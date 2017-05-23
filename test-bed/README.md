@@ -26,3 +26,7 @@ So far it is not decided yet how to do a proper evaluation. Possible important a
 * Royalty free
 * Free/open source implementations?
 * ...
+
+## TODOs
+
+* Reports & Comparisons
