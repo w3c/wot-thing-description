@@ -7,7 +7,7 @@ To make contributions, please provide pull-requests to the html file, see [githu
 ## Rendering
 
 Part of the document is automatically rendered using the [Dust.js](http://www.dustjs.com/) HTML template engine and Node.js. To render it, run:
-```
-npm install rdfstore dustjs-linkedin dustjs-helpers #to be done only once
+```sh
+npm install rdfstore dustjs-linkedin dustjs-helpers # to be done only once
 node render.js
 ```
