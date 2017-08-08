@@ -11,7 +11,6 @@ let subclassQuery = fs.readFileSync('ontology/subclass.sparql', 'UTF-8');
 function context(store, cb) {
     store.execute(classQuery, function(err, bindings) {
         let classes = bindings.map(function(c) {
-            let fq = fieldQuery.replace('?class', '<' + c.uri.value + '>');
             c.fields = {
                 query: fieldQuery.replace('?class', '<' + c.uri.value + '>'),
                 defer: function(bindings) {
@@ -32,9 +31,8 @@ function context(store, cb) {
                 }
             };
 
-            let subq = subclassQuery.replace('?class', '<' + c.uri.value + '>');
             c.subclasses = {
-                query: subq,
+                query: subclassQuery.replace('?class', '<' + c.uri.value + '>'),
                 defer: function(bindings) {
                     let subclasses = bindings.map(function(sub) {
                         sub.subclass.id = '#' + sub.subclass.value.toLowerCase();
@@ -49,11 +47,9 @@ function context(store, cb) {
 
         // executes SPARQL queries in a serial fashion
         // TODO clean all this?
-        let call = function(idx, classes) {
-            if (idx == classes.length) {
-                cb({ classes: classes });
-            } else {
-                let c = classes[idx];
+        let call = function(classes) {
+            for (i in classes) {
+                let c = classes[i];
                 for (key in c) {
                     if (c[key].defer) {
                         let deferred = c[key];
@@ -63,16 +59,16 @@ function context(store, cb) {
                                 // execution stopped
                             } else {
                                 c[key] = deferred.defer(bindings);
-                                call(idx, classes);
+                                call(classes);
                             }
                         });
                         return;
                     }
                 }
-                call(++idx, classes);
             }
+            cb({ classes: classes });
         };
-        call(0, classes);
+        call(classes);
     });
 }
 
