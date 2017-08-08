@@ -4,6 +4,7 @@ let dust = require('dustjs-helpers');
 
 const sparql = 'ontology/td.sparql';
 const ttl = 'ontology/td.ttl';
+const vocTemplate = 'vocabulary.template';
 const template = 'index.html.template';
 const html = 'index.html';
 
@@ -29,15 +30,18 @@ let query = fs.readFileSync(sparql, 'UTF-8');
 
 let onto = fs.readFileSync(ttl, 'UTF-8');
 
+let vocSrc = fs.readFileSync(vocTemplate, 'UTF-8');
+
 let src = fs.readFileSync(template, 'UTF-8');
 
 rdf.create(function(err, store) {
     store.load('text/turtle', onto, function(err) {
         store.execute(query, function(err, results) {
-            dust.renderSource(src, {
+            dust.renderSource(vocSrc, {
                 classes: aggregate(results)
             }, function(err, out) {
-                fs.writeFileSync(html, out, 'UTF-8');
+                let result = src.replace('{vocabulary.template}', out);
+                fs.writeFileSync(html, result, 'UTF-8');
             });
         });
     });
