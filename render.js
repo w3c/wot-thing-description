@@ -22,6 +22,16 @@ function aggregate(bindings) {
             });
             idx[c] = array.length - 1;
         }
+        if (!b.otherClass && b.oc) {
+            // no label, take local name
+            let uri = b.oc.value;
+            b.otherClass = {
+                value: uri.substr(uri.lastIndexOf('#') + 1),
+                id: uri
+            };
+        } else if (b.otherClass) {
+            b.otherClass.id = '#' + b.otherClass.value.toLowerCase()
+        }
     });
     return array;
 }
