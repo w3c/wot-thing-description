@@ -57,13 +57,23 @@ var respecConfig = {
   ],
 };
     </script>
+<style>
+.example {
+		border-color: #EA1252;
+		background: #FEF11E;
+		counter-increment: example;
+		overflow: auto;
+		clear: both;
+	}
+</style>
   </head>
   <body>
 
   <section id="abstract">
-Each Thing is described by a WoT <a>Thing Description</a> (TD).
-The TD must be acquired to use and interact with the Thing, since it describes the semantics of a Thing as well as its <a>WoT Interface</a>.
-Usually, Things directly provide their own TD, but the TD can also be hosted externally if there is not enough space on the device or when a WoT-compatible legacy device is retrofitted with a TD.
+This document describes a common data model for the <a>Web of Things</a>. The W3C Web of Things Thing Description provides a narrow-waist set of vocabulary for describing physical and/or virtual Things in a machine readable format with a default JSON-LD encoding. A Thing Description instance can be hosted by the Thing itself or hosted externally due to Thing's resource restrictions (e.g. limited memory space) or when a Web of Thing-compatible legacy device is retrofitted with a Thing Description.
+
+<!-- for devices.
+The TD must be acquired to use and interact with the Thing, since it describes the semantics of a Thing as well as its <a>WoT Interface</a>. Usually, Things directly provide their own TD, but the TD can also be hosted externally if there is not enough space on the device or when a WoT-compatible legacy device is retrofitted with a TD.-->
   </section>
 
   <section id="sotd">
@@ -75,17 +85,77 @@ Usually, Things directly provide their own TD, but the TD can also be hosted ext
   <section id="introduction">
     <h1>Introduction</h1>
     <p>
+The W3C Thing Desccription (TD) is a central building block in a Web of Things (WoT) enabled system and can be considered as the entrypoint of a Thing (aka the <i>index.html</i> of the Thing). The TD comprises of semantic metadata for the Thing itself, a narrow-waist interaction model with WoT's Properties, Actions, and Events, a semantic schema to make data models machine-understandable, and features for Web Linking to express relations among Things. 
+</p>
+<p>
+Properties can be used for control parameters, such as a set point or operation state. Actions model invocation of physical processes, but can also be used to abstract RPC-like calls of existing platforms. Events cover the push model where state change notifications, discrete events, and streams of values are sent asynchronously to the receiver. In general, the TD provides metadata for the different communication bindings (e.g., HTTP, CoAP, (MQTT?), etc.), mediaTypes (e.g., "application/json", "application/xml", "application/cbor", "application/exi" etc.), and security policies (authentication, authorization, etc.). The default serialisation of the TD is JSON-LD.
+</p>
+
+<p>
+Example 1 shows a simple TD that describes a lamp Thing with the name <i>MyLampThing</i>.
+</p>
+
+<pre class="example" title="Simple Thing Description Sample">
+            {
+    "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+    "@type": "Thing",
+    "name": "MyLampThing",
+    "interactions": [
+        {
+            "@type": ["Property"],
+            "name": "status",
+            "outputData": {"type": "string"},
+            "writable": false,
+            "links": [{
+                "href": "coap://mylamp.example.com:5683/status",
+                "mediaType": "application/json"
+            }]
+        },
+        {
+            "@type": ["Action"],
+            "name": "toggle",
+            "links": [{
+                "href": "coap://mylamp.example.com:5683/toggle",
+                "mediaType": "application/json"
+            }]
+        },
+        {
+            "@type": ["Event"],
+            "name": "overheating",
+            "outputData": {"type": "string"},
+            "links": [{
+                "href": "coap://mylamp.example.com:5683/oh",
+                "mediaType": "application/json"
+            }]
+        }
+    ]
+}
+ </pre>
+
+
+
+
+
+
+
+
+<!--
 The WoT Thing Description (TD) provides the semantic metadata of a Thing as well as a functional description of its <a>WoT Interface</a>.
 For this, it relies on the Resource Description Framework (RDF) [[!rdf11-concepts]] as an underlying data model.
 For now, [[!JSON-LD]] is used as the default TD serialization format.
 The WoT IG defined a minimal vocabulary to express the capabilities of a Thing in terms of different interaction patterns: <i>Properties</i>, <i>Actions</i>, and <i>Events</i>.
 In addition, the TD provides metadata for the different communication bindings (e.g., HTTP, CoAP, etc.), mediaTypes (e.g., "application/json", "application/exi", etc.), and security policies (authentication, authorization, etc.).
-<a href="#fig-td"></a> gives an overview of the relevant content defined in a TD.
-    </p>
+-->
+
+
+<!--<a href="#fig-td"></a> gives an overview of the relevant content defined in a TD. -->
+
+<!--
     <figure id="fig-td">
 <img src="td-concepts.png" style="width:60%" />
 <figcaption>Concepts of the Thing Description (TD)</figcaption>
     </figure>
+-->
   </section>
 
   <section id="quick-start">
@@ -124,9 +194,9 @@ Example 1 shows a simple TD that describes a temperature Thing with the name <i>
   Based on this content, we know there exists one <i>Property</i> interaction resource with the name <i>temperature</i>. In addition, information is provided 
   such as that this Property is accessable over the CoAP protocol with a GET method (see CoAP protocol binding <a href="#protocol-bindings">here</a>) 
   at <code>coap://mytemp.example.com:5683/temp</code> (announced within the endoind structure by the <i>href</i> kye), which will return a number (TD type system) 
-  inside a JSON structure (JSON as payload format is announced by the <i>mediaType</i> field). <!-- However, this is missing critical semantic information such as this resource actually represents and what unit this number has.  -->
+  inside a JSON structure (JSON as payload format is announced by the <i>mediaType</i> field). <!-- However, this is missing critical semantic information such as this resource actually represents and what unit this number has. -->
     </p>
-    
+<!--
     <p>
 In practice, a Thing provides further details about what kind of Thing it is and what the interactions mean.
 This additional information is the semantic context of the Thing.
@@ -135,7 +205,8 @@ Through a context, the meaningless strings turn into semantically defined terms 
 Example 2 shows the integration of the <code>sensor</code> namespace and the resulting semantic enrichment of the temperature 
 Property with an additional entry within the <code>@type</code> and unit assignment.
     </p>
-
+-->
+<!--
     <pre class="example" title="Semantic Annotations">
 {
 "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
@@ -158,14 +229,17 @@ Property with an additional entry within the <code>@type</code> and unit assignm
   ]
 }            
     </pre>
-
+-->
+<!--
     <p>
 Example 3 shows a more advanced TD reflecting an LED Thing that supports multiple protocols (CoAP and HTTP), mediaTypes (JSON and EXI), and security 
 policies (it requires a <a>JWT</a> for interaction). This example also shows the definition of the endpoint information in a global manner. More precisely, a global defined <i>base</i> URI is valid for defined interaction
 resources.  Indivdualiziation of the URI's resource is done by the <i>href</i> key within the interaction definitions.
-<!--The Thing also specifies security policies (it requires a <a>JWT</a>) and provides four different interactions (one Property, two Actions, one Event).-->
-    </p>
-
+</p>
+-->
+<!--p>The Thing also specifies security policies (it requires a <a>JWT</a>) and provides four different interactions (one Property, two Actions, one Event).</p-->
+    
+<!--
     <pre class="example" title="More Capabilities">
 {
   "@context": [
@@ -239,7 +313,8 @@ resources.  Indivdualiziation of the URI's resource is done by the <i>href</i> k
   ]
 }
     </pre>
-
+-->
+<!--
     <p>
 Based on this TD, one is able to know that a JSON Web Token (JWT) is required to interact with the resources of the Thing.
 They are issued by <code>https://authority-issuing.example.org</code> and signed using HMAC SHA-256 (HS256).
@@ -253,7 +328,49 @@ MyLEDThing also serves for the CoAP protocol an Event called criticalCondition, 
 option to <code>coap://myled.example.com:5683/ev</code>). This event sample also shows the local scope definition of the endpoint which 
 overwrite global defined endpoint information. Such a mechanism allows to restrict or expand endpoint oppertunities of indivdual interaction resources.
     </p>
-  </section>
+  -->
+</section>
+  
+  <section>
+    <h1>Namespaces</h1>
+
+<p>
+The namespace for TD is http://www.w3.org/ns/td#. TD itself defines a minimal set of classes and properties of its own. A full set of namespaces and prefixes used in this document is shown in the table below.
+</p>
+
+<table id="namespaces">
+  <thead><tr><th>Prefix</th><th>Namespace</th></tr></thead>
+  <tbody>
+     <tr><td>rdf</td><td>http://www.w3.org/1999/02/22-rdf-syntax-ns#</td></tr>
+    <tr><td>rdfs</td><td>http://www.w3.org/2000/01/rdf-schema#</td></tr>
+    <tr><td>xsd</td><td>http://www.w3.org/2001/XMLSchema#</td></tr>
+  </tbody>
+</table>
+</section>
+
+<p class="issue">
+ToDo: complete table
+</p>
+
+<section>
+    <h1>Conformance</h1>
+
+<p>
+  As well as sections marked as non-normative, all authoring guidelines, diagrams, examples,   and notes in this specification are non-normative. Everything else in this specification is
+  normative.
+</p>
+<p>
+  The key words <em title="MUST" class="rfc2119">MUST</em>, <em title="MUST NOT" class="rfc2119">MUST NOT</em>, <em title="REQUIRED" class="rfc2119">REQUIRED</em>, <em title="SHOULD" class="rfc2119">SHOULD</em>, <em title="SHOULD NOT" class="rfc2119">SHOULD NOT</em>, <em title="RECOMMENDED" class="rfc2119">RECOMMENDED</em>, <em title="MAY" class="rfc2119">MAY</em>,
+  and <em title="OPTIONAL" class="rfc2119">OPTIONAL</em> in this specification are to be interpreted as described in [<cite><a href="#bib-RFC2119" class="bibref">RFC2119</a></cite>].
+</p>
+
+<p class="issue">
+How to validate TD? RDF validation? Structure validation?
+</p>
+
+</section>
+
+</section>
 
   {vocabulary.template}
 
