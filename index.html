@@ -57,13 +57,23 @@ var respecConfig = {
   ],
 };
     </script>
+<style>
+.example {
+		border-color: #EA1252;
+		background: #FEF11E;
+		counter-increment: example;
+		overflow: auto;
+		clear: both;
+	}
+</style>
   </head>
   <body>
 
   <section id="abstract">
-Each Thing is described by a WoT <a>Thing Description</a> (TD).
-The TD must be acquired to use and interact with the Thing, since it describes the semantics of a Thing as well as its <a>WoT Interface</a>.
-Usually, Things directly provide their own TD, but the TD can also be hosted externally if there is not enough space on the device or when a WoT-compatible legacy device is retrofitted with a TD.
+This document describes a common data model for the <a>Web of Things</a>. The W3C Web of Things Thing Description provides a narrow-waist set of vocabulary for describing physical and/or virtual Things in a machine readable format with a default JSON-LD encoding. A Thing Description instance can be hosted by the Thing itself or hosted externally due to Thing's resource restrictions (e.g. limited memory space) or when a Web of Thing-compatible legacy device is retrofitted with a Thing Description.
+
+<!-- for devices.
+The TD must be acquired to use and interact with the Thing, since it describes the semantics of a Thing as well as its <a>WoT Interface</a>. Usually, Things directly provide their own TD, but the TD can also be hosted externally if there is not enough space on the device or when a WoT-compatible legacy device is retrofitted with a TD.-->
   </section>
 
   <section id="sotd">
@@ -75,17 +85,77 @@ Usually, Things directly provide their own TD, but the TD can also be hosted ext
   <section id="introduction">
     <h1>Introduction</h1>
     <p>
+The W3C Thing Desccription (TD) is a central building block in a Web of Things (WoT) enabled system and can be considered as the entrypoint of a Thing (aka the <i>index.html</i> of the Thing). The TD comprises of semantic metadata for the Thing itself, a narrow-waist interaction model with WoT's Properties, Actions, and Events, a semantic schema to make data models machine-understandable, and features for Web Linking to express relations among Things. 
+</p>
+<p>
+Properties can be used for control parameters, such as a set point or operation state. Actions model invocation of physical processes, but can also be used to abstract RPC-like calls of existing platforms. Events cover the push model where state change notifications, discrete events, and streams of values are sent asynchronously to the receiver. In general, the TD provides metadata for the different communication bindings (e.g., HTTP, CoAP, (MQTT?), etc.), mediaTypes (e.g., "application/json", "application/xml", "application/cbor", "application/exi" etc.), and security policies (authentication, authorization, etc.). The default serialisation of the TD is JSON-LD.
+</p>
+
+<p>
+Example 1 shows a simple TD that describes a lamp Thing with the name <i>MyLampThing</i>.
+</p>
+
+<pre class="example" title="Simple Thing Description Sample">
+            {
+    "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+    "@type": "Thing",
+    "name": "MyLampThing",
+    "interactions": [
+        {
+            "@type": ["Property"],
+            "name": "status",
+            "outputData": {"type": "string"},
+            "writable": false,
+            "links": [{
+                "href": "coap://mylamp.example.com:5683/status",
+                "mediaType": "application/json"
+            }]
+        },
+        {
+            "@type": ["Action"],
+            "name": "toggle",
+            "links": [{
+                "href": "coap://mylamp.example.com:5683/toggle",
+                "mediaType": "application/json"
+            }]
+        },
+        {
+            "@type": ["Event"],
+            "name": "overheating",
+            "outputData": {"type": "string"},
+            "links": [{
+                "href": "coap://mylamp.example.com:5683/oh",
+                "mediaType": "application/json"
+            }]
+        }
+    ]
+}
+ </pre>
+
+
+
+
+
+
+
+
+<!--
 The WoT Thing Description (TD) provides the semantic metadata of a Thing as well as a functional description of its <a>WoT Interface</a>.
 For this, it relies on the Resource Description Framework (RDF) [[!rdf11-concepts]] as an underlying data model.
 For now, [[!JSON-LD]] is used as the default TD serialization format.
 The WoT IG defined a minimal vocabulary to express the capabilities of a Thing in terms of different interaction patterns: <i>Properties</i>, <i>Actions</i>, and <i>Events</i>.
 In addition, the TD provides metadata for the different communication bindings (e.g., HTTP, CoAP, etc.), mediaTypes (e.g., "application/json", "application/exi", etc.), and security policies (authentication, authorization, etc.).
-<a href="#fig-td"></a> gives an overview of the relevant content defined in a TD.
-    </p>
+-->
+
+
+<!--<a href="#fig-td"></a> gives an overview of the relevant content defined in a TD. -->
+
+<!--
     <figure id="fig-td">
 <img src="td-concepts.png" style="width:60%" />
 <figcaption>Concepts of the Thing Description (TD)</figcaption>
     </figure>
+-->
   </section>
 
   <section id="quick-start">
@@ -124,9 +194,9 @@ Example 1 shows a simple TD that describes a temperature Thing with the name <i>
   Based on this content, we know there exists one <i>Property</i> interaction resource with the name <i>temperature</i>. In addition, information is provided 
   such as that this Property is accessable over the CoAP protocol with a GET method (see CoAP protocol binding <a href="#protocol-bindings">here</a>) 
   at <code>coap://mytemp.example.com:5683/temp</code> (announced within the endoind structure by the <i>href</i> kye), which will return a number (TD type system) 
-  inside a JSON structure (JSON as payload format is announced by the <i>mediaType</i> field). <!-- However, this is missing critical semantic information such as this resource actually represents and what unit this number has.  -->
+  inside a JSON structure (JSON as payload format is announced by the <i>mediaType</i> field). <!-- However, this is missing critical semantic information such as this resource actually represents and what unit this number has. -->
     </p>
-    
+<!--
     <p>
 In practice, a Thing provides further details about what kind of Thing it is and what the interactions mean.
 This additional information is the semantic context of the Thing.
@@ -135,7 +205,8 @@ Through a context, the meaningless strings turn into semantically defined terms 
 Example 2 shows the integration of the <code>sensor</code> namespace and the resulting semantic enrichment of the temperature 
 Property with an additional entry within the <code>@type</code> and unit assignment.
     </p>
-
+-->
+<!--
     <pre class="example" title="Semantic Annotations">
 {
 "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
@@ -158,14 +229,17 @@ Property with an additional entry within the <code>@type</code> and unit assignm
   ]
 }            
     </pre>
-
+-->
+<!--
     <p>
 Example 3 shows a more advanced TD reflecting an LED Thing that supports multiple protocols (CoAP and HTTP), mediaTypes (JSON and EXI), and security 
 policies (it requires a <a>JWT</a> for interaction). This example also shows the definition of the endpoint information in a global manner. More precisely, a global defined <i>base</i> URI is valid for defined interaction
 resources.  Indivdualiziation of the URI's resource is done by the <i>href</i> key within the interaction definitions.
-<!--The Thing also specifies security policies (it requires a <a>JWT</a>) and provides four different interactions (one Property, two Actions, one Event).-->
-    </p>
-
+</p>
+-->
+<!--p>The Thing also specifies security policies (it requires a <a>JWT</a>) and provides four different interactions (one Property, two Actions, one Event).</p-->
+    
+<!--
     <pre class="example" title="More Capabilities">
 {
   "@context": [
@@ -239,7 +313,8 @@ resources.  Indivdualiziation of the URI's resource is done by the <i>href</i> k
   ]
 }
     </pre>
-
+-->
+<!--
     <p>
 Based on this TD, one is able to know that a JSON Web Token (JWT) is required to interact with the resources of the Thing.
 They are issued by <code>https://authority-issuing.example.org</code> and signed using HMAC SHA-256 (HS256).
@@ -253,9 +328,51 @@ MyLEDThing also serves for the CoAP protocol an Event called criticalCondition, 
 option to <code>coap://myled.example.com:5683/ev</code>). This event sample also shows the local scope definition of the endpoint which 
 overwrite global defined endpoint information. Such a mechanism allows to restrict or expand endpoint oppertunities of indivdual interaction resources.
     </p>
-  </section>
+  -->
+</section>
+  
+  <section>
+    <h1>Namespaces</h1>
 
-  <section><h1>Vocabulary</h1><p><i>This section has been automatically generated.</i></p><section><h2>Classes</h2><h3><code>InteractionPattern</code></h3><p>An interaction in the context of the Web of Things is an exchange of data between a Web client and a Thing. This data can be either given as input by the client, returned as output by the Thing or both. Three interaction patterns have been defined so far: Property, Action and Event. (Definition taken from http://w3c.github.io/wot/current-practices/wot-practices#interaction-patterns)</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>link</code></td><td>Indicates the endpoints from which an interaction pattern is accessible</td><td><a href="#link"><code>Link</code></a></td></tr></tbody></table><p>The class <code>InteractionPattern</code> has the following subclasses:</p><ul><li><td><a href="#action"><code>Action</code></a></td></li><li><td><a href="#event"><code>Event</code></a></td></li><li><td><a href="#property"><code>Property</code></a></td></li></ul><h3><code>Thing</code></h3><p>An thing is anything (both physical and non-physical) which has a distinct and independent existence. Every thing has a unique identity. (Definition adapted from 
+<p>
+The namespace for TD is http://www.w3.org/ns/td#. TD itself defines a minimal set of classes and properties of its own. A full set of namespaces and prefixes used in this document is shown in the table below.
+</p>
+
+<table id="namespaces">
+  <thead><tr><th>Prefix</th><th>Namespace</th></tr></thead>
+  <tbody>
+     <tr><td>rdf</td><td>http://www.w3.org/1999/02/22-rdf-syntax-ns#</td></tr>
+    <tr><td>rdfs</td><td>http://www.w3.org/2000/01/rdf-schema#</td></tr>
+    <tr><td>xsd</td><td>http://www.w3.org/2001/XMLSchema#</td></tr>
+  </tbody>
+</table>
+</section>
+
+<p class="issue">
+ToDo: complete table
+</p>
+
+<section>
+    <h1>Conformance</h1>
+
+<p>
+  As well as sections marked as non-normative, all authoring guidelines, diagrams, examples,   and notes in this specification are non-normative. Everything else in this specification is
+  normative.
+</p>
+<p>
+  The key words <em title="MUST" class="rfc2119">MUST</em>, <em title="MUST NOT" class="rfc2119">MUST NOT</em>, <em title="REQUIRED" class="rfc2119">REQUIRED</em>, <em title="SHOULD" class="rfc2119">SHOULD</em>, <em title="SHOULD NOT" class="rfc2119">SHOULD NOT</em>, <em title="RECOMMENDED" class="rfc2119">RECOMMENDED</em>, <em title="MAY" class="rfc2119">MAY</em>,
+  and <em title="OPTIONAL" class="rfc2119">OPTIONAL</em> in this specification are to be interpreted as described in [<cite><a href="#bib-RFC2119" class="bibref">RFC2119</a></cite>].
+</p>
+
+<p class="issue">
+How to validate TD? RDF validation? Structure validation?
+</p>
+
+</section>
+
+</section>
+
+  <section><h1>Thing Description Core Vocabulary Overview</h1><!-- h1>Vocabulary</h1 --><p><i>This section has been automatically generated.</i></p><p>The following figure below represent the core model of the Thing Description.</p><img src="td-core-model/td-core-model.svg" style="width:100%" /><section><h2>Classes</h2><h3><code>InteractionPattern</code></h3><p>An interaction in the context of the Web of Things is an exchange of data between a Web client and a Thing. This data can be either given as input by the client, returned as output by the Thing or both. Three interaction patterns have been defined so far: Property, Action and Event. (Definition taken from http://w3c.github.io/wot/current-practices/wot-practices#interaction-patterns)</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>link</code></td><td>Indicates the endpoints from which an interaction pattern is accessible</td><td><a href="#link"><code>Link</code></a></td></tr></tbody></table><p>The class <code>InteractionPattern</code> has the following subclasses:</p><ul><li><td><a href="#action"><code>Action</code></a></td></li><li><td><a href="#event"><code>Event</code></a></td></li><li><td><a href="#property"><code>Property</code></a></td></li></ul><h3><code>Thing</code></h3><p>An thing is anything (both physical and non-physical) which has a distinct and independent existence. Every thing has a unique identity. (Definition adapted from 
 ISO/IEC CC 30141. Information technology - Internet of Things Reference architecutre (IoT RA)). Alternative definition: the abstract concept of a physical entity that can either be a
 real-world artifact, such as a device, or a virtual entity that represents physicality, such as a room or group of devices</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>interaction</code></td><td>Link from a thing to the interaction patterns it provides</td><td><a href="#interactionpattern"><code>InteractionPattern</code></a></td></tr><tr><td><code>security</code></td><td>Links a given thing to the security information that indicates the access metadata information for securely transmitting information via all the resources of the thing.</td><td><a href="#security"><code>Security</code></a></td></tr><tr><td><code>base</code></td><td>Define base URI that is valid for all defined local interaction resources. All other URIs in the TD must then be resolved using the algorithm defined in [RFC3986]. This field is optional. (Definition taken from http://w3c.github.io/wot/current-practices/wot-practices#thing-metadata)</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><h3><code>Action</code></h3><p>The Action interaction pattern targets changes or processes on a Thing that take a certain time to complete (i.e., actions cannot be applied instantaneously like property writes). Examples include an LED fade in, moving a robot, brewing a cup of coffee, etc. Usually, ongoing Actions are modelled as Task resources, which are created when an Action invocation is received by the Thing. (Definition taken from http://w3c.github.io/wot/current-practices/wot-practices#action)</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>outputData</code></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>inputData</code></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure expected by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><h3><code>DataSchema</code></h3><p>N-ary class defined to allow the representation of pairs (data type, unit of measure) that are expected as input data or output data of a given interaction pattern.</p><h3><code>Event</code></h3><p>The Event interaction pattern enables a mechanism to be notified by a Thing on a certain condition. (Description taken from http://w3c.github.io/wot/current-practices/wot-practices#event)</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>outputData</code></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><h3><code>Link</code></h3><p>A URL where a service can be accessed by a client application. A service might have more than one link.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>mediaType</code></td><td>link to the media types sopported by an endpoint</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><h3><code>Property</code></h3><p>Property provides readable and/or writeable data that can be static (e.g., supported mode, rated output voltage, etc.) or dynamic (e.g., current fill level of water, minimum recorded temperature, etc.).  (Definition taken from http://w3c.github.io/wot/current-practices/wot-practices#property)</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>outputData</code></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>isWritable</code></td><td>Boolean value that indicates whether a property is writable</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr></tbody></table><h3><code>Security</code></h3><p>The (optional) security field can be used to provide access metadata (self-contained) information of the Thing for securely transmitting information via all its resources. Definition taken from http://w3c.github.io/wot/current-practices/wot-practices#security</p></section></section>
 
