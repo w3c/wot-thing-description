@@ -1,6 +1,10 @@
 let fs = require('fs');
 let rdf = require('rdfstore');
 let dust = require('dustjs-helpers');
+let jd = require("jsdom/lib/old-api.js");
+//let jsdom = require("jsdom");
+
+
 
 // extraction of rendering context from the RDF store
 
@@ -86,7 +90,7 @@ function render(context) {
 
 // main function
 
-let onto = fs.readFileSync('ontology/td.ttl', 'UTF-8');
+let onto = fs.readFileSync('ontology/td4deliverable.ttl', 'UTF-8');
 
 rdf.create(function(err, store) {
     store.load('text/turtle', onto, function(err) {
@@ -95,3 +99,25 @@ rdf.create(function(err, store) {
         });
     });
 });
+
+
+// do some post processing ager index.html generating
+var rawhtml = fs.readFileSync("index.html","utf8")
+jd.env(
+  rawhtml,
+  ["https://code.jquery.com/jquery-1.10.2.js"],
+  function (err, window) {
+   // console.log(window.$("html").html())
+    var $ = require('jquery')(window);
+    //let t = $( "#interactionpattern" );
+    $( "#interactionpattern" ).replaceWith( $( "#thing" ) );
+    //$( "#thing" ).replaceWith( t );
+
+ console.log(window.$( "#acknowledgements" ).html())
+	fs.writeFile('index.html', window.document.documentElement.outerHTML,
+                     function (error){
+            if (error) throw error;
+        });
+
+  }
+);
