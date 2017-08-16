@@ -105,6 +105,7 @@ rdf.create(function(err, store) {
 
 // do some post processing ager index.html generating
 var rawhtml = fs.readFileSync("index.html","utf8")
+/*
 jd.env(
   rawhtml,
   ["https://code.jquery.com/jquery-1.10.2.js"],
@@ -122,4 +123,4 @@ jd.env(
         });
 
   }
-);
+);*/
