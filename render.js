@@ -90,7 +90,7 @@ function render(context) {
 
 // main function
 
-let onto = fs.readFileSync('ontology/td4deliverable.ttl', 'UTF-8');
+let onto = fs.readFileSync('ontology/td.ttl', 'UTF-8');
 
 rdf.create(function(err, store) {
     store.load('text/turtle', onto, function(err) {
