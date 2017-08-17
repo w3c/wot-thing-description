@@ -977,12 +977,35 @@ issuing authority of the security token (as).</p>
     
     <section>
       <h4>Security</h4>
-      
+     
       @TODO Add howto about security metadata and how to use it; WIP
 	    <h5>Requirements</h5>
 	    <ol>
-	    <li>Threat model: assets (TD itself, and then the resources that can be accessed via the TD);
-		    risks; adversaries; and prioritized threats.</li>
+	    <li>Threat model
+		 From a security perspective each TD consists of the following assets:
+		    - A Thing Description itself and all its fields.
+		    - A Thing object instance. 
+		    - Resources, exposed by the Thing Description.
+		 The following main threats on the above assets should be taken into account while developing a TD:
+		    (todo: it would be great to reference here to the created threat model and only call threats by name)
+		    - WoT TD - Privacy. Publicly exposed information in TD can have strong privacy implications, such as
+		      information about individuals, their households, equipment etc. 
+		    - WoT TD - Local Storage.  Any local or remote attack method on TD in-storage the purpose of its modification,
+		      including rolling back to an older version of TD.
+		    - WoT API - General compromise. Any remote attack method using WoT API with the purpose of compromising 
+		      the Thing instance and as a result getting access/control to all available WoT assets in the same 
+		      execution boundary.
+		    - WoT API - Unauthorized API access. Any remote attack method using WoT API with the purpose of obtaining
+		      unauthorized access to a WoT asset.
+		    - WoT DoS. Any attack method using WoT API in order to cause DoS to an end thing, resources it provides,
+		      device or infrastructure (calling WoT API methods that require processing, sending too many messages etc.)
+		      or to disturb the service operation by intentional dropping all or selective WoT messages.
+		    - WoT Protocol - TD Authenticity. Any attack method on TDs in-transfer with the purpose of its modification,
+		      including rolling back to an older version of TD.
+		    - WoT Protocol - TD Confidentiality. Any attack method on TDs in-transfer with the purpose of obtaining
+		      unauthorized access to non-public parts of TDs.
+	    
+	    </li>
 	    <li>General: that we "do no harm": security of described protocols should be maintained.
 		    Don't introduce new security mechanisms, but do preserve functionality of existing mechanisms.</li>
             <li>Exposing: 
@@ -994,20 +1017,40 @@ issuing authority of the security token (as).</p>
 	    </ol>
 	    
 	    <h5>Recommended Practices</h5>
-	    Here is a set of recommended practices for enhancing security and privacy.
+	    Based on the security assets and threats listed above, we provide a set of recommended practices for
+	    enhancing security and privacy.
             <h6>Secure Delivery and Storage of Thing Description</h6>
-	    Implement an access control mechanism for the Thing Description.
+	    When a TD is transferred between endpoints, it is important to use secure protocols guaranteeing
+	    data authenticity and in some cases confidentiality (depending on whenever a TD contains any confidential information).
+	    When TD is stored at the end device or remote storage, its authenticity and in some cases confidentiality should
+	    be protected using the best available local methods. TD also should define an Access Control mechanism that prevents 
+	    illegitimate modification of any of its parts. 
+	    This recommendation helps preventing threats: WoT Protocol - TD Authenticity, WoT Protocol - TD Confidentiality,
+	    WoT TD - Local Storage.
 	    <h6>Use of Secure Transports</h6>
-	    Use coaps and https rather than coap and http whenever possible.
+	    When defining protocols for APIs exposed by a TD, it is important to use secure protocols guaranteeing
+	    data authenticity and confidentiality. For example, coaps and https should be preferred to coap and http whenever possible.
+	    This recommendation helps preventing threats: (?)
+	    <h6>DoS resistance </h6>
+	    When defining APIs exposed by a TD, it is important to avoid any heavy functional processing before the successful authentication
+	    of a WoT client. Any publicly exposed API should avoid heavy processing altogether. 
+	    This recommendation helps preventing threats: WoT DoS.
 	    <h6>Maintaining Privacy</h6>
-	    Avoid exposing personally identifiable information in a Thing Description.
-	    Avoid exposing an immutable hardware identifier.
+	    When defining fields exposed by a TD exposing personally identifiable information should be avoided.
+	    It is also strongly recommended to avoid exposing any immutable hardware identifiers and instead it
+	    is recommended to use "soft identifiers", i.e. identifiers that can be changed during device lifecycle.
+	    This recommendation helps preventing threats: WoT TD - Privacy.
 	    <h6>Minimize API Functionality</h6>
-	    APIs should only provide the functionality necessary, and no more.
-	    Devices should be strongly encapsulated.
+	    APIs exposed by a TD should only provide the minimal necessary functionality, which helps to minimize implementation errors,
+	    possibilities for exposing potentially sensitive data, DoS possibilities etc.  
+	    Devices should be strongly encapsulated. (?)
 	    Consider different levels of access for different users.
+	    This recommendation helps preventing threats: WoT API - General compromise, WoT API - Unauthorized API access, WoT DoS. 
 	    <h5>Testing</h5>
-	    Penetration testing of a Test Thing implemented using an Open-Source implementation will be performed.
+	    The WoT API exposed by a TD should be extensively tested for overall robustness, ability to handle malformed and malicious inputs.
+	    Such testing can be performed using available penetration testing tools. todo: add names of the tools. 
+	    In addition WoT will provide a basic penetration testing of a Test Thing implemented using an Open-Source implementation (?)
+	    This recommendation helps preventing threats: WoT API - General compromise.
     </section>
 
 <section   id="acknowledgements" class="appendix normative">
