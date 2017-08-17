@@ -95,9 +95,48 @@ let onto = fs.readFileSync('ontology/td4deliverable.ttl', 'UTF-8');
 rdf.create(function(err, store) {
     store.load('text/turtle', onto, function(err) {
         context(store, function(classes) {
+	
+		var orderedClasses = {classes : []};
+		var i, s,  len = classes.classes.length;
+		if(len >0) {
+ 			for (i=0; i<len; ++i) {
 
+	   			if(classes.classes[i].label.value=="Thing")
+					{
+					orderedClasses.classes[0] = classes.classes[i];
+					}
+ 			   	if(classes.classes[i].label.value=="InteractionPattern")
+					{
+					orderedClasses.classes[1] = classes.classes[i];
+					}
+ 			   	if(classes.classes[i].label.value=="Property")
+					{
+					orderedClasses.classes[2] = classes.classes[i];
+					}
+ 			   	if(classes.classes[i].label.value=="Action")
+					{
+					orderedClasses.classes[3] = classes.classes[i];
+					}
+ 			   	if(classes.classes[i].label.value=="Event")
+					{
+					orderedClasses.classes[4] = classes.classes[i];
+					}
+		   		if(classes.classes[i].label.value=="DataSchema")
+					{
+					orderedClasses.classes[5] = classes.classes[i];
+					}
+		   		if(classes.classes[i].label.value=="Link")
+					{
+					orderedClasses.classes[6] = classes.classes[i];
+					}
+		   		if(classes.classes[i].label.value=="Security")
+					{
+					orderedClasses.classes[7] = classes.classes[i];
+					}
+	}
 
-            render(classes);
+            render(orderedClasses);
+	}
         });
     });
 });
