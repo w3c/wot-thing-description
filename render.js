@@ -1,7 +1,7 @@
 let fs = require('fs');
 let rdf = require('rdfstore');
 let dust = require('dustjs-helpers');
-let jd = require("jsdom/lib/old-api.js");
+//let jd = require("jsdom/lib/old-api.js");
 //let jsdom = require("jsdom");
 
 
