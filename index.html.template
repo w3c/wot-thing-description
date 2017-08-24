@@ -971,13 +971,178 @@ issuing authority of the security token (as).</p>
  
   </section>
     
-
-    
-    <section>
+<section>
       <h4>Security</h4>
-      
-      @TODO Add howto about security metadata and how to use it
+      <p>Security of a WoT system can refer to the security of the Thing Description itself or the security of
+      the Thing the Thing Description describes.
+      We focus here on the security of the Thing Description itself.
+      More general discussion of overall security of a Thing (for example, best practices API design)
+      can be found in the <a href="architecture">WoT Architecture</a> document.
+      </p>
+      <!-- @TODO Add howto about security metadata and how to use it; WIP -->
+      <section>
+	    <h5>Requirements</h5>
+      <p>The security requirements of a WoT system depend on its context (for example, industrial vs. home)
+      and the value of the assets it provides access to.
+      In this section we discuss some security requirements
+      by reference to a threat model designed for the WoT architecture.
+      </p>
+      <section>
+        <h6>General</h6>
+           <p>
+            In general a WoT approach should "do no harm": security of described protocols should be maintained.
+		    The Web of Things systems does not introduce new security mechanisms, 
+            but should preserve the functionality of existing mechanisms.
+            <ul>
+                <li><strong>Exposing:</strong>
+                When exposing a TD, especially via the Scripting API,
+                it should be possible to use best practices for security,
+                including maintaining the integrity of the TD and delivering it only to an authorized recipient.</li>
+                <li><strong>Consuming:</strong>
+		        A consumed TD should accurately reflect the actual security status of a target device.</li>
+                <li><strong>Protocols:</strong>
+		        We will ensure in particular that, at a minimum, 
+                the needs of the following protocols are addressed: http(s) and coap(s).</li>
+            </ul>
+            </p>
+      </section>
+      <section>
+          <h6>Assets</h6>
+          <p>
+		  From a security perspective each TD consists of the following assets:
+           <ul>
+               <li>A Thing Description itself and all its fields.</li>
+               <li>A Thing object instance that the TD describes.</li> 
+               <li>Resources exposed by the Thing Description.</li>
+           </ul>
+          </p>
+      </section>
+      <section>
+          <h6>Threat Model</h6>
+          <p>
+           The following main <a href="threatmodel">threats</a> on the 
+           above assets should be taken into account while developing a TD:
+           <ul>
+           <li><strong>WoT TD - Privacy.</strong>
+              Publicly exposed information in TD can have strong privacy implications,
+              such as information about individuals, their households, equipment etc.</li>
+           <li><strong>WoT TD - Local Storage.</strong>
+              Any local or remote attack method on TD in-storage the purpose of its modification,
+              including rolling back to an older version of TD.</li>
+           <li><strong>WoT API - General compromise.</strong>
+              Any remote attack method using WoT API with the purpose of compromising 
+		      the Thing instance and as a result getting access/control to all available WoT assets in the same 
+              execution boundary.</li>
+           <li><strong>WoT API - Unauthorized API access.</strong>
+              Any remote attack method using WoT API with the purpose of obtaining
+              unauthorized access to a WoT asset.</li>
+           <li><strong>WoT DoS.</strong>
+              Any attack method using WoT API in order to cause a Denial of Service to another Thing,
+              the tesources it provides, other devices or infrastructure.
+              Examples include calling WoT API methods in a way that requires excessive processing and
+              sending too many messages in a certain time frame, and
+              disturbing the operation of a service by intentional dropping all or some messages.</li>
+           <li><strong>WoT Protocol - TD Authenticity.</strong> 
+              Any attack method on TDs in-transfer with the purpose of its modification,
+              including rolling back to an older version of TD.</li>
+           <li><strong>WoT Protocol - TD Confidentiality.</strong> 
+              Any attack method on TDs during transfer with the purpose of obtaining
+              unauthorized access to non-public parts of TDs.</li>
+           </ul>
+	    </p>
+      </section>
+      </section>
+      <section>
+	    <h5>Recommended Practices</h5>
+        <p>Based on the security assets and threats listed above, we provide a set of recommended practices for
+        enhancing security and privacy.</p>
+        <section>
+            <h6>Secure Delivery and Storage of Thing Description</h6>
+            <p>
+	    When a TD is transferred between endpoints, 
+        it is important to use secure protocols guaranteeing
+	    data authenticity and in many cases confidentiality 
+        (depending on whenever a TD contains any confidential information).
+	    When TD is stored at the end device or remote storage,
+        its authenticity and in some cases confidentiality should
+	    be protected using the best available local methods.
+        TD also should define an Access Control mechanism that prevents 
+	    illegitimate modification of any of its parts. 
+            </p><p>
+	    This recommendation helps prevent the following threats: 
+            WoT Protocol - TD Authenticity,
+            WoT Protocol - TD Confidentiality,
+            WoT TD - Local Storage.
+            </p>
+        </section>
+        <section>
+	    <h6>Use Secure Transports</h6>
+        <p>
+	    When defining protocols for APIs exposed by a TD, 
+        it is often important to use secure protocols guaranteeing
+	    data authenticity and confidentiality.
+        For example, coaps and https should be preferred to coap and http whenever possible.
+        </p><p>
+	    This recommendation helps prevent the following threats: 
+            WoT - Data Security (?)
+        </p>
+        </section>
+        <section>
+	    <h6>Avoid Heavy Functional Processing without Authentication</h6>
+        <p>
+	    When defining APIs exposed by a TD,
+        it is important to avoid any heavy functional processing before the successful authentication
+	    of a WoT client.
+        Any publicly exposed API should avoid heavy processing altogether. 
+        </p><p>
+	    This recommendation helps prevent the following threats: 
+            WoT DoS.
+        </p>
+        </section>
+        <section>
+	    <h6>Avoid Exposing Immutable Identifiers</h6>
+        <p>
+	    When defining fields exposed by a TD personally identifiable information should be avoided.
+	    It is also strongly recommended to avoid exposing any immutable hardware identifiers.
+        Instead it is recommended to use "soft identifiers", i.e. identifiers that can be changed during device lifecycle.
+        </p><p>
+	    This recommendation helps prevent the following threats: 
+            WoT TD - Privacy.
+        </p>
+        </section>
+        <section>
+	    <h6>Minimize API Functionality</h6>
+        <p>
+	    APIs exposed by a TD should only provide the minimal necessary functionality,
+        which helps to minimize implementation errors,
+	    possibilities for exposing potentially sensitive data, DoS possibilities etc.  
+	    Devices should be strongly encapsulated, meaning the network APIs should not expose implementation details
+        (for example, the use of particular software frameworks).
+	    Consider different levels of access for different users.
+        </p><p>
+	    This recommendation helps prevent the following threats: 
+            WoT API - General compromise, 
+            WoT API - Unauthorized API access, 
+            WoT DoS. 
+        </p>
+        </section>
+        <section>
+	    <h5>Testing</h5>
+        <p>
+	    The WoT API exposed by a TD should be extensively tested for overall robustness,
+        including the ability to handle malformed and malicious inputs.
+	    When an HTTP interface is available for a Thing, 
+        it may be possible to perform testing using available web service penetration testing tools. 
+        <!-- todo: add names of the tools. -->
+	    In addition WoT will provide a basic penetration testing of a Test Thing 
+        implemented using an Open-Source implementation (Will we?)
+        </p><p>
+	    This recommendation helps prevent the following threats: 
+            WoT API - General compromise.
+        </p>
+        </section>
     </section>
+ </section>/
 
 <section   id="acknowledgements" class="appendix normative">
 <h1>Acknowledgements</h1>
