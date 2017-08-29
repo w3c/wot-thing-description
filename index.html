@@ -509,21 +509,21 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
         }
       </pre>
 
-      <p>When the <code>integer</code> being exchanged is 123, data serialization in JSON format will look like the following:
+      <p>When the <code>integer</code> being exchanged is 184, data serialization in JSON format will look like the following:
       </p>
 
       <pre class="example">
-        123
+        184
       </pre>
 
       <p>The snippet in the above example is a valid JSON document according to the syntax defined in [[!RFC7159]], which allows sending simple types in the root of the document. There is no need for wrapping a single value into an object.
       </p>
 
-      <p>The same data (i.e. a number of 123) will look like the following when the data is exchanged in XML.
+      <p>The same data (i.e. a number of 184) will look like the following when the data is exchanged in XML.
       </p>
 
       <pre class="example">
-      		&lt;integer>123&lt;/integer>
+      		&lt;integer>184&lt;/integer>
       </pre>
 
     </section>
@@ -534,15 +534,15 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
       <p>In the previous section, we used an example <code>inputData</code> definition consisting of a single <code>integer</code>.
       </p>
 	
-      <p>Since we are using JSON schema to describe <code>inputData</code>, it is also possible to define value types that have more than one literal value.
-      JSON provides two distinct constructs to define a structure that can have multiple literal values. 
-      One is JSON object, and the other is JSON array.
+      <p>With type system, it is also possible to define value types that have more than one literal value.
+      Type system provides two distinct constructs to define a structure that can have multiple literal values. 
+      One is <code>object</code>, and the other is <code>array</code>.
       </p>
 
       <section>
-        <h5 id="json-object">JSON Object</h5>
+        <h5 id="type-system-object">Object</h5>
     
-        <p>The following is an example <code>valueType</code> definition that defines the value to be an <code>object</code> that consists of
+        <p>The following is an example <code>inputData</code> definition that defines the value to be an <code>object</code> consisting of
         two named literals  <code>id</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>)
         where <code>id</code> is required to be present.
         </p>
@@ -550,24 +550,26 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
         <pre class="example">
           "inputData": {
               "type": "object",
-              "properties": {
-                  "id": {
+              "fields": [
+                  {
+                      "name": "id",
                       "type": "integer"
                   },
-                  "name": {
+                  {
+                      "name": "name",
                       "type": "string"
                   }
-              },
+              ],
               "required": ["id"]
           }
         </pre>
     
-        <p>When the <code>id</code> number and the <code>name</code> string values being exchanged are 12345 and "Web of Things", data serialization in JSON format will look like the following.
+        <p>When the <code>id</code> number and the <code>name</code> string values being exchanged are 1314520 and "Web of Things", data serialization in JSON format will look like the following.
         </p>
     
         <pre class="example">
           {
-            "id": 12345,
+            "id": 1314520,
             "name": "Web of Things"
           }
         </pre>
@@ -578,7 +580,7 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
         <pre class="example">
             &lt;object>
               &lt;id>
-                &lt;number>12345&lt;/number>
+                &lt;number>1314520&lt;/number>
               &lt;/id>
               &lt;name>
                 &lt;string>Web of Things&lt;/string>
@@ -586,13 +588,16 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
             &lt;/object>
         </pre>
 
+        <p>In both JSON and XML serialization, values can appear in any order regardless of the order used in the <code>fields</code> definition of the <code>object</code>.
+        </p>
+
       </section>
   
       <section>
-        <h5 id="json-array">JSON Array</h5>
+        <h5 id="type-system-array">Array</h5>
     
         <p>The following is an example <code>valueType</code> definition that defines the value to be an <code>array</code> that consists of
-        exactly three number literals with each value within the range of [ 0 ... 255 ].
+        exactly three number literals with each value within the range of [ 0 ... 2047 ].
         </p>
     
         <pre class="example">
@@ -601,7 +606,7 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
               "items": {
                   "type" : "number",
                   "minimum": 0,
-                  "maximum": 255
+                  "maximum": 2047
               },
               "minItems" : 3,
               "maxItems" : 3
@@ -613,9 +618,9 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
     
         <pre class="example">
           [
-            208,
-            32,
-            144
+            520,
+            184,
+            1314
           ]
         </pre>
     
@@ -624,9 +629,9 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
     
         <pre class="example">
             &lt;array>
-              &lt;number>208&lt;/number>
-              &lt;number>32&lt;/number>
-              &lt;number>144&lt;/number>
+              &lt;number>520&lt;/number>
+              &lt;number>184&lt;/number>
+              &lt;number>1314&lt;/number>
             &lt;/array>
         </pre>
     
@@ -638,38 +643,34 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
     <section>
     <h4>Mapping to XML Schema</h4>
 
-      <p>In the previous section, examples showed what those data whose value type are described using JSON schema
+      <p>In the previous section, examples showed what those data whose value type is described using type system
       look like when serialized to XML in parallel to corresponding JSON serializations.
       </p>
 
-      <p>This section describes how JSON schema definitions can be mapped to XML schema definitions by using the same examples.
-      Given JSON schema definitions, providing the mapping to XML schema allows XML tools to directly validate serialized XML data, for example.
-      </p>
-
-      <p>The XML structure is based on EXI4JSON [[!exi-for-json]].
-      The structure works uniformly well for both schema-less and schema-informed use cases. 
-      </p>
-
-      <p class="ednote">A complete "JSON Schema" to "XML Schema" mapping needs to be defined. 
+      <p>This section describes how type definitions described using type system can be mapped to XML schema definitions by using the same examples.
+      Given type definitions, providing the mapping to XML schema allows XML tools to directly validate serialized XML data, for example.
+      The XML structure for which this mapping is designed is based on EXI4JSON [[!exi-for-json]].
       </p>
 
     <section>
-      <h5>JSON Object Definition to XML Schema</h5>
+      <h5>Object Definition to XML Schema</h5>
 
-      <p>Shown below is the JSON schema <code>object</code> definition used as the <code>inputData</code> in Section <a href="#json-object">JSON Object</a>. The <code>object</code> consists of two named literals <code>id</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>) where <code>id</code> is required to be present.
+      <p>Shown below is the type system <code>object</code> definition given for the <code>inputData</code> in Section <a href="#type-system-object">Object</a>. The <code>object</code> consists of two named literals <code>id</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>) where <code>id</code> is required to be present.
       </p>
 
       <pre class="example">
         {
             "type": "object",
-            "properties": {
-                "id": {
+            "fields": [
+                {
+                    "name": "id",
                     "type": "integer"
                 },
-                "name": {
+                {
+                    "name": "name",
                     "type": "string"
                 }
-            },
+            ],
             "required": ["id"]
         }
       </pre>
@@ -701,18 +702,18 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
         &lt;/xs:element>
         </pre>
   
-        <p class="ednote">JSON schema <code>object</code> does NOT define any order. 
+        <!-- p class="ednote">JSON schema <code>object</code> does NOT define any order. 
         Therefore, in order to capture the constraints of JSON schema <code>object</code>, 
         we need to use xsd:all constructs instead of xsd:sequence.
-        </p>
+        </p -->
   
         <p>Otherwise (i.e. the <code>object</code> is a member of another <code>object</code> definition, thus has a name), 
         the <code>object</code> definition transforms to the following XML schema element definition.
-        Note <code><i>__name</i></code> should be replaced by the actual name of the <code>object</code>.
+        Note <code><i>$name</i></code> represents the name of the <code>object</code>, and needs to be replaced by the actual name of the <code>object</code>.
         </p>
   
         <pre class="example">
-          &lt;xs:element name="<i>__name</i>" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+          &lt;xs:element name="<i>$name</i>" xmlns:xs="http://www.w3.org/2001/XMLSchema">
               &lt;xs:complexType>
                   &lt;xs:sequence>
                       &lt;xs:element name="object">
@@ -743,18 +744,18 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
       </section><!-- End of "JSON Object Definition to XML Schema" -->
 
       <section>
-        <h5>JSON Array Definition to XML Schema</h5>
+        <h5>Array Definition to XML Schema</h5>
 
-          <p>Shown below is the JSON schema <code>array</code> definition used as the <code>inputData</code> in Section <a href="#json-array">JSON Array</a>. 
-          The <code>array</code> consists of exactly three number literals with each value within the value range of [ 0 ... 255 ].</p>
+          <p>Shown below is the type system <code>array</code> definition given for the <code>inputData</code> in Section <a href="#type-system-array">Array</a>. 
+          The <code>array</code> consists of exactly three number literals with each value within the value range of [ 0 ... 2047 ].</p>
 
         <pre class="example">
           {
               "type": "array",
               "items": {
-                  "type" : "number"
+                  "type" : "number",
                   "minimum": 0,
-                  "maximum": 255,
+                  "maximum": 2047
               },
               "minItems" : 3,
               "maxItems" : 3
@@ -773,7 +774,7 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
                           &lt;xs:simpleType name="minInclusive">
                               &lt;xs:restriction base="xs:double">
                                   &lt;xs:minInclusive value="0"/>
-                                  &lt;xs:maxInclusive value="255"/>
+                                  &lt;xs:maxInclusive value="2047"/>
                               &lt;/xs:restriction>
                           &lt;/xs:simpleType>
                       &lt;/xs:element>
@@ -784,11 +785,11 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
 
         <p>Otherwise (i.e. the <code>array</code> is a member of an <code>object</code> definition, thus has a name), 
         the <code>array</code> definition transforms to the following XML schema element definition.
-        Note <code><i>__name</i></code> should be replaced by the actual name of the <code>array</code>.
+        Note <code><i>$name</i></code> represents the name of the <code>array</code>, and needs to be replaced by the actual name of the <code>array</code>.
         </p>
 
         <pre class="example">
-          &lt;xs:element name="<i>__name</i>" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+          &lt;xs:element name="<i>$name</i>" xmlns:xs="http://www.w3.org/2001/XMLSchema">
               &lt;xs:complexType>
                   &lt;xs:sequence>
                       &lt;xs:element name="array">
@@ -798,7 +799,7 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
                                       &lt;xs:simpleType name="minInclusive">
                                           &lt;xs:restriction base="xs:double">
                                               &lt;xs:minInclusive value="0"/>
-                                              &lt;xs:maxInclusive value="255"/>
+                                              &lt;xs:maxInclusive value="2047"/>
                                           &lt;/xs:restriction>
                                       &lt;/xs:simpleType>
                                   &lt;/xs:element>
