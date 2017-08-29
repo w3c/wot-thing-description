@@ -643,38 +643,34 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
     <section>
     <h4>Mapping to XML Schema</h4>
 
-      <p>In the previous section, examples showed what those data whose value type are described using JSON schema
+      <p>In the previous section, examples showed what those data whose value type is described using type system
       look like when serialized to XML in parallel to corresponding JSON serializations.
       </p>
 
-      <p>This section describes how JSON schema definitions can be mapped to XML schema definitions by using the same examples.
-      Given JSON schema definitions, providing the mapping to XML schema allows XML tools to directly validate serialized XML data, for example.
-      </p>
-
-      <p>The XML structure is based on EXI4JSON [[!exi-for-json]].
-      The structure works uniformly well for both schema-less and schema-informed use cases. 
-      </p>
-
-      <p class="ednote">A complete "JSON Schema" to "XML Schema" mapping needs to be defined. 
+      <p>This section describes how type definitions described using type system can be mapped to XML schema definitions by using the same examples.
+      Given type definitions, providing the mapping to XML schema allows XML tools to directly validate serialized XML data, for example.
+      The XML structure for which this mapping is designed is based on EXI4JSON [[!exi-for-json]].
       </p>
 
     <section>
-      <h5>JSON Object Definition to XML Schema</h5>
+      <h5>Object Definition to XML Schema</h5>
 
-      <p>Shown below is the JSON schema <code>object</code> definition used as the <code>inputData</code> in Section <a href="#type-system-object">JSON Object</a>. The <code>object</code> consists of two named literals <code>id</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>) where <code>id</code> is required to be present.
+      <p>Shown below is the type system <code>object</code> definition given for the <code>inputData</code> in Section <a href="#type-system-object">Object</a>. The <code>object</code> consists of two named literals <code>id</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>) where <code>id</code> is required to be present.
       </p>
 
       <pre class="example">
         {
             "type": "object",
-            "properties": {
-                "id": {
+            "fields": [
+                {
+                    "name": "id",
                     "type": "integer"
                 },
-                "name": {
+                {
+                    "name": "name",
                     "type": "string"
                 }
-            },
+            ],
             "required": ["id"]
         }
       </pre>
@@ -706,18 +702,18 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
         &lt;/xs:element>
         </pre>
   
-        <p class="ednote">JSON schema <code>object</code> does NOT define any order. 
+        <!-- p class="ednote">JSON schema <code>object</code> does NOT define any order. 
         Therefore, in order to capture the constraints of JSON schema <code>object</code>, 
         we need to use xsd:all constructs instead of xsd:sequence.
-        </p>
+        </p -->
   
         <p>Otherwise (i.e. the <code>object</code> is a member of another <code>object</code> definition, thus has a name), 
         the <code>object</code> definition transforms to the following XML schema element definition.
-        Note <code><i>__name</i></code> should be replaced by the actual name of the <code>object</code>.
+        Note <code><i>$name</i></code> should be replaced by the actual name of the <code>object</code>.
         </p>
   
         <pre class="example">
-          &lt;xs:element name="<i>__name</i>" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+          &lt;xs:element name="<i>$name</i>" xmlns:xs="http://www.w3.org/2001/XMLSchema">
               &lt;xs:complexType>
                   &lt;xs:sequence>
                       &lt;xs:element name="object">
