@@ -213,38 +213,7 @@ How to validate TD? RDF validation? Structure validation?
       </p>
 
     <section>
-      <h2><code>@context</code></h2>
-
-<p>
-The  <code>@context</code> key is used to define Thing Description's context. All JSON key terms that are defined in the present document (also see <a href="#vocabularyDefinitionSection">Vocabulary Definition Section</a> ) have been put in an external context document, available at
-  <code>https://www.w3.org/ns/td/w3c-wot-td-context.jsonld</code>. Each Thing Description instance in JSON-LD shall include this context information enmbedded within an JSON array structure. Thus, a basic Thing Description would contain the following declaration:
-</p>
-
-  <pre class="example">
-    {
-      "@context": ["https://www.w3.org/ns/td/w3c-wot-td-context.jsonld"],
-      ...
-    }
-  </pre>
-
-<p>
-  In case a single Thing Description instance involves several contexts, additional namespaces with prefixs can be extended to the <code>@context</code> array structure. This option proves relevant if one wants to extend the existing Thing Description context without modifying it. For instance:
-</p>
-  <pre class="example">
-    {
-      "@context": ["https://www.w3.org/ns/td/w3c-wot-td-context.jsonld",
-                   {"sensor": "http://example.org/sensors#"}],
-      ...
-    }
-  </pre>
-
-<p>
-  Section <a href="#td-context-extension"></a> provides a more concrete example on that topic.
-</p>
-    </section>
-
-    <section>
-      <h2>Link</h2>
+      <h2 id="link-serialization">Link</h2>
 
       <p>Link definitions provide for communication metadata for services to be accessed by client applications. Shown below is an example of a link definition.
       </p>
@@ -252,7 +221,7 @@ The  <code>@context</code> key is used to define Thing Description's context. Al
       <pre class="example">
         "link": [
           {
-            "href" : "temperature",
+            "href" : "coap://mytemp.example.com:5683/temp",
             "mediaType": "application/json"
           }
         ]
@@ -275,7 +244,7 @@ The  <code>@context</code> key is used to define Thing Description's context. Al
       <table class="def">
         <thead>
           <tr>
-            <th>Field Name</th>
+            <th>Field in Link Class</th>
             <th>Description</th>
           </tr>
         </thead>
@@ -294,52 +263,7 @@ The  <code>@context</code> key is used to define Thing Description's context. Al
 
     </section>
 
-    <section>
-      <h2>Thing Metadata</h2>
-
-      <p>A Thing Description will provide some generic Thing metadata vocabularies (also see <a href="#thing">Thing vocabulary definition section</a>) that can be used, e.g., 
-      to assign a name or what kind of base URI does a servient support.</p>
-      <pre class="example">
-        {
-          ...
-          "name": "MyLED",
-          "base": "coap://myled.example.com:5683/"
-          ...
-        }
-      </pre>
-
-
-      <p>
-        <b>Note:</b> Besides these pre-defined terms in the Thing Description context, additional characteristics can be
-        added to Thing level such as product ID, firmware version, location, etc. These terms should then appear in the context of the Thing (as detailed in <a href="#td-context"></a>).
-      </p>
-
-      <p class="ednote">This note should be moved to the td-context-extension definition. In there it should be also explained that a context is not necessary if you are working outside of the RDF model and if you handle a TD just as a simple JSON document.
-      </p>
-
-    </section>
- 
-<h2>Security</h2>
-
-<pre class="example">
-  {
-    ...
-    "security": {"cat":"token:jwt", "alg":"HS256", "as":"https://authority-issuing.org"},
-    ...
-  }
-</pre>
-
-The <b>(optional)</b> security field can be used to provide access metadata (self-contained) information of the Thing
-for securely transmitting information via all its resources (also see <a href="#security">Security vocabulary definition section</a>). Also see Section <a href="#security-1">Security</a>.
-
-
-<p>Here as a example, JSON Web Token (JWT) type is assigned (cat), the corresponding hashing algorithm "HS256" (alg), and
-issuing authority of the security token (as).</p>
-
-      <p class="ednote">Do we need a context definition for that example?
-      </p>
-
-  <section>
+  <section id="interaction-patterns-serialization">
     <h1>Interaction Patterns</h1>
 
     <p>
@@ -352,9 +276,11 @@ issuing authority of the security token (as).</p>
       <h3>Property</h3>
   
       <p>
-        The <code>Property</code> interaction (also see <a href="#property">Property vocabulary definition section</a>) provides readable and/or writeable data that can be static (e.g., supported mode, rated output voltage, etc.) or 
+        The <code>Property</code> interaction definitions (also see <a href="#property">Property vocabulary definition section</a>) provides metadata for readable and/or writeable data that can be static (e.g., supported mode, rated output voltage, etc.) or 
         dynamic (e.g., current fill level of water, minimum recorded temperature, etc.).
+        Shown below is an example of a <code>Property</code> interaction definition.
       </p>
+
 
       <pre class="example">
         {
@@ -368,11 +294,86 @@ issuing authority of the security token (as).</p>
               "link": [{
                 "href" : "coap://mytemp.example.com:5683/temp",
                 "mediaType": "application/json"
-              }],
+              }]
             },
           ...
         }
       </pre>
+
+      <p>JSON-LD representation for a <code>Property</code> interaction definition is a JSON object of which the fields are defined below.</p>
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Occurrence</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>@type</td>
+            <td>array of strings</td>
+            <td>required</td>
+            <td>The array MUST start with a string "Property"</td>
+          </tr>
+          <tr>
+            <td>name</td>
+            <td>string</td>
+            <td>required</td>
+            <td>Name of the Property</td>
+          </tr>
+          <tr>
+            <td>outputData</td>
+            <td>object</td>
+            <td>required</td>
+            <td>See <a href="#type-system" class="sec-ref"></a></td>
+          </tr>
+          <tr>
+            <td>writable</td>
+            <td>boolean</td>
+            <td>required</td>
+            <td>a property is writable (=true) or not (=false)</td>
+          </tr>
+          <tr>
+            <td>link</td>
+            <td>array of objects</td>
+            <td>required</td>
+            <td>See <a href="#link-serialization" class="sec-ref"></a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The correspondences between the fields of the <a href="#property">Property class</a> and the JSON properties defined above are as follows.
+      </p>
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field in Property Class</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>link</td>
+            <td>The value of JSON property <code>link</code>
+          </tr>
+          <tr>
+            <td>name</td>
+            <td>The value of JSON property <code>name</code></td>
+          </tr>
+          <tr>
+            <td>outputData</td>
+            <td>The value of JSON property <code>outputData</code></td>
+          </tr>
+          <tr>
+            <td>isWritable</td>
+            <td>The value of JSON property <code>writable</code></td>
+          </tr>
+        </tbody>
+      </table>
 
     </section>
   
@@ -402,6 +403,81 @@ issuing authority of the security token (as).</p>
           ...
         }
       </pre>
+
+      <p>JSON-LD representation for an <code>Action</code> interaction definition is a JSON object of which the fields are defined below.</p>
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Occurrence</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>@type</td>
+            <td>array of strings</td>
+            <td>required</td>
+            <td>The array MUST start with a string "Action"</td>
+          </tr>
+          <tr>
+            <td>name</td>
+            <td>string</td>
+            <td>required</td>
+            <td>Name of the Action</td>
+          </tr>
+          <tr>
+            <td>outputData</td>
+            <td>object</td>
+            <td>required</td>
+            <td>See <a href="#type-system" class="sec-ref"></a></td>
+          </tr>
+          <tr>
+            <td>inputData</td>
+            <td>object</td>
+            <td>required</td>
+            <td>See <a href="#type-system" class="sec-ref"></a></td>
+          </tr>
+          <tr>
+            <td>link</td>
+            <td>array of objects</td>
+            <td>required</td>
+            <td>See <a href="#link-serialization" class="sec-ref"></a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The correspondences between the fields of the <a href="#action">Action class</a> and the JSON properties defined above are as follows.
+      </p>
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field in Action Class</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>link</td>
+            <td>The value of JSON property <code>link</code>
+          </tr>
+          <tr>
+            <td>name</td>
+            <td>The value of JSON property <code>name</code></td>
+          </tr>
+          <tr>
+            <td>outputData</td>
+            <td>The value of JSON property <code>outputData</code></td>
+          </tr>
+          <tr>
+            <td>inputData</td>
+            <td>The value of JSON property <code>inputData</code></td>
+          </tr>
+        </tbody>
+      </table>
 
     </section>
   
@@ -436,8 +512,215 @@ issuing authority of the security token (as).</p>
 
     </section>
 
+      <p>JSON-LD representation for an <code>Event</code> interaction definition is a JSON object of which the fields are defined below.</p>
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Occurrence</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>@type</td>
+            <td>array of strings</td>
+            <td>required</td>
+            <td>The array MUST start with a string "Event"</td>
+          </tr>
+          <tr>
+            <td>name</td>
+            <td>string</td>
+            <td>required</td>
+            <td>Name of the Event</td>
+          </tr>
+          <tr>
+            <td>outputData</td>
+            <td>object</td>
+            <td>required</td>
+            <td>See <a href="#type-system" class="sec-ref"></a></td>
+          </tr>
+          <tr>
+            <td>link</td>
+            <td>array of objects</td>
+            <td>required</td>
+            <td>See <a href="#link-serialization" class="sec-ref"></a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>The correspondences between the fields of the <a href="#event">Action class</a> and the JSON properties defined above are as follows.
+      </p>
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field in Event Class</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>link</td>
+            <td>The value of JSON property <code>link</code>
+          </tr>
+          <tr>
+            <td>name</td>
+            <td>The value of JSON property <code>name</code></td>
+          </tr>
+          <tr>
+            <td>outputData</td>
+            <td>The value of JSON property <code>outputData</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+  </section>
+
+  <section id="security-serialization">
+    <h1>Security</h1>
+
+<pre class="example">
+  {
+    ...
+    "security": {"cat":"token:jwt", "alg":"HS256", "as":"https://authority-issuing.org"},
+    ...
+  }
+</pre>
+
+The <b>(optional)</b> security field can be used to provide access metadata (self-contained) information of the Thing
+for securely transmitting information via all its resources (also see <a href="#security">Security vocabulary definition section</a>). Also see Section <a href="#security-1">Security</a>.
 
 
+<p>Here as a example, JSON Web Token (JWT) type is assigned (cat), the corresponding hashing algorithm "HS256" (alg), and
+issuing authority of the security token (as).</p>
+
+      <p class="ednote">Do we need a context definition for that example?
+      </p>
+  </section>
+
+  <section>
+    <h1>Thing as a Whole</h1>
+
+      <p>JSON-LD representation for a Thing Description is a JSON object of which the fields are defined below.</p>
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Occurrence</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>@context</td>
+            <td>array of strings</td>
+            <td>required</td>
+            <td>The array MUST start with a string "https://w3c.github.io/wot/w3c-wot-td-context.jsonld". Also see below.</td>
+          </tr>
+          <tr>
+            <td>@type</td>
+            <td>array of strings</td>
+            <td>optional</td>
+            <td>Indicates what the Thing is</td>
+          </tr>
+          <tr>
+            <td>name</td>
+            <td>string</td>
+            <td>required</td>
+            <td>Name of the Thing</td>
+          </tr>
+          <tr>
+            <td>base</td>
+            <td>string</td>
+            <td>required</td>
+            <td>Base URI</td>
+          </tr>
+          <tr>
+            <td>interaction</td>
+            <td>array of objects</td>
+            <td>optional</td>
+            <td>See <a href="#interaction-patterns-serialization" class="sec-ref"></a></td>
+          </tr>
+          <tr>
+            <td>security</td>
+            <td>array of objects</td>
+            <td>optional</td>
+            <td>See <a href="#security-serialization" class="sec-ref"></a></td>
+          </tr>
+        </tbody>
+      </table>
+
+<p>
+The  <code>@context</code> key is used to define Thing Description's context. All JSON key terms that are defined in the present document (also see <a href="#vocabularyDefinitionSection">Vocabulary Definition Section</a> ) have been put in an external context document, available at
+  <code>https://www.w3.org/ns/td/w3c-wot-td-context.jsonld</code>. Each Thing Description instance in JSON-LD shall include this context information enmbedded within an JSON array structure. Thus, a basic Thing Description would contain the following declaration:
+</p>
+
+  <pre class="example">
+    {
+      "@context": ["https://www.w3.org/ns/td/w3c-wot-td-context.jsonld"],
+      ...
+    }
+  </pre>
+
+<p>
+  In case a single Thing Description instance involves several contexts, additional namespaces with prefixs can be extended to the <code>@context</code> array structure. This option proves relevant if one wants to extend the existing Thing Description context without modifying it. For instance:
+</p>
+  <pre class="example">
+    {
+      "@context": ["https://www.w3.org/ns/td/w3c-wot-td-context.jsonld",
+                   {"sensor": "http://example.org/sensors#"}],
+      ...
+    }
+  </pre>
+
+      <!-- p>A Thing Description will provide some generic Thing metadata vocabularies (also see <a href="#thing">Thing vocabulary definition section</a>) that can be used, e.g., 
+      to assign a name or what kind of base URI does a servient support.</p -->
+
+      <p>
+        <b>Note:</b> Besides these pre-defined terms in the Thing Description context, additional characteristics can be
+        added to Thing level such as product ID, firmware version, location, etc. These terms should then appear in the context of the Thing (as detailed in <a href="#td-context"></a>).
+      </p>
+
+      <p class="ednote">This note should be moved to the td-context-extension definition. In there it should be also explained that a context is not necessary if you are working outside of the RDF model and if you handle a TD just as a simple JSON document.
+      </p>
+
+      <p>The correspondences between the fields of the <a href="#thing">Thing class</a> and the JSON properties defined above are as follows.
+      </p>
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field in Thing Class</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>interaction</td>
+            <td>The value of JSON property <code>interaction</code>
+          </tr>
+          <tr>
+            <td>security</td>
+            <td>The value of JSON property <code>security</code>
+          </tr>
+          <tr>
+            <td>base</td>
+            <td>The value of JSON property <code>base</code>
+          </tr>
+          <tr>
+            <td>name</td>
+            <td>The value of JSON property <code>name</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>For examples of full Thing Description, see <a href="#examples" class="sec-ref"></a>
+      </p>
 
   </section>
 
@@ -863,7 +1146,7 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
 </p>
    </section>
 
-  <section>
+  <section id="examples">
     <h2>Examples</h2>
 
     <p>
