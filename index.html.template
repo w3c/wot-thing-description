@@ -27,6 +27,32 @@ var respecConfig = {
   wgPublicList: "member-wot-wg@w3.org",
   issueBase: "https://www.github.com/w3c/wot-thing-description/issues/",
   githubAPI: "https://api.github.com/repos/w3c/wot-thing-description",
+
+
+				localBiblio:  {
+					"draft-fge-json-schema-validation-00": {
+						title:    "JSON Schema: interactive and non interactive validation"
+					,   href:     "https://tools.ietf.org/html/draft-fge-json-schema-validation-00"
+					,   authors:  [
+							"Kris Zyp"
+						,   "Gary Court"
+						]
+					,   status:   "Internet-Draft"
+					,   publisher:  "IETF"
+					} ,
+					"draft-zyp-json-schema-04": {
+						title:    "JSON Schema: core definitions and terminology"
+					,   href:     "https://tools.ietf.org/html/draft-zyp-json-schema-04"
+					,   authors:  [
+							"Kris Zyp"
+						,   "Gary Court"
+						]
+					,   status:   "Internet-Draft"
+					,   publisher:  "IETF"
+					}
+				},
+
+
   otherLinks: [
     {
       key: "Repository",
@@ -215,7 +241,7 @@ How to validate TD? RDF validation? Structure validation?
     <section>
       <h2 id="link-serialization">Link</h2>
 
-      <p>Link definitions provide for communication metadata for interaction resources to be accessed by client applications. Shown below is an example of a link definition.
+      <p>This section describes JSON-LD serialization for the instances of the <a href="#link" class="sec-ref"></a> class. Shown below is an example of a link definition.
       </p>
 
       <pre class="example">
@@ -228,17 +254,36 @@ How to validate TD? RDF validation? Structure validation?
       </pre>
 
       <p>JSON-LD representation for a link definition is a JSON array with name "link". 
-         Each item in the array is a JSON object that consists of two JSON properties as summarized below.
+         Each item in the array is a JSON object that consists of two JSON fields as summarized below.
       </p>
 
-      <pre>
-        {
-          "href": <a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a> - required
-          "mediaType": <a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a> - required
-        }
-      </pre>
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Occurrence</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>href</td>
+            <td>string</td>
+            <td>required</td>
+            <td>URI. A relative URIs are relative to base URI</td>
+          </tr>
+          <tr>
+            <td>mediaType</td>
+            <td>string</td>
+            <td>required</td>
+            <td>Media type based on IANA</td>
+          </tr>
+        </tbody>
+      </table>
 
-      <p>The correspondences between the fields of the Link class and the JSON properties defined above are as follows.
+
+      <p>The correspondences between the fields of the Link class and the JSON fields defined above are as follows.
       </p>
 
       <table class="def">
@@ -263,8 +308,8 @@ How to validate TD? RDF validation? Structure validation?
 
     </section>
 
-  <section id="interaction-patterns-serialization">
-    <h1>Interaction Patterns</h1>
+  <section id="interaction-resources">
+    <h1>Interaction Resources</h1>
 
     <p>
       An interaction in the context of the Web of Things is an exchange of data between a Web client and a Thing.
@@ -585,29 +630,30 @@ How to validate TD? RDF validation? Structure validation?
   <section id="security-serialization">
     <h1>Security</h1>
 
+<p>Shown below is an example of a security resource definition.</p>
+
 <pre class="example">
   {
     ...
-    "security": {"cat":"token:jwt", "alg":"HS256", "as":"https://authority-issuing.org"},
+    "security": {
+      "cat": "token:jwt", 
+      "alg":"HS256", 
+      "as":"https://authority-issuing.org"
+    },
     ...
   }
 </pre>
 
-The <b>(optional)</b> security field can be used to provide access metadata (self-contained) information of the Thing
-for securely transmitting information via all its resources (also see <a href="#security">Security vocabulary definition section</a>). Also see Section <a href="#security-1">Security</a>.
+<p>In the above example, JSON Web Token (JWT) type is assigned (cat), along with a corresponding hashing algorithm "HS256" (alg) and issuing authority of the security token (as).</p>
 
-
-<p>Here as a example, JSON Web Token (JWT) type is assigned (cat), the corresponding hashing algorithm "HS256" (alg), and
-issuing authority of the security token (as).</p>
-
-      <p class="ednote">Do we need a context definition for that example?
+      <p class="ednote">Consider the need for a context definition for the above example.
       </p>
   </section>
 
   <section>
     <h1>Thing as a Whole</h1>
 
-      <p>JSON-LD representation for a Thing Description is a JSON object of which the fields are defined below.</p>
+      <p>JSON-LD representation for a Thing Description is a JSON object of which fields are defined below.</p>
 
       <table class="def">
         <thead>
@@ -623,13 +669,13 @@ issuing authority of the security token (as).</p>
             <td>@context</td>
             <td>array of strings</td>
             <td>required</td>
-            <td>The array MUST start with a string "https://w3c.github.io/wot/w3c-wot-td-context.jsonld". Also see below.</td>
+            <td>The array MUST contain a string "https://w3c.github.io/wot/w3c-wot-td-context.jsonld". Also see below.</td>
           </tr>
           <tr>
             <td>@type</td>
             <td>array of strings</td>
             <td>optional</td>
-            <td>Indicates what the Thing is</td>
+            <td>Gives annotations to the Thing</td>
           </tr>
           <tr>
             <td>name</td>
@@ -641,13 +687,13 @@ issuing authority of the security token (as).</p>
             <td>base</td>
             <td>string</td>
             <td>required</td>
-            <td>Base URI</td>
+            <td>Base URI for use in a Thing Description</td>
           </tr>
           <tr>
             <td>interaction</td>
             <td>array of objects</td>
             <td>optional</td>
-            <td>See <a href="#interaction-patterns-serialization" class="sec-ref"></a></td>
+            <td>See <a href="#interaction-resources" class="sec-ref"></a></td>
           </tr>
           <tr>
             <td>security</td>
@@ -686,10 +732,10 @@ The  <code>@context</code> key is used to define Thing Description's context. Al
 
       <p>
         <b>Note:</b> Besides these pre-defined terms in the Thing Description context, additional characteristics can be
-        added to Thing level such as product ID, firmware version, location, etc. These terms should then appear in the context of the Thing (as detailed in <a href="#td-context"></a>).
+        added to Thing level such as product ID, firmware version, location, etc. These terms should then appear in the context of the Thing <!-- (as detailed in <a href="#td-context"></a>) -->.
       </p>
 
-      <p class="ednote">This note should be moved to the td-context-extension definition. In there it should be also explained that a context is not necessary if you are working outside of the RDF model and if you handle a TD just as a simple JSON document.
+      <p class="ednote">This note should be moved to the td-context-extension definition once we have a section for that. In there it should be also explained that a context is not necessary if you are working outside of the RDF model and if you handle a TD just as a simple JSON document.
       </p>
 
       <p>The correspondences between the fields of the <a href="#thing">Thing class</a> and the JSON properties defined above are as follows.
@@ -1302,8 +1348,8 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
  
   </section>
     
-<section>
-      <h4>Security</h4>
+<section id="security-consideration">
+      <h4>Security Consideration</h4>
       <p>Security of a WoT system can refer to the security of the Thing Description itself or the security of
       the Thing the Thing Description describes.
       We focus here on the security of the Thing Description itself.
