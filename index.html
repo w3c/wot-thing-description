@@ -236,7 +236,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
 
 
 
-  <section id="vocabularyDefinitionSection"><h1>Vocabulary Definition</h1><!-- h1>Vocabulary</h1 --><section><h1>Overview</h1><p>The Thing Description relys on a small set of vocabulary. An overview of this vocabulary with its class context and class relation is given by the following figure.</p><center><img src="td-core-model/td-core-model.svg"  /></center><p>A detailed description of the vocabulary is given in the next sub-section.</p></section><section><h2>Classes</h2><p class="ednote">There is an information missing from the tables in subsequent sub-sections as to which vocabulary is optional or manditory. Since the information is already available in the ontology files, tools need to be updated to extract and utilize this information to generate the content of these tables.</p><h3><code>Thing</code></h3><p>Describes a physical and/or virtual Thing (may represent one or more physical and / or virtual Things) in the Web of Thing context.</p><table class="def"><thead><tr><th>Field Name</th><th>Mandatory</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>interaction</code></td><td></td><td>Link from a Thing to the interaction patterns it provides</td><td><a href="#interactionpattern"><code>InteractionPattern</code></a></td></tr><tr><td><code>security</code></td><td></td><td>Links a given Thing to the security information that indicates the access metadata information for securely transmitting information via all the resources of the Thing.</td><td><a href="#security"><code>Security</code></a></td></tr><tr><td><code>base</code></td><td></td><td>Define base URI that is valid for all defined local interaction resources. All other URIs in the TD must then be resolved using the algorithm defined in [[!RFC3986]]. This field is optional.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>name</code></td><td></td><td>Name of the Thing or interaction pattern (must be a valid keyword to be used in the scripting API)</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><h3><code>InteractionPattern</code></h3><p>Three interaction patterns are defined as subclasses: Property, Action and Event. When a concrete Property, Action or Event is defined in a Thing Description, it is called an &quot;interaction resource&quot;. Interactions between Things can be as simple as one Thing accessing another Thing&#39;s data to get or (in the case the data is also writable) change representation of data such as metadata, status or mode. A Thing may also be interested in getting asynchronously notified of future changes in another Thing, or may want to initiate a process served in another Thing that may take some time to complete and monitor the progress. Interactions between Things may involve exchanges of data between them. This data can be either given as input by the client Thing, returned as output by the server Thing or both.  </p><table class="def"><thead><tr><th>Field Name</th><th>Mandatory</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>link</code></td><td></td><td>Indicates the endpoints from which an interaction pattern is accessible</td><td><a href="#link"><code>Link</code></a></td></tr><tr><td><code>name</code></td><td></td><td>Name of the Thing or interaction pattern (must be a valid keyword to be used in the scripting API)</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><p>The class <code>InteractionPattern</code> has the following subclasses:</p><ul><li><td><a href="#action"><code>Action</code></a></td></li><li><td><a href="#event"><code>Event</code></a></td></li><li><td><a href="#property"><code>Property</code></a></td></li></ul><h3><code>Property</code></h3><p>Property provides readable and/or writeable data that can be static (e.g., supported mode, rated output voltage, etc.) or dynamic (e.g., current fill level of water, minimum recorded temperature, etc.).  Please note, this class also inherited all vocabulary from the InteractionPattern class.</p><table class="def"><thead><tr><th>Field Name</th><th>Mandatory</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>outputData</code></td><td></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>writable</code></td><td></td><td>Boolean value that indicates whether a property is writable (=true) or not (=false)</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr></tbody></table><h3><code>Action</code></h3><p>The Action interaction pattern triggers changes or processes on a Thing that take a certain time to complete (i.e., actions cannot be applied instantaneously like property writes). Examples include an LED fade in, moving a robot, brewing a cup of coffee, etc. Usually, ongoing Actions are modelled as Task resources, which are created when an Action invocation is received by the Thing. Please note, this class also inherited all vocabulary from the InteractionPattern class.</p><table class="def"><thead><tr><th>Field Name</th><th>Mandatory</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>outputData</code></td><td></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>inputData</code></td><td></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure expected by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><h3><code>Event</code></h3><p>The Event interaction pattern enables a mechanism for events to be notified by a Thing on a certain condition (e.g., the fill level of the water tank reached a given threshold). Please note, this class also inherited all vocabulary from the InteractionPattern class.</p><table class="def"><thead><tr><th>Field Name</th><th>Mandatory</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>outputData</code></td><td></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><h3><code>DataSchema</code></h3><p>N-ary class defined to allow the representation of pairs (data type, unit of measure) that are expected as input data or output data of a given interaction pattern.</p><h3><code>Link</code></h3><p>Communication metadata where a service can be accessed by a client application. An interaction might have more than one link.</p><table class="def"><thead><tr><th>Field Name</th><th>Mandatory</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>href</code></td><td></td><td>URI of the endpoint where an interaction pattern is provided</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>mediaType</code></td><td></td><td>Assign underlying media type of the interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml)</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><h3><code>Security</code></h3><p>The (optional) security field can be used to provide access metadata (self-contained) information of the Thing for securely transmitting information via all its resources. Also see Section Security Consideration. Definition taken from http://w3c.github.io/wot/current-practices/wot-practices#security</p></section></section>
+  <section id="vocabularyDefinitionSection"><h1>Vocabulary Definition</h1><!-- h1>Vocabulary</h1 --><section><h1>Overview</h1><p>The Thing Description relys on a small set of vocabulary. An overview of this vocabulary with its class context and class relation is given by the following figure.</p><center><img src="td-core-model/td-core-model.svg"  /></center><p>A detailed description of the vocabulary is given in the next sub-section.</p></section><section><h2>Classes</h2><p class="ednote">There is an information missing from the tables in subsequent sub-sections as to which vocabulary is optional or manditory. Since the information is already available in the ontology files, tools need to be updated to extract and utilize this information to generate the content of these tables.</p><h3><code>Thing</code></h3><p>Describes a physical and/or virtual Thing (may represent one or more physical and / or virtual Things) in the Web of Thing context.</p><table class="def"><thead><tr><th>Field Name</th><th>Mandatory</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>interaction</code></td><td></td><td>Link from a Thing to the interaction patterns it provides</td><td><a href="#interactionpattern"><code>InteractionPattern</code></a></td></tr><tr><td><code>security</code></td><td></td><td>Links a given Thing to the security information that indicates the access metadata information for securely transmitting information via all the resources of the Thing.</td><td><a href="#security"><code>Security</code></a></td></tr><tr><td><code>base</code></td><td></td><td>Define base URI that is valid for all defined local interaction resources. All other URIs in the TD must then be resolved using the algorithm defined in [[!RFC3986]]. This field is optional.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>name</code></td><td></td><td>Name of the Thing or interaction pattern (must be a valid keyword to be used in the scripting API)</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><h3><code>InteractionPattern</code></h3><p>Three interaction patterns are defined as subclasses: Property, Action and Event. When a concrete Property, Action or Event is defined in a Thing Description, it is called an &quot;interaction resource&quot;. Interactions between Things can be as simple as one Thing accessing another Thing&#39;s data to get or (in the case the data is also writable) change representation of data such as metadata, status or mode. A Thing may also be interested in getting asynchronously notified of future changes in another Thing, or may want to initiate a process served in another Thing that may take some time to complete and monitor the progress. Interactions between Things may involve exchanges of data between them. This data can be either given as input by the client Thing, returned as output by the server Thing or both.  </p><table class="def"><thead><tr><th>Field Name</th><th>Mandatory</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>link</code></td><td></td><td>Indicates the endpoints from which an interaction pattern is accessible</td><td><a href="#link"><code>Link</code></a></td></tr><tr><td><code>name</code></td><td></td><td>Name of the Thing or interaction pattern (must be a valid keyword to be used in the scripting API)</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><p>The class <code>InteractionPattern</code> has the following subclasses:</p><ul><li><td><a href="#action"><code>Action</code></a></td></li><li><td><a href="#event"><code>Event</code></a></td></li><li><td><a href="#property"><code>Property</code></a></td></li></ul><h3><code>Property</code></h3><p>Property provides readable and/or writeable data that can be static (e.g., supported mode, rated output voltage, etc.) or dynamic (e.g., current fill level of water, minimum recorded temperature, etc.).  Please note, this class also inherited all vocabulary from the InteractionPattern class.</p><table class="def"><thead><tr><th>Field Name</th><th>Mandatory</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>outputData</code></td><td></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>writable</code></td><td></td><td>Boolean value that indicates whether a property is writable (=true) or not (=false)</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr></tbody></table><h3><code>Action</code></h3><p>The Action interaction pattern triggers changes or processes on a Thing that take a certain time to complete (i.e., actions cannot be applied instantaneously like property writes). Examples include an LED fade in, moving a robot, brewing a cup of coffee, etc. Usually, ongoing Actions are modelled as Task resources, which are created when an Action invocation is received by the Thing. Please note, this class also inherited all vocabulary from the InteractionPattern class.</p><table class="def"><thead><tr><th>Field Name</th><th>Mandatory</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>outputData</code></td><td></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>inputData</code></td><td></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure expected by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><h3><code>Event</code></h3><p>The Event interaction pattern enables a mechanism for events to be notified by a Thing on a certain condition (e.g., the fill level of the water tank reached a given threshold). Please note, this class also inherited all vocabulary from the InteractionPattern class.</p><table class="def"><thead><tr><th>Field Name</th><th>Mandatory</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>outputData</code></td><td></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><h3><code>DataSchema</code></h3><p>This class embeds JSON Schema declaration in a linked data form to allow the representation of pairs (data type, unit of measure) that are expected as input data or output data of a given interaction pattern.</p><h3><code>Link</code></h3><p>Communication metadata where a service can be accessed by a client application. An interaction might have more than one link.</p><table class="def"><thead><tr><th>Field Name</th><th>Mandatory</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>href</code></td><td></td><td>URI of the endpoint where an interaction pattern is provided</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>mediaType</code></td><td></td><td>Assign underlying media type of the interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml)</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><h3><code>Security</code></h3><p>The (optional) security field can be used to provide access metadata (self-contained) information of the Thing for securely transmitting information via all its resources. Also see Section Security Consideration. Definition taken from http://w3c.github.io/wot/current-practices/wot-practices#security</p></section></section>
 
   <section>
     <h1>JSON-LD Serialization</h1>
@@ -250,55 +250,103 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
 
       <!-- p class="ednote">Currently, JSON-LD is seen as baseline for TD serialization. In TD task force alternatives are evaluated.
       </p -->
+  <section>
+    <h1>Thing as a Whole</h1>
 
-    <section>
-      <h2 id="link-serialization">Link</h2>
-
-      <p>This section describes JSON-LD serialization for the instances of the <a href="#link" class="sec-ref"></a> class. Shown below is an example of a link definition.
-      </p>
-
-      <pre class="example">
-        "link": [
-          {
-            "href" : "coap://mytemp.example.com:5683/temp",
-            "mediaType": "application/json"
-          }
-        ]
-      </pre>
-
-      <p>JSON-LD representation for a link definition is a JSON array with name "link". 
-         Each item in the array is a JSON object that consists of two JSON fields as summarized below.
-      </p>
+      <p>The JSON-LD representation for a Thing Description is a JSON object of which fields are defined below.</p>
 
       <table class="def">
         <thead>
           <tr>
             <th>Field Name</th>
             <th>JSON Construct</th>
-            <th>Optional / Mandatory</th>
+            <th>Mandatory</th>
             <th>Description</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>href</td>
-            <td>string</td>
-            <td>required</td>
-            <td>URI. A relative URIs are relative to base URI</td>
+            <td>@context</td>
+            <td>array of strings</td>
+            <td>yes</td>
+            <td>The array MUST contain a string "https://w3c.github.io/wot/w3c-wot-td-context.jsonld". Also see below.</td>
           </tr>
           <tr>
-            <td>mediaType</td>
+            <td>@type</td>
+            <td>array of strings</td>
+            <td>no</td>
+            <td>Gives annotations to the Thing</td>
+          </tr>
+          <tr>
+            <td>name</td>
             <td>string</td>
-            <td>required</td>
-            <td>Media type based on IANA</td>
+            <td>yes</td>
+            <td>Name of the Thing</td>
+          </tr>
+          <tr>
+            <td>base</td>
+            <td>string</td>
+            <td>no</td>
+            <td>Base URI for use in a Thing Description</td>
+          </tr>
+          <tr>
+            <td>interaction</td>
+            <td>array of objects</td>
+            <td>no</td>
+            <td>See <a href="#interaction-resources" class="sec-ref"></a></td>
+          </tr>
+          <tr>
+            <td>security</td>
+            <td>array of objects</td>
+            <td>no</td>
+            <td>See <a href="#security-serialization" class="sec-ref"></a></td>
           </tr>
         </tbody>
       </table>
 
-      <p>Each field in Link class (see <a href="#link" class="sec-ref"></a>) is represented by the namesake JSON field described in the above table.
+      <p>Each field in Thing class (see <a href="#thing" class="sec-ref"></a>) is represented by the namesake JSON field described in the above table.
       </p>
 
-    </section>
+<p>
+The  <code>@context</code> key is used to define Thing Description's context. All JSON key terms that are defined in the present document (also see <a href="#vocabularyDefinitionSection">Vocabulary Definition Section</a> ) have been put in an external context document, available at
+  <code>https://www.w3.org/ns/td/w3c-wot-td-context.jsonld</code>. Each Thing Description instance in JSON-LD MUST this context information enmbedded within an JSON array structure. Thus, a basic Thing Description would contain the following declaration:
+</p>
+
+  <pre class="example">
+    {
+      "@context": ["https://www.w3.org/ns/td/w3c-wot-td-context.jsonld"],
+      ...
+    }
+  </pre>
+
+<p>
+  In case a single Thing Description instance involves several contexts, additional namespaces with prefixes can be extended to the <code>@context</code> array structure. This option proves relevant if one wants to extend the existing Thing Description context without modifying it. For instance:
+</p>
+  <pre class="example">
+    {
+      "@context": ["https://www.w3.org/ns/td/w3c-wot-td-context.jsonld",
+                   {"sensor": "http://example.org/sensors#"}],
+      ...
+    }
+  </pre>
+
+      <!-- p>A Thing Description will provide some generic Thing metadata vocabularies (also see <a href="#thing">Thing vocabulary definition section</a>) that can be used, e.g., 
+      to assign a name or what kind of base URI does a servient support.</p -->
+
+      <p>
+        <b>Note:</b> Besides these pre-defined terms in the Thing Description context, additional characteristics can be
+        added to Thing level such as product ID, firmware version, location, etc. These terms should then appear in the context of the Thing <!-- (as detailed in <a href="#td-context"></a>) -->.
+      </p>
+
+      <p class="ednote">This note should be moved to the td-context-extension definition once we have a section for that. In there it should be also explained that a context is not necessary if you are working outside of the RDF model and if you handle a TD just as a simple JSON document.
+      </p>
+
+      <p>For examples of full Thing Description, see <a href="#examples" class="sec-ref"></a>
+      </p>
+
+  </section>
+
+
 
   <section id="interaction-resources">
     <h1>Interaction Resources</h1>
@@ -347,7 +395,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
           <tr>
             <th>Field Name</th>
             <th>JSON Construct</th>
-            <th>Optional / Mandatory</th>
+            <th>Mandatory</th>
             <th>Description</th>
           </tr>
         </thead>
@@ -355,31 +403,31 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
           <tr>
             <td>@type</td>
             <td>array of strings</td>
-            <td>required</td>
+            <td>yes</td>
             <td>The array MUST start with a string "Property"</td>
           </tr>
           <tr>
             <td>name</td>
             <td>string</td>
-            <td>required</td>
+            <td>yes</td>
             <td>Name of the Property</td>
           </tr>
           <tr>
             <td>outputData</td>
             <td>object</td>
-            <td>required</td>
+            <td>no</td>
             <td>See <a href="#type-system" class="sec-ref"></a></td>
           </tr>
           <tr>
             <td>writable</td>
             <td>boolean</td>
-            <td>required</td>
+            <td>no</td>
             <td>a property is writable (=true) or not (=false)</td>
           </tr>
           <tr>
             <td>link</td>
             <td>array of objects</td>
-            <td>required</td>
+            <td>no</td>
             <td>See <a href="#link-serialization" class="sec-ref"></a></td>
           </tr>
         </tbody>
@@ -424,7 +472,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
           <tr>
             <th>Field Name</th>
             <th>JSON Construct</th>
-            <th>Optional / Mandatory</th>
+            <th>Mandatory</th>
             <th>Description</th>
           </tr>
         </thead>
@@ -432,31 +480,31 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
           <tr>
             <td>@type</td>
             <td>array of strings</td>
-            <td>required</td>
+            <td>yes</td>
             <td>The array MUST start with a string "Action"</td>
           </tr>
           <tr>
             <td>name</td>
             <td>string</td>
-            <td>required</td>
+            <td>yes</td>
             <td>Name of the Action</td>
           </tr>
           <tr>
             <td>outputData</td>
             <td>object</td>
-            <td>required</td>
+            <td>no</td>
             <td>See <a href="#type-system" class="sec-ref"></a></td>
           </tr>
           <tr>
             <td>inputData</td>
             <td>object</td>
-            <td>required</td>
+            <td>no</td>
             <td>See <a href="#type-system" class="sec-ref"></a></td>
           </tr>
           <tr>
             <td>link</td>
             <td>array of objects</td>
-            <td>required</td>
+            <td>no</td>
             <td>See <a href="#link-serialization" class="sec-ref"></a></td>
           </tr>
         </tbody>
@@ -474,7 +522,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
         The <code>Event</code> interaction pattern (also see <a href="#event">Event vocabulary definition section</a>) enables a mechanism to be notified by a Thing on a certain condition.
         While some protocols such as CoAP can provide such a mechanism natively, others do not.
         Furthermore, Events might need a specific configuration that requires data sent and stored on the Thing in a standard way.
-        There are are two mandatory and two optional terms defined within the <code>Event</code> pattern:
+        There are are four mandatory terms defined within the <code>Event</code> pattern:
       </p>
   
       <pre class="example">
@@ -505,7 +553,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
           <tr>
             <th>Field Name</th>
             <th>JSON Construct</th>
-            <th>Optional / Mandatory</th>
+            <th>Mandatory</th>
             <th>Description</th>
           </tr>
         </thead>
@@ -513,25 +561,25 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
           <tr>
             <td>@type</td>
             <td>array of strings</td>
-            <td>required</td>
+            <td>yes</td>
             <td>The array MUST start with a string "Event"</td>
           </tr>
           <tr>
             <td>name</td>
             <td>string</td>
-            <td>required</td>
+            <td>yes</td>
             <td>Name of the Event</td>
           </tr>
           <tr>
             <td>outputData</td>
             <td>object</td>
-            <td>required</td>
+            <td>yes</td>
             <td>See <a href="#type-system" class="sec-ref"></a></td>
           </tr>
           <tr>
             <td>link</td>
             <td>array of objects</td>
-            <td>required</td>
+            <td>no</td>
             <td>See <a href="#link-serialization" class="sec-ref"></a></td>
           </tr>
         </tbody>
@@ -541,6 +589,55 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
       </p>
 
   </section>
+
+    <section>
+      <h2 id="link-serialization">Link</h2>
+
+      <p>This section describes JSON-LD serialization for the instances of the <a href="#link" class="sec-ref"></a> class. Shown below is an example of a link definition.
+      </p>
+
+      <pre class="example">
+        "link": [
+          {
+            "href" : "coap://mytemp.example.com:5683/temp",
+            "mediaType": "application/json"
+          }
+        ]
+      </pre>
+
+      <p>JSON-LD representation for a link definition is a JSON array with name "link". 
+         Each item in the array is a JSON object that consists of two JSON fields as summarized below.
+      </p>
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Mandatory</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>href</td>
+            <td>string</td>
+            <td>yes</td>
+            <td>URI. If a relative URI is given then this URI is relative to base URI.</td>
+          </tr>
+          <tr>
+            <td>mediaType</td>
+            <td>string</td>
+            <td>yes</td>
+            <td>Media type based on IANA</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Each field in Link class (see <a href="#link" class="sec-ref"></a>) is represented by the namesake JSON field described in the above table.
+      </p>
+
+    </section>
 
   <section id="security-serialization">
     <h1>Security</h1>
@@ -565,101 +662,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
       </p>
   </section>
 
-  <section>
-    <h1>Thing as a Whole</h1>
 
-      <p>The JSON-LD representation for a Thing Description is a JSON object of which fields are defined below.</p>
-
-      <table class="def">
-        <thead>
-          <tr>
-            <th>Field Name</th>
-            <th>JSON Construct</th>
-            <th>Optional / Mandatory</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>@context</td>
-            <td>array of strings</td>
-            <td>required</td>
-            <td>The array MUST contain a string "https://w3c.github.io/wot/w3c-wot-td-context.jsonld". Also see below.</td>
-          </tr>
-          <tr>
-            <td>@type</td>
-            <td>array of strings</td>
-            <td>optional</td>
-            <td>Gives annotations to the Thing</td>
-          </tr>
-          <tr>
-            <td>name</td>
-            <td>string</td>
-            <td>required</td>
-            <td>Name of the Thing</td>
-          </tr>
-          <tr>
-            <td>base</td>
-            <td>string</td>
-            <td>required</td>
-            <td>Base URI for use in a Thing Description</td>
-          </tr>
-          <tr>
-            <td>interaction</td>
-            <td>array of objects</td>
-            <td>optional</td>
-            <td>See <a href="#interaction-resources" class="sec-ref"></a></td>
-          </tr>
-          <tr>
-            <td>security</td>
-            <td>array of objects</td>
-            <td>optional</td>
-            <td>See <a href="#security-serialization" class="sec-ref"></a></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p>Each field in Thing class (see <a href="#thing" class="sec-ref"></a>) is represented by the namesake JSON field described in the above table.
-      </p>
-
-<p>
-The  <code>@context</code> key is used to define Thing Description's context. All JSON key terms that are defined in the present document (also see <a href="#vocabularyDefinitionSection">Vocabulary Definition Section</a> ) have been put in an external context document, available at
-  <code>https://www.w3.org/ns/td/w3c-wot-td-context.jsonld</code>. Each Thing Description instance in JSON-LD shall include this context information enmbedded within an JSON array structure. Thus, a basic Thing Description would contain the following declaration:
-</p>
-
-  <pre class="example">
-    {
-      "@context": ["https://www.w3.org/ns/td/w3c-wot-td-context.jsonld"],
-      ...
-    }
-  </pre>
-
-<p>
-  In case a single Thing Description instance involves several contexts, additional namespaces with prefixes can be extended to the <code>@context</code> array structure. This option proves relevant if one wants to extend the existing Thing Description context without modifying it. For instance:
-</p>
-  <pre class="example">
-    {
-      "@context": ["https://www.w3.org/ns/td/w3c-wot-td-context.jsonld",
-                   {"sensor": "http://example.org/sensors#"}],
-      ...
-    }
-  </pre>
-
-      <!-- p>A Thing Description will provide some generic Thing metadata vocabularies (also see <a href="#thing">Thing vocabulary definition section</a>) that can be used, e.g., 
-      to assign a name or what kind of base URI does a servient support.</p -->
-
-      <p>
-        <b>Note:</b> Besides these pre-defined terms in the Thing Description context, additional characteristics can be
-        added to Thing level such as product ID, firmware version, location, etc. These terms should then appear in the context of the Thing <!-- (as detailed in <a href="#td-context"></a>) -->.
-      </p>
-
-      <p class="ednote">This note should be moved to the td-context-extension definition once we have a section for that. In there it should be also explained that a context is not necessary if you are working outside of the RDF model and if you handle a TD just as a simple JSON document.
-      </p>
-
-      <p>For examples of full Thing Description, see <a href="#examples" class="sec-ref"></a>
-      </p>
-
-  </section>
 
   <section>
     <h1>Type System</h1>
@@ -842,7 +845,7 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
         <pre class="example">
             &lt;object>
               &lt;id>
-                &lt;number>1314520&lt;/number>
+                &lt;integer>1314520&lt;/integer>
               &lt;/id>
               &lt;name>
                 &lt;string>Web of Things&lt;/string>
@@ -1095,7 +1098,7 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
     <h2>Examples</h2>
 
     <p>
-      In the following, we give three examples of a full TD. The first one, a
+      In the following, we give examples of a full TD. The first one, a
       temperature sensor, shows how to define relations between Thing
       Properties. As a second example, we modeled
       an actuator (LED lamp) where Actions have all been characterized semantically,
@@ -1111,7 +1114,7 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
         {
           "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
                        "https://w3c.github.io/wot/w3c-wot-common-context.jsonld"],
-          "@type": "Sensor",
+          "@type": ["Sensor"],
           "name": "myTempSensor",
           "base" : "coap:///www.example.com:5683/temp/",
           "interaction": [
@@ -1188,7 +1191,7 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
         {
           "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
                        "https://w3c.github.io/wot/w3c-wot-common-context.jsonld"],
-          "@type": "Lamp",
+          "@type": ["Lamp"],
           "name": "myMasterLED",
           "interaction": [
             {
