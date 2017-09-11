@@ -1,6 +1,10 @@
 let fs = require('fs');
 let rdf = require('rdfstore');
 let dust = require('dustjs-helpers');
+//let jd = require("jsdom/lib/old-api.js");
+//let jsdom = require("jsdom");
+
+
 
 // extraction of rendering context from the RDF store
 
@@ -91,7 +95,71 @@ let onto = fs.readFileSync('ontology/td.ttl', 'UTF-8');
 rdf.create(function(err, store) {
     store.load('text/turtle', onto, function(err) {
         context(store, function(classes) {
-            render(classes);
+	
+		var orderedClasses = {classes : []};
+		var i, s,  len = classes.classes.length;
+		if(len >0) {
+ 			for (i=0; i<len; ++i) {
+
+	   			if(classes.classes[i].label.value=="Thing")
+					{
+					orderedClasses.classes[0] = classes.classes[i];
+					}
+ 			   	if(classes.classes[i].label.value=="InteractionPattern")
+					{
+					orderedClasses.classes[1] = classes.classes[i];
+					}
+ 			   	if(classes.classes[i].label.value=="Property")
+					{
+					orderedClasses.classes[2] = classes.classes[i];
+					}
+ 			   	if(classes.classes[i].label.value=="Action")
+					{
+					orderedClasses.classes[3] = classes.classes[i];
+					}
+ 			   	if(classes.classes[i].label.value=="Event")
+					{
+					orderedClasses.classes[4] = classes.classes[i];
+					}
+		   		if(classes.classes[i].label.value=="DataSchema")
+					{
+					orderedClasses.classes[5] = classes.classes[i];
+					}
+		   		if(classes.classes[i].label.value=="Link")
+					{
+					orderedClasses.classes[6] = classes.classes[i];
+					}
+		   		if(classes.classes[i].label.value=="Security")
+					{
+					orderedClasses.classes[7] = classes.classes[i];
+					}
+	}
+
+            render(orderedClasses);
+	}
         });
     });
 });
+
+
+// do some post processing ager index.html generating
+var rawhtml = fs.readFileSync("index.html","utf8")
+/*
+jd.env(
+  rawhtml,
+  ["https://code.jquery.com/jquery-1.10.2.js"],
+  function (err, window) {
+   // console.log(window.$("html").html())
+    var $ = require('jquery')(window);
+    //let t = $( "#interactionpattern" );
+    $( "#interactionpattern" ).replaceWith( $( "#thing" ) );
+    //$( "#thing" ).replaceWith( t );
+
+ console.log(window.$( "#acknowledgements" ).html())
+	fs.writeFile('index.html', window.document.documentElement.outerHTML,
+                     function (error){
+            if (error) throw error;
+        });
+
+  }
+);*/
