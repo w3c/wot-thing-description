@@ -1,7 +1,7 @@
 let fs = require('fs');
 let rdf = require('rdfstore');
 let dust = require('dustjs-helpers');
-//let jd = require("jsdom/lib/old-api.js");
+let jd = require("jsdom/lib/old-api.js");
 //let jsdom = require("jsdom");
 
 
@@ -14,6 +14,7 @@ let subclassQuery = fs.readFileSync('ontology/subclass.sparql', 'UTF-8');
 
 function context(store, cb) {
     store.execute(classQuery, function(err, bindings) {
+		    console.log(err + " " + bindings);
         let classes = bindings.map(function(c) {
             c.fields = {
                 query: fieldQuery.replace('?class', '<' + c.uri.value + '>'),
@@ -83,6 +84,7 @@ let src = fs.readFileSync('index.html.template', 'UTF-8');
 
 function render(context) {
     dust.renderSource(vocSrc, context, function(err, out) {
+	
         let result = src.replace('{vocabulary.template}', out);
         fs.writeFileSync('index.html', result, 'UTF-8');
     });
@@ -94,8 +96,9 @@ let onto = fs.readFileSync('ontology/td.ttl', 'UTF-8');
 
 rdf.create(function(err, store) {
     store.load('text/turtle', onto, function(err) {
+ console.log(err + " "  );
         context(store, function(classes) {
-	
+
 		var orderedClasses = {classes : []};
 		var i, s,  len = classes.classes.length;
 		if(len >0) {
@@ -142,9 +145,10 @@ rdf.create(function(err, store) {
 });
 
 
+/*
 // do some post processing ager index.html generating
 var rawhtml = fs.readFileSync("index.html","utf8")
-/*
+
 jd.env(
   rawhtml,
   ["https://code.jquery.com/jquery-1.10.2.js"],
@@ -162,4 +166,5 @@ jd.env(
         });
 
   }
+
 );*/
