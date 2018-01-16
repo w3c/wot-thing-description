@@ -47,7 +47,7 @@ vs:term_status a owl:AnnotationProperty .
 
 :form a owl:ObjectProperty ;
 	rdfs:comment "Indicates the endpoints from which an interaction pattern is accessible"@en ;
-	rdfs:label "form"@en , "link"@en .
+	rdfs:label "form"@en .
 # 
 # http://www.w3.org/ns/td#inputData
 
@@ -119,6 +119,15 @@ vs:term_status a owl:AnnotationProperty .
 	rdfs:comment "Indicates whether a remote servient can subscribe to (\"observe\") the Property, to receive change notifications or periodic updates (true/false). "@en ;
 	rdfs:label "observable"@en .
 # 
+# http://www.w3.org/ns/td#rel
+
+:rel a owl:DatatypeProperty ;
+	rdfs:range xsd:string ;
+	rdfs:comment """Indicates the expected result of performing the operation described by the form.
+
+For example, the Property interaction allows get and set operations. The protocol binding may contain a form for the get operation and a different form for the set operation. The value of the \"rel\" attribute of the form indicates which form is which and allows the client to select the correct form for the oeration required"""@en ;
+	rdfs:label "rel"@en .
+# 
 # http://www.w3.org/ns/td#writable
 
 :writable a owl:DatatypeProperty , owl:FunctionalProperty ;
@@ -171,41 +180,41 @@ _:genid3 a owl:Restriction ;
 :Event rdfs:comment "The Event interaction pattern enables a mechanism for events to be notified by a Thing on a certain condition (e.g., the fill level of the water tank reached a given threshold). Please note, this class also inherited all vocabulary from the InteractionPattern class."@en ;
 	rdfs:label "Event"@en .
 # 
-# http://www.w3.org/ns/td#InteractionPattern
+# http://www.w3.org/ns/td#Form
 
-:InteractionPattern a owl:Class ;
+:Form a owl:Class ;
 	rdfs:subClassOf _:genid4 .
 
 _:genid4 a owl:Restriction ;
-	owl:onProperty :form ;
-	owl:someValuesFrom :Link .
+	owl:onProperty :href ;
+	owl:someValuesFrom xsd:anyURI .
 
-:InteractionPattern rdfs:subClassOf _:genid5 .
+:Form rdfs:subClassOf _:genid5 .
 
 _:genid5 a owl:Restriction ;
+	owl:onProperty :mediaType ;
+	owl:allValuesFrom xsd:string .
+
+:Form rdfs:comment "Communication metadata where a service can be accessed by a client application. An interaction might have more than one link."@en ;
+	rdfs:label "Form"@en .
+# 
+# http://www.w3.org/ns/td#InteractionPattern
+
+:InteractionPattern a owl:Class ;
+	rdfs:subClassOf _:genid6 .
+
+_:genid6 a owl:Restriction ;
+	owl:onProperty :form ;
+	owl:someValuesFrom :Form .
+
+:InteractionPattern rdfs:subClassOf _:genid7 .
+
+_:genid7 a owl:Restriction ;
 	owl:onProperty :name ;
 	owl:someValuesFrom xsd:string .
 
 :InteractionPattern rdfs:comment "Three interaction patterns are defined as subclasses: Property, Action and Event. When a concrete Property, Action or Event is defined in a Thing Description, it is called an \"interaction resource\". Interactions between Things can be as simple as one Thing accessing another Thing's data to get or (in the case the data is also writable) change representation of data such as metadata, status or mode. A Thing may also be interested in getting asynchronously notified of future changes in another Thing, or may want to initiate a process served in another Thing that may take some time to complete and monitor the progress. Interactions between Things may involve exchanges of data between them. This data can be either given as input by the client Thing, returned as output by the server Thing or both.  "@en ;
 	rdfs:label "InteractionPattern"@en .
-# 
-# http://www.w3.org/ns/td#Link
-
-:Link a owl:Class ;
-	rdfs:subClassOf _:genid6 .
-
-_:genid6 a owl:Restriction ;
-	owl:onProperty :href ;
-	owl:someValuesFrom xsd:anyURI .
-
-:Link rdfs:subClassOf _:genid7 .
-
-_:genid7 a owl:Restriction ;
-	owl:onProperty :mediaType ;
-	owl:allValuesFrom xsd:string .
-
-:Link rdfs:comment "Communication metadata where a service can be accessed by a client application. An interaction might have more than one link."@en ;
-	rdfs:label "Link"@en .
 # 
 # http://www.w3.org/ns/td#Property
 
