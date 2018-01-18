@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSON vs JSON-LD Thing Description</title>
+    <script src="https://www.w3.org/Tools/respec/respec-w3c-common" class="remove"></script>
+    <script class="remove">
+      var respecConfig = {
+        specStatus: "ED",
+		edDraftURI : "TBD",
+        editors: [{
+          name: "Sebastian Kaebisch",
+          company: "Siemens AG"
+        },{
+          name: "Daniel Peintner",
+          company: "Siemens AG"
+        },{
+          name: "Matthias Kovatsch",
+          company: "Siemens AG"
+        }],
+        processVersion: 2017,
+        charterDisclosureURI: 'https://www.w3.org/2016/07/wot-ig-charter.html#patentpolicy',
+		shortName: "json-vs-jsonld-td"
+      };
+    </script>
+    <style>
+      table{
+          width: 100%;
+          border: solid 1px #005A9C;
+          border-collapse: collapse;
+      }
+      th{
+          background-color: #005A9C;
+          color: white;
+      }
+      td,
+      th{
+          border: solid 1px #005A9C;
+          padding: 4px;
+      }</style>
+  </head>
+  <body>
+    <section id="abstract">
+      <p>This document compares the <a
+          href="https://rawgit.com/benfrancis/wot/28a71243b27e1a32ddfb5699f8e3bb9b37958cc6/proposals/json-td/index.html"
+          >plain JSON serialization</a> of a Thing Description with the <a
+          href="https://w3c.github.io/wot-thing-description/">JSON-LD based</a> serialization by
+        example.</p>
+    </section>
+    <section id="sotd">
+      <p> </p>
+    </section>
+    <section>
+      <h2>Example 1</h2>
+
+      <section>
+        <h3><code>JSON</code> Thing Description</h3>
+      	<p>The following JSON example was taken from <a href="https://rawgit.com/benfrancis/wot/28a71243b27e1a32ddfb5699f8e3bb9b37958cc6/proposals/json-td/index.html#web-thing-description">here</a>.</p>
+        
+        <aside class="example" title="JSON Example">
+          <p>Note: Some information in <code>toggle</code> and <code>overheating</code> are missing.</p>
+          <pre>
+{
+	"name": "My Lamp",
+	"type": "thing",
+	"description": "A web connected lamp",
+	"properties": {
+		"on": {
+			"type": "boolean",
+			"description": "Whether the lamp is turned on",
+			"href": "/things/lamp/properties/on"
+		},
+		"brightness": {
+			"type": "number",
+			"description": "The level of light from 0-100",
+			"min": 0,
+			"max": 100,
+			"href": "/things/lamp/properties/brightness"
+		}
+	},
+	"actions": {
+		"toggle": {
+			"description": "Toggle the lamp on and off"
+		}
+	},
+	"events": {
+		"overheating": {
+			"description": "The lamp has exceeded its safe operating temperature"
+		}
+	},
+	"links": {
+		"properties": "/thing/lamp/properties",
+		"actions": "/things/lamp/actions",
+		"events": "/things/lamp/events"
+	}
+}
+        </pre>
+        </aside>
+
+      </section>
+
+      <section>
+        <h3><code>JSON-LD</code> Thing Description with Default values</h3>
+        <p>Based on the previous JSON example the JSON-LD version according to the current Thing Description document has been created. This example tries to illustrate the potential of eliminating information in the JSON-LD serialization by utilizing default values.</p>
+        <aside class="example" title="JSON-LD Example with default">
+          <p>Note: The selected default values are just a proposal.</p>
+          <pre>
+{
+	/* "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"], */
+	"name": "My Lamp",
+	/* "@type": ["Thing"], */
+	"interaction": [{
+			"@type": ["Property"],
+			"name": "on",
+			"outputData": {
+				"type": "boolean"
+			},
+			/* "writable": false, */
+			/* "observable": false, */
+			"link": [{
+				"href": "/things/lamp/properties/on" /* ,
+				"mediaType": "application/json" */
+			}]
+		},
+		{
+			"@type": ["Property"],
+			"name": "brightness",
+			"outputData": {
+				"type": "number",
+				"minimum": 0,
+				"maximum": 100
+			},
+			/* "writable": false, */
+			/* "observable": false,  */
+			"link": [{
+				"href": "/things/lamp/properties/brightness" /*,
+				"mediaType": "application/json" */
+			}]
+		},
+		{
+			"@type": ["Action"],
+			"name": "toggle" /* not enough information in Mozilla TD example */
+		},
+		{
+			"@type": ["Event"],
+			"name": "overheating"  /* not enough information in Mozilla TD example */
+		}
+	]
+}
+        </pre>
+        </aside>
+      	
+      	<p>Possible default values</p>
+      	<ul>
+      		<li><code>"@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"]</code> </li>
+      		<li><code>"@type": ["Thing"]</code> in root object</li>
+      		<li><code>"mediaType": "application/json"</code></li>
+      		<li><code>"writable": false</code></li>
+      		<li><code>"observable": false</code></li>
+      	</ul>
+
+      </section>
+
+
+      <section>
+        <h3>Comparison Status Quo</h3>
+        <ul>
+          <li>JSON serialization provides <code>description</code> attribute</li>
+          <li>JSON serialization provides entry point links for <code>properties</code>, <code>actions</code>,
+              <code>events</code>
+          </li>
+          <li>JSON-LD serialization provides integration of semantic models and is rooted in JSON-LD/RDF.</li>
+          <li>JSON-LD serialization <em>with default values</em> is as compact as JSON serialization</li>
+          <li>Different nesting for interactions
+            <ul>
+              <li>JSON serialization has root attributes for <code>"properties"</code>, <code>"actions"</code>, and <code>"events"</code></li>
+              <li>JSON-LD serialization has <code>"interaction"</code> root object with inner elements for properties, actions and events (e.g., <code>"@type": ["Property"]</code>)</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+	  
+      <section>
+        <h3>Converging <code>JSON</code>/<code>JSON-LD</code> Proposal</h3>
+        <ul>
+          <li>Provide integration of semantic models (RDF/JSON-LD) and align with proposal from Mozilla
+			<ul>
+				<li>create dedicated entry point for <code>property</code>, <code>action</code>, and <code>event</code></li>
+				<li>Define <em>default values</em> to provide both compact JSON and JSON-LD serialization</li>
+			</ul>
+		  </li>
+        </ul>
+		
+        <aside class="example" title="JSON-LD Example with default">
+          <p>Note: The selected default values are just a proposal and are higlighted as <code>/* comments */</code> .</p>
+          <pre>
+{
+	/* "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"], */
+	"name": "My Lamp",
+	/*"@type": ["Thing"], */
+	"properties": [{
+			"name": "on",
+			"outputData": {
+				"type": "boolean"
+			},
+			/* "writable": false, */
+			/* "observable": false, */
+			"forms": [{
+				"href": "/things/lamp/properties/on" /* ,
+				"mediaType": "application/json" */
+			}]
+		},
+		{
+			"name": "brightness",
+			"outputData": {
+				"type": "number",
+				"minimum": 0,
+				"maximum": 100
+			},
+			/* "writable": false, */
+			/* "observable": false,  */
+			"forms": [{
+				"href": "/things/lamp/properties/brightness" /*,
+				"mediaType": "application/json" */
+			}]
+		}
+	],
+	"actions": [{
+			"name": "toggle" /* not enough information in Mozilla TD example */
+		}
+	],
+	"events": [{
+			"name": "overheating"  /* not enough information in Mozilla TD example */
+		}
+	]
+}
+        </pre>
+        </aside>
+		
+		
+		<!--<p class="note">
+			We use singular (<code>property</code> vs. <code>properties</code>) because in RDF they are single predicates.
+		</p>-->
+		<p class="note">
+			We changed <code>link</code> to <code>forms</code> since this seems to be <a href="https://github.com/w3c/wot-thing-description/issues/62">proposed</a> also.
+		</p>
+		<p class="note">
+			Shall we add <code>description</code> attribute?
+		</p>
+		
+		
+		
+		
+      </section>
+
+    </section>
+  </body>
+</html>
