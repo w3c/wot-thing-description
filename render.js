@@ -128,7 +128,7 @@ rdf.create(function(err, store) {
 					{
 					orderedClasses.classes[5] = classes.classes[i];
 					}
-		   		if(classes.classes[i].label.value=="Link")
+		   		if(classes.classes[i].label.value=="Form")
 					{
 					orderedClasses.classes[6] = classes.classes[i];
 					}
