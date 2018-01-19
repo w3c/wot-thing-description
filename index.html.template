@@ -66,15 +66,6 @@
                 , publisher: "W3C"
                 , date: "20 August 2017"
                 }
-	, "WOT-PROTOCOL-BINDING" : {
-                  title: "Web of Things Protocol Binding Templates"
-                , href: "https://w3c.github.io/wot-binding-templates/"
-                , authors:  [
-                    "Michael Koster"
-                  ]
-                , publisher: "W3C"
-                , date: "12 January 2018"
-                }
               }
             , otherLinks: [
                 {
@@ -143,12 +134,12 @@ Properties can be used for controlling (or retrieving) parameters, such as a set
 </p>
 
 <p>
-Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event paradihm by describing a lamp Thing with the name <i>MyLampThing</i>.
+Example 1 shows a simple TD instance that describes a lamp Thing with the name <i>MyLampThing</i>.
 </p>
 
 <pre class="example" title="Simple Thing Description Sample">
   {
-    "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+    "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
     "@type": ["Thing"],
     "name": "MyLampThing",
     "interaction": [
@@ -158,7 +149,7 @@ Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event
             "outputData": {"type": "string"},
             "writable": false,
             "observable": true,
-            "form": [{
+            "link": [{
                 "href": "coaps://mylamp.example.com:5683/status",
                 "mediaType": "application/json"
             }]
@@ -166,7 +157,7 @@ Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event
         {
             "@type": ["Action"],
             "name": "toggle",
-            "form": [{
+            "link": [{
                 "href": "coaps://mylamp.example.com:5683/toggle",
                 "mediaType": "application/json"
             }]
@@ -175,7 +166,7 @@ Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event
             "@type": ["Event"],
             "name": "overheating",
             "outputData": {"type": "string"},
-            "form": [{
+            "link": [{
                 "href": "coaps://mylamp.example.com:5683/oh",
                 "mediaType": "application/json"
             }]
@@ -188,27 +179,15 @@ Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event
 
 
 
-<p>Based on this content, we know there exists one Property interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessable over the CoAP protocol with a GET method (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]) at coaps://mylamp.example.com:5683/status (announced within the form structure by the <code>href</code> key), which will return a string status value within a JSON structure (JSON as payload format is announced by the <code>mediaType</code> field).
+<p>Based on this content, we know there exists one Property interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessable over the CoAP protocol with a GET method (see CoAP protocol binding description in the W3C WoT protocol template deliverable [XXX]) at coaps://mylamp.example.com:5683/status (announced within the endoind (SP?) structure by the <code>href</code> key), which will return a string status value within a JSON structure (JSON as payload format is announced by the <code>mediaType</code> field).
 </p>
-
-<p>In a similar manner an Action is specified to toogle the switch status using the POST method that is applied to the coaps://mylamp.example.com:5683/toggle resource (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).</p>
-
-<p>Events which are, e.g., unexpected or irregular can be specified with the WoT's Event model. Here, a subscription of a possible overheating event of the lamp can be applied by using CoAP OBSERVE at coaps://mylamp.example.com:5683/oh. (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).
-</p>
-
-<section id="intro-semantics"> 
-<h1>Context Extensions</h1>
-The Thing Description provides the oppertunity to have .
-
-
 
 <p class="ednote">
-Simple semantic example should be intrduce as well.
+Further explanation of the example.
 </p>
 </section>
-</section>
 
-<section id="terminology"> 
+  <section id="terminology"> 
     <h2>Terminology</h2>
 <p>The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn> etc.
 </p>
@@ -226,14 +205,14 @@ The namespace for TD is http://www.w3.org/ns/td#. TD itself defines a minimal se
   <tbody>
      <tr><td>td</td><td>http://www.w3.org/ns/td#</td></tr>
      <tr><td>rdf</td><td>http://www.w3.org/1999/02/22-rdf-syntax-ns#</td></tr>
-   <!-- <tr><td>rdfs</td><td>http://www.w3.org/2000/01/rdf-schema#</td></tr>
-    <tr><td>xsd</td><td>http://www.w3.org/2001/XMLSchema#</td></tr> -->
+    <tr><td>rdfs</td><td>http://www.w3.org/2000/01/rdf-schema#</td></tr>
+    <tr><td>xsd</td><td>http://www.w3.org/2001/XMLSchema#</td></tr>
   </tbody>
 </table>
 
 
 <p class="ednote">
-ToDo: complete table 
+ToDo: complete table
 </p>
 </section>
 <section>
@@ -426,7 +405,7 @@ A sample TD snippet that relies on the defined fields above is given below:
               "outputData":{ "type": "number" },
               "writable": false,
               "observable": true,
-              "form": [{
+              "link": [{
                 "href" : "coap://mytemp.example.com:5683/temp",
                 "mediaType": "application/json"
               }]
@@ -478,10 +457,10 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>a property is observable (=true) or not (=false)</td>
           </tr>
           <tr>
-            <td>form</td>
+            <td>link</td>
             <td>array of objects</td>
             <td>no</td>
-            <td>See <a href="#form-serialization" class="sec-ref"></a></td>
+            <td>See <a href="#link-serialization" class="sec-ref"></a></td>
           </tr>
         </tbody>
       </table>
@@ -508,7 +487,7 @@ A sample TD snippet that relies on the defined fields above is given below:
               "@type": ["Action"],
               "name": "fadeIn",
               <i>"inputData":</i> { "type": "integer" },
-              "form": [{
+              "link": [{
               	"href" : "coap://mytemp.example.com:5683/in",
               	"mediaType": "application/json"
               }]
@@ -555,10 +534,10 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>See <a href="#type-system" class="sec-ref"></a></td>
           </tr>
           <tr>
-            <td>form</td>
+            <td>link</td>
             <td>array of objects</td>
             <td>no</td>
-            <td>See <a href="#form-serialization" class="sec-ref"></a></td>
+            <td>See <a href="#link-serialization" class="sec-ref"></a></td>
           </tr>
         </tbody>
       </table>
@@ -587,7 +566,7 @@ A sample TD snippet that relies on the defined fields above is given below:
               "@type": ["Event"],
               "name": "criticalCondition",
               "outputData":  { "type": "string" },
-              "form": [{
+              "link": [{
               	"href" : "coap://mytemp.example.com:5683/ev",
               	"mediaType": "application/json"
               }]
@@ -630,10 +609,10 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>See <a href="#type-system" class="sec-ref"></a></td>
           </tr>
           <tr>
-            <td>form</td>
+            <td>link</td>
             <td>array of objects</td>
             <td>no</td>
-            <td>See <a href="#form-serialization" class="sec-ref"></a></td>
+            <td>See <a href="#link-serialization" class="sec-ref"></a></td>
           </tr>
         </tbody>
       </table>
@@ -644,22 +623,21 @@ A sample TD snippet that relies on the defined fields above is given below:
   </section>
 
     <section>
-      <h2 id="form-serialization">Form</h2>
+      <h2 id="link-serialization">Link</h2>
 
-      <p>This section describes JSON-LD serialization for the instances of the <a href="#form" class="sec-ref"></a> class. Shown below is an example of a form definition.
+      <p>This section describes JSON-LD serialization for the instances of the <a href="#link" class="sec-ref"></a> class. Shown below is an example of a link definition.
       </p>
 
       <pre class="example">
-        "form": [
+        "link": [
           {
             "href" : "coap://mytemp.example.com:5683/temp",
-            "mediaType": "application/json",
-            "rel": "getProperty"
+            "mediaType": "application/json"
           }
         ]
       </pre>
 
-      <p>JSON-LD representation for a web form definition is a JSON array with name "form". 
+      <p>JSON-LD representation for a link definition is a JSON array with name "link". 
          Each item in the array is a JSON object that consists of two JSON fields as summarized below.
       </p>
 
@@ -685,16 +663,10 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>yes</td>
             <td>Media type based on IANA</td>
           </tr>
-          <tr>
-            <td>rel</td>
-            <td>string</td>
-            <td>no</td>
-            <td>Provides the expected result of performing the operation described by the form.</td>
-          </tr>
         </tbody>
       </table>
 
-      <p>The form field is used to pointing a URI to an instance of the interaction and descriptions of the protocol settings and options expected to be used between the client and server for the interaction. The different opportunities of the protocol settings (such as for HTTP, CoAP, MQTT, etc)  is described in [[!WOT-PROTOCOL-BINDING]]. 
+      <p>Each field in Link class (see <a href="#link" class="sec-ref"></a>) is represented by the namesake JSON field described in the above table.
       </p>
 
     </section>
@@ -1181,16 +1153,13 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
             {
               "@id": "val",
               "@type": ["Property","Temperature"],
+              "unit": "celsius",
               "reference": "threshold",
               "name": "myTemp",
-              "outputData": 
-		{ 
-		 "type": "number",             
-		 "unit": "celsius" 
-		},
+              "outputData": { "type": "number" },
               "writable": false,
               "observable": true,
-              "form": [{
+              "link": [{
               	"href" : "val",
               	"mediaType": "application/json"
               }]
@@ -1198,14 +1167,11 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
             {
               "@id": "threshold",
               "@type": ["Property","Temperature"],
+              "unit": "celsius",
               "name": "myThreshold",
-              "outputData": 
-		{ 
-		 "type": "number",             
-		 "unit": "celsius" 
-		},
+              "outputData": { "type": "number" },
               "writable": true,
-             	"form": [{
+             	"link": [{
               	"href" : "thr",
               	"mediaType": "application/json"
               }]
@@ -1215,7 +1181,7 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
               "outputData": { "type": "number" },
               "name": "myChange",
               "property": "temp",
-              "form": [{
+              "link": [{
               	"href" : "val/changed",
               	"mediaType": "application/json"
               }]
@@ -1224,7 +1190,7 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
               "@type": ["Event"],
               "outputData":  { "type": "number" },
               "name": "myWarning",
-              "form": [{
+              "link": [{
               	"href" : "val/high",
               	"mediaType": "application/json"
               }]
@@ -1268,7 +1234,7 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
                 "@type": "OnOff",
                 "type": "boolean"
               },
-              "form": [
+              "link": [
                 {
                   "href" : "coap://www.example.com:5683/master",
                   "mediaType": "application/json"
