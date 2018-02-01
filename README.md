@@ -8,6 +8,6 @@ To make contributions, please provide pull-requests to the html file, see [githu
 
 Part of the document is automatically rendered using the [Dust.js](http://www.dustjs.com/) HTML template engine and Node.js. To render it, run:
 ```sh
-npm install rdfstore dustjs-linkedin dustjs-helpers # to be done only once
+npm install rdfstore dustjs-linkedin dustjs-helpers jsdom # to be done only once
 node render.js
 ```
