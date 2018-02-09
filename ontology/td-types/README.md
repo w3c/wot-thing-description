@@ -38,9 +38,9 @@ The following examples were first presented in issue #13 (as JSON schema definit
 Door state (see also [Turtle](./ex-door.ttl)):
 ```json
 {
-    "@type": "Object",
+    "type": "object",
     "description": "Whether a door is open or closed",
-    "field": [
+    "fields": [
         {
             "name": "door",
             "value": {
@@ -54,13 +54,13 @@ Door state (see also [Turtle](./ex-door.ttl)):
 Humidity value (see also [Turtle](./ex-humidity.ttl)):
 ```json
 {
-    "@type": "Object",
+    "type": "object",
     "description": "Humidity as a percentage",
-    "field": [
+    "fields": [
         {
             "name": "humidity",
             "value": {
-                "@type": "Number",
+                "type": "number",
                 "minimum": 0,
                 "maximum": 100
             }
@@ -72,12 +72,12 @@ Humidity value (see also [Turtle](./ex-humidity.ttl)):
 Supported device modes (see also [Turtle](./ex-modes.ttl)):
 ```json
 {
-    "@type": "Object",
+    "type": "object",
     "description": "Collection of modes supported by a device",
-    "field": [
+    "fields": [
         {
             "name": "supportedModes",
-            "items": { "@type": "String" }
+            "items": { "type": "string" }
         }
     ]
 }
@@ -86,15 +86,15 @@ Supported device modes (see also [Turtle](./ex-modes.ttl)):
 Sensor reading (see also [Turtle](./ex-reading.ttl)):
 ```json
 {
-    "@type": "Object",
+    "type": "object",
     "description": "Generic sensor reading",
-    "field": [
+    "fields": [
         {
             "name": "reading",
             "value": {
                 "anyOf": [
-                    { "@type": "Number" },
-                    { "@type": "String" }
+                    { "type": "number" },
+                    { "type": "string" }
                 ]
             }
         }
@@ -105,13 +105,13 @@ Sensor reading (see also [Turtle](./ex-reading.ttl)):
 Binary switch (see also [Turtle](./ex-switch.ttl)):
 ```json
 {
-    "@type": "Object",
+    "type": "object",
     "description": "An on/off power switch",
-    "field": [
+    "fields": [
         {
             "name": "on",
             "value": {
-                "@type": "Integer"
+                "type": "integer"
             }
         }
     ]
@@ -121,32 +121,32 @@ Binary switch (see also [Turtle](./ex-switch.ttl)):
 Weather station (see also [Turtle](./ex-weather.ttl)):
 ```json
 {
-    "@type": "Object",
+    "type": "object",
     "description": "Weather station",
-    "field": [
+    "fields": [
         {
             "name": "wind",
             "value": {
-                "@type": "Object",
-                "field": [
+                "type": "object",
+                "fields": [
                     {
                         "name": "speed",
-                        "value": { "@type": "Number" }
+                        "value": { "type": "number" }
                     },
                     {
                         "name": "direction",
-                        "value": { "@type": "Integer" }
+                        "value": { "type": "integer" }
                     }
                 ]
             }
         },
         {
             "name": "temperature",
-            "value": { "@type": "Number" }
+            "value": { "type": "number" }
         },
         {
             "name": "humidity",
-            "value": { "@type": "Integer" }
+            "value": { "type": "integer" }
         }
     ]
 }
