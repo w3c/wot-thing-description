@@ -45,7 +45,7 @@
                 , status:   "Internet-Draft"
                 , publisher:  "IETF"
                 }
-              , "draft-zyp-json-schema-04": {
+              , "JSON-SCHEMA": {
                   title:    "JSON Schema: core definitions and terminology"
                 , href:     "https://tools.ietf.org/html/draft-zyp-json-schema-04"
                 , authors:  [
@@ -727,99 +727,69 @@ A sample TD snippet that relies on the defined fields above is given below:
   <section>
     <h1>Type System</h1>
 
-    <p>All of the three interaction types <code>Property</code>, <code>Action</code>, and <code>Event</code> can specify the type of the value acceptable as an input or expected as an output of the interaction. In this section, we define an abstract type system notation based on JSON-LD for describing the structure and datatypes for values of interaction types. While type system is designed to be compatible with JSON schema [[draft-zyp-json-schema-04]] [[draft-fge-json-schema-validation-00]], it is intended to be encoding-neutral and integrates into the Linked Data vocabularies to allow semantic annotations. It can not only be directly translated into JSON schema, but also can be handily translated into XML Schema. Use of JSON-LD equips the type system with a way to associate data elements with citations and semantic concepts defined elsewhere. 
+ 
 
-<!-- JSON schema [[draft-zyp-json-schema-04]] [[draft-fge-json-schema-validation-00]] provides a standard way to describe the structure and datatypes of data, and we use JSON schema as the notation for value types of the interaction types. -->
-
+    <p>All of the three interaction types <code>Property</code>, <code>Action</code>, and <code>Event</code> can specify the type of the value acceptable as an input (by using <code>inputData</code> 	field within the <code>Action</code> interaction type) or expected as an output (by using <code>outputData</code> field within the <code>Property</code>, <code>Action</code>, and/or <code>Event</code> interaction types) of the interaction. 
     </p>
 
-    <!-- p>
-      <b>Note:</b> In the embodiment of type system described in this section, JSON schema is used as an abstract description system for structured data. 
-      JSON schema is something that is already out there being used and well-known, therefore gives us a chance to get started quickly to experiment with type system idea for further contemplation. 
-      Through discussion, the following points have been noted as feedback for improvements.
-    </p>
-      <ul>
-        <li>JSON schema specification was designed for JSON, therefore, may not be an optimal solution as an encoding-neutral description system.</li>
-        <li>JSON schema does not provide a way to associate data elements with citations or semantic concepts defined elsewhere.</li>
-        <li>JSON schema is relatively verbose.</li>
-        <li>JSON schema is not a formal standard.</li>
-      </ul>
-    <p>
-      Note that the current plan is to use JSON-LD syntax to express the function of at least part of what JSON schema provides. This will enable Type System to allow the association of semantics while it remains compatible with JSON schema.
-    </p -->
+   <p>
+	In this section, we define an abstract type system notation based on JSON-LD for describing the structure and datatypes for values of interaction types. While type system is designed to be compatible with JSON schema [[draft-zyp-json-schema-04]] [[draft-fge-json-schema-validation-00]], it is intended to be encoding-neutral and integrates into the Linked Data vocabularies to allow semantic annotations. It can not only be directly translated into JSON schema, but also can be handily translated into XML Schema. Use of JSON-LD equips the type system with a way to associate data elements with citations and semantic concepts defined elsewhere. 
+	</p>
 
-    <p>For <code>Property</code> and <code>Event</code> interaction types, each property or event can specify its value type using <code>outputData</code> field within respective interaction type definition. In the following example, <code>temperature</code> property and <code>criticalCondition</code> event are defined as  <code>number</code> and <code>string</code>, respectively.
-    </p>
+
+
+
+    <section>
+      <h4>Simple Data Definition</h4>
+
+
+
+    <section>
+      <h4>Simple Types</h4>
+	<p>Within <code>inputData</code> and <code>outputData</code> fields, simple type assignments can be done by the usage of the <code>type</code> field as used in [[!JSON-SCHEMA]]. Shown below is an example of an interaction snippet that carries a simple type definition <code>number</code> within <code>outputData</code>.  
 
     <pre class="example">
-      {
-        ...
-        "interaction": [
-          ...
-          {
-            "@type": ["Property"],
-            "name": "temperature",
-            "outputData": { "type": "number" },
-            ...
-          }
-          ...
-          {
-            "@type": ["Event"],
-            "name": "criticalCondition",
-            "outputData": { "type": "string" },
-            ...
-          }
-          ...
-        ]
-        ...
-      }
+            "outputData": { "type": "number" }
     </pre>
 
-    <p>Similarly, for <code>Action</code> interaction type, each action can specify its input and/or output value type 
-using <code>inputData</code> and <code>outputData</code> field, respectively. The following is an example value type definition for an action. In the example, <code>fadeIn</code> action is defined to have <code>inputData</code> of type <code>number</code> and <code>outputData</code> of type <code>boolean</code>.
-    </p>
+JSON-LD representation for primitive data type definition is a JSON object of which the field is defined below.
 
-    <pre class="example">
-      {
-        ...
-        "interaction": [
-          ...
-          {
-            "@type": ["Action"],
-            "name": "fadeIn",
-            "inputData": {
-              "type": "number",
-              "actuator:unit": "actuator:ms"
-            },
-            "outputData": {
-              "type": "boolean"
-            },
-            ...
-          }
-          ...
-        ]
-        ...
-      }
-    </pre>
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Mandatory</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>type</td>
+            <td>string</td>
+            <td>yes</td>
+            <td><p>As defined in [[!JSON-SCHEMA]] following type defintions are possible for simple type assignments:
+	      <ul>
+		<li>boolean</li>
+		<li>integer</li>
+		<li>number</li>
+		<li>string</li>
+	      </ul>
+		</p>
+	   </td>
+          </tr>
+        </tbody>
+      </table>
 
-    <p>Within <code>inputData</code> and <code>outputData</code> fields, type system allows the following definitions in the <code>type</code> field:
-      <ul>
-        <li>boolean</li>
-        <li>integer</li>
-        <li>number</li>
-        <li>string</li>
-        <li>array</li>
-        <li>object</li>
-      </ul>
-    </p>
 
     <p>These type constructs are in parallel to those that are available in JSON schema. Therefore, serialization of data exchanged between servients is straightforward when it is in JSON format.
     </p>
+    </section>
+    
 
     <section>
-      <h4>Simple Data</h4>
-	
-      <p>Consider the following <code>inputData</code> definition which defines the value to be an <code>integer</code> within the value range of [ 0 ... 255 ].
+      <h4>Restrictions</h4>
+  <p>In order to make more pricise data type defintions the TD also allows the usage of all restrication terms that is provided by [[!JSON-SCHEMA]]. Consider the following <code>inputData</code> definition which defines the value to be an <code>integer</code> within the value range of [ 0 ... 255 ].
       </p>
 
       <pre class="example">
@@ -830,7 +800,114 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
         }
       </pre>
 
-      <p>When the <code>integer</code> being exchanged is 184, data serialization in JSON format will look like the following:
+The following table only display a small subset of the restriction terms of JSON Schema. Please check [[!JSON-SCHEMA]] for the full set of restrictions. 
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Mandatory</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>minimum</td>
+            <td>number</td>
+            <td>no</td>
+            <td>Specifies a minimum numeric value. Only applicable for associated <code>number</code> or <code>integer</code> types.
+	   </td>
+          </tr>
+          <tr>
+            <td>maximum</td>
+            <td>number</td>
+            <td>no</td>
+            <td>Specifies a maximum numeric value. Only applicable for associated <code>number</code> or <code>integer</code> types.
+	   </td>
+          </tr>
+          <tr>
+            <td>minLength</td>
+            <td>number</td>
+            <td>no</td>
+            <td>Minimum length of the string. Only applicable for associated <code>string</code> type.
+	   </td>
+          </tr>
+          <tr>
+            <td>maxLength</td>
+            <td>number</td>
+            <td>no</td>
+            <td>Maximum length of the string. Only applicable for associated <code>string</code> type.
+	   </td>
+          </tr>
+          <tr>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>Check [[!JSON-SCHEMA]] for further type restrictions terms.
+	   </td>
+          </tr>
+        </tbody>
+      </table>
+   </section>
+    <section>
+      <h4>Semantic Annotation</h4>
+
+<p>Unlike in JSON Schema, the TD with JSON-LD serializiation allows a semantic annotation of data members of the types by using the <code>@type</code> key. The example below comes with a semantic annotation within <code>inputData</code> to privide its semantic context <i>DimmerData</i> that is defined in the <i>http://iotschema.org/</i> namespace.
+</p>
+
+      <pre class="example">
+       {
+	  "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+	  		{"iot": "http://iotschema.org/"}],
+        ...
+
+        "inputData": { 
+          "type": "integer",
+          "@type": ["iot:DimmerData" ],
+          "minimum": 0,
+          "maximum": 255,
+        }
+        ...
+       }
+</pre>
+
+
+
+<p>JSON-LD representation for semantic annotation of simple type within <code>inputData</code> and <code>outputData</code> fields is  defined below.</p>
+
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Mandatory</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>@type</td>
+            <td>array of strings</td>
+            <td>no</td>
+            <td>Gives one or more semantic annotations to the data member.  </td>
+          </tr>
+        </tbody>
+      </table>
+
+<p class="ednote">
+ToDo: Provide information about JSON Schema validation with <code>@type</code>. 
+</p>
+
+   </section>
+
+    <section>
+      <h4>Runtime Serializiation</h4>
+
+<p>Unless otherwise specified in the <code>form</code> field (also see [[!WOT-PROTOCOL-BINDING]]) the information provided in the <code>inputData</code> and <code>outputData</code> reflects the payload structure of the runtime data of the <code>Property</code>, <code>Action</code>, and <code>Event</code>. </p>
+
+      <p>Lets consider the simple data type defintion as shown in Example 11. When the <code>integer</code> being exchanged is 184, data serialization in JSON format will look like the following:
       </p>
 
       <pre class="example">
@@ -846,7 +923,7 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
       <pre class="example">
       		&lt;integer>184&lt;/integer>
       </pre>
-
+    </section>
     </section>
   
     <section>
