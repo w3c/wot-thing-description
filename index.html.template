@@ -281,7 +281,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
 
       <!-- p class="ednote">Currently, JSON-LD is seen as baseline for TD serialization. In TD task force alternatives are evaluated.
       </p -->
-  <section>
+  <section id="sec-thing-as-a-whole">
     <h1>Thing as a Whole</h1>
 
       <p>The JSON-LD representation for a Thing Description is a JSON object of which fields are defined below.</p>
@@ -318,7 +318,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
             <td>base</td>
             <td>string</td>
             <td>no</td>
-            <td>Base URI for use in a Thing Description</td>
+            <td>Base URI for use in a Thing Description. If relative URIs are used within the <code>form</code> field (see <a href="#form-serialization" class="sec-ref"></a>), <code>base</code> MUST be present. </td>
           </tr>
           <tr>
             <td>interaction</td>
@@ -451,7 +451,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>@type</td>
             <td>array of strings</td>
             <td>yes</td>
-            <td>The array MUST start with a string "Property"</td>
+            <td>Gives one or more semantic annotations to the <code>Property</code> interaction. The array MUST start with a string "Property"</td>
           </tr>
           <tr>
             <td>name</td>
@@ -534,7 +534,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>@type</td>
             <td>array of strings</td>
             <td>yes</td>
-            <td>The array MUST start with a string "Action"</td>
+            <td>Gives one or more semantic annotations to the <code>Action</code> interaction. The array MUST start with a string "Action"</td>
           </tr>
           <tr>
             <td>name</td>
@@ -615,7 +615,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>@type</td>
             <td>array of strings</td>
             <td>yes</td>
-            <td>The array MUST start with a string "Event"</td>
+            <td>Gives one or more semantic annotations to the <code>Event</code> interaction. The array MUST start with a string "Event"</td>
           </tr>
           <tr>
             <td>name</td>
@@ -677,7 +677,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>href</td>
             <td>string</td>
             <td>yes</td>
-            <td>URI. If a relative URI is given then this URI is relative to base URI.</td>
+            <td>URI. If a relative URI is given then this URI is relative to the MUST present base URI (see <a href="#sec-thing-as-a-whole" class="sec-ref"></a>).</td>
           </tr>
           <tr>
             <td>mediaType</td>
@@ -707,11 +707,11 @@ A sample TD snippet that relies on the defined fields above is given below:
 <pre class="example">
   {
     ...
-    "security": {
+    "security": [{
       "cat": "token:jwt", 
       "alg":"HS256", 
       "as":"https://authority-issuing.org"
-    },
+    }],
     ...
   }
 </pre>
@@ -774,6 +774,7 @@ JSON-LD representation for primitive data type definition is a JSON object of wh
 		<li>integer</li>
 		<li>number</li>
 		<li>string</li>
+		<li>null</li>
 	      </ul>
 		</p>
 	   </td>
@@ -796,7 +797,7 @@ JSON-LD representation for primitive data type definition is a JSON object of wh
         "inputData": { 
           "type": "integer",
           "minimum": 0,
-          "maximum": 255,
+          "maximum": 255
         }
       </pre>
 
@@ -841,6 +842,13 @@ The following table only display a small subset of the restriction terms of JSON
 	   </td>
           </tr>
           <tr>
+            <td>const</td>
+            <td>any type</td>
+            <td>no</td>
+            <td>Provides a constand/default value.
+	   </td>
+          </tr>
+          <tr>
             <td>...</td>
             <td>...</td>
             <td>...</td>
@@ -858,8 +866,8 @@ The following table only display a small subset of the restriction terms of JSON
 
       <pre class="example">
        {
-	  "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
-	  		{"iot": "http://iotschema.org/"}],
+	  "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+	  		{"iot": "http://iotschema.org/"}]
         ...
 
         "inputData": { 
@@ -927,22 +935,74 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
     </section>
   
     <section>
-      <h4>Structured Data</h4>
-  
-      <p>In the previous section, we used an example <code>inputData</code> definition consisting of a single <code>integer</code>.
-      </p>
+      <h4>Structured Data Definition</h4>
+ 
 	
       <p>With the type system, it is also possible to define value types that have more than one literal value.
       The type system provides two distinct constructs to define a structure that can have multiple literal values. 
-      One is the <code>object</code>, and the other is the <code>array</code>.
+      One is the <code>object</code>, and the other one is the <code>array</code>. As defined in [[!JSON-SCHEMA]] both
+	are introduced by the <code>type</code>.
       </p>
+
+
 
       <section>
         <h5 id="type-system-object">Object</h5>
+
+
+	<p>To allow all possible <code>object</code> definitions that is provided in  [[!JSON-SCHEMA]] we have to deviate in two points to be better TD and JSON-LD aligned:
+	      <ul>
+		<li>To avoid duplicate key definitions with different meaning, TD uses the term <code>field</code> as JSON array instead JSON Schema's <i>properties</i> as JSON object</li>
+		<li>To be JSON-LD compliant key member definitions of JSON Schema <code>object</code> members will be mapped to seperate JSON object containing at least the <code>name</code> and <code>type</code> keys</li>
+	      </ul>
+	</p>
+
+<p>The following example comparison shows the modification of the [[!JSON-SCHEMA]] decleration in a Thing Description instance using JSON-LD serializiation.</p>
+
+
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>JSON Schema <code>object</code> definition</th>
+            <th>TD with JSON-LD <code>object</code> definition</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+        <pre class="example">
+          {
+              "type": "object",
+              "properties": 
+		 {
+                  "id": {"type": "integer"}
+	         },
+              "required": ["id"]
+          }
+        </pre>
+	    </td>
+            <td>
+        <pre class="example">
+          {
+              "type": "object",
+              "field": [{
+                      "name": "id",
+                      "type": "integer"
+                  }],
+              "required": ["id"]
+          }
+        </pre>
+	</td>
+          </tr>
+        </tbody>
+      </table> 
+
+
     
-        <p>The following is an example <code>inputData</code> definition that defines the value to be an <code>object</code> consisting of
-        two named literals  <code>id</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>)
-        where <code>id</code> is required to be present.
+        <p>The following is an example <code>inputData</code> definition that declares the value to be an <code>object</code> consisting of
+        two named literals  <code>brightness</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>)
+        where <code>brightness</code> is required to be present.
         </p>
     
         <pre class="example">
@@ -950,9 +1010,11 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
               "type": "object",
               "fields": [
                   {
-                      "name": "id",
-                      "value": {
-                        "type": "integer"
+                      "name": "brightness",
+                      "type": "integer",
+                      "@type": ["iot:DimmerData"],
+                      "minimum": 0,
+                      "maximum": 255
                       }
                   },
                   {
@@ -962,11 +1024,42 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
                       }
                   }
               ],
-              "required": ["id"]
+              "required": ["brightness"]
           }
         </pre>
     
-        <p>When the <code>id</code> number and the <code>name</code> string values being exchanged are 1314520 and "Web of Things", data serialization in JSON format will look like the following.
+ 
+
+      </section>
+  
+      <section>
+        <h5 id="type-system-array">Array</h5>
+    
+        <p>Arrays follow again the same convention as defined in [[!JSON-SCHEMA]]. The following is an example value type  definition that defines the value to be an <code>array</code> that consists of
+        exactly three number literals with each value within the range of [ 0 ... 2047 ].
+        </p>
+    
+        <pre class="example">
+          "inputData": {
+              "type": "array",
+              "items": {
+                  "type" : "number",
+                  "minimum": 0,
+                  "maximum": 2047
+              },
+              "minItems" : 3,
+              "maxItems" : 3
+          }
+        </pre>
+ 
+    
+    
+      </section><!-- End of "JSON Array" -->
+
+	<section>
+        <h5>Runtime Serializiation</h5>
+
+       <p>When the <code>id</code> number and the <code>name</code> string values being exchanged are 1314520 and "Web of Things", data serialization in JSON format will look like the following.
         </p>
     
         <pre class="example">
@@ -993,28 +1086,10 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
         <p>In both JSON and XML serialization, values can appear in any order regardless of the order used in the <code>field</code> definition of the <code>object</code>.
         </p>
 
-      </section>
-  
-      <section>
-        <h5 id="type-system-array">Array</h5>
-    
-        <p>The following is an example <code>valueType</code> definition that defines the value to be an <code>array</code> that consists of
-        exactly three number literals with each value within the range of [ 0 ... 2047 ].
-        </p>
-    
-        <pre class="example">
-          "inputData": {
-              "type": "array",
-              "items": {
-                  "type" : "number",
-                  "minimum": 0,
-                  "maximum": 2047
-              },
-              "minItems" : 3,
-              "maxItems" : 3
-          }
-        </pre>
-    
+
+
+
+   
         <p>When the numbers being exchanged are 520, 184 and 1314, data serialization in JSON format will look like the following.
         </p>
     
@@ -1036,9 +1111,8 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
               &lt;number>1314&lt;/number>
             &lt;/array>
         </pre>
-    
-    
-      </section><!-- End of "JSON Array" -->
+
+	</section> <!-- End of "Runtime Serializiation" -->
   
     </section><!-- End of "Structured Data" -->
   
