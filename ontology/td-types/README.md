@@ -17,7 +17,7 @@ Schema definitions can also be derived as OWL classes. An experimental JS script
 | td:Integer | integer | ~ xsd:decimal |
 | td:String | string | ~ xsd:string |
 | td:Boolean | boolean | ~ xsd:boolean |
-| td:items | items | |
+| td:item | items | |
 | td:minItems | minItems | |
 | td:maxItems | maxItems | |
 | td:enum |enum | |
@@ -40,10 +40,10 @@ Door state (see also [Turtle](./ex-door.ttl)):
 {
     "type": "object",
     "description": "Whether a door is open or closed",
-    "fields": [
+    "field": [
         {
             "name": "door",
-            "value": {
+            "schema": {
                 "enum": ["Open", "Closed"]
             }
         }
@@ -56,10 +56,10 @@ Humidity value (see also [Turtle](./ex-humidity.ttl)):
 {
     "type": "object",
     "description": "Humidity as a percentage",
-    "fields": [
+    "field": [
         {
             "name": "humidity",
-            "value": {
+            "schema": {
                 "type": "number",
                 "minimum": 0,
                 "maximum": 100
@@ -74,10 +74,10 @@ Supported device modes (see also [Turtle](./ex-modes.ttl)):
 {
     "type": "object",
     "description": "Collection of modes supported by a device",
-    "fields": [
+    "field": [
         {
             "name": "supportedModes",
-            "items": { "type": "string" }
+            "item": { "type": "string" }
         }
     ]
 }
@@ -88,10 +88,10 @@ Sensor reading (see also [Turtle](./ex-reading.ttl)):
 {
     "type": "object",
     "description": "Generic sensor reading",
-    "fields": [
+    "field": [
         {
             "name": "reading",
-            "value": {
+            "schema": {
                 "anyOf": [
                     { "type": "number" },
                     { "type": "string" }
@@ -107,10 +107,10 @@ Binary switch (see also [Turtle](./ex-switch.ttl)):
 {
     "type": "object",
     "description": "An on/off power switch",
-    "fields": [
+    "field": [
         {
             "name": "on",
-            "value": {
+            "schema": {
                 "type": "integer"
             }
         }
@@ -123,30 +123,30 @@ Weather station (see also [Turtle](./ex-weather.ttl)):
 {
     "type": "object",
     "description": "Weather station",
-    "fields": [
+    "field": [
         {
             "name": "wind",
-            "value": {
+            "schema": {
                 "type": "object",
-                "fields": [
+                "field": [
                     {
                         "name": "speed",
-                        "value": { "type": "number" }
+                        "schema": { "type": "number" }
                     },
                     {
                         "name": "direction",
-                        "value": { "type": "integer" }
+                        "schema": { "type": "integer" }
                     }
                 ]
             }
         },
         {
             "name": "temperature",
-            "value": { "type": "number" }
+            "schema": { "type": "number" }
         },
         {
             "name": "humidity",
-            "value": { "type": "integer" }
+            "schema": { "type": "integer" }
         }
     ]
 }

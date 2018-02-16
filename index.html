@@ -155,7 +155,7 @@ Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event
         {
             "@type": ["Property"],
             "name": "status",
-            "outputData": {"type": "string"},
+            "schema": {"type": "string"},
             "writable": false,
             "observable": true,
             "form": [{
@@ -174,7 +174,7 @@ Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event
         {
             "@type": ["Event"],
             "name": "overheating",
-            "outputData": {"type": "string"},
+            "schema": {"type": "string"},
             "form": [{
                 "href": "coaps://mylamp.example.com:5683/oh",
                 "mediaType": "application/json"
@@ -267,7 +267,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
 
 
 
-<section id="vocabularyDefinitionSection"><h1>Vocabulary Definition</h1><!-- h1>Vocabulary</h1 --><section><h1>Overview</h1><p>The Thing Description relys on a small set of vocabulary. An overview of this vocabulary with its class context and class relation is given by the following figure.</p><figure id="td-core-model"><img src="td-core-model/td-core-model.svg"  style="width: 800px;" alt="TD core model figure"/><figcaption>TD core model</figcaption></figure><p>A detailed description of the vocabulary is given in the next sub-section.</p></section><section><h2>Classes</h2><p class="ednote">There is an information missing from the tables in subsequent sub-sections as to which vocabulary is optional or manditory. Since the information is already available in the ontology files, tools need to be updated to extract and utilize this information to generate the content of these tables.</p><h3><code>Thing</code></h3><p>Describes a physical and/or virtual Thing (may represent one or more physical and / or virtual Things) in the Web of Thing context.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>interaction</code></td><td>Link from a Thing to the interaction patterns it provides</td><td><a href="#interactionpattern"><code>InteractionPattern</code></a></td></tr><tr><td><code>security</code></td><td>Links a given Thing to the security information that indicates the access metadata information for securely transmitting information via all the resources of the Thing.</td><td><a href="#security"><code>Security</code></a></td></tr><tr><td><code>base</code></td><td>Define base URI that is valid for all defined local interaction resources. All other URIs in the TD must then be resolved using the algorithm defined in [[!RFC3986]]. This field is optional.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>name</code></td><td>Name of the Thing or interaction pattern (must be a valid keyword to be used in the scripting API)</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><h3><code>InteractionPattern</code></h3><p>Three interaction patterns are defined as subclasses: Property, Action and Event. When a concrete Property, Action or Event is defined in a Thing Description, it is called an &quot;interaction resource&quot;. Interactions between Things can be as simple as one Thing accessing another Thing&#39;s data to get or (in the case the data is also writable) change representation of data such as metadata, status or mode. A Thing may also be interested in getting asynchronously notified of future changes in another Thing, or may want to initiate a process served in another Thing that may take some time to complete and monitor the progress. Interactions between Things may involve exchanges of data between them. This data can be either given as input by the client Thing, returned as output by the server Thing or both.  </p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>form</code></td><td>Indicates the endpoints from which an interaction pattern is accessible</td><td><a href="#form"><code>Form</code></a></td></tr><tr><td><code>name</code></td><td>Name of the Thing or interaction pattern (must be a valid keyword to be used in the scripting API)</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><p>The class <code>InteractionPattern</code> has the following subclasses:</p><ul><li><td><a href="#action"><code>Action</code></a></td></li><li><td><a href="#event"><code>Event</code></a></td></li><li><td><a href="#property"><code>Property</code></a></td></li></ul><h3><code>Property</code></h3><p>Property provides readable and/or writeable data that can be static (e.g., supported mode, rated output voltage, etc.) or dynamic (e.g., current fill level of water, minimum recorded temperature, etc.).  Please note, this class also inherited all vocabulary from the InteractionPattern class.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>outputData</code></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>observable</code></td><td>Indicates whether a remote servient can subscribe to (&quot;observe&quot;) the Property, to receive change notifications or periodic updates (true/false). </td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr><tr><td><code>writable</code></td><td>Boolean value that indicates whether a property is writable (=true) or not (=false)</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr></tbody></table><h3><code>Action</code></h3><p>The Action interaction pattern triggers changes or processes on a Thing that take a certain time to complete (i.e., actions cannot be applied instantaneously like property writes). Examples include an LED fade in, moving a robot, brewing a cup of coffee, etc. Usually, ongoing Actions are modelled as Task resources, which are created when an Action invocation is received by the Thing. Please note, this class also inherited all vocabulary from the InteractionPattern class.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>inputData</code></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure expected by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>outputData</code></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><h3><code>Event</code></h3><p>The Event interaction pattern enables a mechanism for events to be notified by a Thing on a certain condition (e.g., the fill level of the water tank reached a given threshold). Please note, this class also inherited all vocabulary from the InteractionPattern class.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>outputData</code></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by an interaction pattern.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><h3><code>DataSchema</code></h3><p>This class embeds JSON Schema declaration in a Linked Data form to allow, e.g., the representation of pairs (data type, semantic meaning such as unit of measure) that are expected as input data or output data of a given interaction pattern.</p><h3><code>Form</code></h3><p>Communication metadata where a service can be accessed by a client application. An interaction might have more than one link.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>mediaType</code></td><td>Assign underlying media type of the interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml)</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>rel</code></td><td>Indicates the expected result of performing the operation described by the form.
+<section id="vocabularyDefinitionSection"><h1>Vocabulary Definition</h1><!-- h1>Vocabulary</h1 --><section><h1>Overview</h1><p>The Thing Description relys on a small set of vocabulary. An overview of this vocabulary with its class context and class relation is given by the following figure.</p><figure id="td-core-model"><img src="td-core-model/td-core-model.svg"  style="width: 800px;" alt="TD core model figure"/><figcaption>TD core model</figcaption></figure><p>A detailed description of the vocabulary is given in the next sub-section.</p></section><section><h2>Classes</h2><p class="ednote">There is an information missing from the tables in subsequent sub-sections as to which vocabulary is optional or manditory. Since the information is already available in the ontology files, tools need to be updated to extract and utilize this information to generate the content of these tables.</p><h3><code>Thing</code></h3><p>Describes a physical and/or virtual Thing (may represent one or more physical and / or virtual Things) in the Web of Thing context.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>interaction</code></td><td>Link from a Thing to the interaction patterns it provides</td><td><a href="#interactionpattern"><code>InteractionPattern</code></a></td></tr><tr><td><code>security</code></td><td>Links a given Thing to the security information that indicates the access metadata information for securely transmitting information via all the resources of the Thing.</td><td><a href="#security"><code>Security</code></a></td></tr><tr><td><code>base</code></td><td>Define base URI that is valid for all defined local interaction resources. All other URIs in the TD must then be resolved using the algorithm defined in [[!RFC3986]]. This field is optional.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>name</code></td><td>Name of the Thing or interaction pattern (must be a valid keyword to be used in the scripting API)</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><h3><code>InteractionPattern</code></h3><p>Three interaction patterns are defined as subclasses: Property, Action and Event. When a concrete Property, Action or Event is defined in a Thing Description, it is called an &quot;interaction resource&quot;. Interactions between Things can be as simple as one Thing accessing another Thing&#39;s data to get or (in the case the data is also writable) change representation of data such as metadata, status or mode. A Thing may also be interested in getting asynchronously notified of future changes in another Thing, or may want to initiate a process served in another Thing that may take some time to complete and monitor the progress. Interactions between Things may involve exchanges of data between them. This data can be either given as input by the client Thing, returned as output by the server Thing or both.  </p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>form</code></td><td>Indicates the endpoints from which an interaction pattern is accessible</td><td><a href="#form"><code>Form</code></a></td></tr><tr><td><code>name</code></td><td>Name of the Thing or interaction pattern (must be a valid keyword to be used in the scripting API)</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><p>The class <code>InteractionPattern</code> has the following subclasses:</p><ul><li><td><a href="#action"><code>Action</code></a></td></li><li><td><a href="#event"><code>Event</code></a></td></li><li><td><a href="#property"><code>Property</code></a></td></li></ul><h3><code>Property</code></h3><p>Property provides readable and/or writeable data that can be static (e.g., supported mode, rated output voltage, etc.) or dynamic (e.g., current fill level of water, minimum recorded temperature, etc.).  Please note, this class also inherited all vocabulary from the InteractionPattern class.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>schema</code></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by a property or an event.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>observable</code></td><td>Indicates whether a remote servient can subscribe to (&quot;observe&quot;) the Property, to receive change notifications or periodic updates (true/false). </td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr><tr><td><code>writable</code></td><td>Boolean value that indicates whether a property is writable (=true) or not (=false)</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr></tbody></table><h3><code>Action</code></h3><p>The Action interaction pattern triggers changes or processes on a Thing that take a certain time to complete (i.e., actions cannot be applied instantaneously like property writes). Examples include an LED fade in, moving a robot, brewing a cup of coffee, etc. Usually, ongoing Actions are modelled as Task resources, which are created when an Action invocation is received by the Thing. Please note, this class also inherited all vocabulary from the InteractionPattern class.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>outputSchema</code></td><td>link to the n-ary class that allows the declaration of the data type returned by an action.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>inputSchema</code></td><td>link to the n-ary class that allows the declaration of the accepted data type of an action.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><h3><code>Event</code></h3><p>The Event interaction pattern enables a mechanism for events to be notified by a Thing on a certain condition (e.g., the fill level of the water tank reached a given threshold). Please note, this class also inherited all vocabulary from the InteractionPattern class.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>schema</code></td><td>link to the n-ary class that allows the declaration of the data type and unit of measure provided by a property or an event.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><h3><code>DataSchema</code></h3><p>This class embeds JSON Schema declaration in a Linked Data form to allow, e.g., the representation of pairs (data type, semantic meaning such as unit of measure) that are expected as input data or output data of a given interaction pattern.</p><h3><code>Form</code></h3><p>Communication metadata where a service can be accessed by a client application. An interaction might have more than one link.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Expected value type</th></tr></thead><tbody><tr><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>mediaType</code></td><td>Assign underlying media type of the interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml)</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>rel</code></td><td>Indicates the expected result of performing the operation described by the form.
 
 For example, the Property interaction allows get and set operations. The protocol binding may contain a form for the get operation and a different form for the set operation. The value of the &quot;rel&quot; attribute of the form indicates which form is which and allows the client to select the correct form for the oeration required</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><h3><code>Security</code></h3><p>The (optional) security field can be used to provide access metadata (self-contained) information of the Thing for securely transmitting information via all its resources. Also see Section Security Consideration. Definition taken from http://w3c.github.io/wot/current-practices/wot-practices#security</p></section></section>
 
@@ -425,7 +425,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             {
               "@type": ["Property"],
               "name": "temperature",
-              "outputData":{ "type": "number" },
+              "schema":{ "type": "number" },
               "writable": false,
               "observable": true,
               "form": [{
@@ -462,7 +462,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>Name of the Property</td>
           </tr>
           <tr>
-            <td>outputData</td>
+            <td>schema</td>
             <td>object</td>
             <td>yes</td>
             <td>See <a href="#type-system" class="sec-ref"></a></td>
@@ -509,7 +509,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             {
               "@type": ["Action"],
               "name": "fadeIn",
-              <i>"inputData":</i> { "type": "integer" },
+              <i>"inputSchema":</i> { "type": "integer" },
               "form": [{
               	"href" : "coap://mytemp.example.com:5683/in",
               	"mediaType": "application/json"
@@ -545,13 +545,13 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>Name of the Action</td>
           </tr>
           <tr>
-            <td>outputData</td>
+            <td>outputSchema</td>
             <td>object</td>
             <td>no</td>
             <td>See <a href="#type-system" class="sec-ref"></a></td>
           </tr>
           <tr>
-            <td>inputData</td>
+            <td>inputSchema</td>
             <td>object</td>
             <td>no</td>
             <td>See <a href="#type-system" class="sec-ref"></a></td>
@@ -588,7 +588,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             {
               "@type": ["Event"],
               "name": "criticalCondition",
-              "outputData":  { "type": "string" },
+              "schema":  { "type": "string" },
               "form": [{
               	"href" : "coap://mytemp.example.com:5683/ev",
               	"mediaType": "application/json"
@@ -626,7 +626,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>Name of the Event</td>
           </tr>
           <tr>
-            <td>outputData</td>
+            <td>schema</td>
             <td>object</td>
             <td>yes</td>
             <td>See <a href="#type-system" class="sec-ref"></a></td>
@@ -731,7 +731,7 @@ A sample TD snippet that relies on the defined fields above is given below:
 
  
 
-    <p>All of the three interaction types <code>Property</code>, <code>Action</code>, and <code>Event</code> can specify the type of the value acceptable as an input (by using <code>inputData</code> 	field within the <code>Action</code> interaction type) or expected as an output (by using <code>outputData</code> field within the <code>Property</code>, <code>Action</code>, and/or <code>Event</code> interaction types) of the interaction. 
+    <p>All three interaction types, <code>Property</code>, <code>Action</code>, and <code>Event</code>, include data schema definitions. Instances of the <code>Property</code> and <code>Event</code> interaction types must define only one schema (<code>schema</code> field), which describes the data they expose, while instances of the <code>Action</code> interaction type can define different schemas for inputs and outputs. In the case of an update on a <code>Property</code>, the input schema must be the same as the output schema.
     </p>
 
    <p>
@@ -748,10 +748,10 @@ A sample TD snippet that relies on the defined fields above is given below:
 
     <section>
       <h4>Simple Types</h4>
-	<p>Within <code>inputData</code> and <code>outputData</code> fields, simple type assignments can be done by the usage of the <code>type</code> field as used in [[!JSON-SCHEMA]]. Shown below is an example of an interaction snippet that carries a simple type definition <code>number</code> within <code>outputData</code>.  
+	<p>Within <code>schema</code>, <code>inputSchema</code> and <code>outputSchema</code> fields, simple type assignments can be done by the usage of the <code>type</code> field as used in [[!JSON-SCHEMA]]. Shown below is an example of an interaction snippet that carries a simple type definition <code>number</code> within <code>schema</code>.  
 
     <pre class="example">
-            "outputData": { "type": "number" }
+            "schema": { "type": "number" }
     </pre>
 
 JSON-LD representation for primitive data type definition is a JSON object of which the field is defined below.
@@ -792,11 +792,11 @@ JSON-LD representation for primitive data type definition is a JSON object of wh
 
     <section>
       <h4>Restrictions</h4>
-  <p>In order to make more pricise data type defintions the TD also allows the usage of all restrication terms that is provided by [[!JSON-SCHEMA]]. Consider the following <code>inputData</code> definition which defines the value to be an <code>integer</code> within the value range of [ 0 ... 255 ].
+  <p>In order to make more pricise data type defintions the TD also allows the usage of all restrication terms that is provided by [[!JSON-SCHEMA]]. Consider the following <code>inputSchema</code> definition which defines the value to be an <code>integer</code> within the value range of [ 0 ... 255 ].
       </p>
 
       <pre class="example">
-        "inputData": { 
+        "inputSchema": { 
           "type": "integer",
           "minimum": 0,
           "maximum": 255
@@ -863,7 +863,7 @@ The following table only display a small subset of the restriction terms of JSON
     <section>
       <h4>Semantic Annotation</h4>
 
-<p>Unlike in JSON Schema, the TD with JSON-LD serializiation allows a semantic annotation of data members of the types by using the <code>@type</code> key. The example below comes with a semantic annotation within <code>inputData</code> to privide its semantic context <i>DimmerData</i> that is defined in the <i>http://iotschema.org/</i> namespace.
+<p>Unlike in JSON Schema, the TD with JSON-LD serializiation allows a semantic annotation of data members of the types by using the <code>@type</code> key. The example below comes with a semantic annotation within <code>inputSchema</code> to privide its semantic context <i>DimmerData</i> that is defined in the <i>http://iotschema.org/</i> namespace.
 </p>
 
       <pre class="example">
@@ -872,7 +872,7 @@ The following table only display a small subset of the restriction terms of JSON
 	  		{"iot": "http://iotschema.org/"}]
         ...
 
-        "inputData": { 
+        "inputSchema": { 
           "type": "integer",
           "@type": ["iot:DimmerData" ],
           "minimum": 0,
@@ -884,7 +884,7 @@ The following table only display a small subset of the restriction terms of JSON
 
 
 
-<p>JSON-LD representation for semantic annotation of simple type within <code>inputData</code> and <code>outputData</code> fields is  defined below.</p>
+<p>JSON-LD representation for semantic annotation of simple type within <code>schema</code>, <code>inputSchema</code> and <code>outputSchema</code> fields is  defined below.</p>
 
 
       <table class="def">
@@ -915,7 +915,7 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
     <section>
       <h4>Runtime Serializiation</h4>
 
-<p>Unless otherwise specified in the <code>form</code> field (also see [[!WOT-PROTOCOL-BINDING]]) the information provided in the <code>inputData</code> and <code>outputData</code> reflects the payload structure of the runtime data of the <code>Property</code>, <code>Action</code>, and <code>Event</code>. </p>
+<p>Unless otherwise specified in the <code>form</code> field (also see [[!WOT-PROTOCOL-BINDING]]) the provided schema reflects the payload structure of the runtime data of the <code>Property</code>, <code>Action</code>, and <code>Event</code>. </p>
 
       <p>Lets consider the simple data type defintion as shown in Example 11. When the <code>integer</code> being exchanged is 184, data serialization in JSON format will look like the following:
       </p>
@@ -955,7 +955,7 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
 	<p>To allow all possible <code>object</code> definitions that is provided in  [[!JSON-SCHEMA]] we have to deviate in two points to be better TD and JSON-LD aligned:
 	      <ul>
 		<li>To avoid duplicate key definitions with different meaning, TD uses the term <code>field</code> as JSON array instead JSON Schema's <i>properties</i> as JSON object</li>
-		<li>To be JSON-LD compliant key member definitions of JSON Schema <code>object</code> members will be mapped to seperate JSON object containing at least the <code>name</code> and <code>type</code> keys</li>
+		<li>Field objects must contain the keys <code>name</code> (corresponding to the field name of the specified JSON object), and <code>schema</code>, whose value must be a data schema as specified in the present section (recursive definition)</li>
 	      </ul>
 	</p>
 
@@ -976,10 +976,9 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
         <pre class="example">
           {
               "type": "object",
-              "properties": 
-		 {
+              "properties": {
                   "id": {"type": "integer"}
-	         },
+              },
               "required": ["id"]
           }
         </pre>
@@ -989,9 +988,11 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
           {
               "type": "object",
               "field": [{
-                      "name": "id",
+                  "name": "id",
+                  "schema": {
                       "type": "integer"
-                  }],
+                  }
+              }],
               "required": ["id"]
           }
         </pre>
@@ -1002,26 +1003,27 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
 
 
     
-        <p>The following is an example <code>inputData</code> definition that declares the value to be an <code>object</code> consisting of
+        <p>The following is an example <code>inputSchema</code> definition that declares the value to be an <code>object</code> consisting of
         two named literals  <code>brightness</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>)
         where <code>brightness</code> is required to be present.
         </p>
     
         <pre class="example">
-          "inputData": {
+          "inputSchema": {
               "type": "object",
-              "fields": [
+              "field": [
                   {
                       "name": "brightness",
-                      "type": "integer",
-                      "@type": ["iot:DimmerData"],
-                      "minimum": 0,
-                      "maximum": 255
+                      "schema": {
+                          "type": "integer",
+                          "@type": ["iot:DimmerData"],
+                          "minimum": 0,
+                          "maximum": 255
                       }
                   },
                   {
                       "name": "name",
-                      "value": {
+                      "schema": {
                         "type": "string"
                       }
                   }
@@ -1042,7 +1044,7 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
         </p>
     
         <pre class="example">
-          "inputData": {
+          "inputSchema": {
               "type": "array",
               "items": {
                   "type" : "number",
@@ -1133,22 +1135,22 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
     <section>
       <h5>Object Definition to XML Schema</h5>
 
-      <p>Shown below is the type system <code>object</code> definition given for the <code>inputData</code> in Section <a href="#type-system-object">Object</a>. The <code>object</code> consists of two named literals <code>id</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>) where <code>id</code> is required to be present.
+      <p>Shown below is the type system <code>object</code> definition given for the <code>inputSchema</code> in Section <a href="#type-system-object">Object</a>. The <code>object</code> consists of two named literals <code>id</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>) where <code>id</code> is required to be present.
       </p>
 
       <pre class="example">
         {
             "type": "object",
-            "fields": [
+            "field": [
                 {
                     "name": "id",
-                    "value": {
+                    "schema": {
                       "type": "integer"
                     }
                 },
                 {
                     "name": "name",
-                    "value": {
+                    "schema": {
                       "type": "string"
                     }
                 }
@@ -1228,7 +1230,7 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
       <section>
         <h5>Array Definition to XML Schema</h5>
 
-          <p>Shown below is the type system <code>array</code> definition given for the <code>inputData</code> in Section <a href="#type-system-array">Array</a>. 
+          <p>Shown below is the type system <code>array</code> definition given for the <code>inputSchema</code> in Section <a href="#type-system-array">Array</a>. 
           The <code>array</code> consists of exactly three number literals with each value within the value range of [ 0 ... 2047 ].</p>
 
         <pre class="example">
@@ -1336,11 +1338,10 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
               "@type": ["Property","Temperature"],
               "reference": "threshold",
               "name": "myTemp",
-              "outputData": 
-		{ 
-		 "type": "number",             
-		 "unit": "celsius" 
-		},
+              "schema":  { 
+                "type": "number",
+                "unit": "celsius" 
+              },
               "writable": false,
               "observable": true,
               "form": [{
@@ -1352,11 +1353,10 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
               "@id": "threshold",
               "@type": ["Property","Temperature"],
               "name": "myThreshold",
-              "outputData": 
-		{ 
-		 "type": "number",             
-		 "unit": "celsius" 
-		},
+              "schema": { 
+                "type": "number",
+                "unit": "celsius" 
+              },
               "writable": true,
              	"form": [{
               	"href" : "thr",
@@ -1365,7 +1365,7 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
             },
             {
               "@type": ["Event"],
-              "outputData": { "type": "number" },
+              "schema": { "type": "number" },
               "name": "myChange",
               "property": "temp",
               "form": [{
@@ -1375,7 +1375,7 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
             }, 
             {
               "@type": ["Event"],
-              "outputData":  { "type": "number" },
+              "schema":  { "type": "number" },
               "name": "myWarning",
               "form": [{
               	"href" : "val/high",
@@ -1417,7 +1417,7 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
             {
               "@type": ["Action", "Toggle"],
               "name": "myMasterOnOff",
-              "inputData": {
+              "inputSchema": {
                 "@type": "OnOff",
                 "type": "boolean"
               },
