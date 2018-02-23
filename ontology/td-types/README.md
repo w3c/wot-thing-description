@@ -17,7 +17,7 @@ Schema definitions can also be derived as OWL classes. An experimental JS script
 | td:Integer | integer | ~ xsd:decimal |
 | td:String | string | ~ xsd:string |
 | td:Boolean | boolean | ~ xsd:boolean |
-| td:items | items | |
+| td:item | items | |
 | td:minItems | minItems | |
 | td:maxItems | maxItems | |
 | td:enum |enum | |
@@ -38,12 +38,12 @@ The following examples were first presented in issue #13 (as JSON schema definit
 Door state (see also [Turtle](./ex-door.ttl)):
 ```json
 {
-    "@type": "Object",
+    "type": "object",
     "description": "Whether a door is open or closed",
     "field": [
         {
             "name": "door",
-            "value": {
+            "schema": {
                 "enum": ["Open", "Closed"]
             }
         }
@@ -54,13 +54,13 @@ Door state (see also [Turtle](./ex-door.ttl)):
 Humidity value (see also [Turtle](./ex-humidity.ttl)):
 ```json
 {
-    "@type": "Object",
+    "type": "object",
     "description": "Humidity as a percentage",
     "field": [
         {
             "name": "humidity",
-            "value": {
-                "@type": "Number",
+            "schema": {
+                "type": "number",
                 "minimum": 0,
                 "maximum": 100
             }
@@ -72,12 +72,12 @@ Humidity value (see also [Turtle](./ex-humidity.ttl)):
 Supported device modes (see also [Turtle](./ex-modes.ttl)):
 ```json
 {
-    "@type": "Object",
+    "type": "object",
     "description": "Collection of modes supported by a device",
     "field": [
         {
             "name": "supportedModes",
-            "items": { "@type": "String" }
+            "item": { "type": "string" }
         }
     ]
 }
@@ -86,15 +86,15 @@ Supported device modes (see also [Turtle](./ex-modes.ttl)):
 Sensor reading (see also [Turtle](./ex-reading.ttl)):
 ```json
 {
-    "@type": "Object",
+    "type": "object",
     "description": "Generic sensor reading",
     "field": [
         {
             "name": "reading",
-            "value": {
+            "schema": {
                 "anyOf": [
-                    { "@type": "Number" },
-                    { "@type": "String" }
+                    { "type": "number" },
+                    { "type": "string" }
                 ]
             }
         }
@@ -105,13 +105,13 @@ Sensor reading (see also [Turtle](./ex-reading.ttl)):
 Binary switch (see also [Turtle](./ex-switch.ttl)):
 ```json
 {
-    "@type": "Object",
+    "type": "object",
     "description": "An on/off power switch",
     "field": [
         {
             "name": "on",
-            "value": {
-                "@type": "Integer"
+            "schema": {
+                "type": "integer"
             }
         }
     ]
@@ -121,32 +121,32 @@ Binary switch (see also [Turtle](./ex-switch.ttl)):
 Weather station (see also [Turtle](./ex-weather.ttl)):
 ```json
 {
-    "@type": "Object",
+    "type": "object",
     "description": "Weather station",
     "field": [
         {
             "name": "wind",
-            "value": {
-                "@type": "Object",
+            "schema": {
+                "type": "object",
                 "field": [
                     {
                         "name": "speed",
-                        "value": { "@type": "Number" }
+                        "schema": { "type": "number" }
                     },
                     {
                         "name": "direction",
-                        "value": { "@type": "Integer" }
+                        "schema": { "type": "integer" }
                     }
                 ]
             }
         },
         {
             "name": "temperature",
-            "value": { "@type": "Number" }
+            "schema": { "type": "number" }
         },
         {
             "name": "humidity",
-            "value": { "@type": "Integer" }
+            "schema": { "type": "integer" }
         }
     ]
 }

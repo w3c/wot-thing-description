@@ -35,22 +35,23 @@
                 }
               ]
             , localBiblio: {
-                "draft-fge-json-schema-validation-00": {
-                  title:    "JSON Schema: interactive and non interactive validation"
-                , href:     "https://tools.ietf.org/html/draft-fge-json-schema-validation-00"
+                "JSON-SCHEMA-VALIDATION": {
+                  title:    "JSON Schema Validation: A Vocabulary for Structural Validation of JSON"
+                , href:     "https://tools.ietf.org/html/draft-handrews-json-schema-validation-00"
                 , authors: [
-                    "Kris Zyp"
-                  , "Gary Court"
+                    "Austin Wright"
+                  , "Henry Andrews"
+                  , "Geraint Luff"
                   ]
                 , status:   "Internet-Draft"
                 , publisher:  "IETF"
                 }
-              , "draft-zyp-json-schema-04": {
-                  title:    "JSON Schema: core definitions and terminology"
-                , href:     "https://tools.ietf.org/html/draft-zyp-json-schema-04"
+              , "JSON-SCHEMA-CORE": {
+                  title:    "JSON Schema: A Media Type for Describing JSON Documents"
+                , href:     "https://tools.ietf.org/html/draft-handrews-json-schema-00"
                 , authors:  [
-                    "Kris Zyp"
-                  , "Gary Court"
+                    "Austin Wright"
+                  , "Henry Andrews"
                   ]
                 , status:    "Internet-Draft"
                 , publisher: "IETF"
@@ -65,6 +66,15 @@
                   ]
                 , publisher: "W3C"
                 , date: "20 August 2017"
+                }
+	, "WOT-PROTOCOL-BINDING" : {
+                  title: "Web of Things Protocol Binding Templates"
+                , href: "https://w3c.github.io/wot-binding-templates/"
+                , authors:  [
+                    "Michael Koster"
+                  ]
+                , publisher: "W3C"
+                , date: "12 January 2018"
                 }
               }
             , otherLinks: [
@@ -134,22 +144,22 @@ Properties can be used for controlling (or retrieving) parameters, such as a set
 </p>
 
 <p>
-Example 1 shows a simple TD instance that describes a lamp Thing with the name <i>MyLampThing</i>.
+Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event paradigm by describing a lamp Thing with the name <i>MyLampThing</i>.
 </p>
 
 <pre class="example" title="Simple Thing Description Sample">
   {
-    "@context": ["http://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+    "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
     "@type": ["Thing"],
     "name": "MyLampThing",
     "interaction": [
         {
             "@type": ["Property"],
             "name": "status",
-            "outputData": {"type": "string"},
+            "schema": {"type": "string"},
             "writable": false,
             "observable": true,
-            "link": [{
+            "form": [{
                 "href": "coaps://mylamp.example.com:5683/status",
                 "mediaType": "application/json"
             }]
@@ -157,7 +167,7 @@ Example 1 shows a simple TD instance that describes a lamp Thing with the name <
         {
             "@type": ["Action"],
             "name": "toggle",
-            "link": [{
+            "form": [{
                 "href": "coaps://mylamp.example.com:5683/toggle",
                 "mediaType": "application/json"
             }]
@@ -165,8 +175,8 @@ Example 1 shows a simple TD instance that describes a lamp Thing with the name <
         {
             "@type": ["Event"],
             "name": "overheating",
-            "outputData": {"type": "string"},
-            "link": [{
+            "schema": {"type": "string"},
+            "form": [{
                 "href": "coaps://mylamp.example.com:5683/oh",
                 "mediaType": "application/json"
             }]
@@ -178,16 +188,27 @@ Example 1 shows a simple TD instance that describes a lamp Thing with the name <
 
 
 
-
-<p>Based on this content, we know there exists one Property interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessable over the CoAP protocol with a GET method (see CoAP protocol binding description in the W3C WoT protocol template deliverable [XXX]) at coaps://mylamp.example.com:5683/status (announced within the endoind (SP?) structure by the <code>href</code> key), which will return a string status value within a JSON structure (JSON as payload format is announced by the <code>mediaType</code> field).
+<p>Based on this content, we know there exists one Property interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessable over the CoAP protocol with a GET method (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]) at coaps://mylamp.example.com:5683/status (announced within the <code>form</code> structure by the <code>href</code> key), which will return a string status value within a JSON structure (JSON as payload format is announced by the <code>mediaType</code> field).
 </p>
+
+<p>In a similar manner an Action is specified to toogle the switch status using the POST method that is applied to the coaps://mylamp.example.com:5683/toggle resource (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).</p>
+
+<p>Events which are, e.g., unexpected or irregular can be specified with the WoT's Event model. Here, a subscription of a possible overheating event of the lamp can be applied by using CoAP OBSERVE at coaps://mylamp.example.com:5683/oh. (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).
+</p>
+
+<section id="intro-semantics"> 
+<h1>Context Extensions</h1>
+The Thing Description provides the oppertunity to have .
+
+
 
 <p class="ednote">
-Further explanation of the example.
+Simple example with semantic usage should be introduce here as well.
 </p>
 </section>
+</section>
 
-  <section id="terminology"> 
+<section id="terminology"> 
     <h2>Terminology</h2>
 <p>The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn> etc.
 </p>
@@ -205,14 +226,14 @@ The namespace for TD is http://www.w3.org/ns/td#. TD itself defines a minimal se
   <tbody>
      <tr><td>td</td><td>http://www.w3.org/ns/td#</td></tr>
      <tr><td>rdf</td><td>http://www.w3.org/1999/02/22-rdf-syntax-ns#</td></tr>
-    <tr><td>rdfs</td><td>http://www.w3.org/2000/01/rdf-schema#</td></tr>
-    <tr><td>xsd</td><td>http://www.w3.org/2001/XMLSchema#</td></tr>
+   <!-- <tr><td>rdfs</td><td>http://www.w3.org/2000/01/rdf-schema#</td></tr>
+    <tr><td>xsd</td><td>http://www.w3.org/2001/XMLSchema#</td></tr> -->
   </tbody>
 </table>
 
 
 <p class="ednote">
-ToDo: complete table
+ToDo: complete table 
 </p>
 </section>
 <section>
@@ -260,7 +281,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
 
       <!-- p class="ednote">Currently, JSON-LD is seen as baseline for TD serialization. In TD task force alternatives are evaluated.
       </p -->
-  <section>
+  <section id="sec-thing-as-a-whole">
     <h1>Thing as a Whole</h1>
 
       <p>The JSON-LD representation for a Thing Description is a JSON object of which fields are defined below.</p>
@@ -297,7 +318,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
             <td>base</td>
             <td>string</td>
             <td>no</td>
-            <td>Base URI for use in a Thing Description</td>
+            <td>Base URI for use in a Thing Description. If relative URIs are used within the <code>form</code> field (see <a href="#form-serialization" class="sec-ref"></a>), <code>base</code> MUST be present. </td>
           </tr>
           <tr>
             <td>interaction</td>
@@ -319,7 +340,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
 
 <p>
 The  <code>@context</code> key is used to define Thing Description's context. All JSON key terms that are defined in the present document (also see <a href="#vocabularyDefinitionSection">Vocabulary Definition Section</a> ) have been put in an external context document, available at
-  <code>https://www.w3.org/ns/td/w3c-wot-td-context.jsonld</code>. Each Thing Description instance in JSON-LD MUST this context information enmbedded within an JSON array structure. Thus, a basic Thing Description would contain the following declaration:
+  <code>https://www.w3.org/ns/td/w3c-wot-td-context.jsonld</code>. Each Thing Description instance in JSON-LD MUST have this context information enmbedded within an JSON array structure. Thus, a basic Thing Description would contain the following declaration:
 </p>
 
   <pre class="example">
@@ -402,10 +423,10 @@ A sample TD snippet that relies on the defined fields above is given below:
             {
               "@type": ["Property"],
               "name": "temperature",
-              "outputData":{ "type": "number" },
+              "schema":{ "type": "number" },
               "writable": false,
               "observable": true,
-              "link": [{
+              "form": [{
                 "href" : "coap://mytemp.example.com:5683/temp",
                 "mediaType": "application/json"
               }]
@@ -430,7 +451,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>@type</td>
             <td>array of strings</td>
             <td>yes</td>
-            <td>The array MUST start with a string "Property"</td>
+            <td>Gives one or more semantic annotations to the <code>Property</code> interaction. The array MUST start with a string "Property"</td>
           </tr>
           <tr>
             <td>name</td>
@@ -439,7 +460,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>Name of the Property</td>
           </tr>
           <tr>
-            <td>outputData</td>
+            <td>schema</td>
             <td>object</td>
             <td>yes</td>
             <td>See <a href="#type-system" class="sec-ref"></a></td>
@@ -457,10 +478,10 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>a property is observable (=true) or not (=false)</td>
           </tr>
           <tr>
-            <td>link</td>
+            <td>form</td>
             <td>array of objects</td>
             <td>no</td>
-            <td>See <a href="#link-serialization" class="sec-ref"></a></td>
+            <td>See <a href="#form-serialization" class="sec-ref"></a></td>
           </tr>
         </tbody>
       </table>
@@ -486,8 +507,8 @@ A sample TD snippet that relies on the defined fields above is given below:
             {
               "@type": ["Action"],
               "name": "fadeIn",
-              <i>"inputData":</i> { "type": "integer" },
-              "link": [{
+              <i>"inputSchema":</i> { "type": "integer" },
+              "form": [{
               	"href" : "coap://mytemp.example.com:5683/in",
               	"mediaType": "application/json"
               }]
@@ -513,7 +534,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>@type</td>
             <td>array of strings</td>
             <td>yes</td>
-            <td>The array MUST start with a string "Action"</td>
+            <td>Gives one or more semantic annotations to the <code>Action</code> interaction. The array MUST start with a string "Action"</td>
           </tr>
           <tr>
             <td>name</td>
@@ -522,22 +543,22 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>Name of the Action</td>
           </tr>
           <tr>
-            <td>outputData</td>
+            <td>outputSchema</td>
             <td>object</td>
             <td>no</td>
             <td>See <a href="#type-system" class="sec-ref"></a></td>
           </tr>
           <tr>
-            <td>inputData</td>
+            <td>inputSchema</td>
             <td>object</td>
             <td>no</td>
             <td>See <a href="#type-system" class="sec-ref"></a></td>
           </tr>
           <tr>
-            <td>link</td>
+            <td>form</td>
             <td>array of objects</td>
             <td>no</td>
-            <td>See <a href="#link-serialization" class="sec-ref"></a></td>
+            <td>See <a href="#form-serialization" class="sec-ref"></a></td>
           </tr>
         </tbody>
       </table>
@@ -565,8 +586,8 @@ A sample TD snippet that relies on the defined fields above is given below:
             {
               "@type": ["Event"],
               "name": "criticalCondition",
-              "outputData":  { "type": "string" },
-              "link": [{
+              "schema":  { "type": "string" },
+              "form": [{
               	"href" : "coap://mytemp.example.com:5683/ev",
               	"mediaType": "application/json"
               }]
@@ -594,7 +615,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>@type</td>
             <td>array of strings</td>
             <td>yes</td>
-            <td>The array MUST start with a string "Event"</td>
+            <td>Gives one or more semantic annotations to the <code>Event</code> interaction. The array MUST start with a string "Event"</td>
           </tr>
           <tr>
             <td>name</td>
@@ -603,16 +624,16 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>Name of the Event</td>
           </tr>
           <tr>
-            <td>outputData</td>
+            <td>schema</td>
             <td>object</td>
             <td>yes</td>
             <td>See <a href="#type-system" class="sec-ref"></a></td>
           </tr>
           <tr>
-            <td>link</td>
+            <td>form</td>
             <td>array of objects</td>
             <td>no</td>
-            <td>See <a href="#link-serialization" class="sec-ref"></a></td>
+            <td>See <a href="#form-serialization" class="sec-ref"></a></td>
           </tr>
         </tbody>
       </table>
@@ -623,21 +644,22 @@ A sample TD snippet that relies on the defined fields above is given below:
   </section>
 
     <section>
-      <h2 id="link-serialization">Link</h2>
+      <h2 id="form-serialization">Form</h2>
 
-      <p>This section describes JSON-LD serialization for the instances of the <a href="#link" class="sec-ref"></a> class. Shown below is an example of a link definition.
+      <p>This section describes JSON-LD serialization for the instances of the <a href="#form" class="sec-ref"></a> class. Shown below is an example of a form definition.
       </p>
 
       <pre class="example">
-        "link": [
+        "form": [
           {
             "href" : "coap://mytemp.example.com:5683/temp",
-            "mediaType": "application/json"
+            "mediaType": "application/json",
+            "rel": "getProperty"
           }
         ]
       </pre>
 
-      <p>JSON-LD representation for a link definition is a JSON array with name "link". 
+      <p>JSON-LD representation for a web form definition is a JSON array with name "form". 
          Each item in the array is a JSON object that consists of two JSON fields as summarized below.
       </p>
 
@@ -655,7 +677,7 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>href</td>
             <td>string</td>
             <td>yes</td>
-            <td>URI. If a relative URI is given then this URI is relative to base URI.</td>
+            <td>URI. If a relative URI is given then this URI is relative to the MUST present base URI (see <a href="#sec-thing-as-a-whole" class="sec-ref"></a>).</td>
           </tr>
           <tr>
             <td>mediaType</td>
@@ -663,10 +685,16 @@ A sample TD snippet that relies on the defined fields above is given below:
             <td>yes</td>
             <td>Media type based on IANA</td>
           </tr>
+          <tr>
+            <td>rel</td>
+            <td>string</td>
+            <td>no</td>
+            <td>Provides the expected result of performing the operation described by the form.</td>
+          </tr>
         </tbody>
       </table>
 
-      <p>Each field in Link class (see <a href="#link" class="sec-ref"></a>) is represented by the namesake JSON field described in the above table.
+      <p>The form field is used to pointing a URI to an instance of the interaction and descriptions of the protocol settings and options expected to be used between the client and server for the interaction. The different opportunities of the protocol settings (such as for HTTP, CoAP, MQTT, etc)  is described in [[!WOT-PROTOCOL-BINDING]]. 
       </p>
 
     </section>
@@ -679,11 +707,11 @@ A sample TD snippet that relies on the defined fields above is given below:
 <pre class="example">
   {
     ...
-    "security": {
+    "security": [{
       "cat": "token:jwt", 
       "alg":"HS256", 
       "as":"https://authority-issuing.org"
-    },
+    }],
     ...
   }
 </pre>
@@ -699,110 +727,194 @@ A sample TD snippet that relies on the defined fields above is given below:
   <section>
     <h1>Type System</h1>
 
-    <p>All of the three interaction types <code>Property</code>, <code>Action</code>, and <code>Event</code> can specify the type of the value acceptable as an input or expected as an output of the interaction. In this section, we define an abstract type system notation based on JSON-LD for describing the structure and datatypes for values of interaction types. While type system is designed to be compatible with JSON schema [[draft-zyp-json-schema-04]] [[draft-fge-json-schema-validation-00]], it is intended to be encoding-neutral and integrates into the Linked Data vocabularies to allow semantic annotations. It can not only be directly translated into JSON schema, but also can be handily translated into XML Schema. Use of JSON-LD equips the type system with a way to associate data elements with citations and semantic concepts defined elsewhere. 
+    <p>All three interaction types, <code>Property</code>, <code>Action</code>, and <code>Event</code>, include data schema definitions. Instances of the <code>Property</code> and <code>Event</code> interaction types each must define only one schema (i.e. <code>schema</code> field), which describes the data they expose, while instances of the <code>Action</code> interaction type can define different schemas for inputs (i.e. <code>inputSchema</code>) and outputs (i.e. <code>outputSchema</code>). In the case of a <code>Property</code> that allows for an update operation, the input data and the output data are defined by a single schema (<code>schema</code> field).
 
-<!-- JSON schema [[draft-zyp-json-schema-04]] [[draft-fge-json-schema-validation-00]] provides a standard way to describe the structure and datatypes of data, and we use JSON schema as the notation for value types of the interaction types. -->
+   <p>
+	In this section, we define an abstract type system notation based on JSON-LD for describing the structure and datatypes for values of interaction types. While type system is designed to be compatible with JSON schema [[JSON-SCHEMA-CORE]] [[JSON-SCHEMA-VALIDATION]], it is intended to be encoding-neutral and integrates into the Linked Data vocabularies to allow semantic annotations. It can not only be directly translated into JSON schema, but also can be handily translated into XML Schema. Use of JSON-LD equips the type system with a way to associate data elements with citations and semantic concepts defined elsewhere. 
+	</p>
 
-    </p>
 
-    <!-- p>
-      <b>Note:</b> In the embodiment of type system described in this section, JSON schema is used as an abstract description system for structured data. 
-      JSON schema is something that is already out there being used and well-known, therefore gives us a chance to get started quickly to experiment with type system idea for further contemplation. 
-      Through discussion, the following points have been noted as feedback for improvements.
-    </p>
-      <ul>
-        <li>JSON schema specification was designed for JSON, therefore, may not be an optimal solution as an encoding-neutral description system.</li>
-        <li>JSON schema does not provide a way to associate data elements with citations or semantic concepts defined elsewhere.</li>
-        <li>JSON schema is relatively verbose.</li>
-        <li>JSON schema is not a formal standard.</li>
-      </ul>
-    <p>
-      Note that the current plan is to use JSON-LD syntax to express the function of at least part of what JSON schema provides. This will enable Type System to allow the association of semantics while it remains compatible with JSON schema.
-    </p -->
 
-    <p>For <code>Property</code> and <code>Event</code> interaction types, each property or event can specify its value type using <code>outputData</code> field within respective interaction type definition. In the following example, <code>temperature</code> property and <code>criticalCondition</code> event are defined as  <code>number</code> and <code>string</code>, respectively.
-    </p>
+
+    <section>
+      <h4>Simple Data Definition</h4>
+
+
+
+    <section>
+      <h4>Simple Types</h4>
+
+	<p>Within <code>schema</code>, <code>inputSchema</code> and <code>outputSchema</code> fields, simple type assignments can be done by using the <code>type</code> field that specifies one of the datatypes borrowed from [[JSON-SCHEMA-VALIDATION]]. Shown below is an example of an interaction snippet that carries a simple type definition <code>number</code> within <code>schema</code>.  
 
     <pre class="example">
-      {
-        ...
-        "interaction": [
-          ...
-          {
-            "@type": ["Property"],
-            "name": "temperature",
-            "outputData": { "type": "number" },
-            ...
-          }
-          ...
-          {
-            "@type": ["Event"],
-            "name": "criticalCondition",
-            "outputData": { "type": "string" },
-            ...
-          }
-          ...
-        ]
-        ...
-      }
+            "schema": { "type": "number" }
     </pre>
 
-    <p>Similarly, for <code>Action</code> interaction type, each action can specify its input and/or output value type 
-using <code>inputData</code> and <code>outputData</code> field, respectively. The following is an example value type definition for an action. In the example, <code>fadeIn</code> action is defined to have <code>inputData</code> of type <code>number</code> and <code>outputData</code> of type <code>boolean</code>.
-    </p>
+JSON-LD representation for primitive data type definition is a JSON object of which the field is defined below.
 
-    <pre class="example">
-      {
-        ...
-        "interaction": [
-          ...
-          {
-            "@type": ["Action"],
-            "name": "fadeIn",
-            "inputData": {
-              "type": "number",
-              "actuator:unit": "actuator:ms"
-            },
-            "outputData": {
-              "type": "boolean"
-            },
-            ...
-          }
-          ...
-        ]
-        ...
-      }
-    </pre>
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Mandatory</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>type</td>
+            <td>string</td>
+            <td>yes</td>
+            <td><p>The following type defintions are possible for simple type assignments:
+	      <ul>
+		<li>boolean</li>
+		<li>integer</li>
+		<li>number</li>
+		<li>string</li>
+		<li>null</li>
+	      </ul>
+		</p>
+	   </td>
+          </tr>
+        </tbody>
+      </table>
 
-    <p>Within <code>inputData</code> and <code>outputData</code> fields, type system allows the following definitions in the <code>type</code> field:
-      <ul>
-        <li>boolean</li>
-        <li>integer</li>
-        <li>number</li>
-        <li>string</li>
-        <li>array</li>
-        <li>object</li>
-      </ul>
-    </p>
 
     <p>These type constructs are in parallel to those that are available in JSON schema. Therefore, serialization of data exchanged between servients is straightforward when it is in JSON format.
     </p>
+    </section>
+    
 
     <section>
-      <h4>Simple Data</h4>
-	
-      <p>Consider the following <code>inputData</code> definition which defines the value to be an <code>integer</code> within the value range of [ 0 ... 255 ].
+      <h4>Restrictions</h4>
+  <p>In order to make more precise data type defintions the TD also allows the usage of restrication terms borrowed from [[JSON-SCHEMA-VALIDATION]]. Consider the following <code>inputSchema</code> definition which defines the value to be an <code>integer</code> within the value range of [ 0 ... 255 ].
       </p>
 
       <pre class="example">
-        "inputData": { 
+        "inputSchema": { 
           "type": "integer",
           "minimum": 0,
-          "maximum": 255,
+          "maximum": 255
         }
       </pre>
 
-      <p>When the <code>integer</code> being exchanged is 184, data serialization in JSON format will look like the following:
+The following table only display a small subset of the restriction terms defined in JSON Schema. Please check [[JSON-SCHEMA-VALIDATION]] for the full set of restrictions. 
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Mandatory</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>minimum</td>
+            <td>number</td>
+            <td>no</td>
+            <td>Specifies a minimum numeric value. Only applicable for associated <code>number</code> or <code>integer</code> types.
+	   </td>
+          </tr>
+          <tr>
+            <td>maximum</td>
+            <td>number</td>
+            <td>no</td>
+            <td>Specifies a maximum numeric value. Only applicable for associated <code>number</code> or <code>integer</code> types.
+	   </td>
+          </tr>
+          <tr>
+            <td>minLength</td>
+            <td>number</td>
+            <td>no</td>
+            <td>Minimum length of the string. Only applicable for associated <code>string</code> type.
+	   </td>
+          </tr>
+          <tr>
+            <td>maxLength</td>
+            <td>number</td>
+            <td>no</td>
+            <td>Maximum length of the string. Only applicable for associated <code>string</code> type.
+	   </td>
+          </tr>
+          <tr>
+            <td>const</td>
+            <td>any type</td>
+            <td>no</td>
+            <td>Provides a constand/default value.
+	   </td>
+          </tr>
+          <tr>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>Check [[JSON-SCHEMA-VALIDATION]] for further type restrictions terms.
+	   </td>
+          </tr>
+        </tbody>
+      </table>
+   </section>
+    <section>
+      <h4>Semantic Annotation</h4>
+
+<p>Unlike in JSON Schema, the TD with JSON-LD serializiation allows a semantic annotation of data members of the types by using the <code>@type</code> key. The example below comes with a semantic annotation within <code>inputSchema</code> to privide its semantic context <i>DimmerData</i> that is defined in the <i>http://iotschema.org/</i> namespace.
+</p>
+
+      <pre class="example">
+        {
+          "@context": [
+            "https://w3c.github.io/wot/w3c-wot-td-context.jsonld", 
+            {"iot": "http://iotschema.org/"}
+          ],
+          ...
+          "inputSchema": { 
+            "type": "integer",
+            "@type": ["iot:DimmerData" ],
+            "minimum": 0,
+            "maximum": 255,
+          },
+          ...
+        }
+</pre>
+
+
+
+<p>JSON-LD representation for semantic annotation of simple type within <code>schema</code>, <code>inputSchema</code> and <code>outputSchema</code> fields is  defined below.</p>
+
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Mandatory</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>@type</td>
+            <td>array of strings</td>
+            <td>no</td>
+            <td>Gives one or more semantic annotations to the data member.  </td>
+          </tr>
+        </tbody>
+      </table>
+
+<p class="ednote">
+ToDo: Provide information about JSON Schema validation with <code>@type</code>. 
+</p>
+
+   </section>
+
+    <section>
+      <h4>Runtime Data Serializiation</h4>
+
+<p>Unless otherwise specified in the <code>form</code> field (also see [[!WOT-PROTOCOL-BINDING]]) the provided schema reflects the payload structure of the runtime data of the <code>Property</code>, <code>Action</code>, and <code>Event</code>. </p>
+
+      <p>Let's consider the simple data type defintion as shown in Example 11. When the <code>integer</code> being exchanged is 184, data serialization in JSON format will look like the following:
       </p>
 
       <pre class="example">
@@ -818,50 +930,138 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
       <pre class="example">
       		&lt;integer>184&lt;/integer>
       </pre>
-
+    </section>
     </section>
   
     <section>
-      <h4>Structured Data</h4>
-  
-      <p>In the previous section, we used an example <code>inputData</code> definition consisting of a single <code>integer</code>.
-      </p>
+      <h4>Structured Data Definition</h4>
+ 
 	
       <p>With the type system, it is also possible to define value types that have more than one literal value.
       The type system provides two distinct constructs to define a structure that can have multiple literal values. 
-      One is the <code>object</code>, and the other is the <code>array</code>.
+      One is the <code>object</code>, and the other one is the <code>array</code>. Both <code>object</code> and <code>array</code> are assigned as the value of <code>type</code> field in order to indicate the use of those constructs.
       </p>
+
+
 
       <section>
         <h5 id="type-system-object">Object</h5>
+
+
+	<p>In order to avoid duplicate key definitions with different meanings in the context documents, <code>object</code> definitions take a form that is slightly different from that of [[JSON-SCHEMA-VALIDATION]]. The following highlights the differences.
+	      <ul>
+		<li>TD uses a JSON array with a name <code>field</code> instead of JSON Schema's <i>properties</i> of a JSON object</li>
+
+		<li>Each object in a <code>field</code> array must contain the key <code>name</code> (corresponding to the field name of the specified JSON object), and <code>schema</code>, whose value must be a data schema as specified in the present section (recursive definition)</li>
+	      </ul>
+	</p>
+
+<p>The following example shows a Thing Description <code>object</code> definiton using JSON-LD serializiation, in comparison with an equivalent JSON Schema object definition.
+</p>
+
+
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>TD with JSON-LD <code>object</code> definition</th>
+            <th>JSON Schema <code>object</code> definition</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+        <pre class="example">
+          {
+              "type": "object",
+              "field": [{
+                  "name": "id",
+                  "schema": {
+                      "type": "integer"
+                  }
+              }],
+              "required": ["id"]
+          }
+        </pre>
+	</td>
+            <td>
+        <pre class="example">
+          {
+              "type": "object",
+              "properties": {
+                  "id": {"type": "integer"}
+              },
+              "required": ["id"]
+          }
+        </pre>
+	    </td>
+          </tr>
+        </tbody>
+      </table> 
+
+
     
-        <p>The following is an example <code>inputData</code> definition that defines the value to be an <code>object</code> consisting of
-        two named literals  <code>id</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>)
-        where <code>id</code> is required to be present.
+        <p>The following is an example <code>inputSchema</code> definition that declares the value to be an <code>object</code> consisting of
+        two named literals  <code>brightness</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>)
+        where <code>brightness</code> is required to be present.
         </p>
     
         <pre class="example">
-          "inputData": {
+          "inputSchema": {
               "type": "object",
               "field": [
                   {
-                      "name": "id",
-                      "value": {
-                        "type": "integer"
+                      "name": "brightness",
+                      "schema": {
+                          "type": "integer",
+                          "@type": ["iot:DimmerData"],
+                          "minimum": 0,
+                          "maximum": 255
                       }
                   },
                   {
                       "name": "name",
-                      "value": {
+                      "schema": {
                         "type": "string"
                       }
                   }
               ],
-              "required": ["id"]
+              "required": ["brightness"]
           }
         </pre>
     
-        <p>When the <code>id</code> number and the <code>name</code> string values being exchanged are 1314520 and "Web of Things", data serialization in JSON format will look like the following.
+ 
+
+      </section>
+  
+      <section>
+        <h5 id="type-system-array">Array</h5>
+    
+        <p>Arrays follow again the same convention as defined in [[JSON-SCHEMA-VALIDATION]]. The following is an example value type  definition that defines the value to be an <code>array</code> that consists of
+        exactly three number literals with each value within the range of [ 0 ... 2047 ].
+        </p>
+    
+        <pre class="example">
+          "inputSchema": {
+              "type": "array",
+              "items": {
+                  "type" : "number",
+                  "minimum": 0,
+                  "maximum": 2047
+              },
+              "minItems" : 3,
+              "maxItems" : 3
+          }
+        </pre>
+ 
+    
+    
+      </section><!-- End of "JSON Array" -->
+
+	<section>
+        <h5>Runtime Data Serializiation</h5>
+
+       <p>When the <code>id</code> number and the <code>name</code> string values being exchanged are 1314520 and "Web of Things", data serialization in JSON format will look like the following.
         </p>
     
         <pre class="example">
@@ -888,28 +1088,10 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
         <p>In both JSON and XML serialization, values can appear in any order regardless of the order used in the <code>field</code> definition of the <code>object</code>.
         </p>
 
-      </section>
-  
-      <section>
-        <h5 id="type-system-array">Array</h5>
-    
-        <p>The following is an example <code>valueType</code> definition that defines the value to be an <code>array</code> that consists of
-        exactly three number literals with each value within the range of [ 0 ... 2047 ].
-        </p>
-    
-        <pre class="example">
-          "inputData": {
-              "type": "array",
-              "items": {
-                  "type" : "number",
-                  "minimum": 0,
-                  "maximum": 2047
-              },
-              "minItems" : 3,
-              "maxItems" : 3
-          }
-        </pre>
-    
+
+
+
+   
         <p>When the numbers being exchanged are 520, 184 and 1314, data serialization in JSON format will look like the following.
         </p>
     
@@ -931,9 +1113,8 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
               &lt;number>1314&lt;/number>
             &lt;/array>
         </pre>
-    
-    
-      </section><!-- End of "JSON Array" -->
+
+	</section> <!-- End of "Runtime Serializiation" -->
   
     </section><!-- End of "Structured Data" -->
   
@@ -952,7 +1133,7 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
     <section>
       <h5>Object Definition to XML Schema</h5>
 
-      <p>Shown below is the type system <code>object</code> definition given for the <code>inputData</code> in Section <a href="#type-system-object">Object</a>. The <code>object</code> consists of two named literals <code>id</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>) where <code>id</code> is required to be present.
+      <p>Shown below is the type system <code>object</code> definition given for the <code>inputSchema</code> in Section <a href="#type-system-object">Object</a>. The <code>object</code> consists of two named literals <code>id</code> (of type <code>integer</code>) and <code>name</code> (of type <code>string</code>) where <code>id</code> is required to be present.
       </p>
 
       <pre class="example">
@@ -961,13 +1142,13 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
             "field": [
                 {
                     "name": "id",
-                    "value": {
+                    "schema": {
                       "type": "integer"
                     }
                 },
                 {
                     "name": "name",
-                    "value": {
+                    "schema": {
                       "type": "string"
                     }
                 }
@@ -1047,7 +1228,7 @@ using <code>inputData</code> and <code>outputData</code> field, respectively. Th
       <section>
         <h5>Array Definition to XML Schema</h5>
 
-          <p>Shown below is the type system <code>array</code> definition given for the <code>inputData</code> in Section <a href="#type-system-array">Array</a>. 
+          <p>Shown below is the type system <code>array</code> definition given for the <code>inputSchema</code> in Section <a href="#type-system-array">Array</a>. 
           The <code>array</code> consists of exactly three number literals with each value within the value range of [ 0 ... 2047 ].</p>
 
         <pre class="example">
@@ -1153,13 +1334,15 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
             {
               "@id": "val",
               "@type": ["Property","Temperature"],
-              "unit": "celsius",
               "reference": "threshold",
               "name": "myTemp",
-              "outputData": { "type": "number" },
+              "schema":  { 
+                "type": "number",
+                "unit": "celsius" 
+              },
               "writable": false,
               "observable": true,
-              "link": [{
+              "form": [{
               	"href" : "val",
               	"mediaType": "application/json"
               }]
@@ -1167,30 +1350,32 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
             {
               "@id": "threshold",
               "@type": ["Property","Temperature"],
-              "unit": "celsius",
               "name": "myThreshold",
-              "outputData": { "type": "number" },
+              "schema": { 
+                "type": "number",
+                "unit": "celsius" 
+              },
               "writable": true,
-             	"link": [{
+             	"form": [{
               	"href" : "thr",
               	"mediaType": "application/json"
               }]
             },
             {
               "@type": ["Event"],
-              "outputData": { "type": "number" },
+              "schema": { "type": "number" },
               "name": "myChange",
               "property": "temp",
-              "link": [{
+              "form": [{
               	"href" : "val/changed",
               	"mediaType": "application/json"
               }]
             }, 
             {
               "@type": ["Event"],
-              "outputData":  { "type": "number" },
+              "schema":  { "type": "number" },
               "name": "myWarning",
-              "link": [{
+              "form": [{
               	"href" : "val/high",
               	"mediaType": "application/json"
               }]
@@ -1230,11 +1415,11 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
             {
               "@type": ["Action", "Toggle"],
               "name": "myMasterOnOff",
-              "inputData": {
+              "inputSchema": {
                 "@type": "OnOff",
                 "type": "boolean"
               },
-              "link": [
+              "form": [
                 {
                   "href" : "coap://www.example.com:5683/master",
                   "mediaType": "application/json"
