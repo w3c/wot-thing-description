@@ -35,22 +35,23 @@
                 }
               ]
             , localBiblio: {
-                "draft-fge-json-schema-validation-00": {
-                  title:    "JSON Schema: interactive and non interactive validation"
-                , href:     "https://tools.ietf.org/html/draft-fge-json-schema-validation-00"
+                "JSON-SCHEMA-VALIDATION": {
+                  title:    "JSON Schema Validation: A Vocabulary for Structural Validation of JSON"
+                , href:     "https://tools.ietf.org/html/draft-handrews-json-schema-validation-00"
                 , authors: [
-                    "Kris Zyp"
-                  , "Gary Court"
+                    "Austin Wright"
+                  , "Henry Andrews"
+                  , "Geraint Luff"
                   ]
                 , status:   "Internet-Draft"
                 , publisher:  "IETF"
                 }
-              , "JSON-SCHEMA": {
-                  title:    "JSON Schema: core definitions and terminology"
-                , href:     "https://tools.ietf.org/html/draft-zyp-json-schema-04"
+              , "JSON-SCHEMA-CORE": {
+                  title:    "JSON Schema: A Media Type for Describing JSON Documents"
+                , href:     "https://tools.ietf.org/html/draft-handrews-json-schema-00"
                 , authors:  [
-                    "Kris Zyp"
-                  , "Gary Court"
+                    "Austin Wright"
+                  , "Henry Andrews"
                   ]
                 , status:    "Internet-Draft"
                 , publisher: "IETF"
@@ -187,8 +188,7 @@ Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event
 
 
 
-
-<p>Based on this content, we know there exists one Property interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessable over the CoAP protocol with a GET method (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]) at coaps://mylamp.example.com:5683/status (announced within the form structure by the <code>href</code> key), which will return a string status value within a JSON structure (JSON as payload format is announced by the <code>mediaType</code> field).
+<p>Based on this content, we know there exists one Property interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessable over the CoAP protocol with a GET method (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]) at coaps://mylamp.example.com:5683/status (announced within the <code>form</code> structure by the <code>href</code> key), which will return a string status value within a JSON structure (JSON as payload format is announced by the <code>mediaType</code> field).
 </p>
 
 <p>In a similar manner an Action is specified to toogle the switch status using the POST method that is applied to the coaps://mylamp.example.com:5683/toggle resource (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).</p>
@@ -342,7 +342,7 @@ For example, the Property interaction allows get and set operations. The protoco
 
 <p>
 The  <code>@context</code> key is used to define Thing Description's context. All JSON key terms that are defined in the present document (also see <a href="#vocabularyDefinitionSection">Vocabulary Definition Section</a> ) have been put in an external context document, available at
-  <code>https://www.w3.org/ns/td/w3c-wot-td-context.jsonld</code>. Each Thing Description instance in JSON-LD MUST this context information enmbedded within an JSON array structure. Thus, a basic Thing Description would contain the following declaration:
+  <code>https://www.w3.org/ns/td/w3c-wot-td-context.jsonld</code>. Each Thing Description instance in JSON-LD MUST have this context information enmbedded within an JSON array structure. Thus, a basic Thing Description would contain the following declaration:
 </p>
 
   <pre class="example">
@@ -729,13 +729,10 @@ A sample TD snippet that relies on the defined fields above is given below:
   <section>
     <h1>Type System</h1>
 
- 
-
-    <p>All three interaction types, <code>Property</code>, <code>Action</code>, and <code>Event</code>, include data schema definitions. Instances of the <code>Property</code> and <code>Event</code> interaction types must define only one schema (<code>schema</code> field), which describes the data they expose, while instances of the <code>Action</code> interaction type can define different schemas for inputs and outputs. In the case of an update on a <code>Property</code>, the input schema must be the same as the output schema.
-    </p>
+    <p>All three interaction types, <code>Property</code>, <code>Action</code>, and <code>Event</code>, include data schema definitions. Instances of the <code>Property</code> and <code>Event</code> interaction types each must define only one schema (i.e. <code>schema</code> field), which describes the data they expose, while instances of the <code>Action</code> interaction type can define different schemas for inputs (i.e. <code>inputSchema</code>) and outputs (i.e. <code>outputSchema</code>). In the case of a <code>Property</code> that allows for an update operation, the input data and the output data are defined by a single schema (<code>schema</code> field).
 
    <p>
-	In this section, we define an abstract type system notation based on JSON-LD for describing the structure and datatypes for values of interaction types. While type system is designed to be compatible with JSON schema [[draft-zyp-json-schema-04]] [[draft-fge-json-schema-validation-00]], it is intended to be encoding-neutral and integrates into the Linked Data vocabularies to allow semantic annotations. It can not only be directly translated into JSON schema, but also can be handily translated into XML Schema. Use of JSON-LD equips the type system with a way to associate data elements with citations and semantic concepts defined elsewhere. 
+	In this section, we define an abstract type system notation based on JSON-LD for describing the structure and datatypes for values of interaction types. While type system is designed to be compatible with JSON schema [[JSON-SCHEMA-CORE]] [[JSON-SCHEMA-VALIDATION]], it is intended to be encoding-neutral and integrates into the Linked Data vocabularies to allow semantic annotations. It can not only be directly translated into JSON schema, but also can be handily translated into XML Schema. Use of JSON-LD equips the type system with a way to associate data elements with citations and semantic concepts defined elsewhere. 
 	</p>
 
 
@@ -748,7 +745,8 @@ A sample TD snippet that relies on the defined fields above is given below:
 
     <section>
       <h4>Simple Types</h4>
-	<p>Within <code>schema</code>, <code>inputSchema</code> and <code>outputSchema</code> fields, simple type assignments can be done by the usage of the <code>type</code> field as used in [[!JSON-SCHEMA]]. Shown below is an example of an interaction snippet that carries a simple type definition <code>number</code> within <code>schema</code>.  
+
+	<p>Within <code>schema</code>, <code>inputSchema</code> and <code>outputSchema</code> fields, simple type assignments can be done by using the <code>type</code> field that specifies one of the datatypes borrowed from [[JSON-SCHEMA-VALIDATION]]. Shown below is an example of an interaction snippet that carries a simple type definition <code>number</code> within <code>schema</code>.  
 
     <pre class="example">
             "schema": { "type": "number" }
@@ -770,7 +768,7 @@ JSON-LD representation for primitive data type definition is a JSON object of wh
             <td>type</td>
             <td>string</td>
             <td>yes</td>
-            <td><p>As defined in [[!JSON-SCHEMA]] following type defintions are possible for simple type assignments:
+            <td><p>The following type defintions are possible for simple type assignments:
 	      <ul>
 		<li>boolean</li>
 		<li>integer</li>
@@ -792,7 +790,7 @@ JSON-LD representation for primitive data type definition is a JSON object of wh
 
     <section>
       <h4>Restrictions</h4>
-  <p>In order to make more pricise data type defintions the TD also allows the usage of all restrication terms that is provided by [[!JSON-SCHEMA]]. Consider the following <code>inputSchema</code> definition which defines the value to be an <code>integer</code> within the value range of [ 0 ... 255 ].
+  <p>In order to make more precise data type defintions the TD also allows the usage of restrication terms borrowed from [[JSON-SCHEMA-VALIDATION]]. Consider the following <code>inputSchema</code> definition which defines the value to be an <code>integer</code> within the value range of [ 0 ... 255 ].
       </p>
 
       <pre class="example">
@@ -803,7 +801,7 @@ JSON-LD representation for primitive data type definition is a JSON object of wh
         }
       </pre>
 
-The following table only display a small subset of the restriction terms of JSON Schema. Please check [[!JSON-SCHEMA]] for the full set of restrictions. 
+The following table only display a small subset of the restriction terms defined in JSON Schema. Please check [[JSON-SCHEMA-VALIDATION]] for the full set of restrictions. 
 
       <table class="def">
         <thead>
@@ -854,7 +852,7 @@ The following table only display a small subset of the restriction terms of JSON
             <td>...</td>
             <td>...</td>
             <td>...</td>
-            <td>Check [[!JSON-SCHEMA]] for further type restrictions terms.
+            <td>Check [[JSON-SCHEMA-VALIDATION]] for further type restrictions terms.
 	   </td>
           </tr>
         </tbody>
@@ -867,19 +865,20 @@ The following table only display a small subset of the restriction terms of JSON
 </p>
 
       <pre class="example">
-       {
-	  "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
-	  		{"iot": "http://iotschema.org/"}]
-        ...
-
-        "inputSchema": { 
-          "type": "integer",
-          "@type": ["iot:DimmerData" ],
-          "minimum": 0,
-          "maximum": 255,
+        {
+          "@context": [
+            "https://w3c.github.io/wot/w3c-wot-td-context.jsonld", 
+            {"iot": "http://iotschema.org/"}
+          ],
+          ...
+          "inputSchema": { 
+            "type": "integer",
+            "@type": ["iot:DimmerData" ],
+            "minimum": 0,
+            "maximum": 255,
+          },
+          ...
         }
-        ...
-       }
 </pre>
 
 
@@ -913,11 +912,11 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
    </section>
 
     <section>
-      <h4>Runtime Serializiation</h4>
+      <h4>Runtime Data Serializiation</h4>
 
 <p>Unless otherwise specified in the <code>form</code> field (also see [[!WOT-PROTOCOL-BINDING]]) the provided schema reflects the payload structure of the runtime data of the <code>Property</code>, <code>Action</code>, and <code>Event</code>. </p>
 
-      <p>Lets consider the simple data type defintion as shown in Example 11. When the <code>integer</code> being exchanged is 184, data serialization in JSON format will look like the following:
+      <p>Let's consider the simple data type defintion as shown in Example 11. When the <code>integer</code> being exchanged is 184, data serialization in JSON format will look like the following:
       </p>
 
       <pre class="example">
@@ -942,8 +941,7 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
 	
       <p>With the type system, it is also possible to define value types that have more than one literal value.
       The type system provides two distinct constructs to define a structure that can have multiple literal values. 
-      One is the <code>object</code>, and the other one is the <code>array</code>. As defined in [[!JSON-SCHEMA]] both
-	are introduced by the <code>type</code>.
+      One is the <code>object</code>, and the other one is the <code>array</code>. Both <code>object</code> and <code>array</code> are assigned as the value of <code>type</code> field in order to indicate the use of those constructs.
       </p>
 
 
@@ -952,37 +950,28 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
         <h5 id="type-system-object">Object</h5>
 
 
-	<p>To allow all possible <code>object</code> definitions that is provided in  [[!JSON-SCHEMA]] we have to deviate in two points to be better TD and JSON-LD aligned:
+	<p>In order to avoid duplicate key definitions with different meanings in the context documents, <code>object</code> definitions take a form that is slightly different from that of [[JSON-SCHEMA-VALIDATION]]. The following highlights the differences.
 	      <ul>
-		<li>To avoid duplicate key definitions with different meaning, TD uses the term <code>field</code> as JSON array instead JSON Schema's <i>properties</i> as JSON object</li>
-		<li>Field objects must contain the keys <code>name</code> (corresponding to the field name of the specified JSON object), and <code>schema</code>, whose value must be a data schema as specified in the present section (recursive definition)</li>
+		<li>TD uses a JSON array with a name <code>field</code> instead of JSON Schema's <i>properties</i> of a JSON object</li>
+
+		<li>Each object in a <code>field</code> array must contain the key <code>name</code> (corresponding to the field name of the specified JSON object), and <code>schema</code>, whose value must be a data schema as specified in the present section (recursive definition)</li>
 	      </ul>
 	</p>
 
-<p>The following example comparison shows the modification of the [[!JSON-SCHEMA]] decleration in a Thing Description instance using JSON-LD serializiation.</p>
+<p>The following example shows a Thing Description <code>object</code> definiton using JSON-LD serializiation, in comparison with an equivalent JSON Schema object definition.
+</p>
 
 
 
       <table class="def">
         <thead>
           <tr>
-            <th>JSON Schema <code>object</code> definition</th>
             <th>TD with JSON-LD <code>object</code> definition</th>
+            <th>JSON Schema <code>object</code> definition</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>
-        <pre class="example">
-          {
-              "type": "object",
-              "properties": {
-                  "id": {"type": "integer"}
-              },
-              "required": ["id"]
-          }
-        </pre>
-	    </td>
             <td>
         <pre class="example">
           {
@@ -997,6 +986,17 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
           }
         </pre>
 	</td>
+            <td>
+        <pre class="example">
+          {
+              "type": "object",
+              "properties": {
+                  "id": {"type": "integer"}
+              },
+              "required": ["id"]
+          }
+        </pre>
+	    </td>
           </tr>
         </tbody>
       </table> 
@@ -1039,7 +1039,7 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
       <section>
         <h5 id="type-system-array">Array</h5>
     
-        <p>Arrays follow again the same convention as defined in [[!JSON-SCHEMA]]. The following is an example value type  definition that defines the value to be an <code>array</code> that consists of
+        <p>Arrays follow again the same convention as defined in [[JSON-SCHEMA-VALIDATION]]. The following is an example value type  definition that defines the value to be an <code>array</code> that consists of
         exactly three number literals with each value within the range of [ 0 ... 2047 ].
         </p>
     
@@ -1061,7 +1061,7 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
       </section><!-- End of "JSON Array" -->
 
 	<section>
-        <h5>Runtime Serializiation</h5>
+        <h5>Runtime Data Serializiation</h5>
 
        <p>When the <code>id</code> number and the <code>name</code> string values being exchanged are 1314520 and "Web of Things", data serialization in JSON format will look like the following.
         </p>
