@@ -198,13 +198,33 @@ Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event
 
 <section id="intro-semantics"> 
 <h1>Context Extensions</h1>
-The Thing Description provides the oppertunity to have .
+<p>The Thing Description defines a reltive small set of terms to describe mainly Thing's interacion models. However, the TD opens the reusage of existing models from  un-specific (e.g., schema.org, SSN) and specific domains (e.g., smart home, consumer electronics, industry, automotive) to encrich the capabilites of a Thing with further semantics. The following example extend the previos shown <code>Property</code> from Example 1 with furhter semantics from the iotschema.org context. </p>
+
+<pre class="example" title="Sample with semantic extenstions">
+  {
+    "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld", 
+            {"iot": "http://iotschema.org/"}]
+    "@type": ["Thing",  "iot:Light", "iot:BinarySwitch"],
+    "name": "MyLampThing",
+    "interaction": [
+        {
+            "@type": ["Property", "iot:SwitchStatus"],
+            "name": "status",
+            "schema": {"type": "string"},
+            "writable": false,
+            "observable": true,
+            "form": [{
+                "href": "coaps://mylamp.example.com:5683/status",
+                "mediaType": "application/json"
+            }]
+        },
+	...
+    ]
+  }
+ </pre>
 
 
 
-<p class="ednote">
-Simple example with semantic usage should be introduce here as well.
-</p>
 </section>
 </section>
 
@@ -739,12 +759,12 @@ A sample TD snippet that relies on the defined fields above is given below:
 
 
     <section>
-      <h4>Simple Data Definition</h4>
+      <h4 id="simple-type-section">Simple Data Definition</h4>
 
 
 
     <section>
-      <h4>Simple Types</h4>
+      <h4 id="simple-type-list">Simple Types</h4>
 
 	<p>Within <code>schema</code>, <code>inputSchema</code> and <code>outputSchema</code> fields, simple type assignments can be done by using the <code>type</code> field that specifies one of the datatypes borrowed from [[JSON-SCHEMA-VALIDATION]]. Shown below is an example of an interaction snippet that carries a simple type definition <code>number</code> within <code>schema</code>.  
 
@@ -789,12 +809,12 @@ JSON-LD representation for primitive data type definition is a JSON object of wh
     
 
     <section>
-      <h4>Restrictions</h4>
-  <p>In order to make more precise data type defintions the TD also allows the usage of restrication terms borrowed from [[JSON-SCHEMA-VALIDATION]]. Consider the following <code>inputSchema</code> definition which defines the value to be an <code>integer</code> within the value range of [ 0 ... 255 ].
+      <h4 id="type-restriction">Restrictions</h4>
+  <p>In order to make more precise data type defintions the TD also allows the usage of restrication terms borrowed from [[JSON-SCHEMA-VALIDATION]]. Consider the following <code>schema</code> definition which defines the value to be an <code>integer</code> within the value range of [ 0 ... 255 ].
       </p>
 
       <pre class="example">
-        "inputSchema": { 
+        "schema": { 
           "type": "integer",
           "minimum": 0,
           "maximum": 255
@@ -852,7 +872,7 @@ The following table only display a small subset of the restriction terms defined
             <td>...</td>
             <td>...</td>
             <td>...</td>
-            <td>Check [[JSON-SCHEMA-VALIDATION]] for further type restrictions terms.
+            <td>Check [[JSON-SCHEMA-VALIDATION]] for further type restriction terms.
 	   </td>
           </tr>
         </tbody>
@@ -1032,7 +1052,46 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
           }
         </pre>
     
- 
+
+JSON-LD representation for object data type definition is a JSON object with terms as defined below.
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Mandatory</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>type</td>
+            <td>string</td>
+            <td>yes</td>
+            <td>"object" has to be assigned to <code>type</code> for object declaration. </td>
+          </tr>
+          <tr>
+            <td>field</td>
+            <td>array of objects</td>
+            <td>yes</td>
+            <td><p>Each array entry defines within the object one member of the structure by its 
+	      <ul>
+		<li>name (as string)</li>
+		<li>schema (as defined in <a href="#simple-type-section" class="sec-ref">Simple Data Definition</a>)</li>
+	      </ul>
+		</p>
+		</td>
+          </tr>
+          <tr>
+            <td>required</td>
+            <td>array of strings</td>
+            <td>no</td>
+            <td>Defines which members (associated by member's <code>name</code>) that are defined within the <code>field</code> are mandatory or not in an instance. </td>
+          </tr>
+        </tbody>
+      </table>
+
 
       </section>
   
@@ -1056,19 +1115,70 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
           }
         </pre>
  
-    
+  
+JSON-LD representation for array type definition is a JSON object with terms as defined below.
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th>Field Name</th>
+            <th>JSON Construct</th>
+            <th>Mandatory</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>type</td>
+            <td>string</td>
+            <td>yes</td>
+            <td>"array" has to be assigned to <code>type</code> for array declaration. </td>
+          </tr>
+          <tr>
+            <td>items</td>
+            <td>object</td>
+            <td>yes</td>
+            <td><p>Defines characteristics of the array by the underlying
+	      <ul>
+		<li><code>type</code> (assignment as defined in <a href="#simple-type-list" class="sec-ref">Simple Types</a>)</li>
+		<li>one or more type restrictions (as defined in <a href="#type-restriction" class="sec-ref">Restriction</a>)</li>
+	      </ul>
+		</p>
+		</td>
+          </tr>
+          <tr>
+            <td>minItems</td>
+            <td>integer</td>
+            <td>no</td>
+            <td>Defines the minimum number of itmes that have to be in the array.</td>
+          </tr>
+          <tr>
+            <td>maxItems</td>
+            <td>integer</td>
+            <td>no</td>
+            <td>Defines the maximum number of itmes that the array can provide.</td>
+          </tr>
+          <tr>
+            <td>...</td>
+            <td>...</td>
+            <td>...</td>
+            <td>Check [[JSON-SCHEMA-VALIDATION]] for further array restriction terms.
+	   </td>
+          </tr>
+        </tbody>
+      </table>
     
       </section><!-- End of "JSON Array" -->
 
 	<section>
         <h5>Runtime Data Serializiation</h5>
 
-       <p>When the <code>id</code> number and the <code>name</code> string values being exchanged are 1314520 and "Web of Things", data serialization in JSON format will look like the following.
+ 	<p>In the case of an object-based schema decleration the expected instance is straightforward and similar handling to JSON Schema and JSON instances. Let's consider Example 18: When the <code>brightness</code> number and the <code>name</code> string values being exchanged are 200 and "Web of Things", data serialization in JSON format will look like the following.
         </p>
     
         <pre class="example">
           {
-            "id": 1314520,
+            "brightness": 200,
             "name": "Web of Things"
           }
         </pre>
@@ -1079,7 +1189,7 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
         <pre class="example">
             &lt;object>
               &lt;id>
-                &lt;integer>1314520&lt;/integer>
+                &lt;integer>200&lt;/integer>
               &lt;/id>
               &lt;name>
                 &lt;string>Web of Things&lt;/string>
@@ -1094,7 +1204,7 @@ ToDo: Provide information about JSON Schema validation with <code>@type</code>.
 
 
    
-        <p>When the numbers being exchanged are 520, 184 and 1314, data serialization in JSON format will look like the following.
+        <p>In the case of an array decleration there is the same bahavior from JSON Schema and JSON instances. Let's consider Example 19: When the numbers being exchanged are 520, 184 and 1314, data serialization in JSON format will look like the following.
         </p>
     
         <pre class="example">
