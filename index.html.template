@@ -198,7 +198,9 @@ Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event
 
 <section id="intro-semantics"> 
 <h1>Context Extensions</h1>
-<p>The Thing Description defines a reltive small set of terms to describe mainly Thing's interacion models. However, the TD opens the reusage of existing models from  un-specific (e.g., schema.org, SSN) and specific domains (e.g., smart home, consumer electronics, industry, automotive) to encrich the capabilites of a Thing with further semantics. The following example extend the previos shown <code>Property</code> from Example 1 with furhter semantics from the iotschema.org context. </p>
+<p>The Thing Description defines a reltive small set of terms to describe mainly Thing's interacion models. However, the TD opens the reusage of existing models from  un-specific (e.g., schema.org, SSN) and specific domains (e.g., smart home, consumer electronics, industry, automotive) to encrich the capabilites of a Thing with further semantics.</p>
+
+<p>The following example extend the previos shown Example  with furhter semantics from the iotschema.org context. </p>
 
 <pre class="example" title="Sample with semantic extenstions">
   {
@@ -215,6 +217,14 @@ Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event
             "observable": true,
             "form": [{
                 "href": "coaps://mylamp.example.com:5683/status",
+                "mediaType": "application/json"
+            }]
+        },
+        {
+            "@type": ["Action", "iot:ChangeSwitchStatus"],
+            "name": "toggle",
+            "form": [{
+                "href": "coaps://mylamp.example.com:5683/toggle",
                 "mediaType": "application/json"
             }]
         },
@@ -1104,9 +1114,11 @@ JSON-LD representation for object data type definition is a JSON object with ter
           "inputSchema": {
               "type": "array",
               "items": {
-                  "type" : "number",
-                  "minimum": 0,
-                  "maximum": 2047
+                   "schema": {
+                        "type" : "number",
+                        "minimum": 0,
+                        "maximum": 2047
+                   }
               },
               "minItems" : 3,
               "maxItems" : 3
@@ -1136,11 +1148,7 @@ JSON-LD representation for array type definition is a JSON object with terms as 
             <td>items</td>
             <td>object</td>
             <td>yes</td>
-            <td><p>Defines characteristics of the array by the underlying
-	      <ul>
-		<li><code>type</code> (assignment as defined in <a href="#simple-type-list" class="sec-ref">Simple Types</a>)</li>
-		<li>one or more type restrictions (as defined in <a href="#type-restriction" class="sec-ref">Restriction</a>)</li>
-	      </ul>
+            <td><p>Defines the underlying type of the array items by its <code>schema</code> as defined in <a href="#simple-type-section" class="sec-ref">Simple Data Definition</a> 
 		</p>
 		</td>
           </tr>
@@ -1526,7 +1534,7 @@ To parse a valid Thing Description a simple JSON-based parser and tools can be u
               "@type": ["Action", "Toggle"],
               "name": "myMasterOnOff",
               "inputSchema": {
-                "@type": "OnOff",
+                "@type": ["OnOff"],
                 "type": "boolean"
               },
               "form": [
