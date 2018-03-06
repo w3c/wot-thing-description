@@ -611,15 +611,20 @@
           <h3><code>@id</code></h3>
           <p>
             On the top level, <code>@id</code> will become important for
-            security and identity management. It should be mandatory.
+            security and identity management. It identifies the instance
+            of Thing and also serves as the <code>@base</base> for all
+            other <code>@id</code> definitions (e.g., of Interactions).
+            Only this fully enables the object notation of Interactions
+            (opposed to the previous array notation).
+            The top-level <code>@id</code> must be mandatory.
           </p>
           <p>
             For Interactions, it would be the handle for scripts and it would
             enable references to and between Interactions, e.g., for
             cross-Property constraints or for expressing relations between an
             action and one or more Properties. Note that this would result
-            automatically from the object structure for listing Interactions
-            because of JSON-LD 1.1.
+            automatically from the object structure listing Interactions
+            because of JSON-LD 1.1 (<a href="https://json-ld.org/spec/latest/json-ld/#node-identifier-indexing">Node Identifier Indexing</a>).
           </p>
           <p>
             The JSON-LD default term <code>@id</code> can be masked with a
@@ -630,32 +635,59 @@
 
       <section>
         <h2>Simplified TD by Example</h2>
-
-        <p>
-          The first example reflects the most progressive option with the
-          highest amount of preprocessing necessary. It contains no semantic
-          annotations, nor human-readible decorators such as <code>name</code>
-          or <code>description</code>.
-        </p>
-        </p>
-          Update 2018-03-06: Applied JSON-LD 1.1 for Data Schema definitions.
-        </p>
         
+        <p>
+          When no <code>@context</code> is given, the <a href="https://w3c.github.io/wot/w3c-wot-td-context.jsonld">TD context file</a>
+          is assumed based on the media type. The current TD context needs an additional
+          definition of <code>@base</code> set to the Thing's <code>@id</code>,
+          so that the object representation of Interactions (instead of arrays)
+          works correctly.
+        </p>
+
         <pre class="example" title="Context applied to application/td+json">
 {
   "@context": {
+    /* valid @id generation relative to Thing instance */
     "@base": "@id",
-    /* TD term definitions as in  */
+    /* object notation for Interactions */
+    "properties": {
+      "@container": "@id"
+    },
+    "actions": {
+      "@container": "@id"
+    },
+    "events": {
+      "@container": "@id"
+    },
+    /* optional if schema definitions are wanted */
+    "definitions": {
+      "@container": "@id"
+    },
+    /* TD term definitions as in https://w3c.github.io/wot/w3c-wot-td-context.jsonld */
+    ...
   }
 }
         </pre>
+        
+        <section>
+          <h3>Minimal</h3>
 
-        <pre class="example" title="Progressive Simplified TD Example">
+          <p>
+            The first example reflects the a minimal option. It contains no semantic
+            annotations, nor human-readible decorators such as <code>name</code>
+            or <code>description</code>.
+          </p>
+          <p>
+            Update 2018-03-06: Applied JSON-LD features for Data Schema definitions.
+          </p>
+
+          <pre class="example" title="Simplified TD Example">
 {
   "name": "lamp",
   "@id": "urn:dev:wot:com:example:servient:lamp",
   "base": "https://servient.example.com/",
-  "definitions": { /* optional if wanted! for free by JSON-LD */
+  /* optional, only if wanted, cf. Dave's proposal! for free by JSON-LD */
+  "definitions": {
     "range": {
       "type": "integer",
       "minimum": 0,
@@ -710,9 +742,13 @@
     "mediaType": "application/td"
   }]
 }
-        </pre>
+          </pre>
+        
+        </section>
+        <section>
+          <h3>Semantic Annotations</h3>
 
-        <pre class="example" title="Simplified TD Example with semantic annotations">
+          <pre class="example" title="Simplified TD Example with semantic annotations">
 {
   "@context": [
     "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
@@ -812,12 +848,18 @@
     "mediaType": "application/td"
   }]
 }
-        </pre>
+          </pre>
+        
+        </section>
+        <section>
+          <h3>WIP: Experimental TD</h3>
 
         <p>
           Alternative design with recursive properties to align Interaction Propertis with schema/object properties.
+          The idea is that only properties that have a <code>links</code> field become Interaction Properties.
+          Yet this would also enable nested Properties, e.g., to model LWM2M/IPSO Objects.
         </p>
-        <pre class="example" title="Experimental Simplified TD Example">
+        <pre class="example" title="Experimental TD Example">
 {
   "name": "lamp",
   "@id": "urn:dev:wot:com:example:servient:lamp",
@@ -831,7 +873,6 @@
   },
   "properties": {
     "on": {
-      "writeable": true,
       "type": "boolean",
       "links" [{
         "href": "/things/lamp/properties/on",
@@ -839,6 +880,7 @@
       }]
     },
     "status": {
+      "readOnly": true, /* inversed default logic for us */
       "type": "object",
       "properties": {
         "battery": {
@@ -872,7 +914,7 @@
   },
   "actions": {
     "fade": {
-      "request": {
+      "input": {
         "type": "object",
         "properties": {
           "from": "range",
@@ -882,10 +924,13 @@
       },
       "forms": [{
         "href": "/things/lamp/actions/fade",
+        /* encType would be for the request body
+           opposed to mediaType, which is for target
+           FIXME: can have both meanings based on context (links/forms)? */
         "encType": "application/json",
         /* redundant to default here, just to indicate
            imagine a PATCH Action or a CoAP FETCH Action */
-        "http:methodName": "POST" 
+        "http:methodName": "POST"
       }]
     }
   },
