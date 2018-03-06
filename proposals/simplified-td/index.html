@@ -23,6 +23,19 @@
           company: "Siemens AG"
         }]
       , charterDisclosureURI: 'https://www.w3.org/2016/07/wot-wg-charter.html#patentpolicy'
+      , otherLinks: [{
+          key: "Repository",
+          data: [
+            {
+              value: "We are on GitHub"
+            , href: "https://github.com/w3c/wot-thing-description/tree/master/proposals/simplified-td"
+            }
+          , {
+              value: "File a bug"
+            , href: "https://github.com/w3c/wot-thing-description/issues"
+            }
+          ]
+        }]
       };
     </script>
     <style>
@@ -179,17 +192,16 @@
       </section>
 
       <section>
-        <h2>Data Schema</h2>
+        <h2>Data Model</h2>
         <p>
-          The Web of Things is supposed to make IoT technology more usable,
-          which includes usability for developers. This is fundamental to the
-          success of Web Technology in general.
-        </p>
-        <p>
-          This requirement lead to the choice of a JSON-based format for the TD.
+          Interactions exchange data using representation formats (e.g., JSON),
+          which are identified by Media Types (e.g., <code>application/json</code>.
+          Usually, applications use generic serialization formts without
+          application-specific definitions (cf. JSON). Thus, TDs also needs to
+          include metadata about the data model used, so-called schemas.
         </p>
         <section>
-          <h3>JSON</h3>
+          <h3>Representation Formats</h3>
           <p>
             JSON reflects the state of the art of data interchange formats.
             It is not focused on how data is represented by a specific system
@@ -199,21 +211,27 @@
             <li>Dominant data format on the Web</li>
             <li>Implementation-independent representation of data</li>
           </ul>
-        </section>
-        <section>
-          <h3>JSON Schema</h3>
           <p>
-            JSON is a generic representation format and cannot convey the syntax
-            of application-specific formats. JSON Schema provides the required
-            validation features.
+            CBOR is a concise binary representation that is related to JSON.
+            It can express all JSON structures, but also has additional
+            features such as a binary type to improve over base64-encoded blobs.
           </p>
           <ul>
-            <li>Rich vocabulary for validation</li>
-            <li>Popular schema format</li>
+            <li>Compact</li>
+            <li>Low parsing complexity</li>
           </ul>
         </section>
         <section>
-          <h3>Linked Data / JSON-LD Schema</h3>
+          <h3>Schema</h3>
+          <p>
+            A popular validation schema for JSON data is <a href="http://json-schema.org/">JSON Schema</a>.
+            It defines a vocabulary and a syntax to specify a schema for data validation
+            at the syntactic level.
+          </p>
+          <p>
+            The Web of Things aims at semantic interoperability for Things. For this,
+            
+          </p>
           <p>
             Directly using the JSON Schema syntax within the TD breaks paradigms.
             Two different implementations would be needed to conduct validation.
@@ -227,25 +245,6 @@
             <li>Enable validation through JSON-LD</li>
           </ul>
         </section>
-      </section>
-
-      <section>
-        <h2>Web Linking</h2>
-        <p>
-          The TD now has a top-level <code>link</code> field to carry links to
-          other Web resources.
-        </p>
-        <ul>
-          <li>
-            In a deployment, Things usually have relations to other Things or
-            entities such as locations, which may have metadata representations
-            on their own.
-          </li>
-          <li>
-            In the future, additional metadata might be provided as externalized
-            Web resource, just like done for HTML or the Web Linking header field.
-          </li>
-        </ul>
       </section>
 
       <section>
@@ -381,6 +380,25 @@
             point that comes for free when using JSON-LD and Linked Data.
           </p>
         </section>
+      </section>
+
+      <section>
+        <h2>Web Linking</h2>
+        <p>
+          The TD now has a top-level <code>link</code> field to carry links to
+          other Web resources.
+        </p>
+        <ul>
+          <li>
+            In a deployment, Things usually have relations to other Things or
+            entities such as locations, which may have metadata representations
+            on their own.
+          </li>
+          <li>
+            In the future, additional metadata might be provided as externalized
+            Web resource, just like done for HTML or the Web Linking header field.
+          </li>
+        </ul>
       </section>
 
     </section>
@@ -619,12 +637,31 @@
           annotations, nor human-readible decorators such as <code>name</code>
           or <code>description</code>.
         </p>
+        </p>
+          Update 2018-03-06: Applied JSON-LD 1.1 for Data Schema definitions.
+        </p>
+        
+        <pre class="example" title="Context applied to application/td+json">
+{
+  "@context": {
+    "@base": "@id",
+    /* TD term definitions as in  */
+  }
+}
+        </pre>
 
         <pre class="example" title="Progressive Simplified TD Example">
 {
   "name": "lamp",
   "@id": "urn:dev:wot:com:example:servient:lamp",
   "base": "https://servient.example.com/",
+  "definitions": { /* optional if wanted! for free by JSON-LD */
+    "range": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    }
+  },
   "properties": {
     "on": {
       "writeable": true,
@@ -633,11 +670,7 @@
     },
     "brightness": {
       "writeable": true,
-      "schema": {
-        "type": "number",
-        "minimum": 0,
-        "maximum": 100
-      },
+      "schema": "range",
       "forms": [{ "href": "/things/lamp/properties/brightness" }]
     }
   },
@@ -647,18 +680,10 @@
         "type": "object",
         "fields": [{
           "name": "from",
-          "schema": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 100
-          }
+          "schema": "range"
         }, {
           "name": "to",
-          "schema": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 100
-          }
+          "schema": "range"
         }, {
           "name": "duration",
           "schema": { "type": "number" }
@@ -694,6 +719,14 @@
     { "iot": "http://iotschema.org/" },
     { "http": "http://iotschema.org/protocol/http#" }
   ],
+  "definitions": { /* optional if wanted! for free by JSON-LD */
+    "range": {
+      "@type": ["iot:LevelData"],
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    }
+  },
   "@type": ["Thing", "iot:Light", "iot:BinarySwitch", "iot:LevelCapability"],
   "name": "lamp",
   "description": "A Web-connected lamp",
@@ -725,12 +758,7 @@
       "@type": ["iot:CurrentLevel"],
       "writeable": true,
       "observable": true,
-      "schema": {
-        "@type": ["iot:LevelData"],
-        "type": "number",
-        "minimum": 0,
-        "maximum": 100
-      },
+      "schema": "range",
       "forms": [{
         "href": "/things/lamp/properties/brightness",
         "rel": ["get", "set"]
@@ -749,13 +777,11 @@
       "inputSchema": {
         "type": "object",
         "fields": [{
+          "name": "from",
+          "schema": "range",
+        }, {
           "name": "to",
-          "@type": ["iot:LevelData"],
-          "schema": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 100
-          }
+          "schema": "range",
         }, {
           "name": "duration",
           "@type": ["iot:TransitionTimeData"],
@@ -776,7 +802,7 @@
       },
       "forms": [{
         "href": "/things/lamp/events/overheated",
-        "http:SubProtocol": "http:ServerSentEvents"
+        "http:subProtocol": "http:EventSource"
       }]
     }
   },
@@ -789,73 +815,94 @@
         </pre>
 
         <p>
-          An alternative with the array structure to list Interactions would
-          look as follows. This would circumvent the issue that Interaction IDs
-          would need a <code>_:</code> prefix to make them blank nodes or an
-          <code>@base</code> in an always present <code>@context</code>.
-          Furthermore, it should be noted that the TD is an interchange format
-          that needs to be pared by the recipient. Parsing an array is easier
-          than parsing an Object strcuture. The downside is cumbersome
-          introspection of a TD pared into a JavaScript object
-          (<code>thing.properties[0].schema</code> instead of
-          <code>thing.properties.on.schema</code>).
+          Alternative design with recursive properties to align Interaction Propertis with schema/object properties.
         </p>
-        <pre class="example" title="Moderate Simplified TD Example">
+        <pre class="example" title="Experimental Simplified TD Example">
 {
   "name": "lamp",
   "@id": "urn:dev:wot:com:example:servient:lamp",
   "base": "https://servient.example.com/",
-  "properties": [{
-    "id": "on",
-    "writeable": true,
-    "schema": { "type": "boolean" },
-    "forms": [{ "href": "/things/lamp/properties/on" }]
-  }, {
-    "id": "brightness",
-    "writeable": true,
-    "schema": {
-      "type": "number",
+  "definitions": {
+    "range": {
+      "type": "integer",
       "minimum": 0,
       "maximum": 100
-    },
-    "forms": [{ "href": "/things/lamp/properties/brightness" }]
-  }],
-  "actions": [{
-    "id": "fade",
-    "inputSchema": {
-      "type": "object",
-      "fields": [{
-        "name": "from",
-        "schema": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 100
-        }
-      }, {
-        "name": "to",
-        "schema": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 100
-        }
-      }, {
-        "name": "duration",
-        "schema": { "type": "number" }
+    }
+  },
+  "properties": {
+    "on": {
+      "writeable": true,
+      "type": "boolean",
+      "links" [{
+        "href": "/things/lamp/properties/on",
+        "mediaType": "application/json"
       }]
     },
-    "forms": [{ "href": "/things/lamp/actions/fade" }]
-  }],
-  "events": [{
-    "id": "overheated",
-    "schema": {
+    "status": {
       "type": "object",
-      "fields": [{
-        "name": "temperature",
-        "schema": { "type": "number" }
+      "properties": {
+        "battery": {
+          type: "number",
+          minimum: 0.0,
+          maximum: 100.0,
+          "links" [{
+            "href": "/things/lamp/properties/status/batt",
+            "mediaType": "application/json"
+          }]
+        },
+        "rssi": {
+          "type": "number",
+          minimum: 0.0,
+          maximum: 1.0
+        },
+        "level": "range"
+      },
+      "links" [{
+        "href": "/things/lamp/properties/status",
+        "mediaType": "application/json"
       }]
-    },
-    "forms": [{ "href": "/things/lamp/events/overheated" }]
-  }],
+    }
+    "brightness": {
+      /* FIXME: how to reference "range" to import defintions */
+      "links" [{
+        "href": "/things/lamp/properties/status",
+        "mediaType": "application/json"
+      }]
+    }
+  },
+  "actions": {
+    "fade": {
+      "request": {
+        "type": "object",
+        "properties": {
+          "from": "range",
+          "to": "range"
+          "duration": { "type": "number" }
+        }
+      },
+      "forms": [{
+        "href": "/things/lamp/actions/fade",
+        "encType": "application/json",
+        /* redundant to default here, just to indicate
+           imagine a PATCH Action or a CoAP FETCH Action */
+        "http:methodName": "POST" 
+      }]
+    }
+  },
+  "events": {
+    "overheated": {
+      "type": "object",
+      "properties": {
+        "temperature": { "type": "number" }
+      }
+      "links": [{
+        "href": "/things/lamp/events/overheated",
+        /* needed, alternative: register URI schemes "http+sse", "http+lp", ... */
+        "http:subProtocol": "http:EventSource",
+        "mediaType": "application/json"
+      }]
+    }
+  },
   "links": [{
     "href": "https://servient.example.com/things/motion-detector",
     "rel": "controlledBy",
