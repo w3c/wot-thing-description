@@ -8,9 +8,9 @@ let jd = require("jsdom/lib/old-api.js");
 
 // extraction of rendering context from the RDF store
 
-let classQuery = fs.readFileSync('ontology/class.sparql', 'UTF-8');
-let fieldQuery = fs.readFileSync('ontology/field.sparql', 'UTF-8');
-let subclassQuery = fs.readFileSync('ontology/subclass.sparql', 'UTF-8');
+const classQuery = fs.readFileSync('ontology/class.sparql', 'UTF-8');
+const fieldQuery = fs.readFileSync('ontology/field.sparql', 'UTF-8');
+const subclassQuery = fs.readFileSync('ontology/subclass.sparql', 'UTF-8');
 
 function context(store, cb) {
     store.execute(classQuery, function(err, bindings) {
@@ -81,10 +81,36 @@ function context(store, cb) {
     });
 }
 
+// class sort prior to rendering
+
+const predefined = [
+    "Thing",
+    "InteractionPattern",
+    "Property",
+    "Action",
+    "Event",
+    "DataSchema",
+    "Form"
+];
+
+function sort(classes) {
+    classes.classes.sort(function(c1, c2) {
+        let i1 = predefined.indexOf(c1.label.value);
+        let i2 = predefined.indexOf(c2.label.value);
+        
+        if (i1 === -1) { i1 = predefined.length; }
+        if (i2 === -1) { i2 = predefined.length; }
+        
+        return i1 - i2;
+    });
+    
+    return classes;
+}
+
 // rendering
 
-let vocSrc = fs.readFileSync('vocabulary.template', 'UTF-8');
-let src = fs.readFileSync('index.html.template', 'UTF-8');
+const vocSrc = fs.readFileSync('vocabulary.template', 'UTF-8');
+const src = fs.readFileSync('index.html.template', 'UTF-8');
 
 function render(context) {
     dust.renderSource(vocSrc, context, function(err, out) {
@@ -96,7 +122,7 @@ function render(context) {
 
 // main function
 
-let onto = fs.readFileSync('ontology/td.ttl', 'UTF-8');
+const onto = fs.readFileSync('ontology/td.ttl', 'UTF-8');
 
 rdf.create(function(err, store) {
     store.load('text/turtle', onto, function(err) {
@@ -106,72 +132,7 @@ rdf.create(function(err, store) {
         }
         
         context(store, function(classes) {
-            var orderedClasses = {classes : []};
-            var i, s,  len = classes.classes.length;
-            if(len >0) {
-                for (i=0; i<len; ++i) {
-
-                    if(classes.classes[i].label.value=="Thing")
-                        {
-                        orderedClasses.classes[0] = classes.classes[i];
-                        }
-                    if(classes.classes[i].label.value=="InteractionPattern")
-                        {
-                        orderedClasses.classes[1] = classes.classes[i];
-                        }
-                    if(classes.classes[i].label.value=="Property")
-                        {
-                        orderedClasses.classes[2] = classes.classes[i];
-                        }
-                    if(classes.classes[i].label.value=="Action")
-                        {
-                        orderedClasses.classes[3] = classes.classes[i];
-                        }
-                    if(classes.classes[i].label.value=="Event")
-                        {
-                        orderedClasses.classes[4] = classes.classes[i];
-                        }
-                    if(classes.classes[i].label.value=="DataSchema")
-                        {
-                        orderedClasses.classes[5] = classes.classes[i];
-                        }
-                    if(classes.classes[i].label.value=="Form")
-                        {
-                        orderedClasses.classes[6] = classes.classes[i];
-                        }
-                    if(classes.classes[i].label.value=="Security")
-                        {
-                        orderedClasses.classes[7] = classes.classes[i];
-                        }
-                }
-
-                render(orderedClasses);
-            }
+            render(sort(classes));
         });
     });
 });
-
-
-/*
-// do some post processing ager index.html generating
-var rawhtml = fs.readFileSync("index.html","utf8")
-
-jd.env(
-  rawhtml,
-  ["https://code.jquery.com/jquery-1.10.2.js"],
-  function (err, window) {
-   // console.log(window.$("html").html())
-    var $ = require('jquery')(window);
-    //let t = $( "#interactionpattern" );
-    $( "#interactionpattern" ).replaceWith( $( "#thing" ) );
-    //$( "#thing" ).replaceWith( t );
-
- console.log(window.$( "#acknowledgements" ).html())
-	fs.writeFile('index.html', window.document.documentElement.outerHTML,
-                     function (error){
-            if (error) throw error;
-        });
-
-  }
-
-);*/
