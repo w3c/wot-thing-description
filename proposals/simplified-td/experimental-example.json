@@ -1,0 +1,94 @@
+{
+  "name": "lamp",
+  "@id": "urn:dev:wot:com:example:servient:lamp",
+  "base": "https://servient.example.com/",
+  "definitions": {
+    "range": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    }
+  },
+  "properties": {
+    "on": {
+      "type": "boolean",
+      "links" [{
+        "href": "/things/lamp/properties/on",
+        "mediaType": "application/json"
+      }]
+    },
+    "status": {
+      "readOnly": true, /* inversed default logic for us */
+      "type": "object",
+      "properties": {
+        "battery": {
+          type: "number",
+          minimum: 0.0,
+          maximum: 100.0,
+          "links" [{
+            "href": "/things/lamp/properties/status/batt",
+            "mediaType": "application/json"
+          }]
+        },
+        "rssi": {
+          "type": "number",
+          minimum: 0.0,
+          maximum: 1.0
+        },
+        "level": "range"
+      },
+      "links" [{
+        "href": "/things/lamp/properties/status",
+        "mediaType": "application/json"
+      }]
+    }
+    "brightness": {
+      /* FIXME: how to reference "range" to import defintions */
+      "links" [{
+        "href": "/things/lamp/properties/status",
+        "mediaType": "application/json"
+      }]
+    }
+  },
+  "actions": {
+    "fade": {
+      "input": {
+        "type": "object",
+        "properties": {
+          "from": "range",
+          "to": "range"
+          "duration": { "type": "number" }
+        }
+      },
+      "forms": [{
+        "href": "/things/lamp/actions/fade",
+        /* encType would be for the request body
+           opposed to mediaType, which is for target
+           FIXME: can have both meanings based on context (links/forms)? */
+        "encType": "application/json",
+        /* redundant to default here, just to indicate
+           imagine a PATCH Action or a CoAP FETCH Action */
+        "http:methodName": "POST"
+      }]
+    }
+  },
+  "events": {
+    "overheated": {
+      "type": "object",
+      "properties": {
+        "temperature": { "type": "number" }
+      }
+      "links": [{
+        "href": "/things/lamp/events/overheated",
+        /* needed, alternative: register URI schemes "http+sse", "http+lp", ... */
+        "http:subProtocol": "http:EventSource",
+        "mediaType": "application/json"
+      }]
+    }
+  },
+  "links": [{
+    "href": "https://servient.example.com/things/motion-detector",
+    "rel": "controlledBy",
+    "mediaType": "application/td"
+  }]
+}
