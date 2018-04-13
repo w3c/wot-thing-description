@@ -144,7 +144,7 @@ Properties can be used for controlling (or retrieving) parameters, such as a set
 </p>
 
 <p>
-Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event paradigm by describing a lamp Thing with the name <i>MyLampThing</i>.
+Example 1 shows a simple TD instance in JSON serializiation that reflects WoT's Property, Action, Event paradigm by describing a lamp Thing with the name <i>MyLampThing</i>.
 </p>
 
 <pre class="example" title="Simple Thing Description Sample">
@@ -174,7 +174,7 @@ Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event
 
 
 
-<p>Based on this content, we know there exists one Property interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessable over the CoAP protocol with a GET method (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]) at coaps://mylamp.example.com:5683/status (announced within the <code>form</code> structure by the <code>href</code> key), which will return a string status value within a JSON structure (JSON as payload format is announced by the <code>mediaType</code> field).
+<p>Based on this content, we know there exists one Property interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessable over the CoAP protocol with a GET method (default assumption as descripted in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]) at coaps://mylamp.example.com:5683/status (announced within the <code>form</code> structure by the <code>href</code> key), which will return a string status value within a JSON structure (as default assumption).
 </p>
 
 <p>In a similar manner an Action is specified to toogle the switch status using the POST method that is applied to the coaps://mylamp.example.com:5683/toggle resource (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).</p>
@@ -182,50 +182,42 @@ Example 1 shows a simple TD instance that reflects WoT's Property, Action, Event
 <p>Events which are, e.g., unexpected or irregular can be specified with the WoT's Event model. Here, a subscription of a possible overheating event of the lamp can be applied by using CoAP OBSERVE at coaps://mylamp.example.com:5683/oh. (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).
 </p>
 
-<section id="intro-semantics"> 
-<h1>Context Extensions</h1>
-<p>The Thing Description defines a relative small set of terms to describe mainly Thing's interaction models. However, the TD opens the re-usage of existing models from un-specific (e.g., schema.org, SSN) and specific domains (e.g., smart home, consumer electronics, industry, automotive) to enrich the capabilities of a Thing with further vocabulary and semantics.</p>
+<p>
+The TD in Example 1 reflects some default assumptions that are not explicitly described. E.g., this includes that the media type of the exchange format of the interactions is based on JSON (=<code>mediaType</code>), the property <i>status</i> is not writable and observable. The TD can be also processed as a RD-based model. In that case, the JSON TD can be simple transformed into a JSON-LD style that will implicitly also contain the default assumption vocabularies (<code>writable</code>, <code>observable</code>, <code>mediaType</code>) due to semantic's open-world assumption. Example 2 shows the TD in JSON-LD 1.1 serializiation that contains the same information as in Example 1.
+</p>
 
-<p>The following example extends the previous shown example with further semantics from the iotschema.org context.</p>
-
-<pre class="example" title="Sample with semantic extenstions">
-  {
-    "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld", 
-            {"iot": "http://iotschema.org/"}],
-    "@type": ["Thing",  "iot:Light", "iot:BinarySwitch"],
+<pre class="example" title="Thing Description as JSON-LD 1.1 Serializiation">
+{
+    "@context": "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+    "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
-    "interaction": [
-        {
-            "@type": ["Property", "iot:SwitchStatus"],
-            "name": "status",
-            "schema": {"type": "string"},
-            "writable": false,
-            "observable": true,
-            "form": [{
-                "href": "coaps://mylamp.example.com:5683/status",
-                "mediaType": "application/json"
-            }]
-        },
-        {
-            "@type": ["Action", "iot:ChangeSwitchStatus"],
-            "name": "toggle",
-            "form": [{
-                "href": "coaps://mylamp.example.com:5683/toggle",
-                "mediaType": "application/json"
-            }]
-        },
-        {
-            "@type": ["Event", "iot:TemperatureAlarm"],
-            "name": "overheating",
-            "schema": {"type": "string"},
+    "properties": {
+        "status": {
+         "writable": false,
+         "observable": false,
+         "type": "string",
+         "form": [{
+             "href": "coaps://mylamp.example.com:5683/status",
+             "mediaType": "application/json"
+         }]
+    }},
+    "actions": {
+     "toggle": {
+        "form": [{
+            "href": "coaps://mylamp.example.com:5683/toggle",
+            "mediaType": "application/json"
+        }]}},
+    "events": {
+        "overheating": {
+            "type": "string",
             "form": [{
                 "href": "coaps://mylamp.example.com:5683/oh",
                 "mediaType": "application/json"
             }]
-        }
-    ]
-  }
+        }}
+}
  </pre>
+
 
 <p class="ednote">
 Provide detail description about the semantic usage in the example. Please also check the samples provided in <a href="#examples" class="sec-ref">Section 6.7.</a>
@@ -300,8 +292,60 @@ For example, the Property interaction allows get and set operations. The protoco
 
 For example, the Property interaction allows get and set operations. The protocol binding may contain a form for the get operation and a different form for the set operation. The value of the &quot;rel&quot; attribute of the form indicates which form is which and allows the client to select the correct form for the oeration required</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><h3><code>Security</code></h3><p>The (optional) security field can be used to provide access metadata (self-contained) information of the Thing for securely transmitting information via all its resources. Also see Section Security Consideration. Definition taken from http://w3c.github.io/wot/current-practices/wot-practices#security-metadata</p></section></section>
 
+
+<section id="TD-serialization-section">
+    <h1 >Thing Description Serializations</h1>
+
+  <section id="information-model-section">
+    <h1>Information Model</h1>
+   
+<section id="json-information-model-section">
+    <h1>JSON</h1>
+
+  </section>
+  <section id="rdf-information-model-section">
+    <h1>RDF</h1>
+
+  </section>
+  <section id="transformation-section">
+    <h1>JSON to RDF Transformation</h1>
+
+  </section> 
+ </section> <!-- end of id="information-model-section"-->
+
+  <section id="format-section">
+    <h1>Formats</h1>
+
+<section id="json-serializiation-section">
+    <h1>JSON</h1>
+
+  </section>
+
+<section id="jsonld1.1-serializiation-section">
+    <h1>JSON-LD 1.1</h1>
+
+
+
+
+
+</section>
+
+<section id="exi-serializiation-section">
+    <h1>EXI</h1>
+</section>
+
+<section id="cbor-serializiation-section">
+    <h1>CBOR</h1>
+</section>
+
+<section id="rdf-serializiation-section">
+    <h1>RDF-Serializiations (RDF/XML, N3,...)</h1>
+</section>
+ </section> <!-- end of id="format-section"-->
+ </section> <!-- end of id="TD-serialization-section"-->
+
   <section>
-    <h1 id="jsonld-serialization">JSON-LD Serialization</h1>
+    <h1 id="jsonld-serialization">JSON-LD 1.1 </h1>
 
 <p>
   Thing Description instances are modeled on the classes defined in <a href="#vocabularyDefinitionSection" class="sec-ref"></a>, and they are serialized in <a href="https://www.w3.org/TR/json-ld/">JSON-LD</a> by default, using the vocabulary defined there when they are served at run-time.
