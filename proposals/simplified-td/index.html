@@ -8,10 +8,10 @@
       var respecConfig = {
         specStatus: "ED"
       , processVersion: 2017
-		  , shortName: "wot-thing-description-simplified"
-      , wg:             "Web of Things Working Group"
-      , wgURI:          "https://www.w3.org/WoT/WG/"
-		  , edDraftURI : "https://w3c.github.io/wot-thing-description/proposals/simplified-json-ld/index.html"
+      , shortName: "wot-thing-description-simplified"
+      , wg: "Web of Things Working Group"
+      , wgURI: "https://www.w3.org/WoT/WG/"
+      , edDraftURI : "https://w3c.github.io/wot-thing-description/proposals/simplified-json-ld/index.html"
       , editors: [{
           name: "Matthias Kovatsch",
           company: "Siemens AG"
@@ -19,7 +19,7 @@
           name: "Sebastian Kaebisch",
           company: "Siemens AG"
         },{
-          name: "Daniel Peintner",
+          name: "Victor Charpenay",
           company: "Siemens AG"
         }]
       , charterDisclosureURI: 'https://www.w3.org/2016/07/wot-wg-charter.html#patentpolicy'
@@ -57,14 +57,13 @@
   <body>
     <section id="abstract">
       <p>
-        This document summarizes the discussions on simplifying the <a href="https://w3c.github.io/wot-thing-description/">WoT Thing Description</a>.
-        It lists the features of the current JSON-LD serialization and gives use cases per feature.
-        The proposal of a simplified TD serialization is given in the form of extensive examples.
-        Specification text will be added if the proposal finds acceptance; the editorial work is then most likely continuing in the
-        Working Group's <a href="https://w3c.github.io/wot-thing-description/">WoT Thing Description</a> draft itself.
-        For convenience, an example from the alternative <a href="https://w3c.github.io/wot/proposals/json-td/index.html">JSON Web Thing Description</a>
-        (a.k.a. JSON-TD) is included here.
-        The documents concludes with a list of differences in the proposals.
+        This document summarizes the discussions on simplifying the JSON-LD&nbsp;1.0-based <a href="https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/">WoT Thing Description</a> and proposes a simplified TD serialization based on <a href="https://json-ld.org/spec/latest/json-ld/">JSON-LD&nbsp;1.1</a>.
+        The proposal lists the features of the TD core model and gives use cases per feature.
+        The proposed "Simplified TD" serialization is given in the form of extensive examples.
+        Specification text will be added when merging this proposal into the WoT Thing Description <a href="https://w3c.github.io/wot-thing-description/">Editors' Draft</a>.
+        For convenience, examples of the JSON-LD&nbsp;1.0 serialization and the alternative <a href="https://w3c.github.io/wot/proposals/json-td/index.html">JSON Web Thing Description</a>
+        (a.k.a. JSON-TD) are given for comparison.
+        This document concludes with a list of differences in the proposals.
       </p>
     </section>
 
@@ -75,28 +74,33 @@
     <section>
       <h1>Introduction</h1>
       <p>
+        The <a href="https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/">WoT Thing Description</a> based on JSON-LD&nbsp;1.0 has been criticized for several limitations including complexity and the JSON-LD&nbsp;1.0 array structures and keywords even when no semantic annotations are used.
+        This lead to an alternative draft, the <a href="https://w3c.github.io/wot/proposals/json-td/index.html">JSON Web Thing Description</a>, with a pure JSON serialization, which however, would fragment W3C WoT due to incompatible models behind the serializations.
+        To remedy the situation, this document proposes a simplified TD serialization based on <a href="https://json-ld.org/spec/latest/json-ld/">JSON-LD&nbsp;1.1</a>,
+        thereby combining both requirements:
+        machine-understandability through a formal Linked Data model from the original WoT Thing Description and improved usability from the JSON Web Thing Description.
+        Being able to conduct these simplifications first required a full understanding of the requirements, which were explored by the Working Group since its chartering.
+        The technical deep-dive completed around TPAC 2017 (Burlingame), where the Working Group declared the goal of simplification.
       </p>
     </section>
 
     <section>
-      <h1>TD Features and Use Cases</h1>
+      <h1>Use Cases per TD Feature</h1>
       <p>
-        Most of the discussions are rooted on the question of a certain feature should be included or not.
-        This section lists the features currently included in the <a href="https://w3c.github.io/wot-thing-description/">WoT Thing Description</a>
-        and backs them by use cases.
+        Many discussions are rooted on the question whether a certain feature should be included or not.
+        This section lists the features currently included in the <a href="https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/#overview">TD core model</a> and backs them by use cases.
       </p>
 
       <section>
         <h2>Interaction Model</h2>
         <p>
-          To represent a contract between applications with programming APIs
-          and IoT devices with network APIs, communication with Things must be
-          modeled with a formal interaction model. This describes not only what
-          data a Thing provides or requires, but also <emph>how</emph> this data
-          can be accessed and manipulated.
+          To represent a contract between applications with programming APIs and IoT devices with network APIs,
+          the communication with Things must be modeled with a formal interaction model.
+          This describes not only <emph>what</emph> data a Thing provides or requires,
+          but also <emph>how</emph> to access and manipulate the corresponding internal state of a Thing.
         </p>
         <p>
-          Besed on the <a href="https://www.w3.org/Submission/wot-model/">Web Thing Model</a>
+          Based on the <a href="https://www.w3.org/Submission/wot-model/">Web Thing Model</a>
           and results of the <a href="http://www.compose-project.eu/">COMPOSE project</a>
           the WoT Interest Group explored a threefold of Interactions, which was
           adopted by the WoT Working Group after 2 years of stability:
@@ -104,11 +108,9 @@
         <section>
           <h3>Properties</h3>
           <p>
-            Properties expose internal state of a Thing that can be directly
-            accessed (get) and potentially manipulated (set). Things can also
-            choose to make Properties observable by pushing the new state after
-            a change; this should follow eventual consistency (also see
-            <a href="https://en.wikipedia.org/wiki/CAP_theorem">CAP Theorem</a>).
+            Properties expose internal state of a Thing that can be directly accessed (get) and optionally manipulated (set).
+            Things can also choose to make Properties observable by pushing the new state (not an event) after a change;
+            this must follow eventual consistency (also see <a href="https://en.wikipedia.org/wiki/CAP_theorem">CAP Theorem</a>).
           </p>
           <ul>
             <li>Read-only Properties: state cannot be changed from the outside
@@ -117,12 +119,11 @@
                 <li>results computed from internal state</li>
               </ul>
             </li>
-            <li>Writeable Properties: state needs to changed from the outside
+            <li>Writable Properties: state needs to be changed directly from the outside
               <ul>
-		<li>intended state can be applied to actual state immediately</li>
 		<li>configuration state</li>
                 <li>setpoints</li>
-		<li>better grouping / more concise model</li>
+		<li>more concise model when intended state can be applied to actual state immediately (no Action needed)</li>
               </ul>
             </li>
             <li>Observable Properties: optimize communication through server push
@@ -136,30 +137,31 @@
         <section>
           <h3>Actions</h3>
           <p>
-            Actions offer function of the Thing. These functions manipulate the
-            interal state of Thing in a way that is not possible through setting
-            Properties. Examples are changing internal state that is not exposed
-            as Property, changing multiple Properties, changing Properties over
-            time or with a process that shall not be disclosed.
+            Actions offer functions of the Thing.
+            These functions may manipulate the interal state of a Thing in a way that is not possible through setting Properties.
+            Examples are changing internal state that is not exposed as Property, changing multiple Properties, changing Properties over time or with a process that shall not be disclosed.
+            Actions may also be pure functions, that is, they do not use any internal state at all, e.g., for processing input data and returning the result directly.
           </p>
           <ul>
             <li>Action arguments: the function needs input parameters
               <ul>
+                <li>write-multiple commands</li>
                 <li>functions with parameters</li>
-		<li>write-multiple commands</li>
               </ul>
             </li>
             <li>Action results: the function returns a result
               <ul>
-                <li>(sensors that are not based on sampling / fit for Properties)</li>
-                <li>(calibration reports)</li>
-                <li>read-multiple commands</li>
+                <li>read-multiple commands (e.g., CoAP FETCH)</li>
+                <li>sensors that are not based on sampling / fit for Properties (e.g., power-intensive sensors)</li>
+                <li>function reports (e.g., calibration Action)</li>
+                <li>processing functions (e.g., data conversion)</li>
               </ul>
             </li>
-            <li>Monitorable Actions: process can be monitored, changed, canceled once invoked
+            <li>TODO: Monitorable Actions: process can be monitored, changed, canceled once invoked (not in TD core model yet)
               <ul>
-                <li>progress bars</li>
-                <li>long-lasting processes</li>
+                <li>physical processes (i.e., intended state can not be applied immediately to actual state)</li>
+                <li>cloud services (e.g., client needs to be sure Thing successfully completes Action)</li>
+                <li>user interfaces (e.g., progress bars)</li>
               </ul>
             </li>
           </ul>
@@ -167,12 +169,10 @@
         <section>
           <h3>Events</h3>
           <p>
-            Events are asynchronous push interactions by the server. Here not
-            state, but state transitions (events) are communicated.
-            Events are usually triggered when through conditions that are not
-            exposed as state (Properties). This usually follows strong consistency
-            where messages need to be queued to ensure eventual delivery of all
-            occured events.
+            The Event Interaction Pattern describes event sources that asynchronously push messages.
+            Here not state, but state transitions (events) are communicated (e.g., "clicked").
+            Events may be triggered by internal state changes that are not exposed as Properties.
+            Events usually follow strong consistency, where messages need to be queued to ensure eventual delivery of all occured events.
           </p>
           <ul>
             <li>Events opposed to observable Properties: why two mechanisms
@@ -182,9 +182,10 @@
                 <li>Duality of REST and PubSub systems</li>
               </ul>
             </li>
-            <li>Actionable Events: Event not only has data but also Interactions
+            <li>TODO: Actionable Events: Event not only has data but also Interactions
               <ul>
-                <li>alerts that need to be confirmed, marked as resolved</li>
+                <li>alerts that need to be confirmed and later marked as resolved</li>
+                <li>events that contain dynamic state (Properties)</li>
               </ul>
             </li>
           </ul>
@@ -461,7 +462,7 @@
           is counting on defaults, that is, certain elements can be omitted as
           their meaning is known implicitly or even irrelevant. Examples are
           omitting the <code>security</code> metadata for test Things that use
-          no-security, omitting the <code>writeable</code> flag for read-only
+          no-security, omitting the <code>writable</code> flag for read-only
           Properties, or omitting <code>inputSchema</code>/<code>outputSchema</code>
           for Actions that do not take arguments and/or return nothing.
         </p>
@@ -470,7 +471,7 @@
           of triples, would not allow for such defaults, and hence convenience.
           Linked Data underly the
           <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>.
-          That means, when a TD is omitting statements (e.g., writeable flag),
+          That means, when a TD is omitting statements (e.g., writable flag),
           then the consumer cannot make any assumptions about its actual value.
         </p>
         <p>
@@ -497,9 +498,7 @@
     <section>
       <h1>Simplified TD</h1>
       <p>
-        The direction toward a simplified TD was opened during TPAC 2017 (Burlingame)
-        and is based on the latter two (or three) requirements given in the
-        previous section.
+        The Simpified TD proposal aims at solving the requirements given in the previous section.
       </p>
 
       <section>
@@ -608,27 +607,21 @@
           </p>
         </section>
         <section>
-          <h3><code>@id</code></h3>
+          <h3><code>id</code></h3>
           <p>
-            On the top level, <code>@id</code> will become important for
-            security and identity management. It identifies the instance
-            of Thing and also serves as the <code>@base</code> for all
-            other <code>@id</code> definitions (e.g., of Interactions).
-            Only this fully enables the object notation of Interactions
-            (opposed to the previous array notation).
-            The top-level <code>@id</code> must be mandatory.
+            On the top level, <code>id</code> will become important for security and identity management.
+            It identifies the instance of Thing and also serves as the <code>@base</code> for all other <code>@id</code> definitions (e.g., of Interactions).
+            Only this fully enables the object notation of Interactions (opposed to the previous array notation).
+            The top-level <code>id</code> must be mandatory and internally maps to the <code>@id</code> of the Thing.
+            Therefore, a Thing <code>id</code> must be a URI (which includes URNs).
           </p>
           <p>
-            For Interactions, it would be the handle for scripts and it would
+            For Interactions, <code>@id</code> would be the handle for scripts and it would
             enable references to and between Interactions, e.g., for
             cross-Property constraints or for expressing relations between an
             action and one or more Properties. Note that this would result
             automatically from the object structure listing Interactions
             because of JSON-LD 1.1 (<a href="https://json-ld.org/spec/latest/json-ld/#node-identifier-indexing">Node Identifier Indexing</a>).
-          </p>
-          <p>
-            The JSON-LD default term <code>@id</code> can be masked with a
-            TD-defined, and hence plain term such as <code>id</code>.
           </p>
         </section>
       </section>
@@ -637,16 +630,18 @@
         <h2>Simplified TD by Example</h2>
         
         <p>
-          When no <code>@context</code> is given, the <a href="https://w3c.github.io/wot/w3c-wot-td-context.jsonld">TD context file</a>
-          is assumed based on the media type. The current TD context needs an additional
+          When no <code>@context</code> is given, the <a href="https://w3c.github.io/wot-thing-description/proposals/simplified-td/w3c-wot-td-context.jsonld">Simplified TD context file</a>
+          is assumed based on the media type (location needs update for adoption). The current TD context needs an additional
           definition of <code>@base</code> set to the Thing's <code>@id</code>,
           so that the object representation of Interactions (instead of arrays)
           works correctly.
         </p>
 
-        <pre class="example" title="Context applied to application/td+json">
+        <pre class="example" title="Default context applied to application/td+json">
 {
   "@context": {
+    /* enable JSON-LD 1.1 processing */
+    "@version": 1.1,
     /* valid @id generation relative to Thing instance */
     "@base": "@id",
     /* object notation for Interactions */
@@ -668,9 +663,121 @@
   }
 }
         </pre>
+	      
+        <section>
+          <h3>Minimal Simplified TD (no semantic annotations)</h3>
+
+          <p>
+            Recursive <code>properties</code> align Interaction Properties with schema/object properties.
+            The idea is that only properties that have a <code>forms</code> field become Interaction Properties.
+            Yet this would also enable nested Properties when sub-properties also have a <code>forms</code> field, e.g., to model LWM2M/IPSO Objects.
+          </p>
+          <pre class="example" title="Minimal Simplified TD">
+{
+  "name": "Lamp",
+  "description": "Corner torchiere",
+  "@id": "urn:dev:wot:com:example:servient:lamp",
+  "base": "https://servient.example.com/",
+  "definitions": {
+    "range": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    }
+  },
+  "properties": {
+    "on": {
+      "type": "boolean",
+      "forms": [{
+        "href": "/things/lamp/properties/on",
+        "mediaType": "application/json"
+      }]
+    },
+    "status": {
+      "readOnly": true,
+      "type": "object",
+      "properties": {
+        "battery": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "forms": [{
+            "href": "/things/lamp/properties/status/batt",
+            "mediaType": "application/json"
+          }]
+        },
+        "rssi": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "level": "range"
+      },
+      "forms": [{
+        "href": "/things/lamp/properties/status",
+        "mediaType": "application/json"
+      }]
+    },
+    "brightness": {
+      /* FIXME: how to reference "range" to import defintions */
+      "forms": [{
+        "href": "/things/lamp/properties/status",
+        "mediaType": "application/json"
+      }]
+    }
+  },
+  "actions": {
+    "fade": {
+      "input": {
+        "type": "object",
+        "properties": {
+          "from": "range",
+          "to": "range",
+          "duration": { "type": "number" }
+        }
+      },
+      "forms": [{
+        "href": "/things/lamp/actions/fade",
+        /* encType would be for the request body
+           opposed to mediaType, which is for target
+           FIXME: can have both meanings based on context (links/forms)? */
+        "encType": "application/json",
+        /* redundant to default here, just to indicate
+           imagine a PATCH Action or a CoAP FETCH Action */
+        "http:methodName": "POST"
+      }]
+    }
+  },
+  "events": {
+    "overheated": {
+      "type": "object",
+      "properties": {
+        "temperature": { "type": "number" }
+      },
+      "forms": [{
+        "href": "/things/lamp/events/overheated",
+        /* needed, alternative: register URI schemes "http+sse", "http+lp", ... */
+        "http:subProtocol": "http:EventSource",
+        "mediaType": "application/json"
+      }]
+    }
+  },
+  "links": [{
+    "href": "https://servient.example.com/things/motion-detector",
+    "rel": "controlledBy",
+    "mediaType": "application/td"
+  }]
+}
+          </pre>
+        </section>
+      </section>
+    </section>
+
+    <section>
+      <h1>JSON-LD 1.0 WoT Thing Description</h1>
         
         <section>
-          <h3>Minimal</h3>
+          <h2>Minimal JSON-LD 1.0 TD</h2>
 
           <p>
             The first example reflects the a minimal option. It contains no semantic
@@ -680,8 +787,8 @@
           <p>
             Update 2018-03-06: Applied JSON-LD features for Data Schema definitions.
           </p>
-
-          <pre class="example" title="Simplified TD Example">
+<!--
+          <pre class="example" title="Minimal JSON-LD 1.0 TD">
 {
   "name": "lamp",
   "@id": "urn:dev:wot:com:example:servient:lamp",
@@ -696,12 +803,12 @@
   },
   "properties": {
     "on": {
-      "writeable": true,
+      "writable": true,
       "schema": { "type": "boolean" },
       "forms": [{ "href": "/things/lamp/properties/on" }]
     },
     "brightness": {
-      "writeable": true,
+      "writable": true,
       "schema": "range",
       "forms": [{ "href": "/things/lamp/properties/brightness" }]
     }
@@ -743,12 +850,12 @@
   }]
 }
           </pre>
-        
+-->
         </section>
         <section>
-          <h3>Semantic Annotations</h3>
-
-          <pre class="example" title="Simplified TD Example with semantic annotations">
+          <h2>Annotated JSON-LD 1.0 TD</h2>
+<!--
+          <pre class="example" title="JSON-LD 1.0 TD with semantic annotations">
 {
   "@context": [
     "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
@@ -773,7 +880,7 @@
       "name": "On/Off",
       "description": "Whether the lamp is turned on",
       "@type": ["iot:SwitchStatus"],
-      "writeable": true,
+      "writable": true,
       "observable": true,
       "schema": {
         "@type": ["iot:SwitchData"],
@@ -792,7 +899,7 @@
       "name": "Brightness",
       "description": "The level of light from 0-100",
       "@type": ["iot:CurrentLevel"],
-      "writeable": true,
+      "writable": true,
       "observable": true,
       "schema": "range",
       "forms": [{
@@ -849,118 +956,12 @@
   }]
 }
           </pre>
-        
-        </section>
-        <section>
-          <h3>WIP: Experimental TD</h3>
-
-          <p>
-            Alternative design with recursive properties to align Interaction Propertis with schema/object properties.
-            The idea is that only properties that have a <code>links</code> field become Interaction Properties.
-            Yet this would also enable nested Properties, e.g., to model LWM2M/IPSO Objects.
-          </p>
-          <pre class="example" title="Experimental TD Example">
-{
-  "name": "lamp",
-  "@id": "urn:dev:wot:com:example:servient:lamp",
-  "base": "https://servient.example.com/",
-  "definitions": {
-    "range": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 100
-    }
-  },
-  "properties": {
-    "on": {
-      "type": "boolean",
-      "links" [{
-        "href": "/things/lamp/properties/on",
-        "mediaType": "application/json"
-      }]
-    },
-    "status": {
-      "readOnly": true, /* inversed default logic for us */
-      "type": "object",
-      "properties": {
-        "battery": {
-          type: "number",
-          minimum: 0.0,
-          maximum: 100.0,
-          "links" [{
-            "href": "/things/lamp/properties/status/batt",
-            "mediaType": "application/json"
-          }]
-        },
-        "rssi": {
-          "type": "number",
-          minimum: 0.0,
-          maximum: 1.0
-        },
-        "level": "range"
-      },
-      "links" [{
-        "href": "/things/lamp/properties/status",
-        "mediaType": "application/json"
-      }]
-    }
-    "brightness": {
-      /* FIXME: how to reference "range" to import defintions */
-      "links" [{
-        "href": "/things/lamp/properties/status",
-        "mediaType": "application/json"
-      }]
-    }
-  },
-  "actions": {
-    "fade": {
-      "input": {
-        "type": "object",
-        "properties": {
-          "from": "range",
-          "to": "range"
-          "duration": { "type": "number" }
-        }
-      },
-      "forms": [{
-        "href": "/things/lamp/actions/fade",
-        /* encType would be for the request body
-           opposed to mediaType, which is for target
-           FIXME: can have both meanings based on context (links/forms)? */
-        "encType": "application/json",
-        /* redundant to default here, just to indicate
-           imagine a PATCH Action or a CoAP FETCH Action */
-        "http:methodName": "POST"
-      }]
-    }
-  },
-  "events": {
-    "overheated": {
-      "type": "object",
-      "properties": {
-        "temperature": { "type": "number" }
-      }
-      "links": [{
-        "href": "/things/lamp/events/overheated",
-        /* needed, alternative: register URI schemes "http+sse", "http+lp", ... */
-        "http:subProtocol": "http:EventSource",
-        "mediaType": "application/json"
-      }]
-    }
-  },
-  "links": [{
-    "href": "https://servient.example.com/things/motion-detector",
-    "rel": "controlledBy",
-    "mediaType": "application/td"
-  }]
-}
-          </pre>
-        </section>
+-->
       </section>
     </section>
 
     <section>
-      <h1>JSON Web Thing Description</h1>
+      <h1>JSON Web Thing Description (JSON-TD)</h1>
       <p>
         The following JSON example was build from snippets taken from <a href="https://w3c.github.io/wot/proposals/json-td/index.html">here</a>.
       </p>
@@ -1035,7 +1036,7 @@
     <section>
       <h1>Comparing "Progressive Simplified TD" to "JSON-TD"</h1>
       <ul>
-        <li>Has markup for writeable and observable</li>
+        <li>Has markup for writable and observable</li>
         <li>Data schema of Properties is put into a <code>schema</code> sub-field
           <ul>
             <li>Allows referencing defined types</li>
