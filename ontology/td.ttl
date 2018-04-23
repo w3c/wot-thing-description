@@ -10,7 +10,6 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
-@base <http://www.w3.org/ns/td#> .
 
 <http://www.w3.org/ns/td#> rdf:type owl:Ontology ;
                             dcterms:creator <http://purl.org/net/mpoveda> ,
@@ -46,8 +45,6 @@ vs:term_status rdf:type owl:AnnotationProperty .
 
 ###  http://www.w3.org/ns/td#events
 :events rdf:type owl:ObjectProperty ;
-        rdfs:domain :Event ;
-        rdfs:range :Event ;
         rdfs:comment "Keeps all Event-based interaction pattern of the Thing." ;
         rdfs:label "events" .
 
@@ -58,10 +55,11 @@ vs:term_status rdf:type owl:AnnotationProperty .
        rdfs:label "forms"@en .
 
 
-###  http://www.w3.org/ns/td#inputSchema
-:inputSchema rdf:type owl:ObjectProperty ;
-             rdfs:comment "link to the n-ary class that allows the declaration of the accepted data type of an action."@en ;
-             rdfs:label "inputSchema"@en .
+###  http://www.w3.org/ns/td#input
+:input rdf:type owl:ObjectProperty ;
+       rdfs:range :Property ;
+       rdfs:comment "link to the n-ary class that allows the declaration of the accepted data type of an action."@en ;
+       rdfs:label "input"@en .
 
 
 ###  http://www.w3.org/ns/td#links
@@ -70,10 +68,11 @@ vs:term_status rdf:type owl:AnnotationProperty .
        rdfs:label "links" .
 
 
-###  http://www.w3.org/ns/td#outputSchema
-:outputSchema rdf:type owl:ObjectProperty ;
-              rdfs:comment "link to the n-ary class that allows the declaration of the data type returned by an action."@en ;
-              rdfs:label "outputSchema"@en .
+###  http://www.w3.org/ns/td#output
+:output rdf:type owl:ObjectProperty ;
+        rdfs:range :Property ;
+        rdfs:comment "link to the n-ary class that allows the declaration of the data type returned by an action."@en ;
+        rdfs:label "output"@en .
 
 
 ###  http://www.w3.org/ns/td#properties
@@ -82,12 +81,6 @@ vs:term_status rdf:type owl:AnnotationProperty .
             rdfs:range :Property ;
             rdfs:comment "Keeps all Property-based interaction pattern of the Thing." ;
             rdfs:label "properties" .
-
-
-###  http://www.w3.org/ns/td#schema
-:schema rdf:type owl:ObjectProperty ;
-        rdfs:comment "link to the n-ary class that allows the declaration of the data type and unit of measure provided by a property or an event." ;
-        rdfs:label "schema" .
 
 
 ###  http://www.w3.org/ns/td#security
@@ -208,6 +201,13 @@ For example, the Property interaction allows get and set operations. The protoco
           rdfs:label "required" .
 
 
+###  http://www.w3.org/ns/td#type
+:type rdf:type owl:DatatypeProperty ;
+      rdfs:range xsd:string ;
+      rdfs:comment "Assignment of JSON-based data types that are compatible with JSON Schema (boolean, integer, number, string, object, array, null)." ;
+      rdfs:label "type" .
+
+
 ###  http://www.w3.org/ns/td#writable
 :writable rdf:type owl:DatatypeProperty ,
                    owl:FunctionalProperty ;
@@ -227,35 +227,15 @@ For example, the Property interaction allows get and set operations. The protoco
                           owl:allValuesFrom :Form
                         ] ,
                         [ rdf:type owl:Restriction ;
-                          owl:onProperty :inputSchema ;
-                          owl:allValuesFrom :DataSchema
+                          owl:onProperty :input ;
+                          owl:allValuesFrom :Property
                         ] ,
                         [ rdf:type owl:Restriction ;
-                          owl:onProperty :outputSchema ;
-                          owl:allValuesFrom :DataSchema
+                          owl:onProperty :output ;
+                          owl:allValuesFrom :Property
                         ] ;
-        rdfs:comment "The Action interaction pattern triggers changes or processes on a Thing that take a certain time to complete (i.e., actions cannot be applied instantaneously like property writes). Examples include an LED fade in, moving a robot, brewing a cup of coffee, etc. Usually, ongoing Actions are modelled as Task resources, which are created when an Action invocation is received by the Thing. Please note, this class also inherited all vocabulary from the InteractionPattern class."@en ;
+        rdfs:comment "The Action interaction pattern triggers changes or processes on a Thing that take a certain time to complete (i.e., actions cannot be applied instantaneously like property writes). Examples include an LED fade in, moving a robot, brewing a cup of coffee, etc. Usually, ongoing Actions are modelled as Task resources, which are created when an Action invocation is received by the Thing."@en ;
         rdfs:label "Action"@en .
-
-
-###  http://www.w3.org/ns/td#DataSchema
-:DataSchema rdf:type owl:Class ;
-            rdfs:comment "This class embeds the terms that are defined by JSON Schema (https://tools.ietf.org/html/draft-handrews-json-schema-validation-00#section-6) and map them in a Linked Data form to allow, e.g., the representation of pairs (data type, semantic meaning such as unit of measure) that are expected as input data or output data of a given interaction pattern."@en ;
-            rdfs:label "DataSchema"@en .
-
-
-###  http://www.w3.org/ns/td#Event
-:Event rdf:type owl:Class ;
-       rdfs:subClassOf [ rdf:type owl:Restriction ;
-                         owl:onProperty :forms ;
-                         owl:allValuesFrom :Form
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :schema ;
-                         owl:allValuesFrom :DataSchema
-                       ] ;
-       rdfs:comment "The Event interaction pattern enables a mechanism for events to be notified by a Thing on a certain condition (e.g., the fill level of the water tank reached a given threshold). Please note, this class also inherited all vocabulary from the InteractionPattern class."@en ;
-       rdfs:label "Event"@en .
 
 
 ###  http://www.w3.org/ns/td#Form
@@ -341,10 +321,14 @@ For example, the Property interaction allows get and set operations. The protoco
                             owl:allValuesFrom xsd:string
                           ] ,
                           [ rdf:type owl:Restriction ;
+                            owl:onProperty :type ;
+                            owl:allValuesFrom owl:rational
+                          ] ,
+                          [ rdf:type owl:Restriction ;
                             owl:onProperty :writable ;
                             owl:allValuesFrom xsd:boolean
                           ] ;
-          rdfs:comment "Property provides readable and/or writeable data that can be static (e.g., supported mode, rated output voltage, etc.) or dynamic (e.g., current fill level of water, minimum recorded temperature, etc.).  Please note, this class also inherited all vocabulary from the InteractionPattern class."@en ;
+          rdfs:comment "Property provides readable and/or writeable data that can be static (e.g., supported mode, rated output voltage, etc.) or dynamic (e.g., current fill level of water, minimum recorded temperature, etc.)."@en ;
           rdfs:label "Property"@en .
 
 
@@ -363,7 +347,7 @@ For example, the Property interaction allows get and set operations. The protoco
                        ] ,
                        [ rdf:type owl:Restriction ;
                          owl:onProperty :events ;
-                         owl:allValuesFrom :Event
+                         owl:allValuesFrom :Property
                        ] ,
                        [ rdf:type owl:Restriction ;
                          owl:onProperty :links ;
