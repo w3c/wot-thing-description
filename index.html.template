@@ -237,24 +237,10 @@ Provide detail description about the semantic usage in the example. Please also 
     <h1>Namespaces</h1>
 
 <p>
-The namespace for TD is http://www.w3.org/ns/td#. TD itself defines a minimal set of classes and properties of its own. A full set of namespaces and prefixes used in this document is shown in the table below.
-</p>
-
-<table id="namespacesTable">
-  <thead><tr><th>Prefix</th><th>Namespace</th></tr></thead>
-  <tbody>
-     <tr><td>td</td><td>http://www.w3.org/ns/td#</td></tr>
-     <tr><td>rdf</td><td>http://www.w3.org/1999/02/22-rdf-syntax-ns#</td></tr>
-   <!-- <tr><td>rdfs</td><td>http://www.w3.org/2000/01/rdf-schema#</td></tr>
-    <tr><td>xsd</td><td>http://www.w3.org/2001/XMLSchema#</td></tr> -->
-  </tbody>
-</table>
-
-
-<p class="ednote">
-ToDo: complete table 
+The namespace for TD is http://www.w3.org/ns/td#. TD itself defines a minimal set of classes and properties of its own. 
 </p>
 </section>
+
 <section>
     <h1>Conformance</h1>
 
@@ -289,25 +275,6 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
 {vocabulary.template}
 
 
-  <section id="information-model-section">
-    <h1>Information Model</h1>
-   
-<section id="json-information-model-section">
-    <h1>JSON</h1>
-
-  </section>
-  <section id="rdf-information-model-section">
-    <h1>RDF</h1>
-
-<p>RDF extends the linking structure of the Web to use URIs to name the relationship between things as well as the two ends of the link (this is usually referred to as a “triple”). Using this simple model, it allows structured and semi-structured data to be mixed, exposed, and shared across different applications.
-</p>
-
-  </section>
-  <section id="transformation-section">
-    <h1>JSON to RDF Transformation</h1>
-
-  </section> 
- </section> <!-- end of id="information-model-section"-->
 
 
 <section id="TD-serialization-section">
@@ -323,12 +290,32 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
 <section id="json-serializiation-section">
     <h1>JSON</h1>
 
-This section introduces the JSON serialization of the Thing Description. 
+<p>This section introduces the JSON serialization of the Thing Description. </p>
+
+<p>Mainly, all defined core vocabulary as defined in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> will have a JSON key representation.</p>
+
+<p>The defined types of the vocabulary as defined in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> will be transtormed to JSON-based types. The following rules are used for vocabularies based on simple type definitions:</p>
+	      <ul>
+<li><p>Vocabularies that are based on simple types string and anyURI MUST be serialized as JSON string.</p></li>
+
+<li><p>Vocabularies that are based on the simple type unsignedInt MUST be serialized as JSON integer.</p></li>
+
+<li><p>Vocabularies that are based on the simple type double MUST be serialized as JSON number.</p></li>
+	      </ul>
+
+<p>All vocabularies in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> Section associated with class-based types are defined separately for structured JSON type transformation in the following subsections.</p>
 
 
   <section id="sec-thing-as-a-whole-json">
-    <h2>Thing</h2>
-<p>Each required vocabulary, as defined in the class <a href="#thing" class="sec-ref">Thing</a>, is transformed as a JSON key at the top level of the JSON document. An example of a TD snippet based on the defined fields is given below:</p>
+    <h2>Thing as a whole</h2>
+<p>Each mandatory and required vocabulary, as defined in the class <a href="#thing" class="sec-ref">Thing</a>, MUST be serialized as a JSON key at the top level of the JSON TD document.</p>
+
+
+<p>The type of the fields <code>properties</code>, <code>actions</code>, and <code>events</code> MUST be serialized as a JSON object.</p>
+
+<p>The type of the fields <code>securityDefinitions</code> and <code>links</code> MUST be serialized as a JSON array.</p>
+
+<p>An example of a TD snippet based on the defined fields is given below:</p>
 
   <pre class="example">
         {
@@ -336,11 +323,12 @@ This section introduces the JSON serialization of the Thing Description.
           "id": "urn:dev:wot:com:example:servient:myThing",
           "base": "https://servient.example.com/",
           "description": "Additional (human) readable information of the Thing.",
+          "support": "https://servient.example.com/contact",
           "properties": {...},
           "actions": {...},
           "events": {...},
-          "security": [...],
-          "link": [...]
+          "securityDefinitions": [...],
+          "links": [...]
         }
    </pre>
 
@@ -349,9 +337,16 @@ This section introduces the JSON serialization of the Thing Description.
 
 
     <section id="property-serialization-json">
-      <h2>Property</h2>
+      <h2>properties</h2>
   
-<p>Properties (and sub-properties) offered by a Thing are collected in the <code>properties</code> field of (unique) Property names as JSON keys. Each required vocabulary, as defined in the class <a href="#property" class="sec-ref">Property</a>, is transformed as a JSON key within a Property field.  An example of a TD snippet based on the defined fields is given below:</p>
+<p>Properties (and sub-properties) offered by a Thing MUST be collected in the <code>properties</code> field of (unique) Property names as JSON keys. Each mandatory and required vocabulary, as defined in the class <a href="#property" class="sec-ref">Property</a>, MUST be serialized as a JSON key within a Property field.</p>
+
+<p>The type of the fields <code>properties</code> and <code>items</code> MUST be serialized as a JSON object.</p>
+
+<p>The type of the fields <code>forms</code>, <code>required</code>, and <code>enum</code> MUST be serialized as a JSON array.</p>
+
+<p>An example of a TD snippet based on the defined fields is given below:</p>
+
 
   <pre class="example">
         {
@@ -396,9 +391,17 @@ This section introduces the JSON serialization of the Thing Description.
     </section> <!-- end of id="property-serialization-json"-->
 
     <section id="action-serialization-json">
-      <h2>Action</h2>
+      <h2>actions</h2>
 
-<p>Actions offered by a Thing are collected in the <code>actions</code> field of (unique) Action names as JSON keys. Each required vocabulary, as defined in the class <a href="#action" class="sec-ref">Action</a>, is transformed as a JSON key within a Action field.  An example of a TD snippet based on the defined fields is given below:</p>
+<p>Actions offered by a Thing are collected in the <code>actions</code> field of (unique) Action names as JSON keys. Each required vocabulary, as defined in the class <a href="#action" class="sec-ref">Action</a>, MUST serialized as a JSON key within a Action field.</p>
+
+<p>The type of the fields <code>input</code> and <code>output</code> MUST be serialized as a JSON object.</p>
+
+<p>The members keys of <code>input</code> and <code>output</code> rely on the the class <a href="#property" class="sec-ref">Property</a>. The <code>forms</code> field MUST NOT be serialized as a JSON object.</p>
+
+<p>The type of the field <code>forms</code>  MUST be serialized as a JSON array.</p>
+
+<p>An example of a TD snippet based on the defined fields is given below:</p>
 
       <pre class="example">
         {
@@ -436,8 +439,16 @@ This section introduces the JSON serialization of the Thing Description.
 
 
     <section id="event-serialization-json">
-      <h2>Event</h2>
-<p>Events (and sub-events) offered by a Thing are collected in the <code>events</code> field of (unique) Event names as JSON keys. Each required vocabulary, as defined in the class <a href="#event" class="sec-ref">Event</a>, is transformed as a JSON key within a Event field.  An example of a TD snippet based on the defined fields is given below:</p>
+      <h2>events</h2>
+<p>Events (and sub-events) offered by a Thing are collected in the <code>events</code> field of (unique) Event names as JSON keys. Each required vocabulary, as defined in the class <a href="#event" class="sec-ref">Event</a>, MUST transformed as a JSON key within a Event field.</p>
+
+<p>The type of the fields <code>properties</code> and <code>items</code> MUST be serialized as a JSON object.</p>
+
+<p>The type of the fields <code>forms</code>, <code>required</code>, and <code>enum</code> MUST be serialized as a JSON array.</p>
+
+
+<p>An example of a TD snippet based on the defined fields is given below:</p>
+
       <pre class="example">
         {
           ...
@@ -456,7 +467,7 @@ This section introduces the JSON serialization of the Thing Description.
     </section> <!-- end of id="event-serialization-json"-->
 
     <section id="form-serialization-json">
-      <h2>Form</h2>
+      <h2>forms</h2>
 
       <p>This section shows the JSON serialization for the instances of the <a href="#form" class="sec-ref"></a> class. 
       </p>
@@ -473,10 +484,15 @@ This section introduces the JSON serialization of the Thing Description.
         ...
       </pre>
 
-    </section> <!-- end of id="event-serialization-json"-->
+    </section> <!-- end of id="form-serialization-json"-->
 
 
+    <section id="securityDefinitions-serialization-json">
+      <h2>securityDefinitions</h2>
 
+ 
+
+    </section> <!-- end of id="form-serialization-json"-->
   </section> <!-- end of id="serialization-json"-->
 
 <section id="jsonld1.1-serializiation-section">
@@ -489,8 +505,33 @@ This section introduces the JSON serialization of the Thing Description.
 
 
   <section id="sec-thing-as-a-whole-json-ld">
-    <h2>Thing</h2>
+    <h2><code>@context</code></h2>
 
+<p>
+The  <code>@context</code> key is used to define Thing Description's context. All JSON key terms that are defined in the present document (also see <a href="#vocabularyDefinitionSection">Vocabulary Definition Section</a> ) have been put in an external context document, available at
+  <code>https://www.w3.org/ns/td/w3c-wot-td-context.jsonld</code>. Each Thing Description instance in JSON-LD MUST have this context information enmbedded within an JSON array structure. Thus, a basic Thing Description would contain the following declaration:
+</p>
+
+  <pre class="example">
+    {
+      "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld"],
+      ...
+    }
+  </pre>
+
+<p>
+  In case a single Thing Description instance involves several contexts, additional namespaces with prefixes can be extended to the <code>@context</code> array structure. This option proves relevant if one wants to extend the existing Thing Description context without modifying it. For instance:
+</p>
+  <pre class="example">
+    {
+      "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+                   {"sensor": "http://iotschema.org/"}],
+      ...
+    }
+  </pre>
+<p>
+
+After the <code>@context</code>, each required vocabulary as defined in the class <a href="#thing" class="sec-ref">Thing</a> MUST transformed as a JSON-LD key at the top level. In addition, JSON-LD 1.1 specific keys such as <code>@type</code> to make semantic annotations MAY be applied. An example of a TD snippet based on the defined fields is given below:</p>
 
   <pre class="example">
         {
@@ -500,20 +541,17 @@ This section introduces the JSON serialization of the Thing Description.
           "id": "urn:dev:wot:com:example:servient:myThing",
           "base": "https://servient.example.com/",
           "description": "Additional (human) readable information of the Thing.",
+          "support": "https://servient.example.com/contact",
           "properties": {...},
           "actions": {...},
           "events": {...},
-          "security": [...],
-          "link": [...]
+          "securityDefinitions": [...],
+          "links": [...]
         }
    </pre>
 
   </section> <!-- end of id="serialization-json-ld"-->
 
-</section>
-
-<section id="rdf-serializiation-section">
-    <h1>RDF-Serializiations (RDF/XML, N3,...)</h1>
 </section>
 
 <section id="exi-serializiation-section">
