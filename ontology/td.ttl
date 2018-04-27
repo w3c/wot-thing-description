@@ -10,7 +10,6 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
-@base <http://www.w3.org/ns/td#> .
 
 <http://www.w3.org/ns/td#> rdf:type owl:Ontology ;
                             dcterms:creator <http://purl.org/net/mpoveda> ,
@@ -58,6 +57,7 @@ vs:term_status rdf:type owl:AnnotationProperty .
 
 ###  http://www.w3.org/ns/td#input
 :input rdf:type owl:ObjectProperty ;
+       rdfs:domain :Thing ;
        rdfs:range :Property ;
        rdfs:comment "link to the n-ary class that allows the declaration of the accepted data type of an action."@en ;
        rdfs:label "input"@en .
@@ -65,6 +65,7 @@ vs:term_status rdf:type owl:AnnotationProperty .
 
 ###  http://www.w3.org/ns/td#items
 :items rdf:type owl:ObjectProperty ;
+       rdfs:domain :Thing ;
        rdfs:range :Property ;
        rdfs:comment "Used to defines characteristics of an array." ;
        rdfs:label "items" .
@@ -78,6 +79,7 @@ vs:term_status rdf:type owl:AnnotationProperty .
 
 ###  http://www.w3.org/ns/td#output
 :output rdf:type owl:ObjectProperty ;
+        rdfs:domain :Thing ;
         rdfs:range :Property ;
         rdfs:comment "link to the n-ary class that allows the declaration of the data type returned by an action."@en ;
         rdfs:label "output"@en .
@@ -130,6 +132,7 @@ vs:term_status rdf:type owl:AnnotationProperty .
 
 ###  http://www.w3.org/ns/td#enum
 :enum rdf:type owl:DatatypeProperty ;
+      rdfs:range rdfs:Literal ;
       rdfs:comment "Restricted set of values provided as array." ;
       rdfs:label "enum" .
 
@@ -289,7 +292,7 @@ For example, the Property interaction allows get and set operations. The protoco
                           owl:onProperty :label ;
                           owl:allValuesFrom xsd:string
                         ] ;
-        rdfs:comment "The Action interaction pattern triggers changes or processes on a Thing that take a certain time to complete (i.e., actions cannot be applied instantaneously like property writes). Examples include an LED fade in, moving a robot, brewing a cup of coffee, etc. Usually, ongoing Actions are modelled as Task resources, which are created when an Action invocation is received by the Thing."@en ;
+        rdfs:comment "Actions offer functions of the Thing. These functions may manipulate the interal state of a Thing in a way that is not possible through setting Properties. Examples are changing internal state that is not exposed as Property, changing multiple Properties, changing Properties over time or with a process that shall not be disclosed. Actions may also be pure functions, that is, they do not use any internal state at all, e.g., for processing input data and returning the result directly."@en ;
         rdfs:label "Action"@en .
 
 
@@ -299,7 +302,7 @@ For example, the Property interaction allows get and set operations. The protoco
                              owl:onProperty :properties ;
                              owl:allValuesFrom :Property
                            ] ;
-       rdfs:comment "The Event interaction pattern enables a mechanism for events to be notified by a Thing on a certain condition (e.g., the fill level of the water tank reached a given threshold). Please note, this class also inherited all vocabulary from the InteractionPattern class." ;
+       rdfs:comment "The Event Interaction Pattern describes event sources that asynchronously push messages. Here not state, but state transitions (events) are communicated (e.g., \"clicked\"). Events may be triggered by internal state changes that are not exposed as Properties. Events usually follow strong consistency, where messages need to be queued to ensure eventual delivery of all occured events." ;
        rdfs:label "Event" .
 
 
@@ -405,7 +408,7 @@ For example, the Property interaction allows get and set operations. The protoco
                             owl:onProperty :writable ;
                             owl:allValuesFrom xsd:boolean
                           ] ;
-          rdfs:comment "Property provides readable and/or writeable data that can be static (e.g., supported mode, rated output voltage, etc.) or dynamic (e.g., current fill level of water, minimum recorded temperature, etc.)."@en ;
+          rdfs:comment "Properties expose internal state of a Thing that can be directly accessed (get) and optionally manipulated (set). In addition, Things can also choose to make Properties observable by pushing the new state (not an event) after a change; this must follow eventual consistency (also see CAP Theorem)."@en ;
           rdfs:label "Property"@en .
 
 

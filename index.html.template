@@ -285,18 +285,19 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
     <h1 >Thing Description Serializations</h1>
 
 <p>
-  Thing Description instances are modeled on the classes defined in <a href="#vocabularyDefinitionSection" class="sec-ref"></a>, and they are serialized in JSON or <a href="https://json-ld.org/spec/latest/json-ld/">JSON-LD 1.1</a> by default.
-
+  Thing Description instances are modeled on the classes defined in <a href="#vocabularyDefinitionSection" class="sec-ref"></a>, and they can be serialized in JSON or <a href="https://json-ld.org/spec/latest/json-ld/">JSON-LD 1.1</a> by default. 
 </p>
 
  
 
 <section id="json-serializiation-section">
-    <h1>JSON</h1>
+    <h1>JSON TD</h1>
 
-<p>This section introduces the JSON serialization of the Thing Description. </p>
+<p>This section introduces the JSON-based serialization of the Thing Description (JSON TD). JSON TD allows semantic annotation and JSON TD instances can be simple transformed into RDF-based representation by JSON-LD 1.1 which will be introduce <a href="#jsonld1.1-serializiation-section" class="sec-ref">here</a>.</p>
 
 <p>Mainly, all defined core vocabulary as defined in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> will have a JSON key representation.</p>
+
+<p>JSON TD MAY contain vocabularies that are not in the Thing Description core model. These vocabularies MUST carry a prefix for identification within the key name (e.g., "http:header").</p>
 
 <p>The defined types of the vocabulary as defined in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> will be transtormed to JSON-based types. The following rules are used for vocabularies based on simple type definitions:</p>
 	      <ul>
@@ -473,17 +474,21 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
     <section id="form-serialization-json">
       <h2>forms</h2>
 
-<p>Each mandatory vocabulary, as defined in the class <a href="#form" class="sec-ref">Form</a>, MUST be serialized as a JSON key.</p>
+<p>Each mandatory and required vocabulary, as defined in the class <a href="#form" class="sec-ref">Form</a>, MUST be serialized as a JSON key.</p>
+
+<p>If required, <code>forms</code> MAY be supplemented with protocol-specific vocabularies identified with a prefix. See also [[!WOT-PROTOCOL-BINDING]].</p>
 
       <p>An example of a TD snippet based on the defined fields is given below:</p>
 
       <pre class="example">
         ...
-        "form": [
+        "forms": [
           {
             "href" : "http://mytemp.example.com:5683/temp",
             "mediaType": "application/json",
-            "rel": "writeProperty"
+            "http:methodName": "POST",
+            "rel": "writeProperty",
+            "security": "basicConfig"
           }
         ]
         ...
@@ -492,20 +497,55 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
     </section> <!-- end of id="form-serialization-json"-->
 
 
+    <section id="links-serialization-json">
+      <h2>links</h2>
+
+	<p>Each mandatory and required vocabulary, as defined in the class <a href="#link" class="sec-ref">Link</a>, MUST be serialized as a JSON key.</p>
+
+      <p>An example of a TD snippet based on the defined fields is given below:</p>
+
+      <pre class="example">
+        ...
+        "links": [{
+            "href": "https://servient.example.com/things/lampController",
+            "rel": "controlledBy",
+            "mediaType": "application/td"
+        }]
+        ...
+      </pre>
+
+
+    </section> <!-- end of id="links-serialization-json"-->
+
     <section id="securityDefinitions-serialization-json">
       <h2>securityDefinitions</h2>
 
- 
+      <p class="ednote">This is the first draft containing the new security vocabularies. The definition is not yet completed and is still in progress.
+      </p>
+
+	<p>Each mandatory and required vocabulary, as defined in the class <a href="#security" class="sec-ref">Security</a>, MUST be serialized as a JSON key.</p>
+
+      <pre class="example">
+        ...
+        "securityDefinitions": {
+            "bearerTokenConfig": {
+            	"scheme": "bearer",
+            	"format": "jwt",
+            	"alg": "ES256",
+            	"authorizationUrl": "https://servient.example.com:8443/"
+            }
+        ...
+      </pre>
+
 
     </section> <!-- end of id="form-serialization-json"-->
+
   </section> <!-- end of id="serialization-json"-->
 
 <section id="jsonld1.1-serializiation-section">
     <h1>JSON-LD 1.1</h1>
 
-<p>  JSON-LD 1.1 is a serialization format that adds a semantic layer on top of the JSON specification: the terms that appear in a JSON document
-  should be associated with uniquely identified concepts from shared vocabularies. This principle is part of a set of practices to publish data
-  on the Web called Linked Data, where concepts are usually identified with URIs and originate from RDF vocabularies.
+<p> This section specifies the serializiation of Thing Description instances based on JSON-LD 1.1 (https://json-ld.org/spec/latest/json-ld/#). JSON-LD 1.1 is a JSON-based format to serialize Linked Data.
 </p>
 
 
@@ -564,6 +604,8 @@ After the <code>@context</code>, each required vocabulary as defined in the clas
     <h2>Vocabularies with Default Values</h2>
 </section>
 
+<p>If vocabularies are used from </p>
+
 </section> <!-- end of id="serialization-json-ld"-->
 
 <section id="exi-serializiation-section">
@@ -574,7 +616,12 @@ After the <code>@context</code>, each required vocabulary as defined in the clas
     <h1>CBOR</h1>
 </section>
 
+    <section id="securityDefinitions-serialization">
+      <h2>Implementation Note</h2>
 
+
+
+</section>
  
  </section> <!-- end of id="TD-serialization-section"-->
 
