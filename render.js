@@ -139,7 +139,26 @@ function fields(sh, g) {
 }
 
 function subclasses(sh, g) {
-    return []; // TODO
+    let subclasses = [];
+    
+    let u = target(sh, g);
+    let sc = g.match(
+        null,
+        'http://www.w3.org/2000/01/rdf-schema#subClassOf',
+        u
+    ).toArray().forEach(function(t) {
+        let scu = t.subject.nominalValue;
+        let l = label(scu, g);
+        
+        subclasses.push({
+            subclass: {
+                uri: scu.startsWith('http://www.w3.org/ns/td#') ? '#' + l.toLowerCase(): scu,
+                label: l
+            }
+        });
+    });
+    
+    return subclasses;
 }
 
 function context(store, cb) {
