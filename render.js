@@ -8,76 +8,166 @@ let jd = require("jsdom/lib/old-api.js");
 
 // extraction of rendering context from the RDF store
 
-const classQuery = fs.readFileSync('ontology/class.sparql', 'UTF-8');
-const fieldQuery = fs.readFileSync('ontology/field.sparql', 'UTF-8');
-const subclassQuery = fs.readFileSync('ontology/subclass.sparql', 'UTF-8');
+function target(sh, g) {
+    let uris = g.match(
+        sh,
+        'http://www.w3.org/ns/shacl#targetClass',
+        null
+    ).toArray();
+    
+    if (uris.length != 1) {
+        console.error('Shape does not define exactly one target class: ' + sh);
+    }
+    
+    return uris[0].object.nominalValue;
+}
+
+function label(uri, g) {
+    // TODO
+    return uri.substr(uri.lastIndexOf('#') + 1);
+}
+
+function desc(uri, g) {
+    let comments = g.match(
+        uri,
+        'http://www.w3.org/2000/01/rdf-schema#comment',
+        null
+    ).toArray();
+    
+    let desc = comments.reduce((d, t) => {
+        let c = t.object.nominalValue;
+        c.trim();
+        if (!c.endsWith('.')) {
+            c += '.';
+        }
+        if (d.length > 0) {
+            d += ' ';
+        }
+        d += c;
+        
+        return d;
+    }, '');
+    
+    return desc;
+}
+
+function path(psh, g) {
+    let uris = g.match(
+        psh,
+        'http://www.w3.org/ns/shacl#path',
+        null
+    ).toArray();
+    
+    if (uris.length != 1) {
+        console.error('Shape does not define exactly one path: ' + psh);
+    }
+    
+    return uris[0].object.nominalValue;
+}
+
+function classOrDatatype(psh, g) {
+    let classes = g.filter(t => {
+        return t.subject.equals(psh) &&
+            (t.predicate.equals('http://www.w3.org/ns/shacl#class')
+            || t.predicate.equals('http://www.w3.org/ns/shacl#datatype'));
+    }).toArray();
+    
+    if (classes.length != 1) {
+        console.error('Shape does not define a range: ' + psh);
+    }
+    
+    let u = classes[0].object.nominalValue;
+    let l = label(u, g);
+    
+    return {
+        uri: u.startsWith('http://www.w3.org/ns/td#') ? '#' + l.toLowerCase(): u,
+        label: l
+    };
+}
+
+function mandatory(psh, g) {
+    let minCounts = g.match(
+        psh,
+        'http://www.w3.org/ns/shacl#minCount',
+        null
+    ).toArray();
+    
+    if (minCounts.length > 1) {
+        console.error('Shape defines more than one min count constraint: ' + psh);
+    }
+    
+    return minCounts.length > 0;
+}
+
+function defaultValue(psh, g) {
+    let defaultValues = g.match(
+        psh,
+        'http://www.w3.org/ns/shacl#defaultValue',
+        null
+    ).toArray();
+    
+    if (defaultValues.length > 1) {
+        console.error('Shape defines more than one default value: ' + psh);
+    }
+    
+    return defaultValues.length > 0 ? defaultValues[0].object.nominalValue : null;
+}
+
+function fields(sh, g) {
+    let fields = [];
+    
+    g.match(
+        sh,
+        'http://www.w3.org/ns/shacl#property',
+        null
+    ).toArray().forEach(function(t) {
+        let psh = t.object.nominalValue;
+        let p = path(psh, g);
+
+        let f = {
+            prop: label(p, g),
+            propDesc: desc(p, g),
+            otherClass: classOrDatatype(psh, g),
+            mandatory: mandatory(psh, g),
+            defaultValue: defaultValue(psh, g)
+        };
+        
+        fields.push(f);
+    });
+    
+    return fields;
+}
+
+function subclasses(sh, g) {
+    return []; // TODO
+}
 
 function context(store, cb) {
-    store.execute(classQuery, function(err, bindings) {
-        if (err) {
-		    console.log(err);
-            return;
-        }
-        
-        let classes = bindings.map(function(c) {
-            c.fields = {
-                query: fieldQuery.replace('?class', '<' + c.uri.value + '>'),
-                defer: function(bindings) {
-                    let fields = bindings.map(function(f) {
-                        if (!f.otherClass && f.oc) {
-                            // no label, take local name
-                            let uri = f.oc.value;
-                            f.otherClass = {
-                                value: uri.substr(uri.lastIndexOf('#') + 1),
-                                id: uri
-                            };
-                        } else if (f.otherClass) {
-                            f.otherClass.id = '#' + f.otherClass.value.toLowerCase();
-                        }
-                        return f;
-                    });
-                    return fields;
-                }
-            };
-
-            c.subclasses = {
-                query: subclassQuery.replace('?class', '<' + c.uri.value + '>'),
-                defer: function(bindings) {
-                    let subclasses = bindings.map(function(sub) {
-                        sub.subclass.id = '#' + sub.subclass.value.toLowerCase();
-                        return sub;
-                    });
-                    return subclasses;
-                }
-            };
-
-            return c;
-        });
-
-        // executes SPARQL queries in a serial fashion
-        // TODO clean all this?
-        let call = function(classes) {
-            for (i in classes) {
-                let c = classes[i];
-                for (key in c) {
-                    if (c[key].defer) {
-                        let deferred = c[key];
-                        store.execute(deferred.query, function(err, bindings) {
-                            if (err) {
-                                console.error(err);
-                                // execution stopped
-                            } else {
-                                c[key] = deferred.defer(bindings);
-                                call(classes);
-                            }
-                        });
-                        return;
-                    }
-                }
-            }
-            cb({ classes: classes });
+    store.graph(function(err, g) {
+        let ctx = {
+            classes: []
         };
-        call(classes);
+        
+        g.match(
+            null,
+            'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+            'http://www.w3.org/ns/shacl#NodeShape'
+        ).forEach(function(t) {
+            let sh = t.subject.nominalValue;
+            let u = target(sh, g);
+            
+            let c = {
+                uri: u,
+                label: label(u, g),
+                desc: desc(u, g),
+                fields: fields(sh, g),
+                subclasses: subclasses(sh, g)
+            };
+            
+            ctx.classes.push(c);
+        });
+        
+        cb(ctx);
     });
 }
 
@@ -95,8 +185,8 @@ const predefined = [
 
 
 
-function sort(classes) {
-    classes.classes.sort(function(c1, c2) {
+function sort(ctx) {
+    ctx.classes.sort(function(c1, c2) {
         let i1 = predefined.indexOf(c1.label.value);
         let i2 = predefined.indexOf(c2.label.value);
         
@@ -106,7 +196,7 @@ function sort(classes) {
         return i1 - i2;
     });
     
-    return classes;
+    return ctx;
 }
 
 // rendering
@@ -114,8 +204,8 @@ function sort(classes) {
 const vocSrc = fs.readFileSync('vocabulary.template', 'UTF-8');
 const src = fs.readFileSync('index.html.template', 'UTF-8');
 
-function render(context) {
-    dust.renderSource(vocSrc, context, function(err, out) {
+function render(ctx) {
+    dust.renderSource(vocSrc, ctx, function(err, out) {
 	
         let result = src.replace('{vocabulary.template}', out);
         fs.writeFileSync('index.html', result, 'UTF-8');
@@ -125,6 +215,7 @@ function render(context) {
 // main function
 
 const onto = fs.readFileSync('ontology/td.ttl', 'UTF-8');
+const shapes = fs.readFileSync('validation/td-validation.ttl', 'UTF-8');
 
 rdf.create(function(err, store) {
     store.load('text/turtle', onto, function(err) {
@@ -133,8 +224,15 @@ rdf.create(function(err, store) {
             return;
         }
         
-        context(store, function(classes) {
-            render(sort(classes));
+        store.load('text/turtle', shapes, function(err) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+        
+            context(store, function(ctx) {
+                render(sort(ctx));
+            });
         });
     });
 });
