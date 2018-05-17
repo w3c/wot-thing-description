@@ -33,7 +33,8 @@ for i in `grep 'class="rfc2119-assertion' index.html`
 do
   echo "<dt>" >> testing/assertions.html
   id=`echo $i | grep -oP '(?<=id\=\")[^\"]+(?=\")' -`
-  class=`echo $i | grep -oP '(?<=class\=\"rfc2119-assertion-)[^\"]+(?=\")' -`
+  class=`echo $i | grep -oP '(?<=class\=\"rfc2119\">)[^<]+(?=<\/em>)' -`
+  # class=`echo $i | grep -oP '(?<=class\=\"rfc2119-assertion-)[^\"]+(?=\")' -`
   comment=`echo $i | grep -oP '(?<=<\!--)[^\"]+(?=-->)' -`
   echo "<a href="../index.html#${id}"><tt>$id</tt></a>" >> testing/assertions.html
   echo ": <strong>$class</strong>" >> testing/assertions.html
