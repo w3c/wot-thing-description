@@ -1,4 +1,4 @@
-#/bin/bashsh
+#!/bin/bash
 # Run this after "rendering" in order to extract normative assertions
 # and build testing summary file
 
