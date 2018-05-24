@@ -10,18 +10,19 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@base <http://www.w3.org/ns/td#> .
 
 <http://www.w3.org/ns/td#> rdf:type owl:Ontology ;
                            
-                           vann:preferredNamespaceUri "http://www.w3.org/ns/td#" ;
-                           
                            owl:versionInfo "0.0.1" ;
+                           
+                           vann:preferredNamespacePrefix "td" ;
                            
                            dc:title "Ontology model for Web of Things"@en ;
                            
                            rdfs:comment "This ontology aims to model the Web of Things domain according to the W3C Interest Group (http://w3c.github.io/wot/)"@en ;
                            
-                           vann:preferredNamespacePrefix "td" ;
+                           vann:preferredNamespaceUri "http://www.w3.org/ns/td#" ;
                            
                            dcterms:license <http://purl.org/NET/rdflicense/cc-by4.0> ;
                            
@@ -155,6 +156,20 @@ vs:term_status rdf:type owl:AnnotationProperty .
 
 
 
+###  http://www.w3.org/ns/td#schema
+
+:schema rdf:type owl:ObjectProperty ;
+        
+        rdfs:label "schema"@en ;
+        
+        rdfs:comment "schema definition for values of the given object schema property."@en ;
+        
+        rdfs:domain :ObjectSchemaProperty ;
+        
+        rdfs:range :Property .
+
+
+
 ###  http://www.w3.org/ns/td#securityDefinition
 
 :securityDefinition rdf:type owl:ObjectProperty ;
@@ -162,20 +177,6 @@ vs:term_status rdf:type owl:AnnotationProperty .
                     rdfs:label "securityDefinitions"@en ;
                     
                     rdfs:comment "Links a given Thing to the security information that indicates the access metadata information for securely transmitting information via all the resources of the Thing."@en .
-
-
-
-###  http://www.w3.org/ns/td#schema
-
-:schema rdf:type owl:ObjectProperty ;
-       
-       rdfs:label "schema"@en ;
-       
-       rdfs:comment "schema definition for values of the given object schema property."@en ;
-       
-       rdfs:range :Property ;
-       
-       rdfs:domain :ObjectSchemaProperty .
 
 
 
@@ -479,15 +480,11 @@ For example, the Property interaction allows get and set operations. The protoco
         rdfs:label "Action"@en ;
         
         rdfs:subClassOf [ rdf:type owl:Restriction ;
-                          owl:onProperty :forms ;
-                          owl:allValuesFrom :Form
-                        ] ,
-                        [ rdf:type owl:Restriction ;
                           owl:onProperty :output ;
                           owl:allValuesFrom :Property
                         ] ,
                         [ rdf:type owl:Restriction ;
-                          owl:onProperty :description ;
+                          owl:onProperty :label ;
                           owl:allValuesFrom xsd:string
                         ] ,
                         [ rdf:type owl:Restriction ;
@@ -495,7 +492,11 @@ For example, the Property interaction allows get and set operations. The protoco
                           owl:allValuesFrom :Property
                         ] ,
                         [ rdf:type owl:Restriction ;
-                          owl:onProperty :label ;
+                          owl:onProperty :forms ;
+                          owl:allValuesFrom :Form
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :description ;
                           owl:allValuesFrom xsd:string
                         ] ;
         
@@ -509,16 +510,16 @@ For example, the Property interaction allows get and set operations. The protoco
              
              rdfs:subClassOf :DataSchema ,
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :items ;
-                               owl:allValuesFrom :DataSchema
+                               owl:onProperty :maxItems ;
+                               owl:allValuesFrom xsd:unsignedInt
                              ] ,
                              [ rdf:type owl:Restriction ;
                                owl:onProperty :minItems ;
                                owl:allValuesFrom xsd:unsignedInt
                              ] ,
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :maxItems ;
-                               owl:allValuesFrom xsd:unsignedInt
+                               owl:onProperty :items ;
+                               owl:allValuesFrom :DataSchema
                              ] .
 
 
@@ -536,6 +537,14 @@ For example, the Property interaction allows get and set operations. The protoco
 :DataSchema rdf:type owl:Class ;
             
             rdfs:subClassOf [ rdf:type owl:Restriction ;
+                              owl:onProperty :const ;
+                              owl:allValuesFrom rdfs:Literal
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :enum ;
+                              owl:allValuesFrom rdfs:Literal
+                            ] ,
+                            [ rdf:type owl:Restriction ;
                               owl:onProperty :type ;
                               owl:allValuesFrom xsd:string
                             ] .
@@ -559,16 +568,16 @@ For example, the Property interaction allows get and set operations. The protoco
       rdfs:label "Form"@en ;
       
       rdfs:subClassOf [ rdf:type owl:Restriction ;
-                        owl:onProperty :href ;
-                        owl:someValuesFrom xsd:anyURI
-                      ] ,
-                      [ rdf:type owl:Restriction ;
                         owl:onProperty :mediaType ;
                         owl:allValuesFrom xsd:string
                       ] ,
                       [ rdf:type owl:Restriction ;
                         owl:onProperty :rel ;
                         owl:allValuesFrom xsd:string
+                      ] ,
+                      [ rdf:type owl:Restriction ;
+                        owl:onProperty :href ;
+                        owl:someValuesFrom xsd:anyURI
                       ] ,
                       [ rdf:type owl:Restriction ;
                         owl:onProperty :security ;
@@ -598,12 +607,12 @@ For example, the Property interaction allows get and set operations. The protoco
                         owl:allValuesFrom xsd:anyURI
                       ] ,
                       [ rdf:type owl:Restriction ;
-                        owl:onProperty :mediaType ;
-                        owl:allValuesFrom xsd:string
-                      ] ,
-                      [ rdf:type owl:Restriction ;
                         owl:onProperty :href ;
                         owl:someValuesFrom xsd:anyURI
+                      ] ,
+                      [ rdf:type owl:Restriction ;
+                        owl:onProperty :mediaType ;
+                        owl:allValuesFrom xsd:string
                       ] ,
                       [ rdf:type owl:Restriction ;
                         owl:onProperty :rel ;
@@ -620,7 +629,7 @@ For example, the Property interaction allows get and set operations. The protoco
               
               rdfs:subClassOf :DataSchema ,
                               [ rdf:type owl:Restriction ;
-                                owl:onProperty :maximum ;
+                                owl:onProperty :minimum ;
                                 owl:allValuesFrom [ rdf:type rdfs:Datatype ;
                                                     owl:unionOf ( xsd:double
                                                                   xsd:integer
@@ -628,7 +637,7 @@ For example, the Property interaction allows get and set operations. The protoco
                                                   ]
                               ] ,
                               [ rdf:type owl:Restriction ;
-                                owl:onProperty :minimum ;
+                                owl:onProperty :maximum ;
                                 owl:allValuesFrom [ rdf:type rdfs:Datatype ;
                                                     owl:unionOf ( xsd:double
                                                                   xsd:integer
@@ -662,14 +671,9 @@ For example, the Property interaction allows get and set operations. The protoco
           
           rdfs:label "Property"@en ;
           
-          rdfs:subClassOf :ObjectSchemaProperty ,
-                          [ rdf:type owl:Restriction ;
-                            owl:onProperty :label ;
-                            owl:allValuesFrom xsd:string
-                          ] ,
-                          [ rdf:type owl:Restriction ;
-                            owl:onProperty :writable ;
-                            owl:allValuesFrom xsd:boolean
+          rdfs:subClassOf [ rdf:type owl:Restriction ;
+                            owl:onProperty :schema ;
+                            owl:allValuesFrom :DataSchema
                           ] ,
                           [ rdf:type owl:Restriction ;
                             owl:onProperty :observable ;
@@ -678,6 +682,14 @@ For example, the Property interaction allows get and set operations. The protoco
                           [ rdf:type owl:Restriction ;
                             owl:onProperty :forms ;
                             owl:allValuesFrom :Form
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :writable ;
+                            owl:allValuesFrom xsd:boolean
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :label ;
+                            owl:allValuesFrom xsd:string
                           ] ;
           
           rdfs:comment "Properties expose internal state of a Thing that can be directly accessed (get) and optionally manipulated (set). In addition, Things can also choose to make Properties observable by pushing the new state (not an event) after a change; this must follow eventual consistency (also see CAP Theorem)."@en .
@@ -719,34 +731,33 @@ For example, the Property interaction allows get and set operations. The protoco
        
        rdfs:label "Thing"@en ;
        
-       rdfs:subClassOf :ObjectSchema ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :links ;
-                         owl:allValuesFrom :Link
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :name ;
-                         owl:someValuesFrom xsd:string
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :id ;
-                         owl:allValuesFrom xsd:string
+       rdfs:subClassOf [ rdf:type owl:Restriction ;
+                         owl:onProperty :events ;
+                         owl:allValuesFrom :Property
                        ] ,
                        [ rdf:type owl:Restriction ;
                          owl:onProperty :support ;
                          owl:allValuesFrom xsd:string
                        ] ,
                        [ rdf:type owl:Restriction ;
-                         owl:onProperty :events ;
-                         owl:allValuesFrom :Property
+                         owl:onProperty :actions ;
+                         owl:allValuesFrom :Action
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :links ;
+                         owl:allValuesFrom :Link
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :id ;
+                         owl:allValuesFrom xsd:string
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :name ;
+                         owl:someValuesFrom xsd:string
                        ] ,
                        [ rdf:type owl:Restriction ;
                          owl:onProperty :description ;
                          owl:allValuesFrom xsd:string
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :actions ;
-                         owl:allValuesFrom :Action
                        ] ,
                        [ rdf:type owl:Restriction ;
                          owl:onProperty :securityDefinition ;
@@ -762,5 +773,5 @@ For example, the Property interaction allows get and set operations. The protoco
 
 
 
-###  Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net
+###  Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net
 

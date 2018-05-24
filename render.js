@@ -164,7 +164,8 @@ function subclasses(sh, g) {
 function context(store, cb) {
     store.graph(function(err, g) {
         let ctx = {
-            classes: []
+            coreClasses: [],
+            schemaClasses: []
         };
         
         g.match(
@@ -183,7 +184,12 @@ function context(store, cb) {
                 subclasses: subclasses(sh, g)
             };
             
-            ctx.classes.push(c);
+            // TODO not the best logic
+            if (c.label.match('Schema')) {
+                ctx.schemaClasses.push(c);
+            } else {
+                ctx.coreClasses.push(c);
+            }
         });
         
         cb(ctx);
@@ -198,16 +204,13 @@ const predefined = [
     "Property",
     "Action",
     "Event",
-    "DataSchema",
     "Form"
 ];
 
-
-
 function sort(ctx) {
-    ctx.classes.sort(function(c1, c2) {
-        let i1 = predefined.indexOf(c1.label.value);
-        let i2 = predefined.indexOf(c2.label.value);
+    ctx.coreClasses.sort(function(c1, c2) {
+        let i1 = predefined.indexOf(c1.label);
+        let i2 = predefined.indexOf(c2.label);
         
         if (i1 === -1) { i1 = predefined.length; }
         if (i2 === -1) { i2 = predefined.length; }
@@ -220,12 +223,18 @@ function sort(ctx) {
 
 // rendering
 
+const classSrc = fs.readFileSync('class.template', 'UTF-8');
 const vocSrc = fs.readFileSync('vocabulary.template', 'UTF-8');
 const src = fs.readFileSync('index.html.template', 'UTF-8');
 
 function render(ctx) {
+    dust.loadSource(dust.compile(classSrc, 'class'));
     dust.renderSource(vocSrc, ctx, function(err, out) {
-	
+        if (err) {
+            console.error(err);
+            return;
+        }
+        
         let result = src.replace('{vocabulary.template}', out);
         fs.writeFileSync('index.html', result, 'UTF-8');
     });
