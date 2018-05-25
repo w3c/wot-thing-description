@@ -284,20 +284,38 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
 <section id="TD-serialization-section">
     <h1 >Thing Description Serializations</h1>
 
+      <p class="ednote" title="JSON-LD 1.1 ">
+	This is the first draft that uses JSON-LD 1.1 as a serialization format of the Thing Description. The working assumption is based on the <a href="https://json-ld.org/spec/latest/json-ld/#">Community Draft of JSON-LD 1.1</a>. There is the plan to setup a JSON-LD Working Group with the following <a href="https://www.w3.org/2018/03/jsonld-wg-charter.html">JSON-LD Working Group Charter</a>. It is planned that this section always conforms to the latest working assumptions of JSON-LD 1.1.
+      </p>
+
 <p>
-Thing Description instances are modeled and structured based on the <a href="#vocabularyDefinitionSection" class="sec-ref">Thing Description Information Model</a>. Instances can be serialized in simplified form as JSON TD or in a comprehensive <a href="https://json-ld.org/spec/latest/json-ld/">JSON-LD 1.1</a> format. 
+Thing Description instances are modeled and structured based on the <a href="#vocabularyDefinitionSection" class="sec-ref">Thing Description Information Model</a>. This section proposes a TD serialization based on JSON-LD 1.1. 
 </p>
 
- 
+ <section id="json-serializiation-section">
+    <h1>Media Type</h1>
+
+<p>The JSON-based serialization of the TD is identified by the Media Type <code>application/td+json</code>.</p>
+
+<!--<p>The EXI-based serialization of the TD is identified by the Media Type <code>application/td+exi</code>.</p>
+<p>The CBOR-based serialization of the TD is identified by the Media Type <code>application/td+cbor</code>.</p>-->
+
+      <p class="ednote" title="Media Type">
+These media types have not registered  with IANA yet.
+      </p>
+
+</section>
 
 <section id="json-serializiation-section">
     <h1>JSON TD</h1>
 
-<p>This section introduces the JSON-based serialization of the Thing Description (JSON TD). JSON TD allows semantic annotations and JSON TD instances can be simple transformed into RDF-based representation by JSON-LD 1.1 which will be introduced <a href="#jsonld1.1-serializiation-section" class="sec-ref">here</a>.</p>
+<p>This section introduces the JSON-based serialization of the Thing Description (JSON TD) that also follows the syntax of JSON-LD 1.1 to streamline the semantic evaluation of TDs.</p>
 
 <p>Mainly, all vocabularies as defined in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> will have a JSON key representation.</p>
 
-<p>JSON TD MAY contain vocabularies that are not in the Thing Description core model. These vocabularies MUST carry a prefix for identification within the key name (e.g., "http:header").</p>
+<p>In addition, Thing Description instances MAY contain JSON-LD 1.1 keys such as <code>@context</code> and <code>@type</code>.</p>
+
+<!--<p>JSON TD MAY contain vocabularies that are not in the Thing Description core model. These vocabularies MUST carry a prefix for identification within the key name (e.g., "http:header").</p>-->
 
 <p>The defined types of the vocabulary as defined in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> will be transformed to JSON-based types. The following rules are used for vocabularies based on simple type definitions:</p>
 	      <ul>
@@ -313,6 +331,30 @@ Thing Description instances are modeled and structured based on the <a href="#vo
 
   <section id="sec-thing-as-a-whole-json">
     <h2>Thing as a whole</h2>
+
+<p>
+In the first line of the Thing Description it MAY include the <code>@context</code> key from JSON-LD 1.1 with the value URI of the Thing description context file <code>https://w3c.github.io/wot/w3c-wot-td-context.jsonld</code>.
+</p>
+
+  <pre class="example">
+    {
+      "@context": "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+      ...
+    }
+  </pre>
+
+<p>
+  In case a single Thing Description instance involves several contexts, additional namespaces with prefixes MUST be extended to the <code>@context</code> array structure. This option proves relevant if one wants to extend the existing Thing Description context without modifying it. For instance:
+</p>
+  <pre class="example">
+    {
+      "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+                   {"sensor": "http://iotschema.org/"}],
+      ...
+    }
+  </pre>
+
+
 <p>Each mandatory and required vocabulary, as defined in the class <a href="#thing" class="sec-ref">Thing</a>, MUST be serialized as a JSON key at the top level of the JSON TD document.</p>
 
 
@@ -320,7 +362,7 @@ Thing Description instances are modeled and structured based on the <a href="#vo
 
 <p>The type of the field <code>links</code> MUST be serialized as a JSON array.</p>
 
-<p>An example of a TD snippet based on the defined fields is given below:</p>
+<p>An example of a TD snippet based on the defined fields of the <a href="#thing" class="sec-ref">Thing</a> information model without the optionel field <code>@context</code> is given below:</p>
 
   <pre class="example">
         {
@@ -337,6 +379,25 @@ Thing Description instances are modeled and structured based on the <a href="#vo
         }
    </pre>
 
+
+<p>In addition, the same example can also include the (semantic) keys of JSON-LD 1.1 (<code>@context</code> and <code>@type</code>):</p>
+
+  <pre class="example">
+        {
+          "@context": "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+          "@type": "Thing",
+          "label": "MyThing",
+          "id": "urn:dev:wot:com:example:servient:myThing",
+          "base": "https://servient.example.com/",
+          "description": "Additional (human) readable information of the Thing.",
+          "support": "https://servient.example.com/contact",
+          "properties": {...},
+          "actions": {...},
+          "events": {...},
+          "securityDefinitions": {...},
+          "links": [...]
+        }
+   </pre>
 
  </section> <!-- end of id="sec-thing-as-a-whole-json"-->
 
@@ -359,18 +420,15 @@ Thing Description instances are modeled and structured based on the <a href="#vo
           "properties": {
           	"on": {
           		"label": "On/Off",
-          		"type": "boolean",
-          		"forms": [...]
+          		"type": "boolean"
           	},
           	"status": {
-          		"readOnly": true,
           		"type": "object",
           		"properties": {
           			"brightness": {
           				"type": "number",
           				"minimum": 0.0,
-          				"maximum": 100.0,
-          				"forms": [...]
+          				"maximum": 100.0
           			},
           			"rgb": {
           				"type": "array",
@@ -542,47 +600,66 @@ Thing Description instances are modeled and structured based on the <a href="#vo
 
   </section> <!-- end of id="serialization-json"-->
 
-<section id="jsonld1.1-serializiation-section">
-    <h1>JSON-LD 1.1</h1>
 
 
-      <p class="ednote" title="JSON-LD 1.1 ">
-	This is the first draft that uses JSON-LD 1.1 as a serialization format of the Thing Description. The working assumption is based on the <a href="https://json-ld.org/spec/latest/json-ld/#">Community Draft of JSON-LD 1.1</a>. There is the plan to setup a JSON-LD Working Group with the following <a href="https://www.w3.org/2018/03/jsonld-wg-charter.html">JSON-LD Working Group Charter</a>. It is planned that this section always conforms to the latest working assumptions of JSON-LD 1.1.
-      </p>
+<section id="binary-serializiation">
+    <h1>Binary JSON TD Serializiation</h1>
+<section id="exi-serializiation-section">
+    <h2>EXI</h2>
+</section>
 
-<p> This section specifies the serializiation of Thing Description instances based on <a href="https://json-ld.org/spec/latest/json-ld/#">JSON-LD 1.1</a>. JSON-LD 1.1 is a JSON-based format to serialize Linked Data by using a number of syntax tokens and keywords (typically starting with the <code>@</code> character). JSON-LD 1.1 provides an oppertunity  to be alligned with the <a href="#json-serializiation-section">JSON TD serlializiation</a> and RDF-based modeling to increase the semantic interoperability.  
-</p>
+<section id="cbor-serializiation-section">
+    <h2>CBOR</h2>
+</section>
 
-<p>Mainly, an instance is a valid Thing Description serializiations in JSON-LD 1.1 when it meets the following 3 requirememts:</p>
-  <ul>
-    <li>it MUST fulfill all requirements that are defined in <a href="#json-serializiation-section">JSON TD</a></li>
-     <li>all vocabularies that have a default value as defined  <a href="#vocabularyDefinitionSection">Vocabulary Definition</a> MUST be present at least with their default value.</li>
-     <li>the <code>@context</code> key from JSON-LD 1.1 MUST have the value of the Thing description context file <code>https://w3c.github.io/wot/w3c-wot-td-context.jsonld</code>.</li>
-  </ul>
+</section>
 
 
-  <pre class="example">
-    {
-      "@context": "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
-      ...
-    }
-  </pre>
+<section id="securityDefinitions-serialization">
+      <h2>Implementation Note</h2>
 
-<p>
-  In case a single Thing Description instance involves several contexts, additional namespaces with prefixes can be extended to the <code>@context</code> array structure. This option proves relevant if one wants to extend the existing Thing Description context without modifying it. For instance:
-</p>
-  <pre class="example">
-    {
-      "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
-                   {"sensor": "http://iotschema.org/"}],
-      ...
-    }
-  </pre>
+</section>
 
-<p>
-The following is an example of a Thing Description instance used in JSON-LD 1.1. </p>
 
-  <pre class="example">
+<section id="example-serialization">
+      <h2>Example Serialization</h2>
+
+<section id="example-serialization">
+      <h3>MyLampThing</h3>
+
+  <pre class="example" title="MyLampThing">
+{
+    "id": "urn:dev:wot:com:example:servient:lamp",
+    "name": "MyLampThing",
+    "description" : "MyLampThing uses JSON-LD 1.1 serialization",
+    "properties": {
+        "status": {
+             "description" : "Shows the current status of the lamp",
+             "type": "string",
+             "form": [{
+                 "href": "coaps://mylamp.example.com:5683/status"
+             }]
+        }
+    },
+    "actions": {
+     "toggle": {
+        "description" : "Turn on or off the lamp.",
+        "form": [{
+            "href": "coaps://mylamp.example.com:5683/toggle"
+        }]}},
+    "events": {
+        "overheating": {
+            "description" : "Lamp reaches a critical temperature (overheating).",
+            "type": "string",
+            "form": [{
+                "href": "coaps://mylamp.example.com:5683/oh"
+            }]
+        }}
+}
+   </pre>
+
+
+  <pre class="example" title="MyLampThing with semantic annotations based on JSON-LD 1.1">
 {
     "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld", 
     		{"iot": "http://iotschema.org/"}],
@@ -623,26 +700,11 @@ The following is an example of a Thing Description instance used in JSON-LD 1.1.
         }}
 }
    </pre>
-
-
- 
-
-</section> <!-- end of id="serialization-json-ld"-->
-
-<section id="exi-serializiation-section">
-    <h1>EXI</h1>
 </section>
 
-<section id="cbor-serializiation-section">
-    <h1>CBOR</h1>
 </section>
 
-    <section id="securityDefinitions-serialization">
-      <h2>Implementation Note</h2>
 
-
-
-</section>
  
  </section> <!-- end of id="TD-serialization-section"-->
 
