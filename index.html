@@ -141,14 +141,14 @@ The TD must be acquired to use and interact with the Thing, since it describes t
   <section id="introduction">
     <h1>Introduction</h1>
     <p>
-The W3C Thing Description (TD) is a central building block in a Web of Things (WoT) enabled system and can be considered as the entry point of a Thing (aka the <i>index.html</i> of the Thing). The TD consists of semantic metadata for the Thing itself, a narrow-waist interaction model with WoT's Properties, Actions, and Events, a semantic schema to make data models machine-understandable, and features for Web Linking to express relations among Things. 
+The W3C Thing Description (TD) is a central building block in a Web of Things (WoT) enabled system and can be considered as the entry point of a Thing (aka the <i>index.html</i> of the Thing). The TD consists of semantic metadata for the Thing itself, a narrow-waist interaction model with WoT's <code>Properties</code>, <code>Actions</code>, <code>Events</code>, a semantic schema to make data models machine-understandable, and features for Web Linking to express relations among Things. 
 </p>
 <p>
-Properties can be used for controlling (or retrieving) parameters, such as a setting an operation state (or getting the current value). Actions model invocation of physical processes, but can also be used to abstract RPC-like calls of existing platforms. Events cover the push model where state change notifications, discrete events, and streams of values are sent asynchronously to the receiver. In general, the TD provides metadata for the different communication bindings (e.g., HTTP, CoAP, MQTT, etc.), mediaTypes (e.g., "application/json", "application/xml", "application/cbor", "application/exi" etc.), and security policies (authentication, authorization, etc.). The default serialisation of the TD is JSON-LD.
+Properties can be used for controlling (or retrieving) parameters, such as a setting an operation state (or getting the current value). Actions model invocation of physical processes, but can also be used to abstract RPC-like calls of existing platforms. Events cover the push model where state change notifications, discrete events, and streams of values are sent asynchronously to the receiver. In general, the TD provides metadata for the different communication bindings (e.g., HTTP, CoAP, MQTT, etc.), mediaTypes (e.g., "application/json", "application/xml", "application/cbor", "application/exi" etc.), and security policies (authentication, authorization, etc.). The serialization of the TD instances is based on JSON and includes at least the TD core vocabularies as JSON keys as defined in this specification document.
 </p>
 
 <p>
-Example 1 shows a simple TD instance in JSON serializiation that reflects WoT's Property, Action, Event paradigm by describing a lamp Thing with the name <i>MyLampThing</i>.
+Example 1 shows a simple TD instance in such JSON serializiation that reflects WoT's <code>Properties</code>, <code>Actions</code>, <code>Events</code> paradigm by describing a lamp Thing with the name <i>MyLampThing</i>.
 </p>
 
 <pre class="example" title="Simple Thing Description Sample">
@@ -178,16 +178,19 @@ Example 1 shows a simple TD instance in JSON serializiation that reflects WoT's 
 
 
 
-<p>Based on this content, we know there exists one Property interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessable over the CoAP protocol with a GET method (default assumption as descripted in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]) at coaps://mylamp.example.com:5683/status (announced within the <code>form</code> structure by the <code>href</code> key), which will return a string status value within a JSON structure (as default assumption).
+<p>Based on this content, we know there exists one <code>Property</code> interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessible via the CoAP protocol with a GET method (default assumption as descripted in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]) at coaps://mylamp.example.com:5683/status (announced within the <code>form</code> structure by the <code>href</code> key), which will return a string status value within a JSON structure (as default assumption).
 </p>
 
-<p>In a similar manner an Action is specified to toogle the switch status using the POST method that is applied to the coaps://mylamp.example.com:5683/toggle resource (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).</p>
+<p>In a similar manner an <code>Action</code> is specified to toggle the switch status using the POST method that is applied to the coaps://mylamp.example.com:5683/toggle resource (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).</p>
 
-<p>Events which are, e.g., unexpected or irregular can be specified with the WoT's Event model. Here, a subscription of a possible overheating event of the lamp can be applied by using CoAP OBSERVE at coaps://mylamp.example.com:5683/oh. (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).
+<p>The WoT's <code>Event</code> model enables a mechanism for events to be notified by a Thing. Here, a subscription of a possible overheating event of the lamp can be applied by using CoAP OBSERVE at coaps://mylamp.example.com:5683/oh. (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).
 </p>
 
 <p>
-The TD in Example 1 reflects some default assumptions that are not explicitly described. E.g., this includes that the media type of the exchange format of the interactions is based on JSON (=<code>mediaType</code>), the property <i>status</i> is not writable and observable. The TD can be also processed as a RD-based model. In that case, the JSON TD can be simple transformed into a JSON-LD style that will implicitly also contain the default assumption vocabularies (<code>writable</code>, <code>observable</code>, <code>mediaType</code>) due to semantic's open-world assumption. Example 2 shows the TD in JSON-LD 1.1 serializiation that contains the same information as in Example 1.
+The TD in Example 1 reflects some default assumptions that are not explicitly described. E.g., this includes that the media type of the exchange format of the interactions is based on JSON (=<code>mediaType</code>), the property <i>status</i> is not writable and observable. Thus, the TD specification defines vocabularies (<code>writable</code>, <code>observable</code>, <code>mediaType</code>) that have default values.  If these vocabularies are not implicit in a JSON TD instance, the JSON TD processor follows the default assumption for interpretation as defined here in this specification.
+
+</p>
+<p>The TD can be also processed as a RDF-based model. In that case, the JSON TD can be simple transformed into a JSON-LD style.  In terms of JSON-LD 1.1 serialization and  semantic's open-world assumption the mentioned vocabularies with default values will be always implicit present in the instances. Example 2 shows the TD in JSON-LD 1.1 serializiation that contains the same information as in Example 1.
 </p>
 
 <pre class="example" title="Thing Description as JSON-LD 1.1 Serializiation">
@@ -241,7 +244,7 @@ Provide detail description about the semantic usage in the example. Please also 
     <h1>Namespaces</h1>
 
 <p>
-The namespace for TD is http://www.w3.org/ns/td#. TD itself defines a minimal set of classes and properties of its own. 
+The namespace for the W3C Thing Description vocabularies as defined in this document is http://www.w3.org/ns/td#. The Thing Description ontology is available at https://www.w3.org/ns/td/td.ttl and the conext file is available at https://www.w3.org/ns/td/w3c-wot-td-context.jsonld.
 </p>
 </section>
 
@@ -259,12 +262,9 @@ The namespace for TD is http://www.w3.org/ns/td#. TD itself defines a minimal se
 
  
 <p>
-A Thing Description instance complies with this specification if it follows the normative statements in Section <a href="#vocabularyDefinitionSection" class="sec-ref"><span class="secno">5.</span> <span class="sec-title">Vocabulary Definition</span></a>.
+A Thing Description instance complies with this specification if it follows the normative statements in Section <a href="#vocabularyDefinitionSection" class="sec-ref"><span class="secno">5.</span> <span class="sec-title">Vocabulary Definition</span></a> and Section <a href="#TD-serialization-section" class="sec-ref"><span class="secno">6.</span> <span class="sec-title">Thing Description Serializations</span></a> regarding Thing description serializiation.
 </p>
-
-<p>
-In case of JSON-LD serializiation, a Thing Description instance in JSON-LD format complies with this specification if it follows the normative statements in Section <a href="#jsonld-serialization" class="sec-ref"><span class="secno">6.</span> <span class="sec-title">Serialization</span></a>
-</p>
+ 
 
  
 
@@ -276,7 +276,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
 
 
 
-<section id="vocabularyDefinitionSection"><h1>Information Model</h1><!-- h1>Vocabulary</h1 --><section><h2>Overview</h2><p>The Thing Description information model is a small set of terms (a vocabulary) embedded in the Resource Description Framework (RDF). An overview of this vocabulary with its class context and class relation is given by the following figure.</p><p><a href="http://visualdataweb.de/webvowl/#iri=https://rawgit.com/w3c/wot-thing-description/TD-JSON-LD-1.1/ontology/td.ttl">Click here for the visualization</a></p><!--<figure id="td-core-model"><img src="td-core-model/td-core-model.svg"  style="width: 800px;" alt="TD core model figure"/><figcaption>TD core model</figcaption></figure>--><p>A detailed description of the vocabulary is given in the next sub-section.</p></section><section id="sec-core-vocabulary-definition"><h2>Core Vocabulary Definition</h2>      <h3><code>Thing</code></h3><p>Describes a physical and/or virtual Thing (may represent one or more physical and / or virtual Things) in the Web of Thing context.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>id</code></td><td>unique identifier of the Thing (URI, e.g. custom URN)</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>description</code></td><td>Provides additionel (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>support</code></td><td>Provides information about TD maintainer (e.g., author, link or telephon number to get support, etc).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>base</code></td><td>Define base URI that is valid for all defined local interaction resources. All other URIs in the TD must then be resolved using the algorithm defined in [[!RFC3986]]. This field is optional.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>properties</code></td><td>Keeps all Property-based interaction pattern of the Thing.</td><td>no</td><td>.</td><td><a href="#property"><code>Property</code></a></td></tr><tr><td><code>actions</code></td><td>Keeps all Action-based interaction pattern of the Thing.</td><td>no</td><td>.</td><td><a href="#action"><code>Action</code></a></td></tr><tr><td><code>events</code></td><td>Keeps all Event-based interaction pattern of the Thing.</td><td>no</td><td>.</td><td><a href="#event"><code>Event</code></a></td></tr><tr><td><code>links</code></td><td>provides Web links to arbitrary resources that relate to the specified Thing Description.</td><td>no</td><td>.</td><td><a href="#link"><code>Link</code></a></td></tr><tr><td><code>securityDefinitions</code></td><td></td><td>no</td><td>.</td><td><a href="#security"><code>Security</code></a></td></tr></tbody></table>      <h3><code>Property</code></h3><p>Properties expose internal state of a Thing that can be directly accessed (get) and optionally manipulated (set). In addition, Things can also choose to make Properties observable by pushing the new state (not an event) after a change; this must follow eventual consistency (also see CAP Theorem).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>observable</code></td><td>Indicates whether a remote servient can subscribe to (&quot;observe&quot;) the Property, to receive change notifications or periodic updates (true/false). .</td><td>no</td><td>false</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr><tr><td><code>properties</code></td><td>Data schema nested definitions.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>writable</code></td><td>Boolean value that indicates whether a property is writable (=true) or not (=false).</td><td>no</td><td>false</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr><tr><td><code>forms</code></td><td>Indicates one or more endpoints from which an interaction pattern is accessible.</td><td>no</td><td>.</td><td><a href="#form"><code>Form</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>Action</code></h3><p>Actions offer functions of the Thing. These functions may manipulate the interal state of a Thing in a way that is not possible through setting Properties. Examples are changing internal state that is not exposed as Property, changing multiple Properties, changing Properties over time or with a process that shall not be disclosed. Actions may also be pure functions, that is, they do not use any internal state at all, e.g., for processing input data and returning the result directly.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>description</code></td><td>Provides additionel (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>forms</code></td><td>Indicates one or more endpoints from which an interaction pattern is accessible.</td><td>no</td><td>.</td><td><a href="#form"><code>Form</code></a></td></tr><tr><td><code>input</code></td><td>link to the n-ary class that allows the declaration of the accepted data type of an action.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>output</code></td><td>link to the n-ary class that allows the declaration of the data type returned by an action.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>Event</code></h3><p>The Event Interaction Pattern describes event sources that asynchronously push messages. Here not state, but state transitions (events) are communicated (e.g., &quot;clicked&quot;). Events may be triggered by internal state changes that are not exposed as Properties. Events usually follow strong consistency, where messages need to be queued to ensure eventual delivery of all occured events.</p><p>The <code>Event</code> class has the same fields as the class <a href="#property" class="sec-ref">Property</a>.</p>      <h3><code>Form</code></h3><p>Communication metadata where a service can be accessed by a client application. An interaction might have more than one form.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>mediaType</code></td><td>Assign underlying media type of the interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml).</td><td>no</td><td>application/json</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>rel</code></td><td>Indicates the expected result of performing the operation described by the form.
+<section id="vocabularyDefinitionSection"><h1>Information Model</h1><!-- h1>Vocabulary</h1 --><section><h2>Overview</h2><p>The Thing Description information model is a core set of definitions for terms defined in [[!WOT-ARCHITECTURE]]. These definitions take the form of a vocabulary embedded in the Resource Description Framework (RDF). An overview of this vocabulary with its class context and class relation is given by the following figure.</p><p><a href="http://visualdataweb.de/webvowl/#iri=https://rawgit.com/w3c/wot-thing-description/TD-JSON-LD-1.1/ontology/td.ttl">Click here for the visualization</a></p><!--<figure id="td-core-model"><img src="td-core-model/td-core-model.svg"  style="width: 800px;" alt="TD core model figure"/><figcaption>TD core model</figcaption></figure>--><p>A detailed description of the vocabulary is given in the next sub-section.</p></section><section id="sec-core-vocabulary-definition"><h2>Core Vocabulary Definition</h2>      <h3><code>Thing</code></h3><p>Describes a physical and/or virtual Thing (may represent one or more physical and / or virtual Things) in the Web of Thing context.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>id</code></td><td>unique identifier of the Thing (URI, e.g. custom URN)</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>description</code></td><td>Provides additionel (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>support</code></td><td>Provides information about TD maintainer (e.g., author, link or telephon number to get support, etc).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>base</code></td><td>Define base URI that is valid for all defined local interaction resources. All other URIs in the TD must then be resolved using the algorithm defined in [[!RFC3986]]. This field is optional.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>properties</code></td><td>Keeps all Property-based interaction pattern of the Thing.</td><td>no</td><td>.</td><td><a href="#property"><code>Property</code></a></td></tr><tr><td><code>actions</code></td><td>Keeps all Action-based interaction pattern of the Thing.</td><td>no</td><td>.</td><td><a href="#action"><code>Action</code></a></td></tr><tr><td><code>events</code></td><td>Keeps all Event-based interaction pattern of the Thing.</td><td>no</td><td>.</td><td><a href="#event"><code>Event</code></a></td></tr><tr><td><code>links</code></td><td>provides Web links to arbitrary resources that relate to the specified Thing Description.</td><td>no</td><td>.</td><td><a href="#link"><code>Link</code></a></td></tr><tr><td><code>securityDefinitions</code></td><td></td><td>no</td><td>.</td><td><a href="#security"><code>Security</code></a></td></tr></tbody></table>      <h3><code>Property</code></h3><p>Properties expose internal state of a Thing that can be directly accessed (get) and optionally manipulated (set). In addition, Things can also choose to make Properties observable by pushing the new state (not an event) after a change; this must follow eventual consistency (also see CAP Theorem).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>observable</code></td><td>Indicates whether a remote servient can subscribe to (&quot;observe&quot;) the Property, to receive change notifications or periodic updates (true/false). .</td><td>no</td><td>false</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr><tr><td><code>properties</code></td><td>Data schema nested definitions.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>writable</code></td><td>Boolean value that indicates whether a property is writable (=true) or not (=false).</td><td>no</td><td>false</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr><tr><td><code>forms</code></td><td>Indicates one or more endpoints from which an interaction pattern is accessible.</td><td>no</td><td>.</td><td><a href="#form"><code>Form</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>Action</code></h3><p>Actions offer functions of the Thing. These functions may manipulate the interal state of a Thing in a way that is not possible through setting Properties. Examples are changing internal state that is not exposed as Property, changing multiple Properties, changing Properties over time or with a process that shall not be disclosed. Actions may also be pure functions, that is, they do not use any internal state at all, e.g., for processing input data and returning the result directly.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>description</code></td><td>Provides additionel (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>forms</code></td><td>Indicates one or more endpoints from which an interaction pattern is accessible.</td><td>no</td><td>.</td><td><a href="#form"><code>Form</code></a></td></tr><tr><td><code>input</code></td><td>link to the n-ary class that allows the declaration of the accepted data type of an action.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>output</code></td><td>link to the n-ary class that allows the declaration of the data type returned by an action.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>Event</code></h3><p>The Event Interaction Pattern describes event sources that asynchronously push messages. Here not state, but state transitions (events) are communicated (e.g., &quot;clicked&quot;). Events may be triggered by internal state changes that are not exposed as Properties. Events usually follow strong consistency, where messages need to be queued to ensure eventual delivery of all occured events.</p><p>The <code>Event</code> class has the same fields as the class <a href="#property" class="sec-ref">Property</a>.</p>      <h3><code>Form</code></h3><p>Communication metadata where a service can be accessed by a client application. An interaction might have more than one form.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>mediaType</code></td><td>Assign underlying media type of the interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml).</td><td>no</td><td>application/json</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>rel</code></td><td>Indicates the expected result of performing the operation described by the form.
 
 For example, the Property interaction allows get and set operations. The protocol binding may contain a form for the get operation and a different form for the set operation. The value of the &quot;rel&quot; attribute of the form indicates which form is which and allows the client to select the correct form for the oeration required.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>security</code></td><td>Defines the security requirements of the interacions by making a reference to the top level securityDefinition.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>Link</code></h3><p>A Web link, as specified by IETF RFC 8288 (https://tools.ietf.org/html/rfc8288).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>rel</code></td><td>Indicates the expected result of performing the operation described by the form.
 
@@ -288,47 +288,89 @@ For example, the Property interaction allows get and set operations. The protoco
 <section id="TD-serialization-section">
     <h1 >Thing Description Serializations</h1>
 
+      <p class="ednote" title="JSON-LD 1.1 ">
+	This is the first draft that uses JSON-LD 1.1 as a serialization format of the Thing Description. The working assumption is based on the <a href="https://json-ld.org/spec/latest/json-ld/#">Community Draft of JSON-LD 1.1</a>. There is the plan to setup a JSON-LD Working Group with the following <a href="https://www.w3.org/2018/03/jsonld-wg-charter.html">JSON-LD Working Group Charter</a>. It is planned that this section always conforms to the latest working assumptions of JSON-LD 1.1.
+      </p>
+
 <p>
-  Thing Description instances are modeled on the classes defined in <a href="#vocabularyDefinitionSection" class="sec-ref"></a>, and they can be serialized in JSON or <a href="https://json-ld.org/spec/latest/json-ld/">JSON-LD 1.1</a> by default. 
+Thing Description instances are modeled and structured based on the <a href="#vocabularyDefinitionSection" class="sec-ref">Thing Description Information Model</a>. This section proposes a TD serialization based on JSON-LD 1.1. 
 </p>
 
- 
+ <section id="json-serializiation-section">
+    <h1>Media Type</h1>
+
+<p>The JSON-based serialization of the TD is identified by the Media Type <code>application/td+json</code>.</p>
+
+<!--<p>The EXI-based serialization of the TD is identified by the Media Type <code>application/td+exi</code>.</p>
+<p>The CBOR-based serialization of the TD is identified by the Media Type <code>application/td+cbor</code>.</p>-->
+
+      <p class="ednote" title="Media Type">
+These media types have not registered  with IANA yet.
+      </p>
+
+</section>
 
 <section id="json-serializiation-section">
     <h1>JSON TD</h1>
 
-<p>This section introduces the JSON-based serialization of the Thing Description (JSON TD). JSON TD allows semantic annotations and JSON TD instances can be simple transformed into RDF-based representation by JSON-LD 1.1 which will be introduced <a href="#jsonld1.1-serializiation-section" class="sec-ref">here</a>.</p>
+<p>This section introduces the JSON-based serialization of the Thing Description (JSON TD) that also follows the syntax of JSON-LD 1.1 to streamline the semantic evaluation of TDs.</p>
 
-<p>Mainly, all defined core vocabulary as defined in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> will have a JSON key representation.</p>
+<p>Mainly, all vocabularies as defined in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> will have a JSON key representation.</p>
 
-<p>JSON TD MAY contain vocabularies that are not in the Thing Description core model. These vocabularies MUST carry a prefix for identification within the key name (e.g., "http:header").</p>
+<p>In addition, Thing Description instances MAY contain JSON-LD 1.1 keys such as <code>@context</code> and <code>@type</code>.</p>
 
-<p>The defined types of the vocabulary as defined in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> will be transtormed to JSON-based types. The following rules are used for vocabularies based on simple type definitions:</p>
+<!--<p>JSON TD MAY contain vocabularies that are not in the Thing Description core model. These vocabularies MUST carry a prefix for identification within the key name (e.g., "http:header").</p>-->
+
+<p>The defined types of the vocabulary as defined in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> will be transformed to JSON-based types. The following rules are used for vocabularies based on simple type definitions:</p>
 	      <ul>
-<li><p>Vocabularies that are based on simple types string and anyURI MUST be serialized as JSON string.</p></li>
+<li><p>Vocabularies that use simple types string and anyURI MUST be serialized as JSON string.</p></li>
 
-<li><p>Vocabularies that are based on the simple type unsignedInt MUST be serialized as JSON integer.</p></li>
+<li><p>Vocabularies that use simple type unsignedInt MUST be serialized as JSON integer.</p></li>
 
-<li><p>Vocabularies that are based on the simple type double MUST be serialized as JSON number.</p></li>
+<li><p>Vocabularies that use simple type double MUST be serialized as JSON number.</p></li>
 	      </ul>
 
-<p>All vocabularies in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> Section associated with class-based types are defined separately for structured JSON type transformation in the following subsections.</p>
+<p>All vocabularies in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> Section associated with complex-/class-based types are defined separately for structured JSON type transformation in the following subsections.</p>
 
 
   <section id="sec-thing-as-a-whole-json">
     <h2>Thing as a whole</h2>
-<p>Each mandatory and required vocabulary, as defined in the class <a href="#thing" class="sec-ref">Thing</a>, MUST be serialized as a JSON key at the top level of the JSON TD document.</p>
+
+<p>
+In the first line of the Thing Description instance MAY include the <code>@context</code> key from JSON-LD 1.1 with the value URI of the Thing description context file <code>https://w3c.github.io/wot/w3c-wot-td-context.jsonld</code>.
+</p>
+
+  <pre class="example">
+    {
+      "@context": "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+      ...
+    }
+  </pre>
+
+<p>
+  In case a single Thing Description instance involves several contexts, additional namespaces with prefixes MUST be extended to the <code>@context</code> array structure. This option proves relevant if one wants to extend the existing Thing Description context without modifying it. For instance:
+</p>
+  <pre class="example">
+    {
+      "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+                   {"sensor": "http://iotschema.org/"}],
+      ...
+    }
+  </pre>
+
+
+<p>Each mandatory and required vocabulary, as defined in the class <a href="#thing" class="sec-ref">Thing</a>, MUST be serialized as a JSON key at the top level of the Thing Description instance.</p>
 
 
 <p>The type of the fields <code>properties</code>, <code>actions</code>, <code>events</code>, and <code>securityDefinitions</code> MUST be serialized as a JSON object.</p>
 
 <p>The type of the field <code>links</code> MUST be serialized as a JSON array.</p>
 
-<p>An example of a TD snippet based on the defined fields is given below:</p>
+<p>An example of a TD snippet based on the defined fields of the <a href="#thing" class="sec-ref">Thing</a> information model without the optional field <code>@context</code> is given below:</p>
 
   <pre class="example">
         {
-          "name": "MyThing",
+          "label": "MyThing",
           "id": "urn:dev:wot:com:example:servient:myThing",
           "base": "https://servient.example.com/",
           "description": "Additional (human) readable information of the Thing.",
@@ -341,6 +383,25 @@ For example, the Property interaction allows get and set operations. The protoco
         }
    </pre>
 
+
+<p>In addition, the same example can also include the (semantic) keys of JSON-LD 1.1 (<code>@context</code> and <code>@type</code>):</p>
+
+  <pre class="example">
+        {
+          "@context": "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+          "@type": "Thing",
+          "label": "MyThing",
+          "id": "urn:dev:wot:com:example:servient:myThing",
+          "base": "https://servient.example.com/",
+          "description": "Additional (human) readable information of the Thing.",
+          "support": "https://servient.example.com/contact",
+          "properties": {...},
+          "actions": {...},
+          "events": {...},
+          "securityDefinitions": {...},
+          "links": [...]
+        }
+   </pre>
 
  </section> <!-- end of id="sec-thing-as-a-whole-json"-->
 
@@ -363,18 +424,15 @@ For example, the Property interaction allows get and set operations. The protoco
           "properties": {
           	"on": {
           		"label": "On/Off",
-          		"type": "boolean",
-          		"forms": [...]
+          		"type": "boolean"
           	},
           	"status": {
-          		"readOnly": true,
           		"type": "object",
           		"properties": {
           			"brightness": {
           				"type": "number",
           				"minimum": 0.0,
-          				"maximum": 100.0,
-          				"forms": [...]
+          				"maximum": 100.0
           			},
           			"rgb": {
           				"type": "array",
@@ -546,57 +604,85 @@ For example, the Property interaction allows get and set operations. The protoco
 
   </section> <!-- end of id="serialization-json"-->
 
-<section id="jsonld1.1-serializiation-section">
-    <h1>JSON-LD 1.1</h1>
+<section id="jsonld-serializiation-section">
+    <h2>JSON-LD 1.1 Processing</h2>
+
+<p>To parse a Thing Description (simple) JSON-based parser and tools can be used to retrieve its content. </p>
+
+<p>To interprete the semantic meaning in terms of RDF triples, a Thing Description instance has to bring into a valid JSON-LD 1.1 form based on this specification before passing to a JSON-LD interpreter.</p>
+
+<p>Following pre-processing steps MUST be done:</p>
+
+</section>
+
+<section id="binary-serializiation">
+    <h1>Binary JSON TD Serializiation</h1>
+<section id="exi-serializiation-section">
+    <h2>EXI</h2>
+</section>
+
+<section id="cbor-serializiation-section">
+    <h2>CBOR</h2>
+</section>
+
+</section>
 
 
-      <p class="ednote" title="JSON-LD 1.1 ">
-	This is the first draft that uses JSON-LD 1.1 as a serialization format of the Thing Description. The working assumption is based on the <a href="https://json-ld.org/spec/latest/json-ld/#">Community Draft of JSON-LD 1.1</a>. There is the plan to setup a JSON-LD Working Group with the following <a href="https://www.w3.org/2018/03/jsonld-wg-charter.html">JSON-LD Working Group Charter</a>. It is planned that this section always conforms to the latest working assumptions of JSON-LD 1.1.
-      </p>
+<section id="securityDefinitions-serialization">
+      <h2>Implementation Note</h2>
 
-<p> This section specifies the serializiation of Thing Description instances based on <a href="https://json-ld.org/spec/latest/json-ld/#">JSON-LD 1.1</a>. JSON-LD 1.1 is a JSON-based format to serialize Linked Data by using a number of syntax tokens and keywords (typically starting with the <code>@</code> character). JSON-LD 1.1 provides an oppertunity  to be alligned with the <a href="#json-serializiation-section">JSON TD serlializiation</a> and RDF-based modeling to increase the semantic interoperability.  
-</p>
-
-<p>Mainly, an instance is a valid Thing Description serializiations in JSON-LD 1.1 when it meets the following 3 requirememts:</p>
-  <ul>
-    <li>it MUST fulfill all requirements that are defined in <a href="#json-serializiation-section">JSON TD</a></li>
-     <li>all vocabularies that have a default value as defined  <a href="#vocabularyDefinitionSection">Vocabulary Definition</a> MUST be present at least with their default value.</li>
-     <li>the <code>@context</code> key from JSON-LD 1.1 MUST have the value of the Thing description context file <code>https://w3c.github.io/wot/w3c-wot-td-context.jsonld</code>.</li>
-  </ul>
+</section>
 
 
-  <pre class="example">
-    {
-      "@context": "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
-      ...
-    }
-  </pre>
+<section id="example-serialization">
+      <h2>Example Serialization</h2>
 
-<p>
-  In case a single Thing Description instance involves several contexts, additional namespaces with prefixes can be extended to the <code>@context</code> array structure. This option proves relevant if one wants to extend the existing Thing Description context without modifying it. For instance:
-</p>
-  <pre class="example">
-    {
-      "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
-                   {"sensor": "http://iotschema.org/"}],
-      ...
-    }
-  </pre>
+<section id="example-serialization">
+      <h3>MyLampThing</h3>
 
-<p>
-The following is an example of a Thing Description instance used in JSON-LD 1.1. </p>
-
-  <pre class="example">
+  <pre class="example" title="MyLampThing">
 {
-    "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld", 
-    		{"iot": "http://iotschema.org/"}],
-    "@thing" : "Thing",
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "description" : "MyLampThing uses JSON-LD 1.1 serialization",
     "properties": {
         "status": {
-             "@thing" : "iot:SwitchStatus",
+             "description" : "Shows the current status of the lamp",
+             "type": "string",
+             "form": [{
+                 "href": "coaps://mylamp.example.com:5683/status"
+             }]
+        }
+    },
+    "actions": {
+     "toggle": {
+        "description" : "Turn on or off the lamp.",
+        "form": [{
+            "href": "coaps://mylamp.example.com:5683/toggle"
+        }]}},
+    "events": {
+        "overheating": {
+            "description" : "Lamp reaches a critical temperature (overheating).",
+            "type": "string",
+            "form": [{
+                "href": "coaps://mylamp.example.com:5683/oh"
+            }]
+        }}
+}
+   </pre>
+
+
+  <pre class="example" title="MyLampThing with semantic annotations based on JSON-LD 1.1">
+{
+    "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld", 
+    		{"iot": "http://iotschema.org/"}],
+    "@type" : "Thing",
+    "id": "urn:dev:wot:com:example:servient:lamp",
+    "name": "MyLampThing",
+    "description" : "MyLampThing uses JSON-LD 1.1 serialization",
+    "properties": {
+        "status": {
+             "@type" : "iot:SwitchStatus",
              "description" : "Shows the current status of the lamp",
              "writable": false,
              "observable": false,
@@ -609,7 +695,7 @@ The following is an example of a Thing Description instance used in JSON-LD 1.1.
     },
     "actions": {
      "toggle": {
-        "@thing" : "iot:SwitchStatus",
+        "@type" : "iot:SwitchStatus",
         "description" : "Turn on or off the lamp.",
         "form": [{
             "href": "coaps://mylamp.example.com:5683/toggle",
@@ -617,7 +703,7 @@ The following is an example of a Thing Description instance used in JSON-LD 1.1.
         }]}},
     "events": {
         "overheating": {
-            "@thing" : "iot:TemperatureAlarm",
+            "@type" : "iot:TemperatureAlarm",
             "description" : "Lamp reaches a critical temperature (overheating).",
             "type": "string",
             "form": [{
@@ -627,26 +713,11 @@ The following is an example of a Thing Description instance used in JSON-LD 1.1.
         }}
 }
    </pre>
-
-
- 
-
-</section> <!-- end of id="serialization-json-ld"-->
-
-<section id="exi-serializiation-section">
-    <h1>EXI</h1>
 </section>
 
-<section id="cbor-serializiation-section">
-    <h1>CBOR</h1>
 </section>
 
-    <section id="securityDefinitions-serialization">
-      <h2>Implementation Note</h2>
 
-
-
-</section>
  
  </section> <!-- end of id="TD-serialization-section"-->
 

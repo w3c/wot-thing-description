@@ -695,7 +695,7 @@
       "minimum": 0,
       "maximum": 100
       "forms": [{
-        "href": "/things/lamp/properties/status",
+        "href": "/things/lamp/properties/brightness",
         "mediaType": "application/json"
       }]
     }
@@ -720,9 +720,7 @@
       },
       "forms": [{
         "href": "/things/lamp/actions/fade",
-        /* encType would be for the request body
-           opposed to mediaType, which is for target
-           FIXME: can have both meanings based on context (links/forms)? */
+        /* encType would be for the request body opposed to mediaType, which is for target */
         "encType": "application/json",
         "mediaType": "application/json"
       }]
@@ -736,7 +734,6 @@
       },
       "forms": [{
         "href": "/things/lamp/events/overheated",
-        /* needed, alternative: register URI schemes "http+sse", "http+lp", ... */
         "http:subProtocol": "http:EventSource",
         "mediaType": "application/json"
       }]
@@ -745,7 +742,7 @@
   "links": [{
     "href": "https://servient.example.com/things/motion-detector",
     "rel": "controlledBy",
-    "mediaType": "application/td"
+    "mediaType": "application/td+json"
   }]
 }
           </pre>
@@ -756,21 +753,17 @@
           
           <pre class="example" title="Annotated Simplified TD">
 {
+  "@context": { "iot": "https://iot.schema.org/" },
   "name": "Lamp",
   "description": "Corner torchiere",
+  "@type": ["Thing", "iot:Light"],
   "id": "urn:dev:wot:com:example:servient:lamp",
   "base": "https://servient.example.com/",
-  "definitions": {
-    "range": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 100
-    }
-  },
   "properties": {
     "on": {
       "label": "On/Off",
-      "description": "Power switch"
+      "description": "Power switch",
+      "@type": "iot:SwitchStatus",
       "type": "boolean",
       "forms": [{
         "href": "/things/lamp/properties/on",
@@ -779,9 +772,11 @@
     },
     "status": {
       "readOnly": true,
+      "@type": "iot:DeviceStatus",
       "type": "object",
       "properties": {
         "battery": {
+          "@type": "iot:BatteryLevel",
           "type": "number",
           "minimum": 0.0,
           "maximum": 100.0,
@@ -791,11 +786,17 @@
           }]
         },
         "rssi": {
+          "@type": "iot:SignalStrength",
           "type": "number",
           "minimum": 0.0,
           "maximum": 1.0
         },
-        "level": "range"
+        "level": {
+          "@type": "iot:CurrentLevel",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+	}
       },
       "forms": [{
         "href": "/things/lamp/properties/status",
@@ -803,7 +804,10 @@
       }]
     },
     "brightness": {
-      /* FIXME: how to reference "range" to import defintions at this level */
+      "@type": "iot:CurrentLevel",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
       "forms": [{
         "href": "/things/lamp/properties/status",
         "mediaType": "application/json"
@@ -815,16 +819,28 @@
       "input": {
         "type": "object",
         "properties": {
-          "from": "range",
-          "to": "range",
-          "duration": { "type": "number" }
+          "from": {
+            "@type": "iot:CurrentLevel",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "to": {
+            "@type": "iot:TargetLevel",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "duration": {
+	    "@type": "iot:TransitionTimeData",
+	    "type": "number"
+	  }
         }
       },
       "forms": [{
         "href": "/things/lamp/actions/fade",
         /* encType would be for the request body
-           opposed to mediaType, which is for target
-           FIXME: can have both meanings based on context (links/forms)? */
+           opposed to mediaType, which is for target */
         "encType": "application/json",
         "mediaType": "application/json",
         /* redundant to default here, just to indicate
@@ -841,7 +857,6 @@
       },
       "forms": [{
         "href": "/things/lamp/events/overheated",
-        /* needed, alternative: register URI schemes "http+sse", "http+lp", ... */
         "http:subProtocol": "http:EventSource",
         "mediaType": "application/json"
       }]
@@ -850,7 +865,7 @@
   "links": [{
     "href": "https://servient.example.com/things/motion-detector",
     "rel": "controlledBy",
-    "mediaType": "application/td"
+    "mediaType": "application/td+json"
   }]
 }
           </pre>
@@ -862,7 +877,7 @@
     <section>
       <h1>JSON-LD 1.0 TD</h1>
       
-        <p>This section summerizes the status of the JSON-LD 1.1 based Thing Description (until Prague 2018 WD).</p>
+        <p>This section summerizes the status of the JSON-LD 1.0-based Thing Description (until Prague 2018 WD).</p>
       
         <section>
           <h2>JSON-LD 1.0 TD by Example</h2>
@@ -881,28 +896,52 @@
     "name": "Lamp",
     "@id": "urn:dev:wot:com:example:servient:lamp",
     "base": "https://servient.example.com/",
-    "interactions": [{
+    "interaction": [{
       "@type": "Property",
       "name": "on",
-      "writeable": true,
+      "writable": true,
       "schema": { "type": "boolean" },
-      "forms": [{ "href": "/things/lamp/properties/on" }]
+      "form": [{ "href": "/things/lamp/properties/on" }]
+    }, {
+      "@type": "Property",
+      "name": "status",
+      "writable": false,
+      "schema": {
+        "type": "object",
+	"field": [{
+	  "name": "battery",
+	  "type": "number",
+          "minimum": 0.0,
+          "maximum": 100.0
+	}, {
+	  "name": "rssi",
+	  "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+	}, {
+	  "name": "level",
+	  "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+	}]
+      },
+      "form": [{ "href": "/things/lamp/properties/on" }]
     }, {
       "@type": "Property",
       "name": "brightness",
-      "writeable": true,
+      "writable": true,
       "schema": {
         "type": "number",
         "minimum": 0,
         "maximum": 100
       },
-      "forms": [{ "href": "/things/lamp/properties/brightness" }]
+      "form": [{ "href": "/things/lamp/properties/brightness" }]
     }, {
       "@type": "Action",
       "name": "fade",
       "inputSchema": {
         "type": "object",
-        "fields": [{
+        "field": [{
           "name": "from",
           "schema": {
             "type": "integer",
@@ -921,23 +960,23 @@
           "schema": { "type": "number" }
         }]
       },
-      "forms": [{ "href": "/things/lamp/actions/fade" }]
+      "form": [{ "href": "/things/lamp/actions/fade" }]
     }, {
       "@type": "Event",
       "name": "overheated",
       "schema": {
         "type": "object",
-        "fields": [{
+        "field": [{
           "name": "temperature",
           "schema": { "type": "number" }
         }]
       },
-      "forms": [{ "href": "/things/lamp/events/overheated" }]
+      "form": [{ "href": "/things/lamp/events/overheated" }]
     }],
-    "links": [{
+    "link": [{
       "href": "https://servient.example.com/things/motion-detector",
       "rel": "controlledBy",
-      "mediaType": "application/td"
+      "mediaType": "application/ld+json"
     }]
   }
             </pre>
