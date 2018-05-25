@@ -1,0 +1,253 @@
+@prefix : <http://www.w3.org/ns/td-validation#> .
+@prefix td: <http://www.w3.org/ns/td#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix vs: <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+:ThingShape a sh:NodeShape ;
+    sh:targetClass td:Thing ;
+    sh:closed "false"^^xsd:boolean ;
+    sh:property [
+        sh:path td:label ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path td:description ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path td:support ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path td:base ;
+        sh:datatype xsd:anyURI ;
+    ] ;
+    sh:property [
+        sh:path td:properties ;
+        sh:class td:Property ;
+    ] ;
+    sh:property [
+        sh:path td:actions ;
+        sh:class td:Action ;
+    ] ;
+    sh:property [
+        sh:path td:events ;
+        sh:class td:Event ;
+    ] ;
+    sh:property [
+        sh:path td:links ;
+        sh:class td:Link ;
+    ] ;
+    sh:property [
+        sh:path td:securityDefinitions ;
+        sh:class td:Security ;
+    ] .
+    
+# TODO Schema definition terms missing
+:PropertyShape a sh:NodeShape ;
+    sh:targetClass td:Property ;
+    sh:closed "false"^^xsd:boolean ;
+    sh:property [
+        sh:path td:objectSchemaProperties ;
+        sh:class td:DataSchema ;
+    ] ;
+    sh:property [
+        sh:path td:observable ;
+        sh:datatype xsd:boolean ;
+        sh:defaultValue "false"^^xsd:boolean ;
+    ] ;
+    sh:property [
+        sh:path td:writable ;
+        sh:datatype xsd:boolean ;
+        sh:defaultValue "false"^^xsd:boolean ;
+    ] ;
+    sh:property [
+        sh:path td:forms ;
+        sh:class td:Form ;
+    ] ;
+    sh:property [
+        sh:path td:label ;
+        sh:datatype xsd:string ;
+    ] .
+    
+:ActionShape a sh:NodeShape ;
+    sh:targetClass td:Action ;
+    sh:closed "false"^^xsd:boolean ;
+    sh:property [
+        sh:path td:description ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path td:forms ;
+        sh:class td:Form ;
+    ] ;
+    sh:property [
+        sh:path td:input ;
+        sh:class td:DataSchema ;
+    ] ;
+    sh:property [
+        sh:path td:output ;
+        sh:class td:DataSchema ;
+    ] ;
+    sh:property [
+        sh:path td:label ;
+        sh:datatype xsd:string ;
+    ] .
+    
+:EventShape a sh:NodeShape ;
+    sh:targetClass td:Event ;
+    sh:closed "false"^^xsd:boolean .
+    # TODO same properties as PropertyShape
+    
+# TODO EventShape inherits all PropertyShape constraints
+
+:FormShape a sh:NodeShape ;
+    sh:targetClass td:Form ;
+    sh:closed "false"^^xsd:boolean ;
+    sh:property [
+        sh:path td:href ;
+        sh:minCount 1 ;
+        sh:datatype xsd:anyURI ;
+    ] ;
+    sh:property [
+        sh:path td:mediaType ;
+        sh:datatype xsd:string ;
+        sh:defaultValue "application/json"^^xsd:string ;
+    ] ;
+    sh:property [
+        sh:path td:rel ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path td:security ;
+        # TODO reference to forward declaration of security mechanism
+        sh:datatype xsd:string ;
+    ] .
+    
+:LinkShape a sh:NodeShape ;
+    sh:targetClass td:Link ;
+    sh:closed "false"^^xsd:boolean ;
+    sh:property [
+        sh:path td:href ;
+        sh:minCount 1 ;
+        sh:datatype xsd:anyURI ;
+    ] ;
+    sh:property [
+        sh:path td:mediaType ;
+        sh:datatype xsd:string ;
+        sh:defaultValue "application/json"^^xsd:string ;
+    ] ;
+    sh:property [
+        sh:path td:rel ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path td:anchor ;
+        sh:datatype xsd:anyURI ;
+    ] .
+
+:SecurityShape a sh:NodeShape ;
+    sh:targetClass td:Security ;
+    sh:closed "false"^^xsd:boolean ;
+    sh:property [
+        sh:path td:scheme ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path td:in ;
+        sh:datatype xsd:string ;
+    ] .
+    
+:DataSchemaShape a sh:NodeShape ;
+    sh:targetClass td:DataSchema ;
+    sh:closed "false"^^xsd:boolean ;
+    sh:property [
+        sh:path td:description ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path td:type ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path td:const ;
+        sh:datatype xsd:anyType ;
+    ] ;
+    sh:property [
+        sh:path td:enum ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ; # TODO rdf:List of strings
+    ] .
+
+:ArraySchemaShape a sh:NodeShape ;
+    sh:targetClass td:ArraySchema ;
+    sh:closed "false"^^xsd:boolean ;
+    sh:property [
+        sh:path td:items ;
+        sh:minCount 1 ;
+        sh:class td:DataSchema ;
+    ] ;
+    sh:property [
+        sh:path td:minItems ;
+        sh:datatype xsd:unsignedInt ;
+    ] ;
+    sh:property [
+        sh:path td:maxItems ;
+        sh:datatype xsd:unsignedInt ;
+    ] .
+    
+:BooleanSchemaShape a sh:NodeShape ;
+    sh:targetClass td:BooleanSchema ;
+    sh:closed "false"^^xsd:boolean .
+    
+:NumberSchemaShape a sh:NodeShape ;
+    sh:targetClass td:NumberSchema ;
+    sh:closed "false"^^xsd:boolean ;
+    sh:property [
+        sh:path td:minimum ;
+        sh:datatype xsd:double ;
+    ] ;
+    sh:property [
+        sh:path td:maximum ;
+        sh:datatype xsd:double ;
+    ] .
+    
+:IntegerSchemaShape a sh:NodeShape ;
+    sh:targetClass td:IntegerSchema ;
+    sh:closed "false"^^xsd:boolean ;
+    sh:property [
+        sh:path td:minimum ;
+        sh:datatype xsd:integer ;
+    ] ;
+    sh:property [
+        sh:path td:maximum ;
+        sh:datatype xsd:integer ;
+    ] .
+    
+:ObjectSchemaShape a sh:NodeShape ;
+    sh:targetClass td:ObjectSchema ;
+    sh:closed "false"^^xsd:boolean ;
+    sh:property [
+        sh:path td:objectSchemaProperties ;
+        sh:minCount 1 ;
+        sh:class td:DataSchema ;
+    ] ;
+    sh:property [
+        sh:path td:required ;
+        sh:class xsd:string ; # TODO rdf:List of strings
+    ] .
+
+:StringSchemaShape a sh:NodeShape ;
+    sh:targetClass td:StringSchema ;
+    sh:closed "false"^^xsd:boolean .
