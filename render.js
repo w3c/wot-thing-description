@@ -23,8 +23,17 @@ function target(sh, g) {
 }
 
 function label(uri, g) {
-    // TODO
-    return uri.substr(uri.lastIndexOf('#') + 1);
+    let labels = g.match(
+        uri,
+        'http://www.w3.org/2000/01/rdf-schema#label',
+        null
+    ).toArray();
+    
+    if (labels.length > 0) {
+        return labels[0].object.nominalValue;
+    } else {
+        return uri.substr(uri.lastIndexOf('#') + 1);
+    }
 }
 
 function desc(uri, g) {
