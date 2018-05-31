@@ -210,25 +210,62 @@ function context(store, cb) {
 
 // class sort prior to rendering
 
-const predefined = [
+const corePredefined = [
     "Thing",
     "InteractionPattern",
     "Property",
     "Action",
     "Event",
     "Form",
-    "Link",
+    "Link"
+];
+
+const securityPredefined = [
     "Security",
-    "SecurityScheme"
+    "SecurityScheme",
+    "BasicSecurityScheme",
+    "DigestSecurityScheme",
+    "BearerSecurityScheme",
+    "PopSecurityScheme",
+    "ApikeySecurityScheme",
+    "OCFSecurityScheme",
+    "OAuth2SecurityScheme"
+];
+
+const schemaPredefined = [
+    "DataSchema",
+    "ArraySchema",
+    "ObjectSchema",
+    "BooleanSchema",
+    "NumberSchema",
+    "StringSchema"
 ];
 
 function sort(ctx) {
     ctx.coreClasses.sort(function(c1, c2) {
-        let i1 = predefined.indexOf(c1.label);
-        let i2 = predefined.indexOf(c2.label);
+        let i1 = corePredefined.indexOf(c1.label);
+        let i2 = corePredefined.indexOf(c2.label);
         
-        if (i1 === -1) { i1 = predefined.length; }
-        if (i2 === -1) { i2 = predefined.length; }
+        if (i1 === -1) { i1 = corePredefined.length; }
+        if (i2 === -1) { i2 = corePredefined.length; }
+        
+        return i1 - i2;
+    });
+    ctx.securityClasses.sort(function(c1, c2) {
+        let i1 = securityPredefined.indexOf(c1.label);
+        let i2 = securityPredefined.indexOf(c2.label);
+        
+        if (i1 === -1) { i1 = securityPredefined.length; }
+        if (i2 === -1) { i2 = securityPredefined.length; }
+        
+        return i1 - i2;
+    });
+    ctx.schemaClasses.sort(function(c1, c2) {
+        let i1 = schemaPredefined.indexOf(c1.label);
+        let i2 = schemaPredefined.indexOf(c2.label);
+        
+        if (i1 === -1) { i1 = schemaPredefined.length; }
+        if (i2 === -1) { i2 = schemaPredefined.length; }
         
         return i1 - i2;
     });
