@@ -548,6 +548,11 @@ In the first line of the Thing Description instance MAY include the <code>@conte
 
     <section id="event-serialization-json">
       <h2>events</h2>
+      <p class="ednote">ISSUE: Currently (while the spec is still under development)
+      the ontology for events is empty but should be a near
+      copy of the definitions for properties.
+      </p>
+
 <p>Events (and sub-events) offered by a Thing are collected in the <code>events</code> field of (unique) Event names as JSON keys. Each required vocabulary, as defined in the class <a href="#event" class="sec-ref">Event</a>, MUST transformed as a JSON key within a Event field.</p>
 
 <p>The type of the fields <code>properties</code> and <code>items</code> MUST be serialized as a JSON object.</p>
@@ -630,7 +635,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
       <p class="ednote">This is the first draft containing the new security vocabularies. The definition is not yet completed and is still in progress.
       </p>
 
-	<p>Each mandatory and required vocabulary, as defined in the class <a href="#security" class="sec-ref">Security</a>, MUST be serialized as a JSON key.</p>
+	<p>Each mandatory and required vocabulary, as defined in the class <a href="#security" class="sec-ref">SecurityScheme</a>, MUST be serialized as a JSON key.</p>
 
       <pre class="example">
         ...
@@ -640,12 +645,62 @@ In the first line of the Thing Description instance MAY include the <code>@conte
             	"format": "jwt",
             	"alg": "ES256",
             	"authorizationUrl": "https://servient.example.com:8443/"
-            }
-        ...
+            },
+            ...
+         }
       </pre>
 
 
-    </section> <!-- end of id="form-serialization-json"-->
+    </section> <!-- end of id="securityDefinitions-serialization-json"-->
+
+    <section id="security-serialization-json">
+      <h2>security</h2>
+
+      <p class="ednote">This is the first draft containing the new security vocabularies. The definition is not yet completed and is still in progress.
+      </p>
+
+	<p>Each mandatory and required vocabulary, as defined in the class <a href="#security" class="sec-ref">SecurityScheme</a>, MUST be serialized as a JSON key.</p>
+
+      <pre class="example">
+        ...
+        "security": [
+            {
+            	"scheme": "bearer",
+            	"format": "jwt",
+            	"alg": "ES256",
+            	"authorizationUrl": "https://servient.example.com:8443/"
+            },
+            ...
+         ]
+      </pre>
+
+      <p class="ednote">The use of <code>securityDefinitions</code> is an optional
+      "convenience" feature that we could omit without too much distruption, although it
+      might make some Thing Descriptions slightly more verbose due to repeated copies of
+      the same security configuration.  However, the scoping rules for security configurations
+      (being allowed to have security definitions at different levels, with inner ones
+      overriding outer ones) also avoids certain kinds of redundancy.
+      </p>
+
+      However, given the <code>securityDefinitions</code> in the previous section, the following can
+      also be used and is equivalent:
+
+      <pre class="example">
+        ...
+        "security": [
+            "bearerTokenConfig",
+            ...
+         ]
+      </pre>
+
+      In other words, <code>securityDefinitions</code> define named objects that can then
+      used in place of a security configuration object.  This allows security configurations
+      used in several places to be defined only once.
+
+      Semantically, the use of security definitions is irrelevant and the substitutions
+      can be made during a preprocessing step.
+
+    </section> <!-- end of id="securityDefinitions-serialization-json"-->
 
   </section> <!-- end of id="serialization-json"-->
 

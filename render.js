@@ -174,6 +174,7 @@ function context(store, cb) {
     store.graph(function(err, g) {
         let ctx = {
             coreClasses: [],
+            securityClasses: [],
             schemaClasses: []
         };
         
@@ -196,6 +197,8 @@ function context(store, cb) {
             // TODO not the best logic
             if (c.label.match('Schema')) {
                 ctx.schemaClasses.push(c);
+            } else if (c.label.match('Security')) { 
+                ctx.securityClasses.push(c);
             } else {
                 ctx.coreClasses.push(c);
             }
@@ -213,7 +216,10 @@ const predefined = [
     "Property",
     "Action",
     "Event",
-    "Form"
+    "Form",
+    "Link",
+    "Security",
+    "SecurityScheme"
 ];
 
 function sort(ctx) {
