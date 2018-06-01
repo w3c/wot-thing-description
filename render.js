@@ -221,7 +221,6 @@ const corePredefined = [
 ];
 
 const securityPredefined = [
-    "Security",
     "SecurityScheme",
     "BasicSecurityScheme",
     "DigestSecurityScheme",
