@@ -367,7 +367,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
           "properties": {...},
           "actions": {...},
           "events": {...},
-          "securityDefinitions": {...},
+          "security": {...},
           "links": [...]
         }
    </pre>
@@ -387,7 +387,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
           "properties": {...},
           "actions": {...},
           "events": {...},
-          "securityDefinitions": {...},
+          "security": {...},
           "links": [...]
         }
    </pre>
@@ -629,78 +629,117 @@ In the first line of the Thing Description instance MAY include the <code>@conte
 
     </section> <!-- end of id="links-serialization-json"-->
 
-    <section id="securityDefinitions-serialization-json">
-      <h2>securityDefinitions</h2>
-
-      <p class="ednote">This is the first draft containing the new security vocabularies. The definition is not yet completed and is still in progress.
-      </p>
-
-	<p>Each mandatory and required vocabulary, as defined in the class <a href="#security" class="sec-ref">SecurityScheme</a>, MUST be serialized as a JSON key.</p>
-
-      <pre class="example">
-        ...
-        "securityDefinitions": {
-            "bearerTokenConfig": {
-            	"scheme": "bearer",
-            	"format": "jwt",
-            	"alg": "ES256",
-            	"authorizationUrl": "https://servient.example.com:8443/"
-            },
-            ...
-         }
-      </pre>
-
-
-    </section> <!-- end of id="securityDefinitions-serialization-json"-->
-
     <section id="security-serialization-json">
       <h2>security</h2>
 
-      <p class="ednote">This is the first draft containing the new security vocabularies. The definition is not yet completed and is still in progress.
+      <p class="ednote">This is the first draft containing the new security vocabularies. 
+      The definition is not yet completed and is still in progress.
       </p>
 
 	<p>Each mandatory and required vocabulary, as defined in the class <a href="#security" class="sec-ref">SecurityScheme</a>, MUST be serialized as a JSON key.</p>
 
+      <p>The following TD snippet example shows a simple security configuration specifying
+      basic authentication in the header.  The value of <code>in</code> given is actually the default
+      value.<p>
       <pre class="example">
-        ...
-        "security": [
-            {
-            	"scheme": "bearer",
-            	"format": "jwt",
-            	"alg": "ES256",
-            	"authorizationUrl": "https://servient.example.com:8443/"
-            },
-            ...
-         ]
+"security": [
+  {
+    "scheme": "basic",
+    "in": "header"
+  }
+]
       </pre>
 
-      <p class="ednote">The use of <code>securityDefinitions</code> is an optional
-      "convenience" feature that we could omit without too much distruption, although it
-      might make some Thing Descriptions slightly more verbose due to repeated copies of
-      the same security configuration.  However, the scoping rules for security configurations
-      (being allowed to have security definitions at different levels, with inner ones
-      overriding outer ones) also avoids certain kinds of redundancy.
+      <p>Here is a more complex example: a TD snippet showing digest authentication on a proxy
+      combined with bearer token authentication on an endpoint.  Here the default
+      value of <code>in</code> in the <code>digest</code> scheme is implied.<p>
+      <pre class="example">
+...
+"security": [
+  {
+    "scheme": "digest",
+    "proxyUrl": "https://portal.example.com/"
+  },
+  {
+    "scheme": "bearer",
+    "format": "jwt",
+    "alg": "ES256",
+    "authorizationUrl": "https://servient.example.com:8443/"
+  }
+]
+      </pre>
+
+      <p>Security definitions can be given at more than one level.
+      In this case, definitions at the lower levels override
+      the definitions at the higher level.  In the following example, all interactions
+      require basic authentication except for the <code>overheating</code> event, in which
+      security has been overridden.  Note especially the use of an empty array for
+      the security configuration in the <code>overheating</code> event to indicate no 
+      authentication is required.  For the <code>status</code> property and the <code>toggle</code>
+      action, however, <code>basic</code> authentication is required, as defined
+      at the top level of the Thing.
       </p>
-
-      However, given the <code>securityDefinitions</code> in the previous section, the following can
-      also be used and is equivalent:
-
       <pre class="example">
-        ...
-        "security": [
-            "bearerTokenConfig",
-            ...
-         ]
+{
+  ...
+  "security": [{"scheme": "basic"}],
+  "properties": {
+    "status": {
+      ...
+      "form": [{
+        "href": "https://mylamp.example.com/status",
+        "mediaType": "application/json",
+      }]
+    }
+  },
+  "actions": {
+    "toggle": {
+      ...
+      "form": [{
+        "href": "https://mylamp.example.com/toggle",
+        "mediaType": "application/json"
+      }]
+    }
+  },
+  "events": {
+    "overheating": {
+      ...
+      "form": [{
+        "href": "https://mylamp.example.com/oh",
+        "mediaType": "application/json",
+        "security": [] 
+      }]
+    }
+  }
+}
       </pre>
 
-      In other words, <code>securityDefinitions</code> define named objects that can then
-      used in place of a security configuration object.  This allows security configurations
-      used in several places to be defined only once.
+      <p>Security definitions can also can be given for different elements
+      at the same level.  This may be required for devices that support
+      multiple protocols, for example CoAP and HTTP, with support for different
+      security mechanisms.  Here is a TD snippet demonstrating this:
+      </p>
+      <pre class="example">
+"properties": {
+  "status": {
+    ...
+    "form": [
+      {
+        "href": "https://mylamp.example.com/status",
+        "mediaType": "application/json",
+        "security": [{"scheme": "basic"}]
+      },
+      {
+        "href": "coaps://mylamp.example.com:5683/status",
+        "mediaType": "application/json",
+        "security": [{"scheme": "apikey"}]
+      }
+    ]
+  }
+}
+      </pre>
 
-      Semantically, the use of security definitions is irrelevant and the substitutions
-      can be made during a preprocessing step.
-
-    </section> <!-- end of id="securityDefinitions-serialization-json"-->
+    </section> <!-- end of id="security-serialization-json"-->
 
   </section> <!-- end of id="serialization-json"-->
 
@@ -866,6 +905,7 @@ This media type has not registered  with IANA yet.
     <li>Communication metadata "link" was renamed as "form", and a form now contains a new field "rel".</li>
     <li>A Web "link" was introduced at the top level.</li>
     <li>Descriptions were added to explain how semantic annotations can be attached at various levels (thing, interaction and data).</li>
+    <li>A mechanism to declare security metadata was added.</li>
   </ul>
 </section>
 
