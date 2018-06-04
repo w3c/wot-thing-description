@@ -236,7 +236,6 @@ const securityPredefined = [
     "BearerSecurityScheme",
     "PopSecurityScheme",
     "ApikeySecurityScheme",
-    "OCFSecurityScheme",
     "OAuth2SecurityScheme"
 ];
 
