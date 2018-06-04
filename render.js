@@ -220,6 +220,15 @@ const corePredefined = [
     "Link"
 ];
 
+const schemaPredefined = [
+    "DataSchema",
+    "ArraySchema",
+    "ObjectSchema",
+    "BooleanSchema",
+    "NumberSchema",
+    "StringSchema"
+];
+
 const securityPredefined = [
     "SecurityScheme",
     "BasicSecurityScheme",
@@ -229,15 +238,6 @@ const securityPredefined = [
     "ApikeySecurityScheme",
     "OCFSecurityScheme",
     "OAuth2SecurityScheme"
-];
-
-const schemaPredefined = [
-    "DataSchema",
-    "ArraySchema",
-    "ObjectSchema",
-    "BooleanSchema",
-    "NumberSchema",
-    "StringSchema"
 ];
 
 function sort(ctx) {
@@ -250,21 +250,21 @@ function sort(ctx) {
         
         return i1 - i2;
     });
-    ctx.securityClasses.sort(function(c1, c2) {
-        let i1 = securityPredefined.indexOf(c1.label);
-        let i2 = securityPredefined.indexOf(c2.label);
-        
-        if (i1 === -1) { i1 = securityPredefined.length; }
-        if (i2 === -1) { i2 = securityPredefined.length; }
-        
-        return i1 - i2;
-    });
     ctx.schemaClasses.sort(function(c1, c2) {
         let i1 = schemaPredefined.indexOf(c1.label);
         let i2 = schemaPredefined.indexOf(c2.label);
         
         if (i1 === -1) { i1 = schemaPredefined.length; }
         if (i2 === -1) { i2 = schemaPredefined.length; }
+        
+        return i1 - i2;
+    });
+    ctx.securityClasses.sort(function(c1, c2) {
+        let i1 = securityPredefined.indexOf(c1.label);
+        let i2 = securityPredefined.indexOf(c2.label);
+        
+        if (i1 === -1) { i1 = securityPredefined.length; }
+        if (i2 === -1) { i2 = securityPredefined.length; }
         
         return i1 - i2;
     });
