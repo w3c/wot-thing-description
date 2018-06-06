@@ -176,13 +176,13 @@ vs:term_status rdf:type owl:AnnotationProperty .
         rdfs:range :Property .
 
 
-###  http://www.w3.org/ns/td#scope
+###  http://www.w3.org/ns/td#scopes
 
 :scope rdf:type owl:ObjectProperty ;
         
-       rdfs:label "scope" ;
+       rdfs:label "scopes" ;
         
-       rdfs:comment "Authorization scope identifier."@en ;
+       rdfs:comment "Array of authorization scope identifiers."@en ;
         
        rdfs:range :Thing .
 
@@ -324,7 +324,7 @@ vs:term_status rdf:type owl:AnnotationProperty .
     
     rdfs:label "in" ;
     
-    rdfs:comment "Specifies location of security authentication information (one of header, parameter, body, or cookie)."@en ;
+    rdfs:comment "Specifies location of security authentication information (one of header, query, body, or cookie)."@en ;
     
     rdfs:range xsd:string .
 
@@ -336,7 +336,7 @@ vs:term_status rdf:type owl:AnnotationProperty .
     
     rdfs:label "format" ;
     
-    rdfs:comment "Specifies format of security authentication information (just one option at present: jwt)."@en ;
+    rdfs:comment "Specifies format of security authentication information (one of jwt, jwe, or jws)."@en ;
     
     rdfs:range xsd:string .
 
@@ -439,6 +439,18 @@ vs:term_status rdf:type owl:AnnotationProperty .
             rdfs:comment "Indicates whether a remote servient can subscribe to (\"observe\") the Property, to receive change notifications or periodic updates (true/false)."@en ;
             
             rdfs:range xsd:boolean .
+
+
+###  http://www.w3.org/ns/td#pname
+
+:qop rdf:type owl:DatatypeProperty ;
+          
+     rdfs:label "pname" ;
+             
+     rdfs:comment "Name for query, header, or cookie parameters." ;
+             
+     rdfs:range xsd:string .
+
 
 
 ###  http://www.w3.org/ns/td#proxyUrl
@@ -592,7 +604,7 @@ For example, the Property interaction allows get and set operations. The protoco
                           owl:allValuesFrom :SecurityScheme
                         ] ,
                         [ rdf:type owl:Restriction ;
-                          owl:onProperty :scope ;
+                          owl:onProperty :scopes ;
                           owl:allValuesFrom xsd:string
                         ] ,
                         [ rdf:type owl:Restriction ;
@@ -690,7 +702,7 @@ For example, the Property interaction allows get and set operations. The protoco
                         owl:allValuesFrom xsd:string
                       ] ,
                       [ rdf:type owl:Restriction ;
-                        owl:onProperty :scope ;
+                        owl:onProperty :scopes ;
                         owl:allValuesFrom xsd:string
                       ] ,
                       [ rdf:type owl:Restriction ;
@@ -806,7 +818,7 @@ For example, the Property interaction allows get and set operations. The protoco
                             owl:allValuesFrom :SecurityScheme
                           ] ,
                           [ rdf:type owl:Restriction ;
-                            owl:onProperty :scope ;
+                            owl:onProperty :scopes ;
                             owl:allValuesFrom xsd:string
                           ] ,
                           [ rdf:type owl:Restriction ;
@@ -852,6 +864,10 @@ For example, the Property interaction allows get and set operations. The protoco
              rdfs:subClassOf [ rdf:type owl:Restriction ;
                                owl:onProperty :in ;
                                owl:allValuesFrom xsd:string
+                             ] , 
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :pname ;
+                               owl:allValuesFrom xsd:string
                              ] ; 
              
              rdfs:comment "Basic authentication security configuration (\"scheme\": \"basic\").  Unencrypted username and password.  Should be used with some other security mechanism providing confidentiality, for example, TLS."@en .
@@ -862,6 +878,10 @@ For example, the Property interaction allows get and set operations. The protoco
 
              rdfs:subClassOf [ rdf:type owl:Restriction ;
                                owl:onProperty :in ;
+                               owl:allValuesFrom xsd:string
+                             ] , 
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :pname ;
                                owl:allValuesFrom xsd:string
                              ] , 
                              [ rdf:type owl:Restriction ;
@@ -884,6 +904,14 @@ For example, the Property interaction allows get and set operations. The protoco
                                owl:allValuesFrom xsd:string
                              ] , 
                              [ rdf:type owl:Restriction ;
+                               owl:onProperty :in ;
+                               owl:allValuesFrom xsd:string
+                             ] , 
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :pname ;
+                               owl:allValuesFrom xsd:string
+                             ] , 
+                             [ rdf:type owl:Restriction ;
                                owl:onProperty :authorizationUrl ;
                                owl:allValuesFrom xsd:anyURI
                              ] ; 
@@ -903,6 +931,14 @@ For example, the Property interaction allows get and set operations. The protoco
                                owl:allValuesFrom xsd:string
                              ] , 
                              [ rdf:type owl:Restriction ;
+                               owl:onProperty :in ;
+                               owl:allValuesFrom xsd:string
+                             ] , 
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :pname ;
+                               owl:allValuesFrom xsd:string
+                             ] , 
+                             [ rdf:type owl:Restriction ;
                                owl:onProperty :authorizationUrl ;
                                owl:allValuesFrom xsd:anyURI
                              ] ; 
@@ -916,9 +952,13 @@ For example, the Property interaction allows get and set operations. The protoco
              rdfs:subClassOf [ rdf:type owl:Restriction ;
                                owl:onProperty :in ;
                                owl:allValuesFrom xsd:string
+                             ] , 
+                             [ rdf:type owl:Restriction ;
+                               owl:onProperty :pname ;
+                               owl:allValuesFrom xsd:string
                              ] ; 
 
-             rdfs:comment "API key authentication security configuration (\"scheme\": \"apikey\").  This is for the case where the access token is opaque and is not using a standard token format.  If the location of the key is specified as 'parameter' and there is no URI template, the query parameter 'key=...' will be assumed."@en .
+             rdfs:comment "API key authentication security configuration (\"scheme\": \"apikey\").  This is for the case where the access token is opaque and is not using a standard token format."@en .
 
 :OAuth2SecurityScheme rdf:type owl:Class ;
              
@@ -928,9 +968,10 @@ For example, the Property interaction allows get and set operations. The protoco
                                owl:onProperty :flow ;
                                owl:allValuesFrom xsd:string
                              ] , 
-                             ### NOTE!  This is an (array) of strings; would be nice to have descriptions, but...
+                             ### NOTE!  This is an (array) of strings, not objects; 
+			     ### it would be nice to have descriptions, but would complicate the defn
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :scope ;
+                               owl:onProperty :scopes ;
                                owl:allValuesFrom xsd:string
                              ] , 
                              [ rdf:type owl:Restriction ;
@@ -946,7 +987,7 @@ For example, the Property interaction allows get and set operations. The protoco
                                owl:allValuesFrom xsd:anyURI
                              ] ; 
 
-             rdfs:comment "OAuth2 authentication security configuration (\"scheme\": \"oauth2\").  For the implicit flow the authorizationUrl and scope are required.  For the password and client flows both tokenUrl and scope are required.  For the code flow authorizationUrl, tokenUrl, and scope are required."@en .
+             rdfs:comment "OAuth2 authentication security configuration (\"scheme\": \"oauth2\").  For the implicit flow the authorizationUrl and scopes are required.  For the password and client flows both tokenUrl and scopes are required.  For the code flow authorizationUrl, tokenUrl, and scopes are required."@en .
                   
 
 ###  http://www.w3.org/ns/td#SimpleDataSchema
