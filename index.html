@@ -158,18 +158,18 @@ Example 1 shows a simple TD instance in such JSON serializiation that reflects W
     "properties": {
         "status" : {
             "type": "string",
-            "form": [{"href": "coaps://mylamp.example.com:5683/status"}]
+            "forms": [{"href": "coaps://mylamp.example.com:5683/status"}]
         }
     },
     "actions": {
         "toggle" : {
-            "form": [{"href": "coaps://mylamp.example.com:5683/toggle"}]
+            "forms": [{"href": "coaps://mylamp.example.com:5683/toggle"}]
         }
     },
     "events":{
         "overheating":{
             "type": "string",
-            "form": [{"href": "coaps://mylamp.example.com:5683/oh"}]
+            "forms": [{"href": "coaps://mylamp.example.com:5683/oh"}]
         }
     }
 }
@@ -203,21 +203,21 @@ The TD in Example 1 reflects some default assumptions that are not explicitly de
          "writable": false,
          "observable": false,
          "type": "string",
-         "form": [{
+         "forms": [{
              "href": "coaps://mylamp.example.com:5683/status",
              "mediaType": "application/json"
          }]
     }},
     "actions": {
      "toggle": {
-        "form": [{
+        "forms": [{
             "href": "coaps://mylamp.example.com:5683/toggle",
             "mediaType": "application/json"
         }]}},
     "events": {
         "overheating": {
             "type": "string",
-            "form": [{
+            "forms": [{
                 "href": "coaps://mylamp.example.com:5683/oh",
                 "mediaType": "application/json"
             }]
@@ -276,11 +276,11 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
 
 
 
-<section id="vocabularyDefinitionSection"><h1>Information Model</h1><!-- h1>Vocabulary</h1 --><section><h2>Overview</h2><p>The Thing Description information model is a core set of definitions for terms defined in [[!WOT-ARCHITECTURE]]. These definitions take the form of a vocabulary embedded in the Resource Description Framework (RDF). An overview of this vocabulary with its class context and class relation is given by the following two figures (TD core model and TD data schema model).</p><!--<p><a href="http://visualdataweb.de/webvowl/#iri=https://rawgit.com/w3c/wot-thing-description/TD-JSON-LD-1.1/ontology/td.ttl">Click here for the visualization</a></p>--><figure id="td-core-model"><img src="td-core-model/td-core-model.svg"  alt="TD core model figure"/><figcaption>TD core model</figcaption></figure><figure id="td-core-model"><img src="td-core-model/td-data-schema-model.svg"   alt="TD core model figure"/><figcaption>TD data schema model</figcaption></figure><p>A detailed description of the vocabularies of the TD core model and TD data schema model is given in the next sub-section.</p></section><section id="sec-core-vocabulary-definition"><h2>Core Vocabulary Definition</h2>      <h3><code>Thing</code></h3><p>Describes a physical and/or virtual Thing (may represent one or more physical and / or virtual Things) in the Web of Thing context.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>id</code></td><td>unique identifier of the Thing (URI, e.g. custom URN)</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>description</code></td><td>Provides additionel (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>support</code></td><td>Provides information about TD maintainer (e.g., author, link or telephon number to get support, etc).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>base</code></td><td>Define base URI that is valid for all defined local interaction resources. All other URIs in the TD must then be resolved using the algorithm defined in [[!RFC3986]]. This field is optional.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>properties</code></td><td>Keeps all Property-based interaction pattern of the Thing.</td><td>no</td><td>.</td><td><a href="#property"><code>Property</code></a></td></tr><tr><td><code>actions</code></td><td>Keeps all Action-based interaction pattern of the Thing.</td><td>no</td><td>.</td><td><a href="#action"><code>Action</code></a></td></tr><tr><td><code>events</code></td><td>Keeps all Event-based interaction pattern of the Thing.</td><td>no</td><td>.</td><td><a href="#event"><code>Event</code></a></td></tr><tr><td><code>links</code></td><td>provides Web links to arbitrary resources that relate to the specified Thing Description.</td><td>no</td><td>.</td><td><a href="#link"><code>Link</code></a></td></tr><tr><td><code>securityDefinitions</code></td><td></td><td>no</td><td>.</td><td><a href="#security"><code>Security</code></a></td></tr></tbody></table>      <h3><code>Property</code></h3><p>Properties expose internal state of a Thing that can be directly accessed (get) and optionally manipulated (set). In addition, Things can also choose to make Properties observable by pushing the new state (not an event) after a change; this must follow eventual consistency (also see CAP Theorem).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>observable</code></td><td>Indicates whether a remote servient can subscribe to (&quot;observe&quot;) the Property, to receive change notifications or periodic updates (true/false). .</td><td>no</td><td>false</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr><tr><td><code>properties</code></td><td>Data schema nested definitions.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>writable</code></td><td>Boolean value that indicates whether a property is writable (=true) or not (=false).</td><td>no</td><td>false</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr><tr><td><code>forms</code></td><td>Indicates one or more endpoints from which an interaction pattern is accessible.</td><td>no</td><td>.</td><td><a href="#form"><code>Form</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>Action</code></h3><p>Actions offer functions of the Thing. These functions may manipulate the interal state of a Thing in a way that is not possible through setting Properties. Examples are changing internal state that is not exposed as Property, changing multiple Properties, changing Properties over time or with a process that shall not be disclosed. Actions may also be pure functions, that is, they do not use any internal state at all, e.g., for processing input data and returning the result directly.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>description</code></td><td>Provides additionel (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>forms</code></td><td>Indicates one or more endpoints from which an interaction pattern is accessible.</td><td>no</td><td>.</td><td><a href="#form"><code>Form</code></a></td></tr><tr><td><code>input</code></td><td>link to the n-ary class that allows the declaration of the accepted data type of an action.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>output</code></td><td>link to the n-ary class that allows the declaration of the data type returned by an action.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>Event</code></h3><p>The Event Interaction Pattern describes event sources that asynchronously push messages. Here not state, but state transitions (events) are communicated (e.g., &quot;clicked&quot;). Events may be triggered by internal state changes that are not exposed as Properties. Events usually follow strong consistency, where messages need to be queued to ensure eventual delivery of all occured events.</p><p>The <code>Event</code> class has the same fields as the class <a href="#property" class="sec-ref">Property</a>.</p>      <h3><code>Form</code></h3><p>Communication metadata where a service can be accessed by a client application. An interaction might have more than one form.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>mediaType</code></td><td>Assign underlying media type of the interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml).</td><td>no</td><td>application/json</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>rel</code></td><td>Indicates the expected result of performing the operation described by the form.
+<section id="vocabularyDefinitionSection"><h1>Information Model</h1><!-- h1>Vocabulary</h1 --><section><h2>Overview</h2><p>The Thing Description information model is a core set of definitions for terms defined in [[!WOT-ARCHITECTURE]]. These definitions take the form of a vocabulary embedded in the Resource Description Framework (RDF). An overview of this vocabulary with its class context and class relation is given by the following three figures: TD core model, TD data schema model, and TD security model.</p><!--<p><a href="http://visualdataweb.de/webvowl/#iri=https://rawgit.com/w3c/wot-thing-description/TD-JSON-LD-1.1/ontology/td.ttl">Click here for the visualization</a></p>--><figure id="td-core-model"><img src="td-core-model/td-core-model.svg"  alt="TD core model figure"/><figcaption>TD core model</figcaption></figure><figure id="td-data-schema-model"><img src="td-core-model/td-data-schema-model.svg"   alt="TD data schema model figure"/><figcaption>TD data schema model</figcaption></figure><figure id="td-security-model"><img src="td-core-model/td-security-model.svg"   alt="TD security model figure"/><figcaption>TD security model</figcaption></figure><p>A detailed description of the vocabularies of the TD core model and TD data schema model is given in the next sub-section.</p></section><section id="sec-core-vocabulary-definition"><h2>Core Vocabulary Definition</h2>      <h3><code>Thing</code></h3><p>Describes a physical and/or virtual Thing (may represent one or more physical and / or virtual Things) in the Web of Things context.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>id</code></td><td>unique identifier of the Thing (URI, e.g. custom URN)</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>description</code></td><td>Provides additional (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>support</code></td><td>Provides information about TD maintainer (e.g., author, link or telephone number to get support, etc).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>base</code></td><td>Define base URI that is valid for all defined local interaction resources. All other URIs in the TD must then be resolved using the algorithm defined in [[!RFC3986]]. This field is optional.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>properties</code></td><td>Keeps all Property-based interaction patterns of the Thing.</td><td>no</td><td>.</td><td><a href="#property"><code>Property</code></a></td></tr><tr><td><code>actions</code></td><td>Keeps all Action-based interaction patterns of the Thing.</td><td>no</td><td>.</td><td><a href="#action"><code>Action</code></a></td></tr><tr><td><code>events</code></td><td>Keeps all Event-based interaction patterns of the Thing.</td><td>no</td><td>.</td><td><a href="#event"><code>Event</code></a></td></tr><tr><td><code>links</code></td><td>Provides Web links to arbitrary resources that relate to the specified Thing Description.</td><td>no</td><td>.</td><td><a href="#link"><code>Link</code></a></td></tr><tr><td><code>security</code></td><td>Set of security configurations that must all be satisfied for access to resources at or below the annotated level.</td><td>no</td><td>.</td><td><a href="#securityscheme"><code>SecurityScheme</code></a></td></tr></tbody></table>      <h3><code>Property</code></h3><p>Properties expose internal state of a Thing that can be directly accessed (get) and optionally manipulated (set). In addition, Things can also choose to make Properties observable by pushing the new state (not an event) after a change; this must follow eventual consistency (also see CAP Theorem).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>observable</code></td><td>Indicates whether a remote servient can subscribe to (&quot;observe&quot;) the Property, to receive change notifications or periodic updates (true/false).</td><td>no</td><td>false</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr><tr><td><code>properties</code></td><td>Data schema nested definitions.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>writable</code></td><td>Boolean value that indicates whether a property is writable (=true) or not (=false).</td><td>no</td><td>false</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr><tr><td><code>forms</code></td><td>Indicates one or more endpoints from which an interaction pattern is accessible.</td><td>no</td><td>.</td><td><a href="#form"><code>Form</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>security</code></td><td>Set of security configurations that must all be satisfied for access to resources at or below the annotated level.</td><td>no</td><td>.</td><td><a href="#securityscheme"><code>SecurityScheme</code></a></td></tr><tr><td><code>scopes</code></td><td>Array of authorization scope identifiers.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>Action</code></h3><p>Actions offer functions of the Thing. These functions may manipulate the interal state of a Thing in a way that is not possible through setting Properties. Examples are changing internal state that is not exposed as Property, changing multiple Properties, changing Properties over time or with a process that shall not be disclosed. Actions may also be pure functions, that is, they do not use any internal state at all, e.g., for processing input data and returning the result directly.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>description</code></td><td>Provides additional (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>forms</code></td><td>Indicates one or more endpoints from which an interaction pattern is accessible.</td><td>no</td><td>.</td><td><a href="#form"><code>Form</code></a></td></tr><tr><td><code>input</code></td><td>Link to the n-ary class that allows the declaration of the accepted data type of an action.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>output</code></td><td>Link to the n-ary class that allows the declaration of the data type returned by an action.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>security</code></td><td>Set of security configurations that must all be satisfied for access to resources at or below the annotated level.</td><td>no</td><td>.</td><td><a href="#securityscheme"><code>SecurityScheme</code></a></td></tr><tr><td><code>scopes</code></td><td>Array of authorization scope identifiers.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>Event</code></h3><p>The Event Interaction Pattern describes event sources that asynchronously push messages. Here not state, but state transitions (events) are communicated (e.g., &quot;clicked&quot;). Events may be triggered by internal state changes that are not exposed as Properties. Events usually follow strong consistency, where messages need to be queued to ensure eventual delivery of all occured events.</p><p>The <code>Event</code> class has the same fields as the class <a href="#property" class="sec-ref">Property</a>.</p>      <h3><code>Form</code></h3><p>Communication metadata indicating where a service can be accessed by a client application. An interaction might have more than one form.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>rel</code></td><td>Indicates the expected result of performing the operation described by the form.
 
-For example, the Property interaction allows get and set operations. The protocol binding may contain a form for the get operation and a different form for the set operation. The value of the &quot;rel&quot; attribute of the form indicates which form is which and allows the client to select the correct form for the oeration required.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>security</code></td><td>Defines the security requirements of the interacions by making a reference to the top level securityDefinition.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>Link</code></h3><p>A Web link, as specified by IETF RFC 8288 (https://tools.ietf.org/html/rfc8288).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>rel</code></td><td>Indicates the expected result of performing the operation described by the form.
+For example, the Property interaction allows get and set operations. The protocol binding may contain a form for the get operation and a different form for the set operation. The value of the &quot;rel&quot; attribute of the form indicates which form is which and allows the client to select the correct form for the oeration required.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>mediaType</code></td><td>Assign underlying media type of the interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml).</td><td>no</td><td>application/json</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>security</code></td><td>Set of security configurations that must all be satisfied for access to resources at or below the annotated level.</td><td>no</td><td>.</td><td><a href="#securityscheme"><code>SecurityScheme</code></a></td></tr><tr><td><code>scopes</code></td><td>Array of authorization scope identifiers.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>Link</code></h3><p>A Web link, as specified by IETF RFC 8288 (https://tools.ietf.org/html/rfc8288).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>mediaType</code></td><td>Assign underlying media type of the interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml).</td><td>no</td><td>application/json</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>rel</code></td><td>Indicates the expected result of performing the operation described by the form.
 
-For example, the Property interaction allows get and set operations. The protocol binding may contain a form for the get operation and a different form for the set operation. The value of the &quot;rel&quot; attribute of the form indicates which form is which and allows the client to select the correct form for the oeration required.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>mediaType</code></td><td>Assign underlying media type of the interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml).</td><td>no</td><td>application/json</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>anchor</code></td><td>By default, the context of a link is the URL of the representation it is associated with, and is serialised as a URI. When present, the anchor parameter overrides this with another URI, such as a fragment of this resource, or a third resource (i.e., when the anchor value is an absolute URI).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr></tbody></table>      <h3><code>Security</code></h3><p class="ednote">This is the first draft containing the new security vocabularies. The definition is not yet completed and is still in progress.</p><p>The (optional) security field can be used to provide access metadata (self-contained) information of the Thing for securely transmitting information via all its resources. Also see Section Security Consideration. Definition taken from http://w3c.github.io/wot/current-practices/wot-practices#security-metadata.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>scheme</code></td><td>Identification of security scheme (e.g., basic, digest, and oauth2).</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>in</code></td><td>Specifies location of the authentication information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section><section id="sec-data-schema-vocabulary-definition"><h2>Data Schema Vocabulary Definition</h2>      <h3><code>DataSchema</code></h3><p>Any JSON value specification.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>description</code></td><td>Provides additionel (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>type</code></td><td>Assignment of JSON-based data types that are compatible with JSON Schema (boolean, integer, number, string, object, array, null).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>const</code></td><td>Provides a constant value.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyType"><code>anyType</code></a></td></tr><tr><td><code>enum</code></td><td>Restricted set of values provided as array.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><p>The class <code>DataSchema</code> has the following subclasses:</p><ul><li><td><a href="#arrayschema"><code>ArraySchema</code></a></td></li><li><td><a href="#booleanschema"><code>BooleanSchema</code></a></td></li><li><td><a href="#numberschema"><code>NumberSchema</code></a></td></li><li><td><a href="#objectschema"><code>ObjectSchema</code></a></td></li><li><td><a href="#simpledataschema"><code>SimpleDataSchema</code></a></td></li><li><td><a href="#stringschema"><code>StringSchema</code></a></td></li></ul>      <h3><code>ArraySchema</code></h3><p>A JSON array specification (&quot;type&quot;: &quot;array&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>items</code></td><td>Used to defines characteristics of an array.</td><td>yes</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>minItems</code></td><td>Defines the minimum number of itmes that have to be in the array.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#unsignedInt"><code>unsignedInt</code></a></td></tr><tr><td><code>maxItems</code></td><td>Defines the maximum number of itmes that have to be in the array.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#unsignedInt"><code>unsignedInt</code></a></td></tr></tbody></table>      <h3><code>BooleanSchema</code></h3><p>A JSON boolean value specification (&quot;type&quot;: &quot;boolean&quot;).</p>      <h3><code>NumberSchema</code></h3><p>A JSON number value specification (&quot;type&quot;: &quot;number&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>minimum</code></td><td>Specifies a minimum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#double"><code>double</code></a></td></tr><tr><td><code>maximum</code></td><td>Specifies a maximum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#double"><code>double</code></a></td></tr></tbody></table><p>The class <code>NumberSchema</code> has the following subclasses:</p><ul><li><td><a href="#integerschema"><code>IntegerSchema</code></a></td></li></ul>      <h3><code>IntegerSchema</code></h3><p>A JSON integer value specification, i.e. numbers without a fractional part (&quot;type&quot;: &quot;integer&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>minimum</code></td><td>Specifies a minimum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#integer"><code>integer</code></a></td></tr><tr><td><code>maximum</code></td><td>Specifies a maximum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#integer"><code>integer</code></a></td></tr></tbody></table>      <h3><code>ObjectSchema</code></h3><p>A JSON object specification (&quot;type&quot;: &quot;object&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>properties</code></td><td>Data schema nested definitions.</td><td>yes</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>required</code></td><td>Defines which members of the object type are required/mandatory.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>StringSchema</code></h3><p>A JSON string value specification (&quot;type&quot;: &quot;string&quot;).</p></section></section>
+For example, the Property interaction allows get and set operations. The protocol binding may contain a form for the get operation and a different form for the set operation. The value of the &quot;rel&quot; attribute of the form indicates which form is which and allows the client to select the correct form for the oeration required.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>anchor</code></td><td>By default, the context of a link is the URL of the representation it is associated with, and is serialised as a URI. When present, the anchor parameter overrides this with another URI, such as a fragment of this resource, or a third resource (i.e., when the anchor value is an absolute URI).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr></tbody></table></section><section id="sec-data-schema-vocabulary-definition"><h2>Data Schema Vocabulary Definition</h2>      <h3><code>DataSchema</code></h3><p>Any JSON value specification.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>description</code></td><td>Provides additional (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>type</code></td><td>Assignment of JSON-based data types that are compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>const</code></td><td>Provides a constant value.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyType"><code>anyType</code></a></td></tr><tr><td><code>enum</code></td><td>Restricted set of values provided as array.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><p>The class <code>DataSchema</code> has the following subclasses:</p><ul><li><td><a href="#arrayschema"><code>ArraySchema</code></a></td></li><li><td><a href="#booleanschema"><code>BooleanSchema</code></a></td></li><li><td><a href="#numberschema"><code>NumberSchema</code></a></td></li><li><td><a href="#objectschema"><code>ObjectSchema</code></a></td></li><li><td><a href="#simpledataschema"><code>SimpleDataSchema</code></a></td></li><li><td><a href="#stringschema"><code>StringSchema</code></a></td></li></ul>      <h3><code>ArraySchema</code></h3><p>A JSON array specification (&quot;type&quot;: &quot;array&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>items</code></td><td>Used to define characteristics of an array.</td><td>yes</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>minItems</code></td><td>Defines the minimum number of items that have to be in the array.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#unsignedInt"><code>unsignedInt</code></a></td></tr><tr><td><code>maxItems</code></td><td>Defines the maximum number of items that have to be in the array.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#unsignedInt"><code>unsignedInt</code></a></td></tr></tbody></table>      <h3><code>ObjectSchema</code></h3><p>A JSON object specification (&quot;type&quot;: &quot;object&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>properties</code></td><td>Data schema nested definitions.</td><td>yes</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>required</code></td><td>Defines which members of the object type are required/mandatory.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>BooleanSchema</code></h3><p>A JSON boolean value specification (&quot;type&quot;: &quot;boolean&quot;).</p>      <h3><code>NumberSchema</code></h3><p>A JSON number value specification (&quot;type&quot;: &quot;number&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>minimum</code></td><td>Specifies a minimum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#double"><code>double</code></a></td></tr><tr><td><code>maximum</code></td><td>Specifies a maximum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#double"><code>double</code></a></td></tr></tbody></table><p>The class <code>NumberSchema</code> has the following subclasses:</p><ul><li><td><a href="#integerschema"><code>IntegerSchema</code></a></td></li></ul>      <h3><code>StringSchema</code></h3><p>A JSON string value specification (&quot;type&quot;: &quot;string&quot;).</p>      <h3><code>IntegerSchema</code></h3><p>A JSON integer value specification, i.e. numbers without a fractional part (&quot;type&quot;: &quot;integer&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>minimum</code></td><td>Specifies a minimum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#integer"><code>integer</code></a></td></tr><tr><td><code>maximum</code></td><td>Specifies a maximum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#integer"><code>integer</code></a></td></tr></tbody></table></section><section id="sec-security-vocabulary-definition"><h2>Security Vocabulary Definition</h2><p class="ednote" title="Security Metadata Sources">The set of security metadata supported by the core TD vocabulary is still under discussion.  For the core vocabulary the focus is on well-established security  mechanisms, such as those built into protocols supported by WoT  or already in wide use with those protocols.  Note that the vocabulary extension mechanism of the WoT Thing Description allows for additional security schemes if needed.  The current set of security schemes is partly based on <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#securitySchemeObject">OpenAPI 3.0.1</a>.  The security schemes, vocabulary and syntax given in this specification share many similarities with OpenAPI; however, it is not fully compatible.  Also, as OpenAPI targets only web services built around HTTP it does not cover the full set of use cases required for the IoT.  Therefore, we are currently discussing metadata supporting additional security mechanisms for IoT-centered protocols such as CoAP and MQTT.  For more information about what security schemes are under discussion (and to file issues if you have a request) please visit the <a href="https://github.com/w3c/wot-security">WoT Security TF repository.</a></p>      <h3><code>SecurityScheme</code></h3><p>An optional security configuration defines metadata for a security mechanism to allow access to one or more resources.  More than one security configuration may be specified in which case they all need to be satisfied for access to be permitted.  Security configurations can be given at the level of a Thing, an Interaction pattern, or a Form.  In this case security configurations given at lower levels override security configurations given at higher levels.  Additional security schemes can be used beyond those defined here if an appropriate external vocabulary is included in the context.  See also Security and Privacy Considerations.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>scheme</code></td><td>Identification of security mechanism being configured (one of basic, digest, bearer, pop, oauth2, or apikey).</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>description</code></td><td>Provides additional (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>proxyUrl</code></td><td>URI of the proxy server this security configuration provides access to.  If not given, the corresponding security configuration is for the endpoint.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr></tbody></table><p>The class <code>SecurityScheme</code> has the following subclasses:</p><ul><li><td><a href="#apikeysecurityscheme"><code>ApikeySecurityScheme</code></a></td></li><li><td><a href="#basicsecurityscheme"><code>BasicSecurityScheme</code></a></td></li><li><td><a href="#digestsecurityscheme"><code>DigestSecurityScheme</code></a></td></li><li><td><a href="#bearersecurityscheme"><code>BearerSecurityScheme</code></a></td></li><li><td><a href="#popsecurityscheme"><code>PopSecurityScheme</code></a></td></li><li><td><a href="#oauth2securityscheme"><code>OAuth2SecurityScheme</code></a></td></li></ul>      <h3><code>BasicSecurityScheme</code></h3><p>Basic authentication security configuration (&quot;scheme&quot;: &quot;basic&quot;).  Unencrypted username and password.  Should be used with some other security mechanism providing confidentiality, for example, TLS.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>in</code></td><td>Specifies location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>header</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>pname</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>DigestSecurityScheme</code></h3><p>Digest authentication security configuration (&quot;scheme&quot;: &quot;digest&quot;). Similar to basic authentication but with added features to avoid man-in-the-middle attacks.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>qop</code></td><td>Quality of protection (one of auth or auth-int).</td><td>no</td><td>auth</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>in</code></td><td>Specifies location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>header</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>pname</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>BearerSecurityScheme</code></h3><p>Bearer token authentication security configuration (&quot;scheme&quot;: &quot;bearer&quot;).  This scheme is intended for situations where bearer tokens are used independently of OAuth.  If the oauth2 scheme is specified it is not generally necessary to specify this scheme as well as it is implied.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>authorizationUrl</code></td><td>URI of the authorization server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>alg</code></td><td>Encoding, encryption, or digest algorithm (one of MD5, ES256, or ES512-256).</td><td>no</td><td>ES256</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>format</code></td><td>Specifies format of security authentication information (one of jwt, jwe, or jws).</td><td>no</td><td>jwt</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>in</code></td><td>Specifies location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>header</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>pname</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>PopSecurityScheme</code></h3><p>Proof-of-possession token authentication security configuration (&quot;scheme&quot;: &quot;pop&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>authorizationUrl</code></td><td>URI of the authorization server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>alg</code></td><td>Encoding, encryption, or digest algorithm (one of MD5, ES256, or ES512-256).</td><td>no</td><td>ES256</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>format</code></td><td>Specifies format of security authentication information (one of jwt, jwe, or jws).</td><td>no</td><td>jwt</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>in</code></td><td>Specifies location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>header</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>pname</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>ApikeySecurityScheme</code></h3><p>API key authentication security configuration (&quot;scheme&quot;: &quot;apikey&quot;).  This is for the case where the access token is opaque and is not using a standard token format.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>in</code></td><td>Specifies location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>query</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>pname</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table>      <h3><code>OAuth2SecurityScheme</code></h3><p>OAuth2 authentication security configuration (&quot;scheme&quot;: &quot;oauth2&quot;).  For the implicit flow the authorizationUrl and scopes are required.  For the password and client flows both tokenUrl and scopes are required.  For the code flow authorizationUrl, tokenUrl, and scopes are required.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>scopes</code></td><td>Array of authorization scope identifiers.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>authorizationUrl</code></td><td>URI of the authorization server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>tokenUrl</code></td><td>URI of the token server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>refreshUrl</code></td><td>URI of the refresh server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>flow</code></td><td>Authorization flow (one of implicit, password, client, or code).</td><td>no</td><td>implicit</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section></section>
 
 
 
@@ -363,7 +363,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
 
   <pre class="example">
         {
-          "label": "MyThing",
+          "name": "MyThing",
           "id": "urn:dev:wot:com:example:servient:myThing",
           "base": "https://servient.example.com/",
           "description": "Additional (human) readable information of the Thing.",
@@ -371,7 +371,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
           "properties": {...},
           "actions": {...},
           "events": {...},
-          "securityDefinitions": {...},
+          "security": {...},
           "links": [...]
         }
    </pre>
@@ -383,7 +383,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
         {
           "@context": "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
           "@type": "Thing",
-          "label": "MyThing",
+          "name": "MyThing",
           "id": "urn:dev:wot:com:example:servient:myThing",
           "base": "https://servient.example.com/",
           "description": "Additional (human) readable information of the Thing.",
@@ -391,7 +391,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
           "properties": {...},
           "actions": {...},
           "events": {...},
-          "securityDefinitions": {...},
+          "security": {...},
           "links": [...]
         }
    </pre>
@@ -538,7 +538,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
               	"required": ["to","duration"],
               },
               "output": {"type": "string"},
-              "form": [...]
+              "forms": [...]
             }
           ]
           ...
@@ -552,6 +552,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
 
     <section id="event-serialization-json">
       <h2>events</h2>
+
 <p>Events (and sub-events) offered by a Thing are collected in the <code>events</code> field of (unique) Event names as JSON keys. Each required vocabulary, as defined in the class <a href="#event" class="sec-ref">Event</a>, MUST transformed as a JSON key within a Event field.</p>
 
 <p>The type of the fields <code>properties</code> and <code>items</code> MUST be serialized as a JSON object.</p>
@@ -628,28 +629,130 @@ In the first line of the Thing Description instance MAY include the <code>@conte
 
     </section> <!-- end of id="links-serialization-json"-->
 
-    <section id="securityDefinitions-serialization-json">
-      <h2>securityDefinitions</h2>
+    <section id="security-serialization-json">
+      <h2>security</h2>
 
-      <p class="ednote">This is the first draft containing the new security vocabularies. The definition is not yet completed and is still in progress.
+      <p class="ednote">This is the first draft containing the new security vocabularies. 
+      The definition is not yet completed and is still in progress.
       </p>
 
-	<p>Each mandatory and required vocabulary, as defined in the class <a href="#security" class="sec-ref">Security</a>, MUST be serialized as a JSON key.</p>
+	<p>Each mandatory and required vocabulary, as defined in the class <a href="#security" class="sec-ref">SecurityScheme</a>, MUST be serialized as a JSON key.</p>
 
+      <p>The following TD snippet example shows a simple security configuration specifying
+      basic authentication in the header.  The value of <code>in</code> given is actually the default
+      value.<p>
       <pre class="example">
-        ...
-        "securityDefinitions": {
-            "bearerTokenConfig": {
-            	"scheme": "bearer",
-            	"format": "jwt",
-            	"alg": "ES256",
-            	"authorizationUrl": "https://servient.example.com:8443/"
-            }
-        ...
+"security": [
+  {
+    "scheme": "basic",
+    "in": "header"
+  }
+]
       </pre>
 
+      <p>Here is a more complex example: a TD snippet showing digest authentication on a proxy
+      combined with bearer token authentication on an endpoint.  Here the default
+      value of <code>in</code> in the <code>digest</code> scheme is implied.<p>
+      <pre class="example">
+...
+"security": [
+  {
+    "scheme": "digest",
+    "proxyUrl": "https://portal.example.com/"
+  },
+  {
+    "scheme": "bearer",
+    "format": "jwt",
+    "alg": "ES256",
+    "authorizationUrl": "https://servient.example.com:8443/"
+  }
+]
+      </pre>
 
-    </section> <!-- end of id="form-serialization-json"-->
+      <p>Security definitions can be given at more than one level.
+      In this case, definitions at the lower levels override
+      the definitions at the higher level.  In the following example, all interactions
+      require basic authentication except for the <code>overheating</code> event, in which
+      security has been overridden.  Note especially the use of an empty array for
+      the security configuration in the <code>overheating</code> event to indicate no 
+      authentication is required.  For the <code>status</code> property and the <code>toggle</code>
+      action, however, <code>basic</code> authentication is required, as defined
+      at the top level of the Thing.
+      </p>
+      <pre class="example">
+{
+  ...
+  "security": [{"scheme": "basic"}],
+  "properties": {
+    "status": {
+      ...
+      "forms": [{
+        "href": "https://mylamp.example.com/status",
+        "mediaType": "application/json",
+      }]
+    }
+  },
+  "actions": {
+    "toggle": {
+      ...
+      "forms": [{
+        "href": "https://mylamp.example.com/toggle",
+        "mediaType": "application/json"
+      }]
+    }
+  },
+  "events": {
+    "overheating": {
+      ...
+      "forms": [{
+        "href": "https://mylamp.example.com/oh",
+        "mediaType": "application/json",
+        "security": [] 
+      }]
+    }
+  }
+}
+      </pre>
+
+      <p>Security definitions can also can be given for different elements
+      at the same level.  This may be required for devices that support
+      multiple protocols, for example CoAP and HTTP, with support for different
+      security mechanisms.  It is also useful when alternative authentication
+      mechanisms are allowed.  Here is a TD snippet demonstrating three possible
+      ways to access a resource: via HTTPS with basic authentication, via HTTPS
+      via digest authentication, or via CoAPS with an API key.
+      In other words, the use of multiple security configurations at the same level 
+      provides a way to combine security mechanisms an in "OR" fashion.
+      In contrast, putting multiple security configurations in the same
+      <code>security</code> field combines them in an "AND" fashion, since in that case
+      they would all need to be satisfied.
+      </p>
+      <pre class="example">
+"properties": {
+  "status": {
+    ...
+    "forms": [
+      {
+        "href": "https://mylamp.example.com/status",
+        "mediaType": "application/json",
+        "security": [{"scheme": "basic"}]
+      },
+      {
+        "href": "https://mylamp.example.com/status",
+        "mediaType": "application/json",
+        "security": [{"scheme": "digest"}]
+      },
+      {
+        "href": "coaps://mylamp.example.com:5683/status",
+        "mediaType": "application/json",
+        "security": [{"scheme": "apikey"}]
+      }
+    ]
+  }
+}
+      </pre>
+
+    </section> <!-- end of id="security-serialization-json"-->
 
   </section> <!-- end of id="serialization-json"-->
 
@@ -718,7 +821,7 @@ This media type has not registered  with IANA yet.
         "status": {
              "description" : "Shows the current status of the lamp",
              "type": "string",
-             "form": [{
+             "forms": [{
                  "href": "coaps://mylamp.example.com:5683/status"
              }]
         }
@@ -726,14 +829,14 @@ This media type has not registered  with IANA yet.
     "actions": {
      "toggle": {
         "description" : "Turn on or off the lamp.",
-        "form": [{
+        "forms": [{
             "href": "coaps://mylamp.example.com:5683/toggle"
         }]}},
     "events": {
         "overheating": {
             "description" : "Lamp reaches a critical temperature (overheating).",
             "type": "string",
-            "form": [{
+            "forms": [{
                 "href": "coaps://mylamp.example.com:5683/oh"
             }]
         }}
@@ -756,7 +859,7 @@ This media type has not registered  with IANA yet.
              "writable": false,
              "observable": false,
              "type": "string",
-             "form": [{
+             "forms": [{
                  "href": "coaps://mylamp.example.com:5683/status",
                  "mediaType": "application/json"
              }]
@@ -766,7 +869,7 @@ This media type has not registered  with IANA yet.
      "toggle": {
         "@type" : "iot:SwitchStatus",
         "description" : "Turn on or off the lamp.",
-        "form": [{
+        "forms": [{
             "href": "coaps://mylamp.example.com:5683/toggle",
             "mediaType": "application/json"
         }]}},
@@ -775,7 +878,7 @@ This media type has not registered  with IANA yet.
             "@type" : "iot:TemperatureAlarm",
             "description" : "Lamp reaches a critical temperature (overheating).",
             "type": "string",
-            "form": [{
+            "forms": [{
                 "href": "coaps://mylamp.example.com:5683/oh",
                 "mediaType": "application/json"
             }]
@@ -815,6 +918,7 @@ This media type has not registered  with IANA yet.
     <li>Communication metadata "link" was renamed as "form", and a form now contains a new field "rel".</li>
     <li>A Web "link" was introduced at the top level.</li>
     <li>Descriptions were added to explain how semantic annotations can be attached at various levels (thing, interaction and data).</li>
+    <li>A mechanism to declare security metadata was added.</li>
   </ul>
 </section>
 
