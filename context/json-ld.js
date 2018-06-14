@@ -3,38 +3,45 @@ const fs = require('fs');
 const ld = 'http://www.w3.org/ns/json-ld#';
 const a = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
 
-function context(obj) {
+function context(obj, id) {
     let ctx = obj['@context'];
+    let scope = id ? id.substring(id.indexOf('#') + 1) + "-" : ""; // TODO hash
     
     if (!ctx) {
         return '';
     }
 
-    let txt = `_:context <${a}> <${ld}Context> .\r\n`;
+    let txt = `_:${scope}context <${a}> <${ld}Context> .\r\n`;
     
     if (ctx['@vocab']) {
         let vocab = ctx['@vocab']; // TODO resolve curie if needed
-        txt += `_:context <${ld}vocab> <${vocab}> .\r\n`;
+        txt += `_:${scope}context <${ld}vocab> <${vocab}> .\r\n`;
     }
     
     Object.entries(ctx)
     .filter(([k, v]) => !k.startsWith('@'))
     .map(([k, v]) => {
-        txt += `_:${k} <${a}> <${ld}Mapping> .\r\n`;
-        txt += `_:${k} <${ld}term> "${k}" .\r\n`;
+        txt += `_:${scope}${k} <${a}> <${ld}Mapping> .\r\n`;
+        txt += `_:${scope}${k} <${ld}term> "${k}" .\r\n`;
         
-        let iri = v instanceof String ? v : v['@id']; // TODO resolve curie if needed
-        txt+= `_:${k} <${ld}iri> "${iri}" .\r\n`;
+        let iri = v instanceof Object ? v['@id'] : v; // TODO resolve curie if needed
+        txt+= `_:${scope}${k} <${ld}iri> <${iri}> .\r\n`;
         
         if (v instanceof Object) {
             if (v['@container']) {
-                let container = v['@container'].replace('@id', '');
-                txt += `_:${k} <${ld}container> "${ld + container}" .\r\n`;
+                let container = v['@container'].replace('@', '');
+                txt += `_:${scope}${k} <${ld}container> <${ld + container}> .\r\n`;
             }
 
             if (v['@type']) {
                 let type = v['@type'];
-                txt += `_:${k} <${ld}type> "${type}" .\r\n`;
+                if (type != '@id' && type != '@vocab') {
+                    txt += `_:${scope}${k} <${ld}type> <${type}> .\r\n`;
+                }
+            }
+    
+            if (v['@context']) {
+                txt += context(v, iri);
             }
         }
     });
@@ -42,8 +49,4 @@ function context(obj) {
     return txt;
 }
 
-let txt = fs.readFileSync('ontology/td-context.jsonld', 'utf-8');
-let obj = JSON.parse(txt);
-
-let ctx = context(obj);
-fs.writeFileSync('ontology/td-context.ttl', ctx);
+exports.toRDF = context;
