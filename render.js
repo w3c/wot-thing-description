@@ -335,35 +335,29 @@ function render(voc) {
 
 // main function
 
-const onto = fs.readFileSync('ontology/td.ttl', 'UTF-8');
-const shapes = fs.readFileSync('validation/td-validation.ttl', 'UTF-8');
+const ttlFiles = [
+    'ontology/td.ttl',
+	'ontology/schema/td-schema.ttl',
+	'ontology/security/td-security.ttl',
+	'validation/td-validation.ttl'
+];
+
 const context = fs.readFileSync('context/td-context.jsonld', 'UTF-8');
+let ttl = jsonld.toRDF(JSON.parse(context));
+
+ttlFiles.forEach(function(f) {
+    ttl += fs.readFileSync(f, 'UTF-8');
+});
 
 rdf.create(function(err, store) {
-    store.load('text/turtle', onto, function(err) {
+    store.load('text/turtle', ttl, function(err) {
         if (err) {
             console.log(err);
             return;
         }
-        
-        store.load('text/turtle', shapes, function(err) {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            
-            let ttl = jsonld.toRDF(JSON.parse(context));
-            
-            store.load('text/turtle', ttl, function(err) {
-                if (err) {
-                    console.log(err);
-                    return;
-                }
 
-                vocabulary(store, function(voc) {
-                    render(sort(voc));
-                });
-            });
-        });
+		vocabulary(store, function(voc) {
+			render(sort(voc));
+		});
     });
 });
