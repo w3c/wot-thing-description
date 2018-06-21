@@ -158,18 +158,18 @@ Example 1 shows a simple TD instance in such JSON serializiation that reflects W
     "properties": {
         "status" : {
             "type": "string",
-            "form": [{"href": "coaps://mylamp.example.com:5683/status"}]
+            "forms": [{"href": "coaps://mylamp.example.com:5683/status"}]
         }
     },
     "actions": {
         "toggle" : {
-            "form": [{"href": "coaps://mylamp.example.com:5683/toggle"}]
+            "forms": [{"href": "coaps://mylamp.example.com:5683/toggle"}]
         }
     },
     "events":{
         "overheating":{
             "type": "string",
-            "form": [{"href": "coaps://mylamp.example.com:5683/oh"}]
+            "forms": [{"href": "coaps://mylamp.example.com:5683/oh"}]
         }
     }
 }
@@ -187,10 +187,10 @@ Example 1 shows a simple TD instance in such JSON serializiation that reflects W
 </p>
 
 <p>
-The TD in Example 1 reflects some default assumptions that are not explicitly described. E.g., this includes that the media type of the exchange format of the interactions is based on JSON (=<code>mediaType</code>), the property <i>status</i> is not writable and observable. Thus, the TD specification defines vocabularies (<code>writable</code>, <code>observable</code>, <code>mediaType</code>) that have default values.  If these vocabularies are not implicit in a JSON TD instance, the JSON TD processor follows the default assumption for interpretation as defined here in this specification.
+The TD in Example 1 reflects some default assumptions that are not explicitly described. E.g., this includes that the media type of the exchange format of the interactions is based on JSON (=<code>mediaType</code>), the property <i>status</i> is not writable and observable. Thus, the TD specification defines vocabularies (<code>writable</code>, <code>observable</code>, <code>mediaType</code>) that have default values.  If these vocabularies are not implicit in a Thing Description instance, the Thing Description processor follows the default assumption for interpretation as defined here in this specification.
 
 </p>
-<p>The TD can be also processed as a RDF-based model. In that case, the JSON TD can be simple transformed into a JSON-LD style.  In terms of JSON-LD 1.1 serialization and  semantic's open-world assumption the mentioned vocabularies with default values will be always implicit present in the instances. Example 2 shows the TD in JSON-LD 1.1 serializiation that contains the same information as in Example 1.
+<p>The TD can be also processed as a RDF-based model. In that case, the Thing Description instance can be simple transformed into a valid JSON-LD style.  In terms of JSON-LD 1.1 serialization and  semantic's open-world assumption the mentioned vocabularies with default values will be always implicit present in the instances. Example 2 shows the TD in JSON-LD 1.1 serializiation that contains the same information as in Example 1.
 </p>
 
 <pre class="example" title="Thing Description as JSON-LD 1.1 Serializiation">
@@ -203,21 +203,21 @@ The TD in Example 1 reflects some default assumptions that are not explicitly de
          "writable": false,
          "observable": false,
          "type": "string",
-         "form": [{
+         "forms": [{
              "href": "coaps://mylamp.example.com:5683/status",
              "mediaType": "application/json"
          }]
     }},
     "actions": {
      "toggle": {
-        "form": [{
+        "forms": [{
             "href": "coaps://mylamp.example.com:5683/toggle",
             "mediaType": "application/json"
         }]}},
     "events": {
         "overheating": {
             "type": "string",
-            "form": [{
+            "forms": [{
                 "href": "coaps://mylamp.example.com:5683/oh",
                 "mediaType": "application/json"
             }]
@@ -282,7 +282,7 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
 
 
 <section id="TD-serialization-section">
-    <h1 >Thing Description Serializations</h1>
+    <h1 >Thing Description Serialization</h1>
 
       <p class="ednote" title="JSON-LD 1.1 ">
 	This is the first draft that uses JSON-LD 1.1 as a serialization format of the Thing Description. The working assumption is based on the <a href="https://json-ld.org/spec/latest/json-ld/#">Community Draft of JSON-LD 1.1</a>. There is the plan to setup a JSON-LD Working Group with the following <a href="https://www.w3.org/2018/03/jsonld-wg-charter.html">JSON-LD Working Group Charter</a>. It is planned that this section always conforms to the latest working assumptions of JSON-LD 1.1.
@@ -292,24 +292,12 @@ We need to be more precise here: How to validate a TD? E.g., structure validatio
 Thing Description instances are modeled and structured based on the <a href="#vocabularyDefinitionSection" class="sec-ref">Thing Description Information Model</a>. This section proposes a TD serialization based on JSON-LD 1.1. 
 </p>
 
- <section id="json-serializiation-section">
-    <h1>Media Type</h1>
 
-<p>The JSON-based serialization of the TD is identified by the Media Type <code>application/td+json</code>.</p>
-
-<!--<p>The EXI-based serialization of the TD is identified by the Media Type <code>application/td+exi</code>.</p>
-<p>The CBOR-based serialization of the TD is identified by the Media Type <code>application/td+cbor</code>.</p>-->
-
-      <p class="ednote" title="Media Type">
-These media types have not registered  with IANA yet.
-      </p>
-
-</section>
 
 <section id="json-serializiation-section">
-    <h1>JSON TD</h1>
+    <h1>Representation Format</h1>
 
-<p>This section introduces the JSON-based serialization of the Thing Description (JSON TD) that also follows the syntax of JSON-LD 1.1 to streamline the semantic evaluation of TDs.</p>
+<p>This section introduces the JSON-based serialization of the Thing Description that also follows the syntax of JSON-LD 1.1 to streamline the semantic evaluation of TDs.</p>
 
 <p>Mainly, all vocabularies as defined in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> will have a JSON key representation.</p>
 
@@ -336,12 +324,16 @@ These media types have not registered  with IANA yet.
 In the first line of the Thing Description instance MAY include the <code>@context</code> key from JSON-LD 1.1 with the value URI of the Thing description context file <code>https://w3c.github.io/wot/w3c-wot-td-context.jsonld</code>.
 </p>
 
+
+
   <pre class="example">
     {
       "@context": "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
       ...
     }
   </pre>
+
+<p>In the case the Thing Description instance is processed and interpret by a JSON-LD 1.1 processor this <code>@context</code> with its value MUST be present (also see Section <a href="#jsonld-serializiation-section" class="sec-ref">JSON-LD 1.1 Processing</a>). </p>
 
 <p>
   In case a single Thing Description instance involves several contexts, additional namespaces with prefixes MUST be extended to the <code>@context</code> array structure. This option proves relevant if one wants to extend the existing Thing Description context without modifying it. For instance:
@@ -355,6 +347,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
   </pre>
 
 
+
 <p>Each mandatory and required vocabulary, as defined in the class <a href="#thing" class="sec-ref">Thing</a>, MUST be serialized as a JSON key at the top level of the Thing Description instance.</p>
 
 
@@ -366,7 +359,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
 
   <pre class="example">
         {
-          "label": "MyThing",
+          "name": "MyThing",
           "id": "urn:dev:wot:com:example:servient:myThing",
           "base": "https://servient.example.com/",
           "description": "Additional (human) readable information of the Thing.",
@@ -374,7 +367,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
           "properties": {...},
           "actions": {...},
           "events": {...},
-          "securityDefinitions": {...},
+          "security": {...},
           "links": [...]
         }
    </pre>
@@ -386,7 +379,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
         {
           "@context": "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",
           "@type": "Thing",
-          "label": "MyThing",
+          "name": "MyThing",
           "id": "urn:dev:wot:com:example:servient:myThing",
           "base": "https://servient.example.com/",
           "description": "Additional (human) readable information of the Thing.",
@@ -394,7 +387,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
           "properties": {...},
           "actions": {...},
           "events": {...},
-          "securityDefinitions": {...},
+          "security": {...},
           "links": [...]
         }
    </pre>
@@ -449,7 +442,57 @@ In the first line of the Thing Description instance MAY include the <code>@conte
         }
    </pre>
 
+<p>Similar to the <code>Thing</code> level properties MAY have additional semantic anotations based on JSON-LD 1.1 keys. </p>
 
+<p>In the case the Thing Description instance is processed and interpret by a JSON-LD 1.1 processor, each <code>property</code> MUST contain the vocabularies <code>observable</code> and <code>writable</code> due to the linked data's <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>. That means, when a Thing Description instance is omitting these vocabularies, then the interpreter cannot make any assumptions about its actual value. </p>
+
+
+<p>An example of a TD snippet including semantic annotations and the default values of <code>observable</code> and <code>writable</code> based on class <a href="#property" class="sec-ref">Property</a> definition:</p>
+
+
+
+  <pre class="example">
+        {
+          ...
+          "properties": {
+          	"on": {
+          		"@type": "iot:SwitchToggle",
+          		"label": "On/Off",
+          		"writable": false,
+          		"observable": false,
+          		"type": "boolean",
+          		"forms": [...]
+          	},
+          	"status": {
+          		"writable": false,
+          		"observable": false,
+          		"type": "object",
+          		"properties": {
+          			"brightness": {
+          				"@type": "iot:CurrentLevel",
+          				"type": "number",
+          				"minimum": 0.0,
+          				"maximum": 100.0
+          			},
+          			"rgb": {
+          				"@type": "iot:rgbData",
+          				"type": "array",
+          				"items" : {
+          					"type" : "number",
+          					"minimum": 0,
+          					"maximum": 255
+          				},
+          				"minItems": 3,
+          				"maxItems": 3
+          			}
+          		},
+          		"required": ["brightness","rgb"],
+          		"forms": [...]
+          	}
+          }
+          ...
+        }
+   </pre>
 
     </section> <!-- end of id="property-serialization-json"-->
 
@@ -491,18 +534,21 @@ In the first line of the Thing Description instance MAY include the <code>@conte
               	"required": ["to","duration"],
               },
               "output": {"type": "string"},
-              "form": [...]
+              "forms": [...]
             }
           ]
           ...
         }
       </pre>
 
+<p>Definitions within the  <code>actions</code> level  MAY have also additional semantic anotations based on JSON-LD 1.1 keys. </p>
+
     </section> <!-- end of id="action-serialization-json"-->
 
 
     <section id="event-serialization-json">
       <h2>events</h2>
+
 <p>Events (and sub-events) offered by a Thing are collected in the <code>events</code> field of (unique) Event names as JSON keys. Each required vocabulary, as defined in the class <a href="#event" class="sec-ref">Event</a>, MUST transformed as a JSON key within a Event field.</p>
 
 <p>The type of the fields <code>properties</code> and <code>items</code> MUST be serialized as a JSON object.</p>
@@ -527,6 +573,8 @@ In the first line of the Thing Description instance MAY include the <code>@conte
         }
       </pre>
 
+<p>Definitions within the  <code>events</code> level  MAY have also additional semantic anotations based on JSON-LD 1.1 keys. </p>
+
     </section> <!-- end of id="event-serialization-json"-->
 
     <section id="form-serialization-json">
@@ -535,6 +583,8 @@ In the first line of the Thing Description instance MAY include the <code>@conte
 <p>Each mandatory and required vocabulary, as defined in the class <a href="#form" class="sec-ref">Form</a>, MUST be serialized as a JSON key.</p>
 
 <p>If required, <code>forms</code> MAY be supplemented with protocol-specific vocabularies identified with a prefix. See also [[!WOT-PROTOCOL-BINDING]].</p>
+
+<p>In the case the Thing Description instance is processed and interpret by a JSON-LD 1.1 processor, each <code>forms</code> MUST contain the vocabulary <code>mediaType</code> due to the linked data's <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>. That means, when a Thing Description instance is omitting this vocabulary, then the interpreter cannot make any assumptions about its actual value. </p>
 
       <p>An example of a TD snippet based on the defined fields is given below:</p>
 
@@ -575,65 +625,187 @@ In the first line of the Thing Description instance MAY include the <code>@conte
 
     </section> <!-- end of id="links-serialization-json"-->
 
-    <section id="securityDefinitions-serialization-json">
-      <h2>securityDefinitions</h2>
+    <section id="security-serialization-json">
+      <h2>security</h2>
 
-      <p class="ednote">This is the first draft containing the new security vocabularies. The definition is not yet completed and is still in progress.
+      <p class="ednote">This is the first draft containing the new security vocabularies. 
+      The definition is not yet completed and is still in progress.
       </p>
 
-	<p>Each mandatory and required vocabulary, as defined in the class <a href="#security" class="sec-ref">Security</a>, MUST be serialized as a JSON key.</p>
+	<p>Each mandatory and required vocabulary, as defined in the class <a href="#security" class="sec-ref">SecurityScheme</a>, MUST be serialized as a JSON key.</p>
 
+      <p>The following TD snippet example shows a simple security configuration specifying
+      basic authentication in the header.  The value of <code>in</code> given is actually the default
+      value.<p>
       <pre class="example">
-        ...
-        "securityDefinitions": {
-            "bearerTokenConfig": {
-            	"scheme": "bearer",
-            	"format": "jwt",
-            	"alg": "ES256",
-            	"authorizationUrl": "https://servient.example.com:8443/"
-            }
-        ...
+"security": [
+  {
+    "scheme": "basic",
+    "in": "header"
+  }
+]
       </pre>
 
+      <p>Here is a more complex example: a TD snippet showing digest authentication on a proxy
+      combined with bearer token authentication on an endpoint.  Here the default
+      value of <code>in</code> in the <code>digest</code> scheme is implied.<p>
+      <pre class="example">
+...
+"security": [
+  {
+    "scheme": "digest",
+    "proxyUrl": "https://portal.example.com/"
+  },
+  {
+    "scheme": "bearer",
+    "format": "jwt",
+    "alg": "ES256",
+    "authorizationUrl": "https://servient.example.com:8443/"
+  }
+]
+      </pre>
 
-    </section> <!-- end of id="form-serialization-json"-->
+      <p>Security definitions can be given at more than one level.
+      In this case, definitions at the lower levels override
+      the definitions at the higher level.  In the following example, all interactions
+      require basic authentication except for the <code>overheating</code> event, in which
+      security has been overridden.  Note especially the use of an empty array for
+      the security configuration in the <code>overheating</code> event to indicate no 
+      authentication is required.  For the <code>status</code> property and the <code>toggle</code>
+      action, however, <code>basic</code> authentication is required, as defined
+      at the top level of the Thing.
+      </p>
+      <pre class="example">
+{
+  ...
+  "security": [{"scheme": "basic"}],
+  "properties": {
+    "status": {
+      ...
+      "forms": [{
+        "href": "https://mylamp.example.com/status",
+        "mediaType": "application/json",
+      }]
+    }
+  },
+  "actions": {
+    "toggle": {
+      ...
+      "forms": [{
+        "href": "https://mylamp.example.com/toggle",
+        "mediaType": "application/json"
+      }]
+    }
+  },
+  "events": {
+    "overheating": {
+      ...
+      "forms": [{
+        "href": "https://mylamp.example.com/oh",
+        "mediaType": "application/json",
+        "security": [] 
+      }]
+    }
+  }
+}
+      </pre>
+
+      <p>Security definitions can also can be given for different elements
+      at the same level.  This may be required for devices that support
+      multiple protocols, for example CoAP and HTTP, with support for different
+      security mechanisms.  It is also useful when alternative authentication
+      mechanisms are allowed.  Here is a TD snippet demonstrating three possible
+      ways to access a resource: via HTTPS with basic authentication, via HTTPS
+      via digest authentication, or via CoAPS with an API key.
+      In other words, the use of multiple security configurations at the same level 
+      provides a way to combine security mechanisms an in "OR" fashion.
+      In contrast, putting multiple security configurations in the same
+      <code>security</code> field combines them in an "AND" fashion, since in that case
+      they would all need to be satisfied.
+      </p>
+      <pre class="example">
+"properties": {
+  "status": {
+    ...
+    "forms": [
+      {
+        "href": "https://mylamp.example.com/status",
+        "mediaType": "application/json",
+        "security": [{"scheme": "basic"}]
+      },
+      {
+        "href": "https://mylamp.example.com/status",
+        "mediaType": "application/json",
+        "security": [{"scheme": "digest"}]
+      },
+      {
+        "href": "coaps://mylamp.example.com:5683/status",
+        "mediaType": "application/json",
+        "security": [{"scheme": "apikey"}]
+      }
+    ]
+  }
+}
+      </pre>
+
+    </section> <!-- end of id="security-serialization-json"-->
 
   </section> <!-- end of id="serialization-json"-->
+
+
+
+ <section id="media-type-section">
+    <h1>Media Type</h1>
+
+<p>The JSON-based serialization of the TD is identified by the Media Type <code>application/td+json</code>.</p>
+
+<!--<p>The EXI-based serialization of the TD is identified by the Media Type <code>application/td+exi</code>.</p>
+<p>The CBOR-based serialization of the TD is identified by the Media Type <code>application/td+cbor</code>.</p>-->
+
+      <p class="ednote" title="Media Type">
+This media type has not registered  with IANA yet.
+      </p>
+
+</section>
+
+
+<section id="Implementation-Note-section">
+      <h2>Implementation Note</h2>
+
+<section id="json-serializiation-section">
+    <h2>JSON Processing</h2>
+<p>Per default, the minimum requirement to read the content of a Thing Description instance is a (simple) JSON parser. </p>
+
+<p>To validate the semantic meaning and follow references to external context vocabularies (e.g., iot.schema.org), JSON-LD or RDF-based  tools and libraries are highly recommended that are explained in the next sub-section. </p>
+
+</section>
+
 
 <section id="jsonld-serializiation-section">
     <h2>JSON-LD 1.1 Processing</h2>
 
-<p>To parse a Thing Description (simple) JSON-based parser and tools can be used to retrieve its content. </p>
 
-<p>To interprete the semantic meaning in terms of RDF triples, a Thing Description instance has to bring into a valid JSON-LD 1.1 form based on this specification before passing to a JSON-LD interpreter.</p>
+<p>To interprete the semantic meaning with respect to RDF triples, a Thing Description instance requires a valid JSON-LD 1.1 representation based on this Thing Description specification before passing it to a JSON-LD 1.1 interpreter.</p>
 
-<p>Following pre-processing steps MUST be done:</p>
+<p>The following pre-processing steps of a Thing Description instance MUST be excecuted before starting JSON-LD 1.1 based processing:
 
-</section>
+  <ul>
+     <li>There MUST be a <code>@context</code> key from JSON-LD 1.1 as defined in Section <a href="#sec-thing-as-a-whole-json" class="sec-ref">Thing as a whole</a>.</li>
+     <li>External used vocabularies in the Thing Descriptions MUST provide their context URIs as prefix or within the <code>@context</code>. </li>
+     <li>All vocabularies that have a default value as defined  <a href="#vocabularyDefinitionSection">Vocabulary Definition</a> MUST be present at least with their default value.</li>
+</ul>
+</p>
 
-<section id="binary-serializiation">
-    <h1>Binary JSON TD Serializiation</h1>
-<section id="exi-serializiation-section">
-    <h2>EXI</h2>
-</section>
-
-<section id="cbor-serializiation-section">
-    <h2>CBOR</h2>
-</section>
+<p>The <a href="#myLampThing-example-serialization">MyLampThing Example </a>  shows how such a pre-processing step may look like.</p>
 
 </section>
-
-
-<section id="securityDefinitions-serialization">
-      <h2>Implementation Note</h2>
-
 </section>
 
 
 <section id="example-serialization">
-      <h2>Example Serialization</h2>
+      <h2>Example Thing Description Instances</h2>
 
-<section id="example-serialization">
+<section id="myLampThing-example-serialization">
       <h3>MyLampThing</h3>
 
   <pre class="example" title="MyLampThing">
@@ -645,7 +817,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
         "status": {
              "description" : "Shows the current status of the lamp",
              "type": "string",
-             "form": [{
+             "forms": [{
                  "href": "coaps://mylamp.example.com:5683/status"
              }]
         }
@@ -653,14 +825,14 @@ In the first line of the Thing Description instance MAY include the <code>@conte
     "actions": {
      "toggle": {
         "description" : "Turn on or off the lamp.",
-        "form": [{
+        "forms": [{
             "href": "coaps://mylamp.example.com:5683/toggle"
         }]}},
     "events": {
         "overheating": {
             "description" : "Lamp reaches a critical temperature (overheating).",
             "type": "string",
-            "form": [{
+            "forms": [{
                 "href": "coaps://mylamp.example.com:5683/oh"
             }]
         }}
@@ -668,7 +840,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
    </pre>
 
 
-  <pre class="example" title="MyLampThing with semantic annotations based on JSON-LD 1.1">
+  <pre class="example" title="MyLampThing with semantic annotations based on a valid JSON-LD 1.1 representation">
 {
     "@context": ["https://w3c.github.io/wot/w3c-wot-td-context.jsonld", 
     		{"iot": "http://iotschema.org/"}],
@@ -683,7 +855,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
              "writable": false,
              "observable": false,
              "type": "string",
-             "form": [{
+             "forms": [{
                  "href": "coaps://mylamp.example.com:5683/status",
                  "mediaType": "application/json"
              }]
@@ -693,7 +865,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
      "toggle": {
         "@type" : "iot:SwitchStatus",
         "description" : "Turn on or off the lamp.",
-        "form": [{
+        "forms": [{
             "href": "coaps://mylamp.example.com:5683/toggle",
             "mediaType": "application/json"
         }]}},
@@ -702,7 +874,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
             "@type" : "iot:TemperatureAlarm",
             "description" : "Lamp reaches a critical temperature (overheating).",
             "type": "string",
-            "form": [{
+            "forms": [{
                 "href": "coaps://mylamp.example.com:5683/oh",
                 "mediaType": "application/json"
             }]
@@ -742,6 +914,7 @@ In the first line of the Thing Description instance MAY include the <code>@conte
     <li>Communication metadata "link" was renamed as "form", and a form now contains a new field "rel".</li>
     <li>A Web "link" was introduced at the top level.</li>
     <li>Descriptions were added to explain how semantic annotations can be attached at various levels (thing, interaction and data).</li>
+    <li>A mechanism to declare security metadata was added.</li>
   </ul>
 </section>
 
