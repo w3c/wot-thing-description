@@ -1,0 +1,87 @@
+{
+  "name": "lamp",
+  "@id": "urn:dev:wot:com:example:servient:lamp",
+  "base": "https://servient.example.com/",
+  "definitions": {
+    "range": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    }
+  },
+  "properties": {
+    "on": {
+      "type": "boolean",
+      "links": [{
+        "href": "/things/lamp/properties/on",
+        "mediaType": "application/json"
+      }]
+    },
+    "status": {
+      "readOnly": true,
+      "type": "object",
+      "properties": {
+        "battery": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 100.0,
+          "links": [{
+            "href": "/things/lamp/properties/status/batt",
+            "mediaType": "application/json"
+          }]
+        },
+        "rssi": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "level": "range"
+      },
+      "links": [{
+        "href": "/things/lamp/properties/status",
+        "mediaType": "application/json"
+      }]
+    },
+    "brightness": {
+      "links": [{
+        "href": "/things/lamp/properties/status",
+        "mediaType": "application/json"
+      }]
+    }
+  },
+  "actions": {
+    "fade": {
+      "input": {
+        "type": "object",
+        "properties": {
+          "from": "range",
+          "to": "range",
+          "duration": { "type": "number" }
+        }
+      },
+      "forms": [{
+        "href": "/things/lamp/actions/fade",
+        "encType": "application/json",
+        "http:methodName": "POST"
+      }]
+    }
+  },
+  "events": {
+    "overheated": {
+      "type": "object",
+      "properties": {
+        "temperature": { "type": "number" }
+      },
+      "links": [{
+        "href": "/things/lamp/events/overheated",
+        "http:subProtocol": "http:EventSource",
+        "mediaType": "application/json"
+      }]
+    }
+  },
+  "links": [{
+    "href": "https://servient.example.com/things/motion-detector",
+    "rel": "controlledBy",
+    "mediaType": "application/td"
+  }]
+}
