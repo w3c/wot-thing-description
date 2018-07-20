@@ -46,11 +46,11 @@ src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
 console.log(assertions);
 
 // Merge assertions and test specs into plan
-var plan_body = plan_dom('body');
-var plan_list = plan_body.append('<ul></ul>');
+plan_dom('body').append('<ul></ul>');
 for (a in assertions) {
     console.log("Processing assertion "+a);
-    plan_elem = plan_list.append('<li></li>');
+    plan_dom('body>ul').append('<li></li>');
+    plan_elem = plan_dom('body>ul>li:last-child');
     a_text = assertions[a];
     plan_elem.append(a_text);
     a_spec = testspec[a];
