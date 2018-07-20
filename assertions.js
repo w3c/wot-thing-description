@@ -19,10 +19,10 @@ ts_dom('span[class="testspec"]').each(function(i,elem) {
         console.log("Warning: testspec without id:",
                     ts_dom(this).html());
     } else {
-        testspec[id] = ts_dom(this).text();;
+        testspec[id] = ts_dom(this);
     }
 });
-console.log(testspec);
+// console.log(testspec);
 
 // Initialize plan dom with template
 const template_raw = fs.readFileSync(template_htmlfile, 'UTF-8');
@@ -37,27 +37,69 @@ var assertions = {};
 src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
     let id = src_dom(this).attr('id');
     if (undefined === id) {
-        console.log("Warning: rfc2119-assertion without id:",
+        console.log("WARNING: rfc2119-assertion without id:",
                     src_dom(this).html());
     } else {
-        assertions[id] = src_dom(this).text();;
+        assertions[id] = src_dom(this);
     }
 });
-console.log(assertions);
+// console.log(assertions);
 
 // Merge assertions and test specs into plan
-plan_dom('body').append('<ul></ul>');
+plan_dom('body').append('<dl></dl>');
 for (a in assertions) {
     console.log("Processing assertion "+a);
-    plan_dom('body>ul').append('<li></li>');
-    plan_elem = plan_dom('body>ul>li:last-child');
+
+    plan_dom('body>dl').append('<dt></dt>');
+    let plan_dt = plan_dom('body>dl>dt:last-child');
+    plan_dt.append('<a href="../index.html#'+a+'">'+a+'</a>: ');
+
+    let category = undefined;
+    if (assertions[a].text().indexOf('MUST') > -1) {
+        if (assertions[a].text().indexOf('MUST NOT') > -1) {
+            category = 'MUST NOT';
+        } else {
+            category = 'MUST';
+        }
+    }
+    if (assertions[a].text().indexOf('SHOULD') > -1) {
+        if (assertions[a].text().indexOf('SHOULD NOT') > -1) {
+            category = 'SHOULD NOT';
+        } else {
+            category = 'SHOULD';
+        }
+    }
+    if (assertions[a].text().indexOf('MAY') > -1) {
+        category = 'MAY';
+    }
+    if (assertions[a].text().indexOf('REQUIRED') > -1) {
+        category = 'REQUIRED';
+    }
+    if (assertions[a].text().indexOf('RECOMMENDED') > -1) {
+        category = 'RECOMMENDED';
+    }
+    if (assertions[a].text().indexOf('OPTIONAL') > -1) {
+        category = 'OPTIONAL';
+    }
+
+    if (undefined === category) {
+        console.log("  WARNING: RFC2119 category is not defined");
+        plan_dt.append(': <strong>'+'undefined'+'</strong>');
+    } else {
+        plan_dt.append(': <strong>'+category+'</strong>');
+    }
+
+    plan_dom('body>dl').append('<dd></dd>');
+    let plan_dd = plan_dom('body>dl>dd:last-child');
     a_text = assertions[a];
-    plan_elem.append(a_text);
+    plan_dd.append(a_text);
     a_spec = testspec[a];
     if (undefined === a_spec) {
-        console.log("Warning: no test spec for "+a);
+        console.log("  WARNING: no test spec");
     } else {
-        plan_elem.append(a_spec);
+        plan_dd.append('<ul><li></li></ul>');
+        let plan_li = plan_dom('body>dl>dd>ul>li:last-child');
+        plan_li.append(a_spec);
     }
 }
 
