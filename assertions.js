@@ -16,7 +16,8 @@ var ts = {};
 ts_dom('span[class="testspec"]').each(function(i,elem) {
     let id = ts_dom(this).attr('id');
     if (undefined === id) {
-        console.log("Warning: testspec without id:",elem.html());
+        console.log("Warning: testspec without id:",
+                    ts_dom(this).html());
     } else {
         ts[id] = ts_dom(this).text();;
     }
@@ -33,12 +34,13 @@ var src_dom = cheerio.load(src_raw);
 
 // Extract assertions and merge with test specs into plan dom
 var assertions = {};
-src_dom('span[class="rfc2119"]').each(function(i,elem) {
-    let id = elem.attr('id');
+src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
+    let id = src_dom(this).attr('id');
     if (undefined === id) {
-        console.log("Warning: rfc2119 assertion without id:",elem.html());
+        console.log("Warning: rfc2119-assertion without id:",
+                    src_dom(this).html());
     } else {
-        assertion[id] = elem.text();;
+        assertions[id] = src_dom(this).text();;
     }
 });
 console.log(assertions);
