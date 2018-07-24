@@ -52,7 +52,7 @@ for (a in assertions) {
 
     plan_dom('body>dl').append('<dt></dt>');
     let plan_dt = plan_dom('body>dl>dt:last-child');
-    plan_dt.append('<a href="../index.html#'+a+'">'+a+'</a>: ');
+    plan_dt.append('<a href="../index.html#'+a+'">'+a+'</a>');
 
     let category = undefined;
     if (assertions[a].text().indexOf('MUST') > -1) {
@@ -96,6 +96,9 @@ for (a in assertions) {
     a_spec = testspec[a];
     if (undefined === a_spec) {
         console.log("  WARNING: no test spec");
+        //plan_dd.append('<ul><li></li></ul>');
+        //let plan_li = plan_dom('body>dl>dd>ul>li:last-child');
+        //plan_li.append('<strong>NO TEST SPECIFICATION</strong>');
     } else {
         plan_dd.append('<ul><li></li></ul>');
         let plan_li = plan_dom('body>dl>dd>ul>li:last-child');
