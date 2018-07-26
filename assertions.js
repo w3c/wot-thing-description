@@ -31,6 +31,7 @@ var plan_dom = cheerio.load(template_raw);
 // Read in index.html store as a dom
 const src_raw = fs.readFileSync(src_htmlfile, 'UTF-8');
 var src_dom = cheerio.load(src_raw);
+var src_title = src_dom('title').text();
 
 // Extract assertions
 var assertions = {};
@@ -46,6 +47,8 @@ src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
 // console.log(assertions);
 
 // Merge assertions and test specs into plan
+plan_dom('head>title').append(src_title);
+plan_dom('body>h2').append(src_title);
 plan_dom('body').append('<dl></dl>');
 for (a in assertions) {
     console.log("Processing assertion "+a);
