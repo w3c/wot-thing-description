@@ -89,19 +89,18 @@ for (a in assertions) {
         plan_dt.append(': <strong>'+category+'</strong>');
     }
 
-    plan_dom('body>dl').append('<dd></dd>');
-    let plan_dd = plan_dom('body>dl>dd:last-child');
+    plan_dom('body>dl').append('<dd class="'+a+'"></dd>');
+    //let plan_dd = plan_dom('body>dl>dd:last-child');
+    let plan_dd = plan_dom('dd.'+a);
     a_text = assertions[a];
     plan_dd.append(a_text);
     a_spec = testspec[a];
+    plan_dd.append('<ul><li></li></ul>');
+    let plan_li = plan_dom('dd.'+a+'>ul>li:last-child');
     if (undefined === a_spec) {
         console.log("  WARNING: no test spec");
-        //plan_dd.append('<ul><li></li></ul>');
-        //let plan_li = plan_dom('body>dl>dd>ul>li:last-child');
-        //plan_li.append('<strong>NO TEST SPECIFICATION</strong>');
+        plan_li.append('<strong>NO TEST SPECIFICATION</strong>');
     } else {
-        plan_dd.append('<ul><li></li></ul>');
-        let plan_li = plan_dom('body>dl>dd>ul>li:last-child');
         plan_li.append(a_spec);
     }
 }
