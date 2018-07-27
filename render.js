@@ -318,7 +318,7 @@ function sort(voc) {
 
 const classSrc = fs.readFileSync('class.template', 'UTF-8');
 const vocSrc = fs.readFileSync('vocabulary.template', 'UTF-8');
-const src = fs.readFileSync('index.html.template', 'UTF-8');
+const src = fs.readFileSync('index.html.template.html', 'UTF-8');
 
 function render(voc) {
     dust.loadSource(dust.compile(classSrc, 'class'));
@@ -337,8 +337,8 @@ function render(voc) {
 
 const ttlFiles = [
     'ontology/td.ttl',
-	'ontology/schema/td-schema.ttl',
-	'ontology/security/td-security.ttl',
+	'ontology/json-schema.ttl',
+	'ontology/security.ttl',
 	'validation/td-validation.ttl'
 ];
 
