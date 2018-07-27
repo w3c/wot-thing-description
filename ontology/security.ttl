@@ -45,9 +45,7 @@
         
         rdfs:label "scopes" ;
         
-        rdfs:comment "Array of authorization scope identifiers."@en ;
-        
-        rdfs:range :anyURI .
+        rdfs:comment "Array of authorization scope identifiers."@en .
 
 
 
@@ -114,6 +112,18 @@
 
 
 
+###  http://www.w3.org/ns/td/security#identity
+
+:identity rdf:type owl:DatatypeProperty ;
+          
+          rdfs:label "identity" ;
+          
+          rdfs:comment "Pre-shared key identity" ;
+          
+          rdfs:range xsd:string .
+
+
+
 ###  http://www.w3.org/ns/td/security#in
 
 :in rdf:type owl:DatatypeProperty ;
@@ -147,6 +157,18 @@
           rdfs:comment "URI of the proxy server this security configuration provides access to.  If not given, the corresponding security configuration is for the endpoint."@en ;
           
           rdfs:range xsd:anyURI .
+
+
+
+###  http://www.w3.org/ns/td/security#psk
+
+:psk rdf:type owl:DatatypeProperty ;
+     
+     rdfs:label "psk" ;
+     
+     rdfs:comment "Pre-shared key (binary blob)" ;
+     
+     rdfs:range xsd:string .
 
 
 
@@ -192,7 +214,9 @@
         
         rdfs:label "scopes" ;
         
-        rdfs:comment "Array of authorization scope identifiers."@en .
+        rdfs:comment "Array of authorization scope identifiers."@en ;
+        
+        rdfs:range xsd:anyURI .
 
 
 
@@ -217,9 +241,11 @@
 #################################################################
 
 
-###  http://www.w3.org/ns/td/security#ApikeySecurityScheme
+###  http://www.w3.org/ns/td/security#APIKeySecurityScheme
 
-:ApikeySecurityScheme rdf:type owl:Class ;
+:APIKeySecurityScheme rdf:type owl:Class ;
+                      
+                      rdfs:label "APIKeySecurityScheme" ;
                       
                       rdfs:subClassOf :SecurityScheme ,
                                       [ rdf:type owl:Restriction ;
@@ -239,13 +265,15 @@
 
 :BasicSecurityScheme rdf:type owl:Class ;
                      
+                     rdfs:label "BasicSecurityScheme" ;
+                     
                      rdfs:subClassOf :SecurityScheme ,
                                      [ rdf:type owl:Restriction ;
-                                       owl:onProperty :in ;
+                                       owl:onProperty :pname ;
                                        owl:allValuesFrom xsd:string
                                      ] ,
                                      [ rdf:type owl:Restriction ;
-                                       owl:onProperty :pname ;
+                                       owl:onProperty :in ;
                                        owl:allValuesFrom xsd:string
                                      ] ;
                      
@@ -257,18 +285,12 @@
 
 :BearerSecurityScheme rdf:type owl:Class ;
                       
+                      rdfs:label "BearerSecurityScheme" ;
+                      
                       rdfs:subClassOf :SecurityScheme ,
-                                      [ rdf:type owl:Restriction ;
-                                        owl:onProperty :pname ;
-                                        owl:allValuesFrom xsd:string
-                                      ] ,
                                       [ rdf:type owl:Restriction ;
                                         owl:onProperty :format ;
                                         owl:allValuesFrom xsd:string
-                                      ] ,
-                                      [ rdf:type owl:Restriction ;
-                                        owl:onProperty :authorizationUrl ;
-                                        owl:allValuesFrom xsd:anyURI
                                       ] ,
                                       [ rdf:type owl:Restriction ;
                                         owl:onProperty :alg ;
@@ -276,6 +298,14 @@
                                       ] ,
                                       [ rdf:type owl:Restriction ;
                                         owl:onProperty :in ;
+                                        owl:allValuesFrom xsd:string
+                                      ] ,
+                                      [ rdf:type owl:Restriction ;
+                                        owl:onProperty :authorizationUrl ;
+                                        owl:allValuesFrom xsd:anyURI
+                                      ] ,
+                                      [ rdf:type owl:Restriction ;
+                                        owl:onProperty :pname ;
                                         owl:allValuesFrom xsd:string
                                       ] ;
                       
@@ -287,9 +317,11 @@
 
 :DigestSecurityScheme rdf:type owl:Class ;
                       
+                      rdfs:label "DigestSecurityScheme" ;
+                      
                       rdfs:subClassOf :SecurityScheme ,
                                       [ rdf:type owl:Restriction ;
-                                        owl:onProperty :pname ;
+                                        owl:onProperty :qop ;
                                         owl:allValuesFrom xsd:string
                                       ] ,
                                       [ rdf:type owl:Restriction ;
@@ -297,7 +329,7 @@
                                         owl:allValuesFrom xsd:string
                                       ] ,
                                       [ rdf:type owl:Restriction ;
-                                        owl:onProperty :qop ;
+                                        owl:onProperty :pname ;
                                         owl:allValuesFrom xsd:string
                                       ] ;
                       
@@ -305,21 +337,34 @@
 
 
 
+###  http://www.w3.org/ns/td/security#NoneSecurityScheme
+
+:NoneSecurityScheme rdf:type owl:Class ;
+                    
+                    rdfs:label "No security (\"scheme\": \"none\")." ,
+                               "NoneSecurityScheme" ;
+                    
+                    rdfs:subClassOf :SecurityScheme .
+
+
+
 ###  http://www.w3.org/ns/td/security#OAuth2SecurityScheme
 
 :OAuth2SecurityScheme rdf:type owl:Class ;
                       
+                      rdfs:label "OAuthSecurityScheme" ;
+                      
                       rdfs:subClassOf :SecurityScheme ,
+                                      [ rdf:type owl:Restriction ;
+                                        owl:onProperty :refreshUrl ;
+                                        owl:allValuesFrom xsd:anyURI
+                                      ] ,
                                       [ rdf:type owl:Restriction ;
                                         owl:onProperty :flow ;
                                         owl:allValuesFrom xsd:string
                                       ] ,
                                       [ rdf:type owl:Restriction ;
                                         owl:onProperty :tokenUrl ;
-                                        owl:allValuesFrom xsd:anyURI
-                                      ] ,
-                                      [ rdf:type owl:Restriction ;
-                                        owl:onProperty :refreshUrl ;
                                         owl:allValuesFrom xsd:anyURI
                                       ] ,
                                       [ rdf:type owl:Restriction ;
@@ -335,13 +380,43 @@
 
 
 
-###  http://www.w3.org/ns/td/security#PopSecurityScheme
+###  http://www.w3.org/ns/td/security#PSKSecurityScheme
 
-:PopSecurityScheme rdf:type owl:Class ;
+:PSKSecurityScheme rdf:type owl:Class ;
+                   
+                   rdfs:label "PSKSecurityScheme" ;
                    
                    rdfs:subClassOf :SecurityScheme ,
                                    [ rdf:type owl:Restriction ;
-                                     owl:onProperty :format ;
+                                     owl:onProperty :identity ;
+                                     owl:allValuesFrom xsd:string
+                                   ] ,
+                                   [ rdf:type owl:Restriction ;
+                                     owl:onProperty :psk ;
+                                     owl:someValuesFrom xsd:string
+                                   ] ,
+                                   [ rdf:type owl:Restriction ;
+                                     owl:onProperty :psk ;
+                                     owl:allValuesFrom xsd:string
+                                   ] ;
+                   
+                   rdfs:comment "Pre-shared key authentication security configuration (\"scheme\": \"psk\")." .
+
+
+
+###  http://www.w3.org/ns/td/security#PoPSecurityScheme
+
+:PoPSecurityScheme rdf:type owl:Class ;
+                   
+                   rdfs:label "PoPSecurityScheme" ;
+                   
+                   rdfs:subClassOf :SecurityScheme ,
+                                   [ rdf:type owl:Restriction ;
+                                     owl:onProperty :authorizationUrl ;
+                                     owl:allValuesFrom xsd:anyURI
+                                   ] ,
+                                   [ rdf:type owl:Restriction ;
+                                     owl:onProperty :in ;
                                      owl:allValuesFrom xsd:string
                                    ] ,
                                    [ rdf:type owl:Restriction ;
@@ -349,16 +424,12 @@
                                      owl:allValuesFrom xsd:string
                                    ] ,
                                    [ rdf:type owl:Restriction ;
+                                     owl:onProperty :format ;
+                                     owl:allValuesFrom xsd:string
+                                   ] ,
+                                   [ rdf:type owl:Restriction ;
                                      owl:onProperty :pname ;
                                      owl:allValuesFrom xsd:string
-                                   ] ,
-                                   [ rdf:type owl:Restriction ;
-                                     owl:onProperty :in ;
-                                     owl:allValuesFrom xsd:string
-                                   ] ,
-                                   [ rdf:type owl:Restriction ;
-                                     owl:onProperty :authorizationUrl ;
-                                     owl:allValuesFrom xsd:anyURI
                                    ] ;
                    
                    rdfs:comment "Proof-of-possession token authentication security configuration (\"scheme\": \"pop\")." .
@@ -370,23 +441,17 @@
 :SecurityScheme rdf:type owl:Class ;
                 
                 rdfs:subClassOf [ rdf:type owl:Restriction ;
-                                  owl:onProperty :scheme ;
-                                  owl:allValuesFrom xsd:string
+                                  owl:onProperty :proxyUrl ;
+                                  owl:allValuesFrom xsd:anyURI
                                 ] ,
                                 [ rdf:type owl:Restriction ;
                                   owl:onProperty :description ;
                                   owl:allValuesFrom xsd:string
                                 ] ,
                                 [ rdf:type owl:Restriction ;
-                                  owl:onProperty :proxyUrl ;
-                                  owl:allValuesFrom xsd:anyURI
+                                  owl:onProperty :scheme ;
+                                  owl:allValuesFrom xsd:string
                                 ] .
-
-
-
-###  http://www.w3.org/ns/td/security#anyURI
-
-:anyURI rdf:type owl:Class .
 
 
 
