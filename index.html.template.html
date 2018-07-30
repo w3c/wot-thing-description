@@ -271,16 +271,22 @@ When the Thing Description specification reaches the recommendation status all n
 
  
 <p>
-A Thing Description instance complies with this specification if it follows the normative statements in Section <a href="#vocabularyDefinitionSection" class="sec-ref"><span class="secno">5.</span> <span class="sec-title">Vocabulary Definition</span></a> and Section <a href="#TD-serialization-section" class="sec-ref"><span class="secno">6.</span> <span class="sec-title">Thing Description Serializations</span></a> regarding Thing description serializiation.
+A Thing Description instance complies with this specification if it follows the normative statements in Section 
+<a href="#vocabularyDefinitionSection" class="sec-ref"><span class="secno">5.</span> <span class="sec-title">Vocabulary Definition</span></a> and Section 
+<a href="#TD-serialization-section" class="sec-ref"><span class="secno">6.</span> <span class="sec-title">Thing Description Serializations</span></a> 
+regarding Thing Description serialization.
 </p>
  
-
- 
-
-<p class="issue">
-We need to be more precise here: How to validate a TD? E.g., structure validation and/or RDF validation? Comments are welcome.
+<p>
+ A JSON Schema is provided in Annex <a href="#json-schema-4-validation" class="sec-ref"><span class="secno">A</span> <span class="sec-title">JSON Schema for TD Instance Validation</span></a> 
+ to validate Thing Description instances based on JSON-LD 1.1.
 </p>
 
+<p class="ednote">
+In the future some information about RDF validation will be provided.   
+</p>
+
+ 
 </section>
 
 
@@ -961,6 +967,387 @@ The following pre-processing steps of a Thing Description instance MUST be execu
   be summarized in this section.
 </p>
  </section>
+
+ <section   id="json-schema-4-validation" class="appendix normative">
+  <h1>JSON Schema for TD Instance Validation</h1>
+
+
+  <pre class="advisement" >
+    {
+      "title": "W3C Thing Description JSON Schema",
+      "description": "JSON Schema representation of the W3C WoT TD serialization format.",
+      "$schema ": "http://json-schema.org/draft-06/schema#",
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/url"
+        },
+        "@type": {
+          "$ref": "#/definitions/type_declaration"
+        },
+        "@context": {
+          "$ref": "#/definitions/context"
+        },
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "object",
+          "items": {
+            "$ref": "#/definitions/properties"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "items": {
+            "$ref": "#/definitions/actions"
+          }
+        },
+        "events": {
+          "type": "object",
+          "items": {
+            "$ref": "#/definitions/events"
+          }
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/links"
+          }
+        },
+        "support": {
+          "type": "string"
+        },
+        "security": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/securityScheme"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "id"
+      ],
+      "additionalProperties": true,
+      "definitions": {
+        "context": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/url"
+                  },
+                  {
+                    "type": "object"
+                  }
+                ]
+              },
+              "contains": {
+                "type": "string",
+                "enum": [
+                  "https://w3c.github.io/wot-thing-description/context/td-context.jsonld"
+                ]
+              }
+            },
+            {
+              "type": "string",
+              "enum": [
+                "https://w3c.github.io/wot-thing-description/context/td-context.jsonld"
+              ]
+            }
+          ]
+        },
+        "type_declaration": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array"
+            }
+          ]
+        },
+        "form_declaration": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/form_element"
+          }
+        },
+        "form_element": {
+          "type": "object",
+          "properties": {
+            "href": {
+              "$ref": "#/definitions/url"
+            },
+            "rel": {
+              "type": "string"
+            },
+            "mediaType": {
+              "type": "string"
+            },
+            "security": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/securityScheme"
+              }
+            },
+            "scopes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "href"
+          ],
+          "additionalProperties": true
+        },
+        "properties": {
+          "additionalProperties": {
+            "type": "object",
+            "items": {
+              "$ref": "#/definitions/property_element"
+            }
+          }
+        },
+        "actions": {
+          "additionalProperties": {
+            "type": "object",
+            "items": {
+              "$ref": "#/definitions/action_element"
+            }
+          }
+        },
+        "events": {
+          "additionalProperties": {
+            "type": "object",
+            "items": {
+              "$ref": "#/definitions/event_element"
+            }
+          }
+        },
+        "property_element": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "@type": {
+              "$ref": "#/definitions/type_declaration"
+            },
+            "label": {
+              "type": "string"
+            },
+            "writable": {
+              "type": "boolean"
+            },
+            "observable": {
+              "type": "boolean"
+            },
+            "forms": {
+              "$ref": "#/definitions/form_declaration"
+            },
+            "scopes": {
+              "type": "string"
+            },
+            "security": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/securityScheme"
+              }
+            }
+          },
+          "required": [],
+          "additionalProperties": true
+        },
+        "action_element": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "@type": {
+              "$ref": "#/definitions/type_declaration"
+            },
+            "label": {
+              "type": "string"
+            },
+            "forms": {
+              "$ref": "#/definitions/form_declaration"
+            },
+            "input": {
+              "$ref": "#/definitions/data"
+            },
+            "output": {
+              "$ref": "#/definitions/data"
+            },
+            "scopes": {
+              "type": "string"
+            },
+            "security": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/securityScheme"
+              }
+            }
+          },
+          "required": [],
+          "additionalProperties": true
+        },
+        "event_element": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "@type": {
+              "$ref": "#/definitions/type_declaration"
+            },
+            "label": {
+              "type": "string"
+            },
+            "forms": {
+              "$ref": "#/definitions/form_declaration"
+            },
+            "scopes": {
+              "type": "string"
+            },
+            "security": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/securityScheme"
+              }
+            }
+          },
+          "required": [],
+          "additionalProperties": true
+        },
+        "links": {
+          "type": "object",
+          "properties": {
+            "anchor": {
+              "$ref": "#/definitions/url"
+            },
+            "href": {
+              "$ref": "#/definitions/url"
+            },
+            "rel": {
+              "type": "string"
+            },
+            "mediatype": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "href"
+          ],
+          "additionalProperties": true
+        },
+        "securityScheme": {
+          "type": "object"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(([^#]*))?(#(.*))?"
+        },
+        "jsonld_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "http://[^/?#]*|https://[^/?#]*"
+        },
+        "data": {
+          "title": "Data type",
+          "anyOf": [
+            {
+              "description": "URI of an XSD built-in type",
+              "type": "string"
+            },
+            {
+              "description": "URI and media type for a complex type (XSD, SenML...)",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "href": {
+                  "type": "string"
+                },
+                "mediatype": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "href",
+                "mediatype"
+              ]
+            },
+            {
+              "$ref": "http://json-schema.org/draft-06/schema#"
+            }
+          ]
+        },
+        "dataSchema": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "enum": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "object"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "array"
+                  }
+                ]
+              }
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "string",
+                "boolean",
+                "object",
+                "number",
+                "array"
+              ]
+            }
+          }
+        }
+      }
+    }
+       </pre>
+
+
+
+
+
+
+
+
+
+</section>
 
 <section id="changes" class="appendix">
 <h1>Recent Specification Changes</h1>
