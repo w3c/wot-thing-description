@@ -320,6 +320,9 @@ const classSrc = fs.readFileSync('class.template', 'UTF-8');
 const vocSrc = fs.readFileSync('vocabulary.template', 'UTF-8');
 const src = fs.readFileSync('index.html.template.html', 'UTF-8');
 
+// path to JSON Schema file for validation
+const jsonSchemaValidation = fs.readFileSync('validation/td-json-schema-validation.json', 'UTF-8');
+
 function render(voc) {
     dust.loadSource(dust.compile(classSrc, 'class'));
     dust.renderSource(vocSrc, voc, function(err, out) {
@@ -328,7 +331,12 @@ function render(voc) {
             return;
         }
         
+        // add content in vocabulary section
         let result = src.replace('{vocabulary.template}', out);
+
+        // add JSON Schema file into the annex section
+        result = result.replace('{td.json-schema.validation}', jsonSchemaValidation);
+
         fs.writeFileSync('index.html', result, 'UTF-8');
     });
 }
@@ -361,3 +369,6 @@ rdf.create(function(err, store) {
 		});
     });
 });
+
+
+
