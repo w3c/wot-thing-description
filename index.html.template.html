@@ -394,10 +394,10 @@ The type of the field <code>links</code> and <code>security</code> MUST be seria
           "base": "https://servient.example.com/",
           "description": "Additional (human) readable information of the Thing.",
           "support": "https://servient.example.com/contact",
+          "security": [...],
           "properties": {...},
           "actions": {...},
           "events": {...},
-          "security": [...],
           "links": [...]
         }
    </pre>
@@ -414,10 +414,10 @@ The type of the field <code>links</code> and <code>security</code> MUST be seria
           "base": "https://servient.example.com/",
           "description": "Additional (human) readable information of the Thing.",
           "support": "https://servient.example.com/contact",
+          "security": [...],
           "properties": {...},
           "actions": {...},
           "events": {...},
-          "security": [...],
           "links": [...]
         }
    </pre>
@@ -685,16 +685,12 @@ That means, when a Thing Description instance is omitting this vocabulary, then 
     <section id="security-serialization-json">
       <h2>security</h2>
 
-      <p class="ednote">This is the first draft containing the new security vocabularies. 
-      The definition is not yet completed and is still in progress.
-      </p>
-
     <p><span class="rfc2119-assertion" id="td-security">
     Each mandatory and optional vocabulary, as defined in the class <a href="#security" class="sec-ref">SecurityScheme</a>, MUST be serialized as a JSON key.</span></p>
 
       <p>The following TD snippet example shows a simple security configuration specifying
       basic authentication in the header.  The value of <code>in</code> given is actually the default
-      value.<p>
+      value.</p>
       <pre class="example">
 "security": [
   {
@@ -706,7 +702,7 @@ That means, when a Thing Description instance is omitting this vocabulary, then 
 
       <p>Here is a more complex example: a TD snippet showing digest authentication on a proxy
       combined with bearer token authentication on an endpoint.  Here the default
-      value of <code>in</code> in the <code>digest</code> scheme is implied.<p>
+      value of <code>in</code> in the <code>digest</code> scheme is implied.</p>
       <pre class="example">
 ...
 "security": [
@@ -724,15 +720,50 @@ That means, when a Thing Description instance is omitting this vocabulary, then 
       </pre>
 
       <p>Security definitions can be given at more than one level.
-      In this case, definitions at the lower levels override
-      the definitions at the higher level.  In the following example, all interactions
-      require basic authentication except for the <code>overheating</code> event, in which
-      security has been overridden.  Note especially the use of an empty array for
+      In this case, definitions at the lower levels override (completely replace)
+      the definitions at the higher level.  
+      </p>
+
+      <p>
+      Security configuration is mandatory. 
+      <span class="rfc2119-assertion" id="td-security-mandatory">
+      Every form in a Thing MUST have a security configuration either provided in the form itself,
+      at the interaction level directly above it (if security is not configured in the form), or at the Thing level 
+      (if security is not configured in either the form or at the interaction level).
+      </span>
+      In the vocabulary tables above, note that <code>security</code> is marked as non-mandatory.
+      This is only true at a specific level, and only if the security is configured at a higher or
+      lower level.  In other words, a security
+      configuration must be provided at <em>some</em> level for each form.
+      </p>
+      <p>
+      The <code>none</code> security scheme is provided for the case that no security is needed.
+      The minimal security configuration for a Thing is configuration of the <code>none</code> security scheme 
+      at the top level, as in the following example:
+      <pre class="example">
+        {
+          "name": "MyThing",
+          "id": "urn:dev:wot:com:example:servient:myThing",
+          "base": "https://servient.example.com/",
+          "description": "Additional (human) readable information of the Thing.",
+          "support": "https://servient.example.com/contact",
+	  "security": [{"scheme": "none"}],
+          "properties": {...},
+          "actions": {...},
+          "events": {...},
+          "links": [...]
+        }
+      </pre>
+      </p> 
+
+      <p>
+      To give a more complex example, suppose we have a Thing where all interactions
+      require basic authentication except for one interaction in which
+      security has been overridden.  In the following, the <code>none</code> scheme for
       the security configuration in the <code>overheating</code> event to indicate no 
       authentication is required.  For the <code>status</code> property and the <code>toggle</code>
       action, however, <code>basic</code> authentication is required, as defined
       at the top level of the Thing.
-      </p>
       <pre class="example">
 {
   ...
@@ -761,17 +792,18 @@ That means, when a Thing Description instance is omitting this vocabulary, then 
       "forms": [{
         "href": "https://mylamp.example.com/oh",
         "mediaType": "application/json",
-        "security": [] 
+	"security": [{"scheme": "none"}] 
       }]
     }
   }
 }
       </pre>
+      </p>
 
       <p>Security definitions can also can be given for different elements
       at the same level.  This may be required for devices that support
       multiple protocols, for example CoAP and HTTP, with support for different
-      security mechanisms.  It is also useful when alternative authentication
+      security mechanisms.  This is also useful when alternative authentication
       mechanisms are allowed.  Here is a TD snippet demonstrating three possible
       ways to access a resource: via HTTPS with basic authentication, via HTTPS
       via digest authentication, or via CoAPS with an API key.
@@ -779,8 +811,7 @@ That means, when a Thing Description instance is omitting this vocabulary, then 
       provides a way to combine security mechanisms an in "OR" fashion.
       In contrast, putting multiple security configurations in the same
       <code>security</code> field combines them in an "AND" fashion, since in that case
-      they would all need to be satisfied.
-      </p>
+      they would all need to be satisfied to allow access to the resource.
       <pre class="example">
 "properties": {
   "status": {
@@ -805,6 +836,7 @@ That means, when a Thing Description instance is omitting this vocabulary, then 
   }
 }
       </pre>
+      </p>
 
     </section> <!-- end of id="security-serialization-json"-->
 
@@ -884,6 +916,7 @@ The following pre-processing steps of a Thing Description instance MUST be execu
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "description" : "MyLampThing uses JSON-LD 1.1 serialization",
+    "security": [{"scheme": "none"}],
     "properties": {
         "status": {
              "description" : "Shows the current status of the lamp",
@@ -919,6 +952,7 @@ The following pre-processing steps of a Thing Description instance MUST be execu
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "description" : "MyLampThing uses JSON-LD 1.1 serialization",
+    "security": [{"scheme": "none"}],
     "properties": {
         "status": {
              "@type" : "iot:SwitchStatus",
@@ -999,7 +1033,8 @@ The following pre-processing steps of a Thing Description instance MUST be execu
     <li>Communication metadata "link" was renamed as "form", and a form now contains a new field "rel".</li>
     <li>A Web "link" was introduced at the top level.</li>
     <li>Descriptions were added to explain how semantic annotations can be attached at various levels (thing, interaction and data).</li>
-    <li>A mechanism to declare security metadata was added.</li>
+    <li>A mechanism to declare security configuration metadata was added.</li>
+    <li>Security configuration was made mandatory (at some level, when combined with overriding).</li>
   </ul>
 </section>
 
