@@ -13,9 +13,9 @@
 
 <http://www.w3.org/ns/td#> rdf:type owl:Ontology ;
                            
-                           owl:versionInfo "0.0.1" ;
-                           
                            vann:preferredNamespacePrefix "td" ;
+                           
+                           owl:versionInfo "0.5.0" ;
                            
                            dc:title "Ontology model for Web of Things"@en ;
                            
@@ -388,11 +388,11 @@ For example, the Property interaction allows get and set operations. The protoco
         
         rdfs:subClassOf :InteractionPattern ,
                         [ rdf:type owl:Restriction ;
-                          owl:onProperty :output ;
+                          owl:onProperty :input ;
                           owl:allValuesFrom :Specification
                         ] ,
                         [ rdf:type owl:Restriction ;
-                          owl:onProperty :input ;
+                          owl:onProperty :output ;
                           owl:allValuesFrom :Specification
                         ] ;
         
@@ -430,8 +430,8 @@ For example, the Property interaction allows get and set operations. The protoco
        
        rdfs:label "Event" ;
        
-       rdfs:subClassOf :Specification ,
-                       :InteractionPattern ;
+       rdfs:subClassOf :InteractionPattern ,
+                       :Specification ;
        
        rdfs:comment "The Event Interaction Pattern describes event sources that asynchronously push messages. Here not state, but state transitions (events) are communicated (e.g., \"clicked\"). Events may be triggered by internal state changes that are not exposed as Properties. Events usually follow strong consistency, where messages need to be queued to ensure eventual delivery of all occured events."@en .
 
@@ -444,10 +444,6 @@ For example, the Property interaction allows get and set operations. The protoco
       rdfs:label "Form" ;
       
       rdfs:subClassOf [ rdf:type owl:Restriction ;
-                        owl:onProperty :security ;
-                        owl:allValuesFrom :SecurityScheme
-                      ] ,
-                      [ rdf:type owl:Restriction ;
                         owl:onProperty :rel ;
                         owl:allValuesFrom xsd:string
                       ] ,
@@ -456,12 +452,16 @@ For example, the Property interaction allows get and set operations. The protoco
                         owl:allValuesFrom xsd:anyURI
                       ] ,
                       [ rdf:type owl:Restriction ;
-                        owl:onProperty :href ;
-                        owl:someValuesFrom xsd:anyURI
-                      ] ,
-                      [ rdf:type owl:Restriction ;
                         owl:onProperty :mediaType ;
                         owl:allValuesFrom xsd:string
+                      ] ,
+                      [ rdf:type owl:Restriction ;
+                        owl:onProperty :security ;
+                        owl:allValuesFrom :SecurityScheme
+                      ] ,
+                      [ rdf:type owl:Restriction ;
+                        owl:onProperty :href ;
+                        owl:someValuesFrom xsd:anyURI
                       ] ;
       
       rdfs:comment "Communication metadata indicating where a service can be accessed by a client application. An interaction might have more than one form."@en .
@@ -475,24 +475,24 @@ For example, the Property interaction allows get and set operations. The protoco
                     rdfs:label "InteractionPattern" ;
                     
                     rdfs:subClassOf [ rdf:type owl:Restriction ;
-                                      owl:onProperty :description ;
-                                      owl:allValuesFrom xsd:string
-                                    ] ,
-                                    [ rdf:type owl:Restriction ;
                                       owl:onProperty :forms ;
                                       owl:allValuesFrom :Form
                                     ] ,
                                     [ rdf:type owl:Restriction ;
-                                      owl:onProperty :forms ;
-                                      owl:someValuesFrom :Form
+                                      owl:onProperty :description ;
+                                      owl:allValuesFrom xsd:string
+                                    ] ,
+                                    [ rdf:type owl:Restriction ;
+                                      owl:onProperty :security ;
+                                      owl:allValuesFrom :SecurityScheme
                                     ] ,
                                     [ rdf:type owl:Restriction ;
                                       owl:onProperty :label ;
                                       owl:allValuesFrom xsd:string
                                     ] ,
                                     [ rdf:type owl:Restriction ;
-                                      owl:onProperty :security ;
-                                      owl:allValuesFrom :SecurityScheme
+                                      owl:onProperty :forms ;
+                                      owl:someValuesFrom :Form
                                     ] ;
                     
                     rdfs:comment "Three interaction patterns are defined as subclasses: Property, Action and Event. When a concrete Property, Action or Event is defined in a Thing Description, it is called an \\\"interaction resource\\\". Interactions between Things can be as simple as one Thing accessing another Thing's data to get or (in the case the data is also writable) change representation of data such as metadata, status or mode. A Thing may also be interested in getting asynchronously notified of future changes in another Thing, or may want to initiate a process served in another Thing that may take some time to complete and monitor the progress. Interactions between Things may involve exchanges of data between them. This data can be either given as input by the client Thing, returned as output by the server Thing or both."@en .
@@ -506,12 +506,16 @@ For example, the Property interaction allows get and set operations. The protoco
       rdfs:label "Link" ;
       
       rdfs:subClassOf [ rdf:type owl:Restriction ;
+                        owl:onProperty :href ;
+                        owl:allValuesFrom xsd:anyURI
+                      ] ,
+                      [ rdf:type owl:Restriction ;
                         owl:onProperty :anchor ;
                         owl:allValuesFrom xsd:anyURI
                       ] ,
                       [ rdf:type owl:Restriction ;
-                        owl:onProperty :href ;
-                        owl:allValuesFrom xsd:anyURI
+                        owl:onProperty :rel ;
+                        owl:allValuesFrom xsd:string
                       ] ,
                       [ rdf:type owl:Restriction ;
                         owl:onProperty :href ;
@@ -519,10 +523,6 @@ For example, the Property interaction allows get and set operations. The protoco
                       ] ,
                       [ rdf:type owl:Restriction ;
                         owl:onProperty :mediaType ;
-                        owl:allValuesFrom xsd:string
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :rel ;
                         owl:allValuesFrom xsd:string
                       ] ;
       
@@ -539,11 +539,11 @@ For example, the Property interaction allows get and set operations. The protoco
           rdfs:subClassOf :Data ,
                           :InteractionPattern ,
                           [ rdf:type owl:Restriction ;
-                            owl:onProperty :writable ;
+                            owl:onProperty :observable ;
                             owl:allValuesFrom xsd:boolean
                           ] ,
                           [ rdf:type owl:Restriction ;
-                            owl:onProperty :observable ;
+                            owl:onProperty :writable ;
                             owl:allValuesFrom xsd:boolean
                           ] ;
           
@@ -583,28 +583,16 @@ The SecurityScheme class should be specialized by external ontology classes."""@
        rdfs:label "Thing"@en ;
        
        rdfs:subClassOf [ rdf:type owl:Restriction ;
-                         owl:onProperty :name ;
-                         owl:someValuesFrom xsd:string
+                         owl:onProperty :properties ;
+                         owl:allValuesFrom :Property
                        ] ,
                        [ rdf:type owl:Restriction ;
                          owl:onProperty :description ;
                          owl:allValuesFrom xsd:string
                        ] ,
                        [ rdf:type owl:Restriction ;
-                         owl:onProperty :security ;
-                         owl:allValuesFrom :SecurityScheme
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :base ;
-                         owl:allValuesFrom xsd:anyURI
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :actions ;
-                         owl:allValuesFrom :Action
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :properties ;
-                         owl:allValuesFrom :Property
+                         owl:onProperty :name ;
+                         owl:someValuesFrom xsd:string
                        ] ,
                        [ rdf:type owl:Restriction ;
                          owl:onProperty :links ;
@@ -615,8 +603,20 @@ The SecurityScheme class should be specialized by external ontology classes."""@
                          owl:allValuesFrom :Event
                        ] ,
                        [ rdf:type owl:Restriction ;
+                         owl:onProperty :security ;
+                         owl:allValuesFrom :SecurityScheme
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :base ;
+                         owl:allValuesFrom xsd:anyURI
+                       ] ,
+                       [ rdf:type owl:Restriction ;
                          owl:onProperty :support ;
                          owl:allValuesFrom xsd:string
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :actions ;
+                         owl:allValuesFrom :Action
                        ] ;
        
        rdfs:comment "Describes a physical and/or virtual Thing (may represent one or more physical and / or virtual Things) in the Web of Things context."@en .

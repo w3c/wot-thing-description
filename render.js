@@ -337,8 +337,8 @@ function render(voc) {
 
 const ttlFiles = [
     'ontology/td.ttl',
-	'ontology/schema/td-schema.ttl',
-	'ontology/security/td-security.ttl',
+	'ontology/json-schema.ttl',
+	'ontology/wot-security.ttl',
 	'validation/td-validation.ttl'
 ];
 
