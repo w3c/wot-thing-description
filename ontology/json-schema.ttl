@@ -10,6 +10,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@base <http://www.w3.org/ns/td/schema#> .
 
 <http://www.w3.org/ns/td/schema#> rdf:type owl:Ontology ;
                                   
@@ -191,18 +192,23 @@
 
 :ArraySchema rdf:type owl:Class ;
              
+             owl:equivalentClass [ rdf:type owl:Restriction ;
+                                   owl:onProperty :type ;
+                                   owl:hasValue "array"
+                                 ] ;
+             
              rdfs:subClassOf :DataSchema ,
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :maxItems ;
-                               owl:allValuesFrom xsd:unsignedInt
+                               owl:onProperty :items ;
+                               owl:allValuesFrom :DataSchema
                              ] ,
                              [ rdf:type owl:Restriction ;
                                owl:onProperty :minItems ;
                                owl:allValuesFrom xsd:unsignedInt
                              ] ,
                              [ rdf:type owl:Restriction ;
-                               owl:onProperty :items ;
-                               owl:allValuesFrom :DataSchema
+                               owl:onProperty :maxItems ;
+                               owl:allValuesFrom xsd:unsignedInt
                              ] ;
              
              rdfs:comment "A JSON array specification (\"type\": \"array\")."@en .
@@ -212,6 +218,11 @@
 ###  http://www.w3.org/ns/td/schema#BooleanSchema
 
 :BooleanSchema rdf:type owl:Class ;
+               
+               owl:equivalentClass [ rdf:type owl:Restriction ;
+                                     owl:onProperty :type ;
+                                     owl:hasValue "boolean"
+                                   ] ;
                
                rdfs:subClassOf :DataSchema ;
                
@@ -224,16 +235,16 @@
 :DataSchema rdf:type owl:Class ;
             
             rdfs:subClassOf [ rdf:type owl:Restriction ;
-                              owl:onProperty :enum ;
-                              owl:allValuesFrom rdfs:Literal
-                            ] ,
-                            [ rdf:type owl:Restriction ;
                               owl:onProperty :const ;
                               owl:allValuesFrom rdfs:Literal
                             ] ,
                             [ rdf:type owl:Restriction ;
                               owl:onProperty :type ;
                               owl:allValuesFrom xsd:string
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :enum ;
+                              owl:allValuesFrom rdfs:Literal
                             ] .
 
 
@@ -242,7 +253,12 @@
 
 :IntegerSchema rdf:type owl:Class ;
                
-               rdfs:subClassOf :NumberSchema ,
+               owl:equivalentClass [ rdf:type owl:Restriction ;
+                                     owl:onProperty :type ;
+                                     owl:hasValue "integer"
+                                   ] ;
+               
+               rdfs:subClassOf :DataSchema ,
                                [ rdf:type owl:Restriction ;
                                  owl:onProperty :maximum ;
                                  owl:allValuesFrom xsd:integer
@@ -259,6 +275,11 @@
 ###  http://www.w3.org/ns/td/schema#NumberSchema
 
 :NumberSchema rdf:type owl:Class ;
+              
+              owl:equivalentClass [ rdf:type owl:Restriction ;
+                                    owl:onProperty :type ;
+                                    owl:hasValue "number"
+                                  ] ;
               
               rdfs:subClassOf :DataSchema ,
                               [ rdf:type owl:Restriction ;
@@ -286,14 +307,19 @@
 
 :ObjectSchema rdf:type owl:Class ;
               
+              owl:equivalentClass [ rdf:type owl:Restriction ;
+                                    owl:onProperty :type ;
+                                    owl:hasValue "object"
+                                  ] ;
+              
               rdfs:subClassOf :DataSchema ,
-                              [ rdf:type owl:Restriction ;
-                                owl:onProperty :required ;
-                                owl:allValuesFrom xsd:string
-                              ] ,
                               [ rdf:type owl:Restriction ;
                                 owl:onProperty :properties ;
                                 owl:allValuesFrom :DataSchema
+                              ] ,
+                              [ rdf:type owl:Restriction ;
+                                owl:onProperty :required ;
+                                owl:allValuesFrom xsd:string
                               ] ;
               
               rdfs:comment "A JSON object specification (\"type\": \"object\")."@en .
@@ -320,6 +346,11 @@
 ###  http://www.w3.org/ns/td/schema#StringSchema
 
 :StringSchema rdf:type owl:Class ;
+              
+              owl:equivalentClass [ rdf:type owl:Restriction ;
+                                    owl:onProperty :type ;
+                                    owl:hasValue "string"
+                                  ] ;
               
               rdfs:subClassOf :DataSchema ;
               
