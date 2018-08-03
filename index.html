@@ -152,28 +152,29 @@ Properties can be used for controlling (or retrieving) parameters, such as a set
 </p>
 
 <p>
-Example 1 shows a simple TD instance in such JSON serializiation that reflects WoT's <code>Properties</code>, <code>Actions</code>, <code>Events</code> paradigm by describing a lamp Thing with the name <i>MyLampThing</i>.
+Example 1 shows a simple TD instance in such a JSON serializiation that reflects WoT's <code>Properties</code>, <code>Actions</code>, and <code>Events</code> paradigm by describing a lamp Thing with the name <i>MyLampThing</i>.
 </p>
 
-<pre class="example" title="Simple Thing Description Sample">
+<pre id= "simple-thing-description-sample" class="example" title="Simple Thing Description Sample">
 {
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
+    "security": [{"scheme": "basic"}],
     "properties": {
         "status" : {
             "type": "string",
-            "forms": [{"href": "coaps://mylamp.example.com:5683/status"}]
+            "forms": [{"href": "https://mylamp.example.com/status"}]
         }
     },
     "actions": {
         "toggle" : {
-            "forms": [{"href": "coaps://mylamp.example.com:5683/toggle"}]
+            "forms": [{"href": "https://mylamp.example.com/toggle"}]
         }
     },
     "events":{
         "overheating":{
             "type": "string",
-            "forms": [{"href": "coaps://mylamp.example.com:5683/oh"}]
+            "forms": [{"href": "https://mylamp.example.com/oh"}]
         }
     }
 }
@@ -182,58 +183,57 @@ Example 1 shows a simple TD instance in such JSON serializiation that reflects W
 
 
 
-<p>Based on this content, we know there exists one <code>Property</code> interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessible via the CoAP protocol with a GET method (default assumption as descripted in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]) at coaps://mylamp.example.com:5683/status (announced within the <code>forms</code> structure by the <code>href</code> key), which will return a string status value.
+<p>Based on this content, we know there exists one <code>Property</code> interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessible via (the secure form of) the HTTP protocol with a GET method (default assumption as described in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]) at https://mylamp.example.com/status (announced within the <code>forms</code> structure by the <code>href</code> key), which will return a string status value.
 </p>
 
-<p>In a similar manner an <code>Action</code> is specified to toggle the switch status using the POST method that is applied to the coaps://mylamp.example.com:5683/toggle resource (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).</p>
+<p>In a similar manner an <code>Action</code> is specified to toggle the switch status using the POST method that is applied to the https://mylamp.example.com/toggle resource (see the HTTP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).</p>
 
-<p>The WoT's <code>Event</code> model enables a mechanism for events to be notified by a Thing. Here, a subscription of a possible overheating event of the lamp can be applied by using CoAP OBSERVE at coaps://mylamp.example.com:5683/oh (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).
+<p>The WoT's <code>Event</code> model enables a mechanism for events to be notified by a Thing. Here, a subscription of a possible overheating event of the lamp can be applied by using the default event-handling mechanism defined in the protocol binding for HTTP at https://mylamp.example.com/oh (see the HTTP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).
 </p>
 
 <p>
-The TD in Example 1 reflects some additional defined default assumptions that are not explicitly described. E.g., this includes that the media type of the exchange format of the interactions is assumed to be JSON (=<code>mediaType</code>) and the <code>Property</code> <i>status</i> definition is not writable as well as not observable. Thus, the TD specification defines vocabulary terms (<code>writable</code>, <code>observable</code>, <code>mediaType</code>) that have default values. That means if these vocabulary terms not explicit used in a Thing Description instance, the Thing Description processor follows this default assumption for interpretation as defined here in this specification.
+The TD in Example 1 reflects some additional defined default assumptions that are not explicitly described. E.g., this includes that the media type of the exchange format of the interactions is assumed to be JSON (=<code>mediaType</code>) and the <code>Property</code> <i>status</i> definition is not writable as well as not observable. Thus, the TD specification defines vocabulary terms (<code>writable</code>, <code>observable</code>, <code>mediaType</code>) that have default values. If these vocabulary terms are not explicit used in a Thing Description instance, the Thing Description processor follows default assumptions for interpretation as defined in this specification.
 
 </p>
-<p>The TD can be also processed as a RDF-based model. In that case, the Thing Description instance can be simple transformed into a valid JSON-LD style.  In terms of JSON-LD 1.1 serialization and  semantic's open-world assumption the mentioned vocabulary terms with default values will be always present explicitly in the instances. Example 2 shows the TD in JSON-LD 1.1 serializiation that contains the identical information as in Example 1.
+<p>The TD can be also processed as an RDF-based model. In that case, the Thing Description instance can be simply transformed into valid JSON-LD.  In terms of JSON-LD 1.1 serialization, RDF semantic processing's open-world assumption requires vocabulary terms with default values to be always present explicitly in the instances. Example 2 shows the same TD in a JSON-LD 1.1 serializiation containing identical information as in Example 1.
 </p>
 
-<pre class="example" title="Thing Description as JSON-LD 1.1 Serializiation">
+<pre id="thing-description-as-json-ld-1-1-serialization" 
+     class="example" title="Thing Description as JSON-LD 1.1 Serializiation">
 {
     "@context": "https://w3c.github.io/wot-thing-description/context/td-context.jsonld",
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
+    "security": [{"scheme": "basic"}],
     "properties": {
         "status": {
          "writable": false,
          "observable": false,
          "type": "string",
          "forms": [{
-             "href": "coaps://mylamp.example.com:5683/status",
+             "href": "https://mylamp.example.com/status",
              "mediaType": "application/json"
          }]
     }},
     "actions": {
      "toggle": {
         "forms": [{
-            "href": "coaps://mylamp.example.com:5683/toggle",
+            "href": "https://mylamp.example.com/toggle",
             "mediaType": "application/json"
         }]}},
     "events": {
         "overheating": {
             "type": "string",
             "forms": [{
-                "href": "coaps://mylamp.example.com:5683/oh",
+                "href": "https://mylamp.example.com/oh",
                 "mediaType": "application/json"
             }]
         }}
 }
  </pre>
 
-
-<p class="ednote">
-Provide detail description about the semantic usage in the example. Please also check the samples provided in <a href="#examples" class="sec-ref">Section 6.7.</a>
-</p>
-
+<p>For more examples, including the use of other protocols besides HTTP,
+see <a href="#example-serialization" class="sec-ref">Section 7.</a></p>
 
 </section>
 </section>
