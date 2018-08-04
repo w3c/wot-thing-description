@@ -179,14 +179,22 @@ vs:term_status rdf:type owl:AnnotationProperty .
           
           rdfs:comment "Set of security configurations that must all be satisfied for access to resources at or below the current level, if not overridden at a lower level."@en ;
           
-          rdfs:range :SecurityScheme ;
-          
           rdfs:domain [ rdf:type owl:Class ;
                         owl:unionOf ( :Form
                                       :InteractionPattern
                                       :Thing
                                     )
                       ] .
+
+
+
+###  http://www.w3.org/ns/td#specifiedBy
+
+:specifiedBy rdf:type owl:ObjectProperty ;
+             
+             rdfs:domain :Data ;
+             
+             rdfs:range :Specification .
 
 
 
@@ -235,14 +243,7 @@ vs:term_status rdf:type owl:AnnotationProperty .
              
              rdfs:comment "Provides additional (human) readable information."@en ;
              
-             rdfs:range xsd:string ;
-             
-             rdfs:domain [ rdf:type owl:Class ;
-                           owl:unionOf ( :DataSchema
-                                         :InteractionPattern
-                                         :Thing
-                                       )
-                         ] .
+             rdfs:range xsd:string .
 
 
 
@@ -406,21 +407,14 @@ For example, the Property interaction allows get and set operations. The protoco
       
       rdfs:label "Data" ;
       
-      rdfs:subClassOf :DataSchema ;
+      rdfs:subClassOf [ rdf:type owl:Restriction ;
+                        owl:onProperty :specifiedBy ;
+                        owl:someValuesFrom :Specification
+                      ] ;
       
-      rdfs:comment "Any part of a Thing that is represented by some piece of data (e.g. a temperarture quantity represented by a JSON number). Data and Specification are related in the sense that the former can embed specification elements, for the sake of conciseness." ;
+      rdfs:comment "Any part of a Thing that is represented by some piece of data (e.g. a temperarture quantity represented by a JSON number). Data and Specification are related in the sense that the former can embed specification elements (for the sake of conciseness), thus being its own specification." ;
       
       rdfs:seeAlso <http://schema.org/PropertyValue> .
-
-
-
-###  http://www.w3.org/ns/td#DataSchema
-
-:DataSchema rdf:type owl:Class ;
-            
-            rdfs:label "DataSchema" ;
-            
-            rdfs:comment "Any entity providing schema information against which concrete data can be validated. The DataSchema class should be specialized by external ontology classes (e.g. by the JSON Schema ontology class DataSchema)" .
 
 
 
@@ -444,20 +438,16 @@ For example, the Property interaction allows get and set operations. The protoco
       rdfs:label "Form" ;
       
       rdfs:subClassOf [ rdf:type owl:Restriction ;
+                        owl:onProperty :mediaType ;
+                        owl:allValuesFrom xsd:string
+                      ] ,
+                      [ rdf:type owl:Restriction ;
                         owl:onProperty :rel ;
                         owl:allValuesFrom xsd:string
                       ] ,
                       [ rdf:type owl:Restriction ;
                         owl:onProperty :href ;
                         owl:allValuesFrom xsd:anyURI
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :mediaType ;
-                        owl:allValuesFrom xsd:string
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :security ;
-                        owl:allValuesFrom :SecurityScheme
                       ] ,
                       [ rdf:type owl:Restriction ;
                         owl:onProperty :href ;
@@ -475,19 +465,15 @@ For example, the Property interaction allows get and set operations. The protoco
                     rdfs:label "InteractionPattern" ;
                     
                     rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                      owl:onProperty :label ;
+                                      owl:allValuesFrom xsd:string
+                                    ] ,
+                                    [ rdf:type owl:Restriction ;
                                       owl:onProperty :forms ;
                                       owl:allValuesFrom :Form
                                     ] ,
                                     [ rdf:type owl:Restriction ;
                                       owl:onProperty :description ;
-                                      owl:allValuesFrom xsd:string
-                                    ] ,
-                                    [ rdf:type owl:Restriction ;
-                                      owl:onProperty :security ;
-                                      owl:allValuesFrom :SecurityScheme
-                                    ] ,
-                                    [ rdf:type owl:Restriction ;
-                                      owl:onProperty :label ;
                                       owl:allValuesFrom xsd:string
                                     ] ,
                                     [ rdf:type owl:Restriction ;
@@ -506,10 +492,6 @@ For example, the Property interaction allows get and set operations. The protoco
       rdfs:label "Link" ;
       
       rdfs:subClassOf [ rdf:type owl:Restriction ;
-                        owl:onProperty :href ;
-                        owl:allValuesFrom xsd:anyURI
-                      ] ,
-                      [ rdf:type owl:Restriction ;
                         owl:onProperty :anchor ;
                         owl:allValuesFrom xsd:anyURI
                       ] ,
@@ -524,6 +506,10 @@ For example, the Property interaction allows get and set operations. The protoco
                       [ rdf:type owl:Restriction ;
                         owl:onProperty :mediaType ;
                         owl:allValuesFrom xsd:string
+                      ] ,
+                      [ rdf:type owl:Restriction ;
+                        owl:onProperty :href ;
+                        owl:allValuesFrom xsd:anyURI
                       ] ;
       
       rdfs:comment "A Web link, as specified by IETF RFC 8288 (https://tools.ietf.org/html/rfc8288)."@en .
@@ -539,26 +525,15 @@ For example, the Property interaction allows get and set operations. The protoco
           rdfs:subClassOf :Data ,
                           :InteractionPattern ,
                           [ rdf:type owl:Restriction ;
-                            owl:onProperty :observable ;
+                            owl:onProperty :writable ;
                             owl:allValuesFrom xsd:boolean
                           ] ,
                           [ rdf:type owl:Restriction ;
-                            owl:onProperty :writable ;
+                            owl:onProperty :observable ;
                             owl:allValuesFrom xsd:boolean
                           ] ;
           
           rdfs:comment "Properties expose internal state of a Thing that can be directly accessed (get) and optionally manipulated (set). In addition, Things can also choose to make Properties observable by pushing the new state (not an event) after a change; this must follow eventual consistency (also see CAP Theorem)."@en .
-
-
-
-###  http://www.w3.org/ns/td#SecurityScheme
-
-:SecurityScheme rdf:type owl:Class ;
-                
-                rdfs:label "SecurityScheme" ;
-                
-                rdfs:comment """A security configuration defines metadata for a security mechanism to allow access to one or more resources.  More than one security configuration may be specified in which case they all need to be satisfied for access to be permitted.  Security configurations can be given at the level of a Thing, an Interaction pattern, or a Form.  In the case of security configurations given atmore than one level, lower levels override security configurations given at higher levels.  For every form, a security configuration must be given at at least one level applying to that form.  Additional security schemes can be used beyond those defined here if an appropriate external vocabulary is included in the context.  See also Security and Privacy Considerations.
-The SecurityScheme class should be specialized by external ontology classes."""@en .
 
 
 
@@ -568,9 +543,7 @@ The SecurityScheme class should be specialized by external ontology classes."""@
                
                rdfs:label "Specification" ;
                
-               rdfs:subClassOf :DataSchema ;
-               
-               rdfs:comment "Data specification (e.g. a JSON schema) to use for validation of concrete data exchanged between servients. Data and Specification are related in the sense that the former can embed specification elements, for the sake of conciseness."@en ;
+               rdfs:comment "Data specification (e.g. a JSON schema) to use for validation of concrete data exchanged between servients."@en ;
                
                rdfs:seeAlso <http://schema.org/PropertyValueSpecification> .
 
@@ -583,16 +556,20 @@ The SecurityScheme class should be specialized by external ontology classes."""@
        rdfs:label "Thing"@en ;
        
        rdfs:subClassOf [ rdf:type owl:Restriction ;
+                         owl:onProperty :support ;
+                         owl:allValuesFrom xsd:string
+                       ] ,
+                       [ rdf:type owl:Restriction ;
                          owl:onProperty :properties ;
                          owl:allValuesFrom :Property
                        ] ,
                        [ rdf:type owl:Restriction ;
-                         owl:onProperty :description ;
-                         owl:allValuesFrom xsd:string
-                       ] ,
-                       [ rdf:type owl:Restriction ;
                          owl:onProperty :name ;
                          owl:someValuesFrom xsd:string
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :base ;
+                         owl:allValuesFrom xsd:anyURI
                        ] ,
                        [ rdf:type owl:Restriction ;
                          owl:onProperty :links ;
@@ -603,20 +580,12 @@ The SecurityScheme class should be specialized by external ontology classes."""@
                          owl:allValuesFrom :Event
                        ] ,
                        [ rdf:type owl:Restriction ;
-                         owl:onProperty :security ;
-                         owl:allValuesFrom :SecurityScheme
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :base ;
-                         owl:allValuesFrom xsd:anyURI
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :support ;
-                         owl:allValuesFrom xsd:string
-                       ] ,
-                       [ rdf:type owl:Restriction ;
                          owl:onProperty :actions ;
                          owl:allValuesFrom :Action
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :description ;
+                         owl:allValuesFrom xsd:string
                        ] ;
        
        rdfs:comment "Describes a physical and/or virtual Thing (may represent one or more physical and / or virtual Things) in the Web of Things context."@en .
