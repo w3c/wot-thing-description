@@ -8,6 +8,13 @@ let jsonld = require('./context/json-ld.js');
 
 // extraction of vocabulary to render from the RDF store
 
+function sectionOrURI(uri, label) {
+    let isLocal = uri.startsWith('http://www.w3.org/ns/td#') ||
+                  uri.startsWith('http://www.w3.org/ns/json-schema#') ||
+                  uri.startsWith('http://www.w3.org/ns/wot-security#');
+    return isLocal ? '#' + label.toLowerCase(): uri;
+}
+
 function target(sh, g) {
     let uris = g.match(
         sh,
@@ -117,7 +124,7 @@ function classOrDatatype(psh, g) {
     let l = label(u, g);
     
     return {
-        uri: u.startsWith('http://www.w3.org/ns/td#') ? '#' + l.toLowerCase(): u,
+        uri: sectionOrURI(u, l),
         label: l
     };
 }
@@ -204,7 +211,7 @@ function subclasses(sh, g) {
         
         subclasses.push({
             subclass: {
-                uri: scu.startsWith('http://www.w3.org/ns/td#') ? '#' + l.toLowerCase(): scu,
+                uri: sectionOrURI(scu, l),
                 label: l
             }
         });
@@ -346,7 +353,7 @@ function render(voc) {
 const ttlFiles = [
     'ontology/td.ttl',
 	'ontology/json-schema.ttl',
-	'ontology/security.ttl',
+	'ontology/wot-security.ttl',
 	'validation/td-validation.ttl'
 ];
 
