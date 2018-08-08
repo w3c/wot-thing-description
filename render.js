@@ -281,6 +281,7 @@ const schemaPredefined = [
 
 const securityPredefined = [
     "SecurityScheme",
+    "NoSecurityScheme",
     "BasicSecurityScheme",
     "DigestSecurityScheme",
     "BearerSecurityScheme",

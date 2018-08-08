@@ -116,14 +116,14 @@
   <body>
 
       <p class="ednote" title="First draft based on Simplified TD">
-        This is the first draft based on the new simplified TD approach based on JSON-LD 1.1. Some definitions are not finished yet and are still in progress. A stable Thing Description deliverable version based on JSON-LD 1.0 can be found <a href="https://www.w3.org/TR/wot-thing-description/">here</a>. 
+        This is the first draft based on the new simplified TD approach based on JSON-LD 1.1. Some definitions are not finished yet and are still in progress. A stable Thing Description deliverable version based on JSON-LD 1.0 can be found <a href="https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/">here</a>. 
       </p>
 
   <section id="abstract">
 This document describes a formal model and common representation for a Web of Things (WoT) Thing Description. A Thing Description describes the metadata and interfaces of Things, where a Thing is an abstraction of a physical or virtual entity that provides interactions to and participates in the Web of Things. Thing Descriptions provide a set of interactions based on a small vocabulary that makes it possible both to integrate diverse devices and to allow diverse applications to interoperate. 
 Thing Descriptions, by default, are encoded in JSON-LD. 
 JSON-LD provides both a powerful foundation to represent knowledge about Things and simplicity, since it allows processing as a JSON document. 
-A Thing Description instance can be hosted by the Thing itself or hosted externally due to Thing's resource restrictions (e.g. limited memory space) or when a Web of Things-compatible legacy device is retrofitted with a Thing Description.
+A Thing Description instance can be hosted by the Thing itself or hosted externally due to Thing's resource restrictions (e.g., limited memory space) or when a Web of Things-compatible legacy device is retrofitted with a Thing Description.
 
 <!-- for devices.
 The TD must be acquired to use and interact with the Thing, since it describes the semantics of a Thing as well as its <a>WoT Interface</a>. Usually, Things directly provide their own TD, but the TD can also be hosted externally if there is not enough space on the device or when a WoT-compatible legacy device is retrofitted with a TD.-->
@@ -152,28 +152,29 @@ Properties can be used for controlling (or retrieving) parameters, such as a set
 </p>
 
 <p>
-Example 1 shows a simple TD instance in such JSON serializiation that reflects WoT's <code>Properties</code>, <code>Actions</code>, <code>Events</code> paradigm by describing a lamp Thing with the name <i>MyLampThing</i>.
+Example 1 shows a simple TD instance in such a JSON serializiation that reflects WoT's <code>Properties</code>, <code>Actions</code>, and <code>Events</code> paradigm by describing a lamp Thing with the name <i>MyLampThing</i>.
 </p>
 
-<pre class="example" title="Simple Thing Description Sample">
+<pre id= "simple-thing-description-sample" class="example" title="Simple Thing Description Sample">
 {
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
+    "security": [{"scheme": "basic"}],
     "properties": {
         "status" : {
             "type": "string",
-            "forms": [{"href": "coaps://mylamp.example.com:5683/status"}]
+            "forms": [{"href": "https://mylamp.example.com/status"}]
         }
     },
     "actions": {
         "toggle" : {
-            "forms": [{"href": "coaps://mylamp.example.com:5683/toggle"}]
+            "forms": [{"href": "https://mylamp.example.com/toggle"}]
         }
     },
     "events":{
         "overheating":{
             "type": "string",
-            "forms": [{"href": "coaps://mylamp.example.com:5683/oh"}]
+            "forms": [{"href": "https://mylamp.example.com/oh"}]
         }
     }
 }
@@ -182,58 +183,57 @@ Example 1 shows a simple TD instance in such JSON serializiation that reflects W
 
 
 
-<p>Based on this content, we know there exists one <code>Property</code> interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessible via the CoAP protocol with a GET method (default assumption as descripted in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]) at coaps://mylamp.example.com:5683/status (announced within the <code>forms</code> structure by the <code>href</code> key), which will return a string status value.
+<p>Based on this content, we know there exists one <code>Property</code> interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessible via (the secure form of) the HTTP protocol with a GET method (default assumption as described in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]) at https://mylamp.example.com/status (announced within the <code>forms</code> structure by the <code>href</code> key), which will return a string status value.
 </p>
 
-<p>In a similar manner an <code>Action</code> is specified to toggle the switch status using the POST method that is applied to the coaps://mylamp.example.com:5683/toggle resource (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).</p>
+<p>In a similar manner an <code>Action</code> is specified to toggle the switch status using the POST method that is applied to the https://mylamp.example.com/toggle resource (see the HTTP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).</p>
 
-<p>The WoT's <code>Event</code> model enables a mechanism for events to be notified by a Thing. Here, a subscription of a possible overheating event of the lamp can be applied by using CoAP OBSERVE at coaps://mylamp.example.com:5683/oh (see CoAP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).
+<p>The WoT's <code>Event</code> model enables a mechanism for events to be notified by a Thing. Here, a subscription of a possible overheating event of the lamp can be applied by using the default event-handling mechanism defined in the protocol binding for HTTP at https://mylamp.example.com/oh (see the HTTP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).
 </p>
 
 <p>
-The TD in Example 1 reflects some additional defined default assumptions that are not explicitly described. E.g., this includes that the media type of the exchange format of the interactions is assumed to be JSON (=<code>mediaType</code>) and the <code>Property</code> <i>status</i> definition is not writable as well as not observable. Thus, the TD specification defines vocabulary terms (<code>writable</code>, <code>observable</code>, <code>mediaType</code>) that have default values. That means if these vocabulary terms not explicit used in a Thing Description instance, the Thing Description processor follows this default assumption for interpretation as defined here in this specification.
+The TD in Example 1 reflects some additional defined default assumptions that are not explicitly described. E.g., this includes that the media type of the exchange format of the interactions is assumed to be JSON (=<code>mediaType</code>) and the <code>Property</code> <i>status</i> definition is not writable as well as not observable. Thus, the TD specification defines vocabulary terms (<code>writable</code>, <code>observable</code>, <code>mediaType</code>) that have default values. If these vocabulary terms are not explicit used in a Thing Description instance, the Thing Description processor follows default assumptions for interpretation as defined in this specification.
 
 </p>
-<p>The TD can be also processed as a RDF-based model. In that case, the Thing Description instance can be simple transformed into a valid JSON-LD style.  In terms of JSON-LD 1.1 serialization and  semantic's open-world assumption the mentioned vocabulary terms with default values will be always present explicitly in the instances. Example 2 shows the TD in JSON-LD 1.1 serializiation that contains the identical information as in Example 1.
+<p>The TD can be also processed as an RDF-based model. In that case, the Thing Description instance can be simply transformed into valid JSON-LD.  In terms of JSON-LD 1.1 serialization, RDF semantic processing's open-world assumption requires vocabulary terms with default values to be always present explicitly in the instances. Example 2 shows the same TD in a JSON-LD 1.1 serializiation containing identical information as in Example 1.
 </p>
 
-<pre class="example" title="Thing Description as JSON-LD 1.1 Serializiation">
+<pre id="thing-description-as-json-ld-1-1-serialization" 
+     class="example" title="Thing Description as JSON-LD 1.1 Serializiation">
 {
-    "@context": "https://w3c.github.io/wot-thing-description/context/td-context.jsonld",
+    "@context": "http://www.w3.org/ns/td",
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
+    "security": [{"scheme": "basic"}],
     "properties": {
         "status": {
          "writable": false,
          "observable": false,
          "type": "string",
          "forms": [{
-             "href": "coaps://mylamp.example.com:5683/status",
+             "href": "https://mylamp.example.com/status",
              "mediaType": "application/json"
          }]
     }},
     "actions": {
      "toggle": {
         "forms": [{
-            "href": "coaps://mylamp.example.com:5683/toggle",
+            "href": "https://mylamp.example.com/toggle",
             "mediaType": "application/json"
         }]}},
     "events": {
         "overheating": {
             "type": "string",
             "forms": [{
-                "href": "coaps://mylamp.example.com:5683/oh",
+                "href": "https://mylamp.example.com/oh",
                 "mediaType": "application/json"
             }]
         }}
 }
  </pre>
 
-
-<p class="ednote">
-Provide detail description about the semantic usage in the example. Please also check the samples provided in <a href="#examples" class="sec-ref">Section 6.7.</a>
-</p>
-
+<p>For more examples, including the use of other protocols besides HTTP,
+see <a href="#example-serialization" class="sec-ref">Section 7.</a></p>
 
 </section>
 </section>
@@ -248,16 +248,15 @@ Provide detail description about the semantic usage in the example. Please also 
     <h1>Namespaces</h1>
 
 <p>
-  <p>The namespace for the W3C Thing Description vocabulary as defined in this document is <a href="http://www.w3.org/ns/td#">http://www.w3.org/ns/td#</a>.</p>
-  <p>The Thing Description ontology is available at <a href="https://w3c.github.io/wot-thing-description/ontology/td.ttl">https://w3c.github.io/wot-thing-description/ontology/td.ttl</a>. </p>
-  <p>The Thing Description context file is available at <a href="https://w3c.github.io/wot-thing-description/context/td-context.jsonld">https://w3c.github.io/wot-thing-description/context/td-context.jsonld</a>.</p>
-  <p>The security ontology that can be used with the Thing Description is available at <a href="https://w3c.github.io/wot-thing-description/ontology/security.ttl">https://w3c.github.io/wot-thing-description/ontology/security.ttl</a>. </p>
-  <p>The data schema ontology that can be used with the Thing Description is available at <a href="https://w3c.github.io/wot-thing-description/ontology/json-schema.ttl">https://w3c.github.io/wot-thing-description/ontology/json-schema.ttl</a>. </p>
+  <p>The namespace for the W3C Thing Description vocabulary as defined in this document is <a href="http://www.w3.org/ns/td">http://www.w3.org/ns/td</a>.</p> 
+  
+  <p>Using content negotiation, this namespaces serves either the TD ontology file (Turtle) or the TD context file (JSON-LD). </p>
+  
+  <p>The security ontology that can be used with the Thing Description is available at <br><a href="https://www.w3.org/ns/wot-security">https://www.w3.org/ns/wot-security</a>. </p>
+  <p>The data schema ontology that can be used with the Thing Description is available at <a href="https://www.w3.org/ns/json-schema">https://www.w3.org/ns/json-schema</a>. </p>
 </p>
 
-<p class="ednote">
-When the Thing Description specification reaches the recommendation status all namespaces will be updated as part of the W3C domain.   
-</p>
+
 
 </section>
 
@@ -351,14 +350,14 @@ Thing Description instances MAY contain JSON-LD 1.1 keys such as <code>@context<
     <h2>Thing as a whole</h2>
 
 <p><span class="rfc2119-assertion" id="td-context">
-In the first line of the Thing Description instance MAY include the <code>@context</code> key from JSON-LD 1.1 with the value URI of the Thing description context file <code>https://w3c.github.io/wot-thing-description/context/td-context.jsonld</code>.
+In the first line of the Thing Description instance MAY include the <code>@context</code> key from JSON-LD 1.1 with the value URI of the Thing description context file <code>http://www.w3.org/ns/td</code>.
 </span></p>
 
 
 
   <pre class="example">
     {
-      "@context": "https://w3c.github.io/wot-thing-description/context/td-context.jsonld",
+      "@context": "http://www.w3.org/ns/td",
       ...
     }
   </pre>
@@ -372,7 +371,7 @@ This option proves relevant if one wants to extend the existing Thing Descriptio
 </p>
   <pre class="example">
     {
-      "@context": ["https://w3c.github.io/wot-thing-description/context/td-context.jsonld",
+      "@context": ["http://www.w3.org/ns/td",
                    {"sensor": "http://iotschema.org/"}],
       ...
     }
@@ -411,7 +410,7 @@ The type of the field <code>links</code> and <code>security</code> MUST be seria
 
   <pre class="example">
         {
-          "@context": "https://w3c.github.io/wot-thing-description/context/td-context.jsonld",
+          "@context": "http://www.w3.org/ns/td",
           "@type": "Thing",
           "id": "urn:dev:wot:com:example:servient:myThing",
           "name": "MyThing",
@@ -483,7 +482,7 @@ The type of the fields <code>forms</code>, <code>required</code>, and <code>enum
    </pre>
 
 <p><span class="rfc2119-assertion" id="td-property-semantic">
-Similar to the <code>Thing</code> level properties MAY have additional semantic anotations based on JSON-LD 1.1 keys.</span></p>
+Similar to the <code>Thing</code> level properties MAY have additional semantic annotations based on JSON-LD 1.1 keys.</span></p>
 
 <p><span class="rfc2119-assertion" id="td-property-defaults">
 In the case the Thing Description instance is processed and interpret by a JSON-LD 1.1 processor, each <code>property</code> MUST contain the vocabulary terms <code>observable</code> and <code>writable</code> due to the linked data's <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>.</span>
@@ -550,8 +549,7 @@ Each optional vocabulary, as defined in the class <a href="#action" class="sec-r
 The type of the fields <code>input</code> and <code>output</code> MUST be serialized as a JSON object.</span></p>
 
 <p>The members keys of <code>input</code> and <code>output</code> rely on the the class <a href="#property" class="sec-ref">Property</a>.
-<span class="rfc2119-assertion" id="td-action-not-objects">
-The <code>forms</code> field MUST NOT be serialized as a JSON object.</span></p>
+</p>
 
 <p><span class="rfc2119-assertion" id="td-action-arrays">
 The type of the field <code>forms</code>  MUST be serialized as a JSON array.</span></p>
@@ -643,7 +641,7 @@ Each mandatory and optional vocabulary, as defined in the class <a href="#form" 
 If required, <code>forms</code> MAY be supplemented with protocol-specific vocabulary terms identified with a prefix. See also [[!WOT-PROTOCOL-BINDING]].</span></p>
 
 <p><span class="rfc2119-assertion" id="td-form-mediatype">
-In the case the Thing Description instance is processed and interpret by a JSON-LD 1.1 processor, each <code>forms</code> MUST be contain the vocabulary <code>mediaType</code> due to the linked data's <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>.</span>
+In the case the Thing Description instance is processed and interpret by a JSON-LD 1.1 processor, each <code>forms</code> (array) entry MUST be contain the vocabulary <code>mediaType</code> due to the linked data's <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>.</span>
 That means, when a Thing Description instance is omitting this vocabulary, then the interpreter cannot make any assumptions about its actual value. </p>
 
       <p>An example of a TD snippet based on the defined fields is given below:</p>
@@ -760,7 +758,7 @@ That means, when a Thing Description instance is omitting this vocabulary, then 
           "base": "https://servient.example.com/",
           "description": "Additional (human) readable information of the Thing.",
           "support": "https://servient.example.com/contact",
-	  "security": [{"scheme": "none"}],
+          "security": [{"scheme": "none"}],
           "properties": {...},
           "actions": {...},
           "events": {...},
@@ -862,7 +860,7 @@ That means, when a Thing Description instance is omitting this vocabulary, then 
 
 <p>The JSON-based serialization of the TD is identified by the media type <code>application/td+json</code>.</p>
 
-<p>This media type MUST be also associated with the JSON-LD context: <code>https://w3c.github.io/wot-thing-description/context/td-context.jsonld</code>.
+<p>This media type MUST be also associated with the JSON-LD context: <code>http://www.w3.org/ns/td</code>.
 That means that this media type can also be used for contextual  identification of the vocabulary within a (simplified) TD instance that may omit the <code>@context</code> key term.
 </p>
 
@@ -880,7 +878,14 @@ This media type has not registered  with IANA yet.
     <h2>JSON Processing</h2>
 <p>Per default, the minimum requirement to read the content of a Thing Description instance is a (simple) JSON parser. </p>
 
-<p>To validate the semantic meaning and follow references to external context vocabulary terms (e.g., iot.schema.org), JSON-LD or RDF-based  tools and libraries are highly recommended that are explained in the next sub-section. </p>
+<p>If the key terms <code>writable</code> and/or <code>observable</code> are not present within a <code>properties</code> definition, the default value defined in 
+  the <a href="#vocabularyDefinitionSection">Vocabulary Definition</a> MUST be assumed.</p>
+  
+<p>If the  <code>mediaType</code> key term is not present within a <code>forms</code> definition, the default value as defined in the
+   <a href="#vocabularyDefinitionSection">Vocabulary Definition</a> MUST be assumed.   </p>
+
+<p>To validate the semantic meaning and follow references to external context vocabulary terms (e.g., iot.schema.org), JSON-LD or RDF-based  
+  tools and libraries are highly recommended that are explained in the next sub-section. </p>
 
 </section>
 
@@ -889,7 +894,7 @@ This media type has not registered  with IANA yet.
     <h2>JSON-LD 1.1 Processing</h2>
 
 
-<p>To interprete the semantic meaning with respect to RDF triples, a Thing Description instance requires a valid JSON-LD 1.1 representation based on this Thing Description specification before passing it to a JSON-LD 1.1 interpreter.</p>
+<p>To interpret the semantic meaning with respect to RDF triples, a Thing Description instance requires a valid JSON-LD 1.1 representation based on this Thing Description specification before passing it to a JSON-LD 1.1 interpreter.</p>
 
 <p><!-- The following is not marked as a testable assertion because it simply says the next three are assertions.
         Probably the subassertions will need to be reworded so they can be understood independently as referring to
@@ -902,7 +907,7 @@ The following pre-processing steps of a Thing Description instance MUST be execu
       <li><span class="rfc2119-assertion" id="td-jsonld-preprocessing-prefix">
               External used vocabulary terms in the Thing Descriptions MUST provide their context URIs as prefix or within the <code>@context</code>.</span></li>
       <li><span class="rfc2119-assertion" id="td-jsonld-preprocessing-defaults">
-              All vocabulary terms that have a default value as defined  <a href="#vocabularyDefinitionSection">Vocabulary Definition</a> MUST be present at least with their default value.</span></li>
+              All vocabulary terms that have a default value as defined in the <a href="#vocabularyDefinitionSection">Vocabulary Definition</a> MUST be present at least with their default value.</span></li>
 </ul>
 </p>
 
@@ -928,13 +933,13 @@ The following pre-processing steps of a Thing Description instance MUST be execu
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "description" : "MyLampThing uses JSON-LD 1.1 serialization",
-    "security": [{"scheme": "none"}],
+    "security": [{"scheme": "psk"}],
     "properties": {
         "status": {
              "description" : "Shows the current status of the lamp",
              "type": "string",
              "forms": [{
-                 "href": "coaps://mylamp.example.com:5683/status"
+                 "href": "coaps://mylamp.example.com/status"
              }]
         }
     },
@@ -942,14 +947,14 @@ The following pre-processing steps of a Thing Description instance MUST be execu
      "toggle": {
         "description" : "Turn on or off the lamp.",
         "forms": [{
-            "href": "coaps://mylamp.example.com:5683/toggle"
+            "href": "coaps://mylamp.example.com/toggle"
         }]}},
     "events": {
         "overheating": {
             "description" : "Lamp reaches a critical temperature (overheating).",
             "type": "string",
             "forms": [{
-                "href": "coaps://mylamp.example.com:5683/oh"
+                "href": "coaps://mylamp.example.com/oh"
             }]
         }}
 }
@@ -958,13 +963,13 @@ The following pre-processing steps of a Thing Description instance MUST be execu
 
   <pre class="example" title="MyLampThing with semantic annotations based on a valid JSON-LD 1.1 representation">
 {
-    "@context": ["https://w3c.github.io/wot-thing-description/context/td-context.jsonld", 
+    "@context": ["http://www.w3.org/ns/td", 
     		{"iot": "http://iotschema.org/"}],
     "@type" : "Thing",
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "description" : "MyLampThing uses JSON-LD 1.1 serialization",
-    "security": [{"scheme": "none"}],
+    "security": [{"scheme": "psk"}],
     "properties": {
         "status": {
              "@type" : "iot:SwitchStatus",
@@ -973,7 +978,7 @@ The following pre-processing steps of a Thing Description instance MUST be execu
              "observable": false,
              "type": "string",
              "forms": [{
-                 "href": "coaps://mylamp.example.com:5683/status",
+                 "href": "coaps://mylamp.example.com/status",
                  "mediaType": "application/json"
              }]
         }
@@ -983,7 +988,7 @@ The following pre-processing steps of a Thing Description instance MUST be execu
         "@type" : "iot:SwitchStatus",
         "description" : "Turn on or off the lamp.",
         "forms": [{
-            "href": "coaps://mylamp.example.com:5683/toggle",
+            "href": "coaps://mylamp.example.com/toggle",
             "mediaType": "application/json"
         }]}},
     "events": {
@@ -992,7 +997,7 @@ The following pre-processing steps of a Thing Description instance MUST be execu
             "description" : "Lamp reaches a critical temperature (overheating).",
             "type": "string",
             "forms": [{
-                "href": "coaps://mylamp.example.com:5683/oh",
+                "href": "coaps://mylamp.example.com/oh",
                 "mediaType": "application/json"
             }]
         }}
@@ -1039,34 +1044,29 @@ The following pre-processing steps of a Thing Description instance MUST be execu
 <h1>Recent Specification Changes</h1>
 <h2 id="changes2">Changes from Second Public Working Draft</h2>
   <ul>
-    <li>The default serialization format for Thing Description instances is now plain JSON. However, Thing Description instances MAY contain JSON-LD keys such as @context and @type for facilitating semantic evaluation of TDs.</li>
-    <li>With regards to JSON-LD, this Thing Description draft uses JSON-LD 1.1. With this transition, all vocabulary terms as defined in Vocabulary Definitions now have a JSON key representation.</li>
-    <li>Added Section 6.2 Media Type for defining media types used in exchanging TDs.</li>
-    <li>Added 6.3 Implementation Note that provides clarifications useful for implementors.</li>
-    <li>A JSON Schema is provided in Annex A "JSON Schema for TD Instance Validation" for validating Thing Description instances based on JSON-LD 1.1.</li>
-    <li>Some vocabulary terms (e.g. writable, observable, mediaType) now have default values.</li>
-    <li>In addition to core Thing Description vocabulary, Thing Description now has the data schema vocabulary reflecting a subset of JSON Schema terms as linked data representation and the security vocabulary for define security based conditions.</li>
-    <li>Thing now has a mandatory field "id" (URI, e.g. custom URN) for uniquely identifying a Thing, and an optional field "support" to provide information about Thing Description maintainer.</li>
-    <li>Interaction patterns has an optional "label" providing text for such as user interfaces.</li>
-    <li>Security fields are introduced at three levels (i.e. Thing, Interaction Patterns and Forms) for providing security conditions in accessing resources.</li>
+    <li>The default serialization format for Thing Description is now plain JSON. 
+        Thing Description instances still MAY contain JSON-LD keys such as @context and @type for facilitating semantic evaluation of TDs.</li>
+    <li>With regards to JSON-LD, this Thing Description draft uses JSON-LD 1.1 instead of JSON-LD 1.0. With this transition, all vocabulary terms defined in vocabulary definition sections now have a JSON key representation.
+Previously, there were vocabulary terms represented as key values in TDs.</li>
+    <li>Added a section about media types used for exchanging TDs.</li>
+    <li>Added a section about implementation notes that provide useful clarifications to implementors.</li>
+    <li>A JSON Schema is provided in the appendix section "JSON Schema for TD Instance Validation" to facilitate the validation of Thing Description instances.</li>
+    <li>Some vocabulary terms (e.g., writable, observable, mediaType) now have default values that are used by Thing Description processors when they are absent in TD instances.</li>
+    <li>In addition to core Thing Description vocabulary, Thing Description now has the data schema vocabulary reflecting a subset of JSON Schema terms as linked data representation and the security vocabulary for defining security based conditions.</li>
+    <li>Thing has a mandatory field "id" for uniquely identifying a Thing, and an optional field "support" to provide information about Thing Description maintainer.</li>
+    <li>Interaction patterns have an optional "label" field providing text for such as user interfaces.</li>
+    <li>A security field was introduced, and are available at three levels (i.e. Thing, Interaction Patterns and Forms) for providing security conditions in accessing resources.</li>
   </ul>
 </h2>
 <h2 id="changes1">Changes from First Public Working Draft</h2>
-  <ul>
-    <li>Property's "outputData" field was renamed as "schema".</li>
-    <li>Action's "inputData" and "outputData" fields were renamed as "inputSchema" and "outputSchema", respectively.</li>
-    <li>Event's "outputData" field was renamed as "schema".</li>
-    <li>Communication metadata "link" was renamed as "form", and a form now contains a new field "rel".</li>
-    <li>A Web "link" was introduced at the top level.</li>
-    <li>Descriptions were added to explain how semantic annotations can be attached at various levels (thing, interaction and data).</li>
-    <li>A mechanism to declare security configuration metadata was added.</li>
-    <li>Security configuration was made mandatory and binding.</li>
-  </ul>
+  <p>Changes from First Public Working Draft are described in the <a href="https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/#changes">Second Public Working Draft</a>
+</p>
+
 </section>
 
 <section   id="acknowledgements" class="appendix normative">
 <h1>Acknowledgements</h1>
-<p>This document contains a significant contribution from Web of Things members: ...</p>
+<p>tbd</p>
 </section>
 
 
