@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>Web of Things (WoT) Thing Description</title>
     <script src="https://www.w3.org/Tools/respec/respec-w3c-common" class="remove"></script>
@@ -67,7 +67,7 @@
                 , publisher: "W3C"
                 , date: "20 August 2017"
                 }
-	, "WOT-PROTOCOL-BINDING" : {
+	      , "WOT-PROTOCOL-BINDING" : {
                   title: "Web of Things Protocol Binding Templates"
                 , href: "https://w3c.github.io/wot-binding-templates/"
                 , authors:  [
@@ -112,50 +112,99 @@
 		clear: both;
 	}
 </style>
-  </head>
-  <body>
+</head>
+<body>
 
-      <p class="ednote" title="First draft based on Simplified TD">
-        This is the first draft based on the new simplified TD approach based on JSON-LD 1.1. Some definitions are not finished yet and are still in progress. A stable Thing Description deliverable version based on JSON-LD 1.0 can be found <a href="https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/">here</a>. 
-      </p>
+  <p class="ednote" title="First draft based on Simplified TD">
+  This is the first draft of the new simplified TD approach based 
+  on JSON-LD 1.1. 
+  Some definitions are not finished yet and are still in progress. 
+  A stable Thing Description deliverable version based on JSON-LD 1.0 
+  can be found 
+  <a href="https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/">here</a>. 
+  </p>
 
   <section id="abstract">
-This document describes a formal model and common representation for a Web of Things (WoT) Thing Description. A Thing Description describes the metadata and interfaces of Things, where a Thing is an abstraction of a physical or virtual entity that provides interactions to and participates in the Web of Things. Thing Descriptions provide a set of interactions based on a small vocabulary that makes it possible both to integrate diverse devices and to allow diverse applications to interoperate. 
-Thing Descriptions, by default, are encoded in JSON-LD. 
-JSON-LD provides both a powerful foundation to represent knowledge about Things and simplicity, since it allows processing as a JSON document. 
-A Thing Description instance can be hosted by the Thing itself or hosted externally due to Thing's resource restrictions (e.g., limited memory space) or when a Web of Things-compatible legacy device is retrofitted with a Thing Description.
-
-<!-- for devices.
-The TD must be acquired to use and interact with the Thing, since it describes the semantics of a Thing as well as its <a>WoT Interface</a>. Usually, Things directly provide their own TD, but the TD can also be hosted externally if there is not enough space on the device or when a WoT-compatible legacy device is retrofitted with a TD.-->
+  <p>
+  This document describes a formal model and a common representation 
+  for a Web of Things (WoT) Thing Description. 
+  A Thing Description describes the metadata and interfaces of Things, 
+  where a Thing is an abstraction of a physical or virtual entity that 
+  provides interactions to and participates in the Web of Things. 
+  Thing Descriptions provide a set of interactions based on a small vocabulary 
+  that makes it possible both to integrate diverse devices and 
+  to allow diverse applications to interoperate. 
+  Thing Descriptions, by default, are encoded in JSON-LD. 
+  JSON-LD provides both a powerful foundation to represent knowledge 
+  about Things and simplicity, 
+  since it allows processing as a JSON document. 
+  A Thing Description instance can be hosted by the Thing itself or hosted 
+  externally when a Thing has resource restrictions (e.g., limited memory space) 
+  or when a Web of Things-compatible legacy device is retrofitted 
+  with a Thing Description.
+  </p>
   </section>
 
   <section id="sotd">
   <p>
-    Implementers need to be aware that this specification is considered unstable. Vendors interested in implementing this specification before it eventually reaches the Candidate Recommendation phase should subscribe to the [repository](https://github.com/w3c/wot-thing-description) and take part in the discussions.
+  Implementers need to be aware that this specification is considered unstable. 
+  Vendors interested in implementing this specification before it eventually 
+  reaches the Candidate Recommendation phase should subscribe to the 
+  <a href="https://github.com/w3c/wot-thing-description">repository</a>
+  and take part in the discussions.
   </p>
-
-      <p class="ednote" title="The W3C WoT WG is asking for feedback">
-        Please contribute to this draft using the <a href="https://github.com/w3c/wot-thing-description/issues">GitHub Issue</a> feature of the <a href="https://github.com/w3c/wot-thing-description/">WoT Thing Description</a> repository.
-        For feedback on security and privacy considerations, please use the <a href="https://github.com/w3c/wot-security/issues">WoT Security and Privacy</a> Issues, as they are cross-cutting over all our documents.
-      </p>
-
+  <p class="ednote" title="The W3C WoT WG is asking for feedback">
+  Please contribute to this draft using the 
+  <a href="https://github.com/w3c/wot-thing-description/issues">GitHub Issue</a> 
+  feature of the 
+  <a href="https://github.com/w3c/wot-thing-description/">WoT Thing Description</a> 
+  repository.
+  For feedback on security and privacy considerations, 
+  please use the
+  <a href="https://github.com/w3c/wot-security/issues">WoT Security and Privacy</a> 
+  Issues,
+  as security and privacy is cross-cutting over all our documents.
+  </p>
   </section>
 
   <section id="introduction">
-    <h1>Introduction</h1>
-    <p>
-The W3C Thing Description (TD) is a central building block in a Web of Things (WoT) enabled system and can be considered as the entry point of a Thing (aka the <i>index.html</i> of the Thing). 
-The TD consists of semantic metadata for the Thing itself, an interaction model based on WoT's <code>Properties</code>, <code>Actions</code>, and <code>Events</code> paradigm, a semantic schema to make data models machine-understandable, and features for Web Linking to express relations among Things. 
-</p>
-<p>
-Properties can be used for controlling (or retrieving) parameters, such as a setting an operation state (or getting the current value). Actions model invocation of physical processes, but can also be used to abstract RPC-like calls of existing platforms. Events cover the push model where state change notifications, discrete events, and streams of values are sent asynchronously to the receiver. In general, the TD provides metadata for the different communication bindings (e.g., HTTP, CoAP, MQTT, etc.), mediaTypes (e.g., "application/json", "application/xml", "application/cbor", "application/exi" etc.), and security policies (authentication, authorization, etc.). The serialization of the TD instances is based on JSON and includes at least the TD core vocabulary as JSON keys as defined in this specification document.
-</p>
-
-<p>
-Example 1 shows a simple TD instance in such a JSON serializiation that reflects WoT's <code>Properties</code>, <code>Actions</code>, and <code>Events</code> paradigm by describing a lamp Thing with the name <i>MyLampThing</i>.
-</p>
-
-<pre id= "simple-thing-description-sample" class="example" title="Simple Thing Description Sample">
+  <h1>Introduction</h1>
+  <p>
+  The W3C Thing Description (TD) is a central building block in a Web of Things 
+  (WoT) enabled system and can be considered as the entry point of a Thing 
+  (much like the <i>index.html</i> of a web site). 
+  The TD consists of semantic metadata for the Thing itself,
+  an interaction model based on WoT's <code>Properties</code>,
+  <code>Actions</code>, and <code>Events</code> paradigm, 
+  a semantic schema to make data models machine-understandable, 
+  and features for Web Linking to express relations among Things. 
+  </p>
+  <p>
+  Properties can be used for controlling (or retrieving) parameters, 
+  such as a setting an operation state (or getting the current value). 
+  Actions model invocation of physical processes, 
+  but can also be used to abstract RPC-like calls of existing platforms. 
+  Events are used for interactions that use the push model of
+  communication where state change notifications, 
+  discrete events, 
+  and streams of values are sent asynchronously to the receiver. 
+  In general, the TD provides metadata for different communication bindings 
+  (e.g., HTTP, CoAP, MQTT, etc.), 
+  mediaTypes (e.g., "application/json", "application/xml", "application/cbor", 
+  "application/exi" etc.), 
+  and security mechanisms (for authentication, authorization, 
+  confidentiality, etc.). 
+  Serialization of TD instances is based on JSON and includes at least 
+  the TD core vocabulary as JSON keys as defined in this specification document.
+  </p>
+  <p>
+  Example 1 shows a simple TD instance in such a JSON serializiation that 
+  reflects WoT's <code>Properties</code>, <code>Actions</code>, 
+  and <code>Events</code> paradigm 
+  by describing a lamp Thing with the name <i>MyLampThing</i>.
+  </p>
+<pre id="simple-thing-description-sample" 
+     class="example" title="Simple Thing Description Sample with JSON serialization">
 {
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
@@ -178,49 +227,103 @@ Example 1 shows a simple TD instance in such a JSON serializiation that reflects
         }
     }
 }
- </pre>
-
-
-
-
-<p>Based on this content, we know there exists one <code>Property</code> interaction resource with the name <i>status</i>. In addition, information is provided such as that this Property is accessible via (the secure form of) the HTTP protocol with a GET method (default assumption as described in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]) at https://mylamp.example.com/status (announced within the <code>forms</code> structure by the <code>href</code> key), which will return a string status value.
-</p>
-
-<p>In a similar manner an <code>Action</code> is specified to toggle the switch status using the POST method that is applied to the https://mylamp.example.com/toggle resource (see the HTTP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).</p>
-
-<p>The WoT's <code>Event</code> model enables a mechanism for events to be notified by a Thing. Here, a subscription of a possible overheating event of the lamp can be applied by using the default event-handling mechanism defined in the protocol binding for HTTP at https://mylamp.example.com/oh (see the HTTP protocol binding description in the W3C WoT protocol template deliverable [[!WOT-PROTOCOL-BINDING]]).
-</p>
-
-<p>
-The TD in Example 1 reflects some additional defined default assumptions that are not explicitly described. E.g., this includes that the media type of the exchange format of the interactions is assumed to be JSON (=<code>mediaType</code>) and the <code>Property</code> <i>status</i> definition is not writable as well as not observable. Thus, the TD specification defines vocabulary terms (<code>writable</code>, <code>observable</code>, <code>mediaType</code>) that have default values. If these vocabulary terms are not explicit used in a Thing Description instance, the Thing Description processor follows default assumptions for interpretation as defined in this specification.
-
-</p>
-<p>The TD can be also processed as an RDF-based model. In that case, the Thing Description instance can be simply transformed into valid JSON-LD.  In terms of JSON-LD 1.1 serialization, RDF semantic processing's open-world assumption requires vocabulary terms with default values to be always present explicitly in the instances. Example 2 shows the same TD in a JSON-LD 1.1 serializiation containing identical information as in Example 1.
-</p>
-
+</pre>
+  <p>
+  Based on this content, 
+  we know there exists one <code>Property</code> interaction resource 
+  with the name <i>status</i>. 
+  In addition, 
+  information is provided to indicate that this Property is accessible via 
+  (the secure form of) the HTTP protocol with a GET method 
+  at the URI <code>https://mylamp.example.com/status</code> 
+  (announced within the <code>forms</code> structure by the 
+  <code>href</code> key), and will return a string status value.
+  The use of the GET method is not stated explicitly but is 
+  the default assumption made by the W3C WoT 
+  protocol template deliverable [[!WOT-PROTOCOL-BINDING]].
+  </p>
+  <p>
+  In a similar manner an <code>Action</code> is specified to toggle the 
+  switch status using the POST method applied to the 
+  <code>https://mylamp.example.com/toggle</code> resource 
+  (see again the HTTP protocol binding description in the W3C WoT protocol 
+  template deliverable [[!WOT-PROTOCOL-BINDING]]).
+  </p>
+  <p>
+  The WoT's <code>Event</code> model enables a mechanism for events to be 
+  notified by a Thing. 
+  Here, a subscription to be notified upon a possible overheating event 
+  of the lamp can be obtained by using the default event-handling mechanism 
+  defined in the protocol binding for HTTP at 
+  <code>https://mylamp.example.com/oh</code> 
+  (see again the HTTP protocol binding description in the W3C WoT protocol 
+  template deliverable [[!WOT-PROTOCOL-BINDING]]).
+  </p>
+  <p>
+  This example also specifies the <code>basic</code> security scheme, 
+  requiring a username and password for access.
+  In combination with the use of the HTTP protocol this indicates the use of 
+  HTTP Basic Authentication.
+  Specification of a security scheme at the top level as in this example 
+  indicates that it is required for every resource.
+  However, security schemes can also be specified per-interaction or per-form,
+  with lower-level configurations overriding higher-level ones,
+  allowing for the specification of fine-grained access control.
+  Examples are provided later.
+  </p>
+  <p>
+  The TD in Example 1 reflects some additional defined default assumptions 
+  that are not explicitly described. 
+  For example, the media type of the 
+  exchange format of the interactions is assumed to be JSON 
+  (=<code>mediaType</code>) and the <code>Property</code> <i>status</i> 
+  resource is not writable as well as not observable. 
+  Specifically, 
+  the TD specification defines vocabulary terms 
+  (<code>writable</code>, <code>observable</code>, <code>mediaType</code>) 
+  that have default values. 
+  If these vocabulary terms are not explicitly used in a Thing Description 
+  instance, 
+  the Thing Description processor follows default assumptions for 
+  interpretation as defined in this specification.
+  </p>
+  <p>
+  The TD can be also processed as an RDF-based model. 
+  In that case, the Thing Description instance can be transformed 
+  into valid JSON-LD first.  
+  In terms of JSON-LD 1.1 serialization, 
+  RDF semantic processing's open-world assumption requires vocabulary terms 
+  with default values to be always present explicitly in the instances. 
+  Example 2 shows the same TD in a JSON-LD 1.1 serializiation representing
+  exactly the same information as in Example 1; however, default values
+  have been filled in.
+  </p>
 <pre id="thing-description-as-json-ld-1-1-serialization" 
      class="example" title="Thing Description as JSON-LD 1.1 Serializiation">
 {
     "@context": "http://www.w3.org/ns/td",
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
-    "security": [{"scheme": "basic"}],
+    "security": [{"scheme": "basic", "in": "header"}],
     "properties": {
         "status": {
-         "writable": false,
-         "observable": false,
-         "type": "string",
-         "forms": [{
-             "href": "https://mylamp.example.com/status",
-             "mediaType": "application/json"
-         }]
-    }},
+            "writable": false,
+            "observable": false,
+            "type": "string",
+            "forms": [{
+                "href": "https://mylamp.example.com/status",
+                "mediaType": "application/json"
+            }]
+        }
+    },
     "actions": {
-     "toggle": {
-        "forms": [{
-            "href": "https://mylamp.example.com/toggle",
-            "mediaType": "application/json"
-        }]}},
+        "toggle": {
+            "forms": [{
+                "href": "https://mylamp.example.com/toggle",
+                "mediaType": "application/json"
+            }]
+        }
+    },
     "events": {
         "overheating": {
             "type": "string",
@@ -228,711 +331,937 @@ The TD in Example 1 reflects some additional defined default assumptions that ar
                 "href": "https://mylamp.example.com/oh",
                 "mediaType": "application/json"
             }]
-        }}
+        }
+    }
 }
  </pre>
+  <p>
+  For more examples, including the use of other protocols besides HTTP,
+  see <a href="#example-serialization" class="sec-ref">Section 7.</a>
+  </p>
+  </section>
 
-<p>For more examples, including the use of other protocols besides HTTP,
-see <a href="#example-serialization" class="sec-ref">Section 7.</a></p>
-
-</section>
-</section>
-
-<section id="terminology"> 
-    <h2>Terminology</h2>
-<p>The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn> etc.
-</p>
+  <section id="terminology"> 
+  <h2>Terminology</h2>
+  <p>Generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: 
+  <dfn data-lt="Things">Thing</dfn>, 
+  <dfn data-lt="Thing Descriptions">Thing Description</dfn> 
+    (in short <dfn>TD</dfn>), 
+  <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  
+  <dfn>WoT Interface</dfn> etc.
+  </p>
   </section>
 
   <section>
-    <h1>Namespaces</h1>
+  <h1>Namespaces</h1>
+  <p>
+  The namespace for the W3C Thing Description vocabulary as defined in 
+  this document is <a href="http://www.w3.org/ns/td">http://www.w3.org/ns/td</a>. 
+  </p> 
+  <p>
+  Using content negotiation, 
+  this namespace serves either the TD ontology file (Turtle) 
+  or the TD context file (JSON-LD).
+  </p>
+  <p>
+  The security ontology that can be used with the Thing Description 
+  is available at 
+  <a href="https://www.w3.org/ns/wot-security">https://www.w3.org/ns/wot-security</a>. 
+  </p>
+  <p>
+  The data schema ontology that can be used with the Thing Description is 
+  available at 
+  <a href="https://www.w3.org/ns/json-schema">https://www.w3.org/ns/json-schema</a>. 
+  </p>
+  </section>
 
-<p>
-  <p>The namespace for the W3C Thing Description vocabulary as defined in this document is <a href="http://www.w3.org/ns/td">http://www.w3.org/ns/td</a>.</p> 
-  
-  <p>Using content negotiation, this namespaces serves either the TD ontology file (Turtle) or the TD context file (JSON-LD). </p>
-  
-  <p>The security ontology that can be used with the Thing Description is available at <br><a href="https://www.w3.org/ns/wot-security">https://www.w3.org/ns/wot-security</a>. </p>
-  <p>The data schema ontology that can be used with the Thing Description is available at <a href="https://www.w3.org/ns/json-schema">https://www.w3.org/ns/json-schema</a>. </p>
-</p>
+  <section>
+  <h1>Conformance</h1>
+  <p>
+  As well as all sections marked as non-normative, 
+  all authoring guidelines, diagrams, examples, and notes in this specification 
+  are non-normative. 
+  Everything else in this specification is normative.
+  </p>
+  <p>
+  The key words 
+  <em title="MUST" class="rfc2119">MUST</em>, 
+  <em title="MUST NOT" class="rfc2119">MUST NOT</em>, 
+  <em title="REQUIRED" class="rfc2119">REQUIRED</em>, 
+  <em title="SHOULD" class="rfc2119">SHOULD</em>, 
+  <em title="SHOULD NOT" class="rfc2119">SHOULD NOT</em>, 
+  <em title="RECOMMENDED" class="rfc2119">RECOMMENDED</em>, 
+  <em title="MAY" class="rfc2119">MAY</em>,
+  and <em title="OPTIONAL" class="rfc2119">OPTIONAL</em> 
+  in this specification are to be interpreted as described in [[!RFC2119]].
+  </p>
+  <p>
+  A Thing Description instance complies with this specification if it follows 
+  the normative statements in Section 
+  <a href="#vocabularyDefinitionSection" class="sec-ref"><span class="secno">5.</span> 
+  <span class="sec-title">Vocabulary Definition</span></a> 
+  and Section 
+  <a href="#TD-serialization-section" class="sec-ref"><span class="secno">6.</span> 
+  <span class="sec-title">Thing Description Serializations</span></a> 
+  regarding Thing Description serialization.
+  </p>
+  <p>
+  A JSON Schema is provided in Annex 
+  <a href="#json-schema-4-validation" class="sec-ref"><span class="secno">A</span> 
+  <span class="sec-title">JSON Schema for TD Instance Validation</span></a> 
+  to validate Thing Description instances based on JSON-LD 1.1.
+  </p>
 
+  <p class="ednote">
+  In the future some information about RDF validation will be provided.   
+  </p>
 
-
-</section>
-
-<section>
-    <h1>Conformance</h1>
-
-<p>
-  As well as sections marked as non-normative, all authoring guidelines, diagrams, examples,   and notes in this specification are non-normative. Everything else in this specification is
-  normative.
-</p>
-<p>
-  The key words <em title="MUST" class="rfc2119">MUST</em>, <em title="MUST NOT" class="rfc2119">MUST NOT</em>, <em title="REQUIRED" class="rfc2119">REQUIRED</em>, <em title="SHOULD" class="rfc2119">SHOULD</em>, <em title="SHOULD NOT" class="rfc2119">SHOULD NOT</em>, <em title="RECOMMENDED" class="rfc2119">RECOMMENDED</em>, <em title="MAY" class="rfc2119">MAY</em>,
-  and <em title="OPTIONAL" class="rfc2119">OPTIONAL</em> in this specification are to be interpreted as described in [[!RFC2119]].
-</p>
-
- 
-<p>
-A Thing Description instance complies with this specification if it follows the normative statements in Section 
-<a href="#vocabularyDefinitionSection" class="sec-ref"><span class="secno">5.</span> <span class="sec-title">Vocabulary Definition</span></a> and Section 
-<a href="#TD-serialization-section" class="sec-ref"><span class="secno">6.</span> <span class="sec-title">Thing Description Serializations</span></a> 
-regarding Thing Description serialization.
-</p>
- 
-<p>
- A JSON Schema is provided in Annex <a href="#json-schema-4-validation" class="sec-ref"><span class="secno">A</span> <span class="sec-title">JSON Schema for TD Instance Validation</span></a> 
- to validate Thing Description instances based on JSON-LD 1.1.
-</p>
-
-<p class="ednote">
-In the future some information about RDF validation will be provided.   
-</p>
-
- 
-</section>
-
-
-
-<section id="vocabularyDefinitionSection"><h1>Information Model</h1><!-- h1>Vocabulary</h1 --><section><h2>Overview</h2><p>The W3C Thing Description provides a set of vocabulary for describing physical and virtual Things. To increase the interoperability aspect the vocabulary terms are defined by the Resource Description Framework (RDF).  <span class="rfc2119-assertion" id="td-vocabulary">All vocabulary restrictions noted in these tables MUST be followed, including mandatory items and default values.</span></p><p>In general, the Thing Description vocabulary set is grouped in three modules: the core Thing Description vocabulary reflecting WoT's paradigm of <code>Properties</code>, <code>Actions</code>, and <code>Events</code> (also see [[!WOT-ARCHITECTURE]]), the data schema vocabulary reflecting a subset of JSON Schema terms as linked data representation, and the security vocabulary is used to define security based conditions. </p><p>An overview of this vocabulary with its class context and class relation is given by the following three figures: TD core model, TD data schema model, and TD security model. Please note that the figures reflect the vocabulary terms and structure as they would be used in a Thing Description instance (also see <a href="#TD-serialization-section" class="sec-ref"><span class="secno">6.</span> <span class="sec-title">Thing Description Serialization</span></a>). The full ontology definitions of the different modules can be viewed by following the namespaces as provided in Section <a href="#namespaces" class="sec-ref"><span class="secno">3.</span> <span class="sec-title">Namespaces</span></a>.</p><!--<p><a href="http://visualdataweb.de/webvowl/#iri=https://rawgit.com/w3c/wot-thing-description/TD-JSON-LD-1.1/ontology/td.ttl">Click here for the visualization</a></p>--><figure id="td-core-model"><img src="td-core-model/td-core-model.svg"  alt="TD core model figure"/><figcaption>TD core model</figcaption></figure><figure id="td-data-schema-model"><img src="td-core-model/td-data-schema-model.svg"   alt="TD data schema model figure"/><figcaption>TD data schema model</figcaption></figure><figure id="td-security-model"><img src="td-core-model/td-security-model.svg"   alt="TD security model figure"/><figcaption>TD security model</figcaption></figure><p>A detailed description of the vocabulary of the TD core model and TD data schema model is given in the next sub-section.</p></section><section id="sec-core-vocabulary-definition"><h2>Core Vocabulary Definition</h2>      <section><h3><code>Thing</code></h3><p>Describes a physical and/or virtual Thing (may represent one or more physical and / or virtual Things) in the Web of Things context.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>id</code></td><td>unique identifier of the Thing (URI, e.g. custom URN)</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>security</code></td><td>Set of security configurations that must all be satisfied for access to resources at or below the current level, if not overridden at a lower level.</td><td>no</td><td>.</td><td>array of <a href="#securityscheme"><code>SecurityScheme</code></a></td></tr><tr><td><code>name</code></td><td>Name of the Thing.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>description</code></td><td>Provides additional (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>support</code></td><td>Provides information about TD maintainer (e.g., author, link or telephone number to get support, etc).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>base</code></td><td>Define base URI that is valid for all defined local interaction resources. All other URIs in the TD must then be resolved using the algorithm defined in [[!RFC3986]]. This field is optional.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>properties</code></td><td>Keeps all Property-based interaction patterns of the Thing.</td><td>no</td><td>.</td><td><a href="#property"><code>Property</code></a></td></tr><tr><td><code>actions</code></td><td>Keeps all Action-based interaction patterns of the Thing.</td><td>no</td><td>.</td><td><a href="#action"><code>Action</code></a></td></tr><tr><td><code>events</code></td><td>Keeps all Event-based interaction patterns of the Thing.</td><td>no</td><td>.</td><td><a href="#event"><code>Event</code></a></td></tr><tr><td><code>links</code></td><td>Provides Web links to arbitrary resources that relate to the specified Thing Description.</td><td>no</td><td>.</td><td>array of <a href="#link"><code>Link</code></a></td></tr></tbody></table></section>      <section><h3><code>InteractionPattern</code></h3><p>Three interaction patterns are defined as subclasses: Property, Action and Event. When a concrete Property, Action or Event is defined in a Thing Description, it is called an \&quot;interaction resource\&quot;. Interactions between Things can be as simple as one Thing accessing another Thing&#39;s data to get or (in the case the data is also writable) change representation of data such as metadata, status or mode. A Thing may also be interested in getting asynchronously notified of future changes in another Thing, or may want to initiate a process served in another Thing that may take some time to complete and monitor the progress. Interactions between Things may involve exchanges of data between them. This data can be either given as input by the client Thing, returned as output by the server Thing or both.</p><p class="note">Each instance of a <code>Property</code>, <code>Action</code>, and <code>Event</code>  class has a (unique) name. See Section <a href="#json-serializiation-section" class="sec-ref">Representation Format</a> for more details about JSON-LD 1.1 identifiers.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>forms</code></td><td>Indicates one or more endpoints from which an interaction pattern is accessible.</td><td>yes</td><td>.</td><td>array of <a href="#form"><code>Form</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>description</code></td><td>Provides additional (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>security</code></td><td>Set of security configurations that must all be satisfied for access to resources at or below the current level, if not overridden at a lower level.</td><td>no</td><td>.</td><td>array of <a href="#securityscheme"><code>SecurityScheme</code></a></td></tr><tr><td><code>scopes</code></td><td>Array of authorization scope identifiers.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><p>The class <code>InteractionPattern</code> has the following subclasses:</p><ul><li><td><a href="#event"><code>Event</code></a></td></li><li><td><a href="#property"><code>Property</code></a></td></li><li><td><a href="#action"><code>Action</code></a></td></li></ul></section>      <section><h3><code>Property</code></h3><p>Properties expose internal state of a Thing that can be directly accessed (get) and optionally manipulated (set). In addition, Things can also choose to make Properties observable by pushing the new state (not an event) after a change; this must follow eventual consistency (also see CAP Theorem).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>observable</code></td><td>Indicates whether a remote servient can subscribe to (&quot;observe&quot;) the Property, to receive change notifications or periodic updates (true/false).</td><td>no</td><td>false</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr><tr><td><code>writable</code></td><td>Boolean value that indicates whether a property is writable (=true) or not (=false).</td><td>no</td><td>false</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr></tbody></table><p class="note">Property instances may also be instances of the class <a href="#dataschema" class="sec-ref">DataSchema</a> and therefore can contain, among others, the <code>type</code> term.</p></section>      <section><h3><code>Action</code></h3><p>Actions offer functions of the Thing. These functions may manipulate the interal state of a Thing in a way that is not possible through setting Properties. Examples are changing internal state that is not exposed as Property, changing multiple Properties, changing Properties over time or with a process that shall not be disclosed. Actions may also be pure functions, that is, they do not use any internal state at all, e.g., for processing input data and returning the result directly.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>input</code></td><td>Link to the n-ary class that allows the declaration of the accepted data type of an action.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>output</code></td><td>Link to the n-ary class that allows the declaration of the data type returned by an action.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table></section>      <section><h3><code>Event</code></h3><p>The Event Interaction Pattern describes event sources that asynchronously push messages. Here not state, but state transitions (events) are communicated (e.g., &quot;clicked&quot;). Events may be triggered by internal state changes that are not exposed as Properties. Events usually follow strong consistency, where messages need to be queued to ensure eventual delivery of all occured events.</p><p>Instances of the <code>Event</code> class contains the term definitions of the class <a href="#interactionpattern" class="sec-ref">InteractionPattern</a> and <a href="#dataschema" class="sec-ref">DataSchema</a>.</p></section>      <section><h3><code>Form</code></h3><p>Communication metadata indicating where a service can be accessed by a client application. An interaction might have more than one form.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>mediaType</code></td><td>Assign underlying media type of the interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml).</td><td>no</td><td>application/json</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>rel</code></td><td>Indicates the expected result of performing the operation described by the form.
-
-For example, the Property interaction allows get and set operations. The protocol binding may contain a form for the get operation and a different form for the set operation. The value of the &quot;rel&quot; attribute of the form indicates which form is which and allows the client to select the correct form for the oeration required.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>security</code></td><td>Set of security configurations that must all be satisfied for access to resources at or below the current level, if not overridden at a lower level.</td><td>no</td><td>.</td><td>array of <a href="#securityscheme"><code>SecurityScheme</code></a></td></tr><tr><td><code>scopes</code></td><td>Array of authorization scope identifiers.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>Link</code></h3><p>A Web link, as specified by IETF RFC 8288 (https://tools.ietf.org/html/rfc8288).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>mediaType</code></td><td>Assign underlying media type of the interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml).</td><td>no</td><td>application/json</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>rel</code></td><td>Indicates the expected result of performing the operation described by the form.
-
-For example, the Property interaction allows get and set operations. The protocol binding may contain a form for the get operation and a different form for the set operation. The value of the &quot;rel&quot; attribute of the form indicates which form is which and allows the client to select the correct form for the oeration required.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>anchor</code></td><td>By default, the context of a link is the URL of the representation it is associated with, and is serialised as a URI. When present, the anchor parameter overrides this with another URI, such as a fragment of this resource, or a third resource (i.e., when the anchor value is an absolute URI).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr></tbody></table></section></section><section id="sec-data-schema-vocabulary-definition"><h2>Data Schema Vocabulary Definition</h2>      <section><h3><code>DataSchema</code></h3><p></p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>description</code></td><td>Provides additional (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>type</code></td><td>Assignment of JSON-based data types that are compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>const</code></td><td>Provides a constant value.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyType"><code>anyType</code></a></td></tr><tr><td><code>enum</code></td><td>Restricted set of values provided as array.</td><td>no</td><td>.</td><td>array of <a href="http://www.w3.org/2001/XMLSchema#anyType"><code>anyType</code></a></td></tr></tbody></table><p>The class <code>DataSchema</code> has the following subclasses:</p><ul><li><td><a href="#arrayschema"><code>ArraySchema</code></a></td></li><li><td><a href="#booleanschema"><code>BooleanSchema</code></a></td></li><li><td><a href="#integerschema"><code>IntegerSchema</code></a></td></li><li><td><a href="#numberschema"><code>NumberSchema</code></a></td></li><li><td><a href="#objectschema"><code>ObjectSchema</code></a></td></li><li><td><a href="#stringschema"><code>StringSchema</code></a></td></li></ul></section>      <section><h3><code>ArraySchema</code></h3><p>A JSON array specification (&quot;type&quot;: &quot;array&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>items</code></td><td>Used to define characteristics of an array.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>minItems</code></td><td>Defines the minimum number of items that have to be in the array.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#unsignedInt"><code>unsignedInt</code></a></td></tr><tr><td><code>maxItems</code></td><td>Defines the maximum number of items that have to be in the array.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#unsignedInt"><code>unsignedInt</code></a></td></tr></tbody></table></section>      <section><h3><code>ObjectSchema</code></h3><p>A JSON object specification (&quot;type&quot;: &quot;object&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>properties</code></td><td>Data schema nested definitions.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>required</code></td><td>Defines which members of the object type are required/mandatory.</td><td>no</td><td>.</td><td>array of <a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>BooleanSchema</code></h3><p>A JSON boolean value specification (&quot;type&quot;: &quot;boolean&quot;).</p></section>      <section><h3><code>NumberSchema</code></h3><p>A JSON number value specification (&quot;type&quot;: &quot;number&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>minimum</code></td><td>Specifies a minimum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#double"><code>double</code></a></td></tr><tr><td><code>maximum</code></td><td>Specifies a maximum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#double"><code>double</code></a></td></tr></tbody></table></section>      <section><h3><code>StringSchema</code></h3><p>A JSON string value specification (&quot;type&quot;: &quot;string&quot;).</p></section>      <section><h3><code>IntegerSchema</code></h3><p>A JSON integer value specification, i.e. numbers without a fractional part (&quot;type&quot;: &quot;integer&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>minimum</code></td><td>Specifies a minimum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#integer"><code>integer</code></a></td></tr><tr><td><code>maximum</code></td><td>Specifies a maximum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#integer"><code>integer</code></a></td></tr></tbody></table></section></section><section id="sec-security-vocabulary-definition"><h2>Security Vocabulary Definition</h2><p class="ednote" title="Security Metadata Sources">The set of security metadata supported by the core TD vocabulary is still under discussion.  For the core vocabulary the focus is on well-established security  mechanisms, such as those built into protocols supported by WoT  or already in wide use with those protocols.  Note that the vocabulary extension mechanism of the WoT Thing Description allows for additional security schemes if needed.  The current set of security schemes is partly based on <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#securitySchemeObject">OpenAPI 3.0.1</a>.  The security schemes, vocabulary and syntax given in this specification share many similarities with OpenAPI; however, it is not fully compatible.  Also, as OpenAPI targets only web services built around HTTP it does not cover the full set of use cases required for the IoT.  Therefore, we are currently discussing metadata supporting additional security mechanisms for IoT-centered protocols such as CoAP and MQTT.  For more information about what security schemes are under discussion (and to file issues if you have a request) please visit the <a href="https://github.com/w3c/wot-security">WoT Security TF repository.</a></p>      <section><h3><code>SecurityScheme</code></h3><p></p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>scheme</code></td><td>Identification of security mechanism being configured (one of nosec, basic, digest, bearer, pop, oauth2, or apikey).</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>description</code></td><td>Provides additional (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>proxyUrl</code></td><td>URI of the proxy server this security configuration provides access to.  If not given, the corresponding security configuration is for the endpoint.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr></tbody></table><p>The class <code>SecurityScheme</code> has the following subclasses:</p><ul><li><td><a href="#apikeysecurityscheme"><code>APIKeySecurityScheme</code></a></td></li><li><td><a href="#basicsecurityscheme"><code>BasicSecurityScheme</code></a></td></li><li><td><a href="#bearersecurityscheme"><code>BearerSecurityScheme</code></a></td></li><li><td><a href="#digestsecurityscheme"><code>DigestSecurityScheme</code></a></td></li><li><td><a href="#nosecurityscheme"><code>NoSecurityScheme</code></a></td></li><li><td><a href="#oauth2securityscheme"><code>OAuth2SecurityScheme</code></a></td></li><li><td><a href="#psksecurityscheme"><code>PSKSecurityScheme</code></a></td></li><li><td><a href="#popsecurityscheme"><code>PoPSecurityScheme</code></a></td></li></ul></section>      <section><h3><code>NoSecurityScheme</code></h3><p>A security configuration corresponding to (&quot;scheme&quot;: &quot;nosec&quot;), indicating there is no authentication or other mechanism required to access the resource.</p></section>      <section><h3><code>BasicSecurityScheme</code></h3><p>Basic authentication security configuration (&quot;scheme&quot;: &quot;basic&quot;).  Unencrypted username and password.  Should be used with some other security mechanism providing confidentiality, for example, TLS.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>in</code></td><td>Specifies location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>header</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>name</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>DigestSecurityScheme</code></h3><p>Digest authentication security configuration (&quot;scheme&quot;: &quot;digest&quot;). Similar to basic authentication but with added features to avoid man-in-the-middle attacks.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>qop</code></td><td>Quality of protection (one of auth or auth-int).</td><td>no</td><td>auth</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>in</code></td><td>Specifies location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>header</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>name</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>BearerSecurityScheme</code></h3><p>Bearer token authentication security configuration (&quot;scheme&quot;: &quot;bearer&quot;).  This scheme is intended for situations where bearer tokens are used independently of OAuth2.  If the oauth2 scheme is specified it is not generally necessary to specify this scheme as well as it is implied.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>alg</code></td><td>Encoding, encryption, or digest algorithm (one of MD5, ES256, or ES512-256).</td><td>no</td><td>ES256</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>authorizationUrl</code></td><td>URI of the authorization server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>format</code></td><td>Specifies format of security authentication information (one of jwt, jwe, or jws).</td><td>no</td><td>jwt</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>in</code></td><td>Specifies location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>header</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>name</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>OAuth2SecurityScheme</code></h3><p>OAuth2 authentication security configuration (&quot;scheme&quot;: &quot;oauth2&quot;).  For the implicit flow the authorizationUrl and scopes are required.  For the password and client flows both tokenUrl and scopes are required.  For the code flow authorizationUrl, tokenUrl, and scopes are required.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>authorizationUrl</code></td><td>URI of the authorization server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>tokenUrl</code></td><td>URI of the token server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>refreshUrl</code></td><td>URI of the refresh server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>scopes</code></td><td>Array of authorization scope identifiers.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>flow</code></td><td>Authorization flow (one of implicit, password, client, or code).</td><td>no</td><td>implicit</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>APIKeySecurityScheme</code></h3><p>API key authentication security configuration (&quot;scheme&quot;: &quot;apikey&quot;).  This is for the case where the access token is opaque and is not using a standard token format.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>in</code></td><td>Specifies location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>query</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>name</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>PSKSecurityScheme</code></h3><p>Pre-shared key authentication security configuration (&quot;scheme&quot;: &quot;psk&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>identity</code></td><td>Pre-shared key identity.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>PoPSecurityScheme</code></h3><p>Proof-of-possession token authentication security configuration (&quot;scheme&quot;: &quot;pop&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>authorizationUrl</code></td><td>URI of the authorization server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>alg</code></td><td>Encoding, encryption, or digest algorithm (one of MD5, ES256, or ES512-256).</td><td>no</td><td>ES256</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>format</code></td><td>Specifies format of security authentication information (one of jwt, jwe, or jws).</td><td>no</td><td>jwt</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>in</code></td><td>Specifies location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>header</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>name</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section></section></section>
-
-
-
-
-<section id="TD-serialization-section">
-    <h1 >Thing Description Serialization</h1>
-
-      <p class="ednote" title="JSON-LD 1.1 ">
-	This is the first draft that uses JSON-LD 1.1 as a serialization format of the Thing Description. The working assumption is based on the <a href="https://json-ld.org/spec/latest/json-ld/#">Community Draft of JSON-LD 1.1</a>. There is the plan to setup a JSON-LD Working Group with the following <a href="https://www.w3.org/2018/03/jsonld-wg-charter.html">JSON-LD Working Group Charter</a>. It is planned that this section always conforms to the latest working assumptions of JSON-LD 1.1.
-      </p>
-
-<p>
-Thing Description instances are modeled and structured based on the <a href="#vocabularyDefinitionSection" class="sec-ref">Thing Description Information Model</a>. This section proposes a TD serialization based on JSON-LD 1.1. 
-</p>
+  </section>
 
 
 
-<section id="json-serializiation-section">
-    <h1>Representation Format</h1>
+<section id="vocabularyDefinitionSection"><h1>Information Model</h1><!-- h1>Vocabulary</h1 --><section><h2>Overview</h2><p>The W3C Thing Description provides a set of vocabulary for describing physical and virtual Things. To increase interoperability  the vocabulary terms are defined using the Resource Description Framework (RDF).  <span class="rfc2119-assertion" id="td-vocabulary">All vocabulary restrictions noted in these tables MUST be followed,including mandatory items and default values.</span></p><p>In general, the Thing Description vocabulary set is grouped in three modules: the core Thing Description vocabulary reflecting WoT's paradigm of <code>Properties</code>, <code>Actions</code>, and <code>Events</code> (also see [[!WOT-ARCHITECTURE]]);the data schema vocabulary reflecting a subset of JSON Schema terms in a linked data representation; and the security vocabulary used to define security mechanismconfiguration requirements.</p><p>An overview of this vocabulary with its class context and class relation is given by the following three figures: the TD core model, the TD data schema model, and the TD security model. Please note that the figures reflect the vocabulary terms and structure as they would be used in a Thing Description instance (see see <a href="#TD-serialization-section" class="sec-ref"><span class="secno">6.</span> <span class="sec-title">Thing Description Serialization</span></a>). The full ontology definitions of the different modules can be viewed by following the namespaces as provided in Section <a href="#namespaces" class="sec-ref"><span class="secno">3.</span> <span class="sec-title">Namespaces</span></a>.</p><!--<p><a href="http://visualdataweb.de/webvowl/#iri=https://rawgit.com/w3c/wot-thing-description/TD-JSON-LD-1.1/ontology/td.ttl">Click here for the visualization</a></p>--><figure id="td-core-model"><img src="td-core-model/td-core-model.svg" alt="TD core model figure"/><figcaption>TD core model</figcaption></figure><figure id="td-data-schema-model"><img src="td-core-model/td-data-schema-model.svg" alt="TD data schema model figure"/><figcaption>TD data schema model</figcaption></figure><figure id="td-security-model"><img src="td-core-model/td-security-model.svg" alt="TD security model figure"/><figcaption>TD security model</figcaption></figure><p class="ednote" title="Default Values and Mandatory Attributes">In the figures above, and in the tables to follow, items which have default values are indicated as being optional. However, technically, these are optional <em>only in the JSON serialization</em>. They are actually mandatory parts of the information model and are also mandatory in the JSON-LD serialization. In addition, the security scheme configuration is not actually optional even in the JSON serialization.  Security configuration is mandatory at least one of the three levels at which it may be specified... so it can be omitted only if it is specified at a different level for each form. A future version of this document should better express the status of these attributes. </p><p>A detailed description of the vocabulary of the TD core model and TD data schema model is given in the next sub-section.</p></section><section id="sec-core-vocabulary-definition"><h2>Core Vocabulary Definition</h2>      <section><h3><code>Thing</code></h3><p>Describes a physical and/or virtual Thing (may represent one or more physical and/or virtual Things) in the Web of Things context.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>id</code></td><td>unique identifier of the Thing (URI, e.g. custom URN)</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>security</code></td><td>Set of security configurations that must all be satisfied for access to resources at or below the current level, if not overridden at a lower level.</td><td>no</td><td>.</td><td>array of <a href="#securityscheme"><code>SecurityScheme</code></a></td></tr><tr><td><code>name</code></td><td>Name of the Thing.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>description</code></td><td>Provides additional (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>support</code></td><td>Provides information about the TD maintainer (e.g., author, link or telephone number to get support, etc).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>base</code></td><td>Define the base URI that is valid for all defined local interaction resources. All other URIs in the TD must then be resolved using the algorithm defined in [[!RFC3986]].</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>properties</code></td><td>All Property-based interaction patterns of the Thing.</td><td>no</td><td>.</td><td><a href="#property"><code>Property</code></a></td></tr><tr><td><code>actions</code></td><td>All Action-based interaction patterns of the Thing.</td><td>no</td><td>.</td><td><a href="#action"><code>Action</code></a></td></tr><tr><td><code>events</code></td><td>All Event-based interaction patterns of the Thing.</td><td>no</td><td>.</td><td><a href="#event"><code>Event</code></a></td></tr><tr><td><code>links</code></td><td>Provides Web links to arbitrary resources that relate to the specified Thing Description.</td><td>no</td><td>.</td><td>array of <a href="#link"><code>Link</code></a></td></tr></tbody></table></section>      <section><h3><code>InteractionPattern</code></h3><p>Three interaction patterns are defined as subclasses: Property, Action and Event. When a concrete Property, Action or Event is defined in a Thing Description, it is called an &quot;interaction resource&quot;. Interactions between Things can be as simple as one Thing accessing another Thing&#39;s data to get or (in the case the data is also writable) change the representation of data such as metadata, status or mode. A Thing may also be interested in getting asynchronously notified of future changes in another Thing, or may want to initiate a process served in another Thing that may take some time to complete and monitor the progress. Interactions between Things may involve exchanges of data between them. This data can be either given as input by the client Thing, returned as output by the server Thing or both.</p><p class="note">Each instance of a <code>Property</code>, <code>Action</code>, and <code>Event</code>  class has a (unique) name. See Section <a href="#json-serializiation-section" class="sec-ref">Representation Format</a> for more details about JSON-LD 1.1 identifiers.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>forms</code></td><td>Indicates one or more endpoints from which an interaction pattern is accessible.</td><td>yes</td><td>.</td><td>array of <a href="#form"><code>Form</code></a></td></tr><tr><td><code>label</code></td><td>Provides a label (e.g., display a text for UI representation) of the interaction pattern.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>description</code></td><td>Provides additional (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>security</code></td><td>Set of security configurations that must all be satisfied for access to resources at or below the current level, if not overridden at a lower level.</td><td>no</td><td>.</td><td>array of <a href="#securityscheme"><code>SecurityScheme</code></a></td></tr><tr><td><code>scopes</code></td><td>Array of authorization scope identifiers.  These are provided in tokens returned by an authorization server and associated with forms in order to identify what resources a client may access and how.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table><p>The class <code>InteractionPattern</code> has the following subclasses:</p><ul><li><td><a href="#event"><code>Event</code></a></td></li><li><td><a href="#property"><code>Property</code></a></td></li><li><td><a href="#action"><code>Action</code></a></td></li></ul></section>      <section><h3><code>Property</code></h3><p>Properties expose internal state of a Thing that can be directly retrieved (get) and optionally modified (set). In addition, Things can also choose to make Properties observable by pushing the new state (not an event) after a change; this must follow eventual consistency (also see CAP Theorem).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>observable</code></td><td>Indicates whether a remote servient can subscribe to (&quot;observe&quot;) the Property, to receive change notifications or periodic updates (true/false).</td><td>no</td><td>false</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr><tr><td><code>writable</code></td><td>Boolean value that indicates whether a property is writable (=true) or not (=false).</td><td>no</td><td>false</td><td><a href="http://www.w3.org/2001/XMLSchema#boolean"><code>boolean</code></a></td></tr></tbody></table><p class="note">Property instances may also be instances of the class <a href="#dataschema" class="sec-ref">DataSchema</a> and therefore can contain, among others, the <code>type</code> term.</p></section>      <section><h3><code>Action</code></h3><p>Actions offer functions of the Thing. These functions may manipulate the interal state of a Thing in a way that is not possible through setting Properties. Examples are changing internal state that is not exposed as a Property, changing multiple Properties, changing Properties over time or with a process that should not be disclosed. Actions may also be pure functions, that is, they may not use any internal state at all, and may simply process input data and return a result that directly depends only on the input given.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>input</code></td><td>Link to the n-ary class that allows the declaration of the accepted data type of an action.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>output</code></td><td>Link to the n-ary class that allows the declaration of the data type returned by an action.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table></section>      <section><h3><code>Event</code></h3><p>The Event Interaction Pattern describes event sources that asynchronously push messages. Here not state, but state transitions (events) are communicated (e.g., &quot;clicked&quot;). Events may be triggered by internal state changes that are not exposed as Properties. Events usually follow strong consistency, where messages need to be queued to ensure eventual delivery of all events that have occurred.</p><p>Instances of the <code>Event</code> class contains the term definitions of the class <a href="#interactionpattern" class="sec-ref">InteractionPattern</a> and <a href="#dataschema" class="sec-ref">DataSchema</a>.</p></section>      <section><h3><code>Form</code></h3><p>Communication metadata indicating where a service can be accessed by a client application. An interaction might have more than one form.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>mediaType</code></td><td>Assign the underlying media type of an interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml).</td><td>no</td><td>application/json</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>rel</code></td><td>Indicates the expected result of performing the operation described by the form.
 
-<p>This section introduces the JSON-based serialization of the Thing Description that also follows the syntax of JSON-LD 1.1 to streamline the semantic evaluation of TDs.</p>
+For example, the Property interaction allows get and set operations.  
+The protocol binding may contain a form for the get operation and a different form for the set operation.  
+The value of the &quot;rel&quot; attribute of the form must be one of 
+readproperty, writeproperty, observeproperty, invokeaction, subscribeevent, or unsubscribeevent. 
+The rel attribute indicates which form is which and allows the client to select the correct form for the operation required.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>security</code></td><td>Set of security configurations that must all be satisfied for access to resources at or below the current level, if not overridden at a lower level.</td><td>no</td><td>.</td><td>array of <a href="#securityscheme"><code>SecurityScheme</code></a></td></tr><tr><td><code>scopes</code></td><td>Array of authorization scope identifiers.  These are provided in tokens returned by an authorization server and associated with forms in order to identify what resources a client may access and how.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>Link</code></h3><p>A Web link, as specified by IETF RFC 8288 (https://tools.ietf.org/html/rfc8288).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided.</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>mediaType</code></td><td>Assign the underlying media type of an interaction pattern based on IANA (https://www.iana.org/assignments/media-types/media-types.xhtml).</td><td>no</td><td>application/json</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>rel</code></td><td>Indicates the expected result of performing the operation described by the form.
 
-<p>Mainly, all vocabulary terms as defined in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> will have a JSON key representation.</p>
+For example, the Property interaction allows get and set operations.  
+The protocol binding may contain a form for the get operation and a different form for the set operation.  
+The value of the &quot;rel&quot; attribute of the form must be one of 
+readproperty, writeproperty, observeproperty, invokeaction, subscribeevent, or unsubscribeevent. 
+The rel attribute indicates which form is which and allows the client to select the correct form for the operation required.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>anchor</code></td><td>By default, the context of a link is the URL of the representation it is associated with, and is serialised as a URI. When present, the anchor parameter overrides this with another URI, such as a fragment of this resource, or a third resource (i.e., when the anchor value is an absolute URI).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr></tbody></table></section></section><section id="sec-data-schema-vocabulary-definition"><h2>Data Schema Vocabulary Definition</h2>      <section><h3><code>DataSchema</code></h3><p></p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>description</code></td><td>Provides additional (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>type</code></td><td>Assignment of JSON-based data types compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null).</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>const</code></td><td>Provides a constant value.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyType"><code>anyType</code></a></td></tr><tr><td><code>enum</code></td><td>Restricted set of values provided as an array.</td><td>no</td><td>.</td><td>array of <a href="http://www.w3.org/2001/XMLSchema#anyType"><code>anyType</code></a></td></tr></tbody></table><p>The class <code>DataSchema</code> has the following subclasses:</p><ul><li><td><a href="#arrayschema"><code>ArraySchema</code></a></td></li><li><td><a href="#booleanschema"><code>BooleanSchema</code></a></td></li><li><td><a href="#integerschema"><code>IntegerSchema</code></a></td></li><li><td><a href="#numberschema"><code>NumberSchema</code></a></td></li><li><td><a href="#objectschema"><code>ObjectSchema</code></a></td></li><li><td><a href="#stringschema"><code>StringSchema</code></a></td></li></ul></section>      <section><h3><code>ArraySchema</code></h3><p>A JSON array specification (&quot;type&quot;: &quot;array&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>items</code></td><td>Used to define the characteristics of an array.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>minItems</code></td><td>Defines the minimum number of items that have to be in the array.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#unsignedInt"><code>unsignedInt</code></a></td></tr><tr><td><code>maxItems</code></td><td>Defines the maximum number of items that have to be in the array.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#unsignedInt"><code>unsignedInt</code></a></td></tr></tbody></table></section>      <section><h3><code>ObjectSchema</code></h3><p>A JSON object specification (&quot;type&quot;: &quot;object&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>properties</code></td><td>Data schema nested definitions.</td><td>no</td><td>.</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr><tr><td><code>required</code></td><td>Defines which members of an object type are mandatory. Defines which members of the object type are mandatory.</td><td>no</td><td>.</td><td>array of <a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>BooleanSchema</code></h3><p>A JSON boolean value specification (&quot;type&quot;: &quot;boolean&quot;).</p></section>      <section><h3><code>NumberSchema</code></h3><p>A JSON number value specification (&quot;type&quot;: &quot;number&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>minimum</code></td><td>Specifies a minimum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#double"><code>double</code></a></td></tr><tr><td><code>maximum</code></td><td>Specifies a maximum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#double"><code>double</code></a></td></tr></tbody></table></section>      <section><h3><code>StringSchema</code></h3><p>A JSON string value specification (&quot;type&quot;: &quot;string&quot;).</p></section>      <section><h3><code>IntegerSchema</code></h3><p>A JSON integer value specification, that is, numbers without a fractional part (&quot;type&quot;: &quot;integer&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>minimum</code></td><td>Specifies a minimum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#integer"><code>integer</code></a></td></tr><tr><td><code>maximum</code></td><td>Specifies a maximum numeric value. Only applicable for associated number or integer types.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#integer"><code>integer</code></a></td></tr></tbody></table></section></section><section id="sec-security-vocabulary-definition"><h2>Security Vocabulary Definition</h2><p class="ednote" title="Security Metadata Sources">The set of security metadata supported by the core TD vocabulary is still under discussion.  For the core vocabulary the focus is on well-established security  mechanisms, such as those built into protocols supported by WoT  or already in wide use with those protocols.  Note that the vocabulary extension mechanism of the WoT Thing Description allows for additional security schemes if needed.  The current set of security schemes is partly based on <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#securitySchemeObject">OpenAPI 3.0.1</a>.  The security schemes, vocabulary and syntax given in this specification share many similarities with OpenAPI; however, it is not fully compatible.  Also, as OpenAPI targets only web services built around HTTP it does not cover the full set of use cases required for the IoT.  Therefore, we are currently discussing metadata supporting additional security mechanisms for IoT-centered protocols such as CoAP and MQTT.  For more information about what security schemes are under discussion (and to file issues if you have a request) please visit the <a href="https://github.com/w3c/wot-security">WoT Security TF repository.</a></p>      <section><h3><code>SecurityScheme</code></h3><p></p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>scheme</code></td><td>Identification of security mechanism being configured (one of nosec, basic, digest, bearer, pop, oauth2, or apikey).</td><td>yes</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>description</code></td><td>Provides additional (human) readable information.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>proxyUrl</code></td><td>URI of the proxy server this security configuration provides access to.  If not given, the corresponding security configuration is for the endpoint.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr></tbody></table><p>The class <code>SecurityScheme</code> has the following subclasses:</p><ul><li><td><a href="#apikeysecurityscheme"><code>APIKeySecurityScheme</code></a></td></li><li><td><a href="#basicsecurityscheme"><code>BasicSecurityScheme</code></a></td></li><li><td><a href="#bearersecurityscheme"><code>BearerSecurityScheme</code></a></td></li><li><td><a href="#digestsecurityscheme"><code>DigestSecurityScheme</code></a></td></li><li><td><a href="#nosecurityscheme"><code>NoSecurityScheme</code></a></td></li><li><td><a href="#oauth2securityscheme"><code>OAuth2SecurityScheme</code></a></td></li><li><td><a href="#psksecurityscheme"><code>PSKSecurityScheme</code></a></td></li><li><td><a href="#popsecurityscheme"><code>PoPSecurityScheme</code></a></td></li></ul></section>      <section><h3><code>NoSecurityScheme</code></h3><p>A security configuration corresponding to (&quot;scheme&quot;: &quot;nosec&quot;), indicating there is no authentication or other mechanism required to access the resource.</p></section>      <section><h3><code>BasicSecurityScheme</code></h3><p>Basic authentication security configuration (&quot;scheme&quot;: &quot;basic&quot;), using an unencrypted username and password.  This scheme should be used with some other security mechanism providing confidentiality, for example, TLS.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>in</code></td><td>Specifies the location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>header</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>name</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>DigestSecurityScheme</code></h3><p>Digest authentication security configuration (&quot;scheme&quot;: &quot;digest&quot;). This scheme is similar to basic authentication but with added features to avoid man-in-the-middle attacks.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>qop</code></td><td>Quality of protection (one of auth or auth-int).</td><td>no</td><td>auth</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>in</code></td><td>Specifies the location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>header</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>name</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>BearerSecurityScheme</code></h3><p>Bearer token authentication security configuration (&quot;scheme&quot;: &quot;bearer&quot;).  This scheme is intended for situations where bearer tokens are used independently of OAuth2.  If the oauth2 scheme is specified it is not generally necessary to specify this scheme as well as it is implied.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>alg</code></td><td>Encoding, encryption, or digest algorithm (one of MD5, ES256, or ES512-256).</td><td>no</td><td>ES256</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>authorizationUrl</code></td><td>URI of the authorization server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>format</code></td><td>Specifies format of security authentication information (one of jwt, jwe, or jws).</td><td>no</td><td>jwt</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>in</code></td><td>Specifies the location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>header</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>name</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>OAuth2SecurityScheme</code></h3><p>OAuth2 authentication security configuration (&quot;scheme&quot;: &quot;oauth2&quot;).  For the implicit flow the authorizationUrl and scopes are required.  For the password and client flows both tokenUrl and scopes are required.  For the code flow authorizationUrl, tokenUrl, and scopes are required.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>authorizationUrl</code></td><td>URI of the authorization server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>tokenUrl</code></td><td>URI of the token server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>refreshUrl</code></td><td>URI of the refresh server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>scopes</code></td><td>Array of authorization scope identifiers.  These are provided in tokens returned by an authorization server and associated with forms in order to identify what resources a client may access and how.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>flow</code></td><td>Authorization flow (one of implicit, password, client, or code).</td><td>no</td><td>implicit</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>APIKeySecurityScheme</code></h3><p>API key authentication security configuration (&quot;scheme&quot;: &quot;apikey&quot;).  This is for the case where the access token is opaque and is not using a standard token format.</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>in</code></td><td>Specifies the location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>query</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>name</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>PSKSecurityScheme</code></h3><p>Pre-shared key authentication security configuration (&quot;scheme&quot;: &quot;psk&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>identity</code></td><td>Pre-shared key identity.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section>      <section><h3><code>PoPSecurityScheme</code></h3><p>Proof-of-possession token authentication security configuration (&quot;scheme&quot;: &quot;pop&quot;).</p><table class="def"><thead><tr><th>Field Name</th><th>Description</th><th>Mandatory</th><th>Default value</th><th>Type</th></tr></thead><tbody><tr><td><code>authorizationUrl</code></td><td>URI of the authorization server.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td></tr><tr><td><code>alg</code></td><td>Encoding, encryption, or digest algorithm (one of MD5, ES256, or ES512-256).</td><td>no</td><td>ES256</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>format</code></td><td>Specifies format of security authentication information (one of jwt, jwe, or jws).</td><td>no</td><td>jwt</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>in</code></td><td>Specifies the location of security authentication information (one of header, query, body, or cookie).</td><td>no</td><td>header</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr><tr><td><code>name</code></td><td>Name for query, header, or cookie parameters.</td><td>no</td><td>.</td><td><a href="http://www.w3.org/2001/XMLSchema#string"><code>string</code></a></td></tr></tbody></table></section></section></section>
 
-<p>In addition,
-<span class="rfc2119-assertion" id="td-string-type">
-Thing Description instances MAY contain JSON-LD 1.1 keys such as <code>@context</code> and <code>@type</code>.</span></p>
 
-<!--<p>JSON TD MAY contain vocabulary terms that are not in the Thing Description core model. These vocabulary terms MUST carry a prefix for identification within the key name (e.g., "http:header").</p>-->
 
-<p>The defined types of the vocabulary as defined in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> will be transformed to JSON-based types. The following rules are used for vocabulary terms based on simple type definitions:</p>
-<ul>
-<li><span class="rfc2119-assertion" id="td-string-type">
+  <section id="TD-serialization-section">
+  <h1 >Thing Description Serialization</h1>
+
+  <p class="ednote" title="JSON-LD 1.1 ">
+  This is the first draft that uses JSON-LD 1.1 as a serialization format 
+  of the Thing Description. 
+  As this is a work in progress, working assumptions are based on the latest
+  <a href="https://json-ld.org/spec/latest/json-ld/#">Community Draft of JSON-LD 1.1</a>. 
+  There is a plan to set up a JSON-LD Working Group with the following 
+  <a href="https://www.w3.org/2018/03/jsonld-wg-charter.html">JSON-LD Working Group Charter</a>. 
+  It is planned that this section will conform to the latest working draft 
+  of JSON-LD 1.1.
+  </p>
+
+  <p>
+  Thing Description instances are modeled and structured based on the 
+  <a href="#vocabularyDefinitionSection" class="sec-ref">Thing Description Information Model</a>. 
+  This section proposes a TD serialization based on JSON-LD 1.1. 
+  </p>
+
+  <section id="json-serializiation-section">
+  <h1>Representation Format</h1>
+
+  <p>
+  This section introduces the JSON-based serialization of the Thing Description. 
+  This serialization also follows the syntax of JSON-LD 1.1 
+  in order to streamline the semantic evaluation of TDs.
+  </p>
+
+  <p>
+  In order to enable this convergence,
+  all vocabulary terms defined in 
+  <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> 
+  will have a JSON key representation.
+  </p>
+  <p>
+  In addition,
+  <span class="rfc2119-assertion" id="td-string-type">
+  Thing Description instances MAY contain JSON-LD 1.1 keys such as 
+  <code>@context</code> and <code>@type</code>.</span>
+  </p>
+
+  <!--<p>JSON TD MAY contain vocabulary terms that are not in the 
+  Thing Description core model. 
+  These vocabulary terms MUST carry a prefix for identification 
+  within the key name (e.g., "http:header").</p>-->
+
+  <p>
+  The defined types of the vocabulary as defined in 
+  <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> 
+  will be transformed to JSON-based types. 
+  The following rules are used for vocabulary terms based on some simple type 
+  definitions:
+  </p>
+  <ul>
+  <li><span class="rfc2119-assertion" id="td-string-type">
         Vocabulary terms that use simple types string and anyURI
         MUST be serialized as JSON string.
-    </span></li>
-
-<li><span class="rfc2119-assertion" id="td-integer-type">
+  </span></li>
+  <li><span class="rfc2119-assertion" id="td-integer-type">
         Vocabulary terms that use simple type unsignedInt
         MUST be serialized as JSON integer.
-    </span></li>
-
-<li><span class="rfc2119-assertion" id="td-number-type">
+  </span></li>
+  <li><span class="rfc2119-assertion" id="td-number-type">
         Vocabulary terms that use simple type double
         MUST be serialized as JSON number.
-    </span></li>
-</ul>
+  </span></li>
+  </ul>
 
-<p>All vocabulary terms in <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> Section associated with complex-/class-based types are defined separately for structured JSON type transformation in the following subsections.</p>
-
+  <p>
+  All vocabulary terms in the
+  <a href="#sec-vocabulary-definitions" class="sec-ref">Vocabulary Definitions</a> Section 
+  associated with more complex class-based types are defined separately for 
+  structured JSON type transformation in the following subsections.
+  </p>
 
   <section id="sec-thing-as-a-whole-json">
-    <h2>Thing as a whole</h2>
+  <h2>Thing as a whole</h2>
 
-<p><span class="rfc2119-assertion" id="td-context">
-In the first line of the Thing Description instance MAY include the <code>@context</code> key from JSON-LD 1.1 with the value URI of the Thing description context file <code>http://www.w3.org/ns/td</code>.
-</span></p>
+  <p><span class="rfc2119-assertion" id="td-context">
+  The first line of a Thing Description instance MAY include the 
+  <code>@context</code> key from JSON-LD 1.1 with the value URI of 
+  the Thing description context file <code>http://www.w3.org/ns/td</code>.
+  </span></p>
 
+<pre class="example">
+{  
+    "@context": "http://www.w3.org/ns/td",
+    ...
+}
+</pre>
 
+  <p><span class="rfc2119-assertion" id="td-context-jsonld">
+  When a Thing Description instance is processed and interpreted by a 
+  JSON-LD 1.1 processor the <code>@context</code> with its value 
+  MUST be present</span> 
+  (see also Section <a href="#note-jsonld-processing" class="sec-ref">JSON-LD 1.1 Processing</a>). 
+  </p>
 
-  <pre class="example">
-    {
-      "@context": "http://www.w3.org/ns/td",
-      ...
-    }
-  </pre>
+  <p><span class="rfc2119-assertion" id="td-additional-contexts">
+  When a single Thing Description instance involves several contexts, 
+  additional namespaces with prefixes MUST be appended to the 
+  <code>@context</code> array structure.</span> 
+  This option proves relevant if one wants to extend the existing 
+  Thing Description context without modifying it. For instance:
+  </p>
+<pre class="example">
+{
+    "@context": ["http://www.w3.org/ns/td",
+                {"sensor": "http://iotschema.org/"}],
+    ...
+}
+</pre>
 
-<p><span class="rfc2119-assertion" id="td-context-jsonld">
-In the case the Thing Description instance is processed and interpret by a JSON-LD 1.1 processor this <code>@context</code> with its value MUST be present</span> (also see Section <a href="#note-jsonld-processing" class="sec-ref">JSON-LD 1.1 Processing</a>). </span></p>
+  <p><span class="rfc2119-assertion" id="td-context-toplevel">
+  Each mandatory and optional vocabulary, 
+  as defined in the class <a href="#thing" class="sec-ref">Thing</a>, 
+  MUST be serialized as a JSON key 
+  at the top level of the Thing Description instance.
+  </span></p>
 
-<p><span class="rfc2119-assertion" id="td-additional-contexts">
-In case a single Thing Description instance involves several contexts, additional namespaces with prefixes MUST be extended to the <code>@context</code> array structure.</span> 
-This option proves relevant if one wants to extend the existing Thing Description context without modifying it. For instance:
-</p>
-  <pre class="example">
-    {
-      "@context": ["http://www.w3.org/ns/td",
-                   {"sensor": "http://iotschema.org/"}],
-      ...
-    }
-  </pre>
+  <!-- should this be "the type" or "the elements of"? -->
+  <p><span class="rfc2119-assertion" id="td-objects">
+  The type of the fields <code>properties</code>, <code>actions</code>, 
+  and <code>events</code> MUST be serialized as a JSON object.
+  </span></p>
 
+  <p><span class="rfc2119-assertion" id="td-arrays">
+  The type of the field <code>links</code> and <code>security</code> 
+  MUST be serialized as a JSON array.
+  </span></p>
 
+  <p>
+  An example of a TD snippet based on the defined fields of the 
+  <a href="#thing" class="sec-ref">Thing</a> information model 
+  without the optional field <code>@context</code> is given below:
+  </p>
+<pre class="example">
+{
+    "id": "urn:dev:wot:com:example:servient:myThing",
+    "name": "MyThing",
+    "description": "Additional (human) readable information of the Thing.",
+    "support": "https://servient.example.com/contact",
+    "security": [...],
+    "base": "https://servient.example.com/",
+    "properties": {...},
+    "actions": {...},
+    "events": {...},
+    "links": [...]
+}
+</pre>
 
-<p><span class="rfc2119-assertion" id="td-context-toplevel">
-Each mandatory and optional vocabulary, as defined in the class <a href="#thing" class="sec-ref">Thing</a>, MUST be serialized as a JSON key at the top level of the Thing Description instance.</span></p>
-
-<p><span class="rfc2119-assertion" id="td-objects">
-The type of the fields <code>properties</code>, <code>actions</code>, and <code>events</code> MUST be serialized as a JSON object.</span></p>
-
-<p><span class="rfc2119-assertion" id="td-arrays">
-The type of the field <code>links</code> and <code>security</code> MUST be serialized as a JSON array.</span></p>
-
-<p>An example of a TD snippet based on the defined fields of the <a href="#thing" class="sec-ref">Thing</a> information model without the optional field <code>@context</code> is given below:</p>
-
-  <pre class="example">
-        {
-          "id": "urn:dev:wot:com:example:servient:myThing",
-          "name": "MyThing",
-          "description": "Additional (human) readable information of the Thing.",
-          "support": "https://servient.example.com/contact",
-          "security": [...],
-          "base": "https://servient.example.com/",
-          "properties": {...},
-          "actions": {...},
-          "events": {...},
-          "links": [...]
-        }
-   </pre>
-
-
-<p>In addition, the same example can also include the (semantic) keys of JSON-LD 1.1 (<code>@context</code> and <code>@type</code>):</p>
-
-  <pre class="example">
-        {
-          "@context": "http://www.w3.org/ns/td",
-          "@type": "Thing",
-          "id": "urn:dev:wot:com:example:servient:myThing",
-          "name": "MyThing",
-          "description": "Additional (human) readable information of the Thing.",
-          "support": "https://servient.example.com/contact",
-          "security": [...],
-          "base": "https://servient.example.com/",
-          "properties": {...},
-          "actions": {...},
-          "events": {...},
-          "links": [...]
-        }
-   </pre>
+  <p>Alternatively, the same example can be written instead to 
+  explicitly include the (semantic) keys used by JSON-LD 1.1 
+  (<code>@context</code> and <code>@type</code>):
+  </p>
+<pre class="example">
+{
+    "@context": "http://www.w3.org/ns/td",
+    "@type": "Thing",
+    "id": "urn:dev:wot:com:example:servient:myThing",
+    "name": "MyThing",
+    "description": "Additional (human) readable information of the Thing.",
+    "support": "https://servient.example.com/contact",
+    "security": [...],
+    "base": "https://servient.example.com/",
+    "properties": {...},
+    "actions": {...},
+    "events": {...},
+    "links": [...]
+}
+</pre>
 
  </section> <!-- end of id="sec-thing-as-a-whole-json"-->
 
-
-    <section id="property-serialization-json">
-      <h2>properties</h2>
+ <section id="property-serialization-json">
+ <h2>properties</h2>
   
-<p><span class="rfc2119-assertion" id="td-properties">
-    Properties (and sub-properties) offered by a Thing MUST be collected in the JSON object-based <code>properties</code> field of (unique) Property names as JSON keys.</span> 
-<span class="rfc2119-assertion" id="td-property-keys">
-Each mandatory and optional vocabulary, as defined in the class <a href="#property" class="sec-ref">Property</a>, its two 
-superclasses <a href="#interactionPattern" class="sec-ref">InteractionPattern</a> and <a href="#dataschema" class="sec-ref">DataSchema</a>, MUST be serialized as a JSON key within a Property field.</span></p>
+  <p><span class="rfc2119-assertion" id="td-properties">
+  Properties (and sub-properties) offered by a Thing MUST be collected 
+  in the JSON object-based <code>properties</code> field 
+  of (unique) Property names as JSON keys.
+  </span></p>
 
-<p><span class="rfc2119-assertion" id="td-property-objects">
-The type of the fields <code>properties</code> and <code>items</code> MUST be serialized as a JSON object.</span></p>
+  <span class="rfc2119-assertion" id="td-property-keys">
+  Each mandatory and optional vocabulary, 
+  as defined in the class <a href="#property" class="sec-ref">Property</a>, 
+  its two superclasses 
+  <a href="#interactionPattern" class="sec-ref">InteractionPattern</a> 
+  and <a href="#dataschema" class="sec-ref">DataSchema</a>, 
+  MUST be serialized as a JSON key within a Property field.
+  </span></p>
 
-<p><span class="rfc2119-assertion" id="td-property-arrays">
-The type of the fields <code>forms</code>, <code>required</code>, and <code>enum</code> MUST be serialized as a JSON array.</span></p>
+  <p><span class="rfc2119-assertion" id="td-property-objects">
+  The type of the fields <code>properties</code> and <code>items</code> 
+  MUST be serialized as a JSON object.
+  </span></p>
 
-<p>An example of a TD snippet based on the defined fields is given below:</p>
+  <p><span class="rfc2119-assertion" id="td-property-arrays">
+  The type of the fields <code>forms</code>, <code>required</code>, 
+  and <code>enum</code> MUST be serialized as a JSON array.
+  </span></p>
 
-
-  <pre class="example">
-        {
-          ...
-          "properties": {
-          	"on": {
-          		"label": "On/Off",
-          		"type": "boolean"
-          	},
-          	"status": {
-          		"type": "object",
-          		"properties": {
-          			"brightness": {
-          				"type": "number",
-          				"minimum": 0.0,
-          				"maximum": 100.0
-          			},
-          			"rgb": {
-          				"type": "array",
-          				"items" : {
-          					"type" : "number",
-          					"minimum": 0,
-          					"maximum": 255
-          				},
-          				"minItems": 3,
-          				"maxItems": 3
-          			}
-          		},
-          		"required": ["brightness","rgb"],
-          		"forms": [...]
-          	}
-          }
-          ...
+  <p>
+  An example of a TD snippet based on the defined fields is given below:
+  </p>
+<pre class="example">
+{
+    ...
+    "properties": {
+        "on": {
+            "label": "On/Off",
+            "type": "boolean"
+        },
+        "status": {
+            "type": "object",
+            "properties": {
+                "brightness": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 100.0
+                 },
+                 "rgb": {
+                    "type": "array",
+                    "items" : {
+                        "type" : "number",
+                        "minimum": 0,
+                        "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                }
+            },
+            "required": ["brightness","rgb"],
+            "forms": [...]
         }
-   </pre>
+    }
+    ...
+}
+</pre>
 
-<p><span class="rfc2119-assertion" id="td-property-semantic">
-Similar to the <code>Thing</code> level properties MAY have additional semantic annotations based on JSON-LD 1.1 keys.</span></p>
+  <p><span class="rfc2119-assertion" id="td-property-semantic">
+  Similar to case at the <code>Thing</code> level,
+  properties MAY have additional semantic annotations based on 
+  JSON-LD 1.1 keys.
+  </span></p>
 
-<p><span class="rfc2119-assertion" id="td-property-defaults">
-In the case the Thing Description instance is processed and interpret by a JSON-LD 1.1 processor, each <code>property</code> MUST contain the vocabulary terms <code>observable</code> and <code>writable</code> due to the linked data's <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>.</span>
-That means, when a Thing Description instance is omitting these vocabulary terms, then the interpreter cannot make any assumptions about its actual value. </p>
+  <p><span class="rfc2119-assertion" id="td-property-defaults">
+  When a Thing Description instance is processed and interpreted by 
+  a JSON-LD 1.1 processor, 
+  each <code>property</code> MUST contain the vocabulary terms 
+  <code>observable</code> and <code>writable</code> due to the linked data's 
+  <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>.
+  </span>
+  This assumption means that if a Thing Description instance 
+  were to omit these vocabulary terms, 
+  then the interpreter would not be able to make any assumptions
+  about their actual value. 
+  </p>
 
-
-<p>An example of a TD snippet including semantic annotations and the default values of <code>observable</code> and <code>writable</code> based on class <a href="#property" class="sec-ref">Property</a> definition:</p>
-
-
-
-  <pre class="example">
-        {
-          ...
-          "properties": {
-          	"on": {
-          		"@type": "iot:SwitchToggle",
-          		"label": "On/Off",
-          		"writable": false,
-          		"observable": false,
-          		"type": "boolean",
-          		"forms": [...]
-          	},
-          	"status": {
-          		"writable": false,
-          		"observable": false,
-          		"type": "object",
-          		"properties": {
-          			"brightness": {
-          				"@type": "iot:CurrentLevel",
-          				"type": "number",
-          				"minimum": 0.0,
-          				"maximum": 100.0
-          			},
-          			"rgb": {
-          				"@type": "iot:rgbData",
-          				"type": "array",
-          				"items" : {
-          					"type" : "number",
-          					"minimum": 0,
-          					"maximum": 255
-          				},
-          				"minItems": 3,
-          				"maxItems": 3
-          			}
-          		},
-          		"required": ["brightness","rgb"],
-          		"forms": [...]
-          	}
-          }
-          ...
+  <p>
+  An example of a JSON-LD 1.1 serialization of a TD snippet 
+  including semantic annotations and the 
+  default values of <code>observable</code> and <code>writable</code> 
+  based on class <a href="#property" class="sec-ref">Property</a> definition
+  is given as follows:
+  </p>
+<pre class="example">
+    ...
+    "properties": {
+        "on": {
+            "@type": "iot:SwitchToggle",
+            "label": "On/Off",
+            "writable": false,
+            "observable": false,
+            "type": "boolean",
+            "forms": [...]
+        },
+        "status": {
+            "writable": false,
+            "observable": false,
+            "type": "object",
+            "properties": {
+                "brightness": {
+                    "@type": "iot:CurrentLevel",
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 100.0
+                },
+                "rgb": {
+                    "@type": "iot:rgbData",
+                    "type": "array",
+                    "items" : {
+                        "type" : "number",
+                        "minimum": 0,
+                        "maximum": 255
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                }
+            },
+            "required": ["brightness","rgb"],
+            "forms": [...]
         }
-   </pre>
+    }
+    ...
+</pre>
 
     </section> <!-- end of id="property-serialization-json"-->
 
     <section id="action-serialization-json">
-      <h2>actions</h2>
+    <h2>actions</h2>
 
-<p>Actions offered by a Thing are collected in the JSON object-based <code>actions</code> field of (unique) Action names as JSON keys. 
-<span class="rfc2119-assertion" id="td-actions">
-Each optional vocabulary, as defined in the class <a href="#action" class="sec-ref">Action</a> and its superclass <a href="#interactionPattern" class="sec-ref">InteractionPattern</a>, MUST serialized as a JSON key within a Action field.</span></p>
+    <p>
+    Actions offered by a Thing are collected in the JSON object-based 
+    <code>actions</code> field of (unique) Action names as JSON keys. 
+    <span class="rfc2119-assertion" id="td-actions">
+    Each optional vocabulary term,
+    as defined in the class <a href="#action" class="sec-ref">Action</a> 
+    and its superclass 
+    <a href="#interactionPattern" class="sec-ref">InteractionPattern</a>,
+    MUST be serialized as a JSON key within a Action field.
+    </span></p>
 
-<p><span class="rfc2119-assertion" id="td-action-objects">
-The type of the fields <code>input</code> and <code>output</code> MUST be serialized as a JSON object.</span></p>
+    <p><span class="rfc2119-assertion" id="td-action-objects">
+    The type of the fields <code>input</code> and <code>output</code> 
+    MUST be serialized as a JSON object.
+    </span></p>
 
-<p>The members keys of <code>input</code> and <code>output</code> rely on the the class <a href="#property" class="sec-ref">Property</a>.
-</p>
+    <p>The member keys of <code>input</code> and <code>output</code> 
+    rely on the the class <a href="#property" class="sec-ref">Property</a>.
+    </p>
 
-<p><span class="rfc2119-assertion" id="td-action-arrays">
-The type of the field <code>forms</code>  MUST be serialized as a JSON array.</span></p>
+    <p><span class="rfc2119-assertion" id="td-action-arrays">
+    The type of the field <code>forms</code> 
+    MUST be serialized as a JSON array.
+    </span></p>
 
-<p>An example of a TD snippet based on the defined fields is given below:</p>
+    <p>An example of a TD snippet based on the defined fields is 
+    given below:
+    </p>
 
-      <pre class="example">
-        {
-          ...
-          "actions": {
-            "fade" {
-              "label": "Fade in/out",
-              "description": "Smooth fade in and out animation.",
-              "input": {
-              	"type": "object",
-              	"properties": {
-              		"from": {
-              			"type": "integer",
-              			"minimum": 0,
-              			"maximum": 100
-              		},
-              		"to": {
-              			"type": "integer",
-              			"minimum": 0,
-              			"maximum": 100
-              		},
-              		"duration": {"type": "number"}
-              	},
-              	"required": ["to","duration"],
-              },
-              "output": {"type": "string"},
-              "forms": [...]
-            }
-          ]
-          ...
+<pre class="example">
+    ...
+    "actions": {
+        "fade" {
+            "label": "Fade in/out",
+            "description": "Smooth fade in and out animation.",
+            "input": {
+                "type": "object",
+                "properties": {
+                    "from": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                    },
+                    "to": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                    },
+                    "duration": {"type": "number"}
+                },
+                "required": ["to","duration"],
+            },
+            "output": {"type": "string"},
+            "forms": [...]
         }
-      </pre>
+        ...
+    }
+    ...
+</pre>
 
-<p><span class="rfc2119-assertion" id="td-action-semantic">
-Definitions within the  <code>actions</code> level  MAY have also additional semantic annotations based on JSON-LD 1.1 keys.</span></p>
+  <p><span class="rfc2119-assertion" id="td-action-semantic">
+  Definitions within the  <code>actions</code> level 
+  MAY have also additional semantic annotations based on JSON-LD 1.1 keys.
+  </span></p>
 
-    </section> <!-- end of id="action-serialization-json"-->
+  </section> <!-- end of id="action-serialization-json"-->
 
+  <section id="event-serialization-json">
+  <h2>events</h2>
 
-    <section id="event-serialization-json">
-      <h2>events</h2>
+  <p>
+  Events (and sub-events) offered by a Thing are collected in the JSON 
+  object-based <code>events</code> field with (unique) Event names as 
+  JSON keys.
+  <span class="rfc2119-assertion" id="td-events">
+  Each optional vocabulary term, 
+  as defined in the class <a href="#event" class="sec-ref">Event</a>, 
+  as well as its two superclasses 
+  <a href="#interactionPattern" class="sec-ref">InteractionPattern</a> 
+  and <a href="#dataschema" class="sec-ref">DataSchema</a>, 
+  MUST be serialized as a JSON key within a Event field.
+  </span></p>
 
-<p>Events (and sub-events) offered by a Thing are collected in the JSON object-based <code>events</code> field of (unique) Event names as JSON keys.
-<span class="rfc2119-assertion" id="td-events">
-Each optional vocabulary, as defined in the class <a href="#event" class="sec-ref">Event</a> 
-its two superclasses <a href="#interactionPattern" class="sec-ref">InteractionPattern</a> and <a href="#dataschema" class="sec-ref">DataSchema</a>, MUST be transformed as a JSON key within a Event field.</span></p>
+  <p><span class="rfc2119-assertion" id="td-event-objects">
+  The type of the fields <code>properties</code> and <code>items</code> 
+  MUST be serialized as a JSON object.
+  </span></p>
 
-<p><span class="rfc2119-assertion" id="td-event-objects">
-The type of the fields <code>properties</code> and <code>items</code> MUST be serialized as a JSON object.</span></p>
+  <p><span class="rfc2119-assertion" id="td-event-arrays">
+  The type of the fields <code>forms</code>, <code>required</code>, 
+  and <code>enum</code> MUST be serialized as a JSON array.
+  </span></p>
 
-<p><span class="rfc2119-assertion" id="td-event-arrays">
-The type of the fields <code>forms</code>, <code>required</code>, and <code>enum</code> MUST be serialized as a JSON array.</span></p>
-
-
-<p>An example of a TD snippet based on the defined fields is given below:</p>
-
-      <pre class="example">
-        {
-          ...
-          "event": {
-          	"overheated": {
-          		"type": "object",
-          		"properties": {
-          			"temperature": { "type": "number" }
-          		},
-          		"forms": [...]
-          	}
-          ...
+  <p>
+  An example of a TD snippet based on the defined fields is given below:
+  </p>
+<pre class="example">
+    ...
+    "event": {
+        "overheated": {
+            "type": "object",
+            "properties": {
+                "temperature": { "type": "number" }
+            },
+            "forms": [...]
         }
-      </pre>
-
-<p><span class="rfc2119-assertion" id="td-action-semantic">
-Definitions within the  <code>events</code> level  MAY have also additional semantic anotations based on JSON-LD 1.1 keys.</span></p>
-
-    </section> <!-- end of id="event-serialization-json"-->
-
-    <section id="form-serialization-json">
-      <h2>forms</h2>
-
-<p><span class="rfc2119-assertion" id="td-forms">
-Each mandatory and optional vocabulary, as defined in the class <a href="#form" class="sec-ref">Form</a>, MUST be serialized as a JSON key.</span></p>
-
-<p><span class="rfc2119-assertion" id="td-form-protocolbindings">
-If required, <code>forms</code> MAY be supplemented with protocol-specific vocabulary terms identified with a prefix. See also [[!WOT-PROTOCOL-BINDING]].</span></p>
-
-<p><span class="rfc2119-assertion" id="td-form-mediatype">
-In the case the Thing Description instance is processed and interpret by a JSON-LD 1.1 processor, each <code>forms</code> (array) entry MUST be contain the vocabulary <code>mediaType</code> due to the linked data's <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>.</span>
-That means, when a Thing Description instance is omitting this vocabulary, then the interpreter cannot make any assumptions about its actual value. </p>
-
-      <p>An example of a TD snippet based on the defined fields is given below:</p>
-
-      <pre class="example">
         ...
-        "forms": [
-          {
-            "href" : "http://mytemp.example.com:5683/temp",
-            "mediaType": "application/json",
-            "http:methodName": "POST",
-            "rel": "writeProperty",
-            "security": "basicConfig"
-          }
-        ]
-        ...
-      </pre>
+    }
+    ...
+</pre>
+
+  <p><span class="rfc2119-assertion" id="td-action-semantic">
+  Definitions within the  <code>events</code> level 
+  MAY have also additional semantic anotations 
+  based on JSON-LD 1.1 keys.
+  </span></p>
+
+  </section> <!-- end of id="event-serialization-json"-->
+
+  <section id="form-serialization-json">
+  <h2>forms</h2>
+
+  <p><span class="rfc2119-assertion" id="td-forms">
+  Each mandatory and optional vocabulary term,
+  as defined in the class <a href="#form" class="sec-ref">Form</a>, 
+  MUST be serialized as a JSON key.
+  </span></p>
+
+  <p><span class="rfc2119-assertion" id="td-form-protocolbindings">
+  If required, <code>forms</code> 
+  MAY be supplemented with protocol-specific vocabulary terms 
+  identified with a prefix. 
+  </span>
+  See also [[!WOT-PROTOCOL-BINDING]].
+  </p>
+
+  <p><span class="rfc2119-assertion" id="td-form-mediatype">
+  When a Thing Description instance is processed and interpreted 
+  by a JSON-LD 1.1 processor, 
+  each <code>forms</code> (array) entry 
+  MUST contain a <code>mediaType</code> 
+  due to linked data's 
+  <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>.
+  </span>
+  This assumption means that if a Thing Description instance 
+  were to omit these vocabulary terms, 
+  then the interpreter would not be able to make any assumptions
+  about their actual value. 
+  </p>
+
+  <p>An example of a TD snippet based on the defined fields is given below:</p>
+<pre class="example">
+    ...
+    "forms": [{
+        "href" : "http://mytemp.example.com:5683/temp",
+        "mediaType": "application/json",
+        "http:methodName": "POST",
+        "rel": "writeProperty",
+        "security": [{"scheme":"basic","in":"header"}]
+    }]
+    ...
+</pre>
 
     </section> <!-- end of id="form-serialization-json"-->
 
-
     <section id="links-serialization-json">
-      <h2>links</h2>
+    <h2>links</h2>
 
     <p><span class="rfc2119-assertion" id="td-links">
-    Each mandatory and optional vocabulary, as defined in the class <a href="#link" class="sec-ref">Link</a>, MUST be serialized as a JSON key.</span></p>
+    Each mandatory and optional vocabulary term, 
+    as defined in the class <a href="#link" class="sec-ref">Link</a>, 
+    MUST be serialized as a JSON key.
+    </span></p>
 
-      <p>An example of a TD snippet based on the defined fields is given below:</p>
+    <p>An example of a TD snippet based on the defined fields is given below:</p>
 
-      <pre class="example">
-        ...
-        "links": [{
-            "href": "https://servient.example.com/things/lampController",
-            "rel": "controlledBy",
-            "mediaType": "application/td"
-        }]
-        ...
-      </pre>
-
+<pre class="example">
+    ...
+    "links": [{
+        "href": "https://servient.example.com/things/lampController",
+        "rel": "controlledBy",
+        "mediaType": "application/td"
+    }]
+    ...
+</pre>
 
     </section> <!-- end of id="links-serialization-json"-->
 
     <section id="security-serialization-json">
-      <h2>security</h2>
+    <h2>security</h2>
 
     <p><span class="rfc2119-assertion" id="td-security">
-    Each mandatory and optional vocabulary, as defined in the class <a href="#security" class="sec-ref">SecurityScheme</a>, MUST be serialized as a JSON key.</span></p>
+    Each mandatory and optional vocabulary term, 
+    as defined in the class 
+    <a href="#security" class="sec-ref">SecurityScheme</a>, 
+    MUST be serialized as a JSON key.
+    </span></p>
 
-      <p>The following TD snippet example shows a simple security configuration specifying
-      basic authentication in the header.  The value of <code>in</code> given is actually the default
-      value.</p>
-      <pre class="example">
-"security": [
-  {
-    "scheme": "basic",
-    "in": "header"
-  }
-]
-      </pre>
+    <p>
+    The following TD snippet example shows a simple security configuration specifying
+    basic username/password authentication in the header.
+    The value of <code>in</code> given is actually the default value of
+    <code>header</code>.
+    </p>
+<pre class="example" id="security-basic-example">
+   ...
+   "security": [{
+       "scheme": "basic",
+       "in": "header"
+   }]
+   ...
+</pre>
 
-      <p>Here is a more complex example: a TD snippet showing digest authentication on a proxy
-      combined with bearer token authentication on an endpoint.  Here the default
-      value of <code>in</code> in the <code>digest</code> scheme is implied.</p>
-      <pre class="example">
-...
-"security": [
-  {
-    "scheme": "digest",
-    "proxyUrl": "https://portal.example.com/"
-  },
-  {
-    "scheme": "bearer",
-    "format": "jwt",
-    "alg": "ES256",
-    "authorizationUrl": "https://servient.example.com:8443/"
-  }
-]
-      </pre>
-
-      <p>Security definitions can be given at more than one level.
-      In this case, definitions at the lower levels override (completely replace)
-      the definitions at the higher level.  
-      </p>
-
-      <p>
-      Security configuration is mandatory. 
-      <span class="rfc2119-assertion" id="td-security-mandatory">
-      Every form in a Thing MUST have a security configuration either provided in the form itself,
-      at the interaction level directly above it (if security is not configured in the form), or at the Thing level 
-      (if security is not configured in either the form or at the interaction level).
-      </span>
-      In the vocabulary tables above, note that <code>security</code> is marked as non-mandatory.
-      However, this is only true locally (at a specific level), and only if the security is configured at a higher or
-      lower level.  In other words, a security
-      configuration must be provided at <em>some</em> level for each form.
-      </p>
-      <p>
-      Security configuration is considered binding.
-      <span class="rfc2119-assertion" id="td-security-binding">
-      The security configuration metadata provided in a Thing Description MUST accurately reflect the
-      security requirements of the Thing.
-      </span>  
-      Some protocols can ask for authentication dynamically.  If a protocol asks for
-      a form of security credentials not declared in the Thing Description then the Thing Description
-      is to be considered invalid.
-      <p>
-      The <code>nosec</code> security scheme is provided for the case that no security is needed.
-      The minimal security configuration for a Thing is configuration of the <code>nosec</code> security scheme 
-      at the top level, as in the following example:
-      <pre class="example">
+    <p>
+    Here is a more complex example: a TD snippet showing digest 
+    authentication on a proxy combined with bearer token authentication 
+    on an endpoint.  
+    Here the default 
+    value of <code>in</code> in the <code>digest</code> scheme,
+    <code>header</code>, is implied.
+    </p>
+<pre class="example" id="security-digest-example">
+    ...
+    "security": [
         {
-          "name": "MyThing",
-          "id": "urn:dev:wot:com:example:servient:myThing",
-          "base": "https://servient.example.com/",
-          "description": "Additional (human) readable information of the Thing.",
-          "support": "https://servient.example.com/contact",
-          "security": [{"scheme": "nosec"}],
-          "properties": {...},
-          "actions": {...},
-          "events": {...},
-          "links": [...]
+           "scheme": "digest",
+           "proxyUrl": "https://portal.example.com/"
+        },
+        {
+           "scheme": "bearer",
+           "format": "jwt",
+           "alg": "ES256",
+           "authorizationUrl": "https://servient.example.com:8443/"
         }
-      </pre>
-      </p> 
+    ]
+    ...
+</pre>
+
+    <p>
+    Security definitions can be given at more than one level.
+    In this case, definitions at the lower levels override (completely replace)
+    the definitions at the higher level.  
+    </p>
+
+    <p>
+    Security configuration is mandatory. 
+    <span class="rfc2119-assertion" id="td-security-mandatory">
+    Every form in a Thing MUST have a security configuration either provided 
+    in the form itself,
+    at the interaction level directly above it 
+    (if security is not configured in the form),
+    or at the Thing level 
+    (if security is not configured in either the form or at the
+    interaction level).
+    </span>
+    In the vocabulary defined above,
+    note that <code>security</code> is marked as non-mandatory.
+    However, this is only true locally (at a specific level),
+    and only if the security is configured at a higher or
+    lower level.
+    In other words, a security
+    configuration must be provided at <em>some</em> level for each form.
+    </p>
+    <p>
+    Security configuration is considered binding.
+    <span class="rfc2119-assertion" id="td-security-binding">
+    The security configuration metadata provided in a Thing Description 
+    MUST accurately reflect the
+    security requirements of the Thing.
+    </span>  
+    Some protocols can ask for authentication dynamically.  
+    If a protocol asks for
+    a form of security credentials not declared in the Thing Description 
+    then the Thing Description
+    is to be considered invalid.
+    </p>
+    <p>
+    The <code>nosec</code> security scheme is provided for the case that 
+    no security is needed.
+    The minimal security configuration for a Thing is configuration 
+    of the <code>nosec</code> security scheme 
+    at the top level, as in the following example:
+    </p>
+<pre class="example">
+{
+    "name": "MyThing",
+    "id": "urn:dev:wot:com:example:servient:myThing",
+    "base": "https://servient.example.com/",
+    "description": "Additional (human) readable information of the Thing.",
+    "support": "https://servient.example.com/contact",
+    "security": [{"scheme": "nosec"}],
+    "properties": {...},
+    "actions": {...},
+    "events": {...},
+    "links": [...]
+}
+</pre> 
+
+    <p>
+    To give a more complex example, 
+    suppose we have a Thing where all interactions
+    require basic authentication except for one interaction for which
+    no authentication is required.
+    In the following, the <code>nosec</code> scheme for
+    the security configuration in the <code>overheating</code> event 
+    to indicate no authentication is required.  
+    For the <code>status</code> property and the <code>toggle</code>
+    action, however, <code>basic</code> authentication is required, as defined
+    at the top level of the Thing.
+    </p>
+<pre class="example">
+{
+    ...
+    "security": [{"scheme": "basic"}],
+    "properties": {
+        "status": {
+            ...
+            "forms": [{
+                "href": "https://mylamp.example.com/status",
+                "mediaType": "application/json",
+            }]
+        }
+    },
+    "actions": {
+        "toggle": {
+            ...
+            "forms": [{
+                "href": "https://mylamp.example.com/toggle",
+                "mediaType": "application/json"
+            }]
+        }
+    },
+    "events": {
+        "overheating": {
+            ...
+            "forms": [{
+                "href": "https://mylamp.example.com/oh",
+                "mediaType": "application/json",
+                "security": [{"scheme": "nosec"}] 
+            }]
+        }
+    }
+}
+</pre>
 
       <p>
-      To give a more complex example, suppose we have a Thing where all interactions
-      require basic authentication except for one interaction in which
-      security has been overridden.  In the following, the <code>nosec</code> scheme for
-      the security configuration in the <code>overheating</code> event to indicate no 
-      authentication is required.  For the <code>status</code> property and the <code>toggle</code>
-      action, however, <code>basic</code> authentication is required, as defined
-      at the top level of the Thing.
-      <pre class="example">
-{
-  ...
-  "security": [{"scheme": "basic"}],
-  "properties": {
-    "status": {
-      ...
-      "forms": [{
-        "href": "https://mylamp.example.com/status",
-        "mediaType": "application/json",
-      }]
-    }
-  },
-  "actions": {
-    "toggle": {
-      ...
-      "forms": [{
-        "href": "https://mylamp.example.com/toggle",
-        "mediaType": "application/json"
-      }]
-    }
-  },
-  "events": {
-    "overheating": {
-      ...
-      "forms": [{
-        "href": "https://mylamp.example.com/oh",
-        "mediaType": "application/json",
-	"security": [{"scheme": "nosec"}] 
-      }]
-    }
-  }
-}
-      </pre>
-      </p>
-
-      <p>Security definitions can also can be given for different elements
+      Security definitions can also can be given for different elements
       at the same level.  This may be required for devices that support
       multiple protocols, for example CoAP and HTTP, with support for different
       security mechanisms.  This is also useful when alternative authentication
       mechanisms are allowed.  Here is a TD snippet demonstrating three possible
       ways to access a resource: via HTTPS with basic authentication, via HTTPS
       via digest authentication, or via CoAPS with an API key.
-      In other words, the use of multiple security configurations at the same level 
+      In other words, 
+      the use of multiple security configurations at the same level 
       provides a way to combine security mechanisms an in "OR" fashion.
       In contrast, putting multiple security configurations in the same
-      <code>security</code> field combines them in an "AND" fashion, since in that case
+      <code>security</code> field combines them in an "AND" fashion, 
+      since in that case
       they would all need to be satisfied to allow access to the resource.
-      <pre class="example">
-"properties": {
-  "status": {
-    ...
-    "forms": [
-      {
-        "href": "https://mylamp.example.com/status",
-        "mediaType": "application/json",
-        "security": [{"scheme": "basic"}]
-      },
-      {
-        "href": "https://mylamp.example.com/status",
-        "mediaType": "application/json",
-        "security": [{"scheme": "digest"}]
-      },
-      {
-        "href": "coaps://mylamp.example.com:5683/status",
-        "mediaType": "application/json",
-        "security": [{"scheme": "apikey"}]
-      }
-    ]
-  }
-}
-      </pre>
       </p>
+<pre class="example">
+    ...
+    "properties": {
+        "status": {
+            ...
+            "forms": [
+                {
+                    "href": "https://mylamp.example.com/status",
+                    "mediaType": "application/json",
+                    "security": [{"scheme": "basic"}]
+                },
+                {
+                    "href": "https://mylamp.example.com/status",
+                    "mediaType": "application/json",
+                    "security": [{"scheme": "digest"}]
+                },
+                {
+                    "href": "coaps://mylamp.example.com:5683/status",
+                    "mediaType": "application/json",
+                    "security": [{"scheme": "apikey"}]
+                }
+            ]
+        }
+    },
+    ...
+</pre>
 
-    </section> <!-- end of id="security-serialization-json"-->
+  </section> <!-- end of id="security-serialization-json"-->
 
   </section> <!-- end of id="serialization-json"-->
 
+  <section id="media-type-section">  
+  <h1>Media Type</h1>
 
+  <p>
+  The JSON-based serialization of the TD is identified by 
+  the media type <code>application/td+json</code>.
+  </p>
 
- <section id="media-type-section">
-    <h1>Media Type</h1>
+  <p><span class="rfc2119-assertion" id="td-media-type">
+  The media type <code>application/td+json</code>
+  MUST be also associated with the JSON-LD context 
+  <code>http://www.w3.org/ns/td</code>.
+  </span>
+  That means that this media type can also be used for contextual  
+  identification of the vocabulary within a (simplified) TD instance 
+  that may omit the <code>@context</code> key term.
+  </p>
 
-<p>The JSON-based serialization of the TD is identified by the media type <code>application/td+json</code>.</p>
+  <p class="ednote" title="Media Type">
+  The <code>application/td+json</code> media type has not registered  
+  with IANA yet.
+  </p>
 
-<p>This media type MUST be also associated with the JSON-LD context: <code>http://www.w3.org/ns/td</code>.
-That means that this media type can also be used for contextual  identification of the vocabulary within a (simplified) TD instance that may omit the <code>@context</code> key term.
-</p>
+  </section>
 
-      <p class="ednote" title="Media Type">
-This media type has not registered  with IANA yet.
-      </p>
+  <section id="Implementation-Note-section">
+  <h2>Implementation Notes</h2>
 
-</section>
+  <section id="note-json-processing">
+  <h2>JSON Processing</h2>
+  <p>
+  The minimum requirement to read the content of a Thing Description 
+  instance is a (simple) JSON parser.
+  </p>
 
-
-<section id="Implementation-Note-section">
-      <h2>Implementation Note</h2>
-
-<section id="note-json-processing">
-    <h2>JSON Processing</h2>
-<p>Per default, the minimum requirement to read the content of a Thing Description instance is a (simple) JSON parser. </p>
-
-<p>If the key terms <code>writable</code> and/or <code>observable</code> are not present within a <code>properties</code> definition, the default value defined in 
-  the <a href="#vocabularyDefinitionSection">Vocabulary Definition</a> MUST be assumed.</p>
+  <p><span class="rfc2119-assertion" id="td-writable-observable-default">
+  If the key terms <code>writable</code> and/or <code>observable</code> 
+  are not present within a <code>properties</code> definition,
+  the default value defined in 
+  the <a href="#vocabularyDefinitionSection">Vocabulary Definition</a> 
+  MUST be assumed.
+  </span></p>
   
-<p>If the  <code>mediaType</code> key term is not present within a <code>forms</code> definition, the default value as defined in the
-   <a href="#vocabularyDefinitionSection">Vocabulary Definition</a> MUST be assumed.   </p>
+  <p><span class="rfc2119-assertion" id="td-media-type-default">
+  If the <code>mediaType</code> key term is not present within a 
+  <code>forms</code> definition, the default value as defined in the
+  <a href="#vocabularyDefinitionSection">Vocabulary Definition</a> 
+  MUST be assumed.   
+  </span></p>
 
-<p>To validate the semantic meaning and follow references to external context vocabulary terms (e.g., iot.schema.org), JSON-LD or RDF-based  
-  tools and libraries are highly recommended that are explained in the next sub-section. </p>
+  <p>
+  To validate the semantic meaning and follow references to external 
+  context vocabulary terms (e.g., iot.schema.org), use of JSON-LD or RDF-based  
+  tools and libraries is highly recommended 
+  as explained in the next sub-section. 
+  </p>
 
-</section>
+  </section>
 
+  <section id="note-jsonld-processing">
+  <h2>JSON-LD 1.1 Processing</h2>
 
-<section id="note-jsonld-processing">
-    <h2>JSON-LD 1.1 Processing</h2>
+  <p>To interpret the semantic meaning of a Thing Description
+  in terms of RDF triples, 
+  a Thing Description instance first requires a valid JSON-LD 1.1 
+  representation based on this Thing Description specification. 
+  Then this representation can be passed to a JSON-LD 1.1 interpreter.
+  </p>
 
-
-<p>To interpret the semantic meaning with respect to RDF triples, a Thing Description instance requires a valid JSON-LD 1.1 representation based on this Thing Description specification before passing it to a JSON-LD 1.1 interpreter.</p>
-
-<p><!-- The following is not marked as a testable assertion because it simply says the next three are assertions.
-        Probably the subassertions will need to be reworded so they can be understood independently as referring to
-        preprocessing.  -->
-The following pre-processing steps of a Thing Description instance MUST be executed before starting JSON-LD 1.1 based processing:
-
+  <p><!-- The following is not marked as a testable assertion because it 
+          simply says the next three are assertions.
+          The subassertions have been reworded so they can be understood 
+          independently as referring to preprocessing.
+          This is why "must" is in lower case.  -->
+  The following pre-processing steps of a Thing Description instance 
+  must be executed before starting JSON-LD 1.1 based processing:
   <ul>
-      <li><span class="rfc2119-assertion" id="td-jsonld-preprocessing-context">
-              There MUST be a <code>@context</code> key from JSON-LD 1.1 as defined in Section <a href="#sec-thing-as-a-whole-json" class="sec-ref">Thing as a whole</a>.</span></li>
-      <li><span class="rfc2119-assertion" id="td-jsonld-preprocessing-prefix">
-              External used vocabulary terms in the Thing Descriptions MUST provide their context URIs as prefix or within the <code>@context</code>.</span></li>
-      <li><span class="rfc2119-assertion" id="td-jsonld-preprocessing-defaults">
-              All vocabulary terms that have a default value as defined in the <a href="#vocabularyDefinitionSection">Vocabulary Definition</a> MUST be present at least with their default value.</span></li>
-</ul>
-</p>
+  <li><span class="rfc2119-assertion" id="td-jsonld-preprocessing-context">
+     Before starting JSON-LD 1.1 processing of a Thing Description instance,
+     there MUST be a <code>@context</code> key from JSON-LD 1.1 as defined 
+     in Section 
+     <a href="#sec-thing-as-a-whole-json" class="sec-ref">Thing as a whole</a>.
+  </span></li>
+  <li><span class="rfc2119-assertion" id="td-jsonld-preprocessing-prefix">
+     Before starting JSON-LD 1.1 processing of a Thing Description instance,
+     all external vocabulary terms used in the Thing Description MUST 
+     provide their context URIs as prefix or within the <code>@context</code>.
+  </span></li>
+  <li><span class="rfc2119-assertion" id="td-jsonld-preprocessing-defaults">
+     Before starting JSON-LD 1.1 processing of a Thing Description instance,
+     all vocabulary terms that have a default value as defined in the 
+     <a href="#vocabularyDefinitionSection">Vocabulary Definition</a> Section
+     MUST be present at least with their default value.
+  </span></li>
+  </ul>
+  </p>
 
-<p>The <a href="#myLampThing-example-serialization">MyLampThing Example </a>  shows how such a pre-processing step may look like.</p>
+  <!-- FIX: Actually, the examples in the next section
+       are not that good because they
+       show semantic annotation in the "output" that is not in the "input"!
+       So I have redirected this to examples 1 and 2.
+  -->
+  <p>
+  The 
+  <a href="#introduction">Introduction</a>  
+  Section shows an example of how the input and output of such
+  preprocessing would appear.
+  </p>
 
-</section>
-</section>
+  </section>
+  </section>
 
+  </section> <!-- end of id="TD-serialization-section"-->
 
+  <section id="example-serialization">
+  <h2>Example Thing Description Instances</h2>
 
- 
- </section> <!-- end of id="TD-serialization-section"-->
+  <section id="myLampThing-example-serialization">
+  <h3>MyLampThing Example</h3>
 
-
-<section id="example-serialization">
-      <h2>Example Thing Description Instances</h2>
-
-<section id="myLampThing-example-serialization">
-      <h3>MyLampThing</h3>
-
-  <pre class="example" title="MyLampThing">
+<pre class="example" title="MyLampThing represented as a compact JSON serialization">
 {
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
@@ -940,32 +1269,35 @@ The following pre-processing steps of a Thing Description instance MUST be execu
     "security": [{"scheme": "psk"}],
     "properties": {
         "status": {
-             "description" : "Shows the current status of the lamp",
-             "type": "string",
-             "forms": [{
-                 "href": "coaps://mylamp.example.com/status"
-             }]
+            "description" : "Shows the current status of the lamp",
+            "type": "string",
+            "forms": [{
+                "href": "coaps://mylamp.example.com/status"
+            }]
         }
     },
     "actions": {
-     "toggle": {
-        "description" : "Turn on or off the lamp.",
-        "forms": [{
-            "href": "coaps://mylamp.example.com/toggle"
-        }]}},
+        "toggle": {
+            "description" : "Turn on or off the lamp",
+            "forms": [{
+                "href": "coaps://mylamp.example.com/toggle"
+            }]
+        }
+    },
     "events": {
         "overheating": {
-            "description" : "Lamp reaches a critical temperature (overheating).",
+            "description" : "Lamp reaches a critical temperature (overheating)",
             "type": "string",
             "forms": [{
                 "href": "coaps://mylamp.example.com/oh"
             }]
-        }}
+        }
+    }
 }
-   </pre>
+</pre>
 
 
-  <pre class="example" title="MyLampThing with semantic annotations based on a valid JSON-LD 1.1 representation">
+<pre class="example" title="MyLampThing with semantic annotations based on a valid JSON-LD 1.1 representation">
 {
     "@context": ["http://www.w3.org/ns/td", 
     		{"iot": "http://iotschema.org/"}],
@@ -976,62 +1308,65 @@ The following pre-processing steps of a Thing Description instance MUST be execu
     "security": [{"scheme": "psk"}],
     "properties": {
         "status": {
-             "@type" : "iot:SwitchStatus",
-             "description" : "Shows the current status of the lamp",
-             "writable": false,
-             "observable": false,
-             "type": "string",
-             "forms": [{
-                 "href": "coaps://mylamp.example.com/status",
-                 "mediaType": "application/json"
-             }]
+            "@type" : "iot:SwitchStatus",
+            "description" : "Shows the current status of the lamp",
+            "writable": false,
+            "observable": false,
+            "type": "string",
+            "forms": [{
+                "href": "coaps://mylamp.example.com/status",
+                "mediaType": "application/json"
+            }]
         }
     },
     "actions": {
-     "toggle": {
-        "@type" : "iot:SwitchStatus",
-        "description" : "Turn on or off the lamp.",
-        "forms": [{
-            "href": "coaps://mylamp.example.com/toggle",
-            "mediaType": "application/json"
-        }]}},
+        "toggle": {
+            "@type" : "iot:SwitchStatus",
+            "description" : "Turn on or off the lamp",
+            "forms": [{
+                "href": "coaps://mylamp.example.com/toggle",
+                "mediaType": "application/json"
+            }]
+        }
+    },
     "events": {
         "overheating": {
             "@type" : "iot:TemperatureAlarm",
-            "description" : "Lamp reaches a critical temperature (overheating).",
+            "description" : "Lamp reaches a critical temperature (overheating)",
             "type": "string",
             "forms": [{
                 "href": "coaps://mylamp.example.com/oh",
                 "mediaType": "application/json"
             }]
-        }}
+        }
+    }
 }
-   </pre>
-</section>
+</pre>
+  </section>
 
-</section>
+  </section>
+     
+  <section id="security-consideration">
+  <h4>Security and Privacy Considerations</h4>
   
-    
-<section id="security-consideration">
-      <h4>Security and Privacy Considerations</h4>
-<p class="ednote">
+  <p class="ednote">
   Please see the
   <a href="https://github.com/w3c/wot-security/">WoT Security and Privacy</a>
   repository for work in progress regarding threat models, assets, risks, 
-  recommended mitigations, and best practices for security and privacy for systems 
+  recommended mitigations,
+  and best practices for security and privacy for systems 
   using the Web of Things.
-  Once complete, security and privacy considerations relevant to Thing Descriptions will 
+  Once complete,
+  security and privacy considerations relevant to Thing Descriptions will 
   be summarized in this section.
-</p>
- </section>
+  </p>
+  </section>
 
- <section   id="json-schema-4-validation" class="appendix normative">
+  <section   id="json-schema-4-validation" class="appendix normative">
   <h1>JSON Schema for TD Instance Validation</h1>
 
-
-  <pre class="advisement" >
-
-    {
+<pre class="advisement">
+{
   "title": "WoT TD Schema for Bundang Plug Fest",
   "description": "JSON Schema representation of the TD serialisation format.",
   "$schema ": "http://json-schema.org/draft-06/schema#",
@@ -1397,47 +1732,60 @@ The following pre-processing steps of a Thing Description instance MUST be execu
     }
   }
 }
-  </pre>
+</pre>
 
+  </section>
 
-
-
-
-
-
-
-
-</section>
-
-<section id="changes" class="appendix">
-<h1>Recent Specification Changes</h1>
-<h2 id="changes2">Changes from Second Public Working Draft</h2>
+  <section id="changes" class="appendix">
+  <h1>Recent Specification Changes</h1>
+  <h2 id="changes2">Changes from Second Public Working Draft</h2>
   <ul>
-    <li>The default serialization format for Thing Description is now plain JSON. 
-        Thing Description instances still MAY contain JSON-LD keys such as @context and @type for facilitating semantic evaluation of TDs.</li>
-    <li>With regards to JSON-LD, this Thing Description draft uses JSON-LD 1.1 instead of JSON-LD 1.0. With this transition, all vocabulary terms defined in vocabulary definition sections now have a JSON key representation.
-Previously, there were vocabulary terms represented as key values in TDs.</li>
+    <li>The default serialization format for Thing Description is now 
+        plain JSON. 
+        Thing Description instances still MAY contain JSON-LD keys such 
+        as @context and @type for facilitating semantic evaluation of TDs.</li>
+    <li>With regards to JSON-LD, this Thing Description draft uses JSON-LD 1.1 
+        instead of JSON-LD 1.0. With this transition, 
+        all vocabulary terms defined in vocabulary definition sections 
+        now have a JSON key representation.
+        Previously, 
+        there were vocabulary terms represented as key values in TDs.</li>
     <li>Added a section about media types used for exchanging TDs.</li>
-    <li>Added a section about implementation notes that provide useful clarifications to implementors.</li>
-    <li>A JSON Schema is provided in the appendix section "JSON Schema for TD Instance Validation" to facilitate the validation of Thing Description instances.</li>
-    <li>Some vocabulary terms (e.g., writable, observable, mediaType) now have default values that are used by Thing Description processors when they are absent in TD instances.</li>
-    <li>In addition to core Thing Description vocabulary, Thing Description now has the data schema vocabulary reflecting a subset of JSON Schema terms as linked data representation and the security vocabulary for defining security based conditions.</li>
-    <li>Thing has a mandatory field "id" for uniquely identifying a Thing, and an optional field "support" to provide information about Thing Description maintainer.</li>
-    <li>Interaction patterns have an optional "label" field providing text for such as user interfaces.</li>
-    <li>A security field was introduced, and are available at three levels (i.e. Thing, Interaction Patterns and Forms) for providing security conditions in accessing resources.</li>
+    <li>Added a section about implementation notes that provide useful 
+        clarifications to implementors.</li>
+    <li>A JSON Schema is provided in the appendix section 
+        "JSON Schema for TD Instance Validation" 
+        to facilitate the validation of Thing Description instances.</li>
+    <li>Some vocabulary terms (e.g., writable, observable, mediaType) 
+        now have default values that are used by Thing Description processors 
+        when they are absent in TD instances.  Note that security
+        schemes can also have such values.</li>
+    <li>In addition to core Thing Description vocabulary, 
+        Thing Description now has the data schema vocabulary reflecting a 
+        subset of JSON Schema terms as linked data representation and 
+        the security vocabulary for defining security based conditions.</li>
+    <li>Things now have a mandatory field "id" for uniquely identifying a Thing, 
+        and an optional field "support" to provide information about 
+        Thing Description maintainer.</li>
+    <li>Interaction patterns have an optional "label" field providing text 
+        for such uses as user interfaces.</li>
+    <li>A security field was introduced, 
+        and is available at three levels 
+        (Thing, Interaction Patterns and Forms) for providing security 
+        requirements for accessing resources.</li>
   </ul>
-</h2>
-<h2 id="changes1">Changes from First Public Working Draft</h2>
-  <p>Changes from First Public Working Draft are described in the <a href="https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/#changes">Second Public Working Draft</a>
-</p>
 
-</section>
+  <h2 id="changes1">Changes from First Public Working Draft</h2>
+  <p>Changes from First Public Working Draft are described in the 
+  <a href="https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/#changes">Second Public Working Draft</a>
+  </p>
 
-<section   id="acknowledgements" class="appendix normative">
-<h1>Acknowledgements</h1>
-<p>tbd</p>
-</section>
+  </section>
 
+  <section   id="acknowledgements" class="appendix normative">
+  <h1>Acknowledgements</h1>
+  <p>tbd</p>
+  </section>
 
-  </body>
+</body>
 </html>
