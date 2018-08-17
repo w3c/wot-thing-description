@@ -283,9 +283,12 @@ const securityPredefined = [
     "SecurityScheme",
     "NoSecurityScheme",
     "BasicSecurityScheme",
+    "CertSecurityScheme",
     "DigestSecurityScheme",
     "BearerSecurityScheme",
+    "PSKSecurityScheme",
     "PopSecurityScheme",
+    "PublicSecurityScheme",
     "ApikeySecurityScheme",
     "OAuth2SecurityScheme"
 ];
