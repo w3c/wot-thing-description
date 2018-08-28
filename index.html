@@ -67,7 +67,27 @@
                 , publisher: "W3C"
                 , date: "20 August 2017"
                 }
-	      , "WOT-PROTOCOL-BINDING" : {
+              , "WOT-SECURITY-CONSIDERATIONS" : {
+                title: "Web of Things Security and Privacy Considerations"
+                , href: "https://w3c.github.io/wot-security/"
+                , authors:  [
+                  , "Michael McCool"
+                  , "Elena Reshetova"
+                  ]
+                , publisher: "W3C"
+                , date: "28 August 2017"
+                }
+              , "WOT-SECURITY-BEST-PRACTICES" : {
+                title: "Web of Things Security and Privacy Best Practices (WIP)"
+                , href: "https://github.com/w3c/wot-security/blob/master/wot-security-best-practices.md",
+                , authors:  [
+                  , "Michael McCool"
+                  , "Elena Reshetova"
+                  ]
+                , publisher: "W3C"
+                , date: "WIP"
+                }
+	          , "WOT-PROTOCOL-BINDING" : {
                   title: "Web of Things Protocol Binding Templates"
                 , href: "https://w3c.github.io/wot-binding-templates/"
                 , authors:  [
@@ -1372,17 +1392,82 @@ The rel attribute indicates which form is which and allows the client to select 
   <section id="security-consideration">
   <h4>Security and Privacy Considerations</h4>
   
-  <p class="ednote">
-  Please see the
-  <a href="https://github.com/w3c/wot-security/">WoT Security and Privacy</a>
-  repository for work in progress regarding threat models, assets, risks, 
-  recommended mitigations,
-  and best practices for security and privacy for systems 
-  using the Web of Things.
-  Once complete,
-  security and privacy considerations relevant to Thing Descriptions will 
-  be summarized in this section.
+  <p>
+  In general the security measures taken to protect a WoT 
+  system will depend on the threats and attackers that system
+  may face and the value of the assets needs to protect.
+  A detailed discussion of security and privacy considerations for the Web of Things,
+  including a threat model that can be adapted to various circumstances, is
+  presented in the informative document [[!WOT-SECURITY-CONSIDERATIONS]].  
+  This section includes only normative recommendations relevant to
+  the WoT Thing Description.
   </p>
+  <p>A WoT Thing Description can describe both secure and 
+  insecure network interfaces.  When a Thing Description is 
+  retro-fitted to an existing network interface, no change in the 
+  security status of the network interface is to be expected.
+  </p>
+  <p><span class="rfc2119-assertion" id="td-sec-best-practices">
+  When designing new devices and services for use with the WoT,
+  we have documented a set of best practices
+  in [[!WOT-SECURITY-BEST-PRACTICES]] that SHOULD be followed.</span>
+  This best-practices document may be updated as security measures evolve.
+  Following these practices does not guarantee security, 
+  but it at least will help to avoid common known vulnerabilities.
+  </p>
+  <p>Some additional specific recommendations relate to privacy:
+  <ul>
+      <li>The fact that a Thing Description contains a unique
+          identifier means that should it be associated with
+          a person it can be used to track that person and 
+          therefore pose a risk to privacy.
+          To mitigate this, identifiers should be mutable.
+          <span class="rfc2119-assertion" id="td-sec-mutable-ids">
+              There SHOULD be a mechanism to update the <code>id</code>
+              of a Thing.
+      </span>
+      Specifically, the <code>id</code> of a Thing should not be fixed in
+      hardware.
+      This does, however, conflict with the Linked Data ideal that
+      identifiers are fixed references to entities.  In many circumstances it
+      will be acceptable to only allow updates to identifiers if
+      a Thing is reinitialized.  In this case as a software entity the
+      old Thing ceases to exist and a new Thing is created.  Alternatively,
+      a mechanism can be put into place to notify only authorized users
+      of the change in identifier when a change is made.
+      <!-- What about medical devices that REQUIRE immutable IDs, by law? -->
+      </li>
+      <li><span class="rfc2119-assertion" id="td-sec-authorize-tds">
+              Only authorized users SHOULD be provided access
+              to the Thing Description for a Thing.
+      </span>
+      As noted above, the <code>id</code> field in a TD can pose a privacy risk.  
+      However, even if the <code>id</code> is updated, it may still be possible to associate
+      a TD with a particular physical device, and from there to a person, through fingerprinting.
+      If the TD is only distributed to authorized users 
+      through secure and confidential channels, the risk can be minimized.  
+      Some recommendations on how to concretely acheive this
+      objective are given in [[!WOT-SECURITY-BEST-PRACTICES]].  
+      </li>
+      <li><span class="rfc2119-assertion" id="td-sec-authenticate-tds">
+              Thing Descriptions SHOULD only be obtained through
+              mutually authenticated channels.
+      </span>
+      Many security and privacy risks can be avoided by
+      protecting TDs from tampering, and of course TDs can only be
+      delivered to authorized users if those users are also authenticated.
+      </li>
+      <li><span class="rfc2119-assertion" id="td-sec-consent">
+              A Thing MUST satisfy all legal requirements for informed 
+              consent for usage of data.
+      </span>
+      In many cases, given the limitations of the user interfaces on many
+      constrained devices, consent for usage of personally identifiable data
+      generated by a Thing will have to be obtained when a Thing is paired with system
+      consuming the data.
+      </li>
+   </ul>
+
   </section>
 
   <section id="json-schema-4-validation" class="appendix normative">
@@ -1765,6 +1850,12 @@ The rel attribute indicates which form is which and allows the client to select 
 
   <section id="changes" class="appendix">
   <h1>Recent Specification Changes</h1>
+  <h2 id="changes2">Changes from Third Public Working Draft</h2>
+  <ul>
+    <li>Added a draft Security and Privacy Considerations section
+    (Section <a href="#sec-security-consideration"></a>).</li>
+  </ul>
+
   <h2 id="changes2">Changes from Second Public Working Draft</h2>
   <ul>
     <li>The default serialization format for Thing Description is now 
