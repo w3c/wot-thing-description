@@ -12,7 +12,13 @@ function sectionOrURI(uri, label) {
     let isLocal = uri.startsWith('http://www.w3.org/ns/td#') ||
                   uri.startsWith('http://www.w3.org/ns/json-schema#') ||
                   uri.startsWith('http://www.w3.org/ns/wot-security#');
-    return isLocal ? '#' + label.toLowerCase(): uri;
+	if (isLocal) return '#' + label.toLowerCase();
+				  
+	let isXSD = uri.startsWith('http://www.w3.org/2001/XMLSchema#');
+	if (isXSD) return 'http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#' + label;
+	
+	// default
+    return uri;
 }
 
 function target(sh, g) {
