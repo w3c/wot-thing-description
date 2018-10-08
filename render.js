@@ -15,7 +15,13 @@ function sectionOrURI(uri, label) {
 	if (isLocal) return '#' + label.toLowerCase();
 				  
 	let isXSD = uri.startsWith('http://www.w3.org/2001/XMLSchema#');
-	if (isXSD) return 'http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#' + label;
+	if (isXSD) {
+		let isAnyType = uri.endsWith('#anyType');
+		if (isAnyType)
+			return 'http://www.w3.org/TR/2012/REC-xmlschema11-1-20120405/structures.html#key-anyType';
+		else
+			return 'http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#' + label;
+	}
 	
 	// default
     return uri;
