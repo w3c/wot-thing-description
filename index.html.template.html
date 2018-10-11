@@ -73,6 +73,12 @@
                 , publisher: "OpenAPI Initiative, Linux Foundation"
                 , date: "7 December 2017"
                 }
+              , "SemVer": {
+                  title:    "Semantic Versioning 2.0.0"
+                , href:     "https://semver.org/"
+                , authors:  ["Tom Preston-Werner"]
+                , date: "26 December 2017"
+                }
               , "MEDIATYPES": {
                   title:    "Media Types"
                 , href:     "https://www.iana.org/assignments/media-types/media-types.xhtml"
@@ -582,7 +588,7 @@
   <!-- should this be "the type" or "the elements of"? -->
   <p><span class="rfc2119-assertion" id="td-objects">
   The type of the fields <code>properties</code>, <code>actions</code>, 
-  and <code>events</code> MUST be a JSON object.
+  <code>events</code>, and <code>version</code> MUST be a JSON object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-arrays">
@@ -604,6 +610,7 @@
     "support": "https://servient.example.com/contact",
     "security": [...],
     "base": "https://servient.example.com/",
+    "version" : {...},
     "properties": {...},
     "actions": {...},
     "events": {...},
@@ -625,6 +632,7 @@
     "support": "https://servient.example.com/contact",
     "security": [...],
     "base": "https://servient.example.com/",
+    "version" : {...},
     "properties": {...},
     "actions": {...},
     "events": {...},
@@ -671,7 +679,7 @@
     ...
     "properties": {
         "on": {
-            "label": "On/Off",
+            "title": "On/Off",
             "type": "boolean",
             "forms": [...]
         },
@@ -939,11 +947,34 @@
         "href" : "http://mytemp.example.com:5683/temp",
         "mediaType": "application/json",
         "http:methodName": "POST",
-        "rel": "writeProperty",
+        "op": "writeProperty",
         "security": [{"scheme":"basic", "in":"header"}]
     }]
     ...
 </pre>
+
+    <p><code>href</code> may also carry an URI that contains dynamic parameters. It that case the URI can be defined as template as defined in [[!RFC6570]]. 
+    The <code>uriVariables</code> MUST be used to specify the parameters based on the <code>DataSchema</code> declarations.</p>
+
+    <p>A TD snippet using URI template and <code>uriVariables</code> is given below:</p>
+
+    <pre class="example">
+        ...
+        "actions": {
+            "LeftDown": {
+              "uriVariables": {
+                "p" : { "type": "integer", "minimum": 0, "maximum": 16, "@type": "example:SomeKindOfAngle" },
+                "d" : { "type": "integer", "minimum": 0, "maximum": 1, "@type": "example:Direction" },
+                }
+              },
+              "form": [{
+                "http:method": "GET",
+                "href" : "http://192.168.1.25/left{?p,d}"
+              }]
+            }
+        ...
+    </pre>
+
 
     </section> <!-- end of id="form-serialization-json"-->
 
@@ -1170,6 +1201,38 @@
 </pre>
 
   </section> <!-- end of id="security-serialization-json"-->
+
+
+  <section id="version-serialization-json">
+    <h2><code>version</code></h2>
+
+    <p><span class="rfc2119-assertion" id="td-version">
+        The mandatory vocabulary term
+        as defined in the class <a href="#versioning" class="sec-ref"><code>Versioning</code></a>,
+        MUST be serialized as a JSON key.
+    </span></p>
+
+    <p>The recommended version identification pattern value is to rely on the semantic versioning policy: [[?SemVer]]</p>
+
+    <p>A TD snippet based on the defined fields is given below:</p>
+    <pre class="example">
+        ...
+        "version": {"instance":"1.2.1"}
+        ...
+    </pre>
+
+    <p><span class="rfc2119-assertion" id="td-version">
+        The version container MAY be used to provide additional application and/or device specific version information based on terms from non-TD namespaces. 
+    </span></p>
+
+    <p>A TD snippet based on such additional version metadata from a xyz context is given below:</p>
+    <pre class="example">
+        ...
+        "version": {"instance":"1.2.1", "xyz:firmware": "0.9.1", "xyz:hardware": "1.0"}
+        ...
+    </pre>
+
+    </section> <!-- end of id="version-json"-->
 
   </section> <!-- end of id="serialization-json"-->
 
