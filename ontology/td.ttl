@@ -130,6 +130,44 @@ vs:term_status rdf:type owl:AnnotationProperty .
 
 
 
+###  http://www.w3.org/ns/td#subscription
+
+:subscription rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "subscription" ;
+       
+       rdfs:comment "Defines data that needs to be passed upon subscription, e.g., filters or message format for setting up Webhooks."@en ;
+       
+       rdfs:domain :Event ;
+       
+       rdfs:range :Specification .
+
+###  http://www.w3.org/ns/td#data
+
+:data rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "data" ;
+       
+       rdfs:comment "Defines the data schema of the Event instance messages pushed by the Thing."@en ;
+       
+       rdfs:domain :Event ;
+       
+       rdfs:range :Specification .
+
+###  http://www.w3.org/ns/td#cancellation
+
+:cancellation rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "cancellation" ;
+       
+       rdfs:comment "Defines any data that needs to be passed to cancel a subscription, e.g., a specific message to remove a Webhook"@en ;
+       
+       rdfs:domain :Event ;
+       
+       rdfs:range :Specification .
+
+
+
 ###  http://www.w3.org/ns/td#interactions
 
 :interactions rdf:type owl:ObjectProperty ;
@@ -485,8 +523,19 @@ For example, for HTTP and Events, it indicates which of several available mechan
        
        rdfs:label "Event" ;
        
-       rdfs:subClassOf :InteractionPattern ,
-                       :Specification ;
+        rdfs:subClassOf :InteractionPattern ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :subscription ;
+                          owl:allValuesFrom :Specification
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :data ;
+                          owl:allValuesFrom :Specification
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :cancellation ;
+                          owl:allValuesFrom :Specification
+                        ] ;
        
        rdfs:comment "The Event Interaction Pattern describes event sources that asynchronously push messages. Here not state, but state transitions (events) are communicated (e.g., \"clicked\"). Events may be triggered by internal state changes that are not exposed as Properties. Events usually follow strong consistency, where messages need to be queued to ensure eventual delivery of all events that have occurred."@en .
 
