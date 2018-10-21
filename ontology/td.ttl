@@ -102,6 +102,19 @@ vs:term_status rdf:type owl:AnnotationProperty .
        rdfs:domain :InteractionPattern .
 
 
+###  http://www.w3.org/ns/td#uriVariables
+
+:uriVariables rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "uriVariables" ;
+       
+       rdfs:comment "Define URI template variables as collection based on DataSchema declarations."@en ;
+       
+       rdfs:range :DataSchema ;
+       
+       rdfs:domain :InteractionPattern .
+
+
 
 ###  http://www.w3.org/ns/td#input
 
@@ -112,6 +125,44 @@ vs:term_status rdf:type owl:AnnotationProperty .
        rdfs:comment "Used to define the input data schema of the action."@en ;
        
        rdfs:domain :Action ;
+       
+       rdfs:range :Specification .
+
+
+
+###  http://www.w3.org/ns/td#subscription
+
+:subscription rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "subscription" ;
+       
+       rdfs:comment "Defines data that needs to be passed upon subscription, e.g., filters or message format for setting up Webhooks."@en ;
+       
+       rdfs:domain :Event ;
+       
+       rdfs:range :Specification .
+
+###  http://www.w3.org/ns/td#data
+
+:data rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "data" ;
+       
+       rdfs:comment "Defines the data schema of the Event instance messages pushed by the Thing."@en ;
+       
+       rdfs:domain :Event ;
+       
+       rdfs:range :Specification .
+
+###  http://www.w3.org/ns/td#cancellation
+
+:cancellation rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "cancellation" ;
+       
+       rdfs:comment "Defines any data that needs to be passed to cancel a subscription, e.g., a specific message to remove a Webhook"@en ;
+       
+       rdfs:domain :Event ;
        
        rdfs:range :Specification .
 
@@ -139,6 +190,18 @@ vs:term_status rdf:type owl:AnnotationProperty .
        
        rdfs:domain :Thing .
 
+###  http://www.w3.org/ns/td#version
+
+:version rdf:type owl:DatatypeProperty ,
+                   owl:FunctionalProperty ;
+          
+          rdfs:label "version" ;
+          
+          rdfs:comment "Provides version information."@en ;
+          
+          rdfs:range :Versioning ;
+          
+          rdfs:domain :Thing .
 
 
 ###  http://www.w3.org/ns/td#output
@@ -241,7 +304,7 @@ vs:term_status rdf:type owl:AnnotationProperty .
              
              rdfs:label "description" ;
              
-             rdfs:comment "Provides additional (human) readable information."@en ;
+             rdfs:comment "Provides additional (human-readable) information."@en ;
              
              rdfs:range xsd:string .
 
@@ -266,33 +329,55 @@ vs:term_status rdf:type owl:AnnotationProperty .
 
 
 
-###  http://www.w3.org/ns/td#label
+###  http://www.w3.org/ns/td#title
 
-:label rdf:type owl:DatatypeProperty ;
+:title rdf:type owl:DatatypeProperty ;
        
-       rdfs:label "label" ;
+       rdfs:label "title" ;
        
-       rdfs:comment "Provides a label (e.g., display a text for UI representation) of the interaction pattern."@en ;
+       rdfs:comment "Provides a human-readable title (e.g., display a text for UI representation) of the interaction pattern."@en ;
        
-       rdfs:range xsd:string ;
+       rdfs:range xsd:string .
+
+###  http://www.w3.org/ns/td#instance
+
+:instance rdf:type owl:DatatypeProperty ;
        
-       rdfs:domain :InteractionPattern .
+       rdfs:label "instance" ;
+       
+       rdfs:comment "Provides a version identicator of this TD instance."@en ;
+       
+       rdfs:range xsd:string .
 
+###  http://www.w3.org/ns/td#type
 
-
-###  http://www.w3.org/ns/td#mediaType
-
-:mediaType rdf:type owl:DatatypeProperty ;
+:type rdf:type owl:DatatypeProperty ;
            
-           rdfs:label "mediaType" ;
+           rdfs:label "type" ;
            
-           rdfs:comment "Assign the underlying media type [[!MEDIATYPES]] of an interaction pattern"@en ;
+           rdfs:comment "Provides a hint indicating what the media type [[!MEDIATYPES]] of the result of dereferencing the link should be."@en ;
+           
+           rdfs:range xsd:string ;
+           
+           rdfs:domain [ rdf:type owl:Class ;
+                         owl:unionOf ( 
+                                       :Link
+                                     )
+                       ] .
+
+###  http://www.w3.org/ns/td#contenttype
+
+:contenttype rdf:type owl:DatatypeProperty ;
+           
+           rdfs:label "contenttype" ;
+           
+           rdfs:comment "Assign a content type based on a media type [[!MEDIATYPES]] and (optional) parameters of an interaction pattern (e.g., 'application/json; charset=utf-8')"@en ;
            
            rdfs:range xsd:string ;
            
            rdfs:domain [ rdf:type owl:Class ;
                          owl:unionOf ( :Form
-                                       :Link
+                                       
                                      )
                        ] .
 
@@ -333,6 +418,18 @@ vs:term_status rdf:type owl:AnnotationProperty .
      
      rdfs:label "rel" ;
      
+     rdfs:comment """Indicates the relation to an other Thing."""@en ;
+     
+     rdfs:range xsd:string ;
+     
+     rdfs:domain :Link .
+
+###  http://www.w3.org/ns/td#op
+
+:op rdf:type owl:DatatypeProperty ;
+     
+     rdfs:label "op" ;
+     
      rdfs:comment """Indicates the expected result of performing the operation described by the form.
 
 For example, the Property interaction allows get and set operations.  
@@ -345,11 +442,11 @@ The rel attribute indicates which form is which and allows the client to select 
 
 
 
-###  http://www.w3.org/ns/td#subProtocol
+###  http://www.w3.org/ns/td#subprotocol
 
-:subProtocol rdf:type owl:DatatypeProperty ;
+:subprotocol rdf:type owl:DatatypeProperty ;
      
-     rdfs:label "subProtocol" ;
+     rdfs:label "subprotocol" ;
      
      rdfs:comment """Indicates the exact mechanism by which an interaction will be accomplished for a given protocol when there are multiple options.
      
@@ -442,8 +539,19 @@ For example, for HTTP and Events, it indicates which of several available mechan
        
        rdfs:label "Event" ;
        
-       rdfs:subClassOf :InteractionPattern ,
-                       :Specification ;
+        rdfs:subClassOf :InteractionPattern ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :subscription ;
+                          owl:allValuesFrom :Specification
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :data ;
+                          owl:allValuesFrom :Specification
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :cancellation ;
+                          owl:allValuesFrom :Specification
+                        ] ;
        
        rdfs:comment "The Event Interaction Pattern describes event sources that asynchronously push messages. Here not state, but state transitions (events) are communicated (e.g., \"clicked\"). Events may be triggered by internal state changes that are not exposed as Properties. Events usually follow strong consistency, where messages need to be queued to ensure eventual delivery of all events that have occurred."@en .
 
@@ -460,11 +568,11 @@ For example, for HTTP and Events, it indicates which of several available mechan
                         owl:allValuesFrom xsd:string
                       ] ,
                       [ rdf:type owl:Restriction ;
-                        owl:onProperty :rel ;
+                        owl:onProperty :op ;
                         owl:allValuesFrom xsd:string
                       ] ,
                       [ rdf:type owl:Restriction ;
-                        owl:onProperty :subProtocol ;
+                        owl:onProperty :subprotocol ;
                         owl:allValuesFrom xsd:string
                       ] ,
                       [ rdf:type owl:Restriction ;
@@ -487,7 +595,7 @@ For example, for HTTP and Events, it indicates which of several available mechan
                     rdfs:label "InteractionPattern" ;
                     
                     rdfs:subClassOf [ rdf:type owl:Restriction ;
-                                      owl:onProperty :label ;
+                                      owl:onProperty :title ;
                                       owl:allValuesFrom xsd:string
                                     ] ,
                                     [ rdf:type owl:Restriction ;
@@ -499,7 +607,11 @@ For example, for HTTP and Events, it indicates which of several available mechan
                                       owl:allValuesFrom xsd:string
                                     ] ,
                                     [ rdf:type owl:Restriction ;
-                                      owl:onProperty :forms ;
+                                      owl:onProperty :uriVariables ;
+                                      owl:someValuesFrom :DataSchema
+                                    ],
+                                    [ rdf:type owl:Restriction ;
+                                      owl:onProperty :uriVariables ;
                                       owl:someValuesFrom :Form
                                     ] ;
                     
@@ -526,7 +638,7 @@ For example, for HTTP and Events, it indicates which of several available mechan
                         owl:someValuesFrom xsd:anyURI
                       ] ,
                       [ rdf:type owl:Restriction ;
-                        owl:onProperty :mediaType ;
+                        owl:onProperty :type ;
                         owl:allValuesFrom xsd:string
                       ] ,
                       [ rdf:type owl:Restriction ;
@@ -536,7 +648,18 @@ For example, for HTTP and Events, it indicates which of several available mechan
       
       rdfs:comment "A Web link, as specified by IETF RFC 8288 (https://tools.ietf.org/html/rfc8288)."@en .
 
+###  http://www.w3.org/ns/td#Versioning
 
+:Versioning rdf:type owl:Class ;
+      
+      rdfs:label "Versioning" ;
+      
+      rdfs:subClassOf [ rdf:type owl:Restriction ;
+                        owl:onProperty :instance ;
+                        owl:allValuesFrom xsd:string
+                      ] ;
+      
+      rdfs:comment "Carries version information about the TD instance. If required, additional version information such as firmware and hardware version (term definitions outside of the TD namespace) can be extended here."@en .
 
 ###  http://www.w3.org/ns/td#Property
 
@@ -608,7 +731,11 @@ For example, for HTTP and Events, it indicates which of several available mechan
                        [ rdf:type owl:Restriction ;
                          owl:onProperty :description ;
                          owl:allValuesFrom xsd:string
-                       ] ;
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :version ;
+                         owl:allValuesFrom :Versioning
+                       ];
        
        rdfs:comment "Describes a physical and/or virtual Thing (may represent one or more physical and/or virtual Things) in the Web of Things context."@en .
 
