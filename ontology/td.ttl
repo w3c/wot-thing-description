@@ -130,6 +130,31 @@ vs:term_status rdf:type owl:AnnotationProperty .
        
        rdfs:range :Specification .
 
+###  http://www.w3.org/ns/td#safe
+
+:safe rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "safe" ;
+       
+       rdfs:comment "Signals if the action is safe (=true) or not. Used to signal if there is no internal state (cf. resource state) is changed when invoking an Action. In that case responses can be cached as example."@en ;
+       
+       rdfs:domain :Action ;
+       
+       rdfs:range :Specification .
+
+
+###  http://www.w3.org/ns/td#idempotent
+
+:idempotent rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "idempotent" ;
+       
+       rdfs:comment "Signals if the action is idempotent (=true) or not. Informs if the action can be called repeatedly with the same outcome. "@en ;
+       
+       rdfs:domain :Action ;
+       
+       rdfs:range :Specification .
+
 
 
 ###  http://www.w3.org/ns/td#subscription
@@ -367,13 +392,13 @@ vs:term_status rdf:type owl:AnnotationProperty .
                                      )
                        ] .
 
-###  http://www.w3.org/ns/td#contenttype
+###  http://www.w3.org/ns/td#contentType
 
-:contenttype rdf:type owl:DatatypeProperty ;
+:contentType rdf:type owl:DatatypeProperty ;
            
-           rdfs:label "contenttype" ;
+           rdfs:label "contentType" ;
            
-           rdfs:comment "Assign a content type based on a media type [[!MEDIATYPES]] and (optional) parameters of an interaction pattern (e.g., 'application/json; charset=utf-8')"@en ;
+           rdfs:comment "Assign a content type based on a media type [[!MEDIATYPES]] (e.g., 'application/json) and (optional) parameters (e.g., 'charset=utf-8')"@en ;
            
            rdfs:range xsd:string ;
            
@@ -408,7 +433,7 @@ vs:term_status rdf:type owl:AnnotationProperty .
       rdfs:range xsd:string ;
       
       rdfs:domain :Thing .
-      
+
 
 ###  http://www.w3.org/ns/td#lastModified
 :lastModified rdf:type owl:DatatypeProperty ;
@@ -520,6 +545,14 @@ For example, for HTTP and Events, it indicates which of several available mechan
                         [ rdf:type owl:Restriction ;
                           owl:onProperty :output ;
                           owl:allValuesFrom :Specification
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :scope ;
+                          owl:allValuesFrom :Specification
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :idempotent ;
+                          owl:allValuesFrom :Specification
                         ] ;
         
         rdfs:comment "Actions offer functions of the Thing. These functions may manipulate the interal state of a Thing in a way that is not possible through setting Properties. Examples are changing internal state that is not exposed as a Property, changing multiple Properties, changing Properties over time or with a process that should not be disclosed. Actions may also be pure functions, that is, they may not use any internal state at all, and may simply process input data and return a result that directly depends only on the input given."@en .
@@ -574,7 +607,7 @@ For example, for HTTP and Events, it indicates which of several available mechan
       rdfs:label "Form" ;
       
       rdfs:subClassOf [ rdf:type owl:Restriction ;
-                        owl:onProperty :mediaType ;
+                        owl:onProperty :contentType ;
                         owl:allValuesFrom xsd:string
                       ] ,
                       [ rdf:type owl:Restriction ;
@@ -584,10 +617,6 @@ For example, for HTTP and Events, it indicates which of several available mechan
                       [ rdf:type owl:Restriction ;
                         owl:onProperty :subprotocol ;
                         owl:allValuesFrom xsd:string
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :href ;
-                        owl:allValuesFrom xsd:anyURI
                       ] ,
                       [ rdf:type owl:Restriction ;
                         owl:onProperty :href ;
