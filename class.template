@@ -6,8 +6,8 @@
         <p>{desc}</p>
         {#fields}
         {@first}
-	{@eq key=label value="InteractionPattern"}<p class="note">
-    Each instance of a <code>Property</code>, <code>Action</code>, and <code>Event</code>  class has a (unique) name. 
+	{@eq key=label value="InteractionPattern"}<p><span class="rfc2119-assertion" id="td-unique-identifiers">
+    Each instance of a <code>Property</code>, <code>Action</code>, and <code>Event</code> class MUST have an identifier that is unique within the context of a Thing Description document.</span> 
     See Section <a href="#json-serializiation-section" class="sec-ref">Representation Format</a> for more details about JSON-LD 1.1 identifiers.
       </p>{/eq}
         <table class="def">
@@ -27,7 +27,7 @@
                     <td>unique identifier of the Thing (URI, e.g. custom URN)</td>
                     <td>yes</td>
                     <td>.</td>
-                    <td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td>
+                    <td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td>
                 </tr>
                 {/eq}
         {/first}
@@ -35,19 +35,31 @@
                     <td><code>{prop}</code></td>
                     <td>{propDesc}
                         {@eq key=label value="Form"}
-                        {@eq key=prop value="rel"}
+                        {@eq key=prop value="op"}
                         <p>
-                            The value of the <code>rel</code> attribute of the form must be one of readproperty, writeproperty, observeproperty, invokeaction, subscribeevent, or unsubscribeevent. 
+                            The value of the <code>op</code> attribute of the form must be one of readproperty, writeproperty, observeproperty, invokeaction, subscribeevent, or unsubscribeevent. 
                         </p>
                         {/eq}
                         {/eq}
                     </td>
                     <td>{?mandatory}yes{:else}no{/mandatory}</td>
                     <td>{?defaultValue}{defaultValue}{:else}.{/defaultValue}</td>
-                    <td>{?array}array of {/array}<a href="{otherClass.uri}"><code>{otherClass.label}</code></a>
-                    
+                    <td>{?array}array of {/array}
+                        {?otherClass.uri}
+                            <a href="{otherClass.uri}"><code>{otherClass.label}</code></a>
+                        {:else}
+                          {@eq key=otherClass.label value="anyType"}
+                            {?array}
+                            values of any type with each consistent with the type given to the above <code>type</code> field definition if any
+                            {:else}
+                            a value of any type that is consistent with the type given to the above <code>type</code> field definition if any
+                            {/array}
+                          {:else}
+                            <code>{otherClass.label}</code>
+                          {/eq}
+                        {/otherClass.uri}
                         {@eq key=label value="Form"}
-                        {@eq key=prop value="rel"}
+                        {@eq key=prop value="op"}
                         <p>
                             (one of  
                             <code>"readproperty"</code>, 
@@ -61,10 +73,10 @@
                         {/eq}
 
                         {@eq key=label value="Form"}
-                        {@eq key=prop value="subProtocol"}
+                        {@eq key=prop value="subprotocol"}
                         <p>
                             (one of  
-                            <code>"LongPoll"</code>)
+                            <code>"longpoll"</code>)
                         </p>
                         {/eq}
                         {/eq}
@@ -122,8 +134,7 @@
 	{@eq key=label value="Property"}<p class="note">Property instances may also be instances of the class <a href="#dataschema" class="sec-ref">DataSchema</a> and therefore 
     can contain, among others, the <code>type</code> term.</p>{/eq}
 
-	{@eq key=label value="Event"}<p>Instances of the <code>Event</code> class contains the term definitions of the class <a href="#interactionpattern" class="sec-ref">InteractionPattern</a> and <a href="#dataschema" class="sec-ref">DataSchema</a>.</p>{/eq}
-      
+     
 
       
       </section>
