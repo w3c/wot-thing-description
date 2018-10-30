@@ -32,6 +32,14 @@
         sh:datatype xsd:string ;
     ] ;
     sh:property [
+        sh:path td:created ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path td:lastModified ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
         sh:path td:base ;
         sh:datatype xsd:anyURI ;
     ] ;
@@ -54,7 +62,11 @@
     sh:property [
         sh:path td:security ;
         sh:class wotsec:SecurityScheme ;
-    ] .
+    ] ;
+    sh:property [
+        sh:path td:version ;
+        sh:class td:Versioning ;
+    ].
     
 :InteractionPatternShape a sh:NodeShape ;
     sh:targetClass td:InteractionPattern ;
@@ -65,8 +77,12 @@
         sh:class td:Form ;
     ] ;
     sh:property [
-        sh:path td:label ;
+        sh:path td:title ;
         sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path td:uriVariables ;
+        sh:class td:DataSchema ;
     ] ;
     sh:property [
         sh:path td:description ;
@@ -88,11 +104,6 @@
         sh:path td:observable ;
         sh:datatype xsd:boolean ;
         sh:defaultValue "false"^^xsd:boolean ;
-    ] ;
-    sh:property [
-        sh:path td:writable ;
-        sh:datatype xsd:boolean ;
-        sh:defaultValue "false"^^xsd:boolean ;
     ] .
     
 :ActionShape a sh:NodeShape ;
@@ -105,12 +116,35 @@
     sh:property [
         sh:path td:output ;
         sh:class jsonschema:DataSchema ;
+    ] ;
+    sh:property [
+        sh:path td:safe ;
+        sh:class jsonschema:DataSchema ;
+        sh:minCount 1 ;
+        sh:defaultValue "false"^^xsd:boolean ;
+    ] ;
+    sh:property [
+        sh:path td:idempotent ;
+        sh:class jsonschema:DataSchema ;
+        sh:minCount 1 ;
+        sh:defaultValue "false"^^xsd:boolean ;
     ] .
     
 :EventShape a sh:NodeShape ;
     sh:targetClass td:Event ;
-    sh:closed "false"^^xsd:boolean .
-    # TODO same properties as PropertyShape
+    sh:closed "false"^^xsd:boolean ;
+    sh:property [
+        sh:path td:subscription ;
+        sh:class jsonschema:DataSchema ;
+    ] ;
+    sh:property [
+        sh:path td:data ;
+        sh:class jsonschema:DataSchema ;
+    ] ;
+    sh:property [
+        sh:path td:cancellation ;
+        sh:class jsonschema:DataSchema ;
+    ] .
     
 # TODO EventShape inherits all PropertyShape constraints
 
@@ -123,16 +157,17 @@
         sh:datatype xsd:anyURI ;
     ] ;
     sh:property [
-        sh:path td:mediaType ;
+        sh:path td:contentType ;
         sh:datatype xsd:string ;
+        sh:minCount 1 ;
         sh:defaultValue "application/json"^^xsd:string ;
     ] ;
     sh:property [
-        sh:path td:rel ;
+        sh:path td:op ;
         sh:datatype xsd:string ;
     ] ;
     sh:property [
-        sh:path td:subProtocol ;
+        sh:path td:subprotocol ;
         sh:datatype xsd:string ;
     ] ;
     sh:property [
@@ -153,9 +188,8 @@
         sh:datatype xsd:anyURI ;
     ] ;
     sh:property [
-        sh:path td:mediaType ;
+        sh:path td:type ;
         sh:datatype xsd:string ;
-        sh:defaultValue "application/json"^^xsd:string ;
     ] ;
     sh:property [
         sh:path td:rel ;
@@ -181,6 +215,15 @@
     sh:property [
         sh:path wotsec:proxyUrl ;
         sh:datatype xsd:anyURI ;
+    ] .
+
+:VersioningShape a sh:NodeShape ;
+    sh:targetClass td:Versioning ;
+    sh:closed "false"^^xsd:boolean ;
+    sh:property [
+        sh:path td:instance ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
     ] .
 
 :NoSecuritySchemeShape a sh:NodeShape ;
@@ -332,6 +375,10 @@
         sh:datatype xsd:string ;
     ] ;
     sh:property [
+        sh:path td:title ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
         sh:path jsonschema:type ;
         sh:datatype xsd:string ;
     ] ;
@@ -340,8 +387,25 @@
         sh:datatype xsd:anyType ;
     ] ;
     sh:property [
+        sh:path jsonschema:unit ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
         sh:path jsonschema:enum ;
         sh:datatype xsd:anyType ;
+    ] ;
+    sh:property [
+        sh:path jsonschema:readOnly ;
+        sh:datatype xsd:boolean ;
+        sh:minCount 1 ;
+        sh:defaultValue "false"^^xsd:boolean ;
+
+    ] ;
+    sh:property [
+        sh:path jsonschema:writeOnly ;
+        sh:datatype xsd:boolean ;
+        sh:minCount 1 ;
+        sh:defaultValue "false"^^xsd:boolean ;
     ] .
 
 :ArraySchemaShape a sh:NodeShape ;
