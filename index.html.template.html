@@ -1206,6 +1206,53 @@
     },
     ...
 </pre>
+  <p>As another more complex example, OAuth2 makes use of scopes. 
+  These are identifiers that 
+  may appear in tokens and must match with corresponding identifiers in a resource to allow 
+  access to that resource. 
+  For example, in the following, the "status" property can be 
+  read by users using bearer tokens containing the scope "regular" and the "configure" action can only be 
+  used when the interaction is invoked with a token containing the "special" scope. 
+  Scopes are not identical to roles but are often associated with them; 
+  for example, perhaps only those in an administrative role can perform "special" interactions.
+  Tokens can have more than one scope.  
+  In this example, an administrator would
+  probably be issued tokens with both the "regular" and "special" scopes while regular
+  users would only be issued tokens with the "regular" scope.
+  </p>
+<pre class="example">
+    ...
+    "security": [{
+        "scheme": "oauth2",
+        ...
+        "scopes": ["regular","special"]
+    }],
+    "properties": {
+        "status": {
+            ...
+            "forms": [
+                {
+                    "href": "https://scopes.example.com/status",
+                    "contentType": "application/json",
+                    "scopes": ["regular"]
+                }
+            ]
+        }
+    },
+    "action": {
+        "configure": {
+            ...
+            "forms": [
+                {
+                    "href": "https://scopes.example.com/configure",
+                    "contentType": "application/json",
+                    "scopes": ["special"]
+                }
+            ]
+        }
+    },
+    ...
+</pre>
 
   </section> <!-- end of id="security-serialization-json"-->
 
