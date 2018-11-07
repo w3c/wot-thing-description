@@ -67,7 +67,7 @@ function load(ep, ttl) {
 function transform(ep, txt, main, arg) {
     sttl.connect(ep);
 
-    let templates = txt.split('\n\n');
+    let templates = txt.split('---');
     sttl.clear();
     templates.forEach(t => sttl.register(t));
 
@@ -103,4 +103,4 @@ load(updateEndpoint, null).then(() => {
     }).catch((e) => {
         throw new Error('Could not load RDF data: ' + e.message);
     });
-})
+});
