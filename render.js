@@ -16,9 +16,8 @@ function sectionOrURI(uri, label) {
 				  
 	let isXSD = uri.startsWith('http://www.w3.org/2001/XMLSchema#');
 	if (isXSD) {
-		let isAnyType = uri.endsWith('#anyType');
-		if (isAnyType)
-			return 'http://www.w3.org/TR/2012/REC-xmlschema11-1-20120405/structures.html#key-anyType';
+		if (uri.endsWith('#anyType'))
+			return null;
 		else
 			return 'http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#' + label;
 	}

@@ -73,6 +73,12 @@
                 , publisher: "OpenAPI Initiative, Linux Foundation"
                 , date: "7 December 2017"
                 }
+              , "SemVer": {
+                  title:    "Semantic Versioning 2.0.0"
+                , href:     "https://semver.org/"
+                , authors:  ["Tom Preston-Werner"]
+                , date: "26 December 2017"
+                }
               , "MEDIATYPES": {
                   title:    "Media Types"
                 , href:     "https://www.iana.org/assignments/media-types/media-types.xhtml"
@@ -260,10 +266,10 @@
     },
     "events":{
         "overheating":{
-            "type": "string",
+            "data": {"type": "string"},
             "forms": [{
                 "href": "https://mylamp.example.com/oh",
-                "subProtocol": "LongPoll"
+                "subprotocol": "longpoll"
             }]
         }
     }
@@ -300,11 +306,13 @@
   requiring a username and password for access.
   In combination with the use of the HTTP protocol this indicates the use of 
   HTTP Basic Authentication.
-  Specification of a security scheme at the top level as in this example 
-  indicates that it is required for every resource.
+  Specification of at least one security scheme at the top level is mandatory,
+  and gives the default access requirements for every resource.
   However, security schemes can also be specified per-interaction or per-form,
   with lower-level configurations overriding higher-level ones,
   allowing for the specification of fine-grained access control.
+  It is also possible to use a special <code>nosec</code> security scheme to
+  indicate that no access control mechanisms are used.
   Examples are provided later.
   </p>
   <p>
@@ -312,11 +320,11 @@
   that are not explicitly described. 
   For example, the media type of the 
   exchange format of the interactions is assumed to be JSON 
-  (=<code>mediaType</code>) and the <code>Property</code> <i>status</i> 
-  resource is not writable as well as not observable. 
+  (=<code>contentType</code>) and the <code>Property</code> <i>status</i> 
+  resource is not <code>readOnly</code> as well as not <code>observable</code>. 
   Specifically, 
   the TD specification defines vocabulary terms 
-  (<code>writable</code>, <code>observable</code>, <code>mediaType</code>) 
+  (<code>readOnly</code>, <code>observable</code>, <code>contentType</code>) 
   that have default values. 
   If these vocabulary terms are not explicitly used in a Thing Description 
   instance, 
@@ -344,13 +352,13 @@
     "security": [{"scheme": "basic", "in": "header"}],
     "properties": {
         "status": {
-            "writable": false,
+            "readOnly": false,
             "observable": false,
             "type": "string",
             "forms": [{
                 "href": "https://mylamp.example.com/status",
                 "http:methodName": "GET",
-                "mediaType": "application/json"
+                "contentType": "application/json"
             }]
         }
     },
@@ -359,17 +367,17 @@
             "forms": [{
                 "href": "https://mylamp.example.com/toggle",
                 "http:methodName": "POST",
-                "mediaType": "application/json"
+                "contentType": "application/json"
             }]
         }
     },
     "events": {
         "overheating": {
-            "type": "string",
+            "data": {"type": "string"},
             "forms": [{
                 "href": "https://mylamp.example.com/oh",
-                "subProtocol": "LongPoll",
-                "mediaType": "application/json"
+                "subprotocol": "longpoll",
+                "contentType": "application/json"
             }]
         }
     }
@@ -602,7 +610,7 @@
   <!-- should this be "the type" or "the elements of"? -->
   <p><span class="rfc2119-assertion" id="td-objects">
   The type of the fields <code>properties</code>, <code>actions</code>, 
-  and <code>events</code> MUST be a JSON object.
+  <code>events</code>, and <code>version</code> MUST be a JSON object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-arrays">
@@ -624,6 +632,7 @@
     "support": "https://servient.example.com/contact",
     "security": [...],
     "base": "https://servient.example.com/",
+    "version" : {...},
     "properties": {...},
     "actions": {...},
     "events": {...},
@@ -645,6 +654,7 @@
     "support": "https://servient.example.com/contact",
     "security": [...],
     "base": "https://servient.example.com/",
+    "version" : {...},
     "properties": {...},
     "actions": {...},
     "events": {...},
@@ -691,7 +701,7 @@
     ...
     "properties": {
         "on": {
-            "label": "On/Off",
+            "title": "On/Off",
             "type": "boolean",
             "forms": [...]
         },
@@ -732,7 +742,7 @@
   When a Thing Description instance is processed and interpreted by 
   a JSON-LD 1.1 processor, 
   each <code>property</code> MUST contain the vocabulary terms 
-  <code>observable</code> and <code>writable</code> due to the 
+  <code>observable</code> and <code>readOnly</code> due to the 
   <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>
   of Linked Data.
   </span>
@@ -745,7 +755,7 @@
   <p>
   A snippet of a JSON-LD 1.1 processable TD serialization including
   semantic annotations and the
-  default values of <code>observable</code> and <code>writable</code> 
+  default values of <code>observable</code> and <code>readOnly</code> 
   based on the class <a href="#property" class="sec-ref"><code>Property</code></a>
   is given as follows:
   </p>
@@ -754,14 +764,14 @@
     "properties": {
         "on": {
             "@type": "iot:SwitchToggle",
-            "label": "On/Off",
-            "writable": false,
+            "title": "On/Off",
+            "readOnly": true,
             "observable": false,
             "type": "boolean",
             "forms": [...]
         },
         "status": {
-            "writable": false,
+            "readOnly": true,
             "observable": false,
             "type": "object",
             "properties": {
@@ -831,8 +841,8 @@
 <pre class="example">
     ...
     "actions": {
-        "fade" {
-            "label": "Fade in/out",
+        "fade" : {
+            "title": "Fade in/out",
             "description": "Smooth fade in and out animation.",
             "input": {
                 "type": "object",
@@ -884,10 +894,14 @@
   MUST be serialized as a JSON key within an Event object.
   </span></p>
 
-  <p><span class="rfc2119-assertion" id="td-event-objects">
-  The type of the fields <code>properties</code> and <code>items</code> 
-  MUST be serialized as a JSON object.
-  </span></p>
+  <p><span class="rfc2119-assertion" id="td-action-objects">
+    The type of the fields <code>subscription</code>, <code>data</code>, and <code>cancellation</code>
+    MUST be serialized as a JSON object.
+    </span></p>
+  
+    <p>The keys of <code>subscription</code>, <code>data</code>, and <code>cancellation</code>
+    rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>.
+    </p>
 
   <p><span class="rfc2119-assertion" id="td-event-arrays">
   The type of the fields <code>forms</code>, <code>required</code>, 
@@ -900,9 +914,9 @@
   </p>
 <pre class="example">
     ...
-    "event": {
+    "events": {
         "overheated": {
-            "type": "object",
+            "data" : {"type": "object"},
             "properties": {
                 "temperature": { "type": "number" }
             },
@@ -937,11 +951,11 @@
   See also [[!WOT-PROTOCOL-BINDING]].
   </p>
 
-  <p><span class="rfc2119-assertion" id="td-form-mediatype">
+  <p><span class="rfc2119-assertion" id="td-form-contenttype">
   When a Thing Description instance is processed and interpreted 
   by a JSON-LD 1.1 processor, 
   each <code>forms</code> (array) entry 
-  MUST contain a <code>mediaType</code> 
+  MUST contain a <code>contentType</code> 
   due to the
   <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>
   of Linked Data.
@@ -957,13 +971,46 @@
     ...
     "forms": [{
         "href" : "http://mytemp.example.com:5683/temp",
-        "mediaType": "application/json",
+        "contentType": "application/json",
         "http:methodName": "POST",
-        "rel": "writeProperty",
+        "op": "writeproperty",
         "security": [{"scheme":"basic", "in":"header"}]
     }]
     ...
 </pre>
+
+    <p><code>href</code> may also carry an URI that contains dynamic variables such as p and d in http://192.168.1.25/left?p=2&d=1. It that case the URI can be defined as template as defined in [[!RFC6570]]: http://192.168.1.25/left{?p,d}</p>
+
+    <p><span class="rfc2119-assertion" id="td-events">
+        In such a case these variables in the URI MUST be collected
+        in the JSON-object based <code>uriVariables</code> field
+        with the associated (unique) variables names as JSON keys.
+    </span></p>
+
+    <p>The keys of <code>uriVariables</code> 
+        rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>.
+    </p>
+
+
+    <p>A TD snippet using URI template and <code>uriVariables</code> is given below:</p>
+
+    <pre class="example">
+        ...
+        "actions": {
+            "LeftDown": {
+              "uriVariables": {
+                "p" : { "type": "integer", "minimum": 0, "maximum": 16, "@type": "example:SomeKindOfAngle" },
+                "d" : { "type": "integer", "minimum": 0, "maximum": 1, "@type": "example:Direction" },
+                }
+              },
+              "form": [{
+                "http:method": "GET",
+                "href" : "http://192.168.1.25/left{?p,d}"
+              }]
+            }
+        ...
+    </pre>
+
 
     </section> <!-- end of id="form-serialization-json"-->
 
@@ -983,7 +1030,7 @@
     "links": [{
         "href": "https://servient.example.com/things/lampController",
         "rel": "controlledBy",
-        "mediaType": "application/td+json"
+        "type": "application/td+json"
     }]
     ...
 </pre>
@@ -1041,36 +1088,27 @@
 </pre>
 
     <p>
-    Security definitions can be given at more than one level.
-    In this case, definitions at the lower levels override (completely replace)
-    the definitions at the higher level.
-    </p>
-
-    <p>
     Security configuration is mandatory. 
     <span class="rfc2119-assertion" id="td-security-mandatory">
-    Every form in a Thing MUST have a security configuration either provided 
-    in the form itself,
-    at the interaction level directly above it 
-    (if security is not configured in the form),
-    or at the Thing level 
-    (if security is not configured in either the form or at the
-    interaction level).
+    Every Thing MUST have at least one security scheme specified at the top level. 
     </span>
-    In the vocabulary defined above,
-    note that <code>security</code> is marked as non-mandatory.
-    However, this is only true locally (at a specific level),
-    and only if the security is configured at a higher or
-    lower level.
-    In other words, a security
-    configuration must be provided at <em>some</em> level for each form.
+    <span class="rfc2119-assertion" id="td-security-overrides">
+    Security schemes MAY also be specified at the interaction and form levels.
+    In this case, definitions at the lower levels override (completely replace)
+    the definitions at the higher level. 
+    </span>
     </p>
     <p>
-    Security configuration is considered binding.
+    Security configuration must accurately reflect the requirements of the Thing.
     <span class="rfc2119-assertion" id="td-security-binding">
-    The security configuration metadata provided in a Thing Description 
-    MUST accurately reflect the
-    security requirements of the Thing.
+    If a Thing requires a specific access mechanism for a resource, that 
+    mechanism MUST be specified in the Thing Description's security scheme configuration 
+    for that resource. 
+    </span>  
+    <span class="rfc2119-assertion" id="td-security-no-extras">
+    If a Thing does not require a specific access mechanism for a resource, that 
+    mechanism MUST NOT be specified in the Thing Description's security scheme configuration 
+    for that resource. 
     </span>  
     Some protocols can ask for authentication dynamically.  
     If a protocol asks for
@@ -1120,7 +1158,7 @@
             ...
             "forms": [{
                 "href": "https://mylamp.example.com/status",
-                "mediaType": "application/json",
+                "contentType": "application/json",
             }]
         }
     },
@@ -1129,7 +1167,7 @@
             ...
             "forms": [{
                 "href": "https://mylamp.example.com/toggle",
-                "mediaType": "application/json"
+                "contentType": "application/json"
             }]
         }
     },
@@ -1138,7 +1176,7 @@
             ...
             "forms": [{
                 "href": "https://mylamp.example.com/oh",
-                "mediaType": "application/json",
+                "contentType": "application/json",
                 "security": [{"scheme": "nosec"}] 
             }]
         }
@@ -1170,17 +1208,17 @@
             "forms": [
                 {
                     "href": "https://mylamp.example.com/status",
-                    "mediaType": "application/json",
+                    "contentType": "application/json",
                     "security": [{"scheme": "basic"}]
                 },
                 {
                     "href": "https://mylamp.example.com/status",
-                    "mediaType": "application/json",
+                    "contentType": "application/json",
                     "security": [{"scheme": "digest"}]
                 },
                 {
                     "href": "coaps://mylamp.example.com:5683/status",
-                    "mediaType": "application/json",
+                    "contentType": "application/json",
                     "security": [{"scheme": "apikey"}]
                 }
             ]
@@ -1190,6 +1228,38 @@
 </pre>
 
   </section> <!-- end of id="security-serialization-json"-->
+
+
+  <section id="version-serialization-json">
+    <h2><code>version</code></h2>
+
+    <p><span class="rfc2119-assertion" id="td-version">
+        The mandatory vocabulary term
+        as defined in the class <a href="#versioning" class="sec-ref"><code>Versioning</code></a>,
+        MUST be serialized as a JSON key.
+    </span></p>
+
+    <p>The recommended version identification pattern value is to rely on the semantic versioning policy: [[?SemVer]]</p>
+
+    <p>A TD snippet based on the defined fields is given below:</p>
+    <pre class="example">
+        ...
+        "version": {"instance":"1.2.1"}
+        ...
+    </pre>
+
+    <p><span class="rfc2119-assertion" id="td-version">
+        The version container MAY be used to provide additional application and/or device specific version information based on terms from non-TD namespaces. 
+    </span></p>
+
+    <p>A TD snippet based on such additional version metadata from a xyz context is given below:</p>
+    <pre class="example">
+        ...
+        "version": {"instance":"1.2.1", "xyz:firmware": "0.9.1", "xyz:hardware": "1.0"}
+        ...
+    </pre>
+
+    </section> <!-- end of id="version-json"-->
 
   </section> <!-- end of id="serialization-json"-->
 
@@ -1233,15 +1303,15 @@
   instance is a (simple) JSON parser.
   </p>
 
-  <p><span class="rfc2119-assertion" id="td-writable-observable-default">
-  If the key terms <code>writable</code> and/or <code>observable</code> 
+  <p><span class="rfc2119-assertion" id="td-readOnly-observable-default">
+  If the key terms <code>readOnly</code> and/or <code>observable</code> 
   are not present within a <code>properties</code> definition,
   the default value defined in <a href="#sec-vocabulary-definition"></a>
   MUST be assumed.
   </span></p>
   
   <p><span class="rfc2119-assertion" id="td-media-type-default">
-  If the <code>mediaType</code> key term is not present within a 
+  If the <code>contentType</code> key term is not present within a 
   <code>forms</code> definition, the default value as defined in
   <a href="#sec-vocabulary-definition"></a>
   MUST be assumed.   
@@ -1343,7 +1413,7 @@
     "events": {
         "overheating": {
             "description" : "Lamp reaches a critical temperature (overheating)",
-            "type": "string",
+            "data": {"type": "string"},
             "forms": [{
                 "href": "coaps://mylamp.example.com/oh"
             }]
@@ -1366,12 +1436,12 @@
         "status": {
             "@type" : "iot:SwitchStatus",
             "description" : "Shows the current status of the lamp",
-            "writable": false,
+            "readOnly": true,
             "observable": false,
             "type": "string",
             "forms": [{
                 "href": "coaps://mylamp.example.com/status",
-                "mediaType": "application/json"
+                "contentType": "application/json"
             }]
         }
     },
@@ -1381,7 +1451,7 @@
             "description" : "Turn on or off the lamp",
             "forms": [{
                 "href": "coaps://mylamp.example.com/toggle",
-                "mediaType": "application/json"
+                "contentType": "application/json"
             }]
         }
     },
@@ -1389,10 +1459,10 @@
         "overheating": {
             "@type" : "iot:TemperatureAlarm",
             "description" : "Lamp reaches a critical temperature (overheating)",
-            "type": "string",
+            "data": {"type": "string"},
             "forms": [{
                 "href": "coaps://mylamp.example.com/oh",
-                "mediaType": "application/json"
+                "contentType": "application/json"
             }]
         }
     }
@@ -1517,65 +1587,27 @@
 
   <section id="changes" class="appendix">
   <h1>Recent Specification Changes</h1>
-  <h2 id="changes2">Changes from Third Public Working Draft</h2>
+  <h2 id="changes3">Changes from Third Public Working Draft</h2>
   <ul>
-    <li>Security and Privacy Considerations section
-    (Section <a href="#sec-security-consideration"></a>) added.</li>
+    <li>Security and Privacy Considerations section (Section <a href="#sec-security-consideration"></a>) added.</li>
+    <li>Make it clear that the top-level <a href="#security-serialization-json"><code>security</code></a> declaration is mandatory.</li>
+    <li><a href="#dataschema">DataSchema</a> class now has an optional <code>unit</code> field to provide unit information.</li>
+    <li><a href="#link">Link</a> class's <code>mediaType</code> field was renamed to <code>type</code>, and the field was given an improved description.</li>
+    <li><a href="#form">Form</a> class's <code>mediaType</code> field was renamed to <code>contentType</code> to reflect that it can assign not only a media type but also its parameter settings.</li>
+    <li><a href="#action">Action</a> class now has optional <code>safe</code> and <code>idempotent</code> fields to provide information as to the safeness and idempotency of the action.</li>
+    <li><a href="#thing">Thing</a> class now has optional <code>created</code> and <code>lastModified</code> fields to provide information as to when the TD instance was created (in the case of <code>created</code>) or was last modified (in the case of <code>lastModified</code>).</li>
+    <li>Property interactions are now both readable and writable by default. This can be overridden through <code>readOnly</code> and <code>writeOnly</code> field settings available in <a href="#dataschema">DataSchema</a> class.</li>
+    <li><a href="#interactionpattern">InteractionPattern</a> class's <code>label</code> field was renamed as <code>title</code> to be consistent with JSON Schema.</li>
+    <li><a href="#form">Form</a> class's <code>rel</code> field was renamed as <code>op</code>.</li>
+    <li><a href="#event">Event</a> class now has optional <code>subscription</code> and <code>cancellation</code> 
+fields that define data that needs to be passed upon subscription and cancellation, respectively.</li>
+    <li><a href="#interactionpattern">InteractionPattern</a> class now has an optional <code>uriVariables</code> field where URI template variables can be defined.</li>
+    <li><a href="#thing">Thing</a> class now has an optional <code>version</code> field for providing version information.</li>
   </ul>
 
   <h2 id="changes2">Changes from Second Public Working Draft</h2>
-  <ul>
-    <li>The default serialization format for Thing Description is now 
-        plain JSON. 
-        Thing Description instances still MAY contain JSON-LD keys such 
-        as <code>@context</code> and <code>@type</code> for facilitating semantic evaluation of TDs.
-        (see Section <a href="#json-serializiation-section"></a>)</li>
-    <li>With regards to JSON-LD, this Thing Description draft uses JSON-LD 1.1 
-        instead of JSON-LD 1.0. With this transition, 
-        all vocabulary terms defined in vocabulary definition sections 
-        now have a JSON key representation.
-        Previously, 
-        there were vocabulary terms represented as key values in TDs.</li>
-    <li>In addition to Thing Description core vocabulary, 
-        Thing Description now has the data schema vocabulary reflecting a 
-        subset of JSON Schema terms as linked data representation 
-        (see Section <a href="#sec-data-schema-vocabulary-definition"></a>) and 
-        the security vocabulary 
-        (see Section <a href="#sec-security-vocabulary-definition"></a>)
-        for defining security based conditions.</li>
-    <li>A security field is available at three levels 
-        (Thing, Interaction Patterns and Forms) for providing security 
-        requirements for accessing resources. 
-        Security configuration is mandatory for each <code>form</code>.</li>
-    <li>Some vocabulary terms (e.g., <code>writable</code>, <code>observable</code>, <code>mediaType</code>) 
-        now have default values that are used by Thing Description processors 
-        when they are absent in TD instances 
-        (see Section <a href="#sec-core-vocabulary-definition"></a>).
-        Note that some security vocabulary terms can also have such values
-        (see Section <a href="#sec-security-vocabulary-definition"></a>).</li>
-    <li>Things now have a mandatory field <code>id</code> for uniquely identifying a Thing, 
-        and an optional field <code>support</code> to provide information about 
-        Thing Description maintainer.</li>
-    <li>Interaction patterns have an optional <code>label</code> field providing text 
-        for such uses as user interfaces.</li>
-    <li>The <code>rel</code> attribute for <code>form</code> now has 
-        enumerated allowable values specified.</li>
-    <li>JSON-LD @context key value to represent the Thing description context file 
-        now is <code>http://www.w3.org/ns/td</code>.</li>
-    <li>Added a section about media types used for exchanging TDs.
-        (see Section <a href="#media-type-section"></a>)</li>
-    <li>Added a section about implementation notes that provide useful 
-        clarifications to implementors.
-        (see Section <a href="#Implementation-Note-section"></a>)</li>
-    <li>A JSON Schema is provided in an appendix section to facilitate 
-        the validation of Thing Description instances. 
-        (see Section <a href="#json-schema-4-validation"></a>)</li>
-</li>
-  </ul>
-
-  <h2 id="changes1">Changes from First Public Working Draft</h2>
-  <p>Changes from First Public Working Draft are described in the 
-  <a href="https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/#changes">Second Public Working Draft</a>
+  <p>Changes from Second Public Working Draft are described in the 
+  <a href="https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#changes">Third Public Working Draft</a>
   </p>
 
   </section>
