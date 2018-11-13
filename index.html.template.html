@@ -232,7 +232,10 @@
 {
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
-    "security": [{"scheme": "basic"}],
+    "securityDefinitions": {
+        "basic_sc": {"scheme": "basic"}
+    },
+    "security": ["basic_sc"],
     "properties": {
         "status" : {
             "type": "string",
@@ -284,8 +287,11 @@
   <p>
   This example also specifies the <code>basic</code> security scheme, 
   requiring a username and password for access.
-  In combination with the use of the HTTP protocol this indicates the use of 
-  HTTP Basic Authentication.
+  Note that a security scheme is first given a name in a 
+  <code>securityDefinition</code> and then activated by specifying
+  that name in a <code>security</code> section.
+  In combination with the use of the HTTP protocol this example
+  demonstrates the use of HTTP Basic Authentication.
   Specification of at least one security scheme at the top level is mandatory,
   and gives the default access requirements for every resource.
   However, security schemes can also be specified per-interaction or per-form,
@@ -293,7 +299,7 @@
   allowing for the specification of fine-grained access control.
   It is also possible to use a special <code>nosec</code> security scheme to
   indicate that no access control mechanisms are used.
-  Examples are provided later.
+  Additional examples will be provided later.
   </p>
   <p>
   The TD in Example 1 reflects some additional defined default assumptions 
@@ -329,7 +335,10 @@
     "@context": "http://www.w3.org/ns/td",
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
-    "security": [{"scheme": "basic", "in": "header"}],
+    "securityDefinitions": {
+        "basic_sc": {"scheme": "basic", "in": "header"}
+    },
+    "security": ["basic_sc"],
     "properties": {
         "status": {
             "readOnly": false,
@@ -610,6 +619,7 @@
     "name": "MyThing",
     "description": "Additional (human) readable information of the Thing.",
     "support": "https://servient.example.com/contact",
+    "securityDefinitions": {...},
     "security": [...],
     "base": "https://servient.example.com/",
     "version" : {...},
@@ -632,6 +642,7 @@
     "name": "MyThing",
     "description": "Additional (human) readable information of the Thing.",
     "support": "https://servient.example.com/contact",
+    "securityDefinitions": {...},
     "security": [...],
     "base": "https://servient.example.com/",
     "version" : {...},
@@ -948,15 +959,21 @@
 
   <p>A TD snippet based on the defined fields is given below:</p>
 <pre class="example">
+{
+  ...
+  "securityDefinitions": {
+      "basic_sc": {"scheme":"basic", "in":"header"}
+  },
     ...
     "forms": [{
         "href" : "http://mytemp.example.com:5683/temp",
         "contentType": "application/json",
         "http:methodName": "POST",
         "op": "writeproperty",
-        "security": [{"scheme":"basic", "in":"header"}]
+        "security": ["basic_sc"]
     }]
     ...
+}
 </pre>
 
     <p><code>href</code> may also carry an URI that contains dynamic variables such as p and d in http://192.168.1.25/left?p=2&d=1. It that case the URI can be defined as template as defined in [[!RFC6570]]: http://192.168.1.25/left{?p,d}</p>
@@ -1031,14 +1048,22 @@
     The following TD snippet shows a simple security configuration specifying
     basic username/password authentication in the header.
     The value of <code>in</code> given is actually the default value of
-    <code>header</code>.
+    <code>header</code>.  
+   First, a named security configuration must be given
+   in a <code>securityDefinitions</code> block.
+   Second, that definition must be activated in a <code>security</code>
+   block.
     </p>
 <pre class="example" id="security-basic-example">
    ...
-   "security": [{
-       "scheme": "basic",
-       "in": "header"
-   }]
+   "securityDefinitions": {
+       "basic_sc": {
+           "scheme": "basic",
+           "in": "header"
+       }
+   },
+   ...
+   "security": ["basic_sc"]
    ...
 </pre>
 
@@ -1052,18 +1077,20 @@
     </p>
 <pre class="example" id="security-digest-example">
     ...
-    "security": [
-        {
+    "securityDefinitions": {
+        "basic_sc": {
            "scheme": "digest",
            "proxyUrl": "https://portal.example.com/"
         },
-        {
+        "bearer_sc": {
            "scheme": "bearer",
            "format": "jwt",
            "alg": "ES256",
            "authorizationUrl": "https://servient.example.com:8443/"
         }
-    ]
+    },
+    ...
+    "security": ["basic_sc","bearer_sc"],
     ...
 </pre>
 
@@ -1109,7 +1136,8 @@
     "name": "MyThing",
     "description": "Additional (human) readable information of the Thing.",
     "support": "https://servient.example.com/contact",
-    "security": [{"scheme": "nosec"}],
+    "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+    "security": ["nosec_sc"],
     "properties": {...},
     "actions": {...},
     "events": {...},
@@ -1132,7 +1160,12 @@
 <pre class="example">
 {
     ...
-    "security": [{"scheme": "basic"}],
+    "securityDefinitions": {
+        "nosec_sc": {"scheme": "nosec"},
+        "basic_sc": {"scheme": "basic"}
+    },
+    "security": ["basic_sc"],
+    ...
     "properties": {
         "status": {
             ...
@@ -1157,7 +1190,7 @@
             "forms": [{
                 "href": "https://mylamp.example.com/oh",
                 "contentType": "application/json",
-                "security": [{"scheme": "nosec"}] 
+                "security": ["nosec_sc"] 
             }]
         }
     }
@@ -1165,7 +1198,7 @@
 </pre>
 
       <p>
-      Security definitions can also can be given for different elements
+      Security configurations can also can be specified for different elements
       at the same level.  This may be required for devices that support
       multiple protocols, for example CoAP and HTTP, with support for different
       security mechanisms.  This is also useful when alternative authentication
@@ -1181,6 +1214,11 @@
       they would all need to be satisfied to allow access to the resource.
       </p>
 <pre class="example">
+    "securityDefinitions": {
+        "basic_sc": {"scheme": "basic"},
+        "digest_sc": {"scheme": "digest"},
+        "apikey_sc": {"scheme": "apikey"}
+    },
     ...
     "properties": {
         "status": {
@@ -1189,17 +1227,17 @@
                 {
                     "href": "https://mylamp.example.com/status",
                     "contentType": "application/json",
-                    "security": [{"scheme": "basic"}]
+                    "security": ["basic_sc"]
                 },
                 {
                     "href": "https://mylamp.example.com/status",
                     "contentType": "application/json",
-                    "security": [{"scheme": "digest"}]
+                    "security": ["digest_sc"]
                 },
                 {
                     "href": "coaps://mylamp.example.com:5683/status",
                     "contentType": "application/json",
-                    "security": [{"scheme": "apikey"}]
+                    "security": ["apikey_sc"]
                 }
             ]
         }
@@ -1372,7 +1410,8 @@
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "description" : "MyLampThing uses JSON-LD 1.1 serialization",
-    "security": [{"scheme": "psk"}],
+    "securityDefinitions": {"psk_sc":{"scheme": "psk"}},
+    "security": ["psk_sc"],
     "properties": {
         "status": {
             "description" : "Shows the current status of the lamp",
@@ -1411,7 +1450,8 @@
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "description" : "MyLampThing uses JSON-LD 1.1 serialization",
-    "security": [{"scheme": "psk"}],
+    "securityDefinitions": {"psk_sc":{"scheme": "psk"}},
+    "security": ["psk_sc"],
     "properties": {
         "status": {
             "@type" : "iot:SwitchStatus",
