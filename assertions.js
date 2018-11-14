@@ -165,7 +165,12 @@ function merge_assertions(done_callback) {
     plan_tr.append('<td>'+a_text+'</td>');
     plan_tr.append('<td></td>');
     plan_tr.append('<td></td>');
-    plan_tr.append('<td></td>');
+    let pass_count = merged_results.get(a);
+    if (undefined != pass_count) {
+       plan_tr.append('<td>'+pass_count+'</td>');
+    } else {
+       plan_tr.append('<td></td>');
+    }
     plan_tr.append('<td></td>');
     plan_tr.append('<td></td>');
 
