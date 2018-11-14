@@ -6,8 +6,10 @@ const ts_htmlfile = "testing/testspec.html";
 const plan_htmlfile = "testing/plan.html";
 
 // Dependencies
-var fs = require('fs');
-var cheerio = require('cheerio');
+const path = require('path');
+const fs = require('fs');
+const cheerio = require('cheerio');
+const csvtojson=require("csvtojson"); // V2
 
 // Read in test specs and store as a map
 const ts_raw = fs.readFileSync(ts_htmlfile, 'UTF-8');
@@ -46,18 +48,72 @@ src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
 });
 // console.log(assertions);
 
+// Get all results, convert from CSV to JSON
+const results_dir = path.join(__dirname, 'testing', 'results');
+var results = new Map();
+var results_files = fs.readdirSync(results_dir);
+function get_results(i,done_callback) {
+    var file = path.join(results_dir, results_files[i]);
+    console.log("get_results",i,file);
+    if (file.match(/.csv$/g)) {
+        console.log("processing data in",file);
+        var basename = path.basename(file,'.csv');
+        var filedata = fs.readFileSync(file).toString();
+        csvtojson({"noheader":true})
+            .fromString(filedata)
+            .then((data)=> {
+                results.set(basename,data);
+                if (results_files.length - 1 == i) {
+                    done_callback(results);
+                } else {
+                    get_results(i+1,done_callback);
+                }
+            })
+    } else {
+        if (results_files.length - 1 == i) {
+            done_callback(results);
+        } else {
+            get_results(i+1,done_callback);
+        }
+    }
+}
+var merged_results = new Map();
+function cleanInt(x) {
+   x = Number(x);
+   return x >= 0 ? Math.floor(x) : Math.ceil(x);
+}
+function merge_results(done_callback) {
+    for (let [impl,data] of results.entries()) {
+        // console.log(impl,data);
+        for (let i=0; i<data.length; i++) {
+           let id_name = data[i]["field1"];
+           let id_count = data[i]["field2"];
+           // console.log(impl,id_name,id_count);
+           let current_count = merged_results.get(id_name);
+           if (undefined != current_count) {
+               merged_results.set(id_name,current_count + cleanInt(id_count));
+           } else {
+               merged_results.set(id_name,cleanInt(id_count));
+           }
+        }
+    }
+    done_callback(merged_results);
+}
+
 // Clear results template
-fs.writeFileSync('testing/results/template.csv','');
+var results_template = path.join(results_dir,'template.csv');
+fs.writeFileSync(results_template,'');
 
 // Merge assertions and test specs into plan
 plan_dom('head>title').append(src_title);
 // plan_dom('body>h2').append(src_title);
 // plan_dom('body').append('<dl></dl>');
-for (a in assertions) {
+function merge_assertions(done_callback) {
+  for (a in assertions) {
     console.log("Processing assertion "+a);
 
     // Results template
-    fs.appendFileSync('testing/results/template.csv', '"'+a+'",0\n');
+    fs.appendFileSync(results_template, '"'+a+'",0\n');
 
     // Appendix
     plan_dom('#testspecs').append('<dt></dt>');
@@ -126,13 +182,32 @@ for (a in assertions) {
     } else {
         plan_li.append(a_spec);
     }
+  }
+  done_callback();
 }
 
-// Output plan
-fs.writeFile(plan_htmlfile, plan_dom.html(), function(error) {
-    if (error) {
-        return console.log(err);
-    } else {
-        console.log("Test plan output to "+plan_htmlfile);
+get_results(0,function(results) {
+    console.log("Results: {\n");
+    for (let [key,data] of results.entries()) {
+        console.log(key," => ",data);
     }
-}); 
+    console.log("}");
+    merge_results(function(merged_results) {
+      console.log("Merged Results: {\n");
+      for (let [key,data] of merged_results.entries()) {
+        console.log(key," => ",data);
+      }
+      console.log("}");
+      merge_assertions(function() {
+        // Output plan
+        fs.writeFile(plan_htmlfile, plan_dom.html(), function(error) {
+            if (error) {
+                return console.log(err);
+            } else {
+                console.log("Test plan output to "+plan_htmlfile);
+            }
+        }); 
+      }); 
+    });
+});
+
