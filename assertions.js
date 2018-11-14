@@ -46,12 +46,18 @@ src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
 });
 // console.log(assertions);
 
+// Clear results template
+fs.writeFileSync('testing/results/template.csv','');
+
 // Merge assertions and test specs into plan
 plan_dom('head>title').append(src_title);
 // plan_dom('body>h2').append(src_title);
 // plan_dom('body').append('<dl></dl>');
 for (a in assertions) {
     console.log("Processing assertion "+a);
+
+    // Results template
+    fs.appendFileSync('testing/results/template.csv', '"'+a+'",0\n');
 
     // Appendix
     plan_dom('#testspecs').append('<dt></dt>');
