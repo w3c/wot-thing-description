@@ -21,7 +21,8 @@ Features not listed will be treated as unimplemented.
 If you want to mention a feature but have not implemented it
 record it with a zero.
 If you have tested a feature in multiple
-implementations either check in additional files.
+implementations check in one file per implementation, using as a filename
+the id given in the template for the implementations' description.
 Use a convention
 like corporation-implementation.csv for the filename.
 The filename should also be used as an id in the template
