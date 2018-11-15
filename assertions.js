@@ -3,13 +3,14 @@
 const src_htmlfile = "index.html";
 const template_htmlfile = "testing/template.html";
 const ts_htmlfile = "testing/testspec.html";
+const ea_htmlfile = "testing/extra-assertions.html";
 const plan_htmlfile = "testing/plan.html";
 
 // Dependencies
 const path = require('path');
 const fs = require('fs');
 const cheerio = require('cheerio');
-const csvtojson=require("csvtojson"); // V2
+const csvtojson=require('csvtojson'); // V2
 
 // Read in test specs and store as a map
 const ts_raw = fs.readFileSync(ts_htmlfile, 'UTF-8');
@@ -18,13 +19,13 @@ var testspec = {};
 ts_dom('span[class="testspec"]').each(function(i,elem) {
     let id = ts_dom(this).attr('id');
     if (undefined === id) {
-        console.log("Warning: testspec without id:",
-                    ts_dom(this).html());
+        console.log("Warning: testspec without id:\n",ts_dom(this).html());
     } else {
+        // console.log("Adding testspec for",id,":\n",ts_dom(this).html());
         testspec[id] = ts_dom(this);
     }
 });
-// console.log(testspec);
+// console.log("test specs:",ts_dom.html());
 
 // Initialize plan dom with template
 const template_raw = fs.readFileSync(template_htmlfile, 'UTF-8');
@@ -46,7 +47,6 @@ src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
         assertions[id] = src_dom(this);
     }
 });
-// console.log(assertions);
 
 // Get all results, convert from CSV to JSON
 const results_dir = path.join(__dirname, 'testing', 'results');
@@ -54,9 +54,8 @@ var results = new Map();
 var results_files = fs.readdirSync(results_dir);
 function get_results(i,done_callback) {
     var file = path.join(results_dir, results_files[i]);
-    console.log("get_results",i,file);
     if (file.match(/.csv$/g)) {
-        console.log("processing data in",file);
+        console.log("processing results in",file);
         var basename = path.basename(file,'.csv');
         var filedata = fs.readFileSync(file).toString();
         csvtojson()
@@ -177,11 +176,11 @@ function merge_assertions(done_callback) {
     let plan_dd = plan_dom('dd.'+a);
     plan_dd.append(a_text);
     a_spec = testspec[a];
-    plan_dd.append('<ul><li></li></ul>');
-    let plan_li = plan_dom('dd.'+a+'>ul>li:last-child');
+    plan_dd.append('<br/><span></span>');
+    let plan_li = plan_dom('dd.'+a+'>span:last-child');
     if (undefined === a_spec) {
         console.log("  WARNING: no test spec");
-        plan_li.append('<strong>NO TEST SPECIFICATION</strong>');
+        plan_li.append('<p><strong>NO TEST SPECIFICATION</strong></p>');
     } else {
         plan_li.append(a_spec);
     }
@@ -190,17 +189,21 @@ function merge_assertions(done_callback) {
 }
 
 get_results(0,function(results) {
+/*
     console.log("Results: {\n");
     for (let [key,data] of results.entries()) {
         console.log(key," => ",data);
     }
     console.log("}");
+*/
     merge_results(function(merged_results) {
+/*
       console.log("Merged Results: {\n");
       for (let [key,data] of merged_results.entries()) {
         console.log(key," => ",data);
       }
       console.log("}");
+*/
       merge_assertions(function() {
         // Output plan
         fs.writeFile(plan_htmlfile, plan_dom.html(), function(error) {
