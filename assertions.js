@@ -3,7 +3,7 @@
 const src_htmlfile = "index.html";
 const template_htmlfile = "testing/template.html";
 const ts_htmlfile = "testing/testspec.html";
-const ea_htmlfile = "testing/extra-assertions.html";
+const ea_htmlfile = "testing/extra-asserts.html";
 const plan_htmlfile = "testing/plan.html";
 
 // Dependencies
@@ -37,14 +37,30 @@ var src_dom = cheerio.load(src_raw);
 var src_title = src_dom('title').text();
 
 // Extract assertions
-var assertions = {};
+var src_assertions = {};
 src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
     let id = src_dom(this).attr('id');
     if (undefined === id) {
         console.log("WARNING: rfc2119-assertion without id:",
                     src_dom(this).html());
     } else {
-        assertions[id] = src_dom(this);
+        src_assertions[id] = src_dom(this);
+    }
+});
+
+// Read in extra assertions and store as a dom
+const ea_raw = fs.readFileSync(ea_htmlfile, 'UTF-8');
+var ea_dom = cheerio.load(ea_raw);
+
+// Extract assertions
+var extra_assertions = {};
+ea_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
+    let id = ea_dom(this).attr('id');
+    if (undefined === id) {
+        console.log("WARNING: rfc2119-assertion without id:",
+                    ea_dom(this).html());
+    } else {
+        extra_assertions[id] = ea_dom(this);
     }
 });
 
@@ -105,7 +121,7 @@ fs.writeFileSync(results_template,'"ID","Pass"\n');
 plan_dom('head>title').append(src_title);
 // plan_dom('body>h2').append(src_title);
 // plan_dom('body').append('<dl></dl>');
-function merge_assertions(done_callback) {
+function merge_assertions(assertions,ac,done_callback) {
   for (a in assertions) {
     console.log("Processing assertion "+a);
 
@@ -115,7 +131,10 @@ function merge_assertions(done_callback) {
     // Appendix
     plan_dom('#testspecs').append('<dt></dt>');
     let plan_dt = plan_dom('#testspecs>dt:last-child');
-    plan_dt.append('<a href="../index.html#'+a+'">'+a+'</a>');
+    plan_dt.append('<a href="../index.html#'+a+'">'+a+'</a> ');
+    if ("baseassertion" !== ac) {
+       plan_dt.append('<em>(extra)</em>');
+    }
 
     let category = undefined;
     if (assertions[a].text().indexOf('MUST') > -1) {
@@ -156,8 +175,8 @@ function merge_assertions(done_callback) {
     a_text = assertions[a];
 
     // Table
-    plan_dom('#testresults').append('<tr class="'+a+'"></tr>');
-    let plan_tr = plan_dom('tr.'+a);
+    plan_dom('#testresults').append('<tr id="'+a+'" class="'+ac+'"></tr>');
+    let plan_tr = plan_dom('tr#'+a);
     plan_tr.append('<td><a href="../index.html#'+a+'">'+a+'</a></td>');
     plan_tr.append('<td>'+a_text+'</td>');
     plan_tr.append('<td></td>');
@@ -172,8 +191,8 @@ function merge_assertions(done_callback) {
     plan_tr.append('<td></td>');
 
     // Add to appendix
-    plan_dom('#testspecs').append('<dd class="'+a+'"></dd>');
-    let plan_dd = plan_dom('dd.'+a);
+    plan_dom('#testspecs').append('<dd id="'+a+'" class="'+ac+'"></dd>');
+    let plan_dd = plan_dom('dd#'+a);
     plan_dd.append(a_text);
     a_spec = testspec[a];
     plan_dd.append('<br/><span></span>');
@@ -204,14 +223,16 @@ get_results(0,function(results) {
       }
       console.log("}");
 */
-      merge_assertions(function() {
-        // Output plan
-        fs.writeFile(plan_htmlfile, plan_dom.html(), function(error) {
+      merge_assertions(src_assertions,"baseassertion",function() {
+        merge_assertions(extra_assertions,"extraassertion",function() {
+          // Output plan
+          fs.writeFile(plan_htmlfile, plan_dom.html(), function(error) {
             if (error) {
                 return console.log(err);
             } else {
                 console.log("Test plan output to "+plan_htmlfile);
             }
+          }); 
         }); 
       }); 
     });
