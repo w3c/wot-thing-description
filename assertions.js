@@ -142,6 +142,27 @@ function merge_results(done_callback) {
     done_callback(merged_results);
 }
 
+// Categories
+var categories = new Map();
+function get_categories(done_callback) {
+    var file = path.join(__dirname,"testing","categories.csv");
+    console.log("processing categories in",file);
+    var filedata = fs.readFileSync(file).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let id = item["ID"];
+                let cat = item["Category"];
+                if (undefined != id && undefined != cat) {
+                    categories.set(id,cat);
+                }
+            }
+            done_callback();
+        });
+}
+
 // Clear (well, write headers for) results template
 var results_template = path.join(results_dir,'template.csv');
 fs.writeFileSync(results_template,'"ID","Pass","Fail"\n');
@@ -207,6 +228,11 @@ function merge_assertions(assertions,ac,done_callback) {
     plan_dom('#testresults').append('<tr id="'+a+'" class="'+ac+'"></tr>');
     let plan_tr = plan_dom('tr#'+a);
     plan_tr.append('<td class="'+ac+'"><a href="../index.html#'+a+'">'+a+'</a></td>');
+    if (undefined != categories.get(a)) {
+       plan_tr.append('<td class="'+ac+'">'+categories.get(a)+'</td>');
+    } else {
+       plan_tr.append('<td class="'+ac+'"></td>');
+    }
     plan_tr.append('<td class="'+ac+'">'+a_text+'</td>');
     plan_tr.append('<td class="'+ac+'"></td>');
     plan_tr.append('<td class="'+ac+'"></td>');
@@ -271,6 +297,7 @@ get_results(0,function(results) {
       }
       console.log("}");
 */
+     get_categories(function() {
       merge_assertions(src_assertions,"baseassertion",function() {
         merge_assertions(extra_assertions,"extraassertion",function() {
           // Output plan
@@ -283,6 +310,7 @@ get_results(0,function(results) {
           }); 
         }); 
       }); 
+     }); 
     });
 });
 

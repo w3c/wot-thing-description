@@ -28,6 +28,11 @@ eventually, and before final release, be inserted into the final specification.
 Assertions related to features that are at risk of being deleted from the final
 CR should be listed in the [atrisk.csv](atrisk.csv) file.
 
+## Categories
+Assertions can be assigned to a category in
+[categories.csv](categories.csv) (Eventually the table will group categories
+into sections; for now it is just an extra column).
+
 ## Result Data
 Each implementation should record
 which features they have implemented and tested under the `results` directory.
@@ -55,15 +60,9 @@ Files should be in CSV format, including headers as defined in template.csv,
 and will be parsed by the csvtojson Node.js library.
 
 ## To Dos
-1. Track tests of features that require two implementations to
+* Track tests of features that require two implementations to
 interact.  Probably need to add a column that tracks the other
 implementation's name (as given by the root name of these files).
-2. Provide a way to assign assertions to categories and sort them
-together in the output.
-3. Add a database that tracks whether an implementation is a client, a server, or both.
-4. Provide a list of additional "candidate" assertions to cover aspects
-that are tested but not (yet) included in the actual specification.
-These should be formatted in the report in a way that distinguishes them
-from assertions already in the specification.
-5. Internal hyperlinks in assertions should be removed or fixed (rebased).
+* Sort categories together in the output and put the category in a section header instead of a column.
+* Internal hyperlinks in assertions should be removed or fixed (rebased to they point to the spec).
 
