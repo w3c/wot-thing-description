@@ -1,10 +1,13 @@
+      <section>
       <h3><code>{label}</code></h3>
-	{@eq key=label value="Security"}<p class="ednote">This is the first draft containing the new security vocabularies. The definition is not yet completed and is still in progress.
-      </p>{/eq}
+
         <p>{desc}</p>
         {#fields}
         {@first}
-
+	{@eq key=label value="InteractionPattern"}<p><span class="rfc2119-assertion" id="td-unique-identifiers">
+    Each instance of a <code>Property</code>, <code>Action</code>, and <code>Event</code> class MUST have an identifier that is unique within the context of a Thing Description document.</span> 
+    See Section <a href="#json-serializiation-section" class="sec-ref">Representation Format</a> for more details about JSON-LD 1.1 identifiers.
+      </p>{/eq}
         <table class="def">
             <thead>
             <tr>
@@ -20,18 +23,96 @@
                 <tr>
                     <td><code>id</code></td>
                     <td>unique identifier of the Thing (URI, e.g. custom URN)</td>
-                    <td>no</td>
+                    <td>yes</td>
                     <td>.</td>
-                    <td><a href="http://www.w3.org/2001/XMLSchema#anyURI"><code>anyURI</code></a></td>
+                    <td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td>
                 </tr>
                 {/eq}
         {/first}
                 <tr>
                     <td><code>{prop}</code></td>
-                    <td>{propDesc}</td>
+                    <td>{propDesc}
+                        {@eq key=label value="Form"}
+                        {@eq key=prop value="op"}
+                        <p>
+                            The value of the <code>op</code> attribute of the form must be one of readproperty, writeproperty, observeproperty, invokeaction, subscribeevent, or unsubscribeevent. 
+                        </p>
+                        {/eq}
+                        {/eq}
+                    </td>
                     <td>{?mandatory}yes{:else}no{/mandatory}</td>
                     <td>{?defaultValue}{defaultValue}{:else}.{/defaultValue}</td>
-                    <td><a href="{otherClass.uri}"><code>{otherClass.label}</code></a></td>
+                    <td>{?array}array of {/array}
+                        {?otherClass.uri}
+                            <a href="{otherClass.uri}"><code>{otherClass.label}</code></a>
+                        {:else}
+                          {@eq key=otherClass.label value="anyType"}
+                            {?array}
+                            values of any type with each consistent with the type given to the above <code>type</code> field definition if any
+                            {:else}
+                            a value of any type that is consistent with the type given to the above <code>type</code> field definition if any
+                            {/array}
+                          {:else}
+                            <code>{otherClass.label}</code>
+                          {/eq}
+                        {/otherClass.uri}
+                        {@eq key=label value="Form"}
+                        {@eq key=prop value="op"}
+                        <p>
+                            (one of  
+                            <code>"readproperty"</code>, 
+                            <code>"writeproperty"</code>, 
+                            <code>"observeproperty"</code>, 
+                            <code>"invokeaction"</code>, 
+                            <code>"subscribeevent"</code>, 
+                            or <code>"unsubscribeevent"</code>) 
+                        </p>
+                        {/eq}
+                        {/eq}
+
+                        {@eq key=label value="Form"}
+                        {@eq key=prop value="subprotocol"}
+                        <p>
+                            (one of  
+                            <code>"longpoll"</code>)
+                        </p>
+                        {/eq}
+                        {/eq}
+
+                        {@eq key=label value="DataSchema"}
+                        {@eq key=prop value="type"}
+                        <p>
+                            (one of  
+                            <code>"boolean"</code>, 
+                            <code>"integer"</code>, 
+                            <code>"number"</code>, 
+                            <code>"string"</code>, 
+                            <code>"object"</code>, 
+                            <code>"array"</code>, 
+                            or <code>"null"</code>) 
+                        </p>
+                        {/eq}
+                        {/eq}
+                    
+                        {@eq key=label value="SecurityScheme"}
+                        {@eq key=prop value="scheme"}
+                        <p>
+                            (one of  
+                            <code>"nosec"</code>, 
+                            <code>"basic"</code>, 
+                            <code>"cert"</code>, 
+                            <code>"digest"</code>, 
+                            <code>"bearer"</code>, 
+                            <code>"pop"</code>, 
+                            <code>"psk"</code>, 
+                            <code>"public"</code>, 
+                            <code>"oauth2"</code>, 
+                            or <code>"apikey"</code>) 
+                        </p>
+                        {/eq}
+                        {/eq}
+
+                    </td>
                 </tr>
         {@last}
             </tbody>
@@ -48,4 +129,10 @@
         </ul>
         {/last}
         {/subclasses}
-	{@eq key=label value="Event"}<p>The <code>Event</code> class has the same fields as the class <a href="#property" class="sec-ref">Property</a>.</p>{/eq}
+	{@eq key=label value="Property"}<p class="note">Property instances are also instances of the class <a href="#dataschema" class="sec-ref">DataSchema</a>. 
+    Therefore, it can contain the <code>type</code>, <code>unit</code>, <code>readOnly</code> and <code>writeOnly</code> fields, among others.</p>{/eq}
+
+     
+
+      
+      </section>

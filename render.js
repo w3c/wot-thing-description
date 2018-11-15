@@ -4,9 +4,27 @@ let dust = require('dustjs-helpers');
 let jd = require("jsdom/lib/old-api.js");
 //let jsdom = require("jsdom");
 
+let jsonld = require('./context/json-ld.js');
 
+// extraction of vocabulary to render from the RDF store
 
-// extraction of rendering context from the RDF store
+function sectionOrURI(uri, label) {
+    let isLocal = uri.startsWith('http://www.w3.org/ns/td#') ||
+                  uri.startsWith('http://www.w3.org/ns/json-schema#') ||
+                  uri.startsWith('http://www.w3.org/ns/wot-security#');
+	if (isLocal) return '#' + label.toLowerCase();
+				  
+	let isXSD = uri.startsWith('http://www.w3.org/2001/XMLSchema#');
+	if (isXSD) {
+		if (uri.endsWith('#anyType'))
+			return null;
+		else
+			return 'http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#' + label;
+	}
+	
+	// default
+    return uri;
+}
 
 function target(sh, g) {
     let uris = g.match(
@@ -20,6 +38,34 @@ function target(sh, g) {
     }
     
     return uris[0].object.nominalValue;
+}
+
+function mapping(uri, g) {
+    let mappings = g.match(
+        null,
+        'http://www.w3.org/ns/json-ld#iri',
+        uri
+    ).toArray();
+    
+    if (mappings.length == 0) {
+        console.error('No context mapping defined for URI: ' + uri);
+    }
+    
+    return mappings[0].subject.nominalValue;
+}
+
+function term(uri, g) {
+    let terms = g.match(
+        mapping(uri, g),
+        'http://www.w3.org/ns/json-ld#term',
+        null
+    ).toArray();
+    
+    if (terms.length != 1) {
+        console.error('Context mapping does not define exactly one term: ' + uri);
+    }
+    
+    return terms[0].object.nominalValue;
 }
 
 function label(uri, g) {
@@ -89,9 +135,23 @@ function classOrDatatype(psh, g) {
     let l = label(u, g);
     
     return {
-        uri: u.startsWith('http://www.w3.org/ns/td#') ? '#' + l.toLowerCase(): u,
+        uri: sectionOrURI(u, l),
         label: l
     };
+}
+
+function array(p, g) {
+    let containers = g.match(
+        mapping(p, g),
+        'http://www.w3.org/ns/json-ld#container',
+        null
+    ).toArray();
+    
+    return containers.length > 0 &&
+        containers.find(t =>
+            t.object.nominalValue === 'http://www.w3.org/ns/json-ld#set' ||
+            t.object.nominalValue === 'http://www.w3.org/ns/json-ld#list'
+        );
 }
 
 function mandatory(psh, g) {
@@ -134,9 +194,10 @@ function fields(sh, g) {
         let p = path(psh, g);
 
         let f = {
-            prop: label(p, g),
+            prop: term(p, g),
             propDesc: desc(p, g),
             otherClass: classOrDatatype(psh, g),
+            array: array(p, g),
             mandatory: mandatory(psh, g),
             defaultValue: defaultValue(psh, g)
         };
@@ -161,7 +222,7 @@ function subclasses(sh, g) {
         
         subclasses.push({
             subclass: {
-                uri: scu.startsWith('http://www.w3.org/ns/td#') ? '#' + l.toLowerCase(): scu,
+                uri: sectionOrURI(scu, l),
                 label: l
             }
         });
@@ -170,10 +231,11 @@ function subclasses(sh, g) {
     return subclasses;
 }
 
-function context(store, cb) {
+function vocabulary(store, cb) {
     store.graph(function(err, g) {
-        let ctx = {
+        let voc = {
             coreClasses: [],
+            securityClasses: [],
             schemaClasses: []
         };
         
@@ -195,81 +257,140 @@ function context(store, cb) {
             
             // TODO not the best logic
             if (c.label.match('Schema')) {
-                ctx.schemaClasses.push(c);
+                voc.schemaClasses.push(c);
+            } else if (c.label.match('Security')) { 
+                voc.securityClasses.push(c);
             } else {
-                ctx.coreClasses.push(c);
+                voc.coreClasses.push(c);
             }
         });
         
-        cb(ctx);
+        cb(voc);
     });
 }
 
 // class sort prior to rendering
 
-const predefined = [
+const corePredefined = [
     "Thing",
     "InteractionPattern",
     "Property",
     "Action",
     "Event",
-    "Form"
+    "Form",
+    "Link"
 ];
 
-function sort(ctx) {
-    ctx.coreClasses.sort(function(c1, c2) {
-        let i1 = predefined.indexOf(c1.label);
-        let i2 = predefined.indexOf(c2.label);
+const schemaPredefined = [
+    "DataSchema",
+    "ArraySchema",
+    "ObjectSchema",
+    "BooleanSchema",
+    "NumberSchema",
+    "StringSchema"
+];
+
+const securityPredefined = [
+    "SecurityScheme",
+    "NoSecurityScheme",
+    "BasicSecurityScheme",
+    "CertSecurityScheme",
+    "DigestSecurityScheme",
+    "BearerSecurityScheme",
+    "PSKSecurityScheme",
+    "PopSecurityScheme",
+    "PublicSecurityScheme",
+    "ApikeySecurityScheme",
+    "OAuth2SecurityScheme"
+];
+
+function sort(voc) {
+    voc.coreClasses.sort(function(c1, c2) {
+        let i1 = corePredefined.indexOf(c1.label);
+        let i2 = corePredefined.indexOf(c2.label);
         
-        if (i1 === -1) { i1 = predefined.length; }
-        if (i2 === -1) { i2 = predefined.length; }
+        if (i1 === -1) { i1 = corePredefined.length; }
+        if (i2 === -1) { i2 = corePredefined.length; }
+        
+        return i1 - i2;
+    });
+    voc.schemaClasses.sort(function(c1, c2) {
+        let i1 = schemaPredefined.indexOf(c1.label);
+        let i2 = schemaPredefined.indexOf(c2.label);
+        
+        if (i1 === -1) { i1 = schemaPredefined.length; }
+        if (i2 === -1) { i2 = schemaPredefined.length; }
+        
+        return i1 - i2;
+    });
+    voc.securityClasses.sort(function(c1, c2) {
+        let i1 = securityPredefined.indexOf(c1.label);
+        let i2 = securityPredefined.indexOf(c2.label);
+        
+        if (i1 === -1) { i1 = securityPredefined.length; }
+        if (i2 === -1) { i2 = securityPredefined.length; }
         
         return i1 - i2;
     });
     
-    return ctx;
+    return voc;
 }
 
 // rendering
 
 const classSrc = fs.readFileSync('class.template', 'UTF-8');
 const vocSrc = fs.readFileSync('vocabulary.template', 'UTF-8');
-const src = fs.readFileSync('index.html.template', 'UTF-8');
+const src = fs.readFileSync('index.html.template.html', 'UTF-8');
 
-function render(ctx) {
+// path to JSON Schema file for validation
+const jsonSchemaValidation = fs.readFileSync('validation/td-json-schema-validation.json', 'UTF-8');
+
+function render(voc) {
     dust.loadSource(dust.compile(classSrc, 'class'));
-    dust.renderSource(vocSrc, ctx, function(err, out) {
+    dust.renderSource(vocSrc, voc, function(err, out) {
         if (err) {
             console.error(err);
             return;
         }
         
+        // add content in vocabulary section
         let result = src.replace('{vocabulary.template}', out);
+
+        // add JSON Schema file into the annex section
+        result = result.replace('{td.json-schema.validation}', jsonSchemaValidation);
+
         fs.writeFileSync('index.html', result, 'UTF-8');
     });
 }
 
 // main function
 
-const onto = fs.readFileSync('ontology/td.ttl', 'UTF-8');
-const shapes = fs.readFileSync('validation/td-validation.ttl', 'UTF-8');
+const ttlFiles = [
+    'ontology/td.ttl',
+	'ontology/json-schema.ttl',
+	'ontology/wot-security.ttl',
+	'validation/td-validation.ttl'
+];
+
+const context = fs.readFileSync('context/td-context.jsonld', 'UTF-8');
+let ttl = jsonld.toRDF(JSON.parse(context));
+
+ttlFiles.forEach(function(f) {
+    ttl += fs.readFileSync(f, 'UTF-8');
+});
 
 rdf.create(function(err, store) {
-    store.load('text/turtle', onto, function(err) {
+    store.load('text/turtle', ttl, function(err) {
         if (err) {
             console.log(err);
             return;
         }
-        
-        store.load('text/turtle', shapes, function(err) {
-            if (err) {
-                console.log(err);
-                return;
-            }
-        
-            context(store, function(ctx) {
-                render(sort(ctx));
-            });
-        });
+
+		vocabulary(store, function(voc) {
+			render(sort(voc));
+		});
     });
 });
+
+
+
