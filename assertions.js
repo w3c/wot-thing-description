@@ -59,7 +59,7 @@ function get_results(i,done_callback) {
         console.log("processing data in",file);
         var basename = path.basename(file,'.csv');
         var filedata = fs.readFileSync(file).toString();
-        csvtojson({"noheader":true})
+        csvtojson()
             .fromString(filedata)
             .then((data)=> {
                 results.set(basename,data);
@@ -84,25 +84,23 @@ function cleanInt(x) {
 }
 function merge_results(done_callback) {
     for (let [impl,data] of results.entries()) {
-        // console.log(impl,data);
         for (let i=0; i<data.length; i++) {
-           let id_name = data[i]["field1"];
-           let id_count = data[i]["field2"];
-           // console.log(impl,id_name,id_count);
-           let current_count = merged_results.get(id_name);
-           if (undefined != current_count) {
-               merged_results.set(id_name,current_count + cleanInt(id_count));
+           let id = data[i]["ID"];
+           let pass = data[i]["Pass"];
+           let current_pass = merged_results.get(id);
+           if (undefined != current_pass) {
+               merged_results.set(id,current_pass + cleanInt(pass));
            } else {
-               merged_results.set(id_name,cleanInt(id_count));
+               merged_results.set(id,cleanInt(pass));
            }
         }
     }
     done_callback(merged_results);
 }
 
-// Clear results template
+// Clear (well, write headers for) results template
 var results_template = path.join(results_dir,'template.csv');
-fs.writeFileSync(results_template,'');
+fs.writeFileSync(results_template,'"ID","Pass"\n');
 
 // Merge assertions and test specs into plan
 plan_dom('head>title').append(src_title);
