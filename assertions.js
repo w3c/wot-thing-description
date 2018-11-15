@@ -102,11 +102,40 @@ function merge_results(done_callback) {
         for (let i=0; i<data.length; i++) {
            let id = data[i]["ID"];
            let pass = data[i]["Pass"];
-           let current_pass = merged_results.get(id);
-           if (undefined != current_pass) {
-               merged_results.set(id,current_pass + cleanInt(pass));
+           let fail = data[i]["Fail"];
+           let current = merged_results.get(id);
+           // there has GOT to be an easier way to do this... oh, well
+           if (undefined != current) {
+               if (undefined != current.pass) {
+                   if (undefined != pass) {
+                       current.pass += cleanInt(pass);
+                       merged_results.set(id,current);
+                   }
+               } else {
+                   if (undefined != pass) {
+                       current.pass = cleanInt(pass);
+                       merged_results.set(id,current);
+                   }
+               }
+               if (undefined != current.fail) {
+                   if (undefined != fail) {
+                       current.fail += cleanInt(fail);
+                       merged_results.set(id,current);
+                   }
+               } else {
+                   if (undefined != fail) {
+                       current.fail = cleanInt(fail);
+                       merged_results.set(id,current);
+                   }
+               }
            } else {
-               merged_results.set(id,cleanInt(pass));
+               if (undefined != pass && undefined != fail) {
+                   merged_results.set(id,{"pass":cleanInt(pass),"fail":cleanInt(fail)});
+               } else if (undefined != pass) {
+                   merged_results.set(id,{"pass":cleanInt(pass)});
+               } else if (undefined != fail) {
+                   merged_results.set(id,{"fail":cleanInt(fail)});
+               }
            }
         }
     }
@@ -115,7 +144,7 @@ function merge_results(done_callback) {
 
 // Clear (well, write headers for) results template
 var results_template = path.join(results_dir,'template.csv');
-fs.writeFileSync(results_template,'"ID","Pass"\n');
+fs.writeFileSync(results_template,'"ID","Pass","Fail"\n');
 
 // Merge assertions and test specs into plan
 plan_dom('head>title').append(src_title);
@@ -126,7 +155,7 @@ function merge_assertions(assertions,ac,done_callback) {
     console.log("Processing assertion "+a);
 
     // Results template
-    fs.appendFileSync(results_template, '"'+a+'",0\n');
+    fs.appendFileSync(results_template, '"'+a+'",0,0\n');
 
     // Appendix
     plan_dom('#testspecs').append('<dt></dt>');
@@ -177,18 +206,37 @@ function merge_assertions(assertions,ac,done_callback) {
     // Table
     plan_dom('#testresults').append('<tr id="'+a+'" class="'+ac+'"></tr>');
     let plan_tr = plan_dom('tr#'+a);
-    plan_tr.append('<td><a href="../index.html#'+a+'">'+a+'</a></td>');
-    plan_tr.append('<td>'+a_text+'</td>');
-    plan_tr.append('<td></td>');
-    plan_tr.append('<td></td>');
-    let pass_count = merged_results.get(a);
-    if (undefined != pass_count) {
-       plan_tr.append('<td>'+pass_count+'</td>');
+    plan_tr.append('<td class="'+ac+'"><a href="../index.html#'+a+'">'+a+'</a></td>');
+    plan_tr.append('<td class="'+ac+'">'+a_text+'</td>');
+    plan_tr.append('<td class="'+ac+'"></td>');
+    plan_tr.append('<td class="'+ac+'"></td>');
+    let result = merged_results.get(a);
+    if (undefined != result) {
+       let pass = result.pass;
+       if (undefined != pass) {
+          if (pass >= 2) {
+             plan_tr.append('<td class="'+ac+'">'+pass+'</td>');
+          } else {
+             plan_tr.append('<td class="failed">'+pass+'</td>');
+          }
+       } else {
+          plan_tr.append('<td class="missing"></td>');
+       }
+       let fail = result.fail;
+       if (undefined != fail) {
+          if (fail > 0) {
+             plan_tr.append('<td class="failed">'+fail+'</td>');
+          } else {
+             plan_tr.append('<td class="'+ac+'">'+fail+'</td>');
+          }
+       } else {
+          plan_tr.append('<td class="missing"></td>');
+       }
     } else {
-       plan_tr.append('<td></td>');
+       plan_tr.append('<td class="missing"></td>');
+       plan_tr.append('<td class="missing"></td>');
     }
-    plan_tr.append('<td></td>');
-    plan_tr.append('<td></td>');
+    plan_tr.append('<td class="'+ac+'"></td>');
 
     // Add to appendix
     plan_dom('#testspecs').append('<dd id="'+a+'" class="'+ac+'"></dd>');
