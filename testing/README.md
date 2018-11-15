@@ -27,6 +27,7 @@ eventually, and before final release, be inserted into the final specification.
 ## At-Risk Assertions
 Assertions related to features that are at risk of being deleted from the final
 CR should be listed in the [atrisk.csv](atrisk.csv) file.
+The assertion text for these will be colored in magenta in the report table.
 
 ## Categories
 Assertions can be assigned to a category in

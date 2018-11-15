@@ -163,6 +163,26 @@ function get_categories(done_callback) {
         });
 }
 
+// At-Risk Items
+var risks = new Map();
+function get_risks(done_callback) {
+    var file = path.join(__dirname,"testing","atrisk.csv");
+    console.log("processing risks in",file);
+    var filedata = fs.readFileSync(file).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let id = item["ID"];
+                if (undefined != id) {
+                    risks.set(id,true);
+                }
+            }
+            done_callback();
+        });
+}
+
 // Clear (well, write headers for) results template
 var results_template = path.join(results_dir,'template.csv');
 fs.writeFileSync(results_template,'"ID","Pass","Fail"\n');
@@ -233,7 +253,11 @@ function merge_assertions(assertions,ac,done_callback) {
     } else {
        plan_tr.append('<td class="'+ac+'"></td>');
     }
-    plan_tr.append('<td class="'+ac+'">'+a_text+'</td>');
+    if (undefined != risks.get(a)) {
+       plan_tr.append('<td class="atrisk">'+a_text+'</td>');
+    } else {
+       plan_tr.append('<td class="'+ac+'">'+a_text+'</td>');
+    }
     plan_tr.append('<td class="'+ac+'"></td>');
     plan_tr.append('<td class="'+ac+'"></td>');
     let result = merged_results.get(a);
@@ -297,8 +321,9 @@ get_results(0,function(results) {
       }
       console.log("}");
 */
-     get_categories(function() {
-      merge_assertions(src_assertions,"baseassertion",function() {
+     get_risks(function() {
+      get_categories(function() {
+       merge_assertions(src_assertions,"baseassertion",function() {
         merge_assertions(extra_assertions,"extraassertion",function() {
           // Output plan
           fs.writeFile(plan_htmlfile, plan_dom.html(), function(error) {
@@ -309,6 +334,7 @@ get_results(0,function(results) {
             }
           }); 
         }); 
+       }); 
       }); 
      }); 
     });
