@@ -3,11 +3,14 @@
 const src_htmlfile = "index.html";
 const template_htmlfile = "testing/template.html";
 const ts_htmlfile = "testing/testspec.html";
+const ea_htmlfile = "testing/extra-asserts.html";
 const plan_htmlfile = "testing/plan.html";
 
 // Dependencies
-var fs = require('fs');
-var cheerio = require('cheerio');
+const path = require('path');
+const fs = require('fs');
+const cheerio = require('cheerio');
+const csvtojson=require('csvtojson'); // V2
 
 // Read in test specs and store as a map
 const ts_raw = fs.readFileSync(ts_htmlfile, 'UTF-8');
@@ -16,13 +19,13 @@ var testspec = {};
 ts_dom('span[class="testspec"]').each(function(i,elem) {
     let id = ts_dom(this).attr('id');
     if (undefined === id) {
-        console.log("Warning: testspec without id:",
-                    ts_dom(this).html());
+        console.log("Warning: testspec without id:\n",ts_dom(this).html());
     } else {
+        // console.log("Adding testspec for",id,":\n",ts_dom(this).html());
         testspec[id] = ts_dom(this);
     }
 });
-// console.log(testspec);
+// console.log("test specs:",ts_dom.html());
 
 // Initialize plan dom with template
 const template_raw = fs.readFileSync(template_htmlfile, 'UTF-8');
@@ -34,29 +37,174 @@ var src_dom = cheerio.load(src_raw);
 var src_title = src_dom('title').text();
 
 // Extract assertions
-var assertions = {};
+var src_assertions = {};
 src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
     let id = src_dom(this).attr('id');
     if (undefined === id) {
         console.log("WARNING: rfc2119-assertion without id:",
                     src_dom(this).html());
     } else {
-        assertions[id] = src_dom(this);
+        src_assertions[id] = src_dom(this);
     }
 });
-// console.log(assertions);
+
+// Read in extra assertions and store as a dom
+const ea_raw = fs.readFileSync(ea_htmlfile, 'UTF-8');
+var ea_dom = cheerio.load(ea_raw);
+
+// Extract assertions
+var extra_assertions = {};
+ea_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
+    let id = ea_dom(this).attr('id');
+    if (undefined === id) {
+        console.log("WARNING: rfc2119-assertion without id:",
+                    ea_dom(this).html());
+    } else {
+        extra_assertions[id] = ea_dom(this);
+    }
+});
+
+// Get all results, convert from CSV to JSON
+const results_dir = path.join(__dirname, 'testing', 'results');
+var results = new Map();
+var results_files = fs.readdirSync(results_dir);
+function get_results(i,done_callback) {
+    var file = path.join(results_dir, results_files[i]);
+    if (file.match(/.csv$/g)) {
+        console.log("processing results in",file);
+        var basename = path.basename(file,'.csv');
+        var filedata = fs.readFileSync(file).toString();
+        csvtojson()
+            .fromString(filedata)
+            .then((data)=> {
+                results.set(basename,data);
+                if (results_files.length - 1 == i) {
+                    done_callback(results);
+                } else {
+                    get_results(i+1,done_callback);
+                }
+            })
+    } else {
+        if (results_files.length - 1 == i) {
+            done_callback(results);
+        } else {
+            get_results(i+1,done_callback);
+        }
+    }
+}
+var merged_results = new Map();
+function cleanInt(x) {
+   x = Number(x);
+   return x >= 0 ? Math.floor(x) : Math.ceil(x);
+}
+function merge_results(done_callback) {
+    for (let [impl,data] of results.entries()) {
+        for (let i=0; i<data.length; i++) {
+           let id = data[i]["ID"];
+           let pass = data[i]["Pass"];
+           let fail = data[i]["Fail"];
+           let current = merged_results.get(id);
+           // there has GOT to be an easier way to do this... oh, well
+           if (undefined != current) {
+               if (undefined != current.pass) {
+                   if (undefined != pass) {
+                       current.pass += cleanInt(pass);
+                       merged_results.set(id,current);
+                   }
+               } else {
+                   if (undefined != pass) {
+                       current.pass = cleanInt(pass);
+                       merged_results.set(id,current);
+                   }
+               }
+               if (undefined != current.fail) {
+                   if (undefined != fail) {
+                       current.fail += cleanInt(fail);
+                       merged_results.set(id,current);
+                   }
+               } else {
+                   if (undefined != fail) {
+                       current.fail = cleanInt(fail);
+                       merged_results.set(id,current);
+                   }
+               }
+           } else {
+               if (undefined != pass && undefined != fail) {
+                   merged_results.set(id,{"pass":cleanInt(pass),"fail":cleanInt(fail)});
+               } else if (undefined != pass) {
+                   merged_results.set(id,{"pass":cleanInt(pass)});
+               } else if (undefined != fail) {
+                   merged_results.set(id,{"fail":cleanInt(fail)});
+               }
+           }
+        }
+    }
+    done_callback(merged_results);
+}
+
+// Categories
+var categories = new Map();
+function get_categories(done_callback) {
+    var file = path.join(__dirname,"testing","categories.csv");
+    console.log("processing categories in",file);
+    var filedata = fs.readFileSync(file).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let id = item["ID"];
+                let cat = item["Category"];
+                if (undefined != id && undefined != cat) {
+                    categories.set(id,cat);
+                }
+            }
+            done_callback();
+        });
+}
+
+// At-Risk Items
+var risks = new Map();
+function get_risks(done_callback) {
+    var file = path.join(__dirname,"testing","atrisk.csv");
+    console.log("processing risks in",file);
+    var filedata = fs.readFileSync(file).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let id = item["ID"];
+                if (undefined != id) {
+                    risks.set(id,true);
+                }
+            }
+            done_callback();
+        });
+}
+
+// Clear (well, write headers for) results template
+var results_template = path.join(results_dir,'template.csv');
+fs.writeFileSync(results_template,'"ID","Pass","Fail"\n');
 
 // Merge assertions and test specs into plan
 plan_dom('head>title').append(src_title);
 // plan_dom('body>h2').append(src_title);
 // plan_dom('body').append('<dl></dl>');
-for (a in assertions) {
+function merge_assertions(assertions,ac,done_callback) {
+  for (a in assertions) {
     console.log("Processing assertion "+a);
+
+    // Results template
+    fs.appendFileSync(results_template, '"'+a+'",0,0\n');
 
     // Appendix
     plan_dom('#testspecs').append('<dt></dt>');
     let plan_dt = plan_dom('#testspecs>dt:last-child');
-    plan_dt.append('<a href="../index.html#'+a+'">'+a+'</a>');
+    plan_dt.append('<a href="../index.html#'+a+'">'+a+'</a> ');
+    if ("baseassertion" !== ac) {
+       plan_dt.append('<em>(extra)</em>');
+    }
 
     let category = undefined;
     if (assertions[a].text().indexOf('MUST') > -1) {
@@ -97,36 +245,98 @@ for (a in assertions) {
     a_text = assertions[a];
 
     // Table
-    plan_dom('#testresults').append('<tr class="'+a+'"></tr>');
-    let plan_tr = plan_dom('tr.'+a);
-    plan_tr.append('<td><a href="../index.html#'+a+'">'+a+'</a></td>');
-    plan_tr.append('<td>'+a_text+'</td>');
-    plan_tr.append('<td></td>');
-    plan_tr.append('<td></td>');
-    plan_tr.append('<td></td>');
-    plan_tr.append('<td></td>');
-    plan_tr.append('<td></td>');
+    plan_dom('#testresults').append('<tr id="'+a+'" class="'+ac+'"></tr>');
+    let plan_tr = plan_dom('tr#'+a);
+    plan_tr.append('<td class="'+ac+'"><a href="../index.html#'+a+'">'+a+'</a></td>');
+    if (undefined != categories.get(a)) {
+       plan_tr.append('<td class="'+ac+'">'+categories.get(a)+'</td>');
+    } else {
+       plan_tr.append('<td class="'+ac+'"></td>');
+    }
+    if (undefined != risks.get(a)) {
+       plan_tr.append('<td class="atrisk">'+a_text+'</td>');
+    } else {
+       plan_tr.append('<td class="'+ac+'">'+a_text+'</td>');
+    }
+    plan_tr.append('<td class="'+ac+'"></td>');
+    plan_tr.append('<td class="'+ac+'"></td>');
+    let result = merged_results.get(a);
+    if (undefined != result) {
+       let pass = result.pass;
+       if (undefined != pass) {
+          if (pass >= 2) {
+             plan_tr.append('<td class="'+ac+'">'+pass+'</td>');
+          } else {
+             plan_tr.append('<td class="failed">'+pass+'</td>');
+          }
+       } else {
+          plan_tr.append('<td class="missing"></td>');
+       }
+       let fail = result.fail;
+       if (undefined != fail) {
+          if (fail > 0) {
+             plan_tr.append('<td class="failed">'+fail+'</td>');
+          } else {
+             plan_tr.append('<td class="'+ac+'">'+fail+'</td>');
+          }
+       } else {
+          plan_tr.append('<td class="missing"></td>');
+       }
+    } else {
+       plan_tr.append('<td class="missing"></td>');
+       plan_tr.append('<td class="missing"></td>');
+    }
+    plan_tr.append('<td class="'+ac+'"></td>');
 
     // Add to appendix
-    plan_dom('#testspecs').append('<dd class="'+a+'"></dd>');
-    let plan_dd = plan_dom('dd.'+a);
+    plan_dom('#testspecs').append('<dd id="'+a+'" class="'+ac+'"></dd>');
+    let plan_dd = plan_dom('dd#'+a);
     plan_dd.append(a_text);
     a_spec = testspec[a];
-    plan_dd.append('<ul><li></li></ul>');
-    let plan_li = plan_dom('dd.'+a+'>ul>li:last-child');
+    plan_dd.append('<br/><span></span>');
+    let plan_li = plan_dom('dd#'+a+'>span:last-child');
     if (undefined === a_spec) {
         console.log("  WARNING: no test spec");
-        plan_li.append('<strong>NO TEST SPECIFICATION</strong>');
+        plan_li.append('<p><strong>NO TEST SPECIFICATION</strong></p>');
     } else {
         plan_li.append(a_spec);
     }
+  }
+  done_callback();
 }
 
-// Output plan
-fs.writeFile(plan_htmlfile, plan_dom.html(), function(error) {
-    if (error) {
-        return console.log(err);
-    } else {
-        console.log("Test plan output to "+plan_htmlfile);
+get_results(0,function(results) {
+/*
+    console.log("Results: {\n");
+    for (let [key,data] of results.entries()) {
+        console.log(key," => ",data);
     }
-}); 
+    console.log("}");
+*/
+    merge_results(function(merged_results) {
+/*
+      console.log("Merged Results: {\n");
+      for (let [key,data] of merged_results.entries()) {
+        console.log(key," => ",data);
+      }
+      console.log("}");
+*/
+     get_risks(function() {
+      get_categories(function() {
+       merge_assertions(src_assertions,"baseassertion",function() {
+        merge_assertions(extra_assertions,"extraassertion",function() {
+          // Output plan
+          fs.writeFile(plan_htmlfile, plan_dom.html(), function(error) {
+            if (error) {
+                return console.log(err);
+            } else {
+                console.log("Test plan output to "+plan_htmlfile);
+            }
+          }); 
+        }); 
+       }); 
+      }); 
+     }); 
+    });
+});
+

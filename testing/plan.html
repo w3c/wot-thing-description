@@ -16,7 +16,11 @@ h3 { font-size: 120%; font-weight: bold }
 h4 { font-size: 110%; font-weight: bold}
 .tocline { list-style: none; }
 th { background-color: rgb(180,255,180) }
-td { background-color: rgb(234,255,234) }
+td.baseassertion { background-color: rgb(234,255,234) }
+td.extraassertion { background-color: rgb(200,200,255) }
+td.atrisk { background-color: rgb(255,200,255) }
+td.failed { background-color: rgb(255,128,128) }
+td.missing { background-color: rgb(255,255,128) }
 .comment {color: green; font-style: italic}
 .remove {text-decoration: line-through;color: black;}
 .new { color: red; }
@@ -46,7 +50,8 @@ table.grammars th, table.commands th, able.attrs th, table.testlist th {
    vertical-align: top; text-align: left;
 }
 table.grammars td, table.commands td, table.attrs td, table.testlist td {
-   background-color: rgb(234,255,234);
+/* background-color: rgb(234,255,234);
+*/
    font-size: 10pt;
    vertical-align: top; text-align: left;
 }
@@ -79,6 +84,7 @@ table.attrs {margin-top: 5px}
 	  <p>
       Sebastian Kaebisch (Siemens AG) (Editor in Chief)<br>
       Takuki Kamiya (Fujitsu Laboratories of America, Inc.)<br>
+      Michael McCool (Intel K.K. (Japan))<br>
       Others (TBD)
 	   </p>
 
@@ -106,6 +112,9 @@ table.attrs {margin-top: 5px}
 	</ul>
 	</li>
 	<li class="tocline">6. <a href="#systems" shape="rect">Systems</a></li>
+	<ul>
+		<li class="tocline">6.1 <a href="#impl-intel" shape="rect">Intel K.K. (Japan)</a></li>
+	</ul>
 	<li class="tocline">7. <a href="#test_class" shape="rect">Test results</a> 
     <ul>
 		<li class="tocline">7.1 <a href="#intro_class" shape="rect">Classification of test assertions</a></li>
@@ -226,13 +235,75 @@ outcomes are &quot;<code>pass</code>&quot;, &quot;<code>fail</code>&quot; or
 <a id="test-systems" name="test-systems"></a>
 <h2 id="h_systems"><a id="test-systems" name="test-systems"></a>
 <a id="systems" name="systems">6. Systems</a></h2>
-<p>This section contains testimonials on the WoT Thing Description specification
-from the N companies and universities that submitted implementation reports.</p>
+<p>This section contains descriptions of each of the implementations
+of the WoT Thing Description specification
+from the NIMPLS organizations that submitted implementation reports.
+Each implementation represents a working system 
+that either exposes or consumes at least one WoT Thing Description.
+Implementations that expose a Thing Description act as a network
+server with an interface as described in the Thing Description it exposes. 
+Implementations that consume a Thing Description act as a network
+client and issue network requests consistent with the target Thing Description.
+In some cases a given implementation may be used for multiple Things
+and a single Thing may also act as both client and server on
+multiple interfaces.
+</p><p>
+We only count systems with mostly independent code bases 
+as distinct implementations.
+There are however some cases (documented in the following) where 
+implementations shared components but were still considered substantially
+independent implementations.
+</p>
 <div class="working">
 
-<h3 id="att_ir">Company Name</h3>   
-<h4 id="att_ir_summary">Exec Summary</h4>
-<p>Testimonial and Implementation Description</p>
+<h3 id="impl-intel">Intel K.K. (Japan)</h3>   
+<p>Intel supports this specification as it enables interoperation between devices
+from different manufacturers, supporting the growth of an ecosystem of interoperating
+IoT services and easing barriers to adoption.
+</p>
+<p>Three separate implementations were developed, all based on Node.js.
+The core implementations focused on basic local network access without built-in security.
+A separate project (used by all three implementations) provides security by
+means of a reverse proxy running in the cloud or on a gateway computer, accessible over a secure tunnel,
+that acts as an authentication and encrypted transport endpoint.
+It is also possible to use this reverse proxy service locally on a device to provide
+enhanced security on the local network if it has sufficient compute performance.
+For the purposes of testing this reverse proxy is considered a component of all three implementations.
+</p>
+<h4 id="impl-intel-ocf">OCF Metadata Bridge: Server</h4>
+<p>This implementation translates metadata made available by devices implemented using
+the OCF standard and re-expresses that metadata in the form of WoT Thing Descriptions.
+The actual network interfaces are however provided either by the OCF devices themselves
+directly, via CoAP, or via a CoAP/HTTP bridge developed by OCF.  The metadata
+translator also has the ability to add semantic markup to the generated WoT Thing Descriptions,
+using a database that relates OCF Resource Types to iotschema.org capabilities.
+</p>
+<h4 id="impl-intel-speak">WebSpeak: Server</h4>
+<p>This implementation provides a Thing that can convert text to speech.  English
+text set to its network interface is spoken audibily.  This service was used to
+test several accessibility scenarios, including automatic conversion of visible status
+and event information to spoken announcements in order to support blind users.
+</p>
+<h4 id="impl-intel-camera">Simple Web Camera: Server</h4>
+<p>This implementation provides a Thing that can capture still images from a camera
+and provide them over its network interface.  This was used to test various aspects
+of actions, including support for inputs and outputs with different content types.
+It is also capaple of introspecting the parameters made available via any
+particular attached video4linux camera
+and making those parameters available as WoT Thing Description properties.
+</p>
+
+<h3 id="impl-ORG">TEMPLATE: YOUR ORG NAME HERE</h3>   
+<p><em>Testimonial. State support for specification, and organizational reasons for support.</em></p>
+<p><em>State any additional general statements about implementations; omit if not needed.</em></p>
+<h4 id="impl-ORG-NAME1">Implementation 1: Client</h4>
+<p><em>Example for a client (consumes at least one TD).  Describe Implementation 1</em></p>
+<h4 id="impl-ORG-NAME2">Implementation 2: Server</h4>
+<p><em>Example for a server (exposes at least one TD).  Describe Implementation 2</em></p>
+<h4 id="impl-ORG-NAME3">Implementation 2: Client and Server</h4>
+<p><em>Example for a servient (exposes at least one TD and consumes at least one other TD).
+Describe Implementation 3.</em></p>
+
 
 </div>
 <a id="test-results-xml" name="test-results-xml">
@@ -274,6 +345,7 @@ the set of implementation reports.
 			<tbody>
 				<tr>
 					<th>ID</th>
+					<th>Category</th>
 					<th>Assertion</th>
 					<th>Req</th>
 					<th>Sub</th>
@@ -281,7 +353,7 @@ the set of implementation reports.
 
 				</tr>
 	            <tr>
-					<th colspan="4"></th>
+					<th colspan="5"></th>
 					<th>P</th>
 					<th>F</th>
 					<th>NI</th>
@@ -291,129 +363,116 @@ the set of implementation reports.
 					<th colspan="8">Section Title</th>
 				</tr>
 -->
-<!--
-				<tr>
-					<td valign="top">identifier</td>
-					<td valign="top">
-						<a href="http://www.w3.org/TR/wot-td" target="spec">link</a>
-					</td>
-                    <td>req</td><td>sub</td>
-					<td valign="top">Assertion Text</td>
-					<td>pass</td>
-					<td>fail</td>
-					<td>not-impl</td>
-				</tr>
--->
 			</tbody>
-		<tr class="td-vocabulary"><td><a href="../index.html#td-vocabulary">td-vocabulary</a></td><td><span class="rfc2119-assertion" id="td-vocabulary">All vocabulary restrictions noted in these tables MUST be followed, including mandatory items and default values. </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-unique-identifiers"><td><a href="../index.html#td-unique-identifiers">td-unique-identifiers</a></td><td><span class="rfc2119-assertion" id="td-unique-identifiers">Each instance of a <code>Property</code>, <code>Action</code>, and <code>Event</code> class MUST have an identifier that is unique within the context of a Thing Description document.</span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-jsonld-keywords"><td><a href="../index.html#td-jsonld-keywords">td-jsonld-keywords</a></td><td><span class="rfc2119-assertion" id="td-jsonld-keywords">
+		<tr id="td-vocabulary" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-vocabulary">td-vocabulary</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-vocabulary">All vocabulary restrictions noted in these tables MUST be followed, including mandatory items and default values. </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-unique-identifiers" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-unique-identifiers">td-unique-identifiers</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-unique-identifiers">Each instance of a <code>Property</code>, <code>Action</code>, and <code>Event</code> class MUST have an identifier that is unique within the context of a Thing Description document.</span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-jsonld-keywords" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-jsonld-keywords">td-jsonld-keywords</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-jsonld-keywords">
   Thing Description instances MAY contain JSON-LD 1.1 keywords such as
-  <code>@context</code> and <code>@type</code>.</span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-string-type"><td><a href="../index.html#td-string-type">td-string-type</a></td><td><span class="rfc2119-assertion" id="td-string-type">
+  <code>@context</code> and <code>@type</code>.</span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-string-type" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-string-type">td-string-type</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-string-type">
         Vocabulary terms that use simple types string and anyURI
         MUST be serialized as JSON string.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-integer-type"><td><a href="../index.html#td-integer-type">td-integer-type</a></td><td><span class="rfc2119-assertion" id="td-integer-type">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="baseassertion">2</td><td class="failed">1</td><td class="baseassertion"></td></tr><tr id="td-integer-type" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-integer-type">td-integer-type</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-integer-type">
         Vocabulary terms that use simple type unsignedInt
         MUST be serialized as JSON integer.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-number-type"><td><a href="../index.html#td-number-type">td-number-type</a></td><td><span class="rfc2119-assertion" id="td-number-type">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="failed">1</td><td class="baseassertion">0</td><td class="baseassertion"></td></tr><tr id="td-number-type" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-number-type">td-number-type</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-number-type">
         Vocabulary terms that use simple type double
         MUST be serialized as JSON number.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-context"><td><a href="../index.html#td-context">td-context</a></td><td><span class="rfc2119-assertion" id="td-context">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="failed">1</td><td class="baseassertion">0</td><td class="baseassertion"></td></tr><tr id="td-context" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-context">td-context</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-context">
   The root object of a Thing Description instance MAY include the
   <code>@context</code> key from JSON-LD 1.1 with the value URI of 
   the Thing description context file <code>http://www.w3.org/ns/td</code>.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-context-jsonld"><td><a href="../index.html#td-context-jsonld">td-context-jsonld</a></td><td><span class="rfc2119-assertion" id="td-context-jsonld">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-context-jsonld" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-context-jsonld">td-context-jsonld</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-context-jsonld">
   When a Thing Description instance is processed and interpreted by a
   JSON-LD 1.1 processor the <code>@context</code> field
-  MUST be present</span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-additional-contexts"><td><a href="../index.html#td-additional-contexts">td-additional-contexts</a></td><td><span class="rfc2119-assertion" id="td-additional-contexts">
+  MUST be present</span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-additional-contexts" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-additional-contexts">td-additional-contexts</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-additional-contexts">
   When a single Thing Description instance involves several contexts, 
   additional namespaces with prefixes MUST be appended to the 
-  <code>@context</code> array structure.</span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-context-toplevel"><td><a href="../index.html#td-context-toplevel">td-context-toplevel</a></td><td><span class="rfc2119-assertion" id="td-context-toplevel">
+  <code>@context</code> array structure.</span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-context-toplevel" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-context-toplevel">td-context-toplevel</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-context-toplevel">
   Each mandatory and optional field name
   as defined in the class <a href="#thing" class="sec-ref"><code>Thing</code></a>
   MUST be serialized as a JSON key 
   in the root object of the Thing Description instance.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-objects"><td><a href="../index.html#td-objects">td-objects</a></td><td><span class="rfc2119-assertion" id="td-objects">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-objects" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-objects">td-objects</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-objects">
   The type of the fields <code>properties</code>, <code>actions</code>, 
   <code>events</code>, and <code>version</code> MUST be a JSON object.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-arrays"><td><a href="../index.html#td-arrays">td-arrays</a></td><td><span class="rfc2119-assertion" id="td-arrays">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-arrays" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-arrays">td-arrays</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-arrays">
   The type of the fields <code>links</code>,
   <code>scopes</code>, and <code>security</code>
   MUST be a JSON array.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-properties"><td><a href="../index.html#td-properties">td-properties</a></td><td><span class="rfc2119-assertion" id="td-properties">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-properties" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-properties">td-properties</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-properties">
   Properties (and sub-properties) offered by a Thing MUST be collected
   in the JSON-object based <code>properties</code> field
   with (unique) Property names as JSON keys.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-property-keys"><td><a href="../index.html#td-property-keys">td-property-keys</a></td><td><span class="rfc2119-assertion" id="td-property-keys">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-property-keys" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-property-keys">td-property-keys</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-property-keys">
   Each mandatory and optional vocabulary term
   as defined in the class <a href="#property" class="sec-ref"><code>Property</code></a>,
   as well as its two superclasses
   <a href="#interactionpattern" class="sec-ref"><code>InteractionPattern</code></a>
   and <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>,
   MUST be serialized as a JSON key within a Property object.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-property-objects"><td><a href="../index.html#td-property-objects">td-property-objects</a></td><td><span class="rfc2119-assertion" id="td-property-objects">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-property-objects" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-property-objects">td-property-objects</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-property-objects">
   The type of the fields <code>properties</code> and <code>items</code> 
   MUST be serialized as a JSON object.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-property-arrays"><td><a href="../index.html#td-property-arrays">td-property-arrays</a></td><td><span class="rfc2119-assertion" id="td-property-arrays">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-property-arrays" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-property-arrays">td-property-arrays</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-property-arrays">
   The type of the fields <code>forms</code>, <code>required</code>, 
   and <code>enum</code>, <code>scopes</code>, and <code>security</code>,
   MUST be serialized as a JSON array.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-property-semantic"><td><a href="../index.html#td-property-semantic">td-property-semantic</a></td><td><span class="rfc2119-assertion" id="td-property-semantic">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-property-semantic" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-property-semantic">td-property-semantic</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-property-semantic">
   Similar to the case at the <code>Thing</code> level,
   properties MAY have additional semantic annotations based on 
   JSON-LD 1.1 keywords.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-property-defaults"><td><a href="../index.html#td-property-defaults">td-property-defaults</a></td><td><span class="rfc2119-assertion" id="td-property-defaults">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-property-defaults" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-property-defaults">td-property-defaults</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-property-defaults">
   When a Thing Description instance is processed and interpreted by 
   a JSON-LD 1.1 processor, 
   each <code>property</code> MUST contain the vocabulary terms 
   <code>observable</code> and <code>readOnly</code> due to the 
   <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>
   of Linked Data.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-actions"><td><a href="../index.html#td-actions">td-actions</a></td><td><span class="rfc2119-assertion" id="td-actions">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-actions" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-actions">td-actions</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-actions">
   Actions offered by a Thing MUST be collected
   in the JSON-object based <code>actions</code> field
   with (unique) Action names as JSON keys.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-action-keys"><td><a href="../index.html#td-action-keys">td-action-keys</a></td><td><span class="rfc2119-assertion" id="td-action-keys">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-action-keys" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-action-keys">td-action-keys</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-action-keys">
   Each optional vocabulary term
   as defined in the class <a href="#action" class="sec-ref"><code>Action</code></a>
   and its superclass
   <a href="#interactionpattern" class="sec-ref"><code>InteractionPattern</code></a>
   MUST be serialized as a JSON key within an Action object.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-action-objects"><td><a href="../index.html#td-action-objects">td-action-objects</a></td><td><span class="rfc2119-assertion" id="td-action-objects">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-action-objects" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-action-objects">td-action-objects</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-action-objects">
     The type of the fields <code>subscription</code>, <code>data</code>, and <code>cancellation</code>
     MUST be serialized as a JSON object.
-    </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-action-arrays"><td><a href="../index.html#td-action-arrays">td-action-arrays</a></td><td><span class="rfc2119-assertion" id="td-action-arrays">
+    </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-action-arrays" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-action-arrays">td-action-arrays</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-action-arrays">
   The type of the fields <code>forms</code>, <code>scopes</code>,
   and <code>security</code>
   MUST be serialized as a JSON array.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-action-semantic"><td><a href="../index.html#td-action-semantic">td-action-semantic</a></td><td><span class="rfc2119-assertion" id="td-action-semantic">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-action-semantic" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-action-semantic">td-action-semantic</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-action-semantic">
   Definitions within the <code>actions</code> field
   MAY have additional semantic annotations based on JSON-LD 1.1 keywords.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-events"><td><a href="../index.html#td-events">td-events</a></td><td><span class="rfc2119-assertion" id="td-events">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-events" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-events">td-events</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-events">
         In such a case these variables in the URI MUST be collected
         in the JSON-object based <code>uriVariables</code> field
         with the associated (unique) variables names as JSON keys.
-    </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-event-keys"><td><a href="../index.html#td-event-keys">td-event-keys</a></td><td><span class="rfc2119-assertion" id="td-event-keys">
+    </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-event-keys" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-event-keys">td-event-keys</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-event-keys">
   Each optional vocabulary term
   as defined in the class <a href="#event" class="sec-ref"><code>Event</code></a>,
   as well as its two superclasses
   <a href="#interactionpattern" class="sec-ref"><code>InteractionPattern</code></a>
   and <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>,
   MUST be serialized as a JSON key within an Event object.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-event-arrays"><td><a href="../index.html#td-event-arrays">td-event-arrays</a></td><td><span class="rfc2119-assertion" id="td-event-arrays">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-event-arrays" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-event-arrays">td-event-arrays</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-event-arrays">
   The type of the fields <code>forms</code>, <code>required</code>, 
   and <code>enum</code>, <code>scopes</code>, and <code>security</code>
   MUST be serialized as a JSON array.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-event-semantic"><td><a href="../index.html#td-event-semantic">td-event-semantic</a></td><td><span class="rfc2119-assertion" id="td-event-semantic">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-event-semantic" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-event-semantic">td-event-semantic</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-event-semantic">
   Definitions within the <code>events</code> field
   MAY have additional semantic anotations based on JSON-LD 1.1 keywords.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-forms"><td><a href="../index.html#td-forms">td-forms</a></td><td><span class="rfc2119-assertion" id="td-forms">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-forms" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-forms">td-forms</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-forms">
   Each mandatory and optional vocabulary term
   as defined in the class <a href="#form" class="sec-ref"><code>Form</code></a>,
   MUST be serialized as a JSON key.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-form-protocolbindings"><td><a href="../index.html#td-form-protocolbindings">td-form-protocolbindings</a></td><td><span class="rfc2119-assertion" id="td-form-protocolbindings">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-form-protocolbindings" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-form-protocolbindings">td-form-protocolbindings</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-form-protocolbindings">
   If required, <code>forms</code> 
   MAY be supplemented with protocol-specific vocabulary terms 
   identified with a prefix. 
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-form-contenttype"><td><a href="../index.html#td-form-contenttype">td-form-contenttype</a></td><td><span class="rfc2119-assertion" id="td-form-contenttype">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-form-contenttype" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-form-contenttype">td-form-contenttype</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-form-contenttype">
   When a Thing Description instance is processed and interpreted 
   by a JSON-LD 1.1 processor, 
   each <code>forms</code> (array) entry 
@@ -421,61 +480,68 @@ the set of implementation reports.
   due to the
   <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>
   of Linked Data.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-links"><td><a href="../index.html#td-links">td-links</a></td><td><span class="rfc2119-assertion" id="td-links">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-links" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-links">td-links</a></td><td class="baseassertion">Syntax</td><td class="atrisk"><span class="rfc2119-assertion" id="td-links">
     Each mandatory and optional vocabulary term
     as defined in the class <a href="#link" class="sec-ref"><code>Link</code></a>,
     MUST be serialized as a JSON key.
-    </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-security"><td><a href="../index.html#td-security">td-security</a></td><td><span class="rfc2119-assertion" id="td-security">
+    </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-security" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-security">td-security</a></td><td class="baseassertion">Security</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-security">
     Each mandatory and optional vocabulary term
     as defined in the class 
     <a href="#securityscheme" class="sec-ref"><code>SecurityScheme</code></a>,
     MUST be serialized as a JSON key.
-    </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-security-mandatory"><td><a href="../index.html#td-security-mandatory">td-security-mandatory</a></td><td><span class="rfc2119-assertion" id="td-security-mandatory">
+    </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-security-mandatory" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-security-mandatory">td-security-mandatory</a></td><td class="baseassertion">Security</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-security-mandatory">
     Every Thing MUST have at least one security scheme specified at the top level. 
-    </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-security-overrides"><td><a href="../index.html#td-security-overrides">td-security-overrides</a></td><td><span class="rfc2119-assertion" id="td-security-overrides">
+    </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-security-overrides" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-security-overrides">td-security-overrides</a></td><td class="baseassertion">Security</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-security-overrides">
     Security schemes MAY also be specified at the interaction and form levels.
     In this case, definitions at the lower levels override (completely replace)
     the definitions at the higher level. 
-    </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-security-binding"><td><a href="../index.html#td-security-binding">td-security-binding</a></td><td><span class="rfc2119-assertion" id="td-security-binding">
+    </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-security-binding" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-security-binding">td-security-binding</a></td><td class="baseassertion">Security</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-security-binding">
     If a Thing requires a specific access mechanism for a resource, that 
     mechanism MUST be specified in the Thing Description&apos;s security scheme configuration 
     for that resource. 
-    </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-security-no-extras"><td><a href="../index.html#td-security-no-extras">td-security-no-extras</a></td><td><span class="rfc2119-assertion" id="td-security-no-extras">
+    </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-security-no-extras" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-security-no-extras">td-security-no-extras</a></td><td class="baseassertion">Security</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-security-no-extras">
     If a Thing does not require a specific access mechanism for a resource, that 
     mechanism MUST NOT be specified in the Thing Description&apos;s security scheme configuration 
     for that resource. 
-    </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-version"><td><a href="../index.html#td-version">td-version</a></td><td><span class="rfc2119-assertion" id="td-version">
+    </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-version" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-version">td-version</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-version">
         The version container MAY be used to provide additional application and/or device specific version information based on terms from non-TD namespaces. 
-    </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-media-type"><td><a href="../index.html#td-media-type">td-media-type</a></td><td><span class="rfc2119-assertion" id="td-media-type">
+    </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-media-type" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-media-type">td-media-type</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-media-type">
   The media type <code>application/td+json</code>
   MUST be also associated with the JSON-LD context 
   <code>http://www.w3.org/ns/td</code>.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-readOnly-observable-default"><td><a href="../index.html#td-readOnly-observable-default">td-readOnly-observable-default</a></td><td><span class="rfc2119-assertion" id="td-readOnly-observable-default">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-readOnly-observable-default" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-readOnly-observable-default">td-readOnly-observable-default</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-readOnly-observable-default">
   If the key terms <code>readOnly</code> and/or <code>observable</code> 
   are not present within a <code>properties</code> definition,
   the default value defined in <a href="#sec-vocabulary-definition"></a>
   MUST be assumed.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-media-type-default"><td><a href="../index.html#td-media-type-default">td-media-type-default</a></td><td><span class="rfc2119-assertion" id="td-media-type-default">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-media-type-default" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-media-type-default">td-media-type-default</a></td><td class="baseassertion">Syntax</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-media-type-default">
   If the <code>contentType</code> key term is not present within a 
   <code>forms</code> definition, the default value as defined in
   <a href="#sec-vocabulary-definition"></a>
   MUST be assumed.   
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-jsonld-preprocessing-context"><td><a href="../index.html#td-jsonld-preprocessing-context">td-jsonld-preprocessing-context</a></td><td><span class="rfc2119-assertion" id="td-jsonld-preprocessing-context">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-jsonld-preprocessing-context" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-jsonld-preprocessing-context">td-jsonld-preprocessing-context</a></td><td class="baseassertion">Preprocessing</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-jsonld-preprocessing-context">
      Before starting JSON-LD 1.1 processing of a Thing Description instance,
      there MUST be a <code>@context</code> key from JSON-LD 1.1 as defined 
      in Section 
      <a href="#sec-thing-as-a-whole-json"></a>.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-jsonld-preprocessing-prefix"><td><a href="../index.html#td-jsonld-preprocessing-prefix">td-jsonld-preprocessing-prefix</a></td><td><span class="rfc2119-assertion" id="td-jsonld-preprocessing-prefix">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-jsonld-preprocessing-prefix" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-jsonld-preprocessing-prefix">td-jsonld-preprocessing-prefix</a></td><td class="baseassertion">Preprocessing</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-jsonld-preprocessing-prefix">
      Before starting JSON-LD 1.1 processing of a Thing Description instance,
      all external vocabulary terms used in the Thing Description MUST 
      provide their context URIs as prefix or within the <code>@context</code>
      field.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr><tr class="td-jsonld-preprocessing-defaults"><td><a href="../index.html#td-jsonld-preprocessing-defaults">td-jsonld-preprocessing-defaults</a></td><td><span class="rfc2119-assertion" id="td-jsonld-preprocessing-defaults">
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="td-jsonld-preprocessing-defaults" class="baseassertion"><td class="baseassertion"><a href="../index.html#td-jsonld-preprocessing-defaults">td-jsonld-preprocessing-defaults</a></td><td class="baseassertion">Preprocessing</td><td class="baseassertion"><span class="rfc2119-assertion" id="td-jsonld-preprocessing-defaults">
      Before starting JSON-LD 1.1 processing of a Thing Description instance,
      all mandatory vocabulary terms as defined in Section
      <a href="#sec-vocabulary-definition"></a> that are missing from the instance
      MUST be inserted explicitly with their default value.
-  </span></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+  </span></td><td class="baseassertion"></td><td class="baseassertion"></td><td class="missing"></td><td class="missing"></td><td class="baseassertion"></td></tr><tr id="client-data-schema" class="extraassertion"><td class="extraassertion"><a href="../index.html#client-data-schema">client-data-schema</a></td><td class="extraassertion">Client</td><td class="extraassertion"><span class="rfc2119-assertion" id="client-data-schema">
+A WoT Thing acting as a client when interacting with another Thing MUST generate data payloads 
+according to the data schemas given in the target Thing&apos;s WoT Thing Description.
+</span></td><td class="extraassertion"></td><td class="extraassertion"></td><td class="missing"></td><td class="missing"></td><td class="extraassertion"></td></tr><tr id="client-uri-template" class="extraassertion"><td class="extraassertion"><a href="../index.html#client-uri-template">client-uri-template</a></td><td class="extraassertion">Client</td><td class="extraassertion"><span class="rfc2119-assertion" id="client-uri-template">
+A WoT Thing acting as a client when interacting with another Thing MUST generate URIs 
+according to the URI templates, base URLs, and form href parameters 
+given in the target Thing&apos;s WoT Thing Description.
+</span></td><td class="extraassertion"></td><td class="extraassertion"></td><td class="missing"></td><td class="missing"></td><td class="extraassertion"></td></tr></table>
 
 		<h1 id="h_appendices">
 			<a id="appendices" name="appendices">Appendices</a></h1>
@@ -486,9 +552,9 @@ the set of implementation reports.
 Test Specifications</a>
 </h2>
 <dl id="testspecs">
-<dt><a href="../index.html#td-vocabulary">td-vocabulary</a>: <strong>MUST</strong></dt><dd class="td-vocabulary"><span class="rfc2119-assertion" id="td-vocabulary">All vocabulary restrictions noted in these tables MUST be followed, including mandatory items and default values. </span><ul><li><strong>NO TEST SPECIFICATION</strong></li></ul></dd><dt><a href="../index.html#td-unique-identifiers">td-unique-identifiers</a>: <strong>MUST</strong></dt><dd class="td-unique-identifiers"><span class="rfc2119-assertion" id="td-unique-identifiers">Each instance of a <code>Property</code>, <code>Action</code>, and <code>Event</code> class MUST have an identifier that is unique within the context of a Thing Description document.</span><ul><li><strong>NO TEST SPECIFICATION</strong></li></ul></dd><dt><a href="../index.html#td-jsonld-keywords">td-jsonld-keywords</a>: <strong>MAY</strong></dt><dd class="td-jsonld-keywords"><span class="rfc2119-assertion" id="td-jsonld-keywords">
+<dt><a href="../index.html#td-vocabulary">td-vocabulary</a> : <strong>MUST</strong></dt><dd id="td-vocabulary" class="baseassertion"><span class="rfc2119-assertion" id="td-vocabulary">All vocabulary restrictions noted in these tables MUST be followed, including mandatory items and default values. </span><br><span><p><strong>NO TEST SPECIFICATION</strong></p></span></dd><dt><a href="../index.html#td-unique-identifiers">td-unique-identifiers</a> : <strong>MUST</strong></dt><dd id="td-unique-identifiers" class="baseassertion"><span class="rfc2119-assertion" id="td-unique-identifiers">Each instance of a <code>Property</code>, <code>Action</code>, and <code>Event</code> class MUST have an identifier that is unique within the context of a Thing Description document.</span><br><span><p><strong>NO TEST SPECIFICATION</strong></p></span></dd><dt><a href="../index.html#td-jsonld-keywords">td-jsonld-keywords</a> : <strong>MAY</strong></dt><dd id="td-jsonld-keywords" class="baseassertion"><span class="rfc2119-assertion" id="td-jsonld-keywords">
   Thing Description instances MAY contain JSON-LD 1.1 keywords such as
-  <code>@context</code> and <code>@type</code>.</span><ul><li><span class="testspec" id="td-jsonld-keywords">
+  <code>@context</code> and <code>@type</code>.</span><br><span><span class="testspec" id="td-jsonld-keywords">
 <ul>
 <li>	
 TESTED
@@ -500,10 +566,10 @@ EXAMPLE EXISTS only for @context
 COUNTER EXAMPLE CANNOT EXIST
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-string-type">td-string-type</a>: <strong>MUST</strong></dt><dd class="td-string-type"><span class="rfc2119-assertion" id="td-string-type">
+</span></span></dd><dt><a href="../index.html#td-string-type">td-string-type</a> : <strong>MUST</strong></dt><dd id="td-string-type" class="baseassertion"><span class="rfc2119-assertion" id="td-string-type">
         Vocabulary terms that use simple types string and anyURI
         MUST be serialized as JSON string.
-  </span><ul><li><span class="testspec" id="td-string-type">
+  </span><br><span><span class="testspec" id="td-string-type">
 <ul>
 <li>	
 ASSERTION NOT CLEAR (does this mean that strings we have in TD such as &quot;type&quot;:&quot;number&quot; must be &quot;type&quot; and not (type) or (type is number) etc.? )
@@ -518,10 +584,10 @@ EXAMPLE DOES NOT EXIST
 COUNTER EXAMPLE DOES NOT EXIST
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-integer-type">td-integer-type</a>: <strong>MUST</strong></dt><dd class="td-integer-type"><span class="rfc2119-assertion" id="td-integer-type">
+</span></span></dd><dt><a href="../index.html#td-integer-type">td-integer-type</a> : <strong>MUST</strong></dt><dd id="td-integer-type" class="baseassertion"><span class="rfc2119-assertion" id="td-integer-type">
         Vocabulary terms that use simple type unsignedInt
         MUST be serialized as JSON integer.
-  </span><ul><li><span class="testspec" id="td-integer-type">
+  </span><br><span><span class="testspec" id="td-integer-type">
 <ul>
 <li>	
 ASSERTION NOT CLEAR (does this mean that strings we have in TD such as &quot;type&quot;:123 must be 123 and not (1 2 3))
@@ -536,10 +602,10 @@ EXAMPLE DOES NOT EXIST
 COUNTER EXAMPLE DOES NOT EXIST
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-number-type">td-number-type</a>: <strong>MUST</strong></dt><dd class="td-number-type"><span class="rfc2119-assertion" id="td-number-type">
+</span></span></dd><dt><a href="../index.html#td-number-type">td-number-type</a> : <strong>MUST</strong></dt><dd id="td-number-type" class="baseassertion"><span class="rfc2119-assertion" id="td-number-type">
         Vocabulary terms that use simple type double
         MUST be serialized as JSON number.
-  </span><ul><li><span class="testspec" id="td-number-type">
+  </span><br><span><span class="testspec" id="td-number-type">
 <ul>
 <li>	
 ASSERTION NOT CLEAR (does this mean that strings we have in TD such as &quot;type&quot;:123 must be 123 and not (1 2 3))
@@ -554,11 +620,11 @@ EXAMPLE DOES NOT EXIST
 COUNTEREXAMPLE DOES NOT EXIST
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-context">td-context</a>: <strong>MAY</strong></dt><dd class="td-context"><span class="rfc2119-assertion" id="td-context">
+</span></span></dd><dt><a href="../index.html#td-context">td-context</a> : <strong>MAY</strong></dt><dd id="td-context" class="baseassertion"><span class="rfc2119-assertion" id="td-context">
   The root object of a Thing Description instance MAY include the
   <code>@context</code> key from JSON-LD 1.1 with the value URI of 
   the Thing description context file <code>http://www.w3.org/ns/td</code>.
-  </span><ul><li><span class="testspec" id="td-context">
+  </span><br><span><span class="testspec" id="td-context">
 <ul>
 <li>	
 ASSERTION NOT CLEAR: Can you have an @context key without this context file
@@ -567,10 +633,10 @@ ASSERTION NOT CLEAR: Can you have an @context key without this context file
 IF YES THEN TESTED WRONGLY
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-context-jsonld">td-context-jsonld</a>: <strong>MUST</strong></dt><dd class="td-context-jsonld"><span class="rfc2119-assertion" id="td-context-jsonld">
+</span></span></dd><dt><a href="../index.html#td-context-jsonld">td-context-jsonld</a> : <strong>MUST</strong></dt><dd id="td-context-jsonld" class="baseassertion"><span class="rfc2119-assertion" id="td-context-jsonld">
   When a Thing Description instance is processed and interpreted by a
   JSON-LD 1.1 processor the <code>@context</code> field
-  MUST be present</span><ul><li><span class="testspec" id="td-context-jsonld">
+  MUST be present</span><br><span><span class="testspec" id="td-context-jsonld">
 <ul>
 <li>	
 NOT TESTED
@@ -579,10 +645,10 @@ NOT TESTED
 HOW TO TEST
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-additional-contexts">td-additional-contexts</a>: <strong>MUST</strong></dt><dd class="td-additional-contexts"><span class="rfc2119-assertion" id="td-additional-contexts">
+</span></span></dd><dt><a href="../index.html#td-additional-contexts">td-additional-contexts</a> : <strong>MUST</strong></dt><dd id="td-additional-contexts" class="baseassertion"><span class="rfc2119-assertion" id="td-additional-contexts">
   When a single Thing Description instance involves several contexts, 
   additional namespaces with prefixes MUST be appended to the 
-  <code>@context</code> array structure.</span><ul><li><span class="testspec" id="td-additional-contexts">
+  <code>@context</code> array structure.</span><br><span><span class="testspec" id="td-additional-contexts">
 <ul>
 <li>	
 TESTED
@@ -591,12 +657,12 @@ TESTED
 EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-context-toplevel">td-context-toplevel</a>: <strong>MUST</strong></dt><dd class="td-context-toplevel"><span class="rfc2119-assertion" id="td-context-toplevel">
+</span></span></dd><dt><a href="../index.html#td-context-toplevel">td-context-toplevel</a> : <strong>MUST</strong></dt><dd id="td-context-toplevel" class="baseassertion"><span class="rfc2119-assertion" id="td-context-toplevel">
   Each mandatory and optional field name
   as defined in the class <a href="#thing" class="sec-ref"><code>Thing</code></a>
   MUST be serialized as a JSON key 
   in the root object of the Thing Description instance.
-  </span><ul><li><span class="testspec" id="td-context-toplevel">
+  </span><br><span><span class="testspec" id="td-context-toplevel">
 <ul>
 <li>	
 	TESTED
@@ -608,10 +674,10 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	COUNTER EXAMPLE DOESN&apos;T EXIST 
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-objects">td-objects</a>: <strong>MUST</strong></dt><dd class="td-objects"><span class="rfc2119-assertion" id="td-objects">
+</span></span></dd><dt><a href="../index.html#td-objects">td-objects</a> : <strong>MUST</strong></dt><dd id="td-objects" class="baseassertion"><span class="rfc2119-assertion" id="td-objects">
   The type of the fields <code>properties</code>, <code>actions</code>, 
   <code>events</code>, and <code>version</code> MUST be a JSON object.
-  </span><ul><li><span class="testspec" id="td-objects">
+  </span><br><span><span class="testspec" id="td-objects">
 <ul>
 <li>	
 	TESTED
@@ -623,11 +689,11 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	COUNTER EXAMPLE DOESN&apos;T EXIST 
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-arrays">td-arrays</a>: <strong>MUST</strong></dt><dd class="td-arrays"><span class="rfc2119-assertion" id="td-arrays">
+</span></span></dd><dt><a href="../index.html#td-arrays">td-arrays</a> : <strong>MUST</strong></dt><dd id="td-arrays" class="baseassertion"><span class="rfc2119-assertion" id="td-arrays">
   The type of the fields <code>links</code>,
   <code>scopes</code>, and <code>security</code>
   MUST be a JSON array.
-  </span><ul><li><span class="testspec" id="td-arrays">
+  </span><br><span><span class="testspec" id="td-arrays">
 <ul>
 <li>	
 	TESTED
@@ -639,11 +705,11 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	COUNTER EXAMPLE DOESN&apos;T EXIST 
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-properties">td-properties</a>: <strong>MUST</strong></dt><dd class="td-properties"><span class="rfc2119-assertion" id="td-properties">
+</span></span></dd><dt><a href="../index.html#td-properties">td-properties</a> : <strong>MUST</strong></dt><dd id="td-properties" class="baseassertion"><span class="rfc2119-assertion" id="td-properties">
   Properties (and sub-properties) offered by a Thing MUST be collected
   in the JSON-object based <code>properties</code> field
   with (unique) Property names as JSON keys.
-  </span><ul><li><span class="testspec" id="td-properties">
+  </span><br><span><span class="testspec" id="td-properties">
 <ul>
 <li>	
 	NOT TESTED
@@ -652,23 +718,23 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	TDS THAT DON&apos;T RESPECT THIS ASSERTION ARE VALIDATED
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-property-keys">td-property-keys</a>: <strong>MUST</strong></dt><dd class="td-property-keys"><span class="rfc2119-assertion" id="td-property-keys">
+</span></span></dd><dt><a href="../index.html#td-property-keys">td-property-keys</a> : <strong>MUST</strong></dt><dd id="td-property-keys" class="baseassertion"><span class="rfc2119-assertion" id="td-property-keys">
   Each mandatory and optional vocabulary term
   as defined in the class <a href="#property" class="sec-ref"><code>Property</code></a>,
   as well as its two superclasses
   <a href="#interactionpattern" class="sec-ref"><code>InteractionPattern</code></a>
   and <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>,
   MUST be serialized as a JSON key within a Property object.
-  </span><ul><li><span class="testspec" id="td-property-keys">
+  </span><br><span><span class="testspec" id="td-property-keys">
 <ul>
 <li>	
 	ASSERTION NOT CLEAR
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-property-objects">td-property-objects</a>: <strong>MUST</strong></dt><dd class="td-property-objects"><span class="rfc2119-assertion" id="td-property-objects">
+</span></span></dd><dt><a href="../index.html#td-property-objects">td-property-objects</a> : <strong>MUST</strong></dt><dd id="td-property-objects" class="baseassertion"><span class="rfc2119-assertion" id="td-property-objects">
   The type of the fields <code>properties</code> and <code>items</code> 
   MUST be serialized as a JSON object.
-  </span><ul><li><span class="testspec" id="td-property-objects">
+  </span><br><span><span class="testspec" id="td-property-objects">
 <ul>
 <li>	
 	ASSERTION NOT CLEAR (SOUNDS WRONG SINCE ITEMS CAN BE AN ARRAY 
@@ -678,21 +744,21 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	NOT TESTED
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-property-arrays">td-property-arrays</a>: <strong>MUST</strong></dt><dd class="td-property-arrays"><span class="rfc2119-assertion" id="td-property-arrays">
+</span></span></dd><dt><a href="../index.html#td-property-arrays">td-property-arrays</a> : <strong>MUST</strong></dt><dd id="td-property-arrays" class="baseassertion"><span class="rfc2119-assertion" id="td-property-arrays">
   The type of the fields <code>forms</code>, <code>required</code>, 
   and <code>enum</code>, <code>scopes</code>, and <code>security</code>,
   MUST be serialized as a JSON array.
-  </span><ul><li><span class="testspec" id="td-property-arrays">
+  </span><br><span><span class="testspec" id="td-property-arrays">
 <ul>
 <li>	
 	TESTED
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-property-semantic">td-property-semantic</a>: <strong>MAY</strong></dt><dd class="td-property-semantic"><span class="rfc2119-assertion" id="td-property-semantic">
+</span></span></dd><dt><a href="../index.html#td-property-semantic">td-property-semantic</a> : <strong>MAY</strong></dt><dd id="td-property-semantic" class="baseassertion"><span class="rfc2119-assertion" id="td-property-semantic">
   Similar to the case at the <code>Thing</code> level,
   properties MAY have additional semantic annotations based on 
   JSON-LD 1.1 keywords.
-  </span><ul><li><span class="testspec" id="td-property-semantic">
+  </span><br><span><span class="testspec" id="td-property-semantic">
 <ul>
 <li>	
 	CANNOT BE TESTED
@@ -701,14 +767,14 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	EXAMPLE EXISTS
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-property-defaults">td-property-defaults</a>: <strong>MUST</strong></dt><dd class="td-property-defaults"><span class="rfc2119-assertion" id="td-property-defaults">
+</span></span></dd><dt><a href="../index.html#td-property-defaults">td-property-defaults</a> : <strong>MUST</strong></dt><dd id="td-property-defaults" class="baseassertion"><span class="rfc2119-assertion" id="td-property-defaults">
   When a Thing Description instance is processed and interpreted by 
   a JSON-LD 1.1 processor, 
   each <code>property</code> MUST contain the vocabulary terms 
   <code>observable</code> and <code>readOnly</code> due to the 
   <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>
   of Linked Data.
-  </span><ul><li><span class="testspec" id="td-property-defaults">
+  </span><br><span><span class="testspec" id="td-property-defaults">
 <ul>
 <li>	
 	NOT TESTED
@@ -717,32 +783,32 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	NOT CLEAR HOW TO TEST
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-actions">td-actions</a>: <strong>MUST</strong></dt><dd class="td-actions"><span class="rfc2119-assertion" id="td-actions">
+</span></span></dd><dt><a href="../index.html#td-actions">td-actions</a> : <strong>MUST</strong></dt><dd id="td-actions" class="baseassertion"><span class="rfc2119-assertion" id="td-actions">
   Actions offered by a Thing MUST be collected
   in the JSON-object based <code>actions</code> field
   with (unique) Action names as JSON keys.
-  </span><ul><li><span class="testspec" id="td-actions">
+  </span><br><span><span class="testspec" id="td-actions">
 <ul>
 <li>	
 	NOT TESTED
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-action-keys">td-action-keys</a>: <strong>MUST</strong></dt><dd class="td-action-keys"><span class="rfc2119-assertion" id="td-action-keys">
+</span></span></dd><dt><a href="../index.html#td-action-keys">td-action-keys</a> : <strong>MUST</strong></dt><dd id="td-action-keys" class="baseassertion"><span class="rfc2119-assertion" id="td-action-keys">
   Each optional vocabulary term
   as defined in the class <a href="#action" class="sec-ref"><code>Action</code></a>
   and its superclass
   <a href="#interactionpattern" class="sec-ref"><code>InteractionPattern</code></a>
   MUST be serialized as a JSON key within an Action object.
-  </span><ul><li><span class="testspec" id="td-action-keys">
+  </span><br><span><span class="testspec" id="td-action-keys">
 <ul>
 <li>	
 	ASSERTION NOT CLEAR
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-action-objects">td-action-objects</a>: <strong>MUST</strong></dt><dd class="td-action-objects"><span class="rfc2119-assertion" id="td-action-objects">
+</span></span></dd><dt><a href="../index.html#td-action-objects">td-action-objects</a> : <strong>MUST</strong></dt><dd id="td-action-objects" class="baseassertion"><span class="rfc2119-assertion" id="td-action-objects">
     The type of the fields <code>subscription</code>, <code>data</code>, and <code>cancellation</code>
     MUST be serialized as a JSON object.
-    </span><ul><li><span class="testspec" id="td-action-objects">
+    </span><br><span><span class="testspec" id="td-action-objects">
 <ul>
 <li>	
 	TESTED
@@ -751,11 +817,11 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	EXAMPLE DOES NOT EXIST
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-action-arrays">td-action-arrays</a>: <strong>MUST</strong></dt><dd class="td-action-arrays"><span class="rfc2119-assertion" id="td-action-arrays">
+</span></span></dd><dt><a href="../index.html#td-action-arrays">td-action-arrays</a> : <strong>MUST</strong></dt><dd id="td-action-arrays" class="baseassertion"><span class="rfc2119-assertion" id="td-action-arrays">
   The type of the fields <code>forms</code>, <code>scopes</code>,
   and <code>security</code>
   MUST be serialized as a JSON array.
-  </span><ul><li><span class="testspec" id="td-action-arrays">
+  </span><br><span><span class="testspec" id="td-action-arrays">
 <ul>
 <li>	
 	TESTED
@@ -767,20 +833,20 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	COUNTER EXAMPLE DOES NOT EXIST
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-action-semantic">td-action-semantic</a>: <strong>MAY</strong></dt><dd class="td-action-semantic"><span class="rfc2119-assertion" id="td-action-semantic">
+</span></span></dd><dt><a href="../index.html#td-action-semantic">td-action-semantic</a> : <strong>MAY</strong></dt><dd id="td-action-semantic" class="baseassertion"><span class="rfc2119-assertion" id="td-action-semantic">
   Definitions within the <code>actions</code> field
   MAY have additional semantic annotations based on JSON-LD 1.1 keywords.
-  </span><ul><li><span class="testspec" id="td-action-semantic">
+  </span><br><span><span class="testspec" id="td-action-semantic">
 <ul>
 <li>	
 	CANNOT BE TESTED
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-events">td-events</a>: <strong>MUST</strong></dt><dd class="td-events"><span class="rfc2119-assertion" id="td-events">
+</span></span></dd><dt><a href="../index.html#td-events">td-events</a> : <strong>MUST</strong></dt><dd id="td-events" class="baseassertion"><span class="rfc2119-assertion" id="td-events">
         In such a case these variables in the URI MUST be collected
         in the JSON-object based <code>uriVariables</code> field
         with the associated (unique) variables names as JSON keys.
-    </span><ul><li><span class="testspec" id="td-events">
+    </span><br><span><span class="testspec" id="td-events">
 <ul>
 <li>	
 	HOW TO TEST COUNTER EXAMPLE? 
@@ -789,24 +855,24 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	WHAT IS A COUNTER EXAMPLE?
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-event-keys">td-event-keys</a>: <strong>MUST</strong></dt><dd class="td-event-keys"><span class="rfc2119-assertion" id="td-event-keys">
+</span></span></dd><dt><a href="../index.html#td-event-keys">td-event-keys</a> : <strong>MUST</strong></dt><dd id="td-event-keys" class="baseassertion"><span class="rfc2119-assertion" id="td-event-keys">
   Each optional vocabulary term
   as defined in the class <a href="#event" class="sec-ref"><code>Event</code></a>,
   as well as its two superclasses
   <a href="#interactionpattern" class="sec-ref"><code>InteractionPattern</code></a>
   and <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>,
   MUST be serialized as a JSON key within an Event object.
-  </span><ul><li><span class="testspec" id="td-event-keys">
+  </span><br><span><span class="testspec" id="td-event-keys">
 <ul>
 <li>	
 	ASSERTION NOT CLEAR
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-event-arrays">td-event-arrays</a>: <strong>MUST</strong></dt><dd class="td-event-arrays"><span class="rfc2119-assertion" id="td-event-arrays">
+</span></span></dd><dt><a href="../index.html#td-event-arrays">td-event-arrays</a> : <strong>MUST</strong></dt><dd id="td-event-arrays" class="baseassertion"><span class="rfc2119-assertion" id="td-event-arrays">
   The type of the fields <code>forms</code>, <code>required</code>, 
   and <code>enum</code>, <code>scopes</code>, and <code>security</code>
   MUST be serialized as a JSON array.
-  </span><ul><li><span class="testspec" id="td-event-arrays">
+  </span><br><span><span class="testspec" id="td-event-arrays">
 <ul>
 <li>	
 	TESTED
@@ -815,20 +881,20 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	EXAMPLE DOES NOT EXIST EXPICITLY FOR THIS
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-event-semantic">td-event-semantic</a>: <strong>MAY</strong></dt><dd class="td-event-semantic"><span class="rfc2119-assertion" id="td-event-semantic">
+</span></span></dd><dt><a href="../index.html#td-event-semantic">td-event-semantic</a> : <strong>MAY</strong></dt><dd id="td-event-semantic" class="baseassertion"><span class="rfc2119-assertion" id="td-event-semantic">
   Definitions within the <code>events</code> field
   MAY have additional semantic anotations based on JSON-LD 1.1 keywords.
-  </span><ul><li><span class="testspec" id="td-event-semantic">
+  </span><br><span><span class="testspec" id="td-event-semantic">
 <ul>
 <li>	
 	CANNOT BE TESTED
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-forms">td-forms</a>: <strong>MUST</strong></dt><dd class="td-forms"><span class="rfc2119-assertion" id="td-forms">
+</span></span></dd><dt><a href="../index.html#td-forms">td-forms</a> : <strong>MUST</strong></dt><dd id="td-forms" class="baseassertion"><span class="rfc2119-assertion" id="td-forms">
   Each mandatory and optional vocabulary term
   as defined in the class <a href="#form" class="sec-ref"><code>Form</code></a>,
   MUST be serialized as a JSON key.
-  </span><ul><li><span class="testspec" id="td-forms">
+  </span><br><span><span class="testspec" id="td-forms">
 <ul>
 <li>	
 	HOW TO TEST COUNTEREXAMPLE? 
@@ -837,11 +903,11 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	WHAT IS A COUNTEREXAMPLE?
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-form-protocolbindings">td-form-protocolbindings</a>: <strong>MAY</strong></dt><dd class="td-form-protocolbindings"><span class="rfc2119-assertion" id="td-form-protocolbindings">
+</span></span></dd><dt><a href="../index.html#td-form-protocolbindings">td-form-protocolbindings</a> : <strong>MAY</strong></dt><dd id="td-form-protocolbindings" class="baseassertion"><span class="rfc2119-assertion" id="td-form-protocolbindings">
   If required, <code>forms</code> 
   MAY be supplemented with protocol-specific vocabulary terms 
   identified with a prefix. 
-  </span><ul><li><span class="testspec" id="td-form-protocolbindings">
+  </span><br><span><span class="testspec" id="td-form-protocolbindings">
 <ul>
 <li>	
 	Ege: CANNOT BE TESTED
@@ -850,7 +916,7 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	McCool: CONSIDER TESTING WITH SHEX
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-form-contenttype">td-form-contenttype</a>: <strong>MUST</strong></dt><dd class="td-form-contenttype"><span class="rfc2119-assertion" id="td-form-contenttype">
+</span></span></dd><dt><a href="../index.html#td-form-contenttype">td-form-contenttype</a> : <strong>MUST</strong></dt><dd id="td-form-contenttype" class="baseassertion"><span class="rfc2119-assertion" id="td-form-contenttype">
   When a Thing Description instance is processed and interpreted 
   by a JSON-LD 1.1 processor, 
   each <code>forms</code> (array) entry 
@@ -858,7 +924,7 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
   due to the
   <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>
   of Linked Data.
-  </span><ul><li><span class="testspec" id="td-form-contenttype">
+  </span><br><span><span class="testspec" id="td-form-contenttype">
 <ul>
 <li>	
 	NOT TESTED
@@ -867,11 +933,11 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	HOW TO TEST
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-links">td-links</a>: <strong>MUST</strong></dt><dd class="td-links"><span class="rfc2119-assertion" id="td-links">
+</span></span></dd><dt><a href="../index.html#td-links">td-links</a> : <strong>MUST</strong></dt><dd id="td-links" class="baseassertion"><span class="rfc2119-assertion" id="td-links">
     Each mandatory and optional vocabulary term
     as defined in the class <a href="#link" class="sec-ref"><code>Link</code></a>,
     MUST be serialized as a JSON key.
-    </span><ul><li><span class="testspec" id="td-links">
+    </span><br><span><span class="testspec" id="td-links">
 <ul>
 <li>	
 	HOW TO TEST COUNTEREXAMPLE? 
@@ -880,12 +946,12 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	WHAT IS A COUNTEREXAMPLE?
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-security">td-security</a>: <strong>MUST</strong></dt><dd class="td-security"><span class="rfc2119-assertion" id="td-security">
+</span></span></dd><dt><a href="../index.html#td-security">td-security</a> : <strong>MUST</strong></dt><dd id="td-security" class="baseassertion"><span class="rfc2119-assertion" id="td-security">
     Each mandatory and optional vocabulary term
     as defined in the class 
     <a href="#securityscheme" class="sec-ref"><code>SecurityScheme</code></a>,
     MUST be serialized as a JSON key.
-    </span><ul><li><span class="testspec" id="td-security">
+    </span><br><span><span class="testspec" id="td-security">
 <ul>
 <li>	
 	HOW TO TEST COUNTEREXAMPLE? 
@@ -894,9 +960,9 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	WHAT IS A COUNTEREXAMPLE?
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-security-mandatory">td-security-mandatory</a>: <strong>MUST</strong></dt><dd class="td-security-mandatory"><span class="rfc2119-assertion" id="td-security-mandatory">
+</span></span></dd><dt><a href="../index.html#td-security-mandatory">td-security-mandatory</a> : <strong>MUST</strong></dt><dd id="td-security-mandatory" class="baseassertion"><span class="rfc2119-assertion" id="td-security-mandatory">
     Every Thing MUST have at least one security scheme specified at the top level. 
-    </span><ul><li><span class="testspec" id="td-security-mandatory">
+    </span><br><span><span class="testspec" id="td-security-mandatory">
 <ul>
 <li>	
 	TESTED
@@ -908,15 +974,15 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	COUNTEREXAMPLE DOESN&apos;T EXIST
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-security-overrides">td-security-overrides</a>: <strong>MAY</strong></dt><dd class="td-security-overrides"><span class="rfc2119-assertion" id="td-security-overrides">
+</span></span></dd><dt><a href="../index.html#td-security-overrides">td-security-overrides</a> : <strong>MAY</strong></dt><dd id="td-security-overrides" class="baseassertion"><span class="rfc2119-assertion" id="td-security-overrides">
     Security schemes MAY also be specified at the interaction and form levels.
     In this case, definitions at the lower levels override (completely replace)
     the definitions at the higher level. 
-    </span><ul><li><strong>NO TEST SPECIFICATION</strong></li></ul></dd><dt><a href="../index.html#td-security-binding">td-security-binding</a>: <strong>MUST</strong></dt><dd class="td-security-binding"><span class="rfc2119-assertion" id="td-security-binding">
+    </span><br><span><p><strong>NO TEST SPECIFICATION</strong></p></span></dd><dt><a href="../index.html#td-security-binding">td-security-binding</a> : <strong>MUST</strong></dt><dd id="td-security-binding" class="baseassertion"><span class="rfc2119-assertion" id="td-security-binding">
     If a Thing requires a specific access mechanism for a resource, that 
     mechanism MUST be specified in the Thing Description&apos;s security scheme configuration 
     for that resource. 
-    </span><ul><li><span class="testspec" id="td-security-binding">
+    </span><br><span><span class="testspec" id="td-security-binding">
 <ul>
 <li>	
 	HOW TO TEST? 
@@ -925,13 +991,13 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	PENETRATION TEST?
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-security-no-extras">td-security-no-extras</a>: <strong>MUST NOT</strong></dt><dd class="td-security-no-extras"><span class="rfc2119-assertion" id="td-security-no-extras">
+</span></span></dd><dt><a href="../index.html#td-security-no-extras">td-security-no-extras</a> : <strong>MUST NOT</strong></dt><dd id="td-security-no-extras" class="baseassertion"><span class="rfc2119-assertion" id="td-security-no-extras">
     If a Thing does not require a specific access mechanism for a resource, that 
     mechanism MUST NOT be specified in the Thing Description&apos;s security scheme configuration 
     for that resource. 
-    </span><ul><li><strong>NO TEST SPECIFICATION</strong></li></ul></dd><dt><a href="../index.html#td-version">td-version</a>: <strong>MAY</strong></dt><dd class="td-version"><span class="rfc2119-assertion" id="td-version">
+    </span><br><span><p><strong>NO TEST SPECIFICATION</strong></p></span></dd><dt><a href="../index.html#td-version">td-version</a> : <strong>MAY</strong></dt><dd id="td-version" class="baseassertion"><span class="rfc2119-assertion" id="td-version">
         The version container MAY be used to provide additional application and/or device specific version information based on terms from non-TD namespaces. 
-    </span><ul><li><span class="testspec" id="td-version">
+    </span><br><span><span class="testspec" id="td-version">
 <ul>
 <li>	
 	TESTED
@@ -940,38 +1006,38 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	EXAMPLE EXISTS
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-media-type">td-media-type</a>: <strong>MUST</strong></dt><dd class="td-media-type"><span class="rfc2119-assertion" id="td-media-type">
+</span></span></dd><dt><a href="../index.html#td-media-type">td-media-type</a> : <strong>MUST</strong></dt><dd id="td-media-type" class="baseassertion"><span class="rfc2119-assertion" id="td-media-type">
   The media type <code>application/td+json</code>
   MUST be also associated with the JSON-LD context 
   <code>http://www.w3.org/ns/td</code>.
-  </span><ul><li><span class="testspec" id="td-media-type">
+  </span><br><span><span class="testspec" id="td-media-type">
 <ul>
 <li>	
 	ASSERTION NOT CLEAR
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-readOnly-observable-default">td-readOnly-observable-default</a>: <strong>MUST</strong></dt><dd class="td-readOnly-observable-default"><span class="rfc2119-assertion" id="td-readOnly-observable-default">
+</span></span></dd><dt><a href="../index.html#td-readOnly-observable-default">td-readOnly-observable-default</a> : <strong>MUST</strong></dt><dd id="td-readOnly-observable-default" class="baseassertion"><span class="rfc2119-assertion" id="td-readOnly-observable-default">
   If the key terms <code>readOnly</code> and/or <code>observable</code> 
   are not present within a <code>properties</code> definition,
   the default value defined in <a href="#sec-vocabulary-definition"></a>
   MUST be assumed.
-  </span><ul><li><strong>NO TEST SPECIFICATION</strong></li></ul></dd><dt><a href="../index.html#td-media-type-default">td-media-type-default</a>: <strong>MUST</strong></dt><dd class="td-media-type-default"><span class="rfc2119-assertion" id="td-media-type-default">
+  </span><br><span><p><strong>NO TEST SPECIFICATION</strong></p></span></dd><dt><a href="../index.html#td-media-type-default">td-media-type-default</a> : <strong>MUST</strong></dt><dd id="td-media-type-default" class="baseassertion"><span class="rfc2119-assertion" id="td-media-type-default">
   If the <code>contentType</code> key term is not present within a 
   <code>forms</code> definition, the default value as defined in
   <a href="#sec-vocabulary-definition"></a>
   MUST be assumed.   
-  </span><ul><li><span class="testspec" id="td-media-type-default">
+  </span><br><span><span class="testspec" id="td-media-type-default">
 <ul>
 <li>	
 	HOW TO TEST?
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-jsonld-preprocessing-context">td-jsonld-preprocessing-context</a>: <strong>MUST</strong></dt><dd class="td-jsonld-preprocessing-context"><span class="rfc2119-assertion" id="td-jsonld-preprocessing-context">
+</span></span></dd><dt><a href="../index.html#td-jsonld-preprocessing-context">td-jsonld-preprocessing-context</a> : <strong>MUST</strong></dt><dd id="td-jsonld-preprocessing-context" class="baseassertion"><span class="rfc2119-assertion" id="td-jsonld-preprocessing-context">
      Before starting JSON-LD 1.1 processing of a Thing Description instance,
      there MUST be a <code>@context</code> key from JSON-LD 1.1 as defined 
      in Section 
      <a href="#sec-thing-as-a-whole-json"></a>.
-  </span><ul><li><span class="testspec" id="td-jsonld-preprocessing-context">
+  </span><br><span><span class="testspec" id="td-jsonld-preprocessing-context">
 <ul>
 <li>	
 	HOW TO TEST? 
@@ -980,29 +1046,36 @@ EXAMPLE EXIST BUT NOT EXPLICITELY DONE FOR THIS ASSERTION
 	HOW TO DISGUISH WHETHER IT SHOULD BE A JSON-LD WHICH LACKS THE @CONTEXT?
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-jsonld-preprocessing-prefix">td-jsonld-preprocessing-prefix</a>: <strong>MUST</strong></dt><dd class="td-jsonld-preprocessing-prefix"><span class="rfc2119-assertion" id="td-jsonld-preprocessing-prefix">
+</span></span></dd><dt><a href="../index.html#td-jsonld-preprocessing-prefix">td-jsonld-preprocessing-prefix</a> : <strong>MUST</strong></dt><dd id="td-jsonld-preprocessing-prefix" class="baseassertion"><span class="rfc2119-assertion" id="td-jsonld-preprocessing-prefix">
      Before starting JSON-LD 1.1 processing of a Thing Description instance,
      all external vocabulary terms used in the Thing Description MUST 
      provide their context URIs as prefix or within the <code>@context</code>
      field.
-  </span><ul><li><span class="testspec" id="td-jsonld-preprocessing-prefix">
+  </span><br><span><span class="testspec" id="td-jsonld-preprocessing-prefix">
 <ul>
 <li>	
 	HOW TO TEST? 
 </li>
 </ul>
-</span></li></ul></dd><dt><a href="../index.html#td-jsonld-preprocessing-defaults">td-jsonld-preprocessing-defaults</a>: <strong>MUST</strong></dt><dd class="td-jsonld-preprocessing-defaults"><span class="rfc2119-assertion" id="td-jsonld-preprocessing-defaults">
+</span></span></dd><dt><a href="../index.html#td-jsonld-preprocessing-defaults">td-jsonld-preprocessing-defaults</a> : <strong>MUST</strong></dt><dd id="td-jsonld-preprocessing-defaults" class="baseassertion"><span class="rfc2119-assertion" id="td-jsonld-preprocessing-defaults">
      Before starting JSON-LD 1.1 processing of a Thing Description instance,
      all mandatory vocabulary terms as defined in Section
      <a href="#sec-vocabulary-definition"></a> that are missing from the instance
      MUST be inserted explicitly with their default value.
-  </span><ul><li><span class="testspec" id="td-jsonld-preprocessing-defaults">
+  </span><br><span><span class="testspec" id="td-jsonld-preprocessing-defaults">
 <ul>
 <li>	
 	HOW TO TEST? 
 </li>
 </ul>
-</span></li></ul></dd></dl>
+</span></span></dd><dt><a href="../index.html#client-data-schema">client-data-schema</a> <em>(extra)</em>: <strong>MUST</strong></dt><dd id="client-data-schema" class="extraassertion"><span class="rfc2119-assertion" id="client-data-schema">
+A WoT Thing acting as a client when interacting with another Thing MUST generate data payloads 
+according to the data schemas given in the target Thing&apos;s WoT Thing Description.
+</span><br><span><p><strong>NO TEST SPECIFICATION</strong></p></span></dd><dt><a href="../index.html#client-uri-template">client-uri-template</a> <em>(extra)</em>: <strong>MUST</strong></dt><dd id="client-uri-template" class="extraassertion"><span class="rfc2119-assertion" id="client-uri-template">
+A WoT Thing acting as a client when interacting with another Thing MUST generate URIs 
+according to the URI templates, base URLs, and form href parameters 
+given in the target Thing&apos;s WoT Thing Description.
+</span><br><span><p><strong>NO TEST SPECIFICATION</strong></p></span></dd></dl>
 		
 <h2 id="h_ack">
 			<a id="ackB" name="ack">Appendix B -
