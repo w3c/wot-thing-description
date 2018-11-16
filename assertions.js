@@ -294,7 +294,7 @@ function merge_assertions(assertions,ac,done_callback) {
     plan_dd.append(a_text);
     a_spec = testspec[a];
     plan_dd.append('<br/><span></span>');
-    let plan_li = plan_dom('dd.'+a+'>span:last-child');
+    let plan_li = plan_dom('dd#'+a+'>span:last-child');
     if (undefined === a_spec) {
         console.log("  WARNING: no test spec");
         plan_li.append('<p><strong>NO TEST SPECIFICATION</strong></p>');
