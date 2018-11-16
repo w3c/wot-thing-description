@@ -95,7 +95,27 @@
                 , publisher: "W3C"
                 , date: "20 August 2017"
                 }
-	      , "WOT-PROTOCOL-BINDING" : {
+              , "WOT-SECURITY-CONSIDERATIONS" : {
+                title: "Web of Things Security and Privacy Considerations"
+                , href: "https://w3c.github.io/wot-security/"
+                , authors:  [
+                  , "Michael McCool"
+                  , "Elena Reshetova"
+                  ]
+                , publisher: "W3C"
+                , date: "28 August 2017"
+                }
+              , "WOT-SECURITY-BEST-PRACTICES" : {
+                title: "Web of Things Security and Privacy Best Practices (WIP)"
+                , href: "https://github.com/w3c/wot-security/blob/master/wot-security-best-practices.md"
+                , authors:  [
+                  , "Michael McCool"
+                  , "Elena Reshetova"
+                  ]
+                , publisher: "W3C"
+                , date: "WIP"
+                }
+	          , "WOT-PROTOCOL-BINDING" : {
                   title: "Web of Things Protocol Binding Templates"
                 , href: "https://w3c.github.io/wot-binding-templates/"
                 , authors:  [
@@ -1519,20 +1539,173 @@ For example, for HTTP and Events, it indicates which of several available mechan
 
   </section>
      
-  <section id="security-consideration">
+  <section id="sec-security-consideration">
   <h4>Security and Privacy Considerations</h4>
   
-  <p class="ednote">
-  Please see the
-  <a href="https://github.com/w3c/wot-security/">WoT Security and Privacy</a>
-  repository for work in progress regarding threat models, assets, risks, 
-  recommended mitigations,
-  and best practices for security and privacy for systems 
-  using the Web of Things.
-  Once complete,
-  security and privacy considerations relevant to Thing Descriptions will 
-  be summarized in this section.
+  <p>
+  In general the security measures taken to protect a WoT 
+  system will depend on the threats and attackers that system
+  may face and the value of the assets needs to protect.
+  A detailed discussion of security and privacy considerations for the Web of Things,
+  including a threat model that can be adapted to various circumstances, is
+  presented in the informative document [[!WOT-SECURITY-CONSIDERATIONS]].  
+  This section discusses only security and privacy risks
+  and possible mitigations directly relevant to the WoT Thing Description.
   </p>
+  <p>A WoT Thing Description can describe both secure and 
+  insecure network interfaces.  When a Thing Description is 
+  retro-fitted to an existing network interface, no change in the 
+  security status of the network interface is to be expected.
+  </p>
+  <p>
+  When designing new devices and services for use with the WoT,
+  we have documented a suggested set of best practices
+  in [[!WOT-SECURITY-BEST-PRACTICES]] to improve security.
+  This best-practices document may be updated as security measures evolve.
+  Following these practices does not guarantee security, 
+  but it at least will help to avoid common known vulnerabilities.
+  </p>
+  <p>The use of a WoT Thing Description introduces  
+  the security and privacy risks given in the following sections.
+  After each risk, we suggest some possible mitigations.
+  </p>
+  <section id="sec-security-consideration-context">
+  <h5>Context Dereferencing Privacy Risk</h5>
+      <p>Deferencing the vocabulary files given in the <code>@context</code>
+          field of any JSON-LD document can be a privacy risk.
+          In the case of the WoT, an attacker can observe the network
+          traffic produced by such deferences and can use the metadata
+          of the dereference, such as the destination IP address,
+          to infer information about the device especially if domain-specific
+          vocabularies are used.  This is a risk even if the connection
+          is encrypted, and is related to DNS privacy leaks.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+          Avoid actual dereferencing of vocabulary files.
+          Vocabulary files should be cached whenever possible.
+          Ideally they would be made immutable, built into the interpreting device,
+          and not derefenced at all,
+          with the URI in the <code>@context</code> field serving only as 
+          an identifier of the (known) vocabulary. 
+          This requires the use of strict version control, as updates
+          should use a new URI to ensure that existing URIs can refer to 
+          immutable data.
+          Use well-known standard vocabulary files whenever possible to
+          improve the chances that the context file will be available locally
+          to systems interpreting the metadata in a Thing Description.
+      </dd></dl>
+   </section>
+   <section id="sec-security-consideration-id">
+   <h5>Immutable Identifiers Privacy Risk</h5>
+      <p>The fact that a Thing Description contains a unique
+          identifier means that should it be associated with
+          a person it can be used to track that person and 
+          therefore pose a risk to privacy.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+          All identifiers should be mutable,
+          and there should be a mechanism to update the <code>id</code>
+          of a Thing.
+          Specifically,
+          the <code>id</code> of a Thing should not be fixed in hardware.
+          This does, however, conflict with the Linked Data ideal that
+          identifiers are fixed URIs.  In many circumstances it
+          will be acceptable to only allow updates to identifiers if
+          a Thing is reinitialized.  In this case as a software entity the
+          old Thing ceases to exist and a new Thing is created.
+          This can be sufficient to break a tracking chain when, for
+          example, a device is sold to a new owner.
+          Alternatively, if more frequent changes are desired during 
+          the operational phase of a device,
+          a mechanism can be put into place to notify only authorized users
+          of the change in identifier when a change is made.
+          Note however that some classes of devices, e.g. medical devices,
+          may require immutable IDs by law in some jurisdictions.
+          In this case extra attention should be paid to secure 
+          access to files, such as Thing Descriptions, containing such
+          immutable identifiers.
+          </dd></dl>
+      </p>
+   </section>
+   <section id="sec-security-consideration-fingerprint">
+   <h5>Fingerprinting Privacy Risk</h5>
+      <p>As noted above, the <code>id</code> field in a TD can pose a privacy risk.  
+      However, even if the <code>id</code> is updated as described to mitigate its
+      tracking risk, it may still be possible to associate
+      a TD with a particular physical device, and from there to a person, through fingerprinting.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+          Only authorized users should be provided access
+          to the Thing Description for a Thing.
+          If the TD is only distributed to authorized users 
+          through secure and confidential channels, for
+          example through a directory service that requires authentication,
+          the risk can be minimized.  
+      </dd></dl>
+   </section>
+   <section id="sec-security-consideration-tampering">
+   <h5>TD Interception and Tampering Security Risk</h5>
+      <p>Intercepting and tampering with TDs can be used to launch man-in-the-middle attacks,
+      for example by rewriting URLs in TDs to redirect accesses to a malicious 
+      intermediary that can capture or manipulate data.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+          Obtain Thing Descriptions only through
+          mutually authenticated channels.
+          This ensures that the client and the server are both sure of the 
+          identity of the other party to the communication.
+          This is also necessary in order to deliver TDs only to authorized users.
+      </dd></dl>
+   </section>
+   <section id="sec-security-consideration-tampering">
+   <h5>Context Interception and Tampering Security Risk</h5>
+      <p>Intercepting and tampering with context files can be used to facilitate attacks
+      by modifying the interpretation of vocabulary. 
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+	      Ideally context files would only be obtained through authenticated channels
+	      but it is notable (and unfortunate) that many contexts are indicated using
+	      HTTP URLs, which are vulnerable to interception and modification if 
+	      dereferenced.  However, if context files are immutable and cached, 
+	      and dereferencing is avoided whenever possible, then this risk can be reduced.
+      </dd></dl>
+   </section>
+   <section id="sec-security-consideration-inferencing">
+   <h5>Inferencing of Personally Identifiable Information Privacy Risk</h5>
+      <p>In many locales, in order to protect the privacy of users,
+      there are legal requirements for the handling of
+      personally identifiable information,
+      that is,
+      information that can be associated with a particular person.
+      Such information can of course be generated by IoT devices directly.
+      However,
+      the existence and metadata of IoT devices
+      (the kind of data stored in a Thing Description)
+      can also contain or be used to infer personally identifiable information.
+      This information can be as simple as the fact that a certain person owns a certain
+      type of device,
+      which can lead to additional inferences about that person.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+          Treat a Thing Description associated with a 
+	      personal device as if it contained
+	      personally identifiable information.
+          As an example application of this principle,
+          consider how to obtain user consent.  
+          Consent for usage of personally identifiable data
+          generated by a Thing is often obtained when a Thing is paired with system
+          consuming the data,
+          which is frequently also when the Thing Description
+          is registered with a local directory or the system consuming the 
+          Thing Description in order to access the device.
+          In this case consent for using data from a Thing can be combined with
+          consent for accessing the Thing's Thing Description.
+          As a second example, if we consider a TD to contain personally
+          identifiable information, then it should not be retained indefinitely
+          or used for purposes other than those for which consent was given.
+      </dd></dt>
+  </section>
+
   </section>
 
   <section id="json-schema-4-validation" class="appendix normative">
@@ -2238,6 +2411,7 @@ For example, for HTTP and Events, it indicates which of several available mechan
   <h1>Recent Specification Changes</h1>
   <h2 id="changes3">Changes from Third Public Working Draft</h2>
   <ul>
+    <li>Security and Privacy Considerations section (Section <a href="#sec-security-consideration"></a>) added.</li>
     <li>Add an example for the use of <code>scopes</code>.</li>
     <li>Remove all Url postfixes in parameter names for security schemes.</li>
     <li>Make it clear that the top-level <a href="#security-serialization-json"><code>security</code></a> declaration is mandatory.</li>
