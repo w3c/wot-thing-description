@@ -1220,6 +1220,53 @@
     },
     ...
 </pre>
+  <p>As another more complex example, OAuth2 makes use of scopes. 
+  These are identifiers that 
+  may appear in tokens and must match with corresponding identifiers in a resource to allow 
+  access to that resource. 
+  For example, in the following, the "status" property can be 
+  read by users using bearer tokens containing the scope "limited" and the "configure" action can only be 
+  used when the interaction is invoked with a token containing the "special" scope. 
+  Scopes are not identical to roles but are often associated with them; 
+  for example, perhaps only those in an administrative role can perform "special" interactions.
+  Tokens can have more than one scope.  
+  In this example, an administrator would
+  probably be issued tokens with both the "limited" and "special" scopes while ordinary
+  users would only be issued tokens with the "limited" scope.
+  </p>
+<pre class="example">
+    ...
+    "security": [{
+        "scheme": "oauth2",
+        ...
+        "scopes": ["limited","special"]
+    }],
+    "properties": {
+        "status": {
+            ...
+            "forms": [
+                {
+                    "href": "https://scopes.example.com/status",
+                    "contentType": "application/json",
+                    "scopes": ["limited"]
+                }
+            ]
+        }
+    },
+    "action": {
+        "configure": {
+            ...
+            "forms": [
+                {
+                    "href": "https://scopes.example.com/configure",
+                    "contentType": "application/json",
+                    "scopes": ["special"]
+                }
+            ]
+        }
+    },
+    ...
+</pre>
 
   </section> <!-- end of id="security-serialization-json"-->
 
@@ -1499,6 +1546,7 @@
   <h1>Recent Specification Changes</h1>
   <h2 id="changes3">Changes from Third Public Working Draft</h2>
   <ul>
+    <li>Add an example for the use of <code>scopes</code>.</li>
     <li>Remove all Url postfixes in parameter names for security schemes.</li>
     <li>Make it clear that the top-level <a href="#security-serialization-json"><code>security</code></a> declaration is mandatory.</li>
     <li><a href="#dataschema">DataSchema</a> class now has an optional <code>unit</code> field to provide unit information.</li>
