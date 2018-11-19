@@ -277,7 +277,11 @@ function merge_assertions(assertions,ac,done_callback) {
     } else {
        plan_tr.append('<td class="'+ac+'">'+a_text+'</td>');
     }
-    plan_tr.append('<td class="'+ac+'"></td>');
+    if (req) {
+        plan_tr.append('<td class="'+ac+'">Y</td>');
+    } else {
+        plan_tr.append('<td class="'+ac+'">N</td>');
+    }
     plan_tr.append('<td class="'+ac+'"></td>');
     let result = merged_results.get(a);
     if (undefined != result) {
