@@ -69,6 +69,9 @@ const results_dir = path.join(__dirname, 'testing', 'results');
 var results = new Map();
 var results_files = fs.readdirSync(results_dir);
 function get_results(i,done_callback) {
+    if (0 == results_files.length) {
+        done_callback(results);	    
+    }	    
     var file = path.join(results_dir, results_files[i]);
     if (file.match(/.csv$/g)) {
         console.log("processing results in",file);
@@ -312,7 +315,13 @@ function merge_assertions(assertions,ac,done_callback) {
        }
        // Total number of reported statuses
        let totals = pass + fail + notimpl;
-       plan_tr.append('<td class="'+ac+'">'+totals+'</td>');
+       if (0 == totals) {
+           plan_tr.append('<td class="missing"></td>');
+       } else if (totals < 2) {
+           plan_tr.append('<td class="failed">'+totals+'</td>');
+       } else {
+           plan_tr.append('<td class="'+ac+'">'+totals+'</td>');
+       }
     } else {
        plan_tr.append('<td class="missing"></td>');
        plan_tr.append('<td class="missing"></td>');
