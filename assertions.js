@@ -101,41 +101,54 @@ function merge_results(done_callback) {
     for (let [impl,data] of results.entries()) {
         for (let i=0; i<data.length; i++) {
            let id = data[i]["ID"];
-           let pass = data[i]["Pass"];
-           let fail = data[i]["Fail"];
+	   let st = data[i]["Status"];
+           let pass = undefined;
+           if ("pass" === st) pass = 1;
+           let fail = undefined;
+           if ("fail" === st) fail = 1;
+           let notimpl = undefined;
+           if ("not-impl" === st) notimpl = 1;
            let current = merged_results.get(id);
            // there has GOT to be an easier way to do this... oh, well
            if (undefined != current) {
+               // passes
                if (undefined != current.pass) {
                    if (undefined != pass) {
-                       current.pass += cleanInt(pass);
+                       current.pass += pass;
                        merged_results.set(id,current);
                    }
                } else {
                    if (undefined != pass) {
-                       current.pass = cleanInt(pass);
+                       current.pass = pass;
                        merged_results.set(id,current);
                    }
                }
+               // failures
                if (undefined != current.fail) {
                    if (undefined != fail) {
-                       current.fail += cleanInt(fail);
+                       current.fail += fail;
                        merged_results.set(id,current);
                    }
                } else {
                    if (undefined != fail) {
-                       current.fail = cleanInt(fail);
+                       current.fail = fail;
+                       merged_results.set(id,current);
+                   }
+               }
+               // not-implemented
+               if (undefined != current.notimpl) {
+                   if (undefined != notimpl) {
+                       current.notimpl += notimpl;
+                       merged_results.set(id,current);
+                   }
+               } else {
+                   if (undefined != notimpl) {
+                       current.notimpl = notimpl;
                        merged_results.set(id,current);
                    }
                }
            } else {
-               if (undefined != pass && undefined != fail) {
-                   merged_results.set(id,{"pass":cleanInt(pass),"fail":cleanInt(fail)});
-               } else if (undefined != pass) {
-                   merged_results.set(id,{"pass":cleanInt(pass)});
-               } else if (undefined != fail) {
-                   merged_results.set(id,{"fail":cleanInt(fail)});
-               }
+               merged_results.set(id,{"pass": pass,"fail": fail,"notimpl": notimpl});
            }
         }
     }
@@ -185,7 +198,7 @@ function get_risks(done_callback) {
 
 // Clear (well, write headers for) results template
 var results_template = path.join(results_dir,'template.csv');
-fs.writeFileSync(results_template,'"ID","Pass","Fail"\n');
+fs.writeFileSync(results_template,'"ID","Status"\n');
 
 // Merge assertions and test specs into plan
 plan_dom('head>title').append(src_title);
@@ -196,7 +209,7 @@ function merge_assertions(assertions,ac,done_callback) {
     console.log("Processing assertion "+a);
 
     // Results template
-    fs.appendFileSync(results_template, '"'+a+'",0,0\n');
+    fs.appendFileSync(results_template, '"'+a+'","null"\n');
 
     // Appendix
     plan_dom('#testspecs').append('<dt></dt>');
@@ -207,12 +220,14 @@ function merge_assertions(assertions,ac,done_callback) {
     }
 
     let category = undefined;
+    let req = false;
     if (assertions[a].text().indexOf('MUST') > -1) {
         if (assertions[a].text().indexOf('MUST NOT') > -1) {
             category = 'MUST NOT';
         } else {
             category = 'MUST';
         }
+        req = true;
     }
     if (assertions[a].text().indexOf('SHOULD') > -1) {
         if (assertions[a].text().indexOf('SHOULD NOT') > -1) {
@@ -226,6 +241,7 @@ function merge_assertions(assertions,ac,done_callback) {
     }
     if (assertions[a].text().indexOf('REQUIRED') > -1) {
         category = 'REQUIRED';
+        req = true;
     }
     if (assertions[a].text().indexOf('RECOMMENDED') > -1) {
         category = 'RECOMMENDED';
@@ -262,6 +278,7 @@ function merge_assertions(assertions,ac,done_callback) {
     plan_tr.append('<td class="'+ac+'"></td>');
     let result = merged_results.get(a);
     if (undefined != result) {
+       // Number of reported pass statuses
        let pass = result.pass;
        if (undefined != pass) {
           if (pass >= 2) {
@@ -271,7 +288,9 @@ function merge_assertions(assertions,ac,done_callback) {
           }
        } else {
           plan_tr.append('<td class="missing"></td>');
+	  pass = 0;
        }
+       // Number of reported fail statuses
        let fail = result.fail;
        if (undefined != fail) {
           if (fail > 0) {
@@ -281,12 +300,25 @@ function merge_assertions(assertions,ac,done_callback) {
           }
        } else {
           plan_tr.append('<td class="missing"></td>');
+	  fail = 0;
        }
+       // Number of reported not implemented statuses
+       let notimpl = result.notimpl;
+       if (undefined != notimpl) {
+          plan_tr.append('<td class="'+ac+'">'+notimpl+'</td>');
+       } else {
+          plan_tr.append('<td class="missing"></td>');
+	  notimpl = 0;
+       }
+       // Total number of reported statuses
+       let totals = pass + fail + notimpl;
+       plan_tr.append('<td class="'+ac+'">'+totals+'</td>');
     } else {
        plan_tr.append('<td class="missing"></td>');
        plan_tr.append('<td class="missing"></td>');
+       plan_tr.append('<td class="missing"></td>');
+       plan_tr.append('<td class="missing"></td>');
     }
-    plan_tr.append('<td class="'+ac+'"></td>');
 
     // Add to appendix
     plan_dom('#testspecs').append('<dd id="'+a+'" class="'+ac+'"></dd>');
