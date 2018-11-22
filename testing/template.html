@@ -1,11 +1,435 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <title></title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>Web of Things (WoT) Thing Description: Implementation Report</title>
+	<style type="text/css" xml:space="preserve">
+/*<![CDATA[*/
+body {
+    margin-left: 4%;
+    margin-right: 3%;
+}
+table {
+    border: black;
+    border-width: 1px;
+}
+h2 { font-size: 150% }
+h3 { font-size: 120%; font-weight: bold }
+h4 { font-size: 110%; font-weight: bold}
+.tocline { list-style: none; }
+th { background-color: rgb(180,255,180) }
+td.baseassertion { background-color: rgb(234,255,234) }
+td.extraassertion { background-color: rgb(200,200,255) }
+td.atrisk { background-color: rgb(255,200,255) }
+td.failed { background-color: rgb(255,128,128) }
+td.missing { background-color: rgb(255,255,128) }
+.comment {color: green; font-style: italic}
+.remove {text-decoration: line-through;color: black;}
+.new { color: red; }
+.working {background-color: rgb(255,234,234); padding:0.2em;}
+.fill-in {background-color: rgb(255,234,234);}
+pre.example {
+   font-family: "Courier New", monospace;
+   white-space: pre;
+   background-color: rgb(204,204,255);
+   padding: 0.5em;
+   border: none;
+   border-width: 0;
+   margin-left: 0;
+   font-size: 100%;
+   width: 100%;
+}
+
+table { background-color: rgb(180,180,180) }
+
+table.testlist {
+   border: black;
+   border-width: 1px;
+}
+table.grammars th, table.commands th, able.attrs th, table.testlist th {
+   background-color: rgb(180,255,180);
+   font-size: 10pt;
+   vertical-align: top; text-align: left;
+}
+table.grammars td, table.commands td, table.attrs td, table.testlist td {
+/* background-color: rgb(234,255,234);
+*/
+   font-size: 10pt;
+   vertical-align: top; text-align: left;
+}
+
+table.attrs {margin-top: 5px}
+/*]]>*/
+</style>
+<link rel="stylesheet" type="text/css" href="http://www.w3.org/StyleSheets/general.css">
+        
+<style type="text/css">
+<!--
+.new1 {color: green;}
+-->
+</style>
   </head>
   <body>
-	  <h1>Normative Assertions Summary</h1>
-	  <h2></h2>
-  </body>
-</html>
+	<div class="head">
+			<a href="http://www.w3.org/" shape="rect">
+				<img src="http://www.w3.org/Icons/w3c_home" alt="W3C" width="72" height="48">
+			</a>
+			<h1 id="h_ir">
+	            Web of Things (WoT) Thing Description:<br/>
+		        Implementation Report
+            </h1>
+	  <p>
+				<b>Version</b>: 8 November 2018</p>
+	  <p>
+				<b>Contributors</b>:<br>
+	  </p>
+	  <p>
+      Sebastian Kaebisch (Siemens AG) (Editor in Chief)<br/>
+      Takuki Kamiya (Fujitsu Laboratories of America, Inc.)<br/>
+      Michael McCool (Intel K.K. (Japan))<br/>
+      Others (TBD)
+	   </p>
+
+<p class="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2018 <a href="http://www.w3.org/"><acronym title="World Wide Web Consortium">W3C</acronym></a><sup>®</sup> (<a href="http://www.csail.mit.edu/"><acronym title="Massachusetts Institute of Technology">MIT</acronym></a>, <a href="http://www.ercim.org/"><acronym title="European Research Consortium for Informatics and Mathematics">ERCIM</acronym></a>, <a href="http://www.keio.ac.jp/">Keio</a>), All Rights Reserved. W3C <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="http://www.w3.org/Consortium/Legal/copyright-documents">document use</a> rules apply.</p>
+<hr title="Separator for header">
+</div>
+<h2 id="h_toc">
+<a id="toc" shape="rect" name="toc">Table of Contents</a>
+</h2>
+<ul>
+	<li class="tocline">1. <a href="#intro" shape="rect">Introduction</a>
+	<ul>
+		<li class="tocline">1.1 <a href="#objectives" shape="rect">Implementation report objectives</a></li>
+		<li class="tocline">1.2 <a href="#non_objectives" shape="rect">Implementation report non-objectives</a></li>
+	</ul>
+	</li>
+	<li class="tocline">2. <a href="#cr_work" shape="rect">Work during the Candidate Recommendation period</a></li>
+	<li class="tocline">3. <a href="#participate" shape="rect">Participating in the implementation report</a></li>
+	<li class="tocline">4. <a href="#pr_entrance_crit" shape="rect">Entrance criteria for the Proposed Recommendation phase</a></li>
+	<li class="tocline">5. <a href="#report_reqs" shape="rect">Implementation report requirements</a>
+	<ul>
+		<li class="tocline">5.1 <a href="#DetailedReqs" shape="rect">Detailed requirements for implementation report</a></li>
+		<li class="tocline">5.2 <a href="#NotesOnTesting" shape="rect">Notes on testing</a></li>
+		<li class="tocline">5.3 <a href="#out_of_scope" shape="rect">Out of scope</a></li>
+	</ul>
+	</li>
+	<li class="tocline">6. <a href="#systems" shape="rect">Systems</a></li>
+	<ul>
+		<li class="tocline">6.1 <a href="#impl-intel" shape="rect">Intel K.K. (Japan)</a></li>
+		<li class="tocline">6.1 <a href="#impl-siemens" shape="rect">Siemens AG (Germany)</a></li>
+	</ul>
+	<li class="tocline">7. <a href="#test_class" shape="rect">Test results</a> 
+    <ul>
+		<li class="tocline">7.1 <a href="#intro_class" shape="rect">Classification of test assertions</a></li>
+	    <li class="tocline">7.2 <a href="#emma_test_assertions" shape="rect">Test assertion results</a></li>
+	</ul>
+	</li>
+	<li class="tocline">
+	<a href="#appendices" shape="rect">Appendices</a>
+	<ul>
+        <li class="tocline">Appendix A. <a href="#ackB" shape="rect">Acknowledgements</a></li>
+	</ul>
+	</li>
+</ul>
+<h2 id="h_intro"><a id="intro" name="intro">1. Introduction</a> </h2>
+<p>The <a href="http://www.w3.org/TR/wot/td">Web of Things (WoT) Thing Description Specification</a>
+   entered the Candidate Recommendation period on XX February 2019.</p>
+
+<p> The planned date for entering Proposed Recommendation is XX March 2019.
+This document
+summarizes the results from the Web of Things (WoT) TD implementation reports received and
+describes the process that the Web of Things (WoT) Working Group followed in preparing the report.</p>
+
+<h4 id="h_objectives"><a id="objectives" name="objectives">1.1 Implementation report objectives</a></h4>
+<ol>
+	<li>Must verify that the specification is implementable.</li>
+</ol>
+<h4 id="h_non_objectives"><a id="non_objectives" name="non_objectives">1.2 Implementation report non-objectives</a></h4>
+<ol>
+	<li>The IR does not attempt conformance testing of implementations.</li>
+</ol>
+<h2 id="h_cr_work"><a id="cr_work" name="cr_work">2. Work during the Candidate Recommendation period</a></h2>
+<p>During the CR period, the Working Group carried out the following activities:</p>
+<ol>
+	<li>Clarification and improvement of the exposition of the specification<br/></li>
+	<li>Disposing of comments that were communicated to the WG during the CR period. 
+        These comments and their resolution are detailed in the 
+          <a href="http://www.w3.org/TR/2019/PR-xxx/disp.html">Disposition of Comments</a> 
+          document for the CR period.</li>
+	<li>Preparation of this Implementation Report.</li>
+</ol>
+<h2 id="h_participate"><a id="participate" name="participate">3. Participating in the implementation report</a></h2>
+<p>Implementors were invited to contribute to the assessment of the W3C Web of Things (WoT)
+Thing Description Specification by submitting  implementation reports describing the 
+coverage of their implementations with respect to the test assertions outlined 
+in the <a href="#test_assertions" shape="rect">table below</a>.</p>
+<p>Implementation reports, comments on this document, or requests made for
+further information were  posted to the Working Group's public
+mailing list <a href="mailto:wot-wg@w3.org">wot-wg@w3.org</a>
+(<a href="http://lists.w3.org/Archives/Public/www-wot/">archive</a>)
+and as issues on the github repository i
+<a href="https://github.com/w3c/wot-thing-description">https://github.com/w3c/wot-thing-description</a>.</p>
+<h2 id="h_pr_entrance_crit"><a id="pr_entrance_crit" name="pr_entrance_crit">
+4. Entrance criteria for the Proposed Recommendation phase</a></h2>
+<p>The Web of Things (WoT) Working Group established the following
+entrance criteria for the Proposed Recommendation phase in the
+Request for CR:</p>
+<ol>
+<li>Sufficient reports of implementation experience have been
+gathered to demonstrate that Things can be described by Thing Descriptions 
+in sufficient detail to allow interoperabilty.</li>
+<li>Specific Implementation Report Requirements (<a href="#report_reqs">outlined below</a>) have been met.</li>
+<li>The Working Group has formally addressed and responded to all 
+    public comments received by the Working Group.</li>
+</ol>
+<p>All three of these criteria have been met. 
+<!-- Hard to count since some implementations have multiple components, and some are shared.  Omit.
+A total of N implementations were documented by M different organizations.
+-->
+The testimonials below indicate the broad base of support 
+for the specification. All of the required features had at least
+two implementations. 
+All of the optional features received at least two implementations.
+However, these optional features do not have 
+conformance requirements that have an impact on interoperability. </p>
+<h2 id="h_report_reqs"><a id="report_reqs" name="report_reqs">5. Implementation report requirements</a></h2>
+<h4 id="h_DetailedReqs">
+<a id="DetailedReqs" shape="rect" name="DetailedReqs">5.1 Detailed requirements for implementation report</a></h4>
+<ol>
+	<li>Testimonials from implementers are included in the IR when
+provided to document the utility and implementability of the
+specification.</li>
+	<li>IR must cover all specified features in the specification. For
+each feature the IR should indicate:
+    <ul>
+	     <li>Feature status: required, optional, other.</li>
+	     <li>Feature utility/usefulness based on feedback from
+implementers.</li>
+	     <li>Implementability of the feature specification.</li>
+    </ul>
+    </li>
+    <li>Feature status is a factor in test coverage in the report:
+    <ul>
+		<li>Required specification features must have at least two
+implementations. Implementations that do not implement a required
+specification feature must document the reason for not implementing
+the feature.</li>
+		<li>Optional specification features must have at least one
+implementation. Implementations that do not implement an optional specification
+feature should document the reason for not implementing the
+feature. </li>
+	</ul>
+	</li>
+</ol>
+<div>
+<h4 id="h_NotesOnTesting"><a id="NotesOnTesting" name="NotesOnTesting">5.2 Notes on testing</a></h4>
+<ol>
+    <li>A implementation report must indicate the outcome of evaluating 
+the implementation with respect to each of the test assertions. Possible
+outcomes are "<code>pass</code>", "<code>fail</code>" or
+"<code>not-impl</code>". "</li>
+</ol>
+</div>
+<h4 id="h_out_of_scope"><a id="out_of_scope" name="out_of_scope">5.3 Out of scope</a></h4>
+<div style="margin-left: 2em;">
+<p>This implementation Report will not cover:</p>
+<ul>
+    <li>Combinations of protocols and security schemes not listed in [!BEST-PRACTICES].</li>
+</ul>
+</div>
+<a id="test-systems" name="test-systems"></a>
+<h2 id="h_systems"><a id="test-systems" name="test-systems"></a>
+<a id="systems" name="systems">6. Systems</a></h2>
+<p>This section contains descriptions of each of the implementations
+of the WoT Thing Description specification
+from all organizations that submitted implementation reports.
+Each implementation represents a working system 
+that either exposes or consumes at least one WoT Thing Description.
+Implementations that expose a Thing Description act as a network
+server with an interface as described in the Thing Description it exposes. 
+Implementations that consume a Thing Description act as a network
+client and issue network requests consistent with the target Thing Description.
+In some cases a given implementation may be used for multiple Things
+and a single Thing may also act as both client and server on
+multiple interfaces.
+</p><p>
+We only count systems with mostly independent code bases 
+as distinct implementations.
+There are however some cases (documented in the following) where 
+implementations shared components but were still considered substantially
+independent implementations.  In cases where a substantial component
+was shared across implementations the features supported by that 
+component were only counted once.
+</p>
+<div class="working">
+
+<h3 id="impl-intel">Intel K.K. (Japan)</h3>   
+<p>Intel supports this specification as it enables interoperation between devices
+from different manufacturers, supporting the growth of an ecosystem of interoperating
+IoT services and easing barriers to adoption.
+</p>
+<p>Three separate implementations were developed, all based on Node.js.
+The core implementations focused on basic local network access without built-in security.
+A separate project (used by all three implementations) provided security by means of a reverse proxy. 
+For the purposes of validation this reverse proxy was considered a shared component of all three implementations, 
+and the features it implemented were only counted once in the results.
+</p>
+<h4 id="impl-intel-security">Security and Authentication Proxy: Shared Component</h4>
+This component, shared across all implementations provided by Intel, was a reverse proxy service that provided
+authentication (via various mechanisms indicated by the schemes indicated in the Thing
+Description) and encrypted transport termination.
+The reverse proxy service was made accessible over a secure tunnel, and depending on the circumstances,
+was run in the cloud, on a gateway computer, or locally on a device.
+As this component implemented the security features in all other implementations
+from Intel, for the purposes of validation
+these features are only recorded as being supported in a single implementation.
+</p>
+<h4 id="impl-intel-ocf">OCF Metadata Bridge: TD Producer</h4>
+<p>This implementation translated metadata made available by devices implemented using
+the OCF standard and re-expressed that metadata in the form of WoT Thing Descriptions.
+The actual network interfaces were however provided either by the OCF devices themselves
+directly via CoAP, or via a CoAP/HTTP bridge developed by OCF.  The metadata
+translator also had the ability to add semantic markup to the generated WoT Thing Descriptions,
+using a database that related OCF Resource Types to iotschema.org capabilities.
+Secure interfaces (eg HTTPS combined with an authentication scheme) were provided
+via a reverse proxy attached to the HTTP interface provided by the bridge.
+</p>
+<h4 id="impl-intel-speak">WebSpeak: TD Producer</h4>
+<p>This implementation provided a service to convert text to speech.  English
+text set to its network interface was spoken audibily.  This service was used to
+test several accessibility scenarios, including automatic conversion of visible status
+and event information to spoken announcements in order to support blind users.
+This implementation only supported an HTTP network interface, without security.
+Secure interfaces (eg HTTPS combined with an authentication scheme) were provided
+via a reverse proxy attached to the HTTP interface.
+The TDs for this service were produced using a template mechanism.
+</p>
+<h4 id="intel-camera">Simple Web Camera: TD Producer</h4>
+<p>This implementation provided a service to capture still images from a camera
+and provide them over its network interface.  This was used to test various aspects
+of actions, including support for inputs and outputs with different content types.
+The service was also capaple of introspecting the parameters made available via any
+particular attached video4linux camera
+and made those parameters available as WoT Thing Description properties.
+This implementation only supported an HTTP network interface, without security.
+Secure interfaces (eg HTTPS combined with an authentication scheme) were provided
+via a reverse proxy attached to the HTTP interface.
+The TDs for this service were produced using a template mechanism.
+</p>
+
+<h3 id="impl-siemens">Siemens AG</h3>   
+<p>
+Siemens supports this specification as it allows to attach metadata to heterogeneous IoT devices and services in a uniform way.
+The extensible model with a standardized serialization format in particular remedies interoperability challenges with an installed base of long-lived industrial devices.
+Furthermore, this specification is a central building block for several digitalization topics such as device onboarding, device management, digital twins, and data analytics.
+</p>
+<p>
+Siemens commits to several open-source implementations of W3C Web of Things, which are managed in the public Eclipse Thingweb project.
+Siemens also implemented concepts of this specification in products and aims at aligning the implementations and opening the features to customers once this specification reaches REC status.
+</p>
+<h4 id="impl-siemens-node-wot">node-wot: TD Consumer and Producer</h4>
+<p>
+node-wot is a Node.js-based framework for WoT Servients.
+It features an implementation of the WoT Scripting API to both consume TDs to instantiate Consumed Things and produce Exposed Things that provide a TD.
+node-wot supports several Protocol Bindings including HTTP, CoAP, WebSockets, and MQTT with corresponding security mechanisms such as (D)TLS, HTTP Basic, Digest, Bearer Token, PSK, and username/password, respectively.
+</p>
+<h4 id="impl-siemens-thingweb-directory">Thingweb Directory: TD Consumer and Producer</h4>
+<p>
+Thingweb Directory provides a directory service written in Java to register TDs and look them up through queries (primarily SPARQL).
+The implementation is consuming TDs to represent their metadata in a KnowledgeGraph and (re-)procudes TDs to return look-up results.
+Currently it supports HTTP and CoAP bindings.
+</p>
+<h4 id="impl-siemens-wot-fxui">WoT-fxUI: TD Consumer</h4>
+<p>
+WoT-fxUI is a generic user interface (UI) for Things based on Java with JavaFX.
+It consumes TDs to render UI elements that allow human users to interact with Things.
+The implementation currently supports HTTP and CoAP bindings.
+</p>
+
+</div>
+<a id="test-results-xml" name="test-results-xml">
+
+</a><h2 id="h_test_class"><a id="test-results-xml" name="test-results-xml"></a>
+<a id="test_class" name="test_class">7. Test results</a></h2>
+<p>The aim of this section is to describe the range of test assertions
+developed for the 
+<a href="http://www.w3.org/TR/xxx">Web of Things (WoT) Thing Description Specification</a> 
+and summarize the results from the implementation 
+reports received in the CR period.
+The table lists all the assertions that were derived
+from the 
+<a href="http://www.w3.org/TR/xxx">Web of Things (WoT) Thing Description Specification</a>.
+</p> 
+<p>The <b>ID</b> column uniquely identifies the assertion.
+and links to the assertion in the context of the specification.
+The <b>Assertion</b> column gives the text of the assertion 
+specifying the constraint which must be met.
+The <b>Req</b> column is a Y/N value indicating whether the test assertion is for a feature which is required.
+The <b>Sub</b> column is a Y/N value indicating whether the test assertion is a subconstraint which is dependent on the
+implementation of the preceding non subconstraint feature test assertion.
+The <b>Result</b> column is annotated with the number of 'pass' (P), 'fail' (F), and 'not implemented' (N)
+status results in the individual implementation reports.
+The T column indicates the total number of implementations (or implementation components in the case
+of shared components) reporting a status on each assertion.
+</p>
+<h4 id="h_intro_class">
+<a id="intro_class" name="intro_class">7.1 Classification of test assertions</a>
+</h4>
+<p>
+ Test assertions are classified into two types,
+ basic test assertions which test for the presence of each feature, and sub 
+ constraints which only apply if that particular feature is implemented.
+ Sub constraints are 
+ marked with 'SUB CONSTRAINT:' in the 'Assertion' field and 'Y' in the Sub field.</p>
+
+<h4 id="test_assertions_h"><a id="test_assertions" name="test_assertions">7.2 Test assertion results</a></h4>
+
+<table id="testresults" class="testlist" summary="assertions and tests" cellspacing="2" cellpadding="2" width="100%">
+			<tbody>
+				<tr>
+					<th>ID</th>
+					<th>Category</th>
+					<th>Assertion</th>
+					<th>Req</th>
+					<th>Sub</th>
+					<th colspan="4">Results</th>
+
+				</tr>
+	            <tr>
+					<th colspan="5"></th>
+					<th>P</th>
+					<th>F</th>
+					<th>N</th>
+					<th>T</th>
+				</tr>
+<!--
+				<tr>
+					<th colspan="8">Section Title</th>
+				</tr>
+-->
+			</tbody>
+		</table>
+
+		<h1 id="h_appendices">
+			<a id="appendices" name="appendices">Appendices</a></h1>
+
+<!-- automatically extracted assertion list and test specs will go here -->
+<h2 id="h_assertions">
+<a id="assertionsB" name="assertions">Appendix A -
+Test Specifications</a>
+</h2>
+<dl id="testspecs">
+</dl>
+		
+<h2 id="h_ack">
+			<a id="ackB" name="ack">Appendix B -
+Acknowledgements</a>
+		</h2>
+		<p>The Web of Things Working Group would like to acknowledge the contributions of several individuals:</p>
+		<ul>
+		<li>TBD</li>
+		</ul>
+<div class="navbar">
+			<hr>
+		</div>
+</body></html>
