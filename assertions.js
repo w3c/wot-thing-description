@@ -81,13 +81,19 @@ src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
 });
 
 // Extract tabulated assertions
+var tab_assertions = {};
 src_dom('tr[class="rfc2119-table-assertion"]').each(function(i,elem) {
     let id = src_dom(this).attr('id');
     if (undefined === id) {
         console.log("WARNING: rfc2119-table-assertion without id:",
                     src_dom(this).html());
     } else {
-        src_assertions[id] = src_dom(this);
+        let assertion = src_dom(this).children('td').map(function(i, el) {
+            return src_dom(this).html();
+        }).get().join(' ');
+        assertion = '<span class="rfc2119-table-assertion">'+assertion+'</span>';
+        console.log("table assertion",id,assertion);
+        tab_assertions[id] = cheerio.load(assertion)("span");
     }
 });
 
@@ -439,14 +445,16 @@ get_results(0,function(results) {
       get_categories(function() {
        merge_implementations(function() {
         merge_assertions(src_assertions,"baseassertion",function() {
-         merge_assertions(extra_assertions,"extraassertion",function() {
-          // Output plan
-          fs.writeFile(plan_htmlfile, plan_dom.html(), function(error) {
-            if (error) {
+         merge_assertions(tab_assertions,"tabassertion",function() {
+          merge_assertions(extra_assertions,"extraassertion",function() {
+           // Output plan
+           fs.writeFile(plan_htmlfile, plan_dom.html(), function(error) {
+             if (error) {
                 return console.log(err);
-            } else {
+             } else {
                 console.log("Test plan output to "+plan_htmlfile);
-            }
+             }
+           }); 
           }); 
          }); 
         }); 
