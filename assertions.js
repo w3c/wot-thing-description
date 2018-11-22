@@ -13,7 +13,8 @@ const cheerio = require('cheerio');
 const csvtojson=require('csvtojson'); // V2
 
 // Read in test specs and store as a map
-const ts_raw = fs.readFileSync(ts_htmlfile, 'UTF-8');
+// (Synchronous)
+const ts_raw = fs.readFileSync(ts_htmlfile,'UTF-8');
 var ts_dom = cheerio.load(ts_raw);
 var testspec = {};
 ts_dom('span[class="testspec"]').each(function(i,elem) {
@@ -27,16 +28,45 @@ ts_dom('span[class="testspec"]').each(function(i,elem) {
 });
 // console.log("test specs:",ts_dom.html());
 
+// Read in implementation descriptions, store as a map from name to doms
+// (Synchronous)
+const impls_dir = path.join(__dirname, 'testing', 'implementations');
+var impls = {};
+var impls_files = fs.readdirSync(impls_dir);
+function get_impls() {
+   for (let fi=0; fi<impls_files.length; fi++) {
+       var file = path.join(impls_dir, impls_files[fi]);
+       if (file.match(/.html$/g)) {
+           console.log("processing implementation descriptions in",file);
+           let impl_raw = fs.readFileSync(file,'UTF-8');
+           let impl_dom = cheerio.load(impl_raw);
+           impl_dom('div[class="impl"]').each(function(i,elem) {
+               let id = impl_dom(this).attr('id');
+               if (undefined === id) {
+                   console.log("Warning: implementation without id:\n",impl_dom(this).html());
+               } else {
+                   // console.log("Adding implementation for",id,":\n",impl_dom(this).html());
+                   impls[id] = ts_dom(this);
+               }
+           });
+       }
+   } 
+}
+get_impls();
+
 // Initialize plan dom with template
+// (Synchronous)
 const template_raw = fs.readFileSync(template_htmlfile, 'UTF-8');
 var plan_dom = cheerio.load(template_raw);
 
 // Read in index.html store as a dom
+// (Synchronous)
 const src_raw = fs.readFileSync(src_htmlfile, 'UTF-8');
 var src_dom = cheerio.load(src_raw);
 var src_title = src_dom('title').text();
 
 // Extract assertions
+// (Synchronous)
 var src_assertions = {};
 src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
     let id = src_dom(this).attr('id');
@@ -49,10 +79,12 @@ src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
 });
 
 // Read in extra assertions and store as a dom
+// (Synchronous)
 const ea_raw = fs.readFileSync(ea_htmlfile, 'UTF-8');
 var ea_dom = cheerio.load(ea_raw);
 
 // Extract assertions
+// (Synchronous)
 var extra_assertions = {};
 ea_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
     let id = ea_dom(this).attr('id');
@@ -65,6 +97,7 @@ ea_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
 });
 
 // Get all results, convert from CSV to JSON
+// (Asynchronous)
 const results_dir = path.join(__dirname, 'testing', 'results');
 var results = new Map();
 var results_files = fs.readdirSync(results_dir);
@@ -158,7 +191,8 @@ function merge_results(done_callback) {
     done_callback(merged_results);
 }
 
-// Categories
+// Get categories
+// (Asynchronous)
 var categories = new Map();
 function get_categories(done_callback) {
     var file = path.join(__dirname,"testing","categories.csv");
@@ -180,6 +214,7 @@ function get_categories(done_callback) {
 }
 
 // At-Risk Items
+// (Asynchronous)
 var risks = new Map();
 function get_risks(done_callback) {
     var file = path.join(__dirname,"testing","atrisk.csv");
@@ -200,21 +235,32 @@ function get_risks(done_callback) {
 }
 
 // Clear (well, write headers for) results template
+// (Synchronous)
 var results_template = path.join(results_dir,'template.csv');
 fs.writeFileSync(results_template,'"ID","Status"\n');
 
-// Merge assertions and test specs into plan
+// Merge implementation descriptions, assertions, and test specs into plan
+// (Asynchronous)
 plan_dom('head>title').append(src_title);
 // plan_dom('body>h2').append(src_title);
 // plan_dom('body').append('<dl></dl>');
 function merge_assertions(assertions,ac,done_callback) {
+  let i = 1;
+  for (impl_id in impls) {
+      impl_dom = impls[impl_id];
+      impl_name = "To Do";
+      plan_dom('#systems-toc').append('<li class="tocline">6.'+i+'<a href="#'+impl_id+'" shape="rect">'+impl_name+'</a></li>');
+      i++;
+      plan_dom('#systems-impl').append(impl_dom);
+  }
+
   for (a in assertions) {
     console.log("Processing assertion "+a);
 
     // Results template
     fs.appendFileSync(results_template, '"'+a+'","null"\n');
 
-    // Appendix
+    // Test Specifications Appendix
     plan_dom('#testspecs').append('<dt></dt>');
     let plan_dt = plan_dom('#testspecs>dt:last-child');
     plan_dt.append('<a href="../index.html#'+a+'">'+a+'</a> ');
