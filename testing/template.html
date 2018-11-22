@@ -116,6 +116,7 @@ table.attrs {margin-top: 5px}
 	<li class="tocline">6. <a href="#systems" shape="rect">Systems</a></li>
 	<ul>
 		<li class="tocline">6.1 <a href="#impl-intel" shape="rect">Intel K.K. (Japan)</a></li>
+		<li class="tocline">6.1 <a href="#impl-siemens" shape="rect">Siemens AG (Germany)</a></li>
 	</ul>
 	<li class="tocline">7. <a href="#test_class" shape="rect">Test results</a> 
     <ul>
@@ -181,8 +182,10 @@ in sufficient detail to allow interoperabilty.</li>
 <li>The Working Group has formally addressed and responded to all 
     public comments received by the Working Group.</li>
 </ol>
-<p>All three of these criteria have been met. A total of N 
-implementations were documented by M different organizations.
+<p>All three of these criteria have been met. 
+<!-- Hard to count since some implementations have multiple components, and some are shared.  Omit.
+A total of N implementations were documented by M different organizations.
+-->
 The testimonials below indicate the broad base of support 
 for the specification. All of the required features had at least
 two implementations. 
@@ -239,7 +242,7 @@ outcomes are "<code>pass</code>", "<code>fail</code>" or
 <a id="systems" name="systems">6. Systems</a></h2>
 <p>This section contains descriptions of each of the implementations
 of the WoT Thing Description specification
-from the NIMPLS organizations that submitted implementation reports.
+from all organizations that submitted implementation reports.
 Each implementation represents a working system 
 that either exposes or consumes at least one WoT Thing Description.
 Implementations that expose a Thing Description act as a network
@@ -254,7 +257,9 @@ We only count systems with mostly independent code bases
 as distinct implementations.
 There are however some cases (documented in the following) where 
 implementations shared components but were still considered substantially
-independent implementations.
+independent implementations.  In cases where a substantial component
+was shared across implementations the features supported by that 
+component were only counted once.
 </p>
 <div class="working">
 
@@ -265,47 +270,81 @@ IoT services and easing barriers to adoption.
 </p>
 <p>Three separate implementations were developed, all based on Node.js.
 The core implementations focused on basic local network access without built-in security.
-A separate project (used by all three implementations) provides security by
-means of a reverse proxy running in the cloud or on a gateway computer, accessible over a secure tunnel,
-that acts as an authentication and encrypted transport endpoint.
-It is also possible to use this reverse proxy service locally on a device to provide
-enhanced security on the local network if it has sufficient compute performance.
-For the purposes of testing this reverse proxy is considered a component of all three implementations.
+A separate project (used by all three implementations) provided security by means of a reverse proxy. 
+For the purposes of validation this reverse proxy was considered a shared component of all three implementations, 
+and the features it implemented were only counted once in the results.
 </p>
-<h4 id="impl-intel-ocf">OCF Metadata Bridge: Server</h4>
-<p>This implementation translates metadata made available by devices implemented using
-the OCF standard and re-expresses that metadata in the form of WoT Thing Descriptions.
-The actual network interfaces are however provided either by the OCF devices themselves
-directly, via CoAP, or via a CoAP/HTTP bridge developed by OCF.  The metadata
-translator also has the ability to add semantic markup to the generated WoT Thing Descriptions,
-using a database that relates OCF Resource Types to iotschema.org capabilities.
+<h4 id="impl-intel-security">Security and Authentication Proxy: Shared Component</h4>
+This component, shared across all implementations provided by Intel, was a reverse proxy service that provided
+authentication (via various mechanisms indicated by the schemes indicated in the Thing
+Description) and encrypted transport termination.
+The reverse proxy service was made accessible over a secure tunnel, and depending on the circumstances,
+was run in the cloud, on a gateway computer, or locally on a device.
+As this component implemented the security features in all other implementations
+from Intel, for the purposes of validation
+these features are only recorded as being supported in a single implementation.
 </p>
-<h4 id="impl-intel-speak">WebSpeak: Server</h4>
-<p>This implementation provides a Thing that can convert text to speech.  English
-text set to its network interface is spoken audibily.  This service was used to
+<h4 id="impl-intel-ocf">OCF Metadata Bridge: TD Producer</h4>
+<p>This implementation translated metadata made available by devices implemented using
+the OCF standard and re-expressed that metadata in the form of WoT Thing Descriptions.
+The actual network interfaces were however provided either by the OCF devices themselves
+directly via CoAP, or via a CoAP/HTTP bridge developed by OCF.  The metadata
+translator also had the ability to add semantic markup to the generated WoT Thing Descriptions,
+using a database that related OCF Resource Types to iotschema.org capabilities.
+Secure interfaces (eg HTTPS combined with an authentication scheme) were provided
+via a reverse proxy attached to the HTTP interface provided by the bridge.
+</p>
+<h4 id="impl-intel-speak">WebSpeak: TD Producer</h4>
+<p>This implementation provided a service to convert text to speech.  English
+text set to its network interface was spoken audibily.  This service was used to
 test several accessibility scenarios, including automatic conversion of visible status
 and event information to spoken announcements in order to support blind users.
+This implementation only supported an HTTP network interface, without security.
+Secure interfaces (eg HTTPS combined with an authentication scheme) were provided
+via a reverse proxy attached to the HTTP interface.
+The TDs for this service were produced using a template mechanism.
 </p>
-<h4 id="impl-intel-camera">Simple Web Camera: Server</h4>
-<p>This implementation provides a Thing that can capture still images from a camera
+<h4 id="intel-camera">Simple Web Camera: TD Producer</h4>
+<p>This implementation provided a service to capture still images from a camera
 and provide them over its network interface.  This was used to test various aspects
 of actions, including support for inputs and outputs with different content types.
-It is also capaple of introspecting the parameters made available via any
+The service was also capaple of introspecting the parameters made available via any
 particular attached video4linux camera
-and making those parameters available as WoT Thing Description properties.
+and made those parameters available as WoT Thing Description properties.
+This implementation only supported an HTTP network interface, without security.
+Secure interfaces (eg HTTPS combined with an authentication scheme) were provided
+via a reverse proxy attached to the HTTP interface.
+The TDs for this service were produced using a template mechanism.
 </p>
 
-<h3 id="impl-ORG">TEMPLATE: YOUR ORG NAME HERE</h3>   
-<p><em>Testimonial. State support for specification, and organizational reasons for support.</em></p>
-<p><em>State any additional general statements about implementations; omit if not needed.</em></p>
-<h4 id="impl-ORG-NAME1">Implementation 1: Client</h4>
-<p><em>Example for a client (consumes at least one TD).  Describe Implementation 1</em></p>
-<h4 id="impl-ORG-NAME2">Implementation 2: Server</h4>
-<p><em>Example for a server (exposes at least one TD).  Describe Implementation 2</em></p>
-<h4 id="impl-ORG-NAME3">Implementation 2: Client and Server</h4>
-<p><em>Example for a servient (exposes at least one TD and consumes at least one other TD).
-Describe Implementation 3.</em></p>
-
+<h3 id="impl-siemens">Siemens AG</h3>   
+<p>
+Siemens supports this specification as it allows to attach metadata to heterogeneous IoT devices and services in a uniform way.
+The extensible model with a standardized serialization format in particular remedies interoperability challenges with an installed base of long-lived industrial devices.
+Furthermore, this specification is a central building block for several digitalization topics such as device onboarding, device management, digital twins, and data analytics.
+</p>
+<p>
+Siemens commits to several open-source implementations of W3C Web of Things, which are managed in the public Eclipse Thingweb project.
+Siemens also implemented concepts of this specification in products and aims at aligning the implementations and opening the features to customers once this specification reaches REC status.
+</p>
+<h4 id="impl-siemens-node-wot">node-wot: TD Consumer and Producer</h4>
+<p>
+node-wot is a Node.js-based framework for WoT Servients.
+It features an implementation of the WoT Scripting API to both consume TDs to instantiate Consumed Things and produce Exposed Things that provide a TD.
+node-wot supports several Protocol Bindings including HTTP, CoAP, WebSockets, and MQTT with corresponding security mechanisms such as (D)TLS, HTTP Basic, Digest, Bearer Token, PSK, and username/password, respectively.
+</p>
+<h4 id="impl-siemens-thingweb-directory">Thingweb Directory: TD Consumer and Producer</h4>
+<p>
+Thingweb Directory provides a directory service written in Java to register TDs and look them up through queries (primarily SPARQL).
+The implementation is consuming TDs to represent their metadata in a KnowledgeGraph and (re-)procudes TDs to return look-up results.
+Currently it supports HTTP and CoAP bindings.
+</p>
+<h4 id="impl-siemens-wot-fxui">WoT-fxUI: TD Consumer</h4>
+<p>
+WoT-fxUI is a generic user interface (UI) for Things based on Java with JavaFX.
+It consumes TDs to render UI elements that allow human users to interact with Things.
+The implementation currently supports HTTP and CoAP bindings.
+</p>
 
 </div>
 <a id="test-results-xml" name="test-results-xml">
@@ -328,8 +367,10 @@ specifying the constraint which must be met.
 The <b>Req</b> column is a Y/N value indicating whether the test assertion is for a feature which is required.
 The <b>Sub</b> column is a Y/N value indicating whether the test assertion is a subconstraint which is dependent on the
 implementation of the preceding non subconstraint feature test assertion.
-The <b>Result</b> column is annotated with the number of 'pass', 'fail', and 'not implemented' (P/F/NI) in
-the set of implementation reports.
+The <b>Result</b> column is annotated with the number of 'pass' (P), 'fail' (F), and 'not implemented' (N)
+status results in the individual implementation reports.
+The T column indicates the total number of implementations (or implementation components in the case
+of shared components) reporting a status on each assertion.
 </p>
 <h4 id="h_intro_class">
 <a id="intro_class" name="intro_class">7.1 Classification of test assertions</a>
@@ -351,14 +392,15 @@ the set of implementation reports.
 					<th>Assertion</th>
 					<th>Req</th>
 					<th>Sub</th>
-					<th colspan="3">Results</th>
+					<th colspan="4">Results</th>
 
 				</tr>
 	            <tr>
 					<th colspan="5"></th>
 					<th>P</th>
 					<th>F</th>
-					<th>NI</th>
+					<th>N</th>
+					<th>T</th>
 				</tr>
 <!--
 				<tr>
