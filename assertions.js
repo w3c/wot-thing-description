@@ -67,13 +67,24 @@ const src_raw = fs.readFileSync(src_htmlfile, 'UTF-8');
 var src_dom = cheerio.load(src_raw);
 var src_title = src_dom('title').text();
 
-// Extract assertions
+// Extract span assertions
 // (Synchronous)
 var src_assertions = {};
 src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
     let id = src_dom(this).attr('id');
     if (undefined === id) {
         console.log("WARNING: rfc2119-assertion without id:",
+                    src_dom(this).html());
+    } else {
+        src_assertions[id] = src_dom(this);
+    }
+});
+
+// Extract tabulated assertions
+src_dom('tr[class="rfc2119-table-assertion"]').each(function(i,elem) {
+    let id = src_dom(this).attr('id');
+    if (undefined === id) {
+        console.log("WARNING: rfc2119-table-assertion without id:",
                     src_dom(this).html());
     } else {
         src_assertions[id] = src_dom(this);
