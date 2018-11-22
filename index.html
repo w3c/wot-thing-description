@@ -1588,17 +1588,17 @@ For example, for HTTP and Events, it indicates which of several available mechan
 </section>
 </section>
 
-<section id="TD model" class="appendix">
-<h1>Thing Models</h1>
+<section id="TD model">
+<h1>Thing Templates</h1>
   
 <p>
-A <em>Thing Model</em> is a Thing Description for a <em>class</em> of devices or things.
+A <em>Thing Template</em> is a Thing Description for a <em>class</em> of devices or things.
 It describes the properties, actions, events and common metadata that are shared for an entire group of things,
 to enable the common handling of thousands of devices by a cloud server, which is not practical on a per-thing basis.
-The Thing Model uses the core vocabulary and information model from section 5.
+The Thing Template uses the core vocabulary and information model from section 5.
 </p>
 <p>
-The Thing Model enables:
+The Thing Template enables:
 <ul>
 <li> management of multiple things by a cloud service. </li>
 <li> simulation of devices/things that have not yet been developed.</li>
@@ -1607,29 +1607,152 @@ The Thing Model enables:
 </ul>
 </p>
 <p>
-The Thing Model is a logical description of the interface and possible interaction with devices
+The Thing Template is a logical description of the interface and possible interaction with devices
 (properties, actions and events), however it does not contain device-specific
-information, such as a serial number, GPS location, or concrete protocol endpoints.
+information, such as a serial number, GPS location, security information or concrete protocol endpoints.
 </p><p>
-The same Thing Model can be implemented by things from multiple vendors,
-a thing can implement multiple interface TDs, define additional metadata
+The same Thing Template can be implemented by things from multiple vendors,
+a thing can implement multiple thing templates, define additional metadata
 (vendor, location, security) and define bindings to concrete protocols.
 </p><p>
-A common Thing Model for a class of devices enables writing applications across vendors and
+A common Thing Template for a class of devices enables writing applications across vendors and
 creates a more attractive market for application developers.
-A concrete thing description can implement multiple *Thing Models* and
+A concrete Thing Description can implement multiple <em>Thing Templates</em> and
 thus can aggregate function blocks into a combined device.
 </p><p>
-All devices with the same Thing Model can be managed in the same way by cloud applications.
-and the business models of cloud vendors are typically built on managing thousands of identical devices.
-It is simple to create multiple simulated devices, if the interface and the instance are treated separately.
+The business models of cloud vendors are typically built on managing thousands of identical devices.
+All devices with the same Thing Template can be managed in the same way by cloud applications.
+It is easy to create multiple simulated devices, if the interface and the instance are treated separately.
 </p><p>
-Since a Thing Model is a Thing Description, where some optional parts are not present, it can be serialized in the same way 
+Since a Thing Template is a Thing Description, where some optional parts are not present, it can be serialized in the same way 
 and into the same formats as a thing description.
 </p>
 
+  <section id="thing-template-examples">
+ <h2>Thing Template Examples</h2>
+
+This section defines a Thing Template for a lamp and a Thing Template for a a buzzer.
+The combined thing BuzzerLamp includes both thing templates.
+
+  <section id="lamp-thing-template">
+  <h3>Thing Template: Lamp</h3>
+
+<pre class="example" title="MyLampThingTemplate serialized in JSON">
+{
+    "id": "urn:dev:wot:com:example:servient:lamp:model",
+    "name": "Lamp Thing Template",
+    "description" : "Lamp Thing Template",
+    "properties": {
+        "status": {
+            "description" : "current status of the lamp (on|off)",
+            "type": "string",
+            "readOnly": true
+        }
+    },
+    "actions": {
+        "toggle": {
+            "description" : "Turn the lamp on or off"
+        }
+    },
+    "events": {
+        "overheating": {
+            "description" : "Lamp reaches a critical temperature (overheating)",
+            "data": {"type": "string"}
+        }
+    }
+}
+</pre>
 </section>
-     
+
+<section id="buzzer-thing-template">
+<h3>Thing Template: Buzzer</h3>
+
+<pre class="example" title="MyLampThingTemplate serialized in JSON">
+{
+    "id": "urn:dev:wot:com:example:servient:buzzer:template",
+    "name": "Buzzer Thing Template",
+    "description" : "Thing template of a buzzer that makes noise for 10 seconds",
+     "actions": {
+        "buzz": {
+            "description" : "buzz for 10 seconds"
+        }
+     }
+}
+</pre>
+</section>
+
+<section id="combination-lamp-buzzer-thingl">
+<h3>Combined Thing: Lamp + Buzzer</h3>
+<p>
+The following example illustrates, how a combined thing can be defined using two different thing templates.
+</p>
+<pre class="example" title="Combined Thing: Lamp + Buzzer (JSON-LD1.1 serialisation)">
+{
+   "@context": ["http://www.w3.org/ns/td", 
+   "@type" : [
+        "urn:dev:wot:com:example:servient:lamp:template",
+        "urn:dev:wot:com:example:servient:buzzer:template"
+	],
+    "id": "urn:dev:wot:com:example:servient:combinedBuzzerLamp1",
+    "name": "My Buzzing Lamp Thing",
+    "description" : "A lamp that can issue an alert",
+    "security": [{"scheme": "basic"}],
+    "manufacturer": "SmartLamps.inc",
+    {
+        "id": "urn:dev:wot:com:example:servient:lamp:template",
+        "name": "Lamp Thing Template",
+        "description" : "Thing Template for a lamp",
+        "properties": {
+            "status": {
+                "description" : "current status of the lamp (on|off)",
+                "type": "string",
+                "readOnly": true,
+                "forms": [{
+                "href": "coaps://buzzlamp.example.com/status",
+                "contentType": "application/json"
+                }]
+            }
+        },
+        "actions": {
+            "toggle": {
+                "description" : "Turn on or off the lamp",
+                "forms": [{
+                    "href": "coaps://buzzlamp.example.com/toggle",
+                    "contentType": "application/json"
+                }]
+            }
+        },
+        "events": {
+            "overheating": {
+                "@type" : "iot:TemperatureAlarm",
+                "description" : "Lamp reaches a critical temperature (overheating)",
+                "data": {"type": "string"},
+                "forms": [{
+                    "href": "coaps://buzzlamp.example.com/oh",
+                    "contentType": "application/json"
+                }]
+            }
+        }
+    },
+    {
+        "id": "urn:dev:wot:com:example:servient:buzzer:template",
+        "name": "Buzzer Thing Template",
+        "description" : "Thing Template of a buzzer that makes noise for 10 seconds",
+         "actions": {
+            "buzz": {
+                "description" : "buzz for 10 seconds",
+                "forms": [{
+                    "href": "coaps://buzzlamp.example.com/buzz",
+                    "contentType": "application/json"
+                }]
+            }
+         }
+    }
+}
+  </pre>
+  </section>
+ </section>   
+ </section> 
      
   <section id="sec-security-consideration">
   <h4>Security and Privacy Considerations</h4>
