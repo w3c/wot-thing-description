@@ -32,6 +32,7 @@ ts_dom('span[class="testspec"]').each(function(i,elem) {
 // (Synchronous)
 const impls_dir = path.join(__dirname, 'testing', 'implementations');
 var impls = {};
+var impl_names = {};
 var impls_files = fs.readdirSync(impls_dir);
 function get_impls() {
    for (let fi=0; fi<impls_files.length; fi++) {
@@ -46,7 +47,8 @@ function get_impls() {
                    console.log("Warning: implementation without id:\n",impl_dom(this).html());
                } else {
                    // console.log("Adding implementation for",id,":\n",impl_dom(this).html());
-                   impls[id] = ts_dom(this);
+                   impls[id] = impl_dom(this);
+                   impl_names[id] = impl_dom("h3").text();
                }
            });
        }
@@ -239,21 +241,31 @@ function get_risks(done_callback) {
 var results_template = path.join(results_dir,'template.csv');
 fs.writeFileSync(results_template,'"ID","Status"\n');
 
-// Merge implementation descriptions, assertions, and test specs into plan
+// Merge implementation descriptions
+// (Asynchronous)
+function merge_implementations(done_callback) {
+  // insert implementation descriptions
+  let i = 1;
+  for (impl_id in impls) {
+      impl = impls[impl_id];
+      impl_name = impl_names[impl_id];
+      plan_dom('ul#systems-toc').append('<li class="tocline"></li>\n');
+      let plan_li = plan_dom('ul#systems-toc>li:last-child');
+      plan_li.append('6.'+i+' <a href="#'+impl_id+'" shape="rect">'+impl_name+'</a>');
+      i++;
+      plan_dom('#systems-impl').append(impl);
+  }
+  done_callback();
+}
+
+// Merge assertions, and test specs into plan
 // (Asynchronous)
 plan_dom('head>title').append(src_title);
 // plan_dom('body>h2').append(src_title);
 // plan_dom('body').append('<dl></dl>');
 function merge_assertions(assertions,ac,done_callback) {
-  let i = 1;
-  for (impl_id in impls) {
-      impl_dom = impls[impl_id];
-      impl_name = "To Do";
-      plan_dom('#systems-toc').append('<li class="tocline">6.'+i+'<a href="#'+impl_id+'" shape="rect">'+impl_name+'</a></li>');
-      i++;
-      plan_dom('#systems-impl').append(impl_dom);
-  }
 
+  // insert assertions
   for (a in assertions) {
     console.log("Processing assertion "+a);
 
@@ -414,8 +426,9 @@ get_results(0,function(results) {
 */
      get_risks(function() {
       get_categories(function() {
-       merge_assertions(src_assertions,"baseassertion",function() {
-        merge_assertions(extra_assertions,"extraassertion",function() {
+       merge_implementations(function() {
+        merge_assertions(src_assertions,"baseassertion",function() {
+         merge_assertions(extra_assertions,"extraassertion",function() {
           // Output plan
           fs.writeFile(plan_htmlfile, plan_dom.html(), function(error) {
             if (error) {
@@ -424,6 +437,7 @@ get_results(0,function(results) {
                 console.log("Test plan output to "+plan_htmlfile);
             }
           }); 
+         }); 
         }); 
        }); 
       }); 
