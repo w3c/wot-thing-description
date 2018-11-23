@@ -14,6 +14,8 @@ To render `index.html`, along with SVG figures, run:
 $ ./render.sh
 ```
 
+Requirements: Java 8, Node.js 6, [GraphViz](graphviz.org/).
+
 The script will first download and install some dependencies (triple store, Node.js dependencies) and then execute the JS script `render.js`.
 The latter should always be execute within `render.sh` since it requires some env variables to be set first.
 For Windows users, the script should be run in a [Cygwin shell](http://cygwin.com/).
