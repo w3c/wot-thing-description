@@ -87,7 +87,7 @@ load(updateEndpoint, null).then(() => {
 
     Promise.all(promises).then(() => {
         let tpl = fs.readFileSync(sttlFile, 'utf-8');
-        let main = 'http://w3c.github.io/wot-thing-description/#main';
+        let main = 'http://w3c.github.io/wot-thing-description/visualization#main';
     
         transform(queryEndpoint, tpl, main, {
             type: 'uri', value: 'http://www.w3.org/ns/td#'

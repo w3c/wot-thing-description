@@ -14,8 +14,12 @@ export WOT_SPARUL_ENDPOINT=http://localhost:3030/temp
 sleep 5 # waiting for the RDF store to initialize
 
 echo "Rendering HTML documents & DOT diagrams..."
-cd visualization
-node transform.js
+node render.js
+
+echo "Generating vector graphics from DOT files..."
+dot -ovisualization/td.svg -Tsvg visualization/td.dot
+dot -ovisualization/json-schema.svg -Tsvg visualization/json-schema.dot
+dot -ovisualization/wot-security.svg -Tsvg visualization/wot-security.dot
 
 echo "Shutting down RDF store..."
 kill ${WOT_FUSEKI_PID}

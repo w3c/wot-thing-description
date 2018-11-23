@@ -1,0 +1,169 @@
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix sh: <http://www.w3.org/ns/shacl#>
+prefix : <http://w3c.github.io/wot-thing-description/#>
+template :classes(?ns) {
+    "<section>"
+        format { "<h3><code>%s</code></h3>" st:call-template(:label, ?class) }
+        format { "<p>%s</p>" st:call-template(:desc, ?class) }
+
+        "<table class=\"def\">"
+            "<thead>"
+                "<tr>"
+                    "<th>Member name</th>"
+                    "<th>Description</th>"
+                    "<th>Mandatory</th>"
+                    "<th>Default value</th>"
+                    "<th>Type</th>"
+                "</tr>"
+            "</thead>"
+            format { "<tbody>%s</tbody>" st:call-template(:fields, ?class) }
+        "</table>"
+
+        "<p>"
+            "The class "
+            format { "<code>%s</code>" st:call-template(:label, ?class) }
+            " has the following subclasses:"
+        "</p>"
+        "<ul>"
+            st:call-template(:subclasses, ?class)
+        "</ul>"
+    "</section>"
+} where {
+    ?shape a sh:NodeShape ;
+           sh:targetClass ?class .
+    filter(strstarts(str(?class), str(?ns)))
+    # TODO add annotations to sort classes
+}
+
+---
+
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix sh: <http://www.w3.org/ns/shacl#>
+prefix jsonld: <http://www.w3.org/ns/json-ld#>
+prefix : <http://w3c.github.io/wot-thing-description/#>
+template :fields(?class) {
+    "<tr>"
+        "<td>"
+            format { "<code>%s</code>" st:call-template(:label, ?prop) }
+        "</td>"
+        "<td>"
+            format { "%s" st:call-template(:desc, ?prop) }
+        "</td>"
+        "<td>"
+            format { "%s" if(?mandatory, "yes", "no") }
+        "</td>"
+        "<td>"
+            format { "%s" if(?hasDef, concat("<code>", str(?def), "</code>"), ".") }
+        "</td>"
+        "<td>"
+            format {
+                "%s<a href=\"%s\"><code>%s</code></a>"
+                if(?array, "array of ", "")
+                st:call-template(:href, ?type)
+                st:call-template(:label, ?type)
+            }
+        "</td>"
+    "</tr>"
+} where {
+    ?shape a sh:NodeShape ;
+           sh:targetClass ?class ;
+           sh:property ?propShape .
+    ?propShape sh:path ?prop .
+    { ?propShape sh:datatype ?type }
+    union
+    { ?propShape sh:class ?type }
+    optional { ?propShape sh:minCount ?count }
+    optional {
+        ?m a jsonld:Mapping ;
+           jsonld:iri ?prop ;
+           jsonld:container jsonld:set
+    }
+    optional { ?propShape sh:defaultValue ?def  }
+    bind (bound(?count) as ?mandatory)
+    bind (bound(?m) as ?array)
+    bind (bound(?def) as ?hasDef)
+}
+
+---
+
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix sh: <http://www.w3.org/ns/shacl#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix : <http://w3c.github.io/wot-thing-description/#>
+template :subclasses(?class) {
+    "<li>"
+        format {
+            "<a href=\"%s\"><code>%s</code></a>"
+            st:call-template(:href, ?subclass)
+            st:call-template(:label, ?subclass)
+        }
+    "</li>"
+} where {
+    ?subclass rdfs:subClassOf+ ?class .
+    ?subclassShape a sh:NodeShape ;
+        sh:targetClass ?subclass .
+    ?classShape a sh:NodeShape ;
+        sh:targetClass ?class .
+    filter (isIRI(?subclass) && isIRI(?class))
+}
+
+---
+
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix : <http://w3c.github.io/wot-thing-description/#>
+template :href(?term) {
+    if(strstarts(str(?term), "http://www.w3.org/2001/XMLSchema#"),
+        st:call-template(:href-xsd, ?term),
+        st:call-template(:href-fragment, ?term))
+} where {}
+
+---
+
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix : <http://w3c.github.io/wot-thing-description/#>
+template :href-xsd(?term) {
+    format {
+        "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#%s"
+        st:call-template(:label, ?term)
+    }
+} where {}
+
+---
+
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix : <http://w3c.github.io/wot-thing-description/#>
+template :href-fragment(?term) {
+    format {
+        "#%s"
+        lcase(st:call-template(:label, ?term))
+    }
+} where {}
+
+---
+
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix : <http://w3c.github.io/wot-thing-description/#>
+template :label(?term) {
+    format { "%s" ?label }
+} where {
+    {
+        ?term rdfs:label ?label .
+    } union {
+        bind (strafter(str(?term), "#") as ?label)
+        filter not exists { ?term rdfs:label ?label }
+    }
+} limit 1
+
+---
+
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix : <http://w3c.github.io/wot-thing-description/#>
+template :desc(?term) {
+    format {
+        "%s"
+        if(strends(?desc, "."), ?desc, concat(?desc, "."))
+    } ; separator = " "
+} where {
+    ?term rdfs:comment ?desc .
+}
