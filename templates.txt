@@ -143,17 +143,18 @@ template :href-fragment(?term) {
 ---
 
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix jsonld: <http://www.w3.org/ns/json-ld#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :label(?term) {
     format { "%s" ?label }
 } where {
-    {
-        ?term rdfs:label ?label .
-    } union {
-        bind (strafter(str(?term), "#") as ?label)
-        filter not exists { ?term rdfs:label ?label }
+    optional {
+        ?m a jsonld:Mapping ;
+            jsonld:iri ?term ;
+            jsonld:term ?name .
     }
-} limit 1
+    bind (if(bound(?name), ?name, strafter(str(?term), "#")) as ?label)
+}
 
 ---
 

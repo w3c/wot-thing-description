@@ -177,14 +177,14 @@ load(updateEndpoint, null)
     sttl.callTemplate(tpl1, td)
     .then(html => {
         rendered = rendered.replace('{td}', html);
-    //     return sttl.callTemplate(tpl1, jsonschema);
-    // })
-    // .then((html) => {
-    //     rendered = rendered.replace('{json-schema}', html);
-    //     return sttl.callTemplate(tpl1, wotsec);
-    // })
-    // .then(html => {
-    //     rendered = rendered.replace('{wot-security}', html);
+        return sttl.callTemplate(tpl1, jsonschema);
+    })
+    .then((html) => {
+        rendered = rendered.replace('{json-schema}', html);
+        return sttl.callTemplate(tpl1, wotsec);
+    })
+    .then(html => {
+        rendered = rendered.replace('{wot-security}', html);
         return Promise.resolve();
     }).then(() => {
         rendered = rendered.replace('{td.json-schema.validation}', jsonSchemaValidation);
@@ -194,20 +194,20 @@ load(updateEndpoint, null)
 
     // DOT rendering
 
-    // tpl2 = 'http://w3c.github.io/wot-thing-description/visualization#main';
-    // sttl.callTemplates(tpl2, td)
-    // .then(dot => {
-    //     fs.writeFileSync('visualization/td.dot', dot);
-    //     return sttl.callTemplate(tpl2, jsonschema);
-    // })
-    // .then(dot => {
-    //     fs.writeFileSync('visualization/json-schema.dot', dot);
-    //     return sttl.callTemplate(tpl2, wotsec);
-    // })
-    // .then(dot => {
-    //     fs.writeFileSync('visualization/wot-security.dot', dot);
-    // })
-    // .catch(e => console.error('DOT rendering error: ' + e.message));
+    tpl2 = 'http://w3c.github.io/wot-thing-description/visualization#main';
+    sttl.callTemplate(tpl2, td)
+    .then(dot => {
+        fs.writeFileSync('visualization/td.dot', dot);
+        return sttl.callTemplate(tpl2, jsonschema);
+    })
+    .then(dot => {
+        fs.writeFileSync('visualization/json-schema.dot', dot);
+        return sttl.callTemplate(tpl2, wotsec);
+    })
+    .then(dot => {
+        fs.writeFileSync('visualization/wot-security.dot', dot);
+    })
+    .catch(e => console.error('DOT rendering error: ' + e.message));
 })
 .catch((e) => {
     console.error('Initialization error: ' + e.message);
