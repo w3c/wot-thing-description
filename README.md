@@ -6,12 +6,20 @@ To make contributions, please provide pull-requests to the html file, see [githu
 
 ## Rendering
 
-Part of the document is automatically rendered using the [Dust.js](http://www.dustjs.com/) HTML template engine and Node.js. To render it, run:
+Part of the document is automatically rendered using the [STTL.js](https://github.com/vcharpenay/STTL.js/) RDF template engine and Node.js.
+_Any change to the document must be performed on the main HTML template [`index.template.html`](index.template.html)_, and not on `index.html`.
+To render `index.html`, along with SVG figures, run: 
 
 ```sh
-npm install
-npm run render
+$ ./render.sh
 ```
+
+The script will first download and install some dependencies (triple store, Node.js dependencies) and then execute the JS script `render.js`.
+The latter should always be execute within `render.sh` since it requires some env variables to be set first.
+For Windows users, the script should be run in a [Cygwin shell](http://cygwin.com/).
+
+Rendering is primarly based on the content of [`validation/td-validation.ttl`](validation/td-validation.ttl).
+Any customization of the rendering should go there. e.g. by defining `sh:order` or `sh:description` triples for the relevant shapes.
 
 ## Normative Assertions
 

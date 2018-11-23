@@ -59,7 +59,7 @@ const txtFiles = [
     'visualization/templates.txt'
 ];
 
-const src = fs.readFileSync('index.html.template.html', 'UTF-8');
+const src = fs.readFileSync('index.template.html', 'UTF-8');
 const jsonSchemaValidation = fs.readFileSync('validation/td-json-schema-validation.json', 'UTF-8');
 
 const updateEndpoint = process.env.WOT_SPARUL_ENDPOINT;
