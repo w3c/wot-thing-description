@@ -6,27 +6,9 @@ template :classes(?ns) {
         format { "<h3><code>%s</code></h3>" st:call-template(:label, ?class) }
         format { "<p>%s</p>" st:call-template(:desc, ?class) }
 
-        "<table class=\"def\">"
-            "<thead>"
-                "<tr>"
-                    "<th>Member name</th>"
-                    "<th>Description</th>"
-                    "<th>Mandatory</th>"
-                    "<th>Default value</th>"
-                    "<th>Type</th>"
-                "</tr>"
-            "</thead>"
-            format { "<tbody>%s</tbody>" st:call-template(:fields, ?class) }
-        "</table>"
+        format { "%s" st:call-template(:fields, ?class) }
 
-        "<p>"
-            "The class "
-            format { "<code>%s</code>" st:call-template(:label, ?class) }
-            " has the following subclasses:"
-        "</p>"
-        "<ul>"
-            st:call-template(:subclasses, ?class)
-        "</ul>"
+        format { "%s" st:call-template(:subclasses, ?class) }
     "</section>"
 } where {
     ?shape a sh:NodeShape ;
@@ -42,6 +24,34 @@ prefix sh: <http://www.w3.org/ns/shacl#>
 prefix jsonld: <http://www.w3.org/ns/json-ld#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :fields(?class) {
+    "<table class=\"def\">"
+        "<thead>"
+            "<tr>"
+                "<th>Member name</th>"
+                "<th>Description</th>"
+                "<th>Mandatory</th>"
+                "<th>Default value</th>"
+                "<th>Type</th>"
+            "</tr>"
+        "</thead>"
+        format { "<tbody>%s</tbody>" st:call-template(:field, ?class) }
+    "</table>"
+} where {
+    ?shape a sh:NodeShape ;
+           sh:targetClass ?class .
+    filter exists {
+        ?shape sh:property ?propShape .
+        ?propShape sh:path ?prop .
+    }
+}
+
+---
+
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix sh: <http://www.w3.org/ns/shacl#>
+prefix jsonld: <http://www.w3.org/ns/json-ld#>
+prefix : <http://w3c.github.io/wot-thing-description/#>
+template :field(?class) {
     "<tr>"
         "<td>"
             format { "<code>%s</code>" st:call-template(:label, ?prop) }
@@ -91,6 +101,25 @@ prefix sh: <http://www.w3.org/ns/shacl#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :subclasses(?class) {
+    "<p>"
+        "The class "
+        format { "<code>%s</code>" st:call-template(:label, ?class) }
+        " has the following subclasses:"
+    "</p>"
+    "<ul>"
+        st:call-template(:subclass, ?class)
+    "</ul>"
+} where {
+    ?subclass rdfs:subClassOf+ ?class .
+}
+
+---
+
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix sh: <http://www.w3.org/ns/shacl#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix : <http://w3c.github.io/wot-thing-description/#>
+template :subclass(?class) {
     "<li>"
         format {
             "<a href=\"%s\"><code>%s</code></a>"
@@ -106,6 +135,7 @@ template :subclasses(?class) {
         sh:targetClass ?class .
     filter (isIRI(?subclass) && isIRI(?class))
 }
+
 
 ---
 
