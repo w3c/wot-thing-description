@@ -72,6 +72,12 @@ template :field(?class) {
                 st:call-template(:href, ?type)
                 st:call-template(:label, ?type)
             }
+            format {
+                "%s%s%s"
+                if(?hasEnum, " (one of ", "")
+                st:call-template(:enum, ?class, ?prop)
+                if(?hasEnum, ")", "")
+            }
         "</td>"
     "</tr>"
 } where {
@@ -88,10 +94,38 @@ template :field(?class) {
            jsonld:iri ?prop ;
            jsonld:container jsonld:set
     }
+    optional {
+        ?propShape sh:in ?list
+    }
     optional { ?propShape sh:defaultValue ?def  }
     bind (bound(?count) as ?mandatory)
     bind (bound(?m) as ?array)
     bind (bound(?def) as ?hasDef)
+    bind (bound(?list) as ?hasEnum)
+}
+
+---
+
+prefix sh: <http://www.w3.org/ns/shacl#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix : <http://w3c.github.io/wot-thing-description/#>
+template :enum(?class ?prop) {
+    format {
+        "%s<code>%s</code>%s"
+        if(?last, "or ", "")
+        ?val
+        if(?last, "", ", ")
+    }; separator = ""
+} where {
+    ?shape a sh:NodeShape ;
+           sh:targetClass ?class ;
+           sh:property ?propShape .
+    ?propShape sh:path ?prop ;
+               sh:in ?list .
+    ?list rdf:rest* ?r .
+    ?r rdf:first ?val .
+    ?r rdf:rest ?next
+    bind ((?next = rdf:nil) as ?last)
 }
 
 ---
