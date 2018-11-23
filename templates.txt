@@ -74,7 +74,7 @@ template :field(?class) {
             }
             format {
                 "%s%s%s"
-                if(?hasEnum, " (one of ", "")
+                if(?hasEnum, " (", "")
                 st:call-template(:enum, ?class, ?prop)
                 if(?hasEnum, ")", "")
             }
@@ -112,7 +112,7 @@ prefix : <http://w3c.github.io/wot-thing-description/#>
 template :enum(?class ?prop) {
     format {
         "%s<code>%s</code>%s"
-        if(?last, "or ", "")
+        if(?first, "one of ", if(?last, "or ", ""))
         ?val
         if(?last, "", ", ")
     }; separator = ""
@@ -125,6 +125,7 @@ template :enum(?class ?prop) {
     ?list rdf:rest* ?r .
     ?r rdf:first ?val .
     ?r rdf:rest ?next
+    bind ((?list = ?r) as ?first)
     bind ((?next = rdf:nil) as ?last)
 }
 
