@@ -10,6 +10,8 @@ template :classes(?ns) {
         format { "%s" st:call-template(:fields, ?class) }
 
         format { "%s" st:call-template(:subclasses, ?class) }
+
+        format { "%s" st:call-template(:notes, ?class) }
     "</section>"
 } where {
     ?shape a sh:NodeShape ;
@@ -190,6 +192,20 @@ template :subclass(?class) {
     ?classShape a sh:NodeShape ;
         sh:targetClass ?class .
     filter (isIRI(?subclass) && isIRI(?class))
+}
+
+---
+
+prefix sh: <http://www.w3.org/ns/shacl#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix : <http://w3c.github.io/wot-thing-description/#>
+template :notes(?class) {
+    format { "%s" ?note } ; separator = ""
+} where {
+    ?shape a sh:NodeShape ;
+           sh:targetClass ?class ;
+           sh:description ?note .
+    filter (datatype(?note) = rdf:HTML)
 }
 
 
