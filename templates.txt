@@ -1,5 +1,6 @@
 prefix st: <http://ns.inria.fr/sparql-template/>
 prefix sh: <http://www.w3.org/ns/shacl#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :classes(?ns) {
     "<section>"
@@ -14,8 +15,9 @@ template :classes(?ns) {
     ?shape a sh:NodeShape ;
            sh:targetClass ?class .
     filter(strstarts(str(?class), str(?ns)))
-    # TODO add annotations to sort classes
-}
+    optional { ?shape sh:order ?predefined }
+    bind (if(bound(?predefined), ?predefined, "1000"^^xsd:integer) as ?rank)
+} order by ?rank
 
 ---
 

@@ -1,75 +1,8 @@
 let fs = require('fs');
-let sttl = require('sttl'); // TODO add to package.json
+let sttl = require('sttl');
 const http = require('http');
 
 let jsonld = require('./context/json-ld.js');
-
-// class sort prior to rendering
-
-const corePredefined = [
-    "Thing",
-    "InteractionPattern",
-    "Property",
-    "Action",
-    "Event",
-    "Form",
-    "Link"
-];
-
-const schemaPredefined = [
-    "DataSchema",
-    "ArraySchema",
-    "ObjectSchema",
-    "BooleanSchema",
-    "NumberSchema",
-    "StringSchema"
-];
-
-const securityPredefined = [
-    "SecurityScheme",
-    "NoSecurityScheme",
-    "BasicSecurityScheme",
-    "CertSecurityScheme",
-    "DigestSecurityScheme",
-    "BearerSecurityScheme",
-    "PSKSecurityScheme",
-    "PopSecurityScheme",
-    "PublicSecurityScheme",
-    "ApikeySecurityScheme",
-    "OAuth2SecurityScheme"
-];
-
-function sort(voc) {
-    voc.coreClasses.sort(function(c1, c2) {
-        let i1 = corePredefined.indexOf(c1.label);
-        let i2 = corePredefined.indexOf(c2.label);
-        
-        if (i1 === -1) { i1 = corePredefined.length; }
-        if (i2 === -1) { i2 = corePredefined.length; }
-        
-        return i1 - i2;
-    });
-    voc.schemaClasses.sort(function(c1, c2) {
-        let i1 = schemaPredefined.indexOf(c1.label);
-        let i2 = schemaPredefined.indexOf(c2.label);
-        
-        if (i1 === -1) { i1 = schemaPredefined.length; }
-        if (i2 === -1) { i2 = schemaPredefined.length; }
-        
-        return i1 - i2;
-    });
-    voc.securityClasses.sort(function(c1, c2) {
-        let i1 = securityPredefined.indexOf(c1.label);
-        let i2 = securityPredefined.indexOf(c2.label);
-        
-        if (i1 === -1) { i1 = securityPredefined.length; }
-        if (i2 === -1) { i2 = securityPredefined.length; }
-        
-        return i1 - i2;
-    });
-    
-    return voc;
-}
 
 /**
  * params:
