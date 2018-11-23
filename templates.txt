@@ -67,10 +67,9 @@ template :field(?class) {
         "</td>"
         "<td>"
             format {
-                "%s<a href=\"%s\"><code>%s</code></a>"
+                "%s%s"
                 if(?array, "array of ", "")
-                st:call-template(:href, ?type)
-                st:call-template(:label, ?type)
+                if(?hasType, st:call-template(:type, ?class, ?prop), "any type")
             }
             format {
                 "%s%s%s"
@@ -85,9 +84,7 @@ template :field(?class) {
            sh:targetClass ?class ;
            sh:property ?propShape .
     ?propShape sh:path ?prop .
-    { ?propShape sh:datatype ?type }
-    union
-    { ?propShape sh:class ?type }
+    optional { ?propShape sh:datatype|sh:class ?type }
     optional { ?propShape sh:minCount ?count }
     optional {
         ?m a jsonld:Mapping ;
@@ -99,9 +96,31 @@ template :field(?class) {
     }
     optional { ?propShape sh:defaultValue ?def  }
     bind (bound(?count) as ?mandatory)
-    bind (bound(?m) as ?array)
     bind (bound(?def) as ?hasDef)
+    bind (bound(?m) as ?array)
+    bind (bound(?type) as ?hasType)
     bind (bound(?list) as ?hasEnum)
+}
+
+---
+
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix sh: <http://www.w3.org/ns/shacl#>
+prefix : <http://w3c.github.io/wot-thing-description/#>
+template :type(?class ?prop) {
+    format {
+        "<a href=\"%s\"><code>%s</code></a>"
+        st:call-template(:href, ?type)
+        st:call-template(:label, ?type)
+    }
+} where {
+    ?shape a sh:NodeShape ;
+           sh:targetClass ?class ;
+           sh:property ?propShape .
+    ?propShape sh:path ?prop .
+    { ?propShape sh:datatype ?type }
+    union
+    { ?propShape sh:class ?type }
 }
 
 ---
