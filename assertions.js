@@ -97,7 +97,7 @@ src_dom('tr[class="rfc2119-table-assertion"]').each(function(i,elem) {
                       + (("yes" === assertion_data[2]) ? ' (MUST be included)' : ' (MAY be included)')
                       + (("." === assertion_data[3]) ? '' : ' (default: '+assertion_data[3]+')')
                       +'</span>';
-        //console.log("table assertion",id,assertion);
+        // console.log("table assertion",id,assertion);
         tab_assertions[id] = cheerio.load(assertion)("span");
     }
 });
@@ -213,6 +213,31 @@ function merge_results(done_callback) {
         }
     }
     done_callback(merged_results);
+}
+
+// Get depends
+// (Asynchronous)
+var depends = new Map();
+function get_depends(done_callback) {
+    var file = path.join(__dirname,"testing","depends.csv");
+    console.log("processing dependencies in",file);
+    var filedata = fs.readFileSync(file).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let id = item["ID"];
+                if (undefined != id) {
+                    depends.set(id,{
+                        "parents": item["Parents"],
+                        "contexts": item["Contexts"]
+                    });
+                }
+                // console.log(id," depends ",depends.get(id));
+            }
+            done_callback();
+        });
 }
 
 // Get categories
@@ -345,7 +370,11 @@ function merge_assertions(assertions,ac,done_callback) {
     a_text = assertions[a];
 
     // Table
+
+    // ID
     plan_dom('#testresults').append('<tr id="'+a+'" class="'+ac+'"></tr>');
+
+    // Assertion
     let plan_tr = plan_dom('tr#'+a);
     plan_tr.append('<td class="'+ac+'"><a href="../index.html#'+a+'">'+a+'</a></td>');
     if (undefined != categories.get(a)) {
@@ -358,12 +387,42 @@ function merge_assertions(assertions,ac,done_callback) {
     } else {
        plan_tr.append('<td class="'+ac+'">'+a_text+'</td>');
     }
+
+    // Req
     if (req) {
         plan_tr.append('<td class="'+ac+'">Y</td>');
     } else {
         plan_tr.append('<td class="'+ac+'">N</td>');
     }
-    plan_tr.append('<td class="'+ac+'"></td>');
+
+    // Parent(s) and Context(s)
+    let d = depends.get(a);
+    if (undefined != d) {
+        let p = d.parents;
+        if (undefined != p && "null" !== p) {
+            let ps = p.split(' ');
+            let h = '<td class="'+ac+'">';
+            for (let i=0; i<ps.length; i++) {
+                h = h + '<a href="#' + ps[i] + '">' + ps[i] + '</a> ';
+            }
+            plan_tr.append(h+'</td>');
+        } else {
+            plan_tr.append('<td class="'+ac+'"></td>');
+        }
+        let c = d.contexts;
+        if (undefined != c && "null" !== c) {
+            let cs = c.split(' ');
+            let h = '<td class="'+ac+'">';
+            for (let i=0; i<cs.length; i++) {
+                h = h + '<a href="#' + cs[i] + '">' + cs[i] + '</a> ';
+            }
+            plan_tr.append(h+'</td>');
+        } else {
+            plan_tr.append('<td class="'+ac+'"></td>');
+        }
+    }
+
+    // Test Results
     let result = merged_results.get(a);
     if (undefined != result) {
        // Number of reported pass statuses
@@ -387,7 +446,7 @@ function merge_assertions(assertions,ac,done_callback) {
              plan_tr.append('<td class="'+ac+'">'+fail+'</td>');
           }
        } else {
-          plan_tr.append('<td class="missing"></td>');
+          plan_tr.append('<td class="'+ac+'"></td>');
 	  fail = 0;
        }
        // Number of reported not implemented statuses
@@ -395,7 +454,7 @@ function merge_assertions(assertions,ac,done_callback) {
        if (undefined != notimpl) {
           plan_tr.append('<td class="'+ac+'">'+notimpl+'</td>');
        } else {
-          plan_tr.append('<td class="missing"></td>');
+          plan_tr.append('<td class="'+ac+'"></td>');
 	  notimpl = 0;
        }
        // Total number of reported statuses
@@ -447,7 +506,8 @@ get_results(0,function(results) {
       }
       console.log("}");
 */
-     get_risks(function() {
+    get_risks(function() {
+     get_depends(function() {
       get_categories(function() {
        merge_implementations(function() {
         merge_assertions(src_assertions,"baseassertion",function() {
@@ -468,5 +528,6 @@ get_results(0,function(results) {
       }); 
      }); 
     });
+   });
 });
 
