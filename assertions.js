@@ -88,11 +88,16 @@ src_dom('tr[class="rfc2119-table-assertion"]').each(function(i,elem) {
         console.log("WARNING: rfc2119-table-assertion without id:",
                     src_dom(this).html());
     } else {
-        let assertion = src_dom(this).children('td').map(function(i, el) {
+        let assertion_data = src_dom(this).children('td').map(function(i, el) {
             return src_dom(this).html();
-        }).get().join(' ');
-        assertion = '<span class="rfc2119-table-assertion">'+assertion+'</span>';
-        console.log("table assertion",id,assertion);
+        }).get();
+        let assertion = '<span class="rfc2119-table-assertion">' 
+                      + assertion_data[0]         // vocab term
+                      + ': ' + assertion_data[1]  // vocab text
+                      + (("yes" === assertion_data[2]) ? ' (MUST be included)' : ' (MAY be included)')
+                      + (("." === assertion_data[3]) ? '' : ' (default: '+assertion_data[3]+')')
+                      +'</span>';
+        //console.log("table assertion",id,assertion);
         tab_assertions[id] = cheerio.load(assertion)("span");
     }
 });
@@ -281,7 +286,6 @@ plan_dom('head>title').append(src_title);
 // plan_dom('body>h2').append(src_title);
 // plan_dom('body').append('<dl></dl>');
 function merge_assertions(assertions,ac,done_callback) {
-
   // insert assertions
   for (a in assertions) {
     console.log("Processing assertion "+a);
@@ -299,40 +303,42 @@ function merge_assertions(assertions,ac,done_callback) {
 
     let category = undefined;
     let req = false;
-    if (assertions[a].text().indexOf('MUST') > -1) {
-        if (assertions[a].text().indexOf('MUST NOT') > -1) {
-            category = 'MUST NOT';
-        } else {
-            category = 'MUST';
-        }
-        req = true;
-    }
-    if (assertions[a].text().indexOf('SHOULD') > -1) {
-        if (assertions[a].text().indexOf('SHOULD NOT') > -1) {
-            category = 'SHOULD NOT';
-        } else {
-            category = 'SHOULD';
-        }
-    }
-    if (assertions[a].text().indexOf('MAY') > -1) {
-        category = 'MAY';
-    }
-    if (assertions[a].text().indexOf('REQUIRED') > -1) {
-        category = 'REQUIRED';
-        req = true;
-    }
-    if (assertions[a].text().indexOf('RECOMMENDED') > -1) {
-        category = 'RECOMMENDED';
-    }
-    if (assertions[a].text().indexOf('OPTIONAL') > -1) {
-        category = 'OPTIONAL';
-    }
+    {
+	    if (assertions[a].text().indexOf('MUST') > -1) {
+		if (assertions[a].text().indexOf('MUST NOT') > -1) {
+		    category = 'MUST NOT';
+		} else {
+		    category = 'MUST';
+		}
+		req = true;
+	    }
+	    if (assertions[a].text().indexOf('SHOULD') > -1) {
+		if (assertions[a].text().indexOf('SHOULD NOT') > -1) {
+		    category = 'SHOULD NOT';
+		} else {
+		    category = 'SHOULD';
+		}
+	    }
+	    if (assertions[a].text().indexOf('MAY') > -1) {
+		category = 'MAY';
+	    }
+	    if (assertions[a].text().indexOf('REQUIRED') > -1) {
+		category = 'REQUIRED';
+		req = true;
+	    }
+	    if (assertions[a].text().indexOf('RECOMMENDED') > -1) {
+		category = 'RECOMMENDED';
+	    }
+	    if (assertions[a].text().indexOf('OPTIONAL') > -1) {
+		category = 'OPTIONAL';
+	    }
 
-    if (undefined === category) {
-        console.log("  WARNING: RFC2119 category is not defined");
-        plan_dt.append(': <strong>'+'undefined'+'</strong>');
-    } else {
-        plan_dt.append(': <strong>'+category+'</strong>');
+	    if (undefined === category) {
+		console.log("  WARNING: RFC2119 category is not defined");
+		plan_dt.append(': <strong>'+'undefined'+'</strong>');
+	    } else {
+		plan_dt.append(': <strong>'+category+'</strong>');
+	    }
     }
 
     // retreive text of assertion
