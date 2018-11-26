@@ -1,16 +1,41 @@
-// Parameters
-// TODO: allow these to be specified with options, eg with commander
-const src_htmlfile = "index.html";
-const template_htmlfile = "testing/template.html";
-const ts_htmlfile = "testing/testspec.html";
-const ea_htmlfile = "testing/extra-asserts.html";
-const plan_htmlfile = "testing/plan.html";
+/* Process assertions in index.html, combine with configuration
+ * and test results data in testing, and generate an implementation
+ * report.   
+ * See testing/README.md
+ */
 
 // Dependencies
 const path = require('path');
 const fs = require('fs');
 const cheerio = require('cheerio');
 const csvtojson=require('csvtojson'); // V2
+
+// Parameters
+//=======================================================================
+// TODO: allow these to be specified with options, eg with commander
+
+// Directories
+const src_dir = __dirname;
+const testing_dir = path.join(__dirname, "testing");
+const impls_dir = path.join(testing_dir, "implementations");
+const results_dir = path.join(testing_dir, "results");
+
+// Inputs
+const src_htmlfile = path.join(src_dir, "index.html");
+const template_htmlfile = path.join(testing_dir, "template.html");
+const ts_htmlfile = path.join(testing_dir, "testspec.html");
+const ea_htmlfile = path.join(testing_dir, "extra-asserts.html");
+
+const depends_csvfile = path.join(testing_dir, "depends.csv");
+const categories_csvfile = path.join(testing_dir, "categories.csv");
+const atrisk_csvfile = path.join(testing_dir, "atrisk.csv");
+//-----------------------------------------------------------------------
+
+// Outputs
+const report_htmlfile = path.join(testing_dir, "report.html");
+const results_csvfile = path.join(results_dir,"template.csv");
+//=======================================================================
+
 
 // Read in test specs and store as a map
 // (Synchronous)
@@ -30,7 +55,6 @@ ts_dom('span[class="testspec"]').each(function(i,elem) {
 
 // Read in implementation descriptions, store as a map from name to doms
 // (Synchronous)
-const impls_dir = path.join(__dirname, 'testing', 'implementations');
 var impls = {};
 var impl_names = {};
 var impls_files = fs.readdirSync(impls_dir);
@@ -56,10 +80,10 @@ function get_impls() {
 }
 get_impls();
 
-// Initialize plan dom with template
+// Initialize report document dom with template
 // (Synchronous)
 const template_raw = fs.readFileSync(template_htmlfile, 'UTF-8');
-var plan_dom = cheerio.load(template_raw);
+var report_dom = cheerio.load(template_raw);
 
 // Read in index.html store as a dom
 // (Synchronous)
@@ -122,7 +146,6 @@ ea_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
 
 // Get all results, convert from CSV to JSON
 // (Asynchronous)
-const results_dir = path.join(__dirname, 'testing', 'results');
 var results = new Map();
 var results_files = fs.readdirSync(results_dir);
 function get_results(i,done_callback) {
@@ -219,9 +242,8 @@ function merge_results(done_callback) {
 // (Asynchronous)
 var depends = new Map();
 function get_depends(done_callback) {
-    var file = path.join(__dirname,"testing","depends.csv");
-    console.log("processing dependencies in",file);
-    var filedata = fs.readFileSync(file).toString();
+    console.log("processing dependencies in",depends_csvfile);
+    var filedata = fs.readFileSync(depends_csvfile).toString();
     csvtojson()
         .fromString(filedata)
         .then((data)=> {
@@ -244,9 +266,8 @@ function get_depends(done_callback) {
 // (Asynchronous)
 var categories = new Map();
 function get_categories(done_callback) {
-    var file = path.join(__dirname,"testing","categories.csv");
-    console.log("processing categories in",file);
-    var filedata = fs.readFileSync(file).toString();
+    console.log("processing categories in",categories_csvfile);
+    var filedata = fs.readFileSync(categories_csvfile).toString();
     csvtojson()
         .fromString(filedata)
         .then((data)=> {
@@ -266,9 +287,8 @@ function get_categories(done_callback) {
 // (Asynchronous)
 var risks = new Map();
 function get_risks(done_callback) {
-    var file = path.join(__dirname,"testing","atrisk.csv");
-    console.log("processing risks in",file);
-    var filedata = fs.readFileSync(file).toString();
+    console.log("processing risks in",atrisk_csvfile);
+    var filedata = fs.readFileSync(atrisk_csvfile).toString();
     csvtojson()
         .fromString(filedata)
         .then((data)=> {
@@ -285,8 +305,7 @@ function get_risks(done_callback) {
 
 // Clear (well, write headers for) results template
 // (Synchronous)
-var results_template = path.join(results_dir,'template.csv');
-fs.writeFileSync(results_template,'"ID","Status"\n');
+fs.writeFileSync(results_csvfile,'"ID","Status"\n');
 
 // Merge implementation descriptions
 // (Asynchronous)
@@ -296,34 +315,34 @@ function merge_implementations(done_callback) {
   for (impl_id in impls) {
       impl = impls[impl_id];
       impl_name = impl_names[impl_id];
-      plan_dom('ul#systems-toc').append('<li class="tocline"></li>\n');
-      let plan_li = plan_dom('ul#systems-toc>li:last-child');
-      plan_li.append('6.'+i+' <a href="#'+impl_id+'" shape="rect">'+impl_name+'</a>');
+      report_dom('ul#systems-toc').append('<li class="tocline"></li>\n');
+      let report_li = report_dom('ul#systems-toc>li:last-child');
+      report_li.append('6.'+i+' <a href="#'+impl_id+'" shape="rect">'+impl_name+'</a>');
       i++;
-      plan_dom('#systems-impl').append(impl);
+      report_dom('#systems-impl').append(impl);
   }
   done_callback();
 }
 
-// Merge assertions, and test specs into plan
+// Merge assertions, and test specs into report
 // (Asynchronous)
-plan_dom('head>title').append(src_title);
-// plan_dom('body>h2').append(src_title);
-// plan_dom('body').append('<dl></dl>');
+report_dom('head>title').append(src_title);
+// report_dom('body>h2').append(src_title);
+// report_dom('body').append('<dl></dl>');
 function merge_assertions(assertions,ac,done_callback) {
   // insert assertions
   for (a in assertions) {
     console.log("Processing assertion "+a);
 
     // Results template
-    fs.appendFileSync(results_template, '"'+a+'","null"\n');
+    fs.appendFileSync(results_csvfile, '"'+a+'","null"\n');
 
     // Test Specifications Appendix
-    plan_dom('#testspecs').append('<dt></dt>');
-    let plan_dt = plan_dom('#testspecs>dt:last-child');
-    plan_dt.append('<a href="../index.html#'+a+'">'+a+'</a> ');
+    report_dom('#testspecs').append('<dt></dt>');
+    let report_dt = report_dom('#testspecs>dt:last-child');
+    report_dt.append('<a href="../index.html#'+a+'">'+a+'</a> ');
     if ("baseassertion" !== ac) {
-       plan_dt.append('<em>(extra)</em>');
+       report_dt.append('<em>(extra)</em>');
     }
 
     let category = undefined;
@@ -360,9 +379,9 @@ function merge_assertions(assertions,ac,done_callback) {
 
 	    if (undefined === category) {
 		console.log("  WARNING: RFC2119 category is not defined");
-		plan_dt.append(': <strong>'+'undefined'+'</strong>');
+		report_dt.append(': <strong>'+'undefined'+'</strong>');
 	    } else {
-		plan_dt.append(': <strong>'+category+'</strong>');
+		report_dt.append(': <strong>'+category+'</strong>');
 	    }
     }
 
@@ -372,27 +391,27 @@ function merge_assertions(assertions,ac,done_callback) {
     // Table
 
     // ID
-    plan_dom('#testresults').append('<tr id="'+a+'" class="'+ac+'"></tr>');
+    report_dom('#testresults').append('<tr id="'+a+'" class="'+ac+'"></tr>');
 
     // Assertion
-    let plan_tr = plan_dom('tr#'+a);
-    plan_tr.append('<td class="'+ac+'"><a href="../index.html#'+a+'">'+a+'</a></td>');
+    let report_tr = report_dom('tr#'+a);
+    report_tr.append('<td class="'+ac+'"><a href="../index.html#'+a+'">'+a+'</a></td>');
     if (undefined != categories.get(a)) {
-       plan_tr.append('<td class="'+ac+'">'+categories.get(a)+'</td>');
+       report_tr.append('<td class="'+ac+'">'+categories.get(a)+'</td>');
     } else {
-       plan_tr.append('<td class="'+ac+'"></td>');
+       report_tr.append('<td class="'+ac+'"></td>');
     }
     if (undefined != risks.get(a)) {
-       plan_tr.append('<td class="atrisk">'+a_text+'</td>');
+       report_tr.append('<td class="atrisk">'+a_text+'</td>');
     } else {
-       plan_tr.append('<td class="'+ac+'">'+a_text+'</td>');
+       report_tr.append('<td class="'+ac+'">'+a_text+'</td>');
     }
 
     // Req
     if (req) {
-        plan_tr.append('<td class="'+ac+'">Y</td>');
+        report_tr.append('<td class="'+ac+'">Y</td>');
     } else {
-        plan_tr.append('<td class="'+ac+'">N</td>');
+        report_tr.append('<td class="'+ac+'">N</td>');
     }
 
     // Parent(s) and Context(s)
@@ -405,9 +424,9 @@ function merge_assertions(assertions,ac,done_callback) {
             for (let i=0; i<ps.length; i++) {
                 h = h + '<a href="#' + ps[i] + '">' + ps[i] + '</a> ';
             }
-            plan_tr.append(h+'</td>');
+            report_tr.append(h+'</td>');
         } else {
-            plan_tr.append('<td class="'+ac+'"></td>');
+            report_tr.append('<td class="'+ac+'"></td>');
         }
         let c = d.contexts;
         if (undefined != c && "null" !== c) {
@@ -416,9 +435,9 @@ function merge_assertions(assertions,ac,done_callback) {
             for (let i=0; i<cs.length; i++) {
                 h = h + '<a href="#' + cs[i] + '">' + cs[i] + '</a> ';
             }
-            plan_tr.append(h+'</td>');
+            report_tr.append(h+'</td>');
         } else {
-            plan_tr.append('<td class="'+ac+'"></td>');
+            report_tr.append('<td class="'+ac+'"></td>');
         }
     }
 
@@ -429,62 +448,62 @@ function merge_assertions(assertions,ac,done_callback) {
        let pass = result.pass;
        if (undefined != pass) {
           if (pass >= 2) {
-             plan_tr.append('<td class="'+ac+'">'+pass+'</td>');
+             report_tr.append('<td class="'+ac+'">'+pass+'</td>');
           } else {
-             plan_tr.append('<td class="failed">'+pass+'</td>');
+             report_tr.append('<td class="failed">'+pass+'</td>');
           }
        } else {
-          plan_tr.append('<td class="missing"></td>');
+          report_tr.append('<td class="missing"></td>');
 	  pass = 0;
        }
        // Number of reported fail statuses
        let fail = result.fail;
        if (undefined != fail) {
           if (fail > 0) {
-             plan_tr.append('<td class="failed">'+fail+'</td>');
+             report_tr.append('<td class="failed">'+fail+'</td>');
           } else {
-             plan_tr.append('<td class="'+ac+'">'+fail+'</td>');
+             report_tr.append('<td class="'+ac+'">'+fail+'</td>');
           }
        } else {
-          plan_tr.append('<td class="'+ac+'"></td>');
+          report_tr.append('<td class="'+ac+'"></td>');
 	  fail = 0;
        }
        // Number of reported not implemented statuses
        let notimpl = result.notimpl;
        if (undefined != notimpl) {
-          plan_tr.append('<td class="'+ac+'">'+notimpl+'</td>');
+          report_tr.append('<td class="'+ac+'">'+notimpl+'</td>');
        } else {
-          plan_tr.append('<td class="'+ac+'"></td>');
+          report_tr.append('<td class="'+ac+'"></td>');
 	  notimpl = 0;
        }
        // Total number of reported statuses
        let totals = pass + fail + notimpl;
        if (0 == totals) {
-           plan_tr.append('<td class="missing"></td>');
+           report_tr.append('<td class="missing"></td>');
        } else if (totals < 2) {
-           plan_tr.append('<td class="failed">'+totals+'</td>');
+           report_tr.append('<td class="failed">'+totals+'</td>');
        } else {
-           plan_tr.append('<td class="'+ac+'">'+totals+'</td>');
+           report_tr.append('<td class="'+ac+'">'+totals+'</td>');
        }
     } else {
-       plan_tr.append('<td class="missing"></td>');
-       plan_tr.append('<td class="missing"></td>');
-       plan_tr.append('<td class="missing"></td>');
-       plan_tr.append('<td class="missing"></td>');
+       report_tr.append('<td class="missing"></td>');
+       report_tr.append('<td class="missing"></td>');
+       report_tr.append('<td class="missing"></td>');
+       report_tr.append('<td class="missing"></td>');
     }
 
     // Add to appendix
-    plan_dom('#testspecs').append('<dd id="'+a+'" class="'+ac+'"></dd>');
-    let plan_dd = plan_dom('dd#'+a);
-    plan_dd.append(a_text);
+    report_dom('#testspecs').append('<dd id="'+a+'" class="'+ac+'"></dd>');
+    let report_dd = report_dom('dd#'+a);
+    report_dd.append(a_text);
     a_spec = testspec[a];
-    plan_dd.append('<br/><span></span>');
-    let plan_li = plan_dom('dd#'+a+'>span:last-child');
+    report_dd.append('<br/><span></span>');
+    let report_li = report_dom('dd#'+a+'>span:last-child');
     if (undefined === a_spec) {
         console.log("  WARNING: no test spec");
-        plan_li.append('<p><strong>NO TEST SPECIFICATION</strong></p>');
+        report_li.append('<p><strong>NO TEST SPECIFICATION</strong></p>');
     } else {
-        plan_li.append(a_spec);
+        report_li.append(a_spec);
     }
   }
   done_callback();
@@ -513,12 +532,12 @@ get_results(0,function(results) {
         merge_assertions(src_assertions,"baseassertion",function() {
          merge_assertions(tab_assertions,"tabassertion",function() {
           merge_assertions(extra_assertions,"extraassertion",function() {
-           // Output plan
-           fs.writeFile(plan_htmlfile, plan_dom.html(), function(error) {
+           // Output report
+           fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
              if (error) {
                 return console.log(err);
              } else {
-                console.log("Test plan output to "+plan_htmlfile);
+                console.log("Report output to "+report_htmlfile);
              }
            }); 
           }); 
