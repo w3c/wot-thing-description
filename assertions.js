@@ -213,25 +213,25 @@ function merge_results(done_callback) {
                    }
                }
                // failures
-               if (undefined != current.fail) {
-                   if (undefined != fail) {
+               if (undefined !== current.fail) {
+                   if (undefined !== fail) {
                        current.fail += fail;
                        merged_results.set(id,current);
                    }
                } else {
-                   if (undefined != fail) {
+                   if (undefined !== fail) {
                        current.fail = fail;
                        merged_results.set(id,current);
                    }
                }
                // not-implemented
-               if (undefined != current.notimpl) {
-                   if (undefined != notimpl) {
+               if (undefined !== current.notimpl) {
+                   if (undefined !== notimpl) {
                        current.notimpl += notimpl;
                        merged_results.set(id,current);
                    }
                } else {
-                   if (undefined != notimpl) {
+                   if (undefined !== notimpl) {
                        current.notimpl = notimpl;
                        merged_results.set(id,current);
                    }
@@ -256,7 +256,7 @@ function get_depends(done_callback) {
             for (let i=0; i<data.length; i++) {
                 let item = data[i];
                 let id = item["ID"];
-                if (undefined != id) {
+                if (undefined !== id) {
                     depends.set(id,{
                         "parents": item["Parents"],
                         "contexts": item["Contexts"]
@@ -281,8 +281,11 @@ function get_categories(done_callback) {
                 let item = data[i];
                 let id = item["ID"];
                 let cat = item["Category"];
-                if (undefined != id && undefined != cat) {
+                if (undefined !== id && undefined !== cat) {
                     categories.set(id,cat);
+                    if (chatty_v) console.log("add category record for id",id+":",categories.get(id));
+                } else {
+                    if (warn_v) console.log("WARNING: category record for id",id,"in unexpected format");
                 }
             }
             done_callback();
@@ -301,8 +304,56 @@ function get_risks(done_callback) {
             for (let i=0; i<data.length; i++) {
                 let item = data[i];
                 let id = item["ID"];
-                if (undefined != id) {
+                if (undefined !== id) {
                     risks.set(id,true);
+                    if (chatty_v) console.log("add at-risk record for",id);
+                } else {
+                    if (warn_v) console.log("WARNING: at-risk record for id",id,"in unexpected format");
+                }
+            }
+            done_callback();
+        });
+}
+
+// Interop Data
+// (Asynchronous)
+var interop = new Set();
+function get_interop(done_callback) {
+    if (info_v) console.log("processing interop data in",interop_csvfile);
+    var filedata = fs.readFileSync(interop_csvfile).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let impl1 = item["Implementation 1"];
+                let role1 = item["Role 1"];
+                let impl2 = item["Implementation 2"];
+                let role2 = item["Role 2"];
+                let security = item["Security"];
+                if (undefined !== impl1 && undefined !== role1 &&
+                    undefined !== impl2 && undefined !== role2 &&
+                    undefined !== security) {
+                    if ("producer" === role1 && "consumer" === role2) {
+                        interop.add({
+                           "producer": impl1,
+                           "consumer": impl2,
+                           "security": security
+                        });
+                        if (chatty_v) console.log("add interop record for ",
+                                                  impl1,"("+role1+") to ",impl2,"("+role2+")");
+                    } else if ("consumer" === role1 && "producer" === role2) {
+                        interop.add({
+                           "consumer": impl1,
+                           "producer": impl2,
+                           "security": security
+                        });
+                        if (chatty_v) console.log("add interop record for ",
+                                                  impl1,"("+role1+") to ",impl2,"("+role2+")");
+                    } else {
+                    }
+                } else {
+                    if (warn_v) console.log("WARNING: interop record in unexpected format:",item);
                 }
             }
             done_callback();
@@ -534,17 +585,19 @@ get_results(0,function(results) {
     get_risks(function() {
      get_depends(function() {
       get_categories(function() {
-       merge_implementations(function() {
-        merge_assertions(src_assertions,"baseassertion",function() {
-         merge_assertions(tab_assertions,"tabassertion",function() {
-          merge_assertions(extra_assertions,"extraassertion",function() {
-           // Output report
-           fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
-             if (error) {
+       get_interop(function() {
+        merge_implementations(function() {
+         merge_assertions(src_assertions,"baseassertion",function() {
+          merge_assertions(tab_assertions,"tabassertion",function() {
+           merge_assertions(extra_assertions,"extraassertion",function() {
+            // Output report
+            fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
+              if (error) {
                 return console.log(err);
-             } else {
+              } else {
                 if (info_v) console.log("Report output to "+report_htmlfile);
-             }
+              }
+            }); 
            }); 
           }); 
          }); 
