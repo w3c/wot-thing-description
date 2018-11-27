@@ -19,9 +19,9 @@ const src_dir = __dirname;
 const testing_dir = path.join(__dirname, "testing");                 // test data directory
 const report_dir = testing_dir;                                      // target directory for report output
 const inputs_dir = path.join(testing_dir, "inputs");                 // location of other inputs
-const impls_dir = path.join(testing_dir, "implementations");         // implementation descriptions
-const results_dir = path.join(testing_dir, "results");               // test results for each assertion and impl
-const interop_dir = path.join(testing_dir, "interop");                // interop test results directory
+const impls_dir = path.join(inputs_dir, "implementations");          // implementation descriptions
+const results_dir = path.join(inputs_dir, "results");                // test results for each assertion and impl
+const interop_dir = path.join(inputs_dir, "interop");                // interop test results directory
 
 // Inputs
 const src_htmlfile = path.join(src_dir, "index.html");               // source specification (rendered)
