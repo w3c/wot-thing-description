@@ -1,6 +1,5 @@
 /* Process assertions in index.html, combine with configuration
- * and test results data in testing, and generate an implementation
- * report.   
+ * and test results data, and generate an implementation report.   
  * See testing/README.md
  */
 
@@ -32,24 +31,21 @@ const ea_htmlfile = path.join(inputs_dir, "extra-asserts.html");     // extra no
 const depends_csvfile = path.join(inputs_dir, "depends.csv");        // assertion dependencies
 const categories_csvfile = path.join(inputs_dir, "categories.csv");  // assertion categories
 const atrisk_csvfile = path.join(inputs_dir, "atrisk.csv");          // at-risk assertions
-
-// TODO: search directory and merge all files found; for now, just use one for testing
-const interop_csvfile = path.join(interop_dir, "intel.csv");       // implementation interop data
 //-----------------------------------------------------------------------
-
-// Verbosity level
-const verbosity = 2;
-const silent_v = (verbosity == 0);
-const warn_v = (verbosity >= 1);
-const info_v = (verbosity >= 2);
-const chatty_v = (verbosity >= 3);
-const debug_v = (verbosity >= 4);
 
 // Outputs
 const report_htmlfile = path.join(report_dir, "report.html");
 const results_csvfile = path.join(results_dir,"template.csv");
 //=======================================================================
 
+// Verbosity level
+const verbosity = 3;
+const silent_v = (verbosity == 0);
+const warn_v = (verbosity >= 1);
+const info_v = (verbosity >= 2);
+const chatty_v = (verbosity >= 3);
+const debug_v = (verbosity >= 4);
+//=======================================================================
 
 // Read in test specs and store as a map
 // (Synchronous)
@@ -322,9 +318,9 @@ function get_risks(done_callback) {
 // Interop Data
 // (Asynchronous)
 var interop = new Set();
-function get_interop(done_callback) {
+function get_interop_file(interop_csvfile,done_callback) {
     if (info_v) console.log("processing interop data in",interop_csvfile);
-    var filedata = fs.readFileSync(interop_csvfile).toString();
+    let filedata = fs.readFileSync(interop_csvfile).toString();
     csvtojson()
         .fromString(filedata)
         .then((data)=> {
@@ -355,6 +351,7 @@ function get_interop(done_callback) {
                         if (chatty_v) console.log("add interop record for ",
                                                   impl1,"("+role1+") to ",impl2,"("+role2+")");
                     } else {
+                        if (warn_v) console.log("WARNING: interop record with unexpected roles:",item);
                     }
                 } else {
                     if (warn_v) console.log("WARNING: interop record in unexpected format:",item);
@@ -362,6 +359,33 @@ function get_interop(done_callback) {
             }
             done_callback();
         });
+}
+function get_interop_files(interop_files,done_callback) {
+    if (debug_v) console.log("(D) interop files:",interop_files);
+    if (0 == interop_files.length) {
+        done_callback();	    
+    }	    
+    let interop_file = path.join(interop_dir,interop_files[0]); 
+    if (debug_v) console.log("(D) interop file:",interop_file);
+    if (interop_file.match(/.csv$/g)) {
+        get_interop_file(interop_file,function() {
+           if (interop_files.length > 1) {
+               get_interop_files(interop_files.slice(1),done_callback);
+           } else {
+               done_callback();
+           }
+        });
+    } else {
+       if (interop_files.length > 1) {
+           get_interop_files(interop_files.slice(1),done_callback);
+       } else {
+           done_callback();
+       }
+    }
+}
+function get_interops(done_callback) {
+    let interop_files = fs.readdirSync(interop_dir);
+    get_interop_files(interop_files,done_callback);
 }
 
 // Clear (well, write headers for) results template
@@ -589,7 +613,8 @@ get_results(0,function(results) {
     get_risks(function() {
      get_depends(function() {
       get_categories(function() {
-       get_interop(function() {
+       get_interops(function() {
+        if (debug_v) console.log("interop data: ",interop);
         merge_implementations(function() {
          merge_assertions(src_assertions,"baseassertion",function() {
           merge_assertions(tab_assertions,"tabassertion",function() {
