@@ -465,10 +465,10 @@ function merge_implementations(done_callback) {
 // Merge interop table
 // (Asynchronous)
 function merge_interops(done_callback) {
-  interop_consumers.forEach(function(item) {
-      if (chatty_v) console.log("merge_interops consumer:",item);
+  interop_consumers.forEach(function(consumer) {
+      if (chatty_v) console.log("merge_interops consumer:",consumer);
       let report_tr = report_dom('table#testinterop>thead>tr:last-child');
-      let impl = impls.get(item);
+      let impl = impls.get(consumer);
       let impl_org = "";
       let impl_name = "Unknown";
       if (undefined === impl) {
@@ -478,12 +478,45 @@ function merge_interops(done_callback) {
          impl_name = impl.name;
       }
       report_tr.append('<th class="rotate" id="'
-                       +item
+                       +consumer
                        +'"><div><span>'
                        +impl_org
                        +'</span><br/><span>'
                        +impl_name
                        +'</span></div></th>\n');
+  });
+  interop_producers.forEach(function(producer) { 
+      let impl = impls.get(producer);
+      let impl_org = "";
+      let impl_name = "Unknown";
+      if (undefined === impl) {
+         if (warn_v) console.log("no name available for impl",item);
+      } else {
+         impl_org = impl.org;
+         impl_name = impl.name;
+      }
+      let report_tr = report_dom('table#testinterop>tbody:last-child');
+      report_tr.append('<tr><th id="'
+                       +producer
+                       +'">'
+                       + impl_org
+                       + '<br/>'
+                       + impl_name
+                       +'</th></tr>\n');
+      interop_consumers.forEach(function(consumer) {
+          let pair_id = producer+"=>"+consumer;
+          let item_status = interop_table.get(pair_id);
+          let report_elem = report_dom('table#testinterop>tbody>tr:last-child');
+          if (undefined === item_status) {
+              report_elem.append('<td class="notimpl">Not Impl</td>');
+          } else if ("Secure" === item_status) {
+              report_elem.append('<td class="secure">'+item_status+'</td>');
+          } else if ("Pass" === item_status) {
+              report_elem.append('<td class="passed">'+item_status+'</td>');
+          } else {
+              report_elem.append('<td class="failed">'+item_status+'</td>');
+          }
+      });
   });
   done_callback();
 }
