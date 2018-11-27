@@ -17,20 +17,24 @@ const csvtojson=require('csvtojson'); // V2
 // Directories
 const src_dir = __dirname;
 const testing_dir = path.join(__dirname, "testing");                 // test data directory
-const report_dir = path.join(__dirname, "testing");                  // target directory for report output
+const report_dir = testing_dir;                                      // target directory for report output
+const inputs_dir = path.join(testing_dir, "inputs");                 // location of other inputs
 const impls_dir = path.join(testing_dir, "implementations");         // implementation descriptions
 const results_dir = path.join(testing_dir, "results");               // test results for each assertion and impl
+const interop_dir = path.join(testing_dir, "interop");                // interop test results directory
 
 // Inputs
 const src_htmlfile = path.join(src_dir, "index.html");               // source specification (rendered)
-const template_htmlfile = path.join(testing_dir, "template.html");   // report template
-const ts_htmlfile = path.join(testing_dir, "testspec.html");         // test specifications for assertions
-const ea_htmlfile = path.join(testing_dir, "extra-asserts.html");    // extra non-spec assertions
+const template_htmlfile = path.join(inputs_dir, "template.html");    // report template
+const ts_htmlfile = path.join(inputs_dir, "testspec.html");          // test specifications for assertions
+const ea_htmlfile = path.join(inputs_dir, "extra-asserts.html");     // extra non-spec assertions
 
-const depends_csvfile = path.join(testing_dir, "depends.csv");       // assertion dependencies
-const categories_csvfile = path.join(testing_dir, "categories.csv"); // assertion categories
-const atrisk_csvfile = path.join(testing_dir, "atrisk.csv");         // at-risk assertions
-const interop_csvfile = path.join(testing_dir, "interop.csv");       // implementation interop data
+const depends_csvfile = path.join(inputs_dir, "depends.csv");        // assertion dependencies
+const categories_csvfile = path.join(inputs_dir, "categories.csv");  // assertion categories
+const atrisk_csvfile = path.join(inputs_dir, "atrisk.csv");          // at-risk assertions
+
+// TODO: search directory and merge all files found; for now, just use one for testing
+const interop_csvfile = path.join(interop_dir, "intel.csv");       // implementation interop data
 //-----------------------------------------------------------------------
 
 // Verbosity level
