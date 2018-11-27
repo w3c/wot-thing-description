@@ -18,7 +18,7 @@ const src_dir = __dirname;
 const testing_dir = path.join(__dirname, "testing");                 // test data directory
 const report_dir = testing_dir;                                      // target directory for report output
 const inputs_dir = path.join(testing_dir, "inputs");                 // location of other inputs
-const impls_dir = path.join(inputs_dir, "implementations");          // implementation descriptions
+const descs_dir = path.join(inputs_dir, "implementations");          // implementation descriptions
 const results_dir = path.join(inputs_dir, "results");                // test results for each assertion and impl
 const interop_dir = path.join(inputs_dir, "interop");                // interop test results directory
 
@@ -31,6 +31,7 @@ const ea_htmlfile = path.join(inputs_dir, "extra-asserts.html");     // extra no
 const depends_csvfile = path.join(inputs_dir, "depends.csv");        // assertion dependencies
 const categories_csvfile = path.join(inputs_dir, "categories.csv");  // assertion categories
 const atrisk_csvfile = path.join(inputs_dir, "atrisk.csv");          // at-risk assertions
+const impls_csvfile = path.join(inputs_dir, "impl.csv");             // structured implementation data
 //-----------------------------------------------------------------------
 
 // Outputs
@@ -66,31 +67,31 @@ if (debug_v) console.log("test specs:",ts_dom.html());
 
 // Read in implementation descriptions, store as a map from name to doms
 // (Synchronous)
-var impls = {};
-var impl_names = {};
-var impls_files = fs.readdirSync(impls_dir);
-function get_impls() {
-   for (let fi=0; fi<impls_files.length; fi++) {
-       var file = path.join(impls_dir, impls_files[fi]);
+var descs = {};
+var desc_names = {};
+var desc_files = fs.readdirSync(descs_dir);
+function get_descs() {
+   for (let fi=0; fi<desc_files.length; fi++) {
+       var file = path.join(descs_dir, desc_files[fi]);
        if (file.match(/.html$/g)) {
            if (info_v) console.log("processing implementation descriptions in",file);
-           let impl_raw = fs.readFileSync(file,'UTF-8');
-           let impl_dom = cheerio.load(impl_raw);
-           impl_dom('div[class="impl"]').each(function(i,elem) {
-               let id = impl_dom(this).attr('id');
+           let desc_raw = fs.readFileSync(file,'UTF-8');
+           let desc_dom = cheerio.load(desc_raw);
+           desc_dom('div[class="impl"]').each(function(i,elem) {
+               let id = desc_dom(this).attr('id');
                if (undefined === id) {
-                   console.log("Warning: implementation without id:\n",impl_dom(this).html());
+                   console.log("Warning: implementation description file without id:\n",desc_dom(this).html());
                } else {
-                   if (chatty_v) console.log("Adding implementation for",id);
-                   if (debug_v) console.log("  implementation is:\n",impl_dom(this).html());
-                   impls[id] = impl_dom(this);
-                   impl_names[id] = impl_dom("h3").text();
+                   if (chatty_v) console.log("Adding implementation description for",id);
+                   if (debug_v) console.log("  implementation description is:\n",desc_dom(this).html());
+                   descs[id] = desc_dom(this);
+                   desc_names[id] = desc_dom("h3").text();
                }
            });
        }
    } 
 }
-get_impls();
+get_descs();
 
 // Initialize report document dom with template
 // (Synchronous)
@@ -292,6 +293,39 @@ function get_categories(done_callback) {
         });
 }
 
+// Get implementation data
+// (Asynchronous)
+var impls = new Map();
+function get_impls(done_callback) {
+    if (info_v) console.log("processing implementationt data in",impls_csvfile);
+    var filedata = fs.readFileSync(impls_csvfile).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let id = item["Implementation"];
+                let org = item["Organization"];
+                let name = item["Name"];
+                let roles = item["Roles"];
+                if (undefined !== roles) {
+                    roles = roles.split(' ');
+                }
+                if (undefined !== id) {
+                    impls.set(id,{
+                        "org": org,
+                        "name": name,
+                        "roles": roles
+                    });
+                    if (chatty_v) console.log("add impl record for id",id+":",impls.get(id));
+                } else {
+                    if (warn_v) console.log("WARNING: impl record for id",id,"in unexpected format");
+                }
+            }
+            done_callback();
+        });
+}
+
 // At-Risk Items
 // (Asynchronous)
 var risks = new Map();
@@ -416,15 +450,41 @@ fs.writeFileSync(results_csvfile,'"ID","Status"\n');
 function merge_implementations(done_callback) {
   // insert implementation descriptions
   let i = 1;
-  for (impl_id in impls) {
-      impl = impls[impl_id];
-      impl_name = impl_names[impl_id];
+  for (desc_id in descs) {
+      let desc = descs[desc_id];
+      let desc_name = desc_names[desc_id];
       report_dom('ul#systems-toc').append('<li class="tocline"></li>\n');
       let report_li = report_dom('ul#systems-toc>li:last-child');
-      report_li.append('6.'+i+' <a href="#'+impl_id+'" shape="rect">'+impl_name+'</a>');
+      report_li.append('6.'+i+' <a href="#'+desc_id+'" shape="rect">'+desc_name+'</a>');
       i++;
-      report_dom('#systems-impl').append(impl);
+      report_dom('#systems-impl').append(desc);
   }
+  done_callback();
+}
+
+// Merge interop table
+// (Asynchronous)
+function merge_interops(done_callback) {
+  interop_consumers.forEach(function(item) {
+      if (chatty_v) console.log("merge_interops consumer:",item);
+      let report_tr = report_dom('table#testinterop>thead>tr:last-child');
+      let impl = impls.get(item);
+      let impl_org = "";
+      let impl_name = "Unknown";
+      if (undefined === impl) {
+         if (warn_v) console.log("no name available for impl",item);
+      } else {
+         impl_org = impl.org;
+         impl_name = impl.name;
+      }
+      report_tr.append('<th class="rotate" id="'
+                       +item
+                       +'"><div><span>'
+                       +impl_org
+                       +'</span><br/><span>'
+                       +impl_name
+                       +'</span></div></th>\n');
+  });
   done_callback();
 }
 
@@ -632,24 +692,33 @@ get_results(0,function(results) {
     get_risks(function() {
      get_depends(function() {
       get_categories(function() {
-       get_interops(function() {
         if (chatty_v) {
+            console.log("categories: ",categories);
+        }
+       get_impls(function() {
+         if (chatty_v) {
+            console.log("impls: ",impls);
+         }
+        get_interops(function() {
+         if (chatty_v) {
             console.log("interop: ",interop);
             console.log("interop producers: ",interop_producers);
             console.log("interop consumers: ",interop_consumers);
             console.log("interop table: ",interop_table);
-        }
-        merge_implementations(function() {
-         merge_assertions(src_assertions,"baseassertion",function() {
-          merge_assertions(tab_assertions,"tabassertion",function() {
-           merge_assertions(extra_assertions,"extraassertion",function() {
-            // Output report
-            fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
-              if (error) {
-                return console.log(err);
-              } else {
-                if (info_v) console.log("Report output to "+report_htmlfile);
-              }
+         }
+         merge_implementations(function() {
+          merge_interops(function() {
+           merge_assertions(src_assertions,"baseassertion",function() {
+            merge_assertions(tab_assertions,"tabassertion",function() {
+             merge_assertions(extra_assertions,"extraassertion",function() {
+              // Output report
+              fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
+                if (error) {
+                  return console.log(err);
+                } else {
+                  if (info_v) console.log("Report output to "+report_htmlfile);
+                }
+              }); 
             }); 
            }); 
           }); 
@@ -660,5 +729,6 @@ get_results(0,function(results) {
      }); 
     });
    });
+  });
 });
 
