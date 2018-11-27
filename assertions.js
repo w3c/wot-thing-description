@@ -318,6 +318,9 @@ function get_risks(done_callback) {
 // Interop Data
 // (Asynchronous)
 var interop = new Set();
+var interop_producers = new Set();
+var interop_consumers = new Set();
+var interop_table = new Map();
 function get_interop_file(interop_csvfile,done_callback) {
     if (info_v) console.log("processing interop data in",interop_csvfile);
     let filedata = fs.readFileSync(interop_csvfile).toString();
@@ -340,6 +343,14 @@ function get_interop_file(interop_csvfile,done_callback) {
                            "consumer": impl2,
                            "security": security
                         });
+                        interop_producers.add(impl1);
+                        interop_consumers.add(impl2);
+                        let entry_key = impl1+"=>"+impl2;
+                        let entry = interop_table.get(entry_key);
+                        if ((undefined === entry) || ("Pass" === entry)) {
+                            entry_status = ("nosec" === security) ? "Pass" : "Secure";
+                            interop_table.set(entry_key,entry_status);
+                        }
                         if (chatty_v) console.log("add interop record for ",
                                                   impl1,"("+role1+") to ",impl2,"("+role2+")");
                     } else if ("consumer" === role1 && "producer" === role2) {
@@ -348,6 +359,14 @@ function get_interop_file(interop_csvfile,done_callback) {
                            "producer": impl2,
                            "security": security
                         });
+                        interop_producers.add(impl2);
+                        interop_consumers.add(impl1);
+                        let entry_key = impl2+"=>"+impl1;
+                        let entry = interop_table.get(entry_key);
+                        if ((undefined === entry) || ("Pass" === entry)) {
+                            entry_status = ("nosec" === security) ? "Pass" : "Secure";
+                            interop_table.set(entry_key,entry_status);
+                        }
                         if (chatty_v) console.log("add interop record for ",
                                                   impl1,"("+role1+") to ",impl2,"("+role2+")");
                     } else {
@@ -614,7 +633,12 @@ get_results(0,function(results) {
      get_depends(function() {
       get_categories(function() {
        get_interops(function() {
-        if (debug_v) console.log("interop data: ",interop);
+        if (chatty_v) {
+            console.log("interop: ",interop);
+            console.log("interop producers: ",interop_producers);
+            console.log("interop consumers: ",interop_consumers);
+            console.log("interop table: ",interop_table);
+        }
         merge_implementations(function() {
          merge_assertions(src_assertions,"baseassertion",function() {
           merge_assertions(tab_assertions,"tabassertion",function() {
