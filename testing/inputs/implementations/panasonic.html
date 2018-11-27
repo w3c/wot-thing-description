@@ -1,26 +1,84 @@
 <div class="impl" id="impl-panasonic"> 
 <h3>Panasonic Corporation</h3>
 <p>
-Panasonic supports this specification as it enables to describe features and functionality of multiple devices in uniform way, which will make applications easy to mash-up multiple devices not only form single vendor but also from different vendors, and will expand ecosystem.
+Panasonic supports this specification as it enables device manufacturers 
+to describe features and functionality of multiple devices in a uniform way. 
+This will make it possible to build mash-up applications easily with multiple devices 
+not only from single vendor but also from different vendors, which will expand the ecosystem.
 </p>
 <p>
-Panasonic already has various IoT devices in the market and this specification is the first candidate to be used for the directory system to discover those devices.
-At the moment, Panasonic implements two types of clients (TD consumer) as well as two types of servers (TD producer), together with independent authentication server as a shared component, for experiment purpose.
+Panasonic already has various IoT devices in the market and this specification is the 
+first candidate to be used for the directory system to discover those devices.
+At the moment, 
+Panasonic implements two types of clients (TD consumer) as well as two types of servers (TD producer), 
+together with independent authentication server as a shared component, for experimental purposes.
 </p>
 
 <h4 id="impl-panasonic-authentication">Authentication Server: Shared Component</h4>
-<p>This component provides authentication functionality of users who access Panasonic things (TD producers) such as real things or simulator things. This component supports HTTPS, receives predetermined user_id and password via POST method and sends back bearer token based on JWT, which should be placed in the Authentication request header upon access to the things. URL and other information of this component is provided in the security element of Thing Description of Panasonic things. </p>
+<p>This component provides authentication functionality for users who access Panasonic things (TD producers) 
+such as the real things or simulated things provided by other implementations. 
+This component supports HTTPS, 
+receives a predetermined userid and password via an HTTP POST method and sends back a bearer token based on JWT.
+The token should be placed in the Authentication request header upon access to a Thing supporting
+the `"bearer"` security scheme. 
+The URL and other information of this component is provided in the security 
+elements of the Thing Descriptions produced by Panasonic things. </p>
 
-<h4 id="impl-panasonic-client-browser">Browser based client: TD Consumer</h4>
-<p>This implementation is a TD Consumer which works on Chrome browser. This implementation reads a Thing Description from a designated URL via HTTP(S), expands its properties, actions and events into UI form, then allows user to read, write or observe a property value, invoke an action or subscribe/unsubscribe to an event through the UI. When TD indicates that the thing needs bearer token upon access to that, this implementation also supports to set user credential such as user_id and password and retrieves access token from designated URL in TD such as Authentication Server explained above. This implementation also allows manual addition of any HTTP headers to the request message to the things.</p>
-<p>This implementation basically supports HTTP(S) and does not support CoAP and MQTT. For observe property and subscribe event, this implementation supports both HTTP(S) long poll and simple WebSocket which only contains a data value in its transaction. This implementation only supports application/json as message body and does not support text/plain. Since this implementation is browser based and using Ajax, in its default mode requires support of CORS to server exposing Things, unless chrome browser is launched with "--disable-web-security" option. </p>
+<h4 id="impl-panasonic-client-browser">Browser Based Client: TD Consumer</h4>
+<p>This implementation is a TD Consumer which works on the Chrome browser. 
+This implementation reads a Thing Description from a designated URL via HTTP(S), 
+expands its properties, actions and events into UI form, 
+then allows user to read, write or observe a property value, 
+invoke an action, 
+or subscribe/unsubscribe to an event through the UI. 
+When the TD indicates that the thing needs a bearer token, 
+this implementation also supports the settting of user credentials such as userid and password 
+and retrieves the access token from the authentication service at the URL designated in the TD, 
+such as the <a href="#impl-panasonic-authentication">Authentication Server</a> explained above. 
+This implementation also allows the manual addition of any HTTP headers to the request message sent to the things.
+</p>
+<p>This implementation basically supports only HTTP(S) and does not support CoAP and MQTT. 
+For observe property and events, 
+this implementation supports both HTTP(S) long poll and a simple WebSocket protocol 
+which contains only a data value in its transaction. 
+This implementation only supports application/json as message body and does not support text/plain. 
+Since this implementation is browser based and uses Ajax, 
+its default mode requires support of CORS from the server exposing the Things, 
+unless the chrome browser is launched with the `--disable-web-security` option.
+</p>
 
-<h4 id="impl-panasonic-client-nodered">Node-RED based client: TD Consumer</h4>
-<p>This implementation is a TD Consumer which works on Node-RED. This implementation reads a Thing Description from a designated URL via HTTP(S) and from a local folder, finds a specific thing according to a semantic annotation, and turns the thing on/off. The implementation supports only HTTP(S) with "nosec" and "basic" authorization. For MQTT and WebSocket, this implementation needs a hard-coded URL due to the restriction of normal Node-RED.</p>
+<h4 id="impl-panasonic-client-nodered">Node-RED Based Client: TD Consumer</h4>
+<p>This implementation is a TD Consumer which works on Node-RED. 
+This implementation reads a Thing Description from a designated URL via HTTP(S) and from a local folder, 
+finds a specific thing according to a semantic annotation, and turns the thing on/off. 
+The implementation supports only HTTP(S) with `"nosec"` and `"basic"` authorization. 
+For MQTT and WebSockets, 
+this implementation needs a hard-coded URL due to the restriction of normal Node-RED.
+</p>
 
-<h4 id="impl-panasonic-server-real">WoT Server for real devices: TD Producer</h4>
-<p>This implementation is a TD producer which is hosted on the cloud server and connected to real things in the lab through proprietary tunneling mechanism alike to remote and local WoT proxy. This implementation accepts HTTP bindings with bearer token authorization issued by the authentication server explained above. This implementation currently provides things such as 1) Two Home Air Conditioners, 2) One robotics cleaner, 3) One set of Philips Hue Lighting and 4) Two LED bulletin boards. This implementation is based on Apache HTTP server with plugins written in PHP. </p>
+<h4 id="impl-panasonic-server-real">WoT Server for Real Devices: TD Producer</h4>
+<p>This implementation is a TD producer which is hosted on a cloud server and 
+connected to real things in the lab through a proprietary tunneling mechanism alike to remote and local WoT proxy. 
+This implementation accepts HTTP bindings with bearer token authorization issued by the 
+<a href="impl-panasonic-authentication">Authentication Server</a> explained above. 
+This implementation currently provides the following things: 
+1) Two Home Air Conditioners, 
+2) One robotics cleaner, 
+3) One set of Philips Hue Lighting and 
+4) Two LED bulletin boards. 
+This implementation is based on Apache HTTP server with plugins written in PHP. </p>
 
 <h4 id="impl-panasonic-server-simulator">WoT Simulator: TD Producer</h4>
-<p>This implementation is a TD producer which is hosted on the cloud server and hosts virtual things running on the server. This implementation accepts HTTP bindings with bearer token authorization issued by the authentication server explained above. This implementation currently provides simulation of things such as 1) Home Air Conditioner, 2) Robotics cleaner, 3) Philips Hue Lighting and 4) Simple LED lighting. This implementation is based on nodejs. This implementation is portable and also can be run local machine such as raspberry-pi. </p>
+<p>This implementation is a TD producer which is hosted on a cloud server and 
+hosts virtual things running on the server. 
+This implementation accepts HTTP bindings with bearer token authorization issued by the 
+<a href="impl-panasonic-authentication">Authentication Server</a> explained above. 
+This implementation currently provides simulation of things such as 
+1) Home Air Conditioner, 
+2) Robotics cleaner, 
+3) Philips Hue Lighting and 
+4) Simple LED lighting. 
+This implementation is based on nodejs. 
+This implementation is portable and also can be run on a local machine such as a Raspberry Pi. 
+</p>
 </div>
