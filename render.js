@@ -1,6 +1,7 @@
 let fs = require('fs');
 let sttl = require('sttl');
 const http = require('http');
+const urlm = require('url');
 
 let jsonld = require('./context/json-ld.js');
 
@@ -14,7 +15,7 @@ let jsonld = require('./context/json-ld.js');
  */
 function load(ep, ttl) {
     return new Promise((resolve, reject) => {
-        let url = new URL(ep);
+        let url = urlm.parse(ep);
         let req = http.request({
             protocol: url.protocol,
             hostname: url.hostname,
@@ -22,7 +23,8 @@ function load(ep, ttl) {
             path: url.pathname,
             method: 'POST',
             headers: { 'Content-Type': 'application/sparql-update' }
-        }, res => {
+            }, res => {
+
             if (res.statusCode >= 400) {
                 let e = new Error('Endpoint returned ' + res.statusCode);
                 reject(e);
