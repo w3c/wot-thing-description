@@ -1,369 +1,51 @@
 let fs = require('fs');
-let rdf = require('rdfstore');
-let dust = require('dustjs-helpers');
-let jd = require("jsdom/lib/old-api.js");
-//let jsdom = require("jsdom");
+let sttl = require('sttl');
+const http = require('http');
 
 let jsonld = require('./context/json-ld.js');
 
-// extraction of vocabulary to render from the RDF store
-
-function sectionOrURI(uri, label) {
-    let isLocal = uri.startsWith('http://www.w3.org/ns/td#') ||
-                  uri.startsWith('http://www.w3.org/ns/json-schema#') ||
-                  uri.startsWith('http://www.w3.org/ns/wot-security#');
-	if (isLocal) return '#' + label.toLowerCase();
-				  
-	let isXSD = uri.startsWith('http://www.w3.org/2001/XMLSchema#');
-	if (isXSD) {
-		if (uri.endsWith('#anyType'))
-			return null;
-		else
-			return 'http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#' + label;
-	}
-	
-	// default
-    return uri;
-}
-
-function target(sh, g) {
-    let uris = g.match(
-        sh,
-        'http://www.w3.org/ns/shacl#targetClass',
-        null
-    ).toArray();
-    
-    if (uris.length != 1) {
-        console.error('Shape does not define exactly one target class: ' + sh);
-    }
-    
-    return uris[0].object.nominalValue;
-}
-
-function mapping(uri, g) {
-    let mappings = g.match(
-        null,
-        'http://www.w3.org/ns/json-ld#iri',
-        uri
-    ).toArray();
-    
-    if (mappings.length == 0) {
-        console.error('No context mapping defined for URI: ' + uri);
-    }
-    
-    return mappings[0].subject.nominalValue;
-}
-
-function term(uri, g) {
-    let terms = g.match(
-        mapping(uri, g),
-        'http://www.w3.org/ns/json-ld#term',
-        null
-    ).toArray();
-    
-    if (terms.length != 1) {
-        console.error('Context mapping does not define exactly one term: ' + uri);
-    }
-    
-    return terms[0].object.nominalValue;
-}
-
-function label(uri, g) {
-    let labels = g.match(
-        uri,
-        'http://www.w3.org/2000/01/rdf-schema#label',
-        null
-    ).toArray();
-    
-    if (labels.length > 0) {
-        return labels[0].object.nominalValue;
-    } else {
-        return uri.substr(uri.lastIndexOf('#') + 1);
-    }
-}
-
-function desc(uri, g) {
-    let comments = g.match(
-        uri,
-        'http://www.w3.org/2000/01/rdf-schema#comment',
-        null
-    ).toArray();
-    
-    let desc = comments.reduce((d, t) => {
-        let c = t.object.nominalValue;
-        c.trim();
-        if (!c.endsWith('.')) {
-            c += '.';
-        }
-        if (d.length > 0) {
-            d += ' ';
-        }
-        d += c;
-        
-        return d;
-    }, '');
-    
-    return desc;
-}
-
-function path(psh, g) {
-    let uris = g.match(
-        psh,
-        'http://www.w3.org/ns/shacl#path',
-        null
-    ).toArray();
-    
-    if (uris.length != 1) {
-        console.error('Shape does not define exactly one path: ' + psh);
-    }
-    
-    return uris[0].object.nominalValue;
-}
-
-function classOrDatatype(psh, g) {
-    let classes = g.filter(t => {
-        return t.subject.equals(psh) &&
-            (t.predicate.equals('http://www.w3.org/ns/shacl#class')
-            || t.predicate.equals('http://www.w3.org/ns/shacl#datatype'));
-    }).toArray();
-    
-    if (classes.length != 1) {
-        console.error('Shape does not define a range: ' + psh);
-    }
-    
-    let u = classes[0].object.nominalValue;
-    let l = label(u, g);
-    
-    return {
-        uri: sectionOrURI(u, l),
-        label: l
-    };
-}
-
-function array(p, g) {
-    let containers = g.match(
-        mapping(p, g),
-        'http://www.w3.org/ns/json-ld#container',
-        null
-    ).toArray();
-    
-    return containers.length > 0 &&
-        containers.find(t =>
-            t.object.nominalValue === 'http://www.w3.org/ns/json-ld#set' ||
-            t.object.nominalValue === 'http://www.w3.org/ns/json-ld#list'
-        );
-}
-
-function mandatory(psh, g) {
-    let minCounts = g.match(
-        psh,
-        'http://www.w3.org/ns/shacl#minCount',
-        null
-    ).toArray();
-    
-    if (minCounts.length > 1) {
-        console.error('Shape defines more than one min count constraint: ' + psh);
-    }
-    
-    return minCounts.length > 0;
-}
-
-function defaultValue(psh, g) {
-    let defaultValues = g.match(
-        psh,
-        'http://www.w3.org/ns/shacl#defaultValue',
-        null
-    ).toArray();
-    
-    if (defaultValues.length > 1) {
-        console.error('Shape defines more than one default value: ' + psh);
-    }
-    
-    return defaultValues.length > 0 ? defaultValues[0].object.nominalValue : null;
-}
-
-function fields(sh, g) {
-    let fields = [];
-    
-    g.match(
-        sh,
-        'http://www.w3.org/ns/shacl#property',
-        null
-    ).toArray().forEach(function(t) {
-        let psh = t.object.nominalValue;
-        let p = path(psh, g);
-
-        let f = {
-            prop: term(p, g),
-            propDesc: desc(p, g),
-            otherClass: classOrDatatype(psh, g),
-            array: array(p, g),
-            mandatory: mandatory(psh, g),
-            defaultValue: defaultValue(psh, g)
-        };
-        
-        fields.push(f);
-    });
-    
-    return fields;
-}
-
-function subclasses(sh, g) {
-    let subclasses = [];
-    
-    let u = target(sh, g);
-    let sc = g.match(
-        null,
-        'http://www.w3.org/2000/01/rdf-schema#subClassOf',
-        u
-    ).toArray().forEach(function(t) {
-        let scu = t.subject.nominalValue;
-        let l = label(scu, g);
-        
-        subclasses.push({
-            subclass: {
-                uri: sectionOrURI(scu, l),
-                label: l
-            }
-        });
-    });
-    
-    return subclasses;
-}
-
-function vocabulary(store, cb) {
-    store.graph(function(err, g) {
-        let voc = {
-            coreClasses: [],
-            securityClasses: [],
-            schemaClasses: []
-        };
-        
-        g.match(
-            null,
-            'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-            'http://www.w3.org/ns/shacl#NodeShape'
-        ).forEach(function(t) {
-            let sh = t.subject.nominalValue;
-            let u = target(sh, g);
-            
-            let c = {
-                uri: u,
-                label: label(u, g),
-                desc: desc(u, g),
-                fields: fields(sh, g),
-                subclasses: subclasses(sh, g)
-            };
-            
-            // TODO not the best logic
-            if (c.label.match('Schema')) {
-                voc.schemaClasses.push(c);
-            } else if (c.label.match('Security')) { 
-                voc.securityClasses.push(c);
+/**
+ * params:
+ *  ep  - SPARQL Update endpoint
+ *  ttl - Vocabulary raw content (Turtle format);
+ *        if null, the whole dataset is deleted
+ * 
+ * returns a Promise (no resolve param)
+ */
+function load(ep, ttl) {
+    return new Promise((resolve, reject) => {
+        let url = new URL(ep);
+        let req = http.request({
+            protocol: url.protocol,
+            hostname: url.hostname,
+            port: url.port,
+            path: url.pathname,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/sparql-update' }
+        }, res => {
+            if (res.statusCode >= 400) {
+                let e = new Error('Endpoint returned ' + res.statusCode);
+                reject(e);
             } else {
-                voc.coreClasses.push(c);
+                resolve();
             }
         });
         
-        cb(voc);
-    });
-}
-
-// class sort prior to rendering
-
-const corePredefined = [
-    "Thing",
-    "InteractionPattern",
-    "Property",
-    "Action",
-    "Event",
-    "Form",
-    "Link"
-];
-
-const schemaPredefined = [
-    "DataSchema",
-    "ArraySchema",
-    "ObjectSchema",
-    "BooleanSchema",
-    "NumberSchema",
-    "StringSchema"
-];
-
-const securityPredefined = [
-    "SecurityScheme",
-    "NoSecurityScheme",
-    "BasicSecurityScheme",
-    "CertSecurityScheme",
-    "DigestSecurityScheme",
-    "BearerSecurityScheme",
-    "PSKSecurityScheme",
-    "PopSecurityScheme",
-    "PublicSecurityScheme",
-    "ApikeySecurityScheme",
-    "OAuth2SecurityScheme"
-];
-
-function sort(voc) {
-    voc.coreClasses.sort(function(c1, c2) {
-        let i1 = corePredefined.indexOf(c1.label);
-        let i2 = corePredefined.indexOf(c2.label);
-        
-        if (i1 === -1) { i1 = corePredefined.length; }
-        if (i2 === -1) { i2 = corePredefined.length; }
-        
-        return i1 - i2;
-    });
-    voc.schemaClasses.sort(function(c1, c2) {
-        let i1 = schemaPredefined.indexOf(c1.label);
-        let i2 = schemaPredefined.indexOf(c2.label);
-        
-        if (i1 === -1) { i1 = schemaPredefined.length; }
-        if (i2 === -1) { i2 = schemaPredefined.length; }
-        
-        return i1 - i2;
-    });
-    voc.securityClasses.sort(function(c1, c2) {
-        let i1 = securityPredefined.indexOf(c1.label);
-        let i2 = securityPredefined.indexOf(c2.label);
-        
-        if (i1 === -1) { i1 = securityPredefined.length; }
-        if (i2 === -1) { i2 = securityPredefined.length; }
-        
-        return i1 - i2;
-    });
+        req.on('error', e => reject(e));
     
-    return voc;
-}
+        if (ttl) {
+            // Turtle -> SPARQL Update syntax
+            let prefixRegex = /@(prefix\s+\w*\s*:\s*<.*>)\s*\.\s*\n/g;
+            let prefixes = '';
+            while ((m = prefixRegex.exec(ttl))) prefixes += m[1] + '\n';
+            let triples = ttl.replace(prefixRegex, '');
 
-// rendering
-
-const classSrc = fs.readFileSync('class.template', 'UTF-8');
-const vocSrc = fs.readFileSync('vocabulary.template', 'UTF-8');
-const src = fs.readFileSync('index.html.template.html', 'UTF-8');
-
-// path to JSON Schema file for validation
-const jsonSchemaValidation = fs.readFileSync('validation/td-json-schema-validation.json', 'UTF-8');
-
-function render(voc) {
-    dust.loadSource(dust.compile(classSrc, 'class'));
-    dust.renderSource(vocSrc, voc, function(err, out) {
-        if (err) {
-            console.error(err);
-            return;
+            req.end(prefixes + ' insert data { ' + triples + ' }');
+        } else {
+            req.end('drop all;');
         }
-        
-        // add content in vocabulary section
-        let result = src.replace('{vocabulary.template}', out);
-
-        // add JSON Schema file into the annex section
-        result = result.replace('{td.json-schema.validation}', jsonSchemaValidation);
-
-        fs.writeFileSync('index.html', result, 'UTF-8');
     });
 }
-
-// main function
 
 const ttlFiles = [
     'ontology/td.ttl',
@@ -372,25 +54,94 @@ const ttlFiles = [
 	'validation/td-validation.ttl'
 ];
 
-const context = fs.readFileSync('context/td-context.jsonld', 'UTF-8');
-let ttl = jsonld.toRDF(JSON.parse(context));
+const txtFiles = [
+    'templates.txt',
+    'visualization/templates.txt'
+];
 
-ttlFiles.forEach(function(f) {
-    ttl += fs.readFileSync(f, 'UTF-8');
-});
+const src = fs.readFileSync('index.template.html', 'UTF-8');
+const jsonSchemaValidation = fs.readFileSync('validation/td-json-schema-validation.json', 'UTF-8');
 
-rdf.create(function(err, store) {
-    store.load('text/turtle', ttl, function(err) {
-        if (err) {
-            console.log(err);
-            return;
-        }
+const updateEndpoint = process.env.WOT_SPARUL_ENDPOINT;
+const queryEndpoint = process.env.WOT_SPARQL_ENDPOINT;
+if (!updateEndpoint) throw new Error('WOT_SPARUL_ENDPOINT not defined (SPARQL update endpoint)');
+if (!queryEndpoint) throw new Error('WOT_SPARQL_ENDPOINT not defined (SPARQL query endpoint)');
 
-		vocabulary(store, function(voc) {
-			render(sort(voc));
-		});
+///////////////////////////////////////////////////////////// 1. clear endpoint
+load(updateEndpoint, null)
+//////////////////////////// 2. generate RDF for context and load all RDF files
+.then(() => {
+    let promises = ttlFiles.map((f) => {
+        let ttl = fs.readFileSync(f, 'utf-8');
+        return load(updateEndpoint, ttl);
     });
+
+    const context = fs.readFileSync('context/td-context.jsonld', 'UTF-8');
+    let ttl = jsonld.toRDF(JSON.parse(context));
+    promises.push(load(updateEndpoint, ttl));
+
+    return Promise.all(promises);
+})
+//////////////////////////////////////////////////// 3. register STTL templates
+.then(() => {
+    sttl.clear();
+
+    txtFiles.forEach((f) => {
+        let txt = fs.readFileSync(f, 'UTF-8');
+        let templates = txt.split('---');
+        templates.forEach(t => sttl.register(t));
+    })
+
+    return Promise.resolve();
+})
+//////////////////////////// 4. for each namespace, call HTML and DOT templates
+.then(() => {
+    sttl.connect(queryEndpoint);
+
+    let rendered = src;
+
+    let td = { type: 'uri', value: 'http://www.w3.org/ns/td#' };
+    let jsonschema = { type: 'uri', value: 'http://www.w3.org/ns/json-schema#' };
+    let wotsec = { type: 'uri', value: 'http://www.w3.org/ns/wot-security#' };
+
+    // HTML rendering
+
+    let tpl1 = 'http://w3c.github.io/wot-thing-description/#classes';
+    sttl.callTemplate(tpl1, td)
+    .then(html => {
+        rendered = rendered.replace('{td}', html);
+        return sttl.callTemplate(tpl1, jsonschema);
+    })
+    .then((html) => {
+        rendered = rendered.replace('{json-schema}', html);
+        return sttl.callTemplate(tpl1, wotsec);
+    })
+    .then(html => {
+        rendered = rendered.replace('{wot-security}', html);
+        return Promise.resolve();
+    }).then(() => {
+        rendered = rendered.replace('{td.json-schema.validation}', jsonSchemaValidation);
+        fs.writeFileSync('index.html', rendered, 'UTF-8');
+    })
+    .catch(e => console.error('HTML rendering error: ' + e.message));
+
+    // DOT rendering
+
+    tpl2 = 'http://w3c.github.io/wot-thing-description/visualization#main';
+    sttl.callTemplate(tpl2, td)
+    .then(dot => {
+        fs.writeFileSync('visualization/td.dot', dot);
+        return sttl.callTemplate(tpl2, jsonschema);
+    })
+    .then(dot => {
+        fs.writeFileSync('visualization/json-schema.dot', dot);
+        return sttl.callTemplate(tpl2, wotsec);
+    })
+    .then(dot => {
+        fs.writeFileSync('visualization/wot-security.dot', dot);
+    })
+    .catch(e => console.error('DOT rendering error: ' + e.message));
+})
+.catch((e) => {
+    console.error('Initialization error: ' + e.message);
 });
-
-
-
