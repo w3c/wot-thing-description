@@ -18,10 +18,31 @@ h3 { font-size: 120%; font-weight: bold }
 h4 { font-size: 110%; font-weight: bold}
 .tocline { list-style: none; }
 th { background-color: rgb(180,255,180) }
+th.rotate {
+   /* adjust as necessary... */
+   height: 180px;
+   white-space: nowrap;
+}
+th.rotate>div {
+   transform: 
+      /* translate(25px, 51px) 
+         rotate(315deg);
+      */
+      rotate(90deg);
+   width: 30px;
+}
+th.rotate>div>span {
+   /* border-bottom: 1px solid #ccc;
+   */
+   padding: 5px 10px;
+}
 td.baseassertion { background-color: rgb(234,255,234) }
+td.tabassertion { background-color: rgb(234,255,255) }
 td.extraassertion { background-color: rgb(200,200,255) }
 td.atrisk { background-color: rgb(255,200,255) }
 td.failed { background-color: rgb(255,128,128) }
+td.passed { background-color: rgb(128,255,128) }
+td.secure { background-color: rgb(0,255,0) }
 td.missing { background-color: rgb(255,255,128) }
 .comment {color: green; font-style: italic}
 .remove {text-decoration: line-through;color: black;}
@@ -79,7 +100,7 @@ table.attrs {margin-top: 5px}
 		        Implementation Report
             </h1>
 	  <p>
-				<b>Version</b>: 8 November 2018</p>
+				<b>Version</b>: 21 November 2018</p>
 	  <p>
 				<b>Contributors</b>:<br>
 	  </p>
@@ -113,15 +134,16 @@ table.attrs {margin-top: 5px}
 		<li class="tocline">5.3 <a href="#out_of_scope" shape="rect">Out of scope</a></li>
 	</ul>
 	</li>
-	<li class="tocline">6. <a href="#systems" shape="rect">Systems</a></li>
-	<ul>
-		<li class="tocline">6.1 <a href="#impl-intel" shape="rect">Intel K.K. (Japan)</a></li>
-		<li class="tocline">6.1 <a href="#impl-siemens" shape="rect">Siemens AG (Germany)</a></li>
+	<li class="tocline">6. <a href="#systems-toc" shape="rect">Systems</a></li>
+	<ul id="systems-toc">
+        <!--
+		<li class="tocline">6.x <a href="#impl-ORG" shape="rect">ORG</a></li>
+        -->
 	</ul>
 	<li class="tocline">7. <a href="#test_class" shape="rect">Test results</a> 
     <ul>
-		<li class="tocline">7.1 <a href="#intro_class" shape="rect">Classification of test assertions</a></li>
-	    <li class="tocline">7.2 <a href="#emma_test_assertions" shape="rect">Test assertion results</a></li>
+	    <li class="tocline">7.1 <a href="#test_assertions" shape="rect">Test assertion results</a></li>
+	    <li class="tocline">7.2 <a href="#test_interop" shape="rect">Interoperability results</a></li>
 	</ul>
 	</li>
 	<li class="tocline">
@@ -261,91 +283,8 @@ independent implementations.  In cases where a substantial component
 was shared across implementations the features supported by that 
 component were only counted once.
 </p>
-<div class="working">
-
-<h3 id="impl-intel">Intel K.K. (Japan)</h3>   
-<p>Intel supports this specification as it enables interoperation between devices
-from different manufacturers, supporting the growth of an ecosystem of interoperating
-IoT services and easing barriers to adoption.
-</p>
-<p>Three separate implementations were developed, all based on Node.js.
-The core implementations focused on basic local network access without built-in security.
-A separate project (used by all three implementations) provided security by means of a reverse proxy. 
-For the purposes of validation this reverse proxy was considered a shared component of all three implementations, 
-and the features it implemented were only counted once in the results.
-</p>
-<h4 id="impl-intel-security">Security and Authentication Proxy: Shared Component</h4>
-This component, shared across all implementations provided by Intel, was a reverse proxy service that provided
-authentication (via various mechanisms indicated by the schemes indicated in the Thing
-Description) and encrypted transport termination.
-The reverse proxy service was made accessible over a secure tunnel, and depending on the circumstances,
-was run in the cloud, on a gateway computer, or locally on a device.
-As this component implemented the security features in all other implementations
-from Intel, for the purposes of validation
-these features are only recorded as being supported in a single implementation.
-</p>
-<h4 id="impl-intel-ocf">OCF Metadata Bridge: TD Producer</h4>
-<p>This implementation translated metadata made available by devices implemented using
-the OCF standard and re-expressed that metadata in the form of WoT Thing Descriptions.
-The actual network interfaces were however provided either by the OCF devices themselves
-directly via CoAP, or via a CoAP/HTTP bridge developed by OCF.  The metadata
-translator also had the ability to add semantic markup to the generated WoT Thing Descriptions,
-using a database that related OCF Resource Types to iotschema.org capabilities.
-Secure interfaces (eg HTTPS combined with an authentication scheme) were provided
-via a reverse proxy attached to the HTTP interface provided by the bridge.
-</p>
-<h4 id="impl-intel-speak">WebSpeak: TD Producer</h4>
-<p>This implementation provided a service to convert text to speech.  English
-text set to its network interface was spoken audibily.  This service was used to
-test several accessibility scenarios, including automatic conversion of visible status
-and event information to spoken announcements in order to support blind users.
-This implementation only supported an HTTP network interface, without security.
-Secure interfaces (eg HTTPS combined with an authentication scheme) were provided
-via a reverse proxy attached to the HTTP interface.
-The TDs for this service were produced using a template mechanism.
-</p>
-<h4 id="intel-camera">Simple Web Camera: TD Producer</h4>
-<p>This implementation provided a service to capture still images from a camera
-and provide them over its network interface.  This was used to test various aspects
-of actions, including support for inputs and outputs with different content types.
-The service was also capaple of introspecting the parameters made available via any
-particular attached video4linux camera
-and made those parameters available as WoT Thing Description properties.
-This implementation only supported an HTTP network interface, without security.
-Secure interfaces (eg HTTPS combined with an authentication scheme) were provided
-via a reverse proxy attached to the HTTP interface.
-The TDs for this service were produced using a template mechanism.
-</p>
-
-<h3 id="impl-siemens">Siemens AG</h3>   
-<p>
-Siemens supports this specification as it allows to attach metadata to heterogeneous IoT devices and services in a uniform way.
-The extensible model with a standardized serialization format in particular remedies interoperability challenges with an installed base of long-lived industrial devices.
-Furthermore, this specification is a central building block for several digitalization topics such as device onboarding, device management, digital twins, and data analytics.
-</p>
-<p>
-Siemens commits to several open-source implementations of W3C Web of Things, which are managed in the public Eclipse Thingweb project.
-Siemens also implemented concepts of this specification in products and aims at aligning the implementations and opening the features to customers once this specification reaches REC status.
-</p>
-<h4 id="impl-siemens-node-wot">node-wot: TD Consumer and Producer</h4>
-<p>
-node-wot is a Node.js-based framework for WoT Servients.
-It features an implementation of the WoT Scripting API to both consume TDs to instantiate Consumed Things and produce Exposed Things that provide a TD.
-node-wot supports several Protocol Bindings including HTTP, CoAP, WebSockets, and MQTT with corresponding security mechanisms such as (D)TLS, HTTP Basic, Digest, Bearer Token, PSK, and username/password, respectively.
-</p>
-<h4 id="impl-siemens-thingweb-directory">Thingweb Directory: TD Consumer and Producer</h4>
-<p>
-Thingweb Directory provides a directory service written in Java to register TDs and look them up through queries (primarily SPARQL).
-The implementation is consuming TDs to represent their metadata in a KnowledgeGraph and (re-)procudes TDs to return look-up results.
-Currently it supports HTTP and CoAP bindings.
-</p>
-<h4 id="impl-siemens-wot-fxui">WoT-fxUI: TD Consumer</h4>
-<p>
-WoT-fxUI is a generic user interface (UI) for Things based on Java with JavaFX.
-It consumes TDs to render UI elements that allow human users to interact with Things.
-The implementation currently supports HTTP and CoAP bindings.
-</p>
-
+<div class="working" id="systems-impl">
+    <!-- system implementation descriptions will be inserted here -->
 </div>
 <a id="test-results-xml" name="test-results-xml">
 
@@ -356,55 +295,109 @@ developed for the
 <a href="http://www.w3.org/TR/xxx">Web of Things (WoT) Thing Description Specification</a> 
 and summarize the results from the implementation 
 reports received in the CR period.
-The table lists all the assertions that were derived
-from the 
+The table lists all assertions derived from the 
 <a href="http://www.w3.org/TR/xxx">Web of Things (WoT) Thing Description Specification</a>.
 </p> 
-<p>The <b>ID</b> column uniquely identifies the assertion.
+<ul>
+<li>The <b>ID</b> column uniquely identifies the assertion.
 and links to the assertion in the context of the specification.
-The <b>Assertion</b> column gives the text of the assertion 
-specifying the constraint which must be met.
-The <b>Req</b> column is a Y/N value indicating whether the test assertion is for a feature which is required.
-The <b>Sub</b> column is a Y/N value indicating whether the test assertion is a subconstraint which is dependent on the
-implementation of the preceding non subconstraint feature test assertion.
-The <b>Result</b> column is annotated with the number of 'pass' (P), 'fail' (F), and 'not implemented' (N)
+</li>
+<li>The <b>Assertion</b> column specifies the constraint which must be met.
+</li>
+<li>The <b>Req</b> column is a Y/N value indicating whether the test assertion is for a feature which is required.
+Note however that the feature may only be required if another feature is also used, as indicated in
+the <b>Context</b> column.
+</li>
+<li>The <b>Parent</b> column indicates another more general assertion that this one is a specialization of.
+A specialization indicates a more restrictive context or provides additional detail to facilitate testing.
+The more general assertion is only considered to have a "pass" status if all its required
+or implmented specializations in a given implementation have a "pass" status.
+</li>
+<li>The <b>Context</b> column indicates that the "required" status of this feature depends on the use
+of other features.
+If the context is optional,
+then the value of <b>Req</b> actually indicates whether the feature is required 
+if the indicated context exists.
+</li>
+<li>The <b>Result</b> column is annotated with the number of 'pass' (<b>P</b>), 'fail' (<b>F</b>), and 'not implemented' (<b>N</b>)
 status results in the individual implementation reports.
-The T column indicates the total number of implementations (or implementation components in the case
-of shared components) reporting a status on each assertion.
-</p>
-<h4 id="h_intro_class">
-<a id="intro_class" name="intro_class">7.1 Classification of test assertions</a>
-</h4>
-<p>
- Test assertions are classified into two types,
- basic test assertions which test for the presence of each feature, and sub 
- constraints which only apply if that particular feature is implemented.
- Sub constraints are 
- marked with 'SUB CONSTRAINT:' in the 'Assertion' field and 'Y' in the Sub field.</p>
+</li>
+<li>The <b>T</b> column indicates the total number of implementations (or implementation components in the case
+of shared components) reporting a status (of any kind) on each assertion.
+</li>
+</ul>
 
-<h4 id="test_assertions_h"><a id="test_assertions" name="test_assertions">7.2 Test assertion results</a></h4>
+<h4 id="test_assertions_h"><a id="test_assertions" name="test_assertions">7.1 Test assertion results</a></h4>
 
 <table id="testresults" class="testlist" summary="assertions and tests" cellspacing="2" cellpadding="2" width="100%">
-			<tbody>
+			<thead>
 				<tr>
 					<th>ID</th>
 					<th>Category</th>
 					<th>Assertion</th>
 					<th>Req</th>
-					<th>Sub</th>
+					<th>Parent</th>
+					<th>Context</th>
 					<th colspan="4">Results</th>
 
 				</tr>
 	            <tr>
-					<th colspan="5"></th>
+					<th colspan="6"></th>
 					<th>P</th>
 					<th>F</th>
 					<th>N</th>
 					<th>T</th>
 				</tr>
+			</thead>
+			<tbody>
 <!--
 				<tr>
-					<th colspan="8">Section Title</th>
+					<th colspan="10">Section Title</th>
+				</tr>
+-->
+			</tbody>
+		</table>
+
+<h4 id="test_interop_h"><a id="test_interop" name="test_interop">7.2 Interoperability results</a></h4>
+
+<table id="testinterop" class="testlist" summary="implementation interop" cellspacing="2" cellpadding="2" width="100%">
+			<thead>
+				<tr id="testinterop-consumers">
+					<th>Producers &#92; Consumers</th>
+<!--
+                    <th class="rotate" id="consumer-impl-ORG-MODULE1">
+                        <div><span>Consumer 1</span></div></th>
+                    <th class="rotate" id="consumer-impl-ORG-MODULE2">
+                        <div><span>Consumer 2</span></div></th>
+                    <th class="rotate" id="consumer-impl-ORG-MODULE3">
+                        <div><span>Consumer 3</span></div></th>
+                    <th class="rotate" id="consumer-impl-ORG-MODULE4">
+                        <div><span>Consumer 4</span></div></th>
+-->
+				</tr>
+            </thead>
+			<tbody>
+<!--
+                <tr>
+                    <th id="producer-impl-ORG-MODULE1">Producer 1</th> 
+                    <td class="passed">Pass</td> 
+                    <td class="secure">Secure</td> 
+                    <td class="failed">Fail</td>
+                    <td class="notimpl">Not Impl</td>
+				</tr>
+                <tr>
+                    <th id="producer-impl-ORG-MODULE2">Producer 2</th> 
+                    <td class="secure">Secure</td> 
+                    <td class="passed">Pass</td> 
+                    <td class="notimpl">Not Impl</td>
+                    <td class="passed">Pass</td> 
+				</tr>
+                <tr>
+                    <th id="producer-impl-ORG-MODULE3">Producer 3</th> 
+                    <td class="passed">Pass</td> 
+                    <td class="notimpl">Not Impl</td>
+                    <td class="secure">Secure</td> 
+                    <td class="passed">Pass</td> 
 				</tr>
 -->
 			</tbody>

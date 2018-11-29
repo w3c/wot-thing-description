@@ -239,7 +239,7 @@
   "application/exi" etc.), and security mechanisms (for authentication,
   authorization, confidentiality, etc.).
   Serialization of TD instances is based on JSON and includes at least 
-  the TD core vocabulary as JSON keys as defined in this specification document.
+  the TD core vocabulary as JSON names as defined in this specification document.
   </p>
   <p>
   Example 1 shows a simple TD instance in such a JSON serializiation and
@@ -287,7 +287,7 @@
   (the secure form of) the HTTP protocol with a GET method 
   at the URI <code>https://mylamp.example.com/status</code> 
   (announced within the <code>forms</code> structure by the 
-  <code>href</code> key), and will return a string status value.
+  <code>href</code> name), and will return a string status value.
   The use of the GET method is not stated explicitly, 
   but is one of the default assumptions defined by this document.
   </p>
@@ -484,9 +484,120 @@
 
 
 
-{vocabulary.template}
-
-
+  <section id="sec-vocabulary-definition">
+    <h1>Information Model</h1>
+    <!-- h1>Vocabulary</h1 -->
+    
+      <section>
+      <h2>Overview</h2>
+    
+      <p>
+      The W3C Thing Description provides a set of vocabulary for describing 
+      physical and virtual Things. 
+      To increase interoperability 
+      the vocabulary terms are defined using the 
+      Resource Description Framework (RDF). 
+      <span class="rfc2119-assertion" id="td-vocabulary">
+      All vocabulary restrictions noted in these tables MUST be followed, 
+      including mandatory items and default values. 
+      </span></p>
+    
+      <p>
+      In general, the Thing Description vocabulary set is grouped in three modules: 
+      the core Thing Description vocabulary reflecting WoT's paradigm of 
+      <code>Properties</code>, <code>Actions</code>, 
+      and <code>Events</code> (also see [[!WOT-ARCHITECTURE]]); 
+      the data schema vocabulary reflecting a subset of the terms defined in 
+      JSON Schema [[?JSON-SCHEMA-VALIDATION]] in a 
+      linked data representation; 
+      and the security vocabulary used to define security mechanism 
+      configuration requirements. 
+      </p>
+     
+      <p>
+      An overview of this vocabulary with its class context and class relation 
+      is given by the following three figures: the TD core model, 
+      the TD data schema model, and the TD security model. 
+      Please note that the figures reflect the vocabulary terms and structure 
+      as they would be used in a Thing Description 
+      instance 
+      (see Section <a href="#sec-td-serialization"></a>). 
+      The full ontology definitions of the different modules 
+      can be viewed by following the namespaces as provided in Section 
+      <a href="#namespaces"></a>. 
+      </p>
+      <!--<p><a href="http://visualdataweb.de/webvowl/#iri=https://rawgit.com/w3c/wot-thing-description/TD-JSON-LD-1.1/ontology/td.ttl">Click here for the visualization</a></p>-->
+     
+    <figure id="td-core-model">
+      <img src="visualization/td.svg" alt="TD core model figure"/>
+      <figcaption>TD core model (<a href="visualization/td.svg">Click SVG file</a>)</figcaption>
+    </figure>
+    
+    <figure id="td-data-schema-model">
+      <img src="visualization/json-schema.svg" alt="TD data schema model figure"/>
+      <figcaption>TD data schema model (<a href="visualization/json-schema.svg">Click SVG file</a>)</figcaption>
+    </figure>
+    
+    <figure id="td-security-model">
+      <img src="visualization/wot-security.svg" alt="TD security model figure"/>
+      <figcaption>TD security model (<a href="visualization/wot-security.svg">Click SVG file</a>)</figcaption>
+    </figure>
+    
+      <p class="ednote" title="Default Values and Mandatory Attributes">
+      In the figures above, and in the tables to follow, 
+      items which have default values are indicated as being optional. 
+      However, technically, 
+      these are optional <em>only in the JSON serialization</em>. 
+      They are actually mandatory parts of the 
+      information model and are also mandatory in the JSON-LD serialization. 
+      </p>
+    
+      <p>A detailed description of the vocabulary of the TD core model and 
+      TD data schema model is given in the next sub-section.</p>
+    
+      </section>
+    
+      <section id="sec-core-vocabulary-definition">
+      <h2>Core Vocabulary Definition</h2>
+        {td}
+      </section>
+    
+      <section id="sec-data-schema-vocabulary-definition">
+      <h2>Data Schema Vocabulary Definition</h2>
+        {json-schema}
+      </section>
+    
+      <section id="sec-security-vocabulary-definition">
+      <h2>Security Vocabulary Definition</h2>
+    
+      <p>
+      For the core TD vocabulary only well-established security  
+      mechanisms are supported, such as those built into protocols supported by WoT  
+      or already in wide use with those protocols.  
+      The current set of HTTP security schemes is partly based on 
+      <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#securitySchemeObject">OpenAPI 3.0.1</a> (see also [[?OPENAPI]]). 
+      Note however that while the HTTP security schemes, 
+      vocabulary and syntax given in this specification share many similarities 
+      with OpenAPI they are not fully compatible.  
+      Also, since OpenAPI primarily targets web services built around HTTP, it does not 
+      cover the full set of use cases required for the IoT.  
+      Security schemes appropriate 
+      for IoT-centered protocols such as CoAP and MQTT are therefore also included.
+      </p>
+    
+      <p class="ednote" title="Security Scheme Extensions">
+      The vocabulary extension mechanism of the 
+      WoT Thing Description allows for additional security schemes if needed.
+      However, for more information about what additional security schemes 
+      or modifications are under discussion for the core WoT vocabulary
+      (and to file issues if you have a request) please visit the 
+      <a href="https://github.com/w3c/wot-security">WoT Security TF repository.</a>
+      </p>
+    
+        {wot-security}
+      </section>
+    
+    </section>
 
   <section id="sec-td-serialization">
   <h1>Thing Description Serialization</h1>
@@ -522,7 +633,7 @@
   In order to enable this convergence,
   all vocabulary terms defined in Section
   <a href="#sec-vocabulary-definition"></a>
-  will have a JSON key representation.
+  will have a JSON name representation.
   </p>
   <p>
   In addition,
@@ -570,7 +681,7 @@
 
   <p><span class="rfc2119-assertion" id="td-context">
   The root object of a Thing Description instance MAY include the
-  <code>@context</code> key from JSON-LD 1.1 with the value URI of 
+  <code>@context</code> name from JSON-LD 1.1 with the value URI of 
   the Thing description context file <code>http://www.w3.org/ns/td</code>.
   </span></p>
 
@@ -589,7 +700,7 @@
 
   <p><span class="rfc2119-assertion" id="td-context-jsonld">
   When a Thing Description instance is processed and interpreted by a
-  JSON-LD 1.1 processor the <code>@context</code> field
+  JSON-LD 1.1 processor the <code>@context</code> member
   MUST be present</span> 
   (see also Section <a href="#note-jsonld-processing" class="sec-ref">JSON-LD 1.1 Processing</a>). 
   </p>
@@ -610,28 +721,28 @@
 </pre>
 
   <p><span class="rfc2119-assertion" id="td-context-toplevel">
-  Each mandatory and optional field name
+  Each mandatory and optional member name
   as defined in the class <a href="#thing" class="sec-ref"><code>Thing</code></a>
-  MUST be serialized as a JSON key 
+  MUST be serialized as a JSON name 
   in the root object of the Thing Description instance.
   </span></p>
 
   <!-- should this be "the type" or "the elements of"? -->
   <p><span class="rfc2119-assertion" id="td-objects">
-  The type of the fields <code>properties</code>, <code>actions</code>, 
+  The type of the members <code>properties</code>, <code>actions</code>, 
   <code>events</code>, <code>version</code>, and <code>securityDefinitions</code> MUST be a JSON object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-arrays">
-  The type of the fields <code>links</code>,
+  The type of the members <code>links</code>,
   <code>scopes</code>, and <code>security</code>
   MUST be a JSON array.
   </span></p>
 
   <p>
-  A TD snippet based on the defined fields of the class
+  A TD snippet based on the defined members of the class
   <a href="#thing" class="sec-ref"><code>Thing</code></a>
-  without the optional field <code>@context</code> is given below:
+  without the optional member <code>@context</code> is given below:
   </p>
 <pre class="example">
 {
@@ -653,7 +764,7 @@
 </pre>
 
   <p>Alternatively, the same example can be written instead to 
-  explicitly include the (semantic) keys used by JSON-LD 1.1 
+  explicitly include the (semantic) names used by JSON-LD 1.1 
   (<code>@context</code> and <code>@type</code>):
   </p>
 <pre class="example">
@@ -684,32 +795,32 @@
   
   <p><span class="rfc2119-assertion" id="td-properties">
   Properties (and sub-properties) offered by a Thing MUST be collected
-  in the JSON-object based <code>properties</code> field
-  with (unique) Property names as JSON keys.
+  in the JSON-object based <code>properties</code> member
+  with (unique) Property names as JSON names.
   </span></p>
 
-  <span class="rfc2119-assertion" id="td-property-keys">
+  <span class="rfc2119-assertion" id="td-property-names">
   Each mandatory and optional vocabulary term
   as defined in the class <a href="#property" class="sec-ref"><code>Property</code></a>,
   as well as its two superclasses
   <a href="#interactionpattern" class="sec-ref"><code>InteractionPattern</code></a>
   and <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>,
-  MUST be serialized as a JSON key within a Property object.
+  MUST be serialized as a JSON name within a Property object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-property-objects">
-  The type of the fields <code>properties</code> and <code>items</code> 
+  The type of the members <code>properties</code> and <code>items</code> 
   MUST be serialized as a JSON object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-property-arrays">
-  The type of the fields <code>forms</code>, <code>required</code>, 
+  The type of the members <code>forms</code>, <code>required</code>, 
   and <code>enum</code>, <code>scopes</code>, and <code>security</code>,
   MUST be serialized as a JSON array.
   </span></p>
 
   <p>
-  A TD snippet based on the defined fields is given below:
+  A TD snippet based on the defined members is given below:
   </p>
 <pre class="example">
 {
@@ -822,35 +933,35 @@
 
   <p><span class="rfc2119-assertion" id="td-actions">
   Actions offered by a Thing MUST be collected
-  in the JSON-object based <code>actions</code> field
-  with (unique) Action names as JSON keys.
+  in the JSON-object based <code>actions</code> member
+  with (unique) Action names as JSON names.
   </span></p>
 
-  <span class="rfc2119-assertion" id="td-action-keys">
+  <span class="rfc2119-assertion" id="td-action-names">
   Each optional vocabulary term
   as defined in the class <a href="#action" class="sec-ref"><code>Action</code></a>
   and its superclass
   <a href="#interactionpattern" class="sec-ref"><code>InteractionPattern</code></a>
-  MUST be serialized as a JSON key within an Action object.
+  MUST be serialized as a JSON name within an Action object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-action-objects">
-  The type of the fields <code>input</code> and <code>output</code>
+  The type of the members <code>input</code> and <code>output</code>
   MUST be serialized as a JSON object.
   </span></p>
 
-  <p>The keys of <code>input</code> and <code>output</code>
+  <p>The names of <code>input</code> and <code>output</code>
   rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>.
   </p>
 
   <p><span class="rfc2119-assertion" id="td-action-arrays">
-  The type of the fields <code>forms</code>, <code>scopes</code>,
+  The type of the members <code>forms</code>, <code>scopes</code>,
   and <code>security</code>
   MUST be serialized as a JSON array.
   </span></p>
 
   <p>
-  A TD snippet based on the defined fields is given below:
+  A TD snippet based on the defined members is given below:
   </p>
 
 <pre class="example">
@@ -885,7 +996,7 @@
 </pre>
 
   <p><span class="rfc2119-assertion" id="td-action-semantic">
-  Definitions within the <code>actions</code> field
+  Definitions within the <code>actions</code> member
   MAY have additional semantic annotations based on JSON-LD 1.1 keywords.
   </span></p>
 
@@ -896,36 +1007,36 @@
 
   <p><span class="rfc2119-assertion" id="td-events">
   Events offered by a Thing MUST be collected
-  in the JSON-object based <code>events</code> field
-  with (unique) Event names as JSON keys.
+  in the JSON-object based <code>events</code> member
+  with (unique) Event names as JSON names.
   </span></p>
 
-  <span class="rfc2119-assertion" id="td-event-keys">
+  <span class="rfc2119-assertion" id="td-event-names">
   Each optional vocabulary term
   as defined in the class <a href="#event" class="sec-ref"><code>Event</code></a>,
   as well as its two superclasses
   <a href="#interactionpattern" class="sec-ref"><code>InteractionPattern</code></a>
   and <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>,
-  MUST be serialized as a JSON key within an Event object.
+  MUST be serialized as a JSON name within an Event object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-event-objects">
-    The type of the fields <code>subscription</code>, <code>data</code>, and <code>cancellation</code>
+    The type of the members <code>subscription</code>, <code>data</code>, and <code>cancellation</code>
     MUST be serialized as a JSON object.
     </span></p>
   
-    <p>The keys of <code>subscription</code>, <code>data</code>, and <code>cancellation</code>
+    <p>The names of <code>subscription</code>, <code>data</code>, and <code>cancellation</code>
     rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>.
     </p>
 
   <p><span class="rfc2119-assertion" id="td-event-arrays">
-  The type of the fields <code>forms</code>, <code>required</code>, 
+  The type of the members <code>forms</code>, <code>required</code>, 
   and <code>enum</code>, <code>scopes</code>, and <code>security</code>
   MUST be serialized as a JSON array.
   </span></p>
 
   <p>
-  A TD snippet based on the defined fields is given below:
+  A TD snippet based on the defined members is given below:
   </p>
 <pre class="example">
     ...
@@ -943,7 +1054,7 @@
 </pre>
 
   <p><span class="rfc2119-assertion" id="td-event-semantic">
-  Definitions within the <code>events</code> field
+  Definitions within the <code>events</code> member
   MAY have additional semantic anotations based on JSON-LD 1.1 keywords.
   </span></p>
 
@@ -955,7 +1066,7 @@
   <p><span class="rfc2119-assertion" id="td-forms">
   Each mandatory and optional vocabulary term
   as defined in the class <a href="#form" class="sec-ref"><code>Form</code></a>,
-  MUST be serialized as a JSON key.
+  MUST be serialized as a JSON name.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-form-protocolbindings">
@@ -981,7 +1092,7 @@
   about their actual value.
   </p>
 
-  <p>A TD snippet based on the defined fields is given below:</p>
+  <p>A TD snippet based on the defined members is given below:</p>
 <pre class="example">
 {
   ...
@@ -1004,11 +1115,11 @@
 
     <p><span class="rfc2119-assertion" id="td-events">
         In such a case these variables in the URI MUST be collected
-        in the JSON-object based <code>uriVariables</code> field
-        with the associated (unique) variables names as JSON keys.
+        in the JSON-object based <code>uriVariables</code> member
+        with the associated (unique) variables names as JSON names.
     </span></p>
 
-    <p>The keys of <code>uriVariables</code> 
+    <p>The names of <code>uriVariables</code> 
         rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>.
     </p>
 
@@ -1051,10 +1162,10 @@
     <p><span class="rfc2119-assertion" id="td-links">
     Each mandatory and optional vocabulary term
     as defined in the class <a href="#link" class="sec-ref"><code>Link</code></a>,
-    MUST be serialized as a JSON key.
+    MUST be serialized as a JSON name.
     </span></p>
 
-    <p>A TD snippet based on the defined fields is given below:</p>
+    <p>A TD snippet based on the defined members is given below:</p>
 
 <pre class="example">
     ...
@@ -1075,7 +1186,7 @@
     Each mandatory and optional vocabulary term
     as defined in the class 
     <a href="#securityscheme" class="sec-ref"><code>SecurityScheme</code></a>,
-    MUST be serialized as a JSON key.
+    MUST be serialized as a JSON name.
     </span></p>
 
     <p>
@@ -1243,7 +1354,7 @@
       the use of multiple security configurations at the same level 
       provides a way to combine security mechanisms an in "OR" fashion.
       In contrast, putting multiple security configurations in the same
-      <code>security</code> field combines them in an "AND" fashion, 
+      <code>security</code> member combines them in an "AND" fashion, 
       since in that case
       they would all need to be satisfied to allow access to the resource.
       Note that a <code>security</code> declaration is still mandatory at the 
@@ -1345,12 +1456,12 @@
     <p><span class="rfc2119-assertion" id="td-version">
         The mandatory vocabulary term
         as defined in the class <a href="#versioning" class="sec-ref"><code>Versioning</code></a>,
-        MUST be serialized as a JSON key.
+        MUST be serialized as a JSON name.
     </span></p>
 
     <p>The recommended version identification pattern value is to rely on the semantic versioning policy: [[?SemVer]]</p>
 
-    <p>A TD snippet based on the defined fields is given below:</p>
+    <p>A TD snippet based on the defined members is given below:</p>
     <pre class="example">
         ...
         "version": {"instance":"1.2.1"}
@@ -1392,7 +1503,7 @@
   </span>
   That means that this media type can also be used for contextual  
   identification of the vocabulary within a (simplified) TD instance 
-  that may omit the <code>@context</code> key term.
+  that may omit the <code>@context</code> name term.
   </p>
 
   <p class="ednote" title="IANA Considerations">
@@ -1413,14 +1524,14 @@
   </p>
 
   <p><span class="rfc2119-assertion" id="td-readOnly-observable-default">
-  If the key terms <code>readOnly</code> and/or <code>observable</code> 
+  If the name terms <code>readOnly</code> and/or <code>observable</code> 
   are not present within a <code>properties</code> definition,
   the default value defined in <a href="#sec-vocabulary-definition"></a>
   MUST be assumed.
   </span></p>
   
   <p><span class="rfc2119-assertion" id="td-media-type-default">
-  If the <code>contentType</code> key term is not present within a 
+  If the <code>contentType</code> name term is not present within a 
   <code>forms</code> definition, the default value as defined in
   <a href="#sec-vocabulary-definition"></a>
   MUST be assumed.   
@@ -1455,7 +1566,7 @@
   <ul>
   <li><span class="rfc2119-assertion" id="td-jsonld-preprocessing-context">
      Before starting JSON-LD 1.1 processing of a Thing Description instance,
-     there MUST be a <code>@context</code> key from JSON-LD 1.1 as defined 
+     there MUST be a <code>@context</code> name from JSON-LD 1.1 as defined 
      in Section 
      <a href="#sec-thing-as-a-whole-json"></a>.
   </span></li>
@@ -1463,7 +1574,7 @@
      Before starting JSON-LD 1.1 processing of a Thing Description instance,
      all external vocabulary terms used in the Thing Description MUST 
      provide their context URIs as prefix or within the <code>@context</code>
-     field.
+     member.
   </span></li>
   <li><span class="rfc2119-assertion" id="td-jsonld-preprocessing-defaults">
      Before starting JSON-LD 1.1 processing of a Thing Description instance,
@@ -1782,7 +1893,7 @@ The following example illustrates, how a combined thing can be defined using two
   <section id="sec-security-consideration-context">
   <h5>Context Dereferencing Privacy Risk</h5>
       <p>Deferencing the vocabulary files given in the <code>@context</code>
-          field of any JSON-LD document can be a privacy risk.
+          member of any JSON-LD document can be a privacy risk.
           In the case of the WoT, an attacker can observe the network
           traffic produced by such deferences and can use the metadata
           of the dereference, such as the destination IP address,
@@ -1795,7 +1906,7 @@ The following example illustrates, how a combined thing can be defined using two
           Vocabulary files should be cached whenever possible.
           Ideally they would be made immutable, built into the interpreting device,
           and not derefenced at all,
-          with the URI in the <code>@context</code> field serving only as 
+          with the URI in the <code>@context</code> member serving only as 
           an identifier of the (known) vocabulary. 
           This requires the use of strict version control, as updates
           should use a new URI to ensure that existing URIs can refer to 
@@ -1839,7 +1950,7 @@ The following example illustrates, how a combined thing can be defined using two
    </section>
    <section id="sec-security-consideration-fingerprint">
    <h5>Fingerprinting Privacy Risk</h5>
-      <p>As noted above, the <code>id</code> field in a TD can pose a privacy risk.  
+      <p>As noted above, the <code>id</code> member in a TD can pose a privacy risk.  
       However, even if the <code>id</code> is updated as described to mitigate its
       tracking risk, it may still be possible to associate
       a TD with a particular physical device, and from there to a person, through fingerprinting.
@@ -1940,18 +2051,18 @@ The following example illustrates, how a combined thing can be defined using two
     <li>Add an example for the use of <code>scopes</code>.</li>
     <li>Remove all Url postfixes in parameter names for security schemes.</li>
     <li>Make it clear that the top-level <a href="#security-serialization-json"><code>security</code></a> declaration is mandatory.</li>
-    <li><a href="#dataschema">DataSchema</a> class now has an optional <code>unit</code> field to provide unit information.</li>
-    <li><a href="#link">Link</a> class's <code>mediaType</code> field was renamed to <code>type</code>, and the field was given an improved description.</li>
-    <li><a href="#form">Form</a> class's <code>mediaType</code> field was renamed to <code>contentType</code> to reflect that it can assign not only a media type but also its parameter settings.</li>
-    <li><a href="#action">Action</a> class now has optional <code>safe</code> and <code>idempotent</code> fields to provide information as to the safeness and idempotency of the action.</li>
-    <li><a href="#thing">Thing</a> class now has optional <code>created</code> and <code>lastModified</code> fields to provide information as to when the TD instance was created (in the case of <code>created</code>) or was last modified (in the case of <code>lastModified</code>).</li>
-    <li>Property interactions are now both readable and writable by default. This can be overridden through <code>readOnly</code> and <code>writeOnly</code> field settings available in <a href="#dataschema">DataSchema</a> class.</li>
-    <li><a href="#interactionpattern">InteractionPattern</a> class's <code>label</code> field was renamed as <code>title</code> to be consistent with JSON Schema.</li>
-    <li><a href="#form">Form</a> class's <code>rel</code> field was renamed as <code>op</code>.</li>
+    <li><a href="#dataschema">DataSchema</a> class now has an optional <code>unit</code> member to provide unit information.</li>
+    <li><a href="#link">Link</a> class's <code>mediaType</code> member was renamed to <code>type</code>, and the member was given an improved description.</li>
+    <li><a href="#form">Form</a> class's <code>mediaType</code> member was renamed to <code>contentType</code> to reflect that it can assign not only a media type but also its parameter settings.</li>
+    <li><a href="#action">Action</a> class now has optional <code>safe</code> and <code>idempotent</code> members to provide information as to the safeness and idempotency of the action.</li>
+    <li><a href="#thing">Thing</a> class now has optional <code>created</code> and <code>lastModified</code> members to provide information as to when the TD instance was created (in the case of <code>created</code>) or was last modified (in the case of <code>lastModified</code>).</li>
+    <li>Property interactions are now both readable and writable by default. This can be overridden through <code>readOnly</code> and <code>writeOnly</code> member settings available in <a href="#dataschema">DataSchema</a> class.</li>
+    <li><a href="#interactionpattern">InteractionPattern</a> class's <code>label</code> member was renamed as <code>title</code> to be consistent with JSON Schema.</li>
+    <li><a href="#form">Form</a> class's <code>rel</code> member was renamed as <code>op</code>.</li>
     <li><a href="#event">Event</a> class now has optional <code>subscription</code> and <code>cancellation</code> 
-fields that define data that needs to be passed upon subscription and cancellation, respectively.</li>
-    <li><a href="#interactionpattern">InteractionPattern</a> class now has an optional <code>uriVariables</code> field where URI template variables can be defined.</li>
-    <li><a href="#thing">Thing</a> class now has an optional <code>version</code> field for providing version information.</li>
+members that define data that needs to be passed upon subscription and cancellation, respectively.</li>
+    <li><a href="#interactionpattern">InteractionPattern</a> class now has an optional <code>uriVariables</code> member where URI template variables can be defined.</li>
+    <li><a href="#thing">Thing</a> class now has an optional <code>version</code> member for providing version information.</li>
   </ul>
 
   <h2 id="changes2">Changes from Second Public Working Draft</h2>
