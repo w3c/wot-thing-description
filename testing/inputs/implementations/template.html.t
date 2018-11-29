@@ -1,4 +1,5 @@
-<h3 id="impl-ORG">TEMPLATE: YOUR ORG NAME HERE</h3>   
+<div class="impl" id="impl-ORG">   
+<h3>TEMPLATE: YOUR ORG NAME HERE</h3>   
 <p><em>Testimonial. State support for specification, and organizational reasons for support.</em></p>
 <p><em>State any additional general statements about implementations; omit if not needed.</em></p>
 <h4 id="impl-ORG-NAME1">Component 1: Shared Component</h4>
@@ -15,3 +16,4 @@ as metadata translators.  Describe Implementation 2.</em></p>
 <p><em>Example for a servient (exposes at least one TD and consumes at least one other TD).
 This category can include other services that both consume and produce TDs, such as directories.
 Describe Implementation 3.</em></p>
+</div>

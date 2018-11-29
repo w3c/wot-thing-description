@@ -18,6 +18,7 @@
 :ThingShape a sh:NodeShape ;
     sh:targetClass td:Thing ;
     sh:closed "false"^^xsd:boolean ;
+    sh:order "1"^^xsd:integer ;
     sh:property [
         sh:path td:name ;
         sh:minCount 1 ;
@@ -77,6 +78,19 @@
 :InteractionPatternShape a sh:NodeShape ;
     sh:targetClass td:InteractionPattern ;
     sh:closed "false"^^xsd:boolean ;
+    sh:order "2"^^xsd:integer ;
+    sh:description
+"""
+<p>
+    <span class="rfc2119-assertion" id="td-unique-identifiers">
+        Each instance of a <code>Property</code>, <code>Action</code>,
+        and <code>Event</code> class MUST have an identifier that is
+        unique within the context of a Thing Description document.
+    </span>
+    See Section <a href="#json-serializiation-section" class="sec-ref">Representation
+    Format</a> for more details about JSON-LD 1.1 identifiers.
+</p>
+"""^^rdf:HTML ;
     sh:property [
         sh:path td:forms ;
         sh:minCount 1 ;
@@ -107,6 +121,17 @@
 :PropertyShape a sh:NodeShape ;
     sh:targetClass td:Property ;
     sh:closed "false"^^xsd:boolean ;
+    sh:order "3"^^xsd:integer ;
+    sh:description
+"""
+<p class="note">
+    Property instances are also instances of the class
+    <a href="#dataschema" class="sec-ref">DataSchema</a>. Therefore,
+    it can contain the <code>type</code>, <code>unit</code>,
+    <code>readOnly</code> and <code>writeOnly</code> members, among
+    others.
+</p>
+"""^^rdf:HTML ;
     sh:property [
         sh:path td:observable ;
         sh:datatype xsd:boolean ;
@@ -116,6 +141,7 @@
 :ActionShape a sh:NodeShape ;
     sh:targetClass td:Action ;
     sh:closed "false"^^xsd:boolean ;
+    sh:order "4"^^xsd:integer ;
     sh:property [
         sh:path td:input ;
         sh:class jsonschema:DataSchema ;
@@ -126,13 +152,13 @@
     ] ;
     sh:property [
         sh:path td:safe ;
-        sh:class jsonschema:DataSchema ;
+        sh:datatype xsd:boolean ;
         sh:minCount 1 ;
         sh:defaultValue "false"^^xsd:boolean ;
     ] ;
     sh:property [
         sh:path td:idempotent ;
-        sh:class jsonschema:DataSchema ;
+        sh:datatype xsd:boolean ;
         sh:minCount 1 ;
         sh:defaultValue "false"^^xsd:boolean ;
     ] .
@@ -140,6 +166,7 @@
 :EventShape a sh:NodeShape ;
     sh:targetClass td:Event ;
     sh:closed "false"^^xsd:boolean ;
+    sh:order "5"^^xsd:integer ;
     sh:property [
         sh:path td:subscription ;
         sh:class jsonschema:DataSchema ;
@@ -152,12 +179,11 @@
         sh:path td:cancellation ;
         sh:class jsonschema:DataSchema ;
     ] .
-    
-# TODO EventShape inherits all PropertyShape constraints
 
 :FormShape a sh:NodeShape ;
     sh:targetClass td:Form ;
     sh:closed "false"^^xsd:boolean ;
+    sh:order "6"^^xsd:integer ;
     sh:property [
         sh:path td:href ;
         sh:minCount 1 ;
@@ -172,10 +198,21 @@
     sh:property [
         sh:path td:op ;
         sh:datatype xsd:string ;
+        sh:in (
+            "readproperty"
+            "writeproperty"
+            "observeproperty"
+            "invokeaction"
+            "subscribeevent"
+            "unsubscribeevent"
+        )
     ] ;
     sh:property [
         sh:path td:subprotocol ;
         sh:datatype xsd:string ;
+        sh:in (
+            "longpoll"
+        )
     ] ;
     sh:property [
         sh:path td:security ;
@@ -190,6 +227,7 @@
 :LinkShape a sh:NodeShape ;
     sh:targetClass td:Link ;
     sh:closed "false"^^xsd:boolean ;
+    sh:order "7"^^xsd:integer ;
     sh:property [
         sh:path td:href ;
         sh:minCount 1 ;
@@ -208,13 +246,36 @@
         sh:datatype xsd:anyURI ;
     ] .
 
+:VersioningShape a sh:NodeShape ;
+    sh:targetClass td:Versioning ;
+    sh:closed "false"^^xsd:boolean ;
+    sh:order "8"^^xsd:integer ;
+    sh:property [
+        sh:path td:instance ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+    ] .
+
 :SecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:SecurityScheme ;
     sh:closed "false"^^xsd:boolean ;
+    sh:order "1"^^xsd:integer ;
     sh:property [
         sh:path wotsec:scheme ;
         sh:minCount 1 ;
         sh:datatype xsd:string ;
+        sh:in (
+            "nosec" 
+            "basic" 
+            "cert" 
+            "digest" 
+            "bearer" 
+            "pop" 
+            "psk" 
+            "public" 
+            "oauth2" 
+            "apikey"
+        )
     ] ;
     sh:property [
         sh:path td:description ;
@@ -225,20 +286,13 @@
         sh:datatype xsd:anyURI ;
     ] .
 
-:VersioningShape a sh:NodeShape ;
-    sh:targetClass td:Versioning ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:property [
-        sh:path td:instance ;
-        sh:minCount 1 ;
-        sh:datatype xsd:string ;
-    ] .
-
 :NoSecuritySchemeShape a sh:NodeShape ;
-    sh:targetClass wotsec:NoSecurityScheme .
+    sh:targetClass wotsec:NoSecurityScheme ;
+    sh:order "2"^^xsd:integer .
 
 :BasicSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:BasicSecurityScheme ;
+    sh:order "3"^^xsd:integer ;
     sh:property [
         sh:path wotsec:in ;
         sh:datatype xsd:string ;
@@ -251,6 +305,7 @@
 
 :DigestSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:DigestSecurityScheme ;
+    sh:order "4"^^xsd:integer ;
     sh:property [
         sh:path wotsec:qop ;
         sh:datatype xsd:string ;
@@ -268,6 +323,7 @@
 
 :APIKeySecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:APIKeySecurityScheme ;
+    sh:order "5"^^xsd:integer ;
     sh:property [
         sh:path wotsec:in ;
         sh:datatype xsd:string ;
@@ -280,6 +336,7 @@
 
 :BearerSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:BearerSecurityScheme ;
+    sh:order "6"^^xsd:integer ;
     sh:property [
         sh:path wotsec:authorization ;
         sh:datatype xsd:anyURI ;
@@ -306,6 +363,7 @@
 
 :CertSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:CertSecurityScheme ;
+    sh:order "7"^^xsd:integer ;
     sh:property [
         sh:path wotsec:identity ;
         sh:datatype xsd:string ;
@@ -313,6 +371,7 @@
 
 :PSKSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:PSKSecurityScheme ;
+    sh:order "8"^^xsd:integer ;
     sh:property [
         sh:path wotsec:identity ;
         sh:datatype xsd:string ;
@@ -320,6 +379,7 @@
 
 :PublicSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:PublicSecurityScheme ;
+    sh:order "9"^^xsd:integer ;
     sh:property [
         sh:path wotsec:identity ;
         sh:datatype xsd:string ;
@@ -327,6 +387,7 @@
 
 :PoPSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:PoPSecurityScheme ;
+    sh:order "10"^^xsd:integer ;
     sh:property [
         sh:path wotsec:authorization ;
         sh:datatype xsd:anyURI ;
@@ -353,6 +414,7 @@
 
 :OAuth2SecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:OAuth2SecurityScheme ;
+    sh:order "11"^^xsd:integer ;
     sh:property [
         sh:path wotsec:authorization ;
         sh:datatype xsd:anyURI ;
@@ -378,6 +440,7 @@
 :DataSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:DataSchema ;
     sh:closed "false"^^xsd:boolean ;
+    sh:order "1"^^xsd:integer ;
     sh:property [
         sh:path td:description ;
         sh:datatype xsd:string ;
@@ -389,25 +452,35 @@
     sh:property [
         sh:path jsonschema:type ;
         sh:datatype xsd:string ;
+        sh:in (
+            "object"
+            "array"
+            "string"
+            "number"
+            "integer"
+            "boolean"
+            "null"
+        )
     ] ;
     sh:property [
         sh:path jsonschema:const ;
-        sh:datatype xsd:anyType ;
     ] ;
     sh:property [
         sh:path jsonschema:unit ;
-        sh:datatype xsd:string ;
+        sh:class jsonschema:DataSchema;
+    ] ;
+    sh:property [
+        sh:path jsonschema:oneOf ;
+        sh:class jsonschema:DataSchema;
     ] ;
     sh:property [
         sh:path jsonschema:enum ;
-        sh:datatype xsd:anyType ;
     ] ;
     sh:property [
         sh:path jsonschema:readOnly ;
         sh:datatype xsd:boolean ;
         sh:minCount 1 ;
         sh:defaultValue "false"^^xsd:boolean ;
-
     ] ;
     sh:property [
         sh:path jsonschema:writeOnly ;
@@ -419,6 +492,7 @@
 :ArraySchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:ArraySchema ;
     sh:closed "false"^^xsd:boolean ;
+    sh:order "2"^^xsd:integer ;
     sh:property [
         sh:path jsonschema:items ;
         sh:class jsonschema:DataSchema ;
@@ -434,11 +508,13 @@
     
 :BooleanSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:BooleanSchema ;
-    sh:closed "false"^^xsd:boolean .
+    sh:closed "false"^^xsd:boolean ;
+    sh:order "3"^^xsd:integer .
     
 :NumberSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:NumberSchema ;
     sh:closed "false"^^xsd:boolean ;
+    sh:order "4"^^xsd:integer ;
     sh:property [
         sh:path jsonschema:minimum ;
         sh:datatype xsd:double ;
@@ -451,6 +527,7 @@
 :IntegerSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:IntegerSchema ;
     sh:closed "false"^^xsd:boolean ;
+    sh:order "5"^^xsd:integer ;
     sh:property [
         sh:path jsonschema:minimum ;
         sh:datatype xsd:integer ;
@@ -463,6 +540,7 @@
 :ObjectSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:ObjectSchema ;
     sh:closed "false"^^xsd:boolean ;
+    sh:order "6"^^xsd:integer ;
     sh:property [
         sh:path jsonschema:properties ;
         sh:class jsonschema:DataSchema ;
@@ -474,4 +552,5 @@
 
 :StringSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:StringSchema ;
-    sh:closed "false"^^xsd:boolean .
+    sh:closed "false"^^xsd:boolean ;
+    sh:order "7"^^xsd:integer .
