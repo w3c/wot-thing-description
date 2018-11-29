@@ -363,49 +363,39 @@ function get_interop_file(interop_csvfile,done_callback) {
         .then((data)=> {
             for (let i=0; i<data.length; i++) {
                 let item = data[i];
-                let impl1 = item["Implementation 1"];
-                let role1 = item["Role 1"];
-                let impl2 = item["Implementation 2"];
-                let role2 = item["Role 2"];
+                let producer = item["Producer"];
+                let consumer = item["Consumer"];
                 let security = item["Security"];
-                if (undefined !== impl1 && undefined !== role1 &&
-                    undefined !== impl2 && undefined !== role2 &&
+                let teststatus = item["Status"];
+                if (undefined !== producer && 
+                    undefined !== consumer &&
                     undefined !== security) {
-                    if ("producer" === role1 && "consumer" === role2) {
-                        interop.add({
-                           "producer": impl1,
-                           "consumer": impl2,
-                           "security": security
-                        });
-                        interop_producers.add(impl1);
-                        interop_consumers.add(impl2);
-                        let entry_key = impl1+"=>"+impl2;
-                        let entry = interop_table.get(entry_key);
-                        if ((undefined === entry) || ("Pass" === entry)) {
-                            entry_status = ("nosec" === security) ? "Pass" : "Secure";
-                            interop_table.set(entry_key,entry_status);
-                        }
-                        if (chatty_v) console.log("add interop record for ",
-                                                  impl1,"("+role1+") to ",impl2,"("+role2+")");
-                    } else if ("consumer" === role1 && "producer" === role2) {
-                        interop.add({
-                           "consumer": impl1,
-                           "producer": impl2,
-                           "security": security
-                        });
-                        interop_producers.add(impl2);
-                        interop_consumers.add(impl1);
-                        let entry_key = impl2+"=>"+impl1;
-                        let entry = interop_table.get(entry_key);
-                        if ((undefined === entry) || ("Pass" === entry)) {
-                            entry_status = ("nosec" === security) ? "Pass" : "Secure";
-                            interop_table.set(entry_key,entry_status);
-                        }
-                        if (chatty_v) console.log("add interop record for ",
-                                                  impl1,"("+role1+") to ",impl2,"("+role2+")");
+                    interop.add({
+                       "producer": producer,
+                       "consumer": consumer,
+                       "security": security
+                    });
+                    interop_producers.add(producer);
+                    interop_consumers.add(consumer);
+                    let entry_key = producer+"=>"+consumer;
+                    let entry = interop_table.get(entry_key);
+                    let new_entry = ("fail" === teststatus) 
+                                    ? "Fail" : (("nosec" === security)
+                                                ? "Pass" : "Secure"); 
+                    if (undefined === entry) {
+                        entry = new_entry; 
+                        if (chatty_v) console.log("new interop record for",entry_key,"=",entry);
                     } else {
-                        if (warn_v) console.log("WARNING: interop record with unexpected roles:",item);
+                        // Secure overrides "Pass" (but not "Fail"...)
+                        if ("Secure" === entry && "Pass" === new_entry) {
+                            entry = "Secure";
+                        }
+                        if ("Secure" === new_entry && "Pass" === entry) {
+                            entry = "Secure";
+                        }
+                        if (chatty_v) console.log("update interop record for",entry_key,"=",entry);
                     }
+                    interop_table.set(entry_key,entry);
                 } else {
                     if (warn_v) console.log("WARNING: interop record in unexpected format:",item);
                 }
