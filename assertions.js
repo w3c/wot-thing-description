@@ -1,16 +1,52 @@
-// Parameters
-// TODO: allow these to be specified with options, eg with commander
-const src_htmlfile = "index.html";
-const template_htmlfile = "testing/template.html";
-const ts_htmlfile = "testing/testspec.html";
-const ea_htmlfile = "testing/extra-asserts.html";
-const plan_htmlfile = "testing/plan.html";
+/* Process assertions in index.html, combine with configuration
+ * and test results data, and generate an implementation report.   
+ * See testing/README.md
+ */
 
 // Dependencies
 const path = require('path');
 const fs = require('fs');
 const cheerio = require('cheerio');
 const csvtojson=require('csvtojson'); // V2
+
+// Parameters
+//=======================================================================
+// TODO: allow these to be specified with options, eg with commander
+
+// Directories
+const src_dir = __dirname;
+const testing_dir = path.join(__dirname, "testing");                 // test data directory
+const report_dir = testing_dir;                                      // target directory for report output
+const inputs_dir = path.join(testing_dir, "inputs");                 // location of other inputs
+const descs_dir = path.join(inputs_dir, "implementations");          // implementation descriptions
+const results_dir = path.join(inputs_dir, "results");                // test results for each assertion and impl
+const interop_dir = path.join(inputs_dir, "interop");                // interop test results directory
+
+// Inputs
+const src_htmlfile = path.join(src_dir, "index.html");               // source specification (rendered)
+const template_htmlfile = path.join(inputs_dir, "template.html");    // report template
+const ts_htmlfile = path.join(inputs_dir, "testspec.html");          // test specifications for assertions
+const ea_htmlfile = path.join(inputs_dir, "extra-asserts.html");     // extra non-spec assertions
+
+const depends_csvfile = path.join(inputs_dir, "depends.csv");        // assertion dependencies
+const categories_csvfile = path.join(inputs_dir, "categories.csv");  // assertion categories
+const atrisk_csvfile = path.join(inputs_dir, "atrisk.csv");          // at-risk assertions
+const impls_csvfile = path.join(inputs_dir, "impl.csv");             // structured implementation data
+//-----------------------------------------------------------------------
+
+// Outputs
+const report_htmlfile = path.join(report_dir, "report.html");
+const results_csvfile = path.join(results_dir,"template.csv");
+//=======================================================================
+
+// Verbosity level
+const verbosity = 3;
+const silent_v = (verbosity == 0);
+const warn_v = (verbosity >= 1);
+const info_v = (verbosity >= 2);
+const chatty_v = (verbosity >= 3);
+const debug_v = (verbosity >= 4);
+//=======================================================================
 
 // Read in test specs and store as a map
 // (Synchronous)
@@ -20,46 +56,47 @@ var testspec = {};
 ts_dom('span[class="testspec"]').each(function(i,elem) {
     let id = ts_dom(this).attr('id');
     if (undefined === id) {
-        console.log("Warning: testspec without id:\n",ts_dom(this).html());
+        if (warn_v) console.log("Warning: testspec without id:\n",ts_dom(this).html());
     } else {
-        // console.log("Adding testspec for",id,":\n",ts_dom(this).html());
+        if (chatty_v) console.log("Adding testspec for",id);
+        if (debug_v) console.log("  testspec is:\n",ts_dom(this).html());
         testspec[id] = ts_dom(this);
     }
 });
-// console.log("test specs:",ts_dom.html());
+if (debug_v) console.log("test specs:",ts_dom.html());
 
 // Read in implementation descriptions, store as a map from name to doms
 // (Synchronous)
-const impls_dir = path.join(__dirname, 'testing', 'implementations');
-var impls = {};
-var impl_names = {};
-var impls_files = fs.readdirSync(impls_dir);
-function get_impls() {
-   for (let fi=0; fi<impls_files.length; fi++) {
-       var file = path.join(impls_dir, impls_files[fi]);
+var descs = {};
+var desc_names = {};
+var desc_files = fs.readdirSync(descs_dir);
+function get_descs() {
+   for (let fi=0; fi<desc_files.length; fi++) {
+       var file = path.join(descs_dir, desc_files[fi]);
        if (file.match(/.html$/g)) {
-           console.log("processing implementation descriptions in",file);
-           let impl_raw = fs.readFileSync(file,'UTF-8');
-           let impl_dom = cheerio.load(impl_raw);
-           impl_dom('div[class="impl"]').each(function(i,elem) {
-               let id = impl_dom(this).attr('id');
+           if (info_v) console.log("processing implementation descriptions in",file);
+           let desc_raw = fs.readFileSync(file,'UTF-8');
+           let desc_dom = cheerio.load(desc_raw);
+           desc_dom('div[class="impl"]').each(function(i,elem) {
+               let id = desc_dom(this).attr('id');
                if (undefined === id) {
-                   console.log("Warning: implementation without id:\n",impl_dom(this).html());
+                   console.log("Warning: implementation description file without id:\n",desc_dom(this).html());
                } else {
-                   // console.log("Adding implementation for",id,":\n",impl_dom(this).html());
-                   impls[id] = impl_dom(this);
-                   impl_names[id] = impl_dom("h3").text();
+                   if (chatty_v) console.log("Adding implementation description for",id);
+                   if (debug_v) console.log("  implementation description is:\n",desc_dom(this).html());
+                   descs[id] = desc_dom(this);
+                   desc_names[id] = desc_dom("h3").text();
                }
            });
        }
    } 
 }
-get_impls();
+get_descs();
 
-// Initialize plan dom with template
+// Initialize report document dom with template
 // (Synchronous)
 const template_raw = fs.readFileSync(template_htmlfile, 'UTF-8');
-var plan_dom = cheerio.load(template_raw);
+var report_dom = cheerio.load(template_raw);
 
 // Read in index.html store as a dom
 // (Synchronous)
@@ -67,16 +104,37 @@ const src_raw = fs.readFileSync(src_htmlfile, 'UTF-8');
 var src_dom = cheerio.load(src_raw);
 var src_title = src_dom('title').text();
 
-// Extract assertions
+// Extract span assertions
 // (Synchronous)
 var src_assertions = {};
 src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
     let id = src_dom(this).attr('id');
     if (undefined === id) {
-        console.log("WARNING: rfc2119-assertion without id:",
-                    src_dom(this).html());
+        if (warn_v) console.log("WARNING: rfc2119-assertion without id:",src_dom(this).html());
     } else {
         src_assertions[id] = src_dom(this);
+    }
+});
+
+// Extract tabulated assertions
+var tab_assertions = {};
+src_dom('tr[class="rfc2119-table-assertion"]').each(function(i,elem) {
+    let id = src_dom(this).attr('id');
+    if (undefined === id) {
+        if (warn_v) console.log("WARNING: rfc2119-table-assertion without id:", src_dom(this).html());
+    } else {
+        let assertion_data = src_dom(this).children('td').map(function(i, el) {
+            return src_dom(this).html();
+        }).get();
+        let assertion = '<span class="rfc2119-table-assertion">' 
+                      + assertion_data[0]         // vocab term
+                      + ': ' + assertion_data[1]  // vocab text
+                      + (("yes" === assertion_data[2]) ? ' (MUST be included)' : ' (MAY be included)')
+                      + (("." === assertion_data[3]) ? '' : ' (default: '+assertion_data[3]+')')
+                      +'</span>';
+        if (chatty_v) console.log("table assertion",id,"added");
+        if (debug_v) console.log("  text:",assertion);
+        tab_assertions[id] = cheerio.load(assertion)("span");
     }
 });
 
@@ -91,8 +149,7 @@ var extra_assertions = {};
 ea_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
     let id = ea_dom(this).attr('id');
     if (undefined === id) {
-        console.log("WARNING: rfc2119-assertion without id:",
-                    ea_dom(this).html());
+        if (warn_v) console.log("WARNING: rfc2119-assertion without id:", ea_dom(this).html());
     } else {
         extra_assertions[id] = ea_dom(this);
     }
@@ -100,7 +157,6 @@ ea_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
 
 // Get all results, convert from CSV to JSON
 // (Asynchronous)
-const results_dir = path.join(__dirname, 'testing', 'results');
 var results = new Map();
 var results_files = fs.readdirSync(results_dir);
 function get_results(i,done_callback) {
@@ -109,7 +165,7 @@ function get_results(i,done_callback) {
     }	    
     var file = path.join(results_dir, results_files[i]);
     if (file.match(/.csv$/g)) {
-        console.log("processing results in",file);
+        if (info_v) console.log("processing results in",file);
         var basename = path.basename(file,'.csv');
         var filedata = fs.readFileSync(file).toString();
         csvtojson()
@@ -131,10 +187,6 @@ function get_results(i,done_callback) {
     }
 }
 var merged_results = new Map();
-function cleanInt(x) {
-   x = Number(x);
-   return x >= 0 ? Math.floor(x) : Math.ceil(x);
-}
 function merge_results(done_callback) {
     for (let [impl,data] of results.entries()) {
         for (let i=0; i<data.length; i++) {
@@ -162,25 +214,25 @@ function merge_results(done_callback) {
                    }
                }
                // failures
-               if (undefined != current.fail) {
-                   if (undefined != fail) {
+               if (undefined !== current.fail) {
+                   if (undefined !== fail) {
                        current.fail += fail;
                        merged_results.set(id,current);
                    }
                } else {
-                   if (undefined != fail) {
+                   if (undefined !== fail) {
                        current.fail = fail;
                        merged_results.set(id,current);
                    }
                }
                // not-implemented
-               if (undefined != current.notimpl) {
-                   if (undefined != notimpl) {
+               if (undefined !== current.notimpl) {
+                   if (undefined !== notimpl) {
                        current.notimpl += notimpl;
                        merged_results.set(id,current);
                    }
                } else {
-                   if (undefined != notimpl) {
+                   if (undefined !== notimpl) {
                        current.notimpl = notimpl;
                        merged_results.set(id,current);
                    }
@@ -193,13 +245,36 @@ function merge_results(done_callback) {
     done_callback(merged_results);
 }
 
+// Get depends
+// (Asynchronous)
+var depends = new Map();
+function get_depends(done_callback) {
+    if (info_v) console.log("processing dependencies in",depends_csvfile);
+    var filedata = fs.readFileSync(depends_csvfile).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let id = item["ID"];
+                if (undefined !== id) {
+                    depends.set(id,{
+                        "parents": item["Parents"],
+                        "contexts": item["Contexts"]
+                    });
+                }
+                if (debug_v) console.log(id," depends ",depends.get(id));
+            }
+            done_callback();
+        });
+}
+
 // Get categories
 // (Asynchronous)
 var categories = new Map();
 function get_categories(done_callback) {
-    var file = path.join(__dirname,"testing","categories.csv");
-    console.log("processing categories in",file);
-    var filedata = fs.readFileSync(file).toString();
+    if (info_v) console.log("processing categories in",categories_csvfile);
+    var filedata = fs.readFileSync(categories_csvfile).toString();
     csvtojson()
         .fromString(filedata)
         .then((data)=> {
@@ -207,8 +282,44 @@ function get_categories(done_callback) {
                 let item = data[i];
                 let id = item["ID"];
                 let cat = item["Category"];
-                if (undefined != id && undefined != cat) {
+                if (undefined !== id && undefined !== cat) {
                     categories.set(id,cat);
+                    if (chatty_v) console.log("add category record for id",id+":",categories.get(id));
+                } else {
+                    if (warn_v) console.log("WARNING: category record for id",id,"in unexpected format");
+                }
+            }
+            done_callback();
+        });
+}
+
+// Get implementation data
+// (Asynchronous)
+var impls = new Map();
+function get_impls(done_callback) {
+    if (info_v) console.log("processing implementationt data in",impls_csvfile);
+    var filedata = fs.readFileSync(impls_csvfile).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let id = item["Implementation"];
+                let org = item["Organization"];
+                let name = item["Name"];
+                let roles = item["Roles"];
+                if (undefined !== roles) {
+                    roles = roles.split(' ');
+                }
+                if (undefined !== id) {
+                    impls.set(id,{
+                        "org": org,
+                        "name": name,
+                        "roles": roles
+                    });
+                    if (chatty_v) console.log("add impl record for id",id+":",impls.get(id));
+                } else {
+                    if (warn_v) console.log("WARNING: impl record for id",id,"in unexpected format");
                 }
             }
             done_callback();
@@ -219,223 +330,420 @@ function get_categories(done_callback) {
 // (Asynchronous)
 var risks = new Map();
 function get_risks(done_callback) {
-    var file = path.join(__dirname,"testing","atrisk.csv");
-    console.log("processing risks in",file);
-    var filedata = fs.readFileSync(file).toString();
+    if (info_v) console.log("processing risks in",atrisk_csvfile);
+    var filedata = fs.readFileSync(atrisk_csvfile).toString();
     csvtojson()
         .fromString(filedata)
         .then((data)=> {
             for (let i=0; i<data.length; i++) {
                 let item = data[i];
                 let id = item["ID"];
-                if (undefined != id) {
+                if (undefined !== id) {
                     risks.set(id,true);
+                    if (chatty_v) console.log("add at-risk record for",id);
+                } else {
+                    if (warn_v) console.log("WARNING: at-risk record for id",id,"in unexpected format");
                 }
             }
             done_callback();
         });
 }
 
+// Interop Data
+// (Asynchronous)
+var interop = new Set();
+var interop_producers = new Set();
+var interop_consumers = new Set();
+var interop_table = new Map();
+function get_interop_file(interop_csvfile,done_callback) {
+    if (info_v) console.log("processing interop data in",interop_csvfile);
+    let filedata = fs.readFileSync(interop_csvfile).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let producer = item["Producer"];
+                let consumer = item["Consumer"];
+                let security = item["Security"];
+                let teststatus = item["Status"];
+                if (undefined !== producer && 
+                    undefined !== consumer &&
+                    undefined !== security) {
+                    interop.add({
+                       "producer": producer,
+                       "consumer": consumer,
+                       "security": security
+                    });
+                    interop_producers.add(producer);
+                    interop_consumers.add(consumer);
+                    let entry_key = producer+"=>"+consumer;
+                    let entry = interop_table.get(entry_key);
+                    let new_entry = ("fail" === teststatus) 
+                                    ? "Fail" : (("nosec" === security)
+                                                ? "Pass" : "Secure"); 
+                    if (undefined === entry) {
+                        entry = new_entry; 
+                        if (chatty_v) console.log("new interop record for",entry_key,"=",entry);
+                    } else {
+                        // Secure overrides "Pass" (but not "Fail"...)
+                        if ("Secure" === entry && "Pass" === new_entry) {
+                            entry = "Secure";
+                        }
+                        if ("Secure" === new_entry && "Pass" === entry) {
+                            entry = "Secure";
+                        }
+                        if (chatty_v) console.log("update interop record for",entry_key,"=",entry);
+                    }
+                    interop_table.set(entry_key,entry);
+                } else {
+                    if (warn_v) console.log("WARNING: interop record in unexpected format:",item);
+                }
+            }
+            done_callback();
+        });
+}
+function get_interop_files(interop_files,done_callback) {
+    if (debug_v) console.log("(D) interop files:",interop_files);
+    if (0 == interop_files.length) {
+        done_callback();	    
+    }	    
+    let interop_file = path.join(interop_dir,interop_files[0]); 
+    if (debug_v) console.log("(D) interop file:",interop_file);
+    if (interop_file.match(/.csv$/g)) {
+        get_interop_file(interop_file,function() {
+           if (interop_files.length > 1) {
+               get_interop_files(interop_files.slice(1),done_callback);
+           } else {
+               done_callback();
+           }
+        });
+    } else {
+       if (interop_files.length > 1) {
+           get_interop_files(interop_files.slice(1),done_callback);
+       } else {
+           done_callback();
+       }
+    }
+}
+function get_interops(done_callback) {
+    let interop_files = fs.readdirSync(interop_dir);
+    get_interop_files(interop_files,done_callback);
+}
+
 // Clear (well, write headers for) results template
 // (Synchronous)
-var results_template = path.join(results_dir,'template.csv');
-fs.writeFileSync(results_template,'"ID","Status"\n');
+fs.writeFileSync(results_csvfile,'"ID","Status"\n');
 
 // Merge implementation descriptions
 // (Asynchronous)
 function merge_implementations(done_callback) {
   // insert implementation descriptions
   let i = 1;
-  for (impl_id in impls) {
-      impl = impls[impl_id];
-      impl_name = impl_names[impl_id];
-      plan_dom('ul#systems-toc').append('<li class="tocline"></li>\n');
-      let plan_li = plan_dom('ul#systems-toc>li:last-child');
-      plan_li.append('6.'+i+' <a href="#'+impl_id+'" shape="rect">'+impl_name+'</a>');
+  for (desc_id in descs) {
+      let desc = descs[desc_id];
+      let desc_name = desc_names[desc_id];
+      report_dom('ul#systems-toc').append('<li class="tocline"></li>\n');
+      let report_li = report_dom('ul#systems-toc>li:last-child');
+      report_li.append('6.'+i+' <a href="#'+desc_id+'" shape="rect">'+desc_name+'</a>');
       i++;
-      plan_dom('#systems-impl').append(impl);
+      report_dom('#systems-impl').append(desc);
   }
   done_callback();
 }
 
-// Merge assertions, and test specs into plan
+// Merge interop table
 // (Asynchronous)
-plan_dom('head>title').append(src_title);
-// plan_dom('body>h2').append(src_title);
-// plan_dom('body').append('<dl></dl>');
-function merge_assertions(assertions,ac,done_callback) {
+function merge_interops(done_callback) {
+  interop_consumers.forEach(function(consumer) {
+      if (chatty_v) console.log("merge_interops consumer:",consumer);
+      let report_tr = report_dom('table#testinterop>thead>tr:last-child');
+      let impl = impls.get(consumer);
+      let impl_org = "";
+      let impl_name = "Unknown";
+      if (undefined === impl) {
+         if (warn_v) console.log("no name available for impl",item);
+      } else {
+         impl_org = impl.org;
+         impl_name = impl.name;
+      }
+      report_tr.append('<th class="rotate" id="'
+                       +consumer
+                       +'"><div><span>'
+                       +impl_org
+                       +'</span><br/><span>'
+                       +impl_name
+                       +'</span></div></th>\n');
+  });
+  interop_producers.forEach(function(producer) { 
+      let impl = impls.get(producer);
+      let impl_org = "";
+      let impl_name = "Unknown";
+      if (undefined === impl) {
+         if (warn_v) console.log("no name available for impl",item);
+      } else {
+         impl_org = impl.org;
+         impl_name = impl.name;
+      }
+      let report_tr = report_dom('table#testinterop>tbody:last-child');
+      report_tr.append('<tr><th id="'
+                       +producer
+                       +'">'
+                       + impl_org
+                       + '<br/>'
+                       + impl_name
+                       +'</th></tr>\n');
+      interop_consumers.forEach(function(consumer) {
+          let pair_id = producer+"=>"+consumer;
+          let item_status = interop_table.get(pair_id);
+          let report_elem = report_dom('table#testinterop>tbody>tr:last-child');
+          if (undefined === item_status) {
+              report_elem.append('<td class="notimpl">Not Impl</td>');
+          } else if ("Secure" === item_status) {
+              report_elem.append('<td class="secure">'+item_status+'</td>');
+          } else if ("Pass" === item_status) {
+              report_elem.append('<td class="passed">'+item_status+'</td>');
+          } else {
+              report_elem.append('<td class="failed">'+item_status+'</td>');
+          }
+      });
+  });
+  done_callback();
+}
 
+// Merge assertions, and test specs into report
+// (Asynchronous)
+report_dom('head>title').append(src_title);
+// report_dom('body>h2').append(src_title);
+// report_dom('body').append('<dl></dl>');
+function merge_assertions(assertions,ac,done_callback) {
   // insert assertions
   for (a in assertions) {
-    console.log("Processing assertion "+a);
+    if (chatty_v) console.log("Processing assertion "+a);
 
     // Results template
-    fs.appendFileSync(results_template, '"'+a+'","null"\n');
+    fs.appendFileSync(results_csvfile, '"'+a+'","null"\n');
 
     // Test Specifications Appendix
-    plan_dom('#testspecs').append('<dt></dt>');
-    let plan_dt = plan_dom('#testspecs>dt:last-child');
-    plan_dt.append('<a href="../index.html#'+a+'">'+a+'</a> ');
+    report_dom('#testspecs').append('<dt></dt>');
+    let report_dt = report_dom('#testspecs>dt:last-child');
+    report_dt.append('<a href="../index.html#'+a+'">'+a+'</a> ');
     if ("baseassertion" !== ac) {
-       plan_dt.append('<em>(extra)</em>');
+       report_dt.append('<em>(extra)</em>');
     }
 
     let category = undefined;
     let req = false;
-    if (assertions[a].text().indexOf('MUST') > -1) {
-        if (assertions[a].text().indexOf('MUST NOT') > -1) {
-            category = 'MUST NOT';
-        } else {
-            category = 'MUST';
-        }
-        req = true;
-    }
-    if (assertions[a].text().indexOf('SHOULD') > -1) {
-        if (assertions[a].text().indexOf('SHOULD NOT') > -1) {
-            category = 'SHOULD NOT';
-        } else {
-            category = 'SHOULD';
-        }
-    }
-    if (assertions[a].text().indexOf('MAY') > -1) {
-        category = 'MAY';
-    }
-    if (assertions[a].text().indexOf('REQUIRED') > -1) {
-        category = 'REQUIRED';
-        req = true;
-    }
-    if (assertions[a].text().indexOf('RECOMMENDED') > -1) {
-        category = 'RECOMMENDED';
-    }
-    if (assertions[a].text().indexOf('OPTIONAL') > -1) {
-        category = 'OPTIONAL';
-    }
+    {
+	    if (assertions[a].text().indexOf('MUST') > -1) {
+		if (assertions[a].text().indexOf('MUST NOT') > -1) {
+		    category = 'MUST NOT';
+		} else {
+		    category = 'MUST';
+		}
+		req = true;
+	    }
+	    if (assertions[a].text().indexOf('SHOULD') > -1) {
+		if (assertions[a].text().indexOf('SHOULD NOT') > -1) {
+		    category = 'SHOULD NOT';
+		} else {
+		    category = 'SHOULD';
+		}
+	    }
+	    if (assertions[a].text().indexOf('MAY') > -1) {
+		category = 'MAY';
+	    }
+	    if (assertions[a].text().indexOf('REQUIRED') > -1) {
+		category = 'REQUIRED';
+		req = true;
+	    }
+	    if (assertions[a].text().indexOf('RECOMMENDED') > -1) {
+		category = 'RECOMMENDED';
+	    }
+	    if (assertions[a].text().indexOf('OPTIONAL') > -1) {
+		category = 'OPTIONAL';
+	    }
 
-    if (undefined === category) {
-        console.log("  WARNING: RFC2119 category is not defined");
-        plan_dt.append(': <strong>'+'undefined'+'</strong>');
-    } else {
-        plan_dt.append(': <strong>'+category+'</strong>');
+	    if (undefined === category) {
+		if (warn_v) console.log("WARNING: RFC2119 category is not defined for",a);
+		report_dt.append(': <strong>'+'undefined'+'</strong>');
+	    } else {
+		report_dt.append(': <strong>'+category+'</strong>');
+	    }
     }
 
     // retreive text of assertion
     a_text = assertions[a];
 
     // Table
-    plan_dom('#testresults').append('<tr id="'+a+'" class="'+ac+'"></tr>');
-    let plan_tr = plan_dom('tr#'+a);
-    plan_tr.append('<td class="'+ac+'"><a href="../index.html#'+a+'">'+a+'</a></td>');
+
+    // ID
+    report_dom('#testresults').append('<tr id="'+a+'" class="'+ac+'"></tr>');
+
+    // Assertion
+    let report_tr = report_dom('tr#'+a);
+    report_tr.append('<td class="'+ac+'"><a href="../index.html#'+a+'">'+a+'</a></td>');
     if (undefined != categories.get(a)) {
-       plan_tr.append('<td class="'+ac+'">'+categories.get(a)+'</td>');
+       report_tr.append('<td class="'+ac+'">'+categories.get(a)+'</td>');
     } else {
-       plan_tr.append('<td class="'+ac+'"></td>');
+       report_tr.append('<td class="'+ac+'"></td>');
     }
     if (undefined != risks.get(a)) {
-       plan_tr.append('<td class="atrisk">'+a_text+'</td>');
+       report_tr.append('<td class="atrisk">'+a_text+'</td>');
     } else {
-       plan_tr.append('<td class="'+ac+'">'+a_text+'</td>');
+       report_tr.append('<td class="'+ac+'">'+a_text+'</td>');
     }
+
+    // Req
     if (req) {
-        plan_tr.append('<td class="'+ac+'">Y</td>');
+        report_tr.append('<td class="'+ac+'">Y</td>');
     } else {
-        plan_tr.append('<td class="'+ac+'">N</td>');
+        report_tr.append('<td class="'+ac+'">N</td>');
     }
-    plan_tr.append('<td class="'+ac+'"></td>');
+
+    // Parent(s) and Context(s)
+    let d = depends.get(a);
+    if (undefined != d) {
+        let p = d.parents;
+        if (undefined != p && "null" !== p) {
+            let ps = p.split(' ');
+            let h = '<td class="'+ac+'">';
+            for (let i=0; i<ps.length; i++) {
+                h = h + '<a href="#' + ps[i] + '">' + ps[i] + '</a> ';
+            }
+            report_tr.append(h+'</td>');
+        } else {
+            report_tr.append('<td class="'+ac+'"></td>');
+        }
+        let c = d.contexts;
+        if (undefined != c && "null" !== c) {
+            let cs = c.split(' ');
+            let h = '<td class="'+ac+'">';
+            for (let i=0; i<cs.length; i++) {
+                h = h + '<a href="#' + cs[i] + '">' + cs[i] + '</a> ';
+            }
+            report_tr.append(h+'</td>');
+        } else {
+            report_tr.append('<td class="'+ac+'"></td>');
+        }
+    }
+
+    // Test Results
     let result = merged_results.get(a);
     if (undefined != result) {
        // Number of reported pass statuses
        let pass = result.pass;
        if (undefined != pass) {
           if (pass >= 2) {
-             plan_tr.append('<td class="'+ac+'">'+pass+'</td>');
+             report_tr.append('<td class="'+ac+'">'+pass+'</td>');
           } else {
-             plan_tr.append('<td class="failed">'+pass+'</td>');
+             report_tr.append('<td class="failed">'+pass+'</td>');
           }
        } else {
-          plan_tr.append('<td class="missing"></td>');
+          report_tr.append('<td class="missing"></td>');
 	  pass = 0;
        }
        // Number of reported fail statuses
        let fail = result.fail;
        if (undefined != fail) {
           if (fail > 0) {
-             plan_tr.append('<td class="failed">'+fail+'</td>');
+             report_tr.append('<td class="failed">'+fail+'</td>');
           } else {
-             plan_tr.append('<td class="'+ac+'">'+fail+'</td>');
+             report_tr.append('<td class="'+ac+'">'+fail+'</td>');
           }
        } else {
-          plan_tr.append('<td class="missing"></td>');
+          report_tr.append('<td class="'+ac+'"></td>');
 	  fail = 0;
        }
        // Number of reported not implemented statuses
        let notimpl = result.notimpl;
        if (undefined != notimpl) {
-          plan_tr.append('<td class="'+ac+'">'+notimpl+'</td>');
+          report_tr.append('<td class="'+ac+'">'+notimpl+'</td>');
        } else {
-          plan_tr.append('<td class="missing"></td>');
+          report_tr.append('<td class="'+ac+'"></td>');
 	  notimpl = 0;
        }
        // Total number of reported statuses
        let totals = pass + fail + notimpl;
        if (0 == totals) {
-           plan_tr.append('<td class="missing"></td>');
+           report_tr.append('<td class="missing"></td>');
        } else if (totals < 2) {
-           plan_tr.append('<td class="failed">'+totals+'</td>');
+           report_tr.append('<td class="failed">'+totals+'</td>');
        } else {
-           plan_tr.append('<td class="'+ac+'">'+totals+'</td>');
+           report_tr.append('<td class="'+ac+'">'+totals+'</td>');
        }
     } else {
-       plan_tr.append('<td class="missing"></td>');
-       plan_tr.append('<td class="missing"></td>');
-       plan_tr.append('<td class="missing"></td>');
-       plan_tr.append('<td class="missing"></td>');
+       report_tr.append('<td class="missing"></td>');
+       report_tr.append('<td class="missing"></td>');
+       report_tr.append('<td class="missing"></td>');
+       report_tr.append('<td class="missing"></td>');
     }
 
     // Add to appendix
-    plan_dom('#testspecs').append('<dd id="'+a+'" class="'+ac+'"></dd>');
-    let plan_dd = plan_dom('dd#'+a);
-    plan_dd.append(a_text);
+    report_dom('#testspecs').append('<dd id="'+a+'" class="'+ac+'"></dd>');
+    let report_dd = report_dom('dd#'+a);
+    report_dd.append(a_text);
     a_spec = testspec[a];
-    plan_dd.append('<br/><span></span>');
-    let plan_li = plan_dom('dd#'+a+'>span:last-child');
+    report_dd.append('<br/><span></span>');
+    let report_li = report_dom('dd#'+a+'>span:last-child');
     if (undefined === a_spec) {
-        console.log("  WARNING: no test spec");
-        plan_li.append('<p><strong>NO TEST SPECIFICATION</strong></p>');
+        if (warn_v) console.log("WARNING: no test spec for",a);
+        report_li.append('<p><strong>NO TEST SPECIFICATION</strong></p>');
     } else {
-        plan_li.append(a_spec);
+        report_li.append(a_spec);
     }
   }
   done_callback();
 }
 
 get_results(0,function(results) {
-/*
-    console.log("Results: {\n");
-    for (let [key,data] of results.entries()) {
-        console.log(key," => ",data);
+    if (debug_v) {
+        console.log("Results: {\n");
+        for (let [key,data] of results.entries()) {
+            console.log(key," => ",data);
+        }
+        console.log("}");
     }
-    console.log("}");
-*/
     merge_results(function(merged_results) {
-/*
+    if (debug_v) {
       console.log("Merged Results: {\n");
       for (let [key,data] of merged_results.entries()) {
         console.log(key," => ",data);
       }
       console.log("}");
-*/
-     get_risks(function() {
+    }
+    get_risks(function() {
+     get_depends(function() {
       get_categories(function() {
-       merge_implementations(function() {
-        merge_assertions(src_assertions,"baseassertion",function() {
-         merge_assertions(extra_assertions,"extraassertion",function() {
-          // Output plan
-          fs.writeFile(plan_htmlfile, plan_dom.html(), function(error) {
-            if (error) {
-                return console.log(err);
-            } else {
-                console.log("Test plan output to "+plan_htmlfile);
-            }
+        if (chatty_v) {
+            console.log("categories: ",categories);
+        }
+       get_impls(function() {
+         if (chatty_v) {
+            console.log("impls: ",impls);
+         }
+        get_interops(function() {
+         if (chatty_v) {
+            console.log("interop: ",interop);
+            console.log("interop producers: ",interop_producers);
+            console.log("interop consumers: ",interop_consumers);
+            console.log("interop table: ",interop_table);
+         }
+         merge_implementations(function() {
+          merge_interops(function() {
+           merge_assertions(src_assertions,"baseassertion",function() {
+            merge_assertions(tab_assertions,"tabassertion",function() {
+             merge_assertions(extra_assertions,"extraassertion",function() {
+              // Output report
+              fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
+                if (error) {
+                  return console.log(err);
+                } else {
+                  if (info_v) console.log("Report output to "+report_htmlfile);
+                }
+              }); 
+            }); 
+           }); 
           }); 
          }); 
         }); 
@@ -443,5 +751,7 @@ get_results(0,function(results) {
       }); 
      }); 
     });
+   });
+  });
 });
 
