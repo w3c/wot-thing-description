@@ -22,6 +22,7 @@ const descs_dir = path.join(inputs_dir, "implementations");          // implemen
 const results_dir = path.join(inputs_dir, "results");                // test results for each assertion and impl
 const interop_dir = path.join(inputs_dir, "interop");                // interop test results directory
 
+
 // Inputs
 const src_htmlfile = path.join(src_dir, "index.html");               // source specification (rendered)
 const template_htmlfile = path.join(inputs_dir, "template.html");    // report template
@@ -37,6 +38,20 @@ const impls_csvfile = path.join(inputs_dir, "impl.csv");             // structur
 // Outputs
 const report_htmlfile = path.join(report_dir, "report.html");
 const results_csvfile = path.join(results_dir,"template.csv");
+
+// Base URL to use for internal links (necessary since we use <base> in
+// the HTML template to resolve hyperlinks included from index.html,
+// so this needs to link back to the report from the location of that
+// file...
+const report_base = path.join(report_dir, "report.html");
+
+// Base URL for specification.  Empty since it is set in <base> in
+// the HTML template.
+const src_base = "";
+
+// Whether or not to duplicate category and assertion in test spec appendix.
+// Off by default since it is redundant, but is convenient sometimes.
+const repeat_assertion_in_appendix = false;
 //=======================================================================
 
 // Verbosity level
@@ -129,8 +144,9 @@ src_dom('tr[class="rfc2119-table-assertion"]').each(function(i,elem) {
         let assertion = '<span class="rfc2119-table-assertion">' 
                       + assertion_data[0]         // vocab term
                       + ': ' + assertion_data[1]  // vocab text
-                      + (("yes" === assertion_data[2]) ? ' (MUST be included)' : ' (MAY be included)')
-                      + (("." === assertion_data[3]) ? '' : ' (default: '+assertion_data[3]+')')
+                      + (("yes" === assertion_data[2]) ? '<hr/>\nMUST be included.' : '<hr/>\nMAY be included.')
+                      + (("." === assertion_data[3]) ? '' : '\nDefault: '+assertion_data[3]+'.')
+                      + ('\nType: '+assertion_data[4]+'.')
                       +'</span>';
         if (chatty_v) console.log("table assertion",id,"added");
         if (debug_v) console.log("  text:",assertion);
@@ -445,7 +461,7 @@ function merge_implementations(done_callback) {
       let desc_name = desc_names[desc_id];
       report_dom('ul#systems-toc').append('<li class="tocline"></li>\n');
       let report_li = report_dom('ul#systems-toc>li:last-child');
-      report_li.append('6.'+i+' <a href="#'+desc_id+'" shape="rect">'+desc_name+'</a>');
+      report_li.append('6.'+i+' <a href="'+report_base+'#'+desc_id+'" shape="rect">'+desc_name+'</a>');
       i++;
       report_dom('#systems-impl').append(desc);
   }
@@ -527,9 +543,9 @@ function merge_assertions(assertions,ac,done_callback) {
     // Test Specifications Appendix
     report_dom('#testspecs').append('<dt></dt>');
     let report_dt = report_dom('#testspecs>dt:last-child');
-    report_dt.append('<a href="../index.html#'+a+'">'+a+'</a> ');
+    report_dt.append('<a href="'+report_base+'#'+a+'">'+a+'</a>:');
     if ("baseassertion" !== ac) {
-       report_dt.append('<em>(extra)</em>');
+       report_dt.append(' <em>(extra)</em>');
     }
 
     let category = undefined;
@@ -565,10 +581,14 @@ function merge_assertions(assertions,ac,done_callback) {
 	    }
 
 	    if (undefined === category) {
-		if (warn_v) console.log("WARNING: RFC2119 category is not defined for",a);
-		report_dt.append(': <strong>'+'undefined'+'</strong>');
-	    } else {
-		report_dt.append(': <strong>'+category+'</strong>');
+	        if (warn_v) console.log("WARNING: RFC2119 category is not defined for",a);
+            }
+            if (repeat_assertion_in_appendix) {
+	        if (undefined === category) {
+		    report_dt.append(': <strong>category is undefined</strong>');
+	        } else {
+		    report_dt.append(': <strong>'+category+'</strong>');
+	        }
 	    }
     }
 
@@ -582,7 +602,7 @@ function merge_assertions(assertions,ac,done_callback) {
 
     // Assertion
     let report_tr = report_dom('tr#'+a);
-    report_tr.append('<td class="'+ac+'"><a href="../index.html#'+a+'">'+a+'</a></td>');
+    report_tr.append('<td class="'+ac+'"><a href="'+src_base+'#'+a+'">'+a+'</a></td>');
     if (undefined != categories.get(a)) {
        report_tr.append('<td class="'+ac+'">'+categories.get(a)+'</td>');
     } else {
@@ -609,7 +629,7 @@ function merge_assertions(assertions,ac,done_callback) {
             let ps = p.split(' ');
             let h = '<td class="'+ac+'">';
             for (let i=0; i<ps.length; i++) {
-                h = h + '<a href="#' + ps[i] + '">' + ps[i] + '</a> ';
+                h = h + '<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a> ';
             }
             report_tr.append(h+'</td>');
         } else {
@@ -620,7 +640,7 @@ function merge_assertions(assertions,ac,done_callback) {
             let cs = c.split(' ');
             let h = '<td class="'+ac+'">';
             for (let i=0; i<cs.length; i++) {
-                h = h + '<a href="#' + cs[i] + '">' + cs[i] + '</a> ';
+                h = h + '<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a> ';
             }
             report_tr.append(h+'</td>');
         } else {
@@ -679,12 +699,15 @@ function merge_assertions(assertions,ac,done_callback) {
        report_tr.append('<td class="missing"></td>');
     }
 
-    // Add to appendix
+    // Add to test spec appendix
     report_dom('#testspecs').append('<dd id="'+a+'" class="'+ac+'"></dd>');
     let report_dd = report_dom('dd#'+a);
-    report_dd.append(a_text);
+    if (repeat_assertion_in_appendix) {
+        report_dd.append(a_text);
+        report_dd.append('<br/>');
+    }
     a_spec = testspec[a];
-    report_dd.append('<br/><span></span>');
+    report_dd.append('<span></span>');
     let report_li = report_dom('dd#'+a+'>span:last-child');
     if (undefined === a_spec) {
         if (warn_v) console.log("WARNING: no test spec for",a);
