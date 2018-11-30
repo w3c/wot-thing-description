@@ -101,9 +101,8 @@ Files should be in CSV format, including headers as defined in
 and will be parsed by the `csvtojson` Node.js library.
 
 ## To Dos
-* Table assertions should have type information, as it is relevant to several assertions.
+* Test specs need to be completed.
+* Interop and results data needs to be collected and collated.
 * Sort categories together in the output and put the category in a section header instead of a column.
-* Internal hyperlinks in assertions should be removed or fixed (rebased to they point to the spec).
-* Section references should be resolved or removed.
 * Sanity check that parent assertions are only marked as "pass" if all sub-assertions are also marked as "pass".
 
