@@ -43,7 +43,7 @@ const results_csvfile = path.join(results_dir,"template.csv");
 // the HTML template to resolve hyperlinks included from index.html,
 // so this needs to link back to the report from the location of that
 // file...
-const report_base = path.join(report_dir, "report.html");
+const report_base = "file://"+path.join(report_dir, "report.html");
 
 // Base URL for specification.  Empty since it is set in <base> in
 // the HTML template.
@@ -544,7 +544,10 @@ function merge_assertions(assertions,ac,done_callback) {
     report_dom('#testspecs').append('<dt></dt>');
     let report_dt = report_dom('#testspecs>dt:last-child');
     report_dt.append('<a href="'+report_base+'#'+a+'">'+a+'</a>:');
-    if ("baseassertion" !== ac) {
+    if ("tabassertion" === ac) {
+       report_dt.append(' <em>(table)</em>');
+    }
+    if ("extraassertion" === ac) {
        report_dt.append(' <em>(extra)</em>');
     }
 
