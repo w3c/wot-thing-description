@@ -461,7 +461,7 @@ function merge_implementations(done_callback) {
       let desc_name = desc_names[desc_id];
       report_dom('ul#systems-toc').append('<li class="tocline"></li>\n');
       let report_li = report_dom('ul#systems-toc>li:last-child');
-      report_li.append('6.'+i+' <a href="'+report_base+'#'+desc_id+'" shape="rect">'+desc_name+'</a>');
+      report_li.append('\n\t6.'+i+' <a href="'+report_base+'#'+desc_id+'" shape="rect">'+desc_name+'</a>');
       i++;
       report_dom('#systems-impl').append(desc);
   }
@@ -483,7 +483,7 @@ function merge_interops(done_callback) {
          impl_org = impl.org;
          impl_name = impl.name;
       }
-      report_tr.append('<th class="rotate" id="'
+      report_tr.append('\n\t<th class="rotate" id="'
                        +consumer
                        +'"><div><span>'
                        +impl_org
@@ -502,25 +502,25 @@ function merge_interops(done_callback) {
          impl_name = impl.name;
       }
       let report_tr = report_dom('table#testinterop>tbody:last-child');
-      report_tr.append('<tr><th id="'
+      report_tr.append('\n<tr><th id="'
                        +producer
                        +'">'
                        + impl_org
                        + '<br/>'
                        + impl_name
-                       +'</th></tr>\n');
+                       +'</th></tr>');
       interop_consumers.forEach(function(consumer) {
           let pair_id = producer+"=>"+consumer;
           let item_status = interop_table.get(pair_id);
           let report_elem = report_dom('table#testinterop>tbody>tr:last-child');
           if (undefined === item_status) {
-              report_elem.append('<td class="notimpl">Not Impl</td>');
+              report_elem.append('\n\t<td class="notimpl">Not Impl</td>');
           } else if ("Secure" === item_status) {
-              report_elem.append('<td class="secure">'+item_status+'</td>');
+              report_elem.append('\n\t<td class="secure">'+item_status+'</td>');
           } else if ("Pass" === item_status) {
-              report_elem.append('<td class="passed">'+item_status+'</td>');
+              report_elem.append('\n\t<td class="passed">'+item_status+'</td>');
           } else {
-              report_elem.append('<td class="failed">'+item_status+'</td>');
+              report_elem.append('\n\t<td class="failed">'+item_status+'</td>');
           }
       });
   });
@@ -541,9 +541,9 @@ function merge_assertions(assertions,ac,done_callback) {
     fs.appendFileSync(results_csvfile, '"'+a+'","null"\n');
 
     // Test Specifications Appendix
-    report_dom('#testspecs').append('<dt></dt>');
+    report_dom('#testspecs').append('\n<dt></dt>');
     let report_dt = report_dom('#testspecs>dt:last-child');
-    report_dt.append('<a href="'+report_base+'#'+a+'">'+a+'</a>:');
+    report_dt.append('\n\t<a href="'+report_base+'#'+a+'">'+a+'</a>:');
     if ("tabassertion" === ac) {
        report_dt.append(' <em>(table)</em>');
     }
@@ -601,27 +601,28 @@ function merge_assertions(assertions,ac,done_callback) {
     // Table
 
     // ID
-    report_dom('#testresults').append('<tr id="'+a+'" class="'+ac+'"></tr>');
+    report_dom('table#testresults>tbody:last-child')
+        .append('\n<tr id="'+a+'" class="'+ac+'"></tr>');
 
     // Assertion
     let report_tr = report_dom('tr#'+a);
-    report_tr.append('<td class="'+ac+'"><a href="'+src_base+'#'+a+'">'+a+'</a></td>');
+    report_tr.append('\n\t<td class="'+ac+'"><a target="spec" href="'+src_base+'#'+a+'">'+a+'</a></td>');
     if (undefined != categories.get(a)) {
-       report_tr.append('<td class="'+ac+'">'+categories.get(a)+'</td>');
+       report_tr.append('\n\t<td class="'+ac+'">'+categories.get(a)+'</td>\n');
     } else {
-       report_tr.append('<td class="'+ac+'"></td>');
+       report_tr.append('\n\t<td class="'+ac+'"></td>');
     }
     if (undefined != risks.get(a)) {
-       report_tr.append('<td class="atrisk">'+a_text+'</td>');
+       report_tr.append('\n\t<td class="atrisk">'+a_text+'</td>');
     } else {
-       report_tr.append('<td class="'+ac+'">'+a_text+'</td>');
+       report_tr.append('\n\t<td class="'+ac+'">'+a_text+'</td>');
     }
 
     // Req
     if (req) {
-        report_tr.append('<td class="'+ac+'">Y</td>');
+        report_tr.append('\n\t<td class="'+ac+'">Y</td>');
     } else {
-        report_tr.append('<td class="'+ac+'">N</td>');
+        report_tr.append('\n\t<td class="'+ac+'">N</td>');
     }
 
     // Parent(s) and Context(s)
@@ -630,24 +631,24 @@ function merge_assertions(assertions,ac,done_callback) {
         let p = d.parents;
         if (undefined != p && "null" !== p) {
             let ps = p.split(' ');
-            let h = '<td class="'+ac+'">';
+            let h = '\n\t<td class="'+ac+'">';
             for (let i=0; i<ps.length; i++) {
-                h = h + '<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a> ';
+                h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a> ';
             }
-            report_tr.append(h+'</td>');
+            report_tr.append(h+'\n\t</td>');
         } else {
-            report_tr.append('<td class="'+ac+'"></td>');
+            report_tr.append('\n\t<td class="'+ac+'"></td>');
         }
         let c = d.contexts;
         if (undefined != c && "null" !== c) {
             let cs = c.split(' ');
-            let h = '<td class="'+ac+'">';
+            let h = '\n\t<td class="'+ac+'">';
             for (let i=0; i<cs.length; i++) {
-                h = h + '<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a> ';
+                h = h + '\n\t\t<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a> ';
             }
-            report_tr.append(h+'</td>');
+            report_tr.append(h+'\n\t</td>');
         } else {
-            report_tr.append('<td class="'+ac+'"></td>');
+            report_tr.append('\n\t<td class="'+ac+'"></td>');
         }
     }
 
@@ -658,65 +659,65 @@ function merge_assertions(assertions,ac,done_callback) {
        let pass = result.pass;
        if (undefined != pass) {
           if (pass >= 2) {
-             report_tr.append('<td class="'+ac+'">'+pass+'</td>');
+             report_tr.append('\n\t<td class="'+ac+'">'+pass+'</td>');
           } else {
-             report_tr.append('<td class="failed">'+pass+'</td>');
+             report_tr.append('\n\t<td class="failed">'+pass+'</td>');
           }
        } else {
-          report_tr.append('<td class="missing"></td>');
+          report_tr.append('\n\t<td class="missing"></td>');
 	  pass = 0;
        }
        // Number of reported fail statuses
        let fail = result.fail;
        if (undefined != fail) {
           if (fail > 0) {
-             report_tr.append('<td class="failed">'+fail+'</td>');
+             report_tr.append('\n\t<td class="failed">'+fail+'</td>');
           } else {
-             report_tr.append('<td class="'+ac+'">'+fail+'</td>');
+             report_tr.append('\n\t<td class="'+ac+'">'+fail+'</td>');
           }
        } else {
-          report_tr.append('<td class="'+ac+'"></td>');
+          report_tr.append('\n\t<td class="'+ac+'"></td>');
 	  fail = 0;
        }
        // Number of reported not implemented statuses
        let notimpl = result.notimpl;
        if (undefined != notimpl) {
-          report_tr.append('<td class="'+ac+'">'+notimpl+'</td>');
+          report_tr.append('\n\t<td class="'+ac+'">'+notimpl+'</td>');
        } else {
-          report_tr.append('<td class="'+ac+'"></td>');
+          report_tr.append('\n\t<td class="'+ac+'"></td>');
 	  notimpl = 0;
        }
        // Total number of reported statuses
        let totals = pass + fail + notimpl;
        if (0 == totals) {
-           report_tr.append('<td class="missing"></td>');
+           report_tr.append('\n\t<td class="missing"></td>');
        } else if (totals < 2) {
-           report_tr.append('<td class="failed">'+totals+'</td>');
+           report_tr.append('\n\t<td class="failed">'+totals+'</td>');
        } else {
-           report_tr.append('<td class="'+ac+'">'+totals+'</td>');
+           report_tr.append('\n\t<td class="'+ac+'">'+totals+'</td>');
        }
     } else {
-       report_tr.append('<td class="missing"></td>');
-       report_tr.append('<td class="missing"></td>');
-       report_tr.append('<td class="missing"></td>');
-       report_tr.append('<td class="missing"></td>');
+       report_tr.append('\n\t<td class="missing"></td>');
+       report_tr.append('\n\t<td class="missing"></td>');
+       report_tr.append('\n\t<td class="missing"></td>');
+       report_tr.append('\n\t<td class="missing"></td>');
     }
 
     // Add to test spec appendix
-    report_dom('#testspecs').append('<dd id="'+a+'" class="'+ac+'"></dd>');
+    report_dom('#testspecs').append('\n<dd id="'+a+'" class="'+ac+'"></dd>');
     let report_dd = report_dom('dd#'+a);
     if (repeat_assertion_in_appendix) {
         report_dd.append(a_text);
-        report_dd.append('<br/>');
+        report_dd.append('\n\t<br/>');
     }
     a_spec = testspec[a];
-    report_dd.append('<span></span>');
+    report_dd.append('\n\t<span></span>');
     let report_li = report_dom('dd#'+a+'>span:last-child');
     if (undefined === a_spec) {
         if (warn_v) console.log("WARNING: no test spec for",a);
-        report_li.append('<p><strong>NO TEST SPECIFICATION</strong></p>');
+        report_li.append('\n\t\t<p><strong>NO TEST SPECIFICATION</strong></p>');
     } else {
-        report_li.append(a_spec);
+        report_li.append('\n\t\t'+a_spec);
     }
   }
   done_callback();
