@@ -46,7 +46,8 @@ const results_csvfile = path.join(results_dir,"template.csv");
 const report_base = "file://"+path.join(report_dir, "report.html");
 
 // Base URL for specification.  Empty since it is set in <base> in
-// the HTML template.
+// the HTML template.   Should be updated to published spec when that 
+// URL is available.
 const src_base = "";
 
 // Whether or not to duplicate category and assertion in test spec appendix.
