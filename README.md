@@ -29,7 +29,7 @@ Requirements: Java 8, Node.js 6, [GraphViz](graphviz.org/).
 The script will first download and install some dependencies (triple store, Node.js dependencies) and then execute the JS script `render.js`.
 The latter should always be execute within `render.sh` since it requires some env variables to be set first.
 
-For Windows users, the script should be run in a [Cygwin shell](http://cygwin.com/). Git package from Cygwin distribution should not be installed. You need to use an alternative Git client distribution such as [Git for Windows](https://gitforwindows.org/).
+For Windows users, the script should be run in a [Cygwin shell](http://cygwin.com/). Git package from Cygwin distribution had better not be used. Alternative Git client distribution such as [Git for Windows](https://gitforwindows.org/) works better when you encounter an issue building the document using Cygwin.
 
 Rendering is primarly based on the content of [`validation/td-validation.ttl`](validation/td-validation.ttl).
 Any customization of the rendering should go there. e.g. by defining `sh:order` or `sh:description` triples for the relevant shapes.
