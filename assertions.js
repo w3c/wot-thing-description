@@ -651,6 +651,9 @@ function merge_assertions(assertions,ac,done_callback) {
         } else {
             report_tr.append('\n\t<td class="'+ac+'"></td>');
         }
+    } else {
+        report_tr.append('\n\t<td class="'+ac+'"></td>');
+        report_tr.append('\n\t<td class="'+ac+'"></td>');
     }
 
     // Test Results
