@@ -4,6 +4,7 @@ const http = require('http');
 const urlm = require('url');
 
 let jsonld = require('./context/json-ld.js');
+//let tidyHTML = require('./tidy.js');
 
 /**
  * params:
@@ -123,6 +124,12 @@ load(updateEndpoint, null)
         return Promise.resolve();
     }).then(() => {
         rendered = rendered.replace('{td.json-schema.validation}', jsonSchemaValidation);
+
+        // beautify html
+        /*var html = rendered.querySelector("body").outerHTML;
+        var result = tidy_html5(html, options);
+        tidyHTML.tidy_html5(html, options);
+        */
         fs.writeFileSync('index.html', rendered, 'UTF-8');
     })
     .catch(e => console.error('HTML rendering error: ' + e.message));
