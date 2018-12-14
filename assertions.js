@@ -209,6 +209,7 @@ function merge_results(done_callback) {
         for (let i=0; i<data.length; i++) {
            let id = data[i]["ID"];
 	   let st = data[i]["Status"];
+	   let cmt = data[i]["Comment"];
            let pass = undefined;
            if ("pass" === st) pass = 1;
            let fail = undefined;
@@ -450,7 +451,7 @@ function get_interops(done_callback) {
 
 // Clear (well, write headers for) results template
 // (Synchronous)
-fs.writeFileSync(results_csvfile,'"ID","Status"\n');
+fs.writeFileSync(results_csvfile,'"ID","Status","Comment"\n');
 
 // Merge implementation descriptions
 // (Asynchronous)
@@ -539,7 +540,7 @@ function merge_assertions(assertions,ac,done_callback) {
     if (chatty_v) console.log("Processing assertion "+a);
 
     // Results template
-    fs.appendFileSync(results_csvfile, '"'+a+'","null"\n');
+    fs.appendFileSync(results_csvfile, '"'+a+'","null",\n');
 
     // Test Specifications Appendix
     report_dom('#testspecs').append('\n<dt></dt>');
