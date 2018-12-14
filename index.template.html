@@ -168,14 +168,7 @@
 </head>
 <body>
 
-  <p class="ednote" title="First draft based on Simplified TD">
-  This is the first draft of the new simplified TD approach based 
-  on JSON-LD 1.1. 
-  Some definitions are not finished yet and are still in progress. 
-  A stable Thing Description deliverable version based on JSON-LD 1.0 
-  can be found 
-  <a href="https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/">here</a>. 
-  </p>
+  
 
   <section id="abstract">
   <p>
@@ -205,18 +198,7 @@
   <a href="https://github.com/w3c/wot-thing-description">repository</a>
   and take part in the discussions.
   </p>
-  <p class="ednote" title="The W3C WoT WG is asking for feedback">
-  Please contribute to this draft using the 
-  <a href="https://github.com/w3c/wot-thing-description/issues">GitHub Issue</a> 
-  feature of the 
-  <a href="https://github.com/w3c/wot-thing-description/">WoT Thing Description</a> 
-  repository.
-  For feedback on security and privacy considerations, 
-  please use the
-  <a href="https://github.com/w3c/wot-security/issues">WoT Security and Privacy</a> 
-  Issues,
-  as security and privacy is cross-cutting over all our documents.
-  </p>
+   
   </section>
 
   <section id="introduction">
@@ -335,7 +317,7 @@
   resource is not <code>readOnly</code> as well as not <code>observable</code>. 
   Specifically, 
   the TD specification defines vocabulary terms 
-  (<code>readOnly</code>, <code>observable</code>, <code>contentType</code>) 
+  (<code>readOnly</code>, <code>writeOnly</code>, <code>observable</code>, <code>contentType</code>) 
   that have default values. 
   If these vocabulary terms are not explicitly used in a Thing Description 
   instance, 
@@ -344,20 +326,18 @@
   </p>
 
   <p>
-  The TD can be also processed as an RDF-based model. 
-  In that case, the Thing Description instance needs to be transformed
-  into valid JSON-LD first.  
-  In terms of JSON-LD 1.1 serialization, 
-  the open-world assumption of RDF semantic processing requires vocabulary terms
-  with default values to be always present explicitly in the instances. 
-  Example 2 shows the same TD in a JSON-LD 1.1 serializiation representing
-  exactly the same information as in Example 1; however, default values
-  have been filled in.
+        The Thing Description offers the possibility to add context knowledge from different namespaces. This mechanism can be used to add 
+        additional semantics, such as specific domain knowledge, to the content of the Thing Description instance, and to specify some configurations and 
+        behavior of the underlying communication protocols declared in the <code>forms</code> field.  
+        Example 2 extends the TD sample from example 1 and uses the <code>@context</code> known from JSON-LD to introduce the http context. 
+        Specify explicitly the http methods for the property and action. 
   </p>
-<pre id="thing-description-as-json-ld-1-1-serialization" 
-     class="example" title="Thing Description as JSON-LD 1.1 Serializiation">
+
+<pre id="thing-description-full-serialization" 
+     class="example" title="Thing Description with context extension">
 {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": ["http://www.w3.org/ns/td",
+        {"http": "http://www.w3.org/2011/http#"}],
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "securityDefinitions": {
@@ -397,10 +377,12 @@
     }
 }
  </pre>
-  <p>
-  For more examples, including the use of other protocols besides HTTP,
-  see Section <a href="#example-serialization"></a>.
-  </p>
+  
+ <p>
+        The TD can be also processed as an RDF-based model. In that case, the Thing Description instance needs to be transformed
+        into valid JSON-LD first which will be specified in this document.  
+ </p>
+
   </section>
 
   <section id="terminology"> 
@@ -613,17 +595,6 @@
   <section id="sec-td-serialization">
   <h1>Thing Description Serialization</h1>
 
-  <p class="ednote" title="JSON-LD 1.1">
-  This is the first draft that uses JSON-LD 1.1 as a serialization format 
-  of the Thing Description. 
-  As that is work in progress, working assumptions are based on the latest
-  <a href="https://json-ld.org/spec/latest/json-ld/#">Community Draft of JSON-LD 1.1</a>. 
-  A new JSON-LD Working Group has already been
-  <a href="https://www.w3.org/2018/03/jsonld-wg-charter.html">chartered</a>.
-  It is planned that this section will conform to the latest working draft 
-  of their JSON-LD 1.1 deliverable and only use stable elements.
-  </p>
-
   <p>
   Thing Description instances are modeled and structured based on Section
   <a href="#sec-vocabulary-definition"></a>.
@@ -631,15 +602,9 @@
   </p>
 
   <section id="json-serializiation-section">
-  <h1>Representation Format</h1>
+  <h1>Basic Representation Format Assumptions</h1>
 
-  <p>
-  The JSON serialization of TDs follows the syntax of JSON-LD 1.1
-  in order to streamline semantic evaluation.
-  Hence, serializations can be parsed either as raw JSON or with a JSON-LD 1.1
-  processor.
-  </p>
-
+   
   <p>
   In order to enable this convergence,
   all vocabulary terms defined in Section
@@ -650,7 +615,9 @@
   In addition,
   <span class="rfc2119-assertion" id="td-jsonld-keywords">
   Thing Description instances MAY contain JSON-LD keywords such as
-  <code>@context</code> and <code>@type</code>.</span>
+  <code>@context</code> and <code>@type</code>. With these the thing description can be easily extended. 
+  You can find additional details in the Section  <a href="#content-extension-section"></a>.
+ </span>
   </p>
 
   <!--<p>JSON TD MAY contain vocabulary terms that are not in the 
@@ -681,12 +648,18 @@
   </ul>
 
   <p>The vocabulary terms <code>titles</code> and <code>descriptions</code> enables human text description in multi-languages using  
-    the ISO 639-1 [[!ISO639-1]] language codes. </p>
+    the ISO 639-1 [[!ISO639-1]] language codes. 
   <span class="rfc2119-assertion" id="td-multi-languages">
-      The vocabulary terms <code>titles</code> and <code>descriptions</code> MUST be serialized as JSON Object. The member names of the JSON Object MUST be 
-      the language codes as defined in ISO 639-1 (e.g., "en", "de", "jp").
+      Whenever the vocabulary terms <code>titles</code> and <code>descriptions</code> can be used, both MUST be serialized as JSON Object. The member names of the JSON Object MUST be 
+      the language codes as defined in ISO 639-1 (e.g., "en", "de", "jp"). The value of each member MUST be serialized as JSON string.
   </span>
+</p>
+  <p>
 
+<span class="rfc2119-assertion" id="td-@type">
+        The <code>@type</code> MUST be serialized as JSON String or as JSON array of strings when multiple values are assigned to <code>@type</code>.
+</span>
+</p>
   <p>
   All vocabulary terms in Section
   <a href="#sec-vocabulary-definition"></a>
@@ -699,7 +672,7 @@
 
   <p><span class="rfc2119-assertion" id="td-context">
   The root object of a Thing Description instance MAY include the
-  <code>@context</code> name from JSON-LD 1.1 with the value URI of 
+  <code>@context</code> name known from JSON-LD with the value URI of 
   the Thing description context file <code>http://www.w3.org/ns/td</code>.
   </span></p>
 
@@ -716,13 +689,6 @@
   to <code>application/ld+json</code>.
   </p>
 
-  <p><span class="rfc2119-assertion" id="td-context-jsonld">
-  When a Thing Description instance is processed and interpreted by a
-  JSON-LD 1.1 processor the <code>@context</code> member
-  MUST be present</span> 
-  (see also Section <a href="#note-jsonld-processing" class="sec-ref">JSON-LD 1.1 Processing</a>). 
-  </p>
-
   <p><span class="rfc2119-assertion" id="td-additional-contexts">
   When a single Thing Description instance involves several contexts, 
   additional namespaces with prefixes MUST be appended to the 
@@ -733,7 +699,7 @@
 <pre class="example">
 {
     "@context": ["http://www.w3.org/ns/td",
-                {"iot": "http://iotschema.org/"}],
+                {"iot": "http://example.org/iot"}],
     ...
 }
 </pre>
@@ -748,7 +714,7 @@
   <!-- should this be "the type" or "the elements of"? -->
   <p><span class="rfc2119-assertion" id="td-objects">
   The type of the members <code>properties</code>, <code>actions</code>, 
-  <code>events</code>, <code>version</code>, <code>descriptions</code> and <code>securityDefinitions</code> MUST be a JSON object.
+  <code>events</code>, <code>version</code>,   and <code>securityDefinitions</code> MUST be a JSON object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-arrays">
@@ -786,8 +752,7 @@
 </pre>
 
   <p>Alternatively, the same example can be written instead to 
-  explicitly include the (semantic) names used by JSON-LD 1.1 
-  (<code>@context</code> and <code>@type</code>):
+  explicitly include the (semantic) names used by JSON-LD, namely <code>@context</code> and <code>@type</code>:
   </p>
 <pre class="example">
 {
@@ -814,6 +779,11 @@
 }
 </pre>
 
+<p>In that case the content can be directly associated as Thing Description based on the namespace  <code>http://www.w3.org/ns/td</code>  provided 
+    in the <code>@context</code>. The  <code>"@type": "Thing"</code> associates an instantiations of the Thing class as defined in Section <a href="#thing"></a>.
+
+</p>
+
  </section> <!-- end of id="sec-thing-as-a-whole-json"-->
 
  <section id="property-serialization-json">
@@ -835,7 +805,7 @@
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-property-objects">
-  The type of the members <code>properties</code>, <code>titles</code>, and <code>items</code> 
+  The type of the members <code>properties</code>, and <code>items</code> 
   MUST be serialized as a JSON object.
   </span></p>
 
@@ -891,80 +861,7 @@
 }
 </pre>
 
-  <p><span class="rfc2119-assertion" id="td-property-semantic">
-  Similar to the case at the <code>Thing</code> level,
-  properties MAY have additional semantic annotations based on 
-  JSON-LD 1.1 keywords.
-  </span></p>
 
-  <p><span class="rfc2119-assertion" id="td-property-defaults">
-  When a Thing Description instance is processed and interpreted by 
-  a JSON-LD 1.1 processor, 
-  each <code>property</code> MUST contain the vocabulary terms 
-  <code>observable</code> and <code>readOnly</code> due to the 
-  <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>
-  of Linked Data.
-  </span>
-  This assumption means that if a Linked Data model of a Thing Description
-  instance were to omit these vocabulary terms,
-  then the interpreter would not be able to make any assumptions
-  about their actual value. 
-  </p>
-
-  <p>
-  A snippet of a JSON-LD 1.1 processable TD serialization including
-  semantic annotations and the
-  default values of <code>observable</code> and <code>readOnly</code> 
-  based on the class <a href="#property" class="sec-ref"><code>Property</code></a>
-  is given as follows:
-  </p>
-<pre class="example">
-    ...
-    "properties": {
-        "on": {
-            "@type": "iot:SwitchToggle",
-            "titles": {
-                "en": "On/Off",
-                "de": "An/Aus",
-                "jp": "オンオフ"},
-            "readOnly": true,
-            "observable": false,
-            "type": "boolean",
-            "forms": [...]
-        },
-        "status": {
-            "titles": {
-                "en": "Status",
-                "de": "Zustand",
-                "jp": "状態"},
-            "readOnly": true,
-            "observable": false,
-            "type": "object",
-            "properties": {
-                "brightness": {
-                    "@type": "iot:CurrentLevel",
-                    "type": "number",
-                    "minimum": 0.0,
-                    "maximum": 100.0
-                },
-                "rgb": {
-                    "@type": "iot:rgbData",
-                    "type": "array",
-                    "items" : {
-                        "type" : "number",
-                        "minimum": 0,
-                        "maximum": 255
-                    },
-                    "minItems": 3,
-                    "maxItems": 3
-                }
-            },
-            "required": ["brightness","rgb"],
-            "forms": [...]
-        }
-    }
-    ...
-</pre>
 
   </section> <!-- end of id="property-serialization-json"-->
 
@@ -990,7 +887,7 @@
   MUST be serialized as a JSON object.
   </span></p>
 
-  <p>The names of <code>input</code> and <code>output</code>
+  <p>The names  <code>input</code> and <code>output</code>
   rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>.
   </p>
 
@@ -1035,10 +932,7 @@
     ...
 </pre>
 
-  <p><span class="rfc2119-assertion" id="td-action-semantic">
-  Definitions within the <code>actions</code> member
-  MAY have additional semantic annotations based on JSON-LD 1.1 keywords.
-  </span></p>
+ 
 
   </section> <!-- end of id="action-serialization-json"-->
 
@@ -1065,7 +959,7 @@
     MUST be serialized as a JSON object.
     </span></p>
   
-    <p>The names of <code>subscription</code>, <code>data</code>, and <code>cancellation</code>
+    <p>The JSON names of <code>subscription</code>, <code>data</code>, and <code>cancellation</code>
     rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>.
     </p>
 
@@ -1093,10 +987,7 @@
     ...
 </pre>
 
-  <p><span class="rfc2119-assertion" id="td-event-semantic">
-  Definitions within the <code>events</code> member
-  MAY have additional semantic anotations based on JSON-LD 1.1 keywords.
-  </span></p>
+ 
 
   </section> <!-- end of id="event-serialization-json"-->
 
@@ -1141,6 +1032,8 @@
   <p>A TD snippet based on the defined members is given below:</p>
 <pre class="example">
 {
+  "@context": ["http://www.w3.org/ns/td",
+    {"http": "http://www.w3.org/2011/http#"}],
   ...
   "securityDefinitions": {
       "basic_sc": {"scheme":"basic", "in":"header"}
@@ -1159,20 +1052,25 @@
 
     <p><code>href</code> may also carry an URI that contains dynamic variables such as p and d in http://192.168.1.25/left?p=2&d=1. It that case the URI can be defined as template as defined in [[!RFC6570]]: http://192.168.1.25/left{?p,d}</p>
 
-    <p><span class="rfc2119-assertion" id="td-events">
+    <p><span class="rfc2119-assertion" id="td-uriVariables">
         In such a case these variables in the URI MUST be collected
         in the JSON-object based <code>uriVariables</code> member
         with the associated (unique) variables names as JSON names.
     </span></p>
 
-    <p>The names of <code>uriVariables</code> 
-        rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>.
-    </p>
+    <p><span class="rfc2119-assertion" id="td-uriVariables">
+            Each defined JSON name of the <code>uriVariables</code> collection MUST
+            rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>.
+    </span></p>
+
+ 
 
 
     <p>A TD snippet using URI template and <code>uriVariables</code> is given below:</p>
 
     <pre class="example">
+        "@context": ["http://www.w3.org/ns/td",
+            {"http": "http://www.w3.org/2011/http#"}],
         ...
         "actions": {
             "LeftDown": {
@@ -1206,13 +1104,15 @@ The <code>output</code> of this action is the photo taken, which is available in
 </p>
 
 <p><span class="rfc2119-assertion" id="td-forms-response">
-  If the <code>response</code> member is used in <code>forms</code> it MUST contain the <code>contentType</code> as 
+  If the <code>response</code> member is used in <code>forms</code> MUST contain the <code>contentType</code> as 
   defined in class <a href="#response" class="sec-ref"><code>Response</code></a>.
 </span></p>
 
 <p>A <code>form</code> snippet with the <code>response</code> member is listed below based on the use case of the action 'takePhoto' described above:</p>
 
 <pre class="example">
+    "@context": ["http://www.w3.org/ns/td",
+        {"http": "http://www.w3.org/2011/http#"}],
     ...
     "forms": [
         {
@@ -1549,28 +1449,43 @@ The <code>output</code> of this action is the photo taken, which is available in
 
     <p>A TD snippet based on such additional version metadata from a xyz context is given below:</p>
     <pre class="example">
+        "@context": ["http://www.w3.org/ns/td",
+                    {"v": "http://www.example.org/versioningTerms#"}],
         ...
-        "version": {"instance":"1.2.1", "xyz:firmware": "0.9.1", "xyz:hardware": "1.0"}
+        "version": {"instance":"1.2.1", "v:firmware": "0.9.1", "v:hardware": "1.0"}
         ...
     </pre>
 
     </section> <!-- end of id="version-json"-->
 
+    <section id="version-serialization-json">
+            <h2>Data Schema</h2>
+<p>tbd</p>
+
+    </section>
   </section> <!-- end of id="serialization-json"-->
 
   <section id="content-extension-section">
         <h1>Context Extension</h1>
- <p>In addition to the standard vocabulary definitions as defined in section <a href="#sec-vocabulary-definition"></a>, the Thing Description offers the possibility to add
-    context knowledge from different namespaces. This mechanism can be used to enrich the content of the Thing Description instances with additional (e.g., domain specific) semantics as well as 
-    to specify some configurations and  behaviors of the underlying communication protocols that is announced within the <code>forms</code> field.</p>
-
+ <p>In addition to the standard vocabulary definitions as defined in Section <a href="#sec-vocabulary-definition"></a>, the Thing Description offers the possibility to add
+    context knowledge from different namespaces. This mechanism can be used to enrich the content of the Thing Description instances with additional 
+    (e.g., domain specific) semantics. In addition, it can also be used to specify some configurations and behaviors of the underlying communication 
+    protocols announced in the <code>forms</code> field.
  <p>
-    For this extension the Thing Description uses the <code>@context</code> mechanism known from JSON-LD.
+    For this extension the Thing Description uses the <code>@context</code> mechanism known from JSON-LD. The usage and serializiation of the <code>@context</code> 
+    within the Thing Description is specified in Section <a href="#sec-thing-as-a-whole-json"></a>.
  </p>
 
- <p><span class="rfc2119-assertion" id="td-@context">
-     ...
-    </span></p>
+ <p>
+When adding additional vocabulary to a Thing Description instance, it is recommended that these vocabulary be linked to a namespace context that is within 
+the JSON name <code>@context</code> container is specified.
+</p>
+
+<p>
+If included namespaces are based on class definitions such as those provided by the RDF Schema or OWL, the Things Description also allows the use of 
+ <code>@type</code> known from JSON-LD to perform semantic instantiations.
+</p>
+
 
  </section>
 
@@ -1637,7 +1552,18 @@ The <code>output</code> of this action is the photo taken, which is available in
 
   </section>
 
-  <section id="note-jsonld-processing">
+
+  <section id="note-jsonld10-processing">
+        <h2>JSON-LD 1.0 Processing</h2>
+
+        <p>To interpret the semantic meaning of a Thing Description
+                in terms of RDF triples, a Thing Description instance can be simple transformed into a RDF-based serializiation format by JSON-LD 1.0. 
+ 
+        </p>
+
+    </section>
+
+  <section id="note-jsonld11-processing">
   <h2>JSON-LD 1.1 Processing</h2>
 
   <p>To interpret the semantic meaning of a Thing Description
