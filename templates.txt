@@ -26,6 +26,7 @@ template :classes(?ns) {
 prefix st: <http://ns.inria.fr/sparql-template/>
 prefix sh: <http://www.w3.org/ns/shacl#>
 prefix jsonld: <http://www.w3.org/ns/json-ld#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :fields(?class) {
     "<table class=\"def\">"
@@ -38,7 +39,20 @@ template :fields(?class) {
                 "<th>Type</th>"
             "</tr>"
         "</thead>"
-        format { "<tbody>%s</tbody>" st:call-template(:field, ?class) }
+        format {
+            "<tbody>%s%s</tbody>"
+            # custom property for Thing (id = @id = IRI)
+            if(?class = <http://www.w3.org/ns/td#Thing>,
+                concat("<tr>",
+                       "<td><code>id</code></td>",
+                       "<td>unique identifier of the Thing (URI, e.g. custom URN).</td>",
+                       "<td>yes</td>",
+                       "<td>.</td>",
+                       "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI\"><code>anyURI</code></a></td>",
+                       "</tr>"
+                ), "")
+            st:call-template(:field, ?class)
+        }
     "</table>"
 } where {
     ?shape a sh:NodeShape ;
@@ -85,15 +99,15 @@ template :field(?class) {
     "</tr>"
 } where {
     ?shape a sh:NodeShape ;
-           sh:targetClass ?class ;
-           sh:property ?propShape .
+        sh:targetClass ?class ;
+        sh:property ?propShape .
     ?propShape sh:path ?prop .
     optional { ?propShape sh:datatype|sh:class ?type }
     optional { ?propShape sh:minCount ?count }
     optional {
         ?m a jsonld:Mapping ;
-           jsonld:iri ?prop ;
-           jsonld:container jsonld:set
+        jsonld:iri ?prop ;
+        jsonld:container jsonld:set
     }
     optional {
         ?propShape sh:in ?list
