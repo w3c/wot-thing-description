@@ -171,6 +171,86 @@
 		clear: both;
 	}
 </style>
+
+<!-- BEGIN EXTRA TABS -->
+<script>
+  // Add example button selection logic
+  document.addEventListener("DOMContentLoaded", () => {
+    for (const button of document.querySelectorAll(".ds-selector-tabs .selectors button")) {
+      button.onclick = () => {
+        const ex = button.closest(".ds-selector-tabs");
+        ex.querySelector("button.selected").classList.remove("selected");
+        ex.querySelector(".selected").classList.remove("selected");
+        button.classList.add('selected');
+        ex.querySelector("." + button.dataset.selects).classList.add("selected");
+      }
+    }
+  })
+</script>
+<style>
+  /* example tab selection */
+  .ds-selector-tabs {
+    padding-bottom: 2em;
+  }
+  .ds-selector-tabs .selectors {
+    padding: 0;
+    border-bottom: 1px solid #ccc;
+    height: 28px;
+  }
+  .ds-selector-tabs .selectors button {
+    display: inline-block;
+    min-width: 54px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: bold;
+    height: 27px;
+    padding: 0 8px;
+    line-height: 27px;
+    transition: all,0.218s;
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+    color: #666;
+    border: 1px solid transparent;
+  }
+  .ds-selector-tabs .selectors button:first-child {
+    margin-left: 2px;
+  }
+  .ds-selector-tabs .selectors button.selected {
+    color: #202020 !important;
+    border: 1px solid #ccc;
+    border-bottom: 1px solid #fff !important;
+  }
+  .ds-selector-tabs .selectors button:hover {
+    background-color: transparent;
+    color: #202020;
+    cursor: pointer;
+  }
+  .ds-selector-tabs pre, .ds-selector-tabs table {
+    display: none;
+  }
+  .ds-selector-tabs pre.selected, .ds-selector-tabs table.selected {
+    display: block;
+  }
+  a.playground {
+    display: inline-block;
+    width: 150px;
+    border: 1px solid transparent;
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+    background-color: rgb(192, 192, 192);
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  a[href].playground {
+    padding: 4px 0 3px 8px;
+    border-bottom: none;
+    text-decoration: none;
+    color: #666;
+  }
+</style>
+<!-- END EXTRA TABS -->
+
 </head>
 <body>
 
@@ -240,9 +320,12 @@
   and <code>Events</code> paradigm 
   by describing a lamp Thing with the name <i>MyLampThing</i>.
   </p>
-<pre id="simple-thing-description-sample" 
-     class="example" title="Simple Thing Description Sample with JSON serialization">
-{
+<aside class="example ds-selector-tabs changed" id="simple-thing-description-sample" title="Thing Description Sample with JSON serialization">
+    <div class="selectors">
+      <button class="selected" data-selects="original">Simple</button>
+      <button data-selects="expanded">Full</button>
+    </div>
+    <pre class="original selected">{
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "securityDefinitions": {
@@ -269,8 +352,45 @@
             }]
         }
     }
-}
-</pre>
+}</pre>
+    <pre class="expanded">{
+    "id": "urn:dev:wot:com:example:servient:lamp",
+    "name": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {"scheme": "basic"}
+    },
+    "security": ["basic_sc"],
+    "properties": {
+        "status" : {
+			"readOnly": false,
+			"writeOnly": false,
+            "type": "string",
+            "forms": [{
+				"href": "https://mylamp.example.com/status",
+				"contentType": "application/json"
+			}]
+        }
+    },
+    "actions": {
+        "toggle" : {
+            "forms": [{
+				"href": "https://mylamp.example.com/toggle",
+				"contentType": "application/json"
+			}]
+        }
+    },
+    "events":{
+        "overheating":{
+            "data": {"type": "string"},
+            "forms": [{
+                "href": "https://mylamp.example.com/oh",
+				"contentType": "application/json",
+                "subprotocol": "longpoll"
+            }]
+        }
+    }
+}</pre>
+</aside>
   <p>
   Based on this content, 
   we know there exists one <code>Property</code> interaction resource 
