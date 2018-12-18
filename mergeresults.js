@@ -95,10 +95,10 @@ function merge_results(results,done_callback) {
 
 function get_comment(st,current_st,value_st,cm,current_cm) {
     let comment = "";
-    if (value_st === current_st) {
+    if ((current_cm) && (value_st === current_st)) {
         comment = current_cm;
     }
-    if (value_st === st) {
+    if ((cm) && (value_st === st)) {
         if ((comment) && (comment.indexOf(cm) < 0)) {
             comment = comment + " + " + cm;
         } else {
