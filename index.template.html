@@ -491,7 +491,7 @@
             <li>the core Thing Description vocabulary reflecting WoT's paradigm of 
                     <code>Properties</code>, <code>Actions</code>, and <code>Events</code> (also see [[!WOT-ARCHITECTURE]])</li>
             <li> the data schema vocabulary reflecting a subset of the terms defined in 
-                    JSON Schema [[?JSON-SCHEMA-VALIDATION]] with extended features such as the multi-language and physical unit support,</li>
+                    JSON Schema [[?JSON-SCHEMA-VALIDATION]] with extended features such as the multi-language support and physical unit assignments,</li>
             <li>      and the security vocabulary used to define security mechanism 
                     configuration requirements. </li>                    
         </ul>
@@ -547,11 +547,14 @@
 
       <p>
             <span class="rfc2119-assertion" id="td-vocabulary">
-                    All vocabulary restrictions noted in these tables MUST be followed, 
+                    All vocabulary restrictions noted in tables in Section <a href="#sec-core-vocabulary-definition"></a>, <a href="#sec-data-schema-vocabulary-definition"></a>, and <a href="#sec-security-vocabulary-definition"></a> MUST be followed, 
                     including mandatory items and default values. 
                     </span>
       </p>
 
+      <p>
+            How to serialize these vocabulary terms to a Thing Description instance using a JSON-based representation is explained in section <a href="#sec-td-serialization"></a>. 
+      </p>
       
       </section>
     
@@ -807,22 +810,10 @@
     ...
     "properties": {
         "on": {
-            "titles": {
-                "en": "On/Off",
-                "de": "An/Aus",
-                "jp": "オンオフ",
-                "zh-Hans": "开关",
-                "zh-Hant": "開關" },
             "type": "boolean",
             "forms": [...]
         },
         "status": {
-            "titles": {
-                "en": "Status",
-                "de": "Zustand",
-                "jp": "状態",
-                "zh-Hans": "状态",
-                "zh-Hant": "狀態" },
             "type": "object",
             "properties": {
                 "brightness": {
@@ -1472,8 +1463,80 @@ The <code>output</code> of this action is the photo taken, which is available in
                 </span></p>
 
             <p><span class="rfc2119-assertion" id="td-property-arrays">
-                    The type of the members <code>enum</code>, <code>scopes</code> MUST be serialized as a JSON array.
+                    The type of the member <code>enum</code> MUST be serialized as a JSON array.
                     </span></p>
+
+
+                    <p>
+                            A TD snippet based on the defined members is given below:
+                            </p>
+        <pre class="example">
+        ...
+        "type": "object",
+        "properties": {
+            "status": {
+                "title": "Status",
+                "type": "string",
+                "enum": ["On", "Off", "Error"]
+            },
+            "brightness": {
+                "title": "Brightness value",
+                "type": "number",
+                "minimum": 0.0,
+                "maximum": 100.0
+            },
+            "rgb": {
+                "title": "RGB color value",
+                "type": "array",
+                "items" : {
+                    "type" : "number",
+                    "minimum": 0,
+                    "maximum": 255
+                },
+                "minItems": 3,
+                "maxItems": 3
+            }
+        },
+        ...
+        </pre>
+
+        <p>The terms <code>readOnly</code> and <code>writeOnly</code> MAY be used to signalize which data members are 
+            exchanged for a read request (e.g., read an interaction property) and which one for a write process 
+            (e.g. write an interaction property).     
+        </p>
+
+        <p>
+          An TD snippet with the usage of <code>readOnly</code> and <code>writeOnly</code> is given below:
+        </p>
+<pre class="example">
+    ...
+        properties": {
+            "status": {
+              "description": "Read or write On/Off status.",
+              "type": "object",
+              "properties": {
+                "latestStatus": {
+                  "type": "string",
+                  ""enum": ["On", "Off"],
+                  "readOnly": true
+                },
+                "newStatusValue": {
+                  "type": "string",
+                  "enum": ["On", "Off"],
+                  "writeOnly": true
+                }
+              },
+              forms:[...]
+            }
+          }
+    ...
+</pre>
+<p>If the interaction property <code>status</code> is read, the status data is returned using <code>latestStatus</code> in the payload.
+    To manipulate the status of the interaction property, the new value must be provided by assigning <code>newStatusValue</code> in 
+    the payload. 
+</p>
+
+
     </section> <!-- end of id="data-schema-serialization-json"-->
 
 
