@@ -463,51 +463,102 @@
         This context is used to specify explicitly the http methods for the property and action within the <code>forms</code>. 
   </p>
 
-<pre id="thing-description-full-serialization" 
-     class="example" title="Thing Description with context extension">
-{
-    "@context": ["http://www.w3.org/ns/td",
-        {"http": "http://www.w3.org/2011/http#"}],
-    "id": "urn:dev:wot:com:example:servient:lamp",
-    "name": "MyLampThing",
-    "securityDefinitions": {
-        "basic_sc": {"scheme": "basic", "in": "header"}
-    },
-    "security": ["basic_sc"],
-    "properties": {
-        "status": {
-            "readOnly": false,
-            "observable": false,
-            "type": "string",
-            "forms": [{
-                "href": "https://mylamp.example.com/status",
-                "http:methodName": "GET",
-                "contentType": "application/json"
-            }]
+ <aside class="example ds-selector-tabs changed" id="thing-description-full-serialization" title="Thing Description with context extension">
+        <div class="selectors">
+                <button class="selected" data-selects="original">Simple</button>
+                <button data-selects="expanded">Full</button>
+              </div>
+              <pre class="original selected">
+    {
+        "@context": [
+            "http://www.w3.org/ns/td",
+            {"http": "http://www.w3.org/2011/http#"}
+        ],
+        "id": "urn:dev:wot:com:example:servient:lamp",
+        "name": "MyLampThing",
+        "securityDefinitions": {"basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }},
+        "security": ["basic_sc"],
+        "properties": {
+            "status": {
+                "type": "string",
+                "forms": [{
+                    "href": "https://mylamp.example.com/status",
+                    "http:methodName": "GET"
+                }]
+            }
+        },
+        "actions": {
+            "toggle": {
+                "forms": [{
+                    "href": "https://mylamp.example.com/toggle",
+                    "http:methodName": "POST"
+                }]
+            }
+        },
+        "events": {
+            "overheating": {
+                "data": {"type": "string"},
+                "forms": [{
+                    "href": "https://mylamp.example.com/oh",
+                    "subprotocol": "longpoll"
+                }]
+            }
         }
-    },
-    "actions": {
-        "toggle": {
-            "forms": [{
-                "href": "https://mylamp.example.com/toggle",
-                "http:methodName": "POST",
-                "contentType": "application/json"
-            }]
+    }</pre>
+              <pre class="expanded">
+    {
+        "@context": [
+            "http://www.w3.org/ns/td",
+            {"http": "http://www.w3.org/2011/http#"}
+        ],
+        "id": "urn:dev:wot:com:example:servient:lamp",
+        "name": "MyLampThing",
+        "securityDefinitions": {"basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }},
+        "security": ["basic_sc"],
+        "properties": {
+            "status": {
+                "readOnly": false,
+                "writeOnly": false,
+                "observable": false,
+                "type": "string",
+                "forms": [{
+                    "href": "https://mylamp.example.com/status",
+                    "http:methodName": "GET",
+                    "contentType": "application/json"
+                }]
+            }
+        },
+        "actions": {
+            "toggle": {
+                "idempotent": false,
+                "safe": false,
+                "forms": [{
+                    "href": "https://mylamp.example.com/toggle",
+                    "http:methodName": "POST",
+                    "contentType": "application/json"
+                }]
+            }
+        },
+        "events": {
+            "overheating": {
+                "data": {"type": "string"},
+                "forms": [{
+                    "href": "https://mylamp.example.com/oh",
+                    "subprotocol": "longpoll",
+                    "contentType": "application/json"
+                }]
+            }
         }
-    },
-    "events": {
-        "overheating": {
-            "data": {"type": "string"},
-            "forms": [{
-                "href": "https://mylamp.example.com/oh",
-                "subprotocol": "longpoll",
-                "contentType": "application/json"
-            }]
-        }
-    }
-}
- </pre>
-  
+    }</pre>
+          </aside>
+
+
  <p>
         The TD can be also processed as an RDF-based model. In that case, the Thing Description instance needs to be transformed
         into valid JSON-LD first which will be specified in this document.  
@@ -529,33 +580,13 @@
   <section>
   <h1>Namespaces</h1>
   <p>
-  The namespace for the W3C TD vocabulary as defined in 
+  The namespace for the W3C Thing Description vocabulary as defined in 
   this document is <a href="http://www.w3.org/ns/td">http://www.w3.org/ns/td</a>. 
   </p> 
   <p>
-  Using content negotiation,  this namespace serves either the TD ontology file (Turtle) 
-  or the TD context file (JSON-LD).
+  Using content negotiation,  this namespace serves either the TD ontology file (Turtle) or the TD context file (JSON-LD).
   </p>
-  <p>
-    The suggested prefix for the TD namespace is <code>td</code>.      
-  </p>
-  <p>
-  The security ontology that can be used with the TD 
-  is available at 
-  <a href="https://www.w3.org/ns/wot-security">https://www.w3.org/ns/wot-security</a>. 
-  </p>
-  <p>
-  The data schema ontology that can be used with the TD is 
-  available at 
-  <a href="https://www.w3.org/ns/json-schema">https://www.w3.org/ns/json-schema</a>. 
-  </p>
-
-  <p class="ednote" title="Binding Vocabulary and Prefixes">
-   The TD will reuse existing vocabulary definitions such as for http from the 
-   <a href="http://www.w3.org/2011/http#">http://www.w3.org/2011/http#</a> namespace. In that case the prefix <code>http</code> is used. However, there are prefixes such as
-   <code>coap</code> and <code>mqtt</code> which have no namespace yet. Currently there are efforts to have such namespace representations which will be referenced in the 
-   TD specification in the future. In the meantime,  the [[!WOT-PROTOCOL-BINDING]] provides the list of terms that can be used to specify the protocol metadata in the Thing Description.
-  </p>
+  
 
   </section>
 
@@ -615,7 +646,7 @@
             <li>the core Thing Description vocabulary reflecting WoT's paradigm of 
                     <code>Properties</code>, <code>Actions</code>, and <code>Events</code> (also see [[!WOT-ARCHITECTURE]])</li>
             <li> the data schema vocabulary reflecting a subset of the terms defined in 
-                    JSON Schema [[?JSON-SCHEMA-VALIDATION]] with extended features such as the multi-language support and physical unit assignments,</li>
+                    JSON Schema [[?JSON-SCHEMA-VALIDATION]],</li>
             <li>      and the security vocabulary used to define security mechanism 
                     configuration requirements. </li>                    
         </ul>
@@ -629,9 +660,7 @@
       is given by the following three figures. 
       Please note that the figures reflect the vocabulary terms and structure 
       as they would be used in a Thing Description 
-      instance (see Section <a href="#sec-td-serialization"></a>). For modeling the different modules with their vocabulary terms, classes and relationships, 
-      the W3C Web Ontology Language (OWL) was used. Their full definitions can be viewed by following the namespaces as provided in Section 
-      <a href="#namespaces"></a>. 
+      instance (see Section <a href="#sec-td-serialization"></a>).
        
       </p>
       <!--<p><a href="http://visualdataweb.de/webvowl/#iri=https://rawgit.com/w3c/wot-thing-description/TD-JSON-LD-1.1/ontology/td.ttl">Click here for the visualization</a></p>-->
@@ -919,7 +948,9 @@
   as well as its two superclasses
   <a href="#interactionpattern" class="sec-ref"><code>InteractionPattern</code></a>
   and <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>,
-  MUST be serialized as a JSON name within a Property object.
+  MUST be serialized as a JSON name within a Property object. This means that at the level of an interaction property instance, the vocabulary terms
+   of  <a href="#interactionpattern" class="sec-ref"><code>InteractionPattern</code></a>
+  and <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a> can be presented at the same time.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-property-arrays">
@@ -930,28 +961,78 @@
   <p>
   A TD snippet based on the defined members is given below:
   </p>
-<pre class="example">
-{
+
+
+
+<aside class="example ds-selector-tabs changed" id="property-serialization-sample" title="Sample of a property interaction serialization">
+        <div class="selectors">
+          <button class="selected" data-selects="original">Simple</button>
+          <button data-selects="expanded">Full</button>
+        </div>
+        <pre class="original selected">{
+        ...
+        "properties": {
+            "on": {
+                "type": "boolean",
+                "forms": [...]
+            },
+            "status": {
+                "type": "object",
+                "properties": {
+                    "brightness": {
+                        "type": "number",
+                        "minimum": 0.0,
+                        "maximum": 100.0
+                        },
+                        "rgb": {
+                        "type": "array",
+                        "items" : {
+                            "type" : "number",
+                            "minimum": 0,
+                            "maximum": 255
+                        },
+                        "minItems": 3,
+                        "maxItems": 3
+                    }
+                },
+                "required": ["brightness", "rgb"],
+                "forms": [...]
+            }
+        }
+        ...
+    }</pre>
+        <pre class="expanded">{
     ...
     "properties": {
         "on": {
             "type": "boolean",
+            "readOnly" : false,
+            "writeOnly" : false,
+            "observable" : false,
             "forms": [...]
         },
         "status": {
             "type": "object",
+            "readOnly" : false,
+            "writeOnly" : false,
             "properties": {
                 "brightness": {
                     "type": "number",
                     "minimum": 0.0,
-                    "maximum": 100.0
-                 },
-                 "rgb": {
+                    "maximum": 100.0,
+                    "readOnly" : false,
+                    "writeOnly" : false
+                    },
+                    "rgb": {
                     "type": "array",
+                    "readOnly" : false,
+                    "writeOnly" : false
                     "items" : {
                         "type" : "number",
                         "minimum": 0,
-                        "maximum": 255
+                        "maximum": 255,
+                        "readOnly" : false,
+                        "writeOnly" : false
                     },
                     "minItems": 3,
                     "maxItems": 3
@@ -962,8 +1043,14 @@
         }
     }
     ...
-}
-</pre>
+}</pre>
+    </aside>
+
+
+
+
+
+
 
 
 
@@ -1566,8 +1653,7 @@ The <code>output</code> of this action is the photo taken, which is available in
 
     <section id="data-schema-serialization-json">
             <h2>Data Schema Representation</h2>
-            <p>The data schema concept within the Thing Description is based on a subset of JSON schema terms and has been extended by some special features, 
-                such as the multi-language support of <code>titles</code> and <code>descriptions</code> and the assignment of <code>unit</code> information.  The data schema concept is applied 
+            <p>The data schema concept within the Thing Description is based on a subset of JSON schema terms.  The data schema concept is applied 
                 to the <a href="#event-serialization-json">properties</a> interaction declaration, <code>input</code> and <code>output</code> within <a href="#form-serialization-json">actions</a> 
                 interaction declaration,  <code>subscription</code>, <code>data</code> and <code>cancellation</code> within <a href="#event-serialization-json">events</a> interaction declaration, 
                 and <code>uriVariables</code> that can be used within the <a href="#form-serialization-json">forms</a> container. 
@@ -1662,7 +1748,9 @@ The <code>output</code> of this action is the photo taken, which is available in
     the payload. 
 </p>
 
-<p>The term <code>unit</code> in data schema definitions can be used to associates some units to some data members. The unit values can be
+<p>As an additional feature, a Thing Description instance allows the usage of the term <code>unit</code> within data schema definitions.
+    This can be used to associates some 
+    unit information to some data members. The unit values can be
     free selected, however, it is recommended to select units based on existing definitions by integrating 
     the corresponding namespace context (e.g., from Smart Appliances REFerence (SAREF) ontology or Ontology of units of Measure (OM)).
 </p>
