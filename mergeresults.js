@@ -24,6 +24,7 @@
  * multiple internal tests should be combined into a single
  * file before generating the implementation report.
  * 
+ * Comments in the input will be concatenated in the output.
  */
 
 // Dependencies
@@ -84,8 +85,8 @@ function merge_results(results,done_callback) {
                    // pass dominates not-impl
                    merged_results.set(id,["pass", get_comment(st,current_st,"pass",cm,current_cm)]);
                } else {
-                   // No change actually needed, both must be "not-impl". 
-                   // merged_results.set(id,st);
+                   // both must be not-impl, but may need to update comments
+                   merged_results.set(id,["not-impl", get_comment(st,current_st,"not-impl",cm,current_cm)]);
                }
            }
         }
@@ -93,7 +94,13 @@ function merge_results(results,done_callback) {
     done_callback(merged_results);
 }
 
-function get_comment(st,current_st,value_st,cm,current_cm) {
+function get_comment(
+    st,         // status of just read input
+    current_st, // current status
+    value_st,   // new status
+    cm,         // comment of just read input
+    current_cm  // current comment
+) {
     let comment = "";
     if ((current_cm) && (value_st === current_st)) {
         comment = current_cm;
@@ -110,8 +117,12 @@ function get_comment(st,current_st,value_st,cm,current_cm) {
 
 function output_results(merged_results) {
   process.stdout.write('"ID","Status","Comment"\n');
-  merged_results.forEach((st,id) => {
-     process.stdout.write('"'+id+'","'+st[0]+'","'+st[1]+'"\n');
+  merged_results.forEach((data,id) => {
+     if ("" === data[1]) {
+         process.stdout.write('"'+id+'","'+data[0]+'",\n');
+     } else {
+         process.stdout.write('"'+id+'","'+data[0]+'","'+data[1]+'"\n');
+     }
   });
 }
 
