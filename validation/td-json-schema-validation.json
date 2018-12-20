@@ -1,5 +1,5 @@
 {
-    "title": "WoT TD Schema - Nov 2018",
+    "title": "WoT TD Schema - December 2018",
     "description": "JSON Schema representation of the TD serialisation format.",
     "$schema ": "http://json-schema.org/draft-06/schema#",
     "type": "object",
@@ -22,17 +22,23 @@
         "description": {
             "type": "string"
         },
+        "descriptions": {
+            "$ref": "#/definitions/descriptions"
+        },
         "properties": {
+            "type":"object",
             "additionalProperties": {
                 "$ref": "#/definitions/property_element"
             }
         },
         "actions": {
+            "type": "object",
             "additionalProperties": {
                 "$ref": "#/definitions/action_element"
             }
         },
         "events": {
+            "type": "object",
             "additionalProperties": {
                 "$ref": "#/definitions/event_element"
             }
@@ -44,7 +50,13 @@
             }
         },
         "support": {
-            "type": "string"
+            "$ref": "#/definitions/url"
+        },
+        "securityDefinitions": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/securityScheme"
+            }
         },
         "security": {
             "type": "array",
@@ -52,10 +64,11 @@
                 "type": "string"
             }
         },
-        "securityDefinitions": {
-            "additionalProperties": {
-                "$ref": "#/definitions/securityScheme"
-            }
+        "created": {
+            "type": "string"
+        },
+        "lastModified": {
+            "type": "string"
         },
         "version": {
             "type": "object",
@@ -71,17 +84,16 @@
     },
     "required": [
         "name",
-        "id"
+        "id",
+        "security"
     ],
     "additionalProperties": true,
     "definitions": {
         "context": {
-            "oneOf": [
-                {
+            "oneOf": [{
                     "type": "array",
                     "items": {
-                        "anyOf": [
-                            {
+                        "anyOf": [{
                                 "$ref": "#/definitions/url"
                             },
                             {
@@ -105,8 +117,7 @@
             ]
         },
         "type_declaration": {
-            "oneOf": [
-                {
+            "oneOf": [{
                     "type": "string"
                 },
                 {
@@ -124,8 +135,7 @@
                     "$ref": "#/definitions/url"
                 },
                 "op": {
-                    "oneOf": [
-                        {
+                    "oneOf": [{
                             "type": "string",
                             "enum": [
                                 "readproperty",
@@ -152,10 +162,7 @@
                         }
                     ]
                 },
-                "mediaType": {
-                    "type": "string"
-                },
-                "contenttype": {
+                "contentType": {
                     "type": "string"
                 },
                 "security": {
@@ -175,10 +182,19 @@
                     "enum": [
                         "longpoll"
                     ]
+                },
+                "response": {
+                    "type": "object",
+                    "properties": {
+                        "contentType": {
+                            "type": "string"
+                        }
+                    }
                 }
             },
             "required": [
-                "href"
+                "href",
+                "contentType"
             ],
             "additionalProperties": true
         },
@@ -188,17 +204,20 @@
                 "description": {
                     "type": "string"
                 },
+                "descriptions": {
+                    "$ref": "#/definitions/descriptions"
+                },
                 "title": {
                     "type": "string"
+                },
+                "titles": {
+                    "$ref": "#/definitions/titles"
                 },
                 "uriVariables": {
                     "$ref": "#/definitions/dataSchema"
                 },
                 "@type": {
                     "$ref": "#/definitions/type_declaration"
-                },
-                "writable": {
-                    "type": "boolean"
                 },
                 "observable": {
                     "type": "boolean"
@@ -238,6 +257,18 @@
                         "array",
                         "null"
                     ]
+                },
+                "writeOnly": {
+                    "type": "boolean"
+                },
+                "readOnly": {
+                    "type": "boolean"
+                },
+                "oneOf": {
+                    "$ref": "#/definitions/dataSchema"
+                },
+                "unit": {
+                    "$ref": "#/definitions/dataSchema"
                 }
             },
             "required": [
@@ -251,8 +282,14 @@
                 "description": {
                     "type": "string"
                 },
+                "descriptions": {
+                    "$ref": "#/definitions/descriptions"
+                },
                 "title": {
                     "type": "string"
+                },
+                "titles": {
+                    "$ref": "#/definitions/titles"
                 },
                 "uriVariables": {
                     "$ref": "#/definitions/dataSchema"
@@ -271,6 +308,12 @@
                 },
                 "output": {
                     "$ref": "#/definitions/dataSchema"
+                },
+                "safe": {
+                    "type": "boolean"
+                },
+                "idempotent": {
+                    "type": "boolean"
                 },
                 "scopes": {
                     "type": "array",
@@ -295,6 +338,12 @@
             "properties": {
                 "description": {
                     "type": "string"
+                },
+                "descriptions": {
+                    "$ref": "#/definitions/descriptions"
+                },
+                "titles": {
+                    "$ref": "#/definitions/titles"
                 },
                 "uriVariables": {
                     "$ref": "#/definitions/dataSchema"
@@ -373,6 +422,24 @@
                         "array",
                         "null"
                     ]
+                },
+                "descriptions": {
+                    "$ref": "#/definitions/descriptions"
+                },
+                "titles": {
+                    "$ref": "#/definitions/titles"
+                },
+                "writeOnly": {
+                    "type": "boolean"
+                },
+                "readOnly": {
+                    "type": "boolean"
+                },
+                "oneOf": {
+                    "$ref": "#/definitions/dataSchema"
+                },
+                "unit": {
+                    "$ref": "#/definitions/dataSchema"
                 }
             }
         },
@@ -388,9 +455,6 @@
                 "rel": {
                     "type": "string"
                 },
-                "mediatype": {
-                    "type": "string"
-                },
                 "type": {
                     "type": "string"
                 }
@@ -401,8 +465,7 @@
             "additionalProperties": true
         },
         "securityScheme": {
-            "oneOf": [
-                {
+            "oneOf": [{
                     "type": "object",
                     "properties": {
                         "description": {
@@ -686,6 +749,12 @@
             "type": "string",
             "format": "uri",
             "pattern": "(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(([^#]*))?(#(.*))?"
+        },
+        "descriptions": {
+            "type": "object"
+        },
+        "titles": {
+            "type": "object"
         }
     }
 }
