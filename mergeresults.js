@@ -57,6 +57,7 @@ function merge_results(results,done_callback) {
         for (let j=0; j<data.length; j++) {
            let id = data[j]["ID"];
 	   let st = data[j]["Status"];
+           let cm = data[j]["Comment"];
            if (undefined  === id) {
                console.error(new Error("Missing ID CSV header"));
                // Failure
@@ -67,16 +68,21 @@ function merge_results(results,done_callback) {
                // Failure
                process.exit(1);
            }
+           if (undefined  === cm) {
+               cm = "";
+           }
            let current = merged_results.get(id);
            if (undefined === current) {
-               merged_results.set(id,st);
+               merged_results.set(id,[st, cm]);
            } else {
-               if ("fail" === st || "fail" === current) {
+               let current_st = current[0];
+               let current_cm = current[1];
+               if ("fail" === st || "fail" === current_st) {
                    // failure dominates anything else
-                   merged_results.set(id,"fail");
-               } else if ("pass" === st || "pass" === current) {
+                   merged_results.set(id,["fail", get_comment(st,current_st,"fail",cm,current_cm)]);
+               } else if ("pass" === st || "pass" === current_st) {
                    // pass dominates not-impl
-                   merged_results.set(id,"pass");
+                   merged_results.set(id,["pass", get_comment(st,current_st,"pass",cm,current_cm)]);
                } else {
                    // No change actually needed, both must be "not-impl". 
                    // merged_results.set(id,st);
@@ -87,10 +93,25 @@ function merge_results(results,done_callback) {
     done_callback(merged_results);
 }
 
+function get_comment(st,current_st,value_st,cm,current_cm) {
+    let comment = "";
+    if ((current_cm) && (value_st === current_st)) {
+        comment = current_cm;
+    }
+    if ((cm) && (value_st === st)) {
+        if ((comment) && (comment.indexOf(cm) < 0)) {
+            comment = comment + " + " + cm;
+        } else {
+            comment = cm;
+        }
+    }
+    return comment;
+}
+
 function output_results(merged_results) {
-  process.stdout.write('"ID","Status"\n');
+  process.stdout.write('"ID","Status","Comment"\n');
   merged_results.forEach((st,id) => {
-     process.stdout.write('"'+id+'","'+st+'"\n');
+     process.stdout.write('"'+id+'","'+st[0]+'","'+st[1]+'"\n');
   });
 }
 
