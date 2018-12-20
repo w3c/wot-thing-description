@@ -451,8 +451,8 @@
   If these vocabulary terms are not explicitly used in a Thing Description 
   instance,  
   the Thing Description processor follows default assumptions for 
-  interpretation as defined in this specification. The full tab in <a href="#simple-thing-description-sample">Example 1</a> shows the identical information of the 
-  simple form of the Thing Description instance, but presented the implicit standard vocabulary and values mentioned above.
+  interpretation as defined in this specification. The <i>Full</i> tab in <a href="#simple-thing-description-sample">Example 1</a> shows the identical information of the 
+  simple form of the Thing Description instance, but includes these mentioned implicit vocabulary terms with its default values.
   </p>
 
   <p>
@@ -803,12 +803,13 @@
 
   <p>
     <span class="rfc2119-assertion" id="td-simple-form">
-            A Thing Description instance MAY omit vocabulary terms that are mandatory AND have default values based on the definitions under 
-            <a href="#sec-data-schema-vocabulary-definition"></a> (e.g., <code>readOnly</code> and <code>observable</code>). 
+            A Thing Description instance serialization MAY omit one ore more vocabulary terms that are mandatory AND have default values based on the definitions under 
+            <a href="#sec-data-schema-vocabulary-definition"></a> (e.g., <code>readOnly</code> and <code>contentType</code>). 
     </span>
     In this specification, this form is referred to as <i>Simple</i> Thing Description representation. The processing of such 
     <i>Simple</i> Thing Description representation will be explained in <a href="#note-json-processing"></a>. 
     When a Thing Description instance carry all mandatory vocabulary terms we will call this representation as <i>Full</i> Thing Description.
+    
   </p>
 
   <p>
@@ -1037,7 +1038,7 @@
                     "rgb": {
                     "type": "array",
                     "readOnly" : false,
-                    "writeOnly" : false
+                    "writeOnly" : false,
                     "items" : {
                         "type" : "number",
                         "minimum": 0,
@@ -1104,7 +1105,12 @@
   A TD snippet based on the defined members is given below:
   </p>
 
-<pre class="example">
+  <aside class="example ds-selector-tabs changed" id="action-serialization-sample" title="Sample of a property interaction serialization">
+        <div class="selectors">
+          <button class="selected" data-selects="original">Simple</button>
+          <button data-selects="expanded">Full</button>
+        </div>
+        <pre class="original selected">{
     ...
     "actions": {
         "fade" : {
@@ -1134,7 +1140,47 @@
     }
     ...
 </pre>
-
+<pre class="expanded">{
+    ...
+    "actions": {
+        "fade" : {
+            "title": "Fade in/out",
+            "description": "Smooth fade in and out animation.",
+            "idempotent" :  false,
+            "safe" :  false,
+            "input": {
+                "type": "object",
+                "properties": {
+                    "from": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "readOnly" : false,
+                        "writeOnly" : false
+                    },
+                    "to": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "readOnly" : false,
+                        "writeOnly" : false
+                    },
+                    "duration": {"type": "number"}
+                },
+                "required": ["to","duration"],
+            },
+            "output": {
+                "type": "string",
+                "readOnly" : false,
+                "writeOnly" : false
+            },
+            "forms": [...]
+        }
+        ...
+    }
+    ...
+}</pre>
+</aside>
  
 
   </section> <!-- end of id="action-serialization-json"-->
@@ -1175,21 +1221,39 @@
   <p>
   A TD snippet based on the defined members is given below:
   </p>
-<pre class="example">
+
+<aside class="example ds-selector-tabs changed" id="event-serialization-sample" title="Sample of a property interaction serialization">
+        <div class="selectors">
+          <button class="selected" data-selects="original">Simple</button>
+          <button data-selects="expanded">Full</button>
+        </div>
+        <pre class="original selected">{
+        ...
+        "events": {
+            "overheated": {
+                "data" : {"type": "object"},
+                "forms": [...]
+            }
+            ...
+        }
+        ...
+</pre>
+<pre class="expanded">{
     ...
     "events": {
         "overheated": {
-            "data" : {"type": "object"},
-            "properties": {
-                "temperature": { "type": "number" }
+            "data" : {
+                "type": "object",
+                "readOnly" : false,
+                "writeOnly" : false
             },
             "forms": [...]
         }
         ...
     }
     ...
-</pre>
-
+}</pre>
+</aside>
  
 
   </section> <!-- end of id="event-serialization-json"-->
@@ -1925,29 +1989,19 @@ If included namespaces are based on class definitions such as those provided by 
         {
             "@context": [
                 "http://www.w3.org/ns/td",
-                {"om": "http://www.wurvoc.org/vocabularies/om-1.8/"}
+                {"om": "http://www.wurvoc.org/vocabularies/om-1.8/"},
+                {"saref": "https://w3id.org/saref#"}
             ],
+            "@type": "Thing",
             ...
             "properties": {
-                "latestValues": {
-                    "description": "Provides all latest values of the weather station.",
-                    "type": "object",
-                    "properties": {
-                        "temperature": {
-                            "type": "number",
-                            "minimum": -32.5,
-                            "maximum": -55.2,
-                            "unit": "om:degree_Celsius",
-                            "@type": "om:Celsius_temperature"
-                        },
-                        "humidity": {
-                            "type": "number",
-                            "minimum": 0,
-                            "maximum": 100,
-                            "unit": "om:percent",
-                            "@type": "om:Relative_humidity"
-                        }
-                    }
+                "Temperature": {
+                    "@type": "saref:Temperature",
+                    "description": "Temperature value of the weather station",
+                    "om:unit_of_measure": "om:degree_Celsius",
+                    "readOnly": true,
+                    "observable": true,
+                    "type": "string",
                 },
                 ...
             }
