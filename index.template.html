@@ -1278,7 +1278,7 @@
   MAY be supplemented with protocol-specific vocabulary terms 
   identified with a prefix. 
   </span>
-  See also [[!WOT-PROTOCOL-BINDING]].
+  See also <a href="#content-extension-section"></a>.
   </p>
 
 
@@ -1987,13 +1987,120 @@ If included namespaces are based on class definitions such as those provided by 
                     "om:unit_of_measure": "om:degree_Celsius",
                     "readOnly": true,
                     "observable": true,
-                    "type": "number"
+                    "writeOnly": false,
+                    "type": "number",
+                    "forms" : [...]
                 },
                 ...
             }
         }
     </pre>
 
+    <p>
+    With the context extension in the Thing Description, communication metadata can be supplemented or specified in the declarations <code>forms</code>. 
+    This is useful when default assumptions as defined in [[[!WOT-PROTOCOL-BINDING]]] need to be overwritten.</p>
+    
+    <p>The following example shows
+    a property "brightness" that offers a read, write, and observe operation within the <code>forms</code> deceleration. 
+    </p>
+
+    <aside class="example ds-selector-tabs changed" id="context-extension-for-forms" title="Specialization of the form definition by context extension.">
+            <div class="selectors">
+              <button class="selected" data-selects="original">Simple</button>
+              <button data-selects="expanded">Full</button>
+            </div>
+<pre class="original selected">{
+        "@context": [
+            "http://www.w3.org/ns/td",
+            {
+                "iot": "http://www.example.org/iot",
+                "http": "http://www.w3.org/2011/http#"
+            }
+        ],
+        ...
+        "properties": {
+            "brightness": {
+                "description": "The current brightness setting",
+                "@type": [
+                    "iot:CurrentLevel",
+                    "iot:LevelData"
+                ],
+                "type": "integer",
+                "minimum": -64,
+                "maximum": 64,
+                "observable": true,
+                    "forms": [
+                    {
+                        "href": "http://example.org:9191/api/brightness",
+                        "op": ["readproperty"]
+                    },
+                    {
+                        "href": "http://example.org:9191/api/brightness",
+                        "op": ["writeproperty"],
+                        "http:methodName": "POST"
+                    },
+                    {
+                        "href": "http://example.org:9191/api/brightness/observe",
+                        "op": ["observeproperty"],
+                        "http:methodName": "GET",
+                        "subProtocol": "longpoll"
+                    }
+                ]
+            }
+        }
+    }</pre>
+<pre class="expanded">{
+        "@context": [
+            "http://www.w3.org/ns/td",
+            {
+                "iot": "http://www.example.org/iot",
+                "http": "http://www.w3.org/2011/http#"
+            }
+        ],
+        ...
+        "properties": {
+            "brightness": {
+                "description": "The current brightness setting",
+                "@type": [
+                    "iot:CurrentLevel",
+                    "iot:LevelData"
+                ],
+                "type": "integer",
+                "minimum": -64,
+                "maximum": 64,
+                "observable": true,
+                "readOnly" : false,
+                "writeOnly": false,
+                "forms": [
+                    {
+                        "href": "http://example.org:9191/api/brightness",
+                        "contentType": "application/json",
+                        "op": ["readproperty"]
+                    },
+                    {
+                        "href": "http://example.org:9191/api/brightness",
+                        "contentType": "application/json",
+                        "op": ["writeproperty"],
+                        "http:methodName": "POST"
+                    },
+                    {
+                        "href": "http://example.org:9191/api/brightness/observe",
+                        "contentType": "application/json",
+                        "op": ["observeproperty"],
+                        "http:methodName": "GET",
+                        "subProtocol": "longpoll"
+                    }
+                ]
+            }
+        }
+    }</pre>
+        </aside>
+
+        <p>For the read operation, the deceleration follows the default assumption to execute an HTTP GET as defined  
+            in [[[!WOT-PROTOCOL-BINDING]]]. The write operation overwrites the default assumption (= HTTP PUT) and 
+            declares with the context extension the HTTP POST method to be used for this operation. In order to observe this property, the 
+            context extension is used here to announce that an HTTP GET is always running to follow the long poll mechanism.          
+        </p>
 
  </section>
 
