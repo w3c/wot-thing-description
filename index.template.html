@@ -2198,7 +2198,20 @@ If included namespaces are based on class definitions such as those provided by 
   <h2>Example Thing Description Instances</h2>
 
   <section id="myLampThing-example-serialization">
-  <h3>MyLampThing Example</h3>
+  <h3>MyLampThing Example with CoAP Binding</h3>
+
+  <p>Feature list of the Thing:</p>
+
+  <ul>
+      <li>Name: MyLampThing</li>
+      <li>Context extension: none</li>
+      <li>Offered interactions: 1 property, 1 action, 1 event</li>
+      <li>Security: PSKSecurityScheme</li>
+      <li>Protocol binding: CoAP over TLS</li>
+      <li>Serializiation: JSON</li>
+      <li>Comment: none</li>
+
+  </ul>
 
 <pre class="example" title="MyLampThing represented as a compact JSON serialization">
 {
@@ -2235,53 +2248,42 @@ If included namespaces are based on class definitions such as those provided by 
     }
 }
 </pre>
+</section>
 
+  <section id="myLampThing-example-serialization">
+  <h3>MyLightSensor Example with MQTT Binding</h3>
 
-<pre class="example" title="MyLampThing with semantic annotations">
-{
-    "@context": ["http://www.w3.org/ns/td", 
-    		{"iot": "http://iotschema.org/"}],
-    "@type" : "Thing",
-    "id": "urn:dev:wot:com:example:servient:lamp",
-    "name": "MyLampThing",
-    "description" : "MyLampThing with additional semantic annotations",
-    "securityDefinitions": {"psk_sc":{"scheme": "psk"}},
-    "security": ["psk_sc"],
-    "properties": {
-        "status": {
-            "@type" : "iot:SwitchStatus",
-            "description" : "Shows the current status of the lamp",
-            "readOnly": true,
-            "observable": false,
-            "type": "string",
-            "forms": [{
-                "href": "coaps://mylamp.example.com/status",
-                "contentType": "application/json"
-            }]
+  <p>Feature list of the Thing:</p>
+
+  <ul>
+      <li>Name: MyLightSensor</li>
+      <li>Context extension: none</li>
+      <li>Offered interactions: 1 event</li>
+      <li>Security: none</li>
+      <li>Protocol binding: MQTT</li>
+      <li>Serializiation: text </li>
+      <li>Comment: An MQTT client frequently publishes the light sensor data (number is serialized in text format) to 
+          the topic /lightSensor by the MQTT broker running behind the address 192.168.1.187:1883. </li>
+  </ul>
+
+<pre class="example" title="MyLightSensor with MQTT binding">
+        {
+            "name": "MyLightSensor",
+            "id": "urn:dev:wot:com:example:servient:lightsensor",
+            "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+            "security": ["nosec_sc"],
+            "events": {
+                "lightSensor": {
+                "type": "integer",
+                "forms": [
+                    {
+                        "href": "mqtt://192.168.1.187:1883/lightSensor",
+                        "contentType" : "application/text"
+                    }
+                ]
+            }
+        } 
         }
-    },
-    "actions": {
-        "toggle": {
-            "@type" : "iot:SwitchStatus",
-            "description" : "Turn on or off the lamp",
-            "forms": [{
-                "href": "coaps://mylamp.example.com/toggle",
-                "contentType": "application/json"
-            }]
-        }
-    },
-    "events": {
-        "overheating": {
-            "@type" : "iot:TemperatureAlarm",
-            "description" : "Lamp reaches a critical temperature (overheating)",
-            "data": {"type": "string"},
-            "forms": [{
-                "href": "coaps://mylamp.example.com/oh",
-                "contentType": "application/json"
-            }]
-        }
-    }
-}
 </pre>
   </section>
 
