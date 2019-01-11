@@ -882,7 +882,7 @@
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-arrays">
-  The type of the members <code>links</code>,
+  The type of the members <code>forms</code>, <code>links</code>,
   <code>scopes</code>, and <code>security</code>
   MUST be a JSON array.
   </span></p>
@@ -908,7 +908,8 @@
     "properties": {...},
     "actions": {...},
     "events": {...},
-    "links": [...]
+    "links": [...],
+    "forms": [...]
 }
 </pre>
 
@@ -933,7 +934,8 @@
     "properties": {...},
     "actions": {...},
     "events": {...},
-    "links": [...]
+    "links": [...],
+    "forms": [...]
 }
 </pre>
 
@@ -1303,7 +1305,7 @@
 }
 </pre>
 
-    <p><code>href</code> may also carry an URI that contains dynamic variables such as p and d in http://192.168.1.25/left?p=2&amp;d=1. It that case the URI can be defined as template as defined in [[!RFC6570]]: http://192.168.1.25/left{?p,d}</p>
+    <p><code>href</code> may also carry an URI that contains dynamic variables such as p and d in http://192.168.1.25/left?p=2&amp;d=1. In that case the URI can be defined as template as defined in [[!RFC6570]]: http://192.168.1.25/left{?p,d}</p>
 
     <p><span class="rfc2119-assertion" id="td-uriVariables">
         In such a case these variables in the URI MUST be collected
@@ -1358,8 +1360,8 @@ The <code>output</code> of this action is the photo taken, which is available in
 </p>
 
 <p><span class="rfc2119-assertion" id="td-forms-response">
-  If the <code>response</code> member is used in <code>forms</code> MUST contain the <code>contentType</code> as 
-  defined in class <a href="#response" class="sec-ref"><code>Response</code></a>.
+  If the <code>response</code> member is used in <code>forms</code>, it MUST contain the <code>contentType</code> as 
+  defined in class <a href="#expectedresponse" class="sec-ref"><code>ExpectedResponse</code></a>.
 </span></p>
 
 <p>A <code>form</code> snippet with the <code>response</code> member is listed below based on the use case of the action 'takePhoto' described above:</p>
@@ -1380,6 +1382,38 @@ The <code>output</code> of this action is the photo taken, which is available in
         }
       ]
     ...
+</pre>
+
+<p>When <code>forms</code> is present at the top level, it can be used to describe meta interactions supported by a <a href="#thing" class="sec-ref"><code>Thing</code></a> instance. For example, operations "readall" and "writeall" are meta interactions by which clients can read and write all properties of the thing at once. In the example below, <code>forms</code> is used at the top level, and the clients can access end point (i.e. <code>https://mylamp.example.com/allproperties</code>) both to read or write all properties (i.e. <code>"on"</code>, <code>"brightness"</code> and <code>"timer"</code> property) of the thing by a single interaction.</p>
+
+<pre class="example" id="td-forms-readall-example">
+{
+    "id": "urn:dev:wot:com:example:servient:lamp",
+    ...
+    "forms": [
+        {
+          "href": "https://mylamp.example.com/allproperties",
+          "contentType": "application/json",
+          "op": ["readall", "writeall"],
+        }
+    ],
+    ...
+    "properties": {
+        "on": {
+          "type": "boolean",
+          "forms": [...]
+        },
+        "brightness": {
+          "type": "number",
+          "forms": [...]
+        },
+        "timer": {
+          "type": "integer",
+          "forms": [...]
+        }
+    },
+    ...
+}
 </pre>
 
 
@@ -1872,7 +1906,7 @@ The <code>output</code> of this action is the photo taken, which is available in
                             "de": "Menschenlesbare Informationen.",
                             "ja" : "人間が読むことができる情報",
                             "zh-Hans" : "人们可阅读的信息", 
-                            "zh-Hant-TW" : "人們可閱讀的資訊"
+                            "zh-Hant" : "人們可閱讀的資訊"
                         },
                         ...
                         "properties": {
@@ -1915,7 +1949,7 @@ The <code>output</code> of this action is the photo taken, which is available in
                     "de": "Menschenlesbare Informationen.",
                     "ja" : "人間が読むことができる情報",
                     "zh-Hans" : "人们可阅读的信息", 
-                    "zh-Hant-TW" : "人們可閱讀的資訊"
+                    "zh-Hant" : "人們可閱讀的資訊"
                 },
                 ...
                 "properties": {
