@@ -698,14 +698,6 @@
       <figcaption>TD security model (<a href="visualization/wot-security.svg">Click SVG file</a>)</figcaption>
     </figure>
     
-      <p class="ednote" title="Default Values and Mandatory Attributes">
-      In the figures above, and in the tables to follow, 
-      items which have default values are indicated as being optional. 
-      However, technically, 
-      these are optional <em>only in the JSON serialization</em>. 
-      They are actually mandatory parts of the 
-      information model and are also mandatory in the JSON-LD serialization. 
-      </p>
     
       <p>A detailed description of the vocabulary of the TD core model and 
       TD data schema model is given in the next sub-section.</p>
@@ -809,15 +801,12 @@
   </span></li>
   </ul>
 
+
+
   <p>
-    <span class="rfc2119-assertion" id="td-simple-form">
-            A Thing Description instance serialization MAY omit one ore more vocabulary terms that are mandatory AND have default values based on the definitions under 
-            <a href="#sec-data-schema-vocabulary-definition"></a> (e.g., <code>readOnly</code> and <code>contentType</code>). 
-    </span>
-    In this specification, this form is referred to as <i>Simple</i> Thing Description representation. The processing of such 
-    <i>Simple</i> Thing Description representation will be explained in <a href="#note-json-processing"></a>. 
-    When a Thing Description instance carry all mandatory vocabulary terms we will call this representation as <i>Full</i> Thing Description.
-    
+    <span class="rfc2119-assertion" id="td-serializiation-default-values">
+        For the JSON-based Thing Description serialization the following default values has to be assumed: 
+    </span>    
   </p>
 
 <table class="def">
@@ -828,14 +817,56 @@
         </tr>
     </thead>
     <tbody>
-        <tr class="rfc2119-table-assertion" id="td-vocab-instance">
+        <tr>
             <td>
                 <code>readOnly</code>
             </td>
             <td>false</td>
         </tr>
+        <tr>
+            <td>
+                <code>writeOnly</code>
+            </td>
+            <td>false</td>
+        </tr>
+        <tr>
+            <td>
+                <code>observable</code>
+            </td>
+            <td>false</td>
+        </tr>
+        <tr>
+            <td>
+                <code>contentType</code>
+            </td>
+            <td>application/json</td>
+        </tr>
+        <tr>
+            <td>
+                <code>safe</code>
+            </td>
+            <td>false</td>
+        </tr>
+        <tr>
+            <td>
+                <code>idempotent</code>
+            </td>
+            <td>false</td>
+        </tr>
     </tbody>
+
 </table>
+
+  <p>
+    <span class="rfc2119-assertion" id="td-simple-form">
+            A Thing Description instance serialization MAY omit one ore more vocabulary terms that are mandatory (<a href="#sec-core-vocabulary-definition"></a>) AND have default values based on the table above. 
+    </span>
+    In this specification, this form is referred to as <i>Simple</i> Thing Description representation. The processing of such 
+    <i>Simple</i> Thing Description representation will be explained in <a href="#note-json-processing"></a>. 
+    When a Thing Description instance carry all mandatory vocabulary terms we will call this representation as <i>Full</i> Thing Description.
+    
+  </p>
+
 
 
 
@@ -1376,7 +1407,7 @@
 
    <pre class="example">
     ...
-    "contentType" : "application/text; charset=utf-8"
+    "contentType" : "text/plain; charset=utf-8"
     ...
 </pre>
 
@@ -2208,11 +2239,13 @@ If included namespaces are based on class definitions such as those provided by 
   <h2>Implementation Notes</h2>
 
   <section id="note-json-processing">
-  <h2>Thing Description Processing</h2>
+  <h2>Thing Description Processing and Interpretation</h2>
   <p>
   The minimum requirement to read the content of a Thing Description 
   instance is a (simple) JSON parser.
   </p>
+
+ 
 
   <p>
         For reasons of simplification and/or compactness, exchanged Thing Descriptions instances may omit mandatory vocabulary 
@@ -2222,23 +2255,28 @@ If included namespaces are based on class definitions such as those provided by 
  <span class="rfc2119-assertion" id="td-readOnly-observable-writeOnly-default">
   If the name terms <code>readOnly</code>, <code>writeOnly</code>, and/or <code>observable</code> 
   are not present within a <code>properties</code> interaction definition,
-  the default value defined in <a href="#property"></a>
+  the default value defined in <a href="#json-serializiation-section"></a>
   MUST be assumed.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-readOnly-observable-default">
         If the name terms <code>idempotent</code> and/or <code>safe</code> 
         are not present within an <code>actions</code> interaction definition,
-        the default value defined in <a href="#action"></a>
+        the default value defined in <a href="#json-serializiation-section"></a>
         MUST be assumed.
     </span></p>
   
   <p><span class="rfc2119-assertion" id="td-content-type-default">
   If the <code>contentType</code> name term is not present within a 
   <code>forms</code> definition, the default value as defined in
-  <a href="#form"></a>
+  <a href="#json-serializiation-section"></a>
   MUST be assumed.   
   </span></p>
+
+  <p>
+    The accompanying document [[!WOT-PROTOCOL-BINDING]] is recommended for interpreting the protocol-specific information that is typical defined within the <code>forms</code> container. 
+  </p>
+
 
   <p>
   To validate the semantic meaning and follow references to external 
@@ -2348,7 +2386,7 @@ If included namespaces are based on class definitions such as those provided by 
                 "forms": [
                     {
                         "href": "mqtt://192.168.1.187:1883/lightSensor",
-                        "contentType" : "application/text"
+                        "contentType" : "text/plain"
                     }
                 ]
             }
