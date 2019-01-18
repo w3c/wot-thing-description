@@ -33,6 +33,18 @@
                 , company:    "Fujitsu Laboratories of America, Inc."
                 , companyURL: "https://www.fujitsu.com/"
                 }
+                , {
+                  name:       "Michael McCool"
+                , w3cid:      ""
+                , company:    "Intel"
+                , companyURL: "	www.intel.com/"
+                }
+                , {
+                  name:       "Victor Charpenay"
+                , w3cid:      ""
+                , company:    "Siemens AG"
+                , companyURL: "https://www.siemens.com/"
+                }
               ]
             , localBiblio: {
                 "JSON-SCHEMA-VALIDATION": {
@@ -79,10 +91,16 @@
                 , authors:  ["Tom Preston-Werner"]
                 , date: "26 December 2017"
                 }
-              , "ISO639-1": {
-                  title:    "Codes for the representation of names of languages − Part 1"
-                , href:     "https://www.iso.org/standard/22109.html"
-                , date: "2002"
+              , "BCP47": {
+                  title:    "Tags for Identifying Languages"
+                , href:     "https://tools.ietf.org/html/bcp47"
+                , authors:  [
+                    "A. Phillips"
+                  , "M. Davis"
+                  ]
+                , date: "2009"
+                , status:    "Request for Comments"
+                , publisher: "IETF"
                 }
               , "MEDIATYPES": {
                   title:    "Media Types"
@@ -165,17 +183,90 @@
 		clear: both;
 	}
 </style>
+
+<!-- BEGIN EXTRA TABS -->
+<script>
+  // Add example button selection logic
+  document.addEventListener("DOMContentLoaded", () => {
+    for (const button of document.querySelectorAll(".ds-selector-tabs .selectors button")) {
+      button.onclick = () => {
+        const ex = button.closest(".ds-selector-tabs");
+        ex.querySelector("button.selected").classList.remove("selected");
+        ex.querySelector(".selected").classList.remove("selected");
+        button.classList.add('selected');
+        ex.querySelector("." + button.dataset.selects).classList.add("selected");
+      }
+    }
+  })
+</script>
+<style>
+  /* example tab selection */
+  .ds-selector-tabs {
+    padding-bottom: 2em;
+  }
+  .ds-selector-tabs .selectors {
+    padding: 0;
+    border-bottom: 1px solid #ccc;
+    height: 28px;
+  }
+  .ds-selector-tabs .selectors button {
+    display: inline-block;
+    min-width: 54px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: bold;
+    height: 27px;
+    padding: 0 8px;
+    line-height: 27px;
+    transition: all,0.218s;
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+    color: #666;
+    border: 1px solid transparent;
+  }
+  .ds-selector-tabs .selectors button:first-child {
+    margin-left: 2px;
+  }
+  .ds-selector-tabs .selectors button.selected {
+    color: #202020 !important;
+    border: 1px solid #ccc;
+    border-bottom: 1px solid #fff !important;
+  }
+  .ds-selector-tabs .selectors button:hover {
+    background-color: transparent;
+    color: #202020;
+    cursor: pointer;
+  }
+  .ds-selector-tabs pre, .ds-selector-tabs table {
+    display: none;
+  }
+  .ds-selector-tabs pre.selected, .ds-selector-tabs table.selected {
+    display: block;
+  }
+  a.playground {
+    display: inline-block;
+    width: 150px;
+    border: 1px solid transparent;
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+    background-color: rgb(192, 192, 192);
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  a[href].playground {
+    padding: 4px 0 3px 8px;
+    border-bottom: none;
+    text-decoration: none;
+    color: #666;
+  }
+</style>
+<!-- END EXTRA TABS -->
+
 </head>
 <body>
 
-  <p class="ednote" title="First draft based on Simplified TD">
-  This is the first draft of the new simplified TD approach based 
-  on JSON-LD 1.1. 
-  Some definitions are not finished yet and are still in progress. 
-  A stable Thing Description deliverable version based on JSON-LD 1.0 
-  can be found 
-  <a href="https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/">here</a>. 
-  </p>
+  
 
   <section id="abstract">
   <p>
@@ -205,18 +296,7 @@
   <a href="https://github.com/w3c/wot-thing-description">repository</a>
   and take part in the discussions.
   </p>
-  <p class="ednote" title="The W3C WoT WG is asking for feedback">
-  Please contribute to this draft using the 
-  <a href="https://github.com/w3c/wot-thing-description/issues">GitHub Issue</a> 
-  feature of the 
-  <a href="https://github.com/w3c/wot-thing-description/">WoT Thing Description</a> 
-  repository.
-  For feedback on security and privacy considerations, 
-  please use the
-  <a href="https://github.com/w3c/wot-security/issues">WoT Security and Privacy</a> 
-  Issues,
-  as security and privacy is cross-cutting over all our documents.
-  </p>
+   
   </section>
 
   <section id="introduction">
@@ -252,9 +332,12 @@
   and <code>Events</code> paradigm 
   by describing a lamp Thing with the name <i>MyLampThing</i>.
   </p>
-<pre id="simple-thing-description-sample" 
-     class="example" title="Simple Thing Description Sample with JSON serialization">
-{
+<aside class="example ds-selector-tabs changed" id="simple-thing-description-sample" title="Thing Description Sample with JSON serialization">
+    <div class="selectors">
+      <button class="selected" data-selects="original">Simple</button>
+      <button data-selects="expanded">Full</button>
+    </div>
+    <pre class="original selected">{
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "securityDefinitions": {
@@ -281,8 +364,48 @@
             }]
         }
     }
-}
-</pre>
+}</pre>
+    <pre class="expanded">{
+    "id": "urn:dev:wot:com:example:servient:lamp",
+    "name": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {"scheme": "basic"}
+    },
+    "security": ["basic_sc"],
+    "properties": {
+        "status" : {
+			"readOnly": false,
+            "writeOnly": false,
+            "observable": false,
+            "type": "string",
+            "forms": [{
+				"href": "https://mylamp.example.com/status",
+				"contentType": "application/json"
+			}]
+        }
+    },
+    "actions": {
+        "toggle" : {
+            "idempotent" : false,
+            "safe" : false,
+            "forms": [{
+				"href": "https://mylamp.example.com/toggle",
+				"contentType": "application/json"
+			}]
+        }
+    },
+    "events":{
+        "overheating":{
+            "data": {"type": "string"},
+            "forms": [{
+                "href": "https://mylamp.example.com/oh",
+				"contentType": "application/json",
+                "subprotocol": "longpoll"
+            }]
+        }
+    }
+}</pre>
+</aside>
   <p>
   Based on this content, 
   we know there exists one <code>Property</code> interaction resource 
@@ -294,7 +417,7 @@
   (announced within the <code>forms</code> structure by the 
   <code>href</code> name), and will return a string status value.
   The use of the GET method is not stated explicitly, 
-  but is one of the default assumptions defined by this document.
+  but is one of the default assumptions defined by this document and explained in [[!WOT-PROTOCOL-BINDING]].
   </p>
   <p>
   In a similar manner, an <code>Action</code> is specified to toggle the
@@ -327,7 +450,7 @@
   Additional examples will be provided later.
   </p>
   <p>
-  The TD in Example 1 reflects some additional defined default assumptions 
+  The TD in <a href="#simple-thing-description-sample">Example 1</a>  reflects some additional defined default assumptions 
   that are not explicitly described. 
   For example, the content type of the 
   exchange format of the interactions is assumed to be JSON 
@@ -335,72 +458,124 @@
   resource is not <code>readOnly</code> as well as not <code>observable</code>. 
   Specifically, 
   the TD specification defines vocabulary terms 
-  (<code>readOnly</code>, <code>observable</code>, <code>contentType</code>) 
+  (e.g., <code>readOnly</code>, <code>writeOnly</code>, <code>observable</code>, <code>contentType</code>) 
   that have default values. 
   If these vocabulary terms are not explicitly used in a Thing Description 
-  instance, 
+  instance,  
   the Thing Description processor follows default assumptions for 
-  interpretation as defined in this specification.
+  interpretation as defined in this specification. The <i>Full</i> tab in <a href="#simple-thing-description-sample">Example 1</a> shows the identical information of the 
+  simple form of the Thing Description instance, but includes these mentioned implicit vocabulary terms with its default values.
   </p>
 
   <p>
-  The TD can be also processed as an RDF-based model. 
-  In that case, the Thing Description instance needs to be transformed
-  into valid JSON-LD first.  
-  In terms of JSON-LD 1.1 serialization, 
-  the open-world assumption of RDF semantic processing requires vocabulary terms
-  with default values to be always present explicitly in the instances. 
-  Example 2 shows the same TD in a JSON-LD 1.1 serializiation representing
-  exactly the same information as in Example 1; however, default values
-  have been filled in.
+        The Thing Description offers the possibility to add context knowledge from different namespaces. This mechanism can be used to add 
+        additional semantics, such as specific domain knowledge, to the content of the Thing Description instance, and to specify some configurations and 
+        behavior of the underlying communication protocols declared in the <code>forms</code> field.  
+        Example 2 extends the TD sample from Example 1 and uses the <code>@context</code> known from JSON-LD to introduce the http context. 
+        This context is used to specify explicitly the http methods for the property and action within the <code>forms</code>. 
   </p>
-<pre id="thing-description-as-json-ld-1-1-serialization" 
-     class="example" title="Thing Description as JSON-LD 1.1 Serializiation">
-{
-    "@context": "http://www.w3.org/ns/td",
-    "id": "urn:dev:wot:com:example:servient:lamp",
-    "name": "MyLampThing",
-    "securityDefinitions": {
-        "basic_sc": {"scheme": "basic", "in": "header"}
-    },
-    "security": ["basic_sc"],
-    "properties": {
-        "status": {
-            "readOnly": false,
-            "observable": false,
-            "type": "string",
-            "forms": [{
-                "href": "https://mylamp.example.com/status",
-                "http:methodName": "GET",
-                "contentType": "application/json"
-            }]
+
+ <aside class="example ds-selector-tabs changed" id="thing-description-full-serialization" title="Thing Description with context extension">
+        <div class="selectors">
+                <button class="selected" data-selects="original">Simple</button>
+                <button data-selects="expanded">Full</button>
+              </div>
+              <pre class="original selected">
+    {
+        "@context": [
+            "http://www.w3.org/ns/td",
+            {"http": "http://www.w3.org/2011/http#"}
+        ],
+        "id": "urn:dev:wot:com:example:servient:lamp",
+        "name": "MyLampThing",
+        "securityDefinitions": {"basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }},
+        "security": ["basic_sc"],
+        "properties": {
+            "status": {
+                "type": "string",
+                "forms": [{
+                    "href": "https://mylamp.example.com/status",
+                    "http:methodName": "GET"
+                }]
+            }
+        },
+        "actions": {
+            "toggle": {
+                "forms": [{
+                    "href": "https://mylamp.example.com/toggle",
+                    "http:methodName": "POST"
+                }]
+            }
+        },
+        "events": {
+            "overheating": {
+                "data": {"type": "string"},
+                "forms": [{
+                    "href": "https://mylamp.example.com/oh",
+                    "subprotocol": "longpoll"
+                }]
+            }
         }
-    },
-    "actions": {
-        "toggle": {
-            "forms": [{
-                "href": "https://mylamp.example.com/toggle",
-                "http:methodName": "POST",
-                "contentType": "application/json"
-            }]
+    }</pre>
+              <pre class="expanded">
+    {
+        "@context": [
+            "http://www.w3.org/ns/td",
+            {"http": "http://www.w3.org/2011/http#"}
+        ],
+        "id": "urn:dev:wot:com:example:servient:lamp",
+        "name": "MyLampThing",
+        "securityDefinitions": {"basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }},
+        "security": ["basic_sc"],
+        "properties": {
+            "status": {
+                "readOnly": false,
+                "writeOnly": false,
+                "observable": false,
+                "type": "string",
+                "forms": [{
+                    "href": "https://mylamp.example.com/status",
+                    "http:methodName": "GET",
+                    "contentType": "application/json"
+                }]
+            }
+        },
+        "actions": {
+            "toggle": {
+                "idempotent": false,
+                "safe": false,
+                "forms": [{
+                    "href": "https://mylamp.example.com/toggle",
+                    "http:methodName": "POST",
+                    "contentType": "application/json"
+                }]
+            }
+        },
+        "events": {
+            "overheating": {
+                "data": {"type": "string"},
+                "forms": [{
+                    "href": "https://mylamp.example.com/oh",
+                    "subprotocol": "longpoll",
+                    "contentType": "application/json"
+                }]
+            }
         }
-    },
-    "events": {
-        "overheating": {
-            "data": {"type": "string"},
-            "forms": [{
-                "href": "https://mylamp.example.com/oh",
-                "subprotocol": "longpoll",
-                "contentType": "application/json"
-            }]
-        }
-    }
-}
- </pre>
-  <p>
-  For more examples, including the use of other protocols besides HTTP,
-  see Section <a href="#example-serialization"></a>.
-  </p>
+    }</pre>
+          </aside>
+
+
+ <p>
+        The TD can be also processed as an RDF-based model. In that case, the Thing Description instance needs to be transformed
+        into valid JSON-LD first which will be specified in this document.  
+ </p>
+
   </section>
 
   <section id="terminology"> 
@@ -417,33 +592,13 @@
   <section>
   <h1>Namespaces</h1>
   <p>
-  The namespace for the W3C TD vocabulary as defined in 
+  The namespace for the W3C Thing Description vocabulary as defined in 
   this document is <a href="http://www.w3.org/ns/td">http://www.w3.org/ns/td</a>. 
   </p> 
   <p>
-  Using content negotiation,  this namespace serves either the TD ontology file (Turtle) 
-  or the TD context file (JSON-LD).
+  Using content negotiation,  this namespace serves either the TD ontology file (Turtle) or the TD context file (JSON-LD).
   </p>
-  <p>
-    The suggested prefix for the TD namespace is <code>td</code>.      
-  </p>
-  <p>
-  The security ontology that can be used with the TD 
-  is available at 
-  <a href="https://www.w3.org/ns/wot-security">https://www.w3.org/ns/wot-security</a>. 
-  </p>
-  <p>
-  The data schema ontology that can be used with the TD is 
-  available at 
-  <a href="https://www.w3.org/ns/json-schema">https://www.w3.org/ns/json-schema</a>. 
-  </p>
-
-  <p class="ednote" title="Binding Vocabulary and Prefixes">
-   The TD will reuse existing vocabulary definitions such as for http from the 
-   <a href="http://www.w3.org/2011/http#">http://www.w3.org/2011/http#</a> namespace. In that case the prefix <code>http</code> is used. However, there are prefixes such as
-   <code>coap</code> and <code>mqtt</code> which have no namespace yet. Currently there are efforts to have such namespace representations which will be referenced in the 
-   TD specification in the future. In the meantime,  the [[!WOT-PROTOCOL-BINDING]] provides the list of terms that can be used to specify the protocol metadata in the Thing Description.
-  </p>
+  
 
   </section>
 
@@ -478,7 +633,7 @@
   <p>
   A JSON Schema [[?JSON-SCHEMA-VALIDATION]] is provided in Annex 
   <a href="#json-schema-4-validation"></a> 
-  to validate Thing Description instances based on JSON-LD 1.1.
+  to validate Thing Description instances based on JSON serialization.
   </p>
 
   <p class="ednote">
@@ -498,38 +653,27 @@
     
       <p>
       The W3C Thing Description provides a set of vocabulary for describing 
-      physical and virtual Things. 
-      To increase interoperability 
-      the vocabulary terms are defined using the 
-      Resource Description Framework (RDF). 
-      <span class="rfc2119-assertion" id="td-vocabulary">
-      All vocabulary restrictions noted in these tables MUST be followed, 
-      including mandatory items and default values. 
-      </span></p>
-    
-      <p>
-      In general, the Thing Description vocabulary set is grouped in three modules: 
-      the core Thing Description vocabulary reflecting WoT's paradigm of 
-      <code>Properties</code>, <code>Actions</code>, 
-      and <code>Events</code> (also see [[!WOT-ARCHITECTURE]]); 
-      the data schema vocabulary reflecting a subset of the terms defined in 
-      JSON Schema [[?JSON-SCHEMA-VALIDATION]] in a 
-      linked data representation; 
-      and the security vocabulary used to define security mechanism 
-      configuration requirements. 
+      physical and virtual Things. In general, the Thing Description vocabulary set is grouped in three modules: 
+        <ul>
+            <li>the core Thing Description vocabulary reflecting WoT's paradigm of 
+                    <code>Properties</code>, <code>Actions</code>, and <code>Events</code> (also see [[!WOT-ARCHITECTURE]])</li>
+            <li> the data schema vocabulary reflecting a subset of the terms defined in 
+                    JSON Schema [[?JSON-SCHEMA-VALIDATION]],</li>
+            <li>      and the security vocabulary used to define security mechanism 
+                    configuration requirements. </li>                    
+        </ul>
+
       </p>
+
+
      
       <p>
       An overview of this vocabulary with its class context and class relation 
-      is given by the following three figures: the TD core model, 
-      the TD data schema model, and the TD security model. 
+      is given by the following three figures. 
       Please note that the figures reflect the vocabulary terms and structure 
       as they would be used in a Thing Description 
-      instance 
-      (see Section <a href="#sec-td-serialization"></a>). 
-      The full ontology definitions of the different modules 
-      can be viewed by following the namespaces as provided in Section 
-      <a href="#namespaces"></a>. 
+      instance (see Section <a href="#sec-td-serialization"></a>).
+       
       </p>
       <!--<p><a href="http://visualdataweb.de/webvowl/#iri=https://rawgit.com/w3c/wot-thing-description/TD-JSON-LD-1.1/ontology/td.ttl">Click here for the visualization</a></p>-->
      
@@ -554,22 +698,26 @@
       <figcaption>TD security model (<a href="visualization/wot-security.svg">Click SVG file</a>)</figcaption>
     </figure>
     
-      <p class="ednote" title="Default Values and Mandatory Attributes">
-      In the figures above, and in the tables to follow, 
-      items which have default values are indicated as being optional. 
-      However, technically, 
-      these are optional <em>only in the JSON serialization</em>. 
-      They are actually mandatory parts of the 
-      information model and are also mandatory in the JSON-LD serialization. 
-      </p>
     
       <p>A detailed description of the vocabulary of the TD core model and 
       TD data schema model is given in the next sub-section.</p>
-    
+
+      <p>
+            <span class="rfc2119-assertion" id="td-vocabulary">
+                    All vocabulary restrictions noted in tables in Section <a href="#sec-core-vocabulary-definition"></a>, <a href="#sec-data-schema-vocabulary-definition"></a>, and <a href="#sec-security-vocabulary-definition"></a> MUST be followed, 
+                    including mandatory items and default values. 
+                    </span>
+      </p>
+
+      <p>
+            How to serialize these vocabulary terms to a Thing Description instance using a JSON-based representation is explained in section <a href="#sec-td-serialization"></a>. 
+      </p>
+      
       </section>
     
       <section id="sec-core-vocabulary-definition">
       <h2>Core Vocabulary Definition</h2>
+
         {td}
       </section>
     
@@ -613,17 +761,6 @@
   <section id="sec-td-serialization">
   <h1>Thing Description Serialization</h1>
 
-  <p class="ednote" title="JSON-LD 1.1">
-  This is the first draft that uses JSON-LD 1.1 as a serialization format 
-  of the Thing Description. 
-  As that is work in progress, working assumptions are based on the latest
-  <a href="https://json-ld.org/spec/latest/json-ld/#">Community Draft of JSON-LD 1.1</a>. 
-  A new JSON-LD Working Group has already been
-  <a href="https://www.w3.org/2018/03/jsonld-wg-charter.html">chartered</a>.
-  It is planned that this section will conform to the latest working draft 
-  of their JSON-LD 1.1 deliverable and only use stable elements.
-  </p>
-
   <p>
   Thing Description instances are modeled and structured based on Section
   <a href="#sec-vocabulary-definition"></a>.
@@ -631,32 +768,16 @@
   </p>
 
   <section id="json-serializiation-section">
-  <h1>Representation Format</h1>
+  <h1>Basic Representation Format Assumptions</h1>
 
-  <p>
-  The JSON serialization of TDs follows the syntax of JSON-LD 1.1
-  in order to streamline semantic evaluation.
-  Hence, serializations can be parsed either as raw JSON or with a JSON-LD 1.1
-  processor.
-  </p>
-
+   
   <p>
   In order to enable this convergence,
   all vocabulary terms defined in Section
   <a href="#sec-core-vocabulary-definition"></a>
   will have a JSON name representation.
   </p>
-  <p>
-  In addition,
-  <span class="rfc2119-assertion" id="td-jsonld-keywords">
-  Thing Description instances MAY contain JSON-LD keywords such as
-  <code>@context</code> and <code>@type</code>.</span>
-  </p>
 
-  <!--<p>JSON TD MAY contain vocabulary terms that are not in the 
-  Thing Description core model. 
-  These vocabulary terms MUST carry a prefix for identification 
-  within the key name (e.g., "http:header").</p>-->
 
   <p>
   The data types of the vocabulary as defined in Section
@@ -680,13 +801,87 @@
   </span></li>
   </ul>
 
-  <p>The vocabulary terms <code>titles</code> and <code>descriptions</code> enables human text description in multi-languages using  
-    the ISO 639-1 [[!ISO639-1]] language codes. </p>
-  <span class="rfc2119-assertion" id="td-multi-languages">
-      The vocabulary terms <code>titles</code> and <code>descriptions</code> MUST be serialized as JSON Object. The member names of the JSON Object MUST be 
-      the language codes as defined in ISO 639-1 (e.g., "en", "de", "jp" and "zh").
-  </span>
 
+
+  <p>
+    <span class="rfc2119-assertion" id="td-serializiation-default-values">
+        For JSON-based Thing Description serialization, the following default values MUST be assumed:
+    </span>    
+  </p>
+
+<table class="def">
+    <thead>
+        <tr>
+            <th>Vocabulary term</th>
+            <th>Default value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <code>readOnly</code>
+            </td>
+            <td>false</td>
+        </tr>
+        <tr>
+            <td>
+                <code>writeOnly</code>
+            </td>
+            <td>false</td>
+        </tr>
+        <tr>
+            <td>
+                <code>observable</code>
+            </td>
+            <td>false</td>
+        </tr>
+        <tr>
+            <td>
+                <code>contentType</code>
+            </td>
+            <td>application/json</td>
+        </tr>
+        <tr>
+            <td>
+                <code>safe</code>
+            </td>
+            <td>false</td>
+        </tr>
+        <tr>
+            <td>
+                <code>idempotent</code>
+            </td>
+            <td>false</td>
+        </tr>
+    </tbody>
+
+</table>
+
+  <p>
+    <span class="rfc2119-assertion" id="td-simple-form">
+            A Thing Description instance serialization MAY omit one ore more vocabulary terms that are mandatory (<a href="#sec-core-vocabulary-definition"></a>) AND have default values based on the table above. 
+    </span>
+    In this specification, this form is referred to as <i>Simple</i> Thing Description representation. The processing of such 
+    <i>Simple</i> Thing Description representation will be explained in <a href="#note-json-processing"></a>. 
+    When a Thing Description instance carry all mandatory vocabulary terms we will call this representation as <i>Full</i> Thing Description.
+    
+  </p>
+
+
+
+
+  <p>
+        In addition, <span class="rfc2119-assertion" id="td-jsonld-keywords">
+        Thing Description instances MAY contain additional JSON-LD keywords such as
+        <code>@context</code> and <code>@type</code>. With these the Thing Description can be easily extended. 
+        You can find additional details in the Section  <a href="#content-extension-section"></a>.
+       </span>
+
+
+<span class="rfc2119-assertion" id="td-at-type">
+        In the case of <code>@type</code> usage in the Thing Description instance, the <code>@type</code> MUST be serialized as JSON String or as JSON array of strings when multiple values are assigned to <code>@type</code>.
+</span>
+</p>
   <p>
   All vocabulary terms in Section
   <a href="#sec-vocabulary-definition"></a>
@@ -699,7 +894,7 @@
 
   <p><span class="rfc2119-assertion" id="td-context">
   The root object of a Thing Description instance MAY include the
-  <code>@context</code> name from JSON-LD 1.1 with the value URI of 
+  <code>@context</code> name known from JSON-LD with the value URI of 
   the Thing description context file <code>http://www.w3.org/ns/td</code>.
   </span></p>
 
@@ -716,13 +911,6 @@
   to <code>application/ld+json</code>.
   </p>
 
-  <p><span class="rfc2119-assertion" id="td-context-jsonld">
-  When a Thing Description instance is processed and interpreted by a
-  JSON-LD 1.1 processor the <code>@context</code> member
-  MUST be present</span> 
-  (see also Section <a href="#note-jsonld-processing" class="sec-ref">JSON-LD 1.1 Processing</a>). 
-  </p>
-
   <p><span class="rfc2119-assertion" id="td-additional-contexts">
   When a single Thing Description instance involves several contexts, 
   additional namespaces with prefixes MUST be appended to the 
@@ -733,7 +921,7 @@
 <pre class="example">
 {
     "@context": ["http://www.w3.org/ns/td",
-                {"iot": "http://iotschema.org/"}],
+                {"iot": "http://example.org/iot"}],
     ...
 }
 </pre>
@@ -748,11 +936,11 @@
   <!-- should this be "the type" or "the elements of"? -->
   <p><span class="rfc2119-assertion" id="td-objects">
   The type of the members <code>properties</code>, <code>actions</code>, 
-  <code>events</code>, <code>version</code>, <code>descriptions</code> and <code>securityDefinitions</code> MUST be a JSON object.
+  <code>events</code>, <code>version</code>,   and <code>securityDefinitions</code> MUST be a JSON object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-arrays">
-  The type of the members <code>links</code>,
+  The type of the members <code>forms</code>, <code>links</code>,
   <code>scopes</code>, and <code>security</code>
   MUST be a JSON array.
   </span></p>
@@ -767,11 +955,7 @@
     "id": "urn:dev:wot:com:example:servient:myThing",
     "name": "MyThing",
     "description": "Human readable information.",
-    "descriptions": {
-        "en":"Human readable information.",
-        "de": "Menschenlesbare Informationen.",
-        "jp" : "人間が読むことができる情報",
-        "zh" : "人们可阅读的信息" },
+    "descriptions": {...},
     "support": "mailto:support@example.com",
     "securityDefinitions": {...},
     "security": [...],
@@ -782,13 +966,13 @@
     "properties": {...},
     "actions": {...},
     "events": {...},
-    "links": [...]
+    "links": [...],
+    "forms": [...]
 }
 </pre>
 
   <p>Alternatively, the same example can be written instead to 
-  explicitly include the (semantic) names used by JSON-LD 1.1 
-  (<code>@context</code> and <code>@type</code>):
+  explicitly include the (semantic) names used by JSON-LD, namely <code>@context</code> and <code>@type</code>:
   </p>
 <pre class="example">
 {
@@ -797,11 +981,7 @@
     "id": "urn:dev:wot:com:example:servient:myThing",
     "name": "MyThing",
     "description": "Human readable information.",
-    "descriptions": {
-        "en":"Human readable information.",
-        "de": "Menschenlesbare Informationen.",
-        "jp" : "人間が読むことができる情報",
-        "zh" : "人们可阅读的信息" },
+    "descriptions": {...},
     "support": "mailto:support@example.com",
     "securityDefinitions": {...},
     "security": [...],
@@ -812,9 +992,15 @@
     "properties": {...},
     "actions": {...},
     "events": {...},
-    "links": [...]
+    "links": [...],
+    "forms": [...]
 }
 </pre>
+
+<p>In that case the content can be directly associated as Thing Description based on the namespace  <code>http://www.w3.org/ns/td</code>  provided 
+    in the <code>@context</code>. The  <code>"@type": "Thing"</code> associates an instantiations of the Thing class as defined in Section <a href="#thing"></a>.
+
+</p>
 
  </section> <!-- end of id="sec-thing-as-a-whole-json"-->
 
@@ -827,61 +1013,98 @@
   with (unique) Property names as JSON names.
   </span></p>
 
+  <p>
   <span class="rfc2119-assertion" id="td-property-names">
   Each mandatory and optional vocabulary term
   as defined in the class <a href="#property" class="sec-ref"><code>Property</code></a>,
   as well as its two superclasses
   <a href="#interactionpattern" class="sec-ref"><code>InteractionPattern</code></a>
   and <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>,
-  MUST be serialized as a JSON name within a Property object.
-  </span></p>
-
-  <p><span class="rfc2119-assertion" id="td-property-objects">
-  The type of the members <code>properties</code>, <code>titles</code>, and <code>items</code> 
-  MUST be serialized as a JSON object.
+  MUST be serialized as a JSON name within a Property object. This means that at the level of an interaction property instance, the vocabulary terms
+   of  <a href="#interactionpattern" class="sec-ref"><code>InteractionPattern</code></a>
+  and <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a> can be presented at the same time.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-property-arrays">
-  The type of the members <code>forms</code>, <code>required</code>, 
-  and <code>enum</code>, <code>scopes</code>, and <code>security</code>,
+  The type of the members <code>forms</code>, <code>scopes</code>, and <code>security</code>,
   MUST be serialized as a JSON array.
   </span></p>
 
   <p>
   A TD snippet based on the defined members is given below:
   </p>
-<pre class="example">
-{
+
+
+
+<aside class="example ds-selector-tabs changed" id="property-serialization-sample" title="Sample of a property interaction serialization">
+        <div class="selectors">
+          <button class="selected" data-selects="original">Simple</button>
+          <button data-selects="expanded">Full</button>
+        </div>
+        <pre class="original selected">{
+        ...
+        "properties": {
+            "on": {
+                "type": "boolean",
+                "forms": [...]
+            },
+            "status": {
+                "type": "object",
+                "properties": {
+                    "brightness": {
+                        "type": "number",
+                        "minimum": 0.0,
+                        "maximum": 100.0
+                        },
+                        "rgb": {
+                        "type": "array",
+                        "items" : {
+                            "type" : "number",
+                            "minimum": 0,
+                            "maximum": 255
+                        },
+                        "minItems": 3,
+                        "maxItems": 3
+                    }
+                },
+                "required": ["brightness", "rgb"],
+                "forms": [...]
+            }
+        }
+        ...
+    }</pre>
+        <pre class="expanded">{
     ...
     "properties": {
         "on": {
-            "titles": {
-                "en": "On/Off",
-                "de": "An/Aus",
-                "jp": "オンオフ",
-                "zh": "开关" },
             "type": "boolean",
+            "readOnly" : false,
+            "writeOnly" : false,
+            "observable" : false,
             "forms": [...]
         },
         "status": {
-            "titles": {
-                "en": "Status",
-                "de": "Zustand",
-                "jp": "状態",
-                "zh": "状态" },
             "type": "object",
+            "readOnly" : false,
+            "writeOnly" : false,
             "properties": {
                 "brightness": {
                     "type": "number",
                     "minimum": 0.0,
-                    "maximum": 100.0
-                 },
-                 "rgb": {
+                    "maximum": 100.0,
+                    "readOnly" : false,
+                    "writeOnly" : false
+                    },
+                    "rgb": {
                     "type": "array",
+                    "readOnly" : false,
+                    "writeOnly" : false,
                     "items" : {
                         "type" : "number",
                         "minimum": 0,
-                        "maximum": 255
+                        "maximum": 255,
+                        "readOnly" : false,
+                        "writeOnly" : false
                     },
                     "minItems": 3,
                     "maxItems": 3
@@ -892,85 +1115,16 @@
         }
     }
     ...
-}
-</pre>
+}</pre>
+    </aside>
 
-  <p><span class="rfc2119-assertion" id="td-property-semantic">
-  Similar to the case at the <code>Thing</code> level,
-  properties MAY have additional semantic annotations based on 
-  JSON-LD 1.1 keywords.
-  </span></p>
 
-  <p><span class="rfc2119-assertion" id="td-property-defaults">
-  When a Thing Description instance is processed and interpreted by 
-  a JSON-LD 1.1 processor, 
-  each <code>property</code> MUST contain the vocabulary terms 
-  <code>observable</code> and <code>readOnly</code> due to the 
-  <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>
-  of Linked Data.
-  </span>
-  This assumption means that if a Linked Data model of a Thing Description
-  instance were to omit these vocabulary terms,
-  then the interpreter would not be able to make any assumptions
-  about their actual value. 
-  </p>
 
-  <p>
-  A snippet of a JSON-LD 1.1 processable TD serialization including
-  semantic annotations and the
-  default values of <code>observable</code> and <code>readOnly</code> 
-  based on the class <a href="#property" class="sec-ref"><code>Property</code></a>
-  is given as follows:
-  </p>
-<pre class="example">
-    ...
-    "properties": {
-        "on": {
-            "@type": "iot:SwitchToggle",
-            "titles": {
-                "en": "On/Off",
-                "de": "An/Aus",
-                "jp": "オンオフ",
-                "zh": "开关" },
-            "readOnly": true,
-            "observable": false,
-            "type": "boolean",
-            "forms": [...]
-        },
-        "status": {
-            "titles": {
-                "en": "Status",
-                "de": "Zustand",
-                "jp": "状態",
-                "zh": "状态" },
-            "readOnly": true,
-            "observable": false,
-            "type": "object",
-            "properties": {
-                "brightness": {
-                    "@type": "iot:CurrentLevel",
-                    "type": "number",
-                    "minimum": 0.0,
-                    "maximum": 100.0
-                },
-                "rgb": {
-                    "@type": "iot:rgbData",
-                    "type": "array",
-                    "items" : {
-                        "type" : "number",
-                        "minimum": 0,
-                        "maximum": 255
-                    },
-                    "minItems": 3,
-                    "maxItems": 3
-                }
-            },
-            "required": ["brightness","rgb"],
-            "forms": [...]
-        }
-    }
-    ...
-</pre>
+
+
+
+
+
 
   </section> <!-- end of id="property-serialization-json"-->
 
@@ -983,6 +1137,7 @@
   with (unique) Action names as JSON names.
   </span></p>
 
+  <p>
   <span class="rfc2119-assertion" id="td-action-names">
   Each optional vocabulary term
   as defined in the class <a href="#action" class="sec-ref"><code>Action</code></a>
@@ -996,8 +1151,8 @@
   MUST be serialized as a JSON object.
   </span></p>
 
-  <p>The names of <code>input</code> and <code>output</code>
-  rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>.
+  <p>The names  <code>input</code> and <code>output</code>
+  rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a> and will follow the serialization introduction provided in <a href="#data-schema-serialization-json"></a>.
   </p>
 
   <p><span class="rfc2119-assertion" id="td-action-arrays">
@@ -1010,7 +1165,12 @@
   A TD snippet based on the defined members is given below:
   </p>
 
-<pre class="example">
+  <aside class="example ds-selector-tabs changed" id="action-serialization-sample" title="Sample of a property interaction serialization">
+        <div class="selectors">
+          <button class="selected" data-selects="original">Simple</button>
+          <button data-selects="expanded">Full</button>
+        </div>
+        <pre class="original selected">{
     ...
     "actions": {
         "fade" : {
@@ -1040,11 +1200,48 @@
     }
     ...
 </pre>
-
-  <p><span class="rfc2119-assertion" id="td-action-semantic">
-  Definitions within the <code>actions</code> member
-  MAY have additional semantic annotations based on JSON-LD 1.1 keywords.
-  </span></p>
+<pre class="expanded">{
+    ...
+    "actions": {
+        "fade" : {
+            "title": "Fade in/out",
+            "description": "Smooth fade in and out animation.",
+            "idempotent" :  false,
+            "safe" :  false,
+            "input": {
+                "type": "object",
+                "properties": {
+                    "from": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "readOnly" : false,
+                        "writeOnly" : false
+                    },
+                    "to": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "readOnly" : false,
+                        "writeOnly" : false
+                    },
+                    "duration": {"type": "number"}
+                },
+                "required": ["to","duration"],
+            },
+            "output": {
+                "type": "string",
+                "readOnly" : false,
+                "writeOnly" : false
+            },
+            "forms": [...]
+        }
+        ...
+    }
+    ...
+}</pre>
+</aside>
+ 
 
   </section> <!-- end of id="action-serialization-json"-->
 
@@ -1057,6 +1254,7 @@
   with (unique) Event names as JSON names.
   </span></p>
 
+  <p>
   <span class="rfc2119-assertion" id="td-event-names">
   Each optional vocabulary term
   as defined in the class <a href="#event" class="sec-ref"><code>Event</code></a>,
@@ -1071,38 +1269,52 @@
     MUST be serialized as a JSON object.
     </span></p>
   
-    <p>The names of <code>subscription</code>, <code>data</code>, and <code>cancellation</code>
-    rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>.
+    <p>The JSON names of <code>subscription</code>, <code>data</code>, and <code>cancellation</code>
+    rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>  and will follow the serialization introduction provided in <a href="#data-schema-serialization-json"></a>.
     </p>
 
   <p><span class="rfc2119-assertion" id="td-event-arrays">
-  The type of the members <code>forms</code>, <code>required</code>, 
-  and <code>enum</code>, <code>scopes</code>, and <code>security</code>
+  The type of the members <code>forms</code>, <code>scopes</code>, and <code>security</code>
   MUST be serialized as a JSON array.
   </span></p>
 
   <p>
   A TD snippet based on the defined members is given below:
   </p>
-<pre class="example">
+
+<aside class="example ds-selector-tabs changed" id="event-serialization-sample" title="Sample of a property interaction serialization">
+        <div class="selectors">
+          <button class="selected" data-selects="original">Simple</button>
+          <button data-selects="expanded">Full</button>
+        </div>
+        <pre class="original selected">{
+        ...
+        "events": {
+            "overheated": {
+                "data" : {"type": "object"},
+                "forms": [...]
+            }
+            ...
+        }
+        ...
+</pre>
+<pre class="expanded">{
     ...
     "events": {
         "overheated": {
-            "data" : {"type": "object"},
-            "properties": {
-                "temperature": { "type": "number" }
+            "data" : {
+                "type": "object",
+                "readOnly" : false,
+                "writeOnly" : false
             },
             "forms": [...]
         }
         ...
     }
     ...
-</pre>
-
-  <p><span class="rfc2119-assertion" id="td-event-semantic">
-  Definitions within the <code>events</code> member
-  MAY have additional semantic anotations based on JSON-LD 1.1 keywords.
-  </span></p>
+}</pre>
+</aside>
+ 
 
   </section> <!-- end of id="event-serialization-json"-->
 
@@ -1115,7 +1327,7 @@
   MUST be serialized as a JSON name.
   </span></p>
 
-  <p><span class="rfc2119-assertion" id="td-event-arrays">
+  <p><span class="rfc2119-assertion" id="td-event-response-arrays">
     If required, the type of the member <code>response</code> 
         MUST be serialized as a JSON array.
         </span>
@@ -1126,27 +1338,15 @@
   MAY be supplemented with protocol-specific vocabulary terms 
   identified with a prefix. 
   </span>
-  See also [[!WOT-PROTOCOL-BINDING]].
+  See also <a href="#content-extension-section"></a>.
   </p>
 
-  <p><span class="rfc2119-assertion" id="td-form-contenttype">
-  When a Thing Description instance is processed and interpreted 
-  by a JSON-LD 1.1 processor, 
-  each <code>forms</code> (array) entry 
-  MUST contain a <code>contentType</code> 
-  due to the
-  <a href="https://en.wikipedia.org/wiki/Open-world_assumption">open-world assumption</a>
-  of Linked Data.
-  </span>
-  This assumption means that if a Linked Data model of a Thing Description
-  instance were to omit these vocabulary terms,
-  then the interpreter would not be able to make any assumptions
-  about their actual value.
-  </p>
 
   <p>A TD snippet based on the defined members is given below:</p>
 <pre class="example">
 {
+  "@context": ["http://www.w3.org/ns/td",
+    {"http": "http://www.w3.org/2011/http#"}],
   ...
   "securityDefinitions": {
       "basic_sc": {"scheme":"basic", "in":"header"}
@@ -1156,35 +1356,41 @@
         "href" : "http://mytemp.example.com:5683/temp",
         "contentType": "application/json",
         "http:methodName": "POST",
-        "op": "writeproperty",
+        "op": ["writeproperty"],
         "security": ["basic_sc"]
     }]
     ...
 }
 </pre>
 
-    <p><code>href</code> may also carry an URI that contains dynamic variables such as p and d in http://192.168.1.25/left?p=2&d=1. It that case the URI can be defined as template as defined in [[!RFC6570]]: http://192.168.1.25/left{?p,d}</p>
+    <p><code>href</code> may also carry an URI that contains dynamic variables such as p and d in http://192.168.1.25/left?p=2&amp;d=1. In that case the URI can be defined as template as defined in [[!RFC6570]]: http://192.168.1.25/left{?p,d}</p>
 
-    <p><span class="rfc2119-assertion" id="td-events">
+    <p><span class="rfc2119-assertion" id="td-uriVariables">
         In such a case these variables in the URI MUST be collected
         in the JSON-object based <code>uriVariables</code> member
         with the associated (unique) variables names as JSON names.
     </span></p>
 
-    <p>The names of <code>uriVariables</code> 
-        rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>.
-    </p>
+    <p><span class="rfc2119-assertion" id="td-uriVariables">
+            Each defined JSON name of the <code>uriVariables</code> collection MUST
+            rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>.
+    </span></p>
+
+ 
 
 
     <p>A TD snippet using URI template and <code>uriVariables</code> is given below:</p>
 
     <pre class="example">
+        "@context": ["http://www.w3.org/ns/td",
+            {"http": "http://www.w3.org/2011/http#"},
+            {"eg": "http://www.example.org/iot"}],
         ...
         "actions": {
             "LeftDown": {
               "uriVariables": {
-                "p" : { "type": "integer", "minimum": 0, "maximum": 16, "@type": "example:SomeKindOfAngle" },
-                "d" : { "type": "integer", "minimum": 0, "maximum": 1, "@type": "example:Direction" },
+                "p" : { "type": "integer", "minimum": 0, "maximum": 16, "@type": "eg:SomeKindOfAngle" },
+                "d" : { "type": "integer", "minimum": 0, "maximum": 1, "@type": "eg:Direction" }
                 }
               },
               "forms": [{
@@ -1201,7 +1407,7 @@
 
    <pre class="example">
     ...
-    "contentType" : "application/text; charset=utf-8"
+    "contentType" : "text/plain; charset=utf-8"
     ...
 </pre>
 
@@ -1212,13 +1418,15 @@ The <code>output</code> of this action is the photo taken, which is available in
 </p>
 
 <p><span class="rfc2119-assertion" id="td-forms-response">
-  If the <code>response</code> member is used in <code>forms</code> it MUST contain the <code>contentType</code> as 
-  defined in class <a href="#response" class="sec-ref"><code>Response</code></a>.
+  If the <code>response</code> member is used in <code>forms</code>, it MUST contain the <code>contentType</code> as 
+  defined in class <a href="#expectedresponse" class="sec-ref"><code>ExpectedResponse</code></a>.
 </span></p>
 
 <p>A <code>form</code> snippet with the <code>response</code> member is listed below based on the use case of the action 'takePhoto' described above:</p>
 
 <pre class="example">
+    "@context": ["http://www.w3.org/ns/td",
+        {"http": "http://www.w3.org/2011/http#"}],
     ...
     "forms": [
         {
@@ -1232,6 +1440,47 @@ The <code>output</code> of this action is the photo taken, which is available in
         }
       ]
     ...
+</pre>
+
+<p>When <code>forms</code> is present at the top level, it can be used to describe meta interactions supported by a <a href="#thing" class="sec-ref"><code>Thing</code></a> instance. For example, operations "readallproperties" and "writeallproperties" are meta interactions by which clients can read and write all properties of the thing at once. In the example below, <code>forms</code> is used at the top level, and the clients can access end point (i.e. <code>https://mylamp.example.com/allproperties</code>) both to read or write all properties (i.e. <code>"on"</code>, <code>"brightness"</code> and <code>"timer"</code> property) of the thing in a single interaction.</p>
+
+<pre class="example" id="td-forms-readall-example">
+{
+    "@context": ["http://www.w3.org/ns/td",
+        {"http": "http://www.w3.org/2011/http#"}],
+    "id": "urn:dev:wot:com:example:servient:lamp",
+    ...
+    "forms": [
+        {
+          "href": "https://mylamp.example.com/allproperties",
+          "contentType": "application/json",
+          "op": ["readallproperties"],
+          "http:methodName": "GET"
+        }
+        {
+          "href": "https://mylamp.example.com/allproperties",
+          "contentType": "application/json",
+          "op": ["writeallproperties"],
+          "http:methodName": "PUT"
+        }
+    ],
+    ...
+    "properties": {
+        "on": {
+          "type": "boolean",
+          "forms": [...]
+        },
+        "brightness": {
+          "type": "number",
+          "forms": [...]
+        },
+        "timer": {
+          "type": "integer",
+          "forms": [...]
+        }
+    },
+    ...
+}
 </pre>
 
 
@@ -1261,7 +1510,7 @@ The <code>output</code> of this action is the photo taken, which is available in
     </section> <!-- end of id="links-serialization-json"-->
 
     <section id="security-serialization-json">
-    <h2><code>security</code></h2>
+    <h2><code>securityDefinitions</code> and <code>security</code></h2>
 
     <p><span class="rfc2119-assertion" id="td-security">
     Each mandatory and optional vocabulary term
@@ -1553,30 +1802,406 @@ The <code>output</code> of this action is the photo taken, which is available in
         The version container MAY be used to provide additional application and/or device specific version information based on terms from non-TD namespaces. 
     </span></p>
 
-    <p>A TD snippet based on such additional version metadata from a xyz context is given below:</p>
+    <p>A TD snippet based on such additional version metadata from a <code>v</code> context is given below:</p>
     <pre class="example">
+        "@context": ["http://www.w3.org/ns/td",
+                    {"v": "http://www.example.org/versioningTerms#"}],
         ...
-        "version": {"instance":"1.2.1", "xyz:firmware": "0.9.1", "xyz:hardware": "1.0"}
+        "version": {"instance":"1.2.1", "v:firmware": "0.9.1", "v:hardware": "1.0"}
         ...
     </pre>
 
     </section> <!-- end of id="version-json"-->
 
+    <section id="data-schema-serialization-json">
+            <h2>Data Schema Representation</h2>
+            <p>The data schema concept within the Thing Description is based on a subset of JSON schema terms.  The data schema concept is applied 
+                to the <a href="#event-serialization-json">properties</a> interaction declaration, <code>input</code> and <code>output</code> within <a href="#form-serialization-json">actions</a> 
+                interaction declaration,  <code>subscription</code>, <code>data</code> and <code>cancellation</code> within <a href="#event-serialization-json">events</a> interaction declaration, 
+                and <code>uriVariables</code> that can be used within the <a href="#form-serialization-json">forms</a> container. 
+            </p>
+
+            <p>
+                <span class="rfc2119-assertion" id="td-security">
+                    Each mandatory and optional vocabulary term as defined in the class 
+                        <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>,
+                        MUST be serialized as a JSON name.
+                 </span>
+            </p>
+
+
+
+            <p><span class="rfc2119-assertion" id="td-property-objects">
+                The type of the members <code>properties</code> and <code>items</code> 
+                MUST be serialized as a JSON object.
+                </span></p>
+
+            <p><span class="rfc2119-assertion" id="td-property-arrays">
+                    The type of the member <code>enum</code>, <code>required</code>, and <code>oneOf</code> MUST be serialized as a JSON array.
+                    </span></p>
+
+
+                    <p>
+                            A TD snippet based on the defined members is given below:
+                            </p>
+        <pre class="example">
+        ...
+        "type": "object",
+        "properties": {
+            "status": {
+                "title": "Status",
+                "type": "string",
+                "enum": ["On", "Off", "Error"]
+            },
+            "brightness": {
+                "title": "Brightness value",
+                "type": "number",
+                "minimum": 0.0,
+                "maximum": 100.0
+            },
+            "rgb": {
+                "title": "RGB color value",
+                "type": "array",
+                "items" : {
+                    "type" : "number",
+                    "minimum": 0,
+                    "maximum": 255
+                },
+                "minItems": 3,
+                "maxItems": 3
+            }
+        },
+        ...
+        </pre>
+
+        <p>The terms <code>readOnly</code> and <code>writeOnly</code> MAY be used to signalize which data members are 
+            exchanged for a read request (e.g., read an interaction property) and which one for a write process 
+            (e.g. write an interaction property).     
+        </p>
+
+        <p>
+          An TD snippet with the usage of <code>readOnly</code> and <code>writeOnly</code> is given below:
+        </p>
+<pre class="example">
+    ...
+        "properties": {
+            "status": {
+              "description": "Read or write On/Off status.",
+              "type": "object",
+              "properties": {
+                "latestStatus": {
+                  "type": "string",
+                  "enum": ["On", "Off"],
+                  "readOnly": true
+                },
+                "newStatusValue": {
+                  "type": "string",
+                  "enum": ["On", "Off"],
+                  "writeOnly": true
+                }
+              },
+              forms:[...]
+            }
+          }
+    ...
+</pre>
+<p>If the interaction property <code>status</code> is read, the status data is returned using <code>latestStatus</code> in the payload.
+    To manipulate the status of the interaction property, the new value must be provided by assigning <code>newStatusValue</code> in 
+    the payload. 
+</p>
+
+<p>As an additional feature, a Thing Description instance allows the usage of the term <code>unit</code> within data schema definitions.
+    This can be used to associates some 
+    unit information to some data members. The unit values can be
+    free selected, however, it is recommended to select units based on existing definitions by integrating 
+    the corresponding namespace context (e.g., from Smart Appliances REFerence (SAREF) ontology or Ontology of units of Measure (OM)).
+</p>
+
+<pre class="example">
+    {
+    "@context": ["http://www.w3.org/ns/td",
+                {"om": "http://www.wurvoc.org/vocabularies/om-1.8/"}],
+    ...
+    "properties": {
+        "latestValues": {
+            "description": "Provides all current values of the weather station.",
+            "type": "object",
+            "properties": {
+            "temperature": {
+                "type": "number",
+                "minimum" : -32.5,
+                "maximum" : -55.2,
+                "unit": "om:degree_Celsius"
+            },
+            "humidity": {
+                "type": "number",
+                "minimum" : 0,
+                "maximum" : 100,
+                "unit": "om:percent"
+            }
+            },
+            forms:[...]
+        }
+    }
+    ...
+</pre>
+
+
+
+
+    </section> <!-- end of id="data-schema-serialization-json"-->
+
+
+    <section id="titles-descriptions-serialization-json">
+            <h2><code>titles</code> and <code>descriptions</code></h2>
+
+            <p>The vocabulary terms <code>titles</code> and <code>descriptions</code> enables human-readable text description in multi-languages using  
+                language tags described in [[!BCP47]].
+              <span class="rfc2119-assertion" id="td-multi-languages">
+                  Whenever the vocabulary terms <code>titles</code> and <code>descriptions</code> can be used, both MUST be serialized as JSON Object. The member names of the JSON Object MUST be 
+                  the language tags as defined in [[!BCP47]] (e.g., "en", "de", "ja", "zh-Hans", "zh-Hant"). The value of each member MUST be serialized as JSON string.
+              </span>
+            </p>
+
+            <p>A TD snippet using <code>titles</code> and <code>descriptions</code> in different levels is given below: </p>
+
+            <pre class="example">
+                    {
+                        "name": "MyThing",
+                        "descriptions": {
+                            "en":"Human readable information.",
+                            "de": "Menschenlesbare Informationen.",
+                            "ja" : "人間が読むことができる情報",
+                            "zh-Hans" : "人们可阅读的信息", 
+                            "zh-Hant" : "人們可閱讀的資訊"
+                        },
+                        ...
+                        "properties": {
+                            "on": {
+                                "titles": {
+                                    "en": "On/Off",
+                                    "de": "An/Aus",
+                                    "ja": "オンオフ",
+                                    "zh-Hans": "开关",
+                                    "zh-Hant": "開關" },
+                                "type": "boolean",
+                                "forms": [...]
+                            },
+                            "status": {
+                                "titles": {
+                                    "en": "Status",
+                                    "de": "Zustand",
+                                    "ja": "状態",
+                                    "zh-Hans": "状态",
+                                    "zh-Hant": "狀態" },
+                                "type": "object",
+                                ...
+                    }
+                    </pre>
+
+    <p>TD instances may also additional use <code>title</code> and <code>description</code>  beside of <code>titles</code> and <code>descriptions</code>. 
+        <span class="rfc2119-assertion" id="td-title-description">
+              If <code>title</code> and <code>titles</code>   <code>description</code> and <code>descriptions</code> are defined at the same time at the JSON level,
+              <code>title</code> and <code>description</code> MAY be seen as default text.
+        </span>
+          
+    </p>
+
+    <pre class="example">
+            {
+                "name": "MyThing",
+                "description": "Menschenlesbare Informationen.",
+                "descriptions": {
+                    "en":"Human readable information.",
+                    "de": "Menschenlesbare Informationen.",
+                    "ja" : "人間が読むことができる情報",
+                    "zh-Hans" : "人们可阅读的信息", 
+                    "zh-Hant" : "人們可閱讀的資訊"
+                },
+                ...
+                "properties": {
+                    "on": {
+                        "title" : "An/Aus",
+                        "titles": {
+                            "en": "On/Off",
+                            "de": "An/Aus",
+                            "ja": "オンオフ",
+                            "zh-Hans": "开关",
+                            "zh-Hant": "開關" },
+                        "type": "boolean",
+                        "forms": [...]
+                    },
+                    "status": {
+                        "title" : "Zustand",
+                        "titles": {
+                            "en": "Status",
+                            "de": "Zustand",
+                            "ja": "状態",
+                            "zh-Hans": "状态",
+                            "zh-Hant": "狀態" },
+                        "type": "object",
+                        ...
+            }
+            </pre>
+
+
+    </section> <!-- end of id="data-schema-serialization-json"-->
+
+
   </section> <!-- end of id="serialization-json"-->
 
   <section id="content-extension-section">
         <h1>Context Extension</h1>
- <p>In addition to the standard vocabulary definitions as defined in section <a href="#sec-vocabulary-definition"></a>, the Thing Description offers the possibility to add
-    context knowledge from different namespaces. This mechanism can be used to enrich the content of the Thing Description instances with additional (e.g., domain specific) semantics as well as 
-    to specify some configurations and  behaviors of the underlying communication protocols that is announced within the <code>forms</code> field.</p>
-
+ <p>In addition to the standard vocabulary definitions as defined in Section <a href="#sec-vocabulary-definition"></a>, the Thing Description offers the possibility to add
+    context knowledge from different namespaces. This mechanism can be used to enrich the content of the Thing Description instances with additional 
+    (e.g., domain specific) semantics. In addition, it can also be used to specify some configurations and behaviors of the underlying communication 
+    protocols announced in the <code>forms</code> field.
  <p>
-    For this extension the Thing Description uses the <code>@context</code> mechanism known from JSON-LD.
+    For this extension the Thing Description uses the <code>@context</code> mechanism known from JSON-LD. The usage and serializiation of the <code>@context</code> 
+    within the Thing Description is specified in Section <a href="#sec-thing-as-a-whole-json"></a>.
  </p>
 
- <p><span class="rfc2119-assertion" id="td-@context">
-     ...
-    </span></p>
+ <p>
+When adding additional vocabulary to a Thing Description instance, it is recommended that these vocabulary be linked to a namespace context that is within 
+the JSON name <code>@context</code> container is specified.
+</p>
+
+<p>
+If included namespaces are based on class definitions such as those provided by the RDF Schema or OWL, the Things Description also allows the use of 
+ <code>@type</code> known from JSON-LD to associate the affiliation to a class.
+</p>
+
+
+<pre class="example">
+        {
+            "@context": [
+                "http://www.w3.org/ns/td",
+                {"om": "http://www.wurvoc.org/vocabularies/om-1.8/"},
+                {"saref": "https://w3id.org/saref#"}
+            ],
+            "@type": "Thing",
+            ...
+            "properties": {
+                "Temperature": {
+                    "@type": "saref:Temperature",
+                    "description": "Temperature value of the weather station",
+                    "om:unit_of_measure": "om:degree_Celsius",
+                    "readOnly": true,
+                    "observable": true,
+                    "writeOnly": false,
+                    "type": "number",
+                    "forms" : [...]
+                },
+                ...
+            }
+        }
+    </pre>
+
+    <p>
+    With the context extension in the Thing Description, communication metadata can be supplemented or specified in the declarations <code>forms</code>. 
+    This is useful when default assumptions as defined in [[[!WOT-PROTOCOL-BINDING]]] need to be overwritten.</p>
+    
+    <p>The following example shows
+    a property "brightness" that offers a read, write, and observe operation within the <code>forms</code> deceleration. 
+    </p>
+
+    <aside class="example ds-selector-tabs changed" id="context-extension-for-forms" title="Specialization of the form definition by context extension.">
+            <div class="selectors">
+              <button class="selected" data-selects="original">Simple</button>
+              <button data-selects="expanded">Full</button>
+            </div>
+<pre class="original selected">{
+        "@context": [
+            "http://www.w3.org/ns/td",
+            {
+                "iot": "http://www.example.org/iot",
+                "http": "http://www.w3.org/2011/http#"
+            }
+        ],
+        ...
+        "properties": {
+            "brightness": {
+                "description": "The current brightness setting",
+                "@type": [
+                    "iot:CurrentLevel",
+                    "iot:LevelData"
+                ],
+                "type": "integer",
+                "minimum": -64,
+                "maximum": 64,
+                "observable": true,
+                    "forms": [
+                    {
+                        "href": "http://example.org:9191/api/brightness",
+                        "op": ["readproperty"]
+                    },
+                    {
+                        "href": "http://example.org:9191/api/brightness",
+                        "op": ["writeproperty"],
+                        "http:methodName": "POST"
+                    },
+                    {
+                        "href": "http://example.org:9191/api/brightness/observe",
+                        "op": ["observeproperty"],
+                        "http:methodName": "GET",
+                        "subProtocol": "longpoll"
+                    }
+                ]
+            }
+        }
+    }</pre>
+<pre class="expanded">{
+        "@context": [
+            "http://www.w3.org/ns/td",
+            {
+                "iot": "http://www.example.org/iot",
+                "http": "http://www.w3.org/2011/http#"
+            }
+        ],
+        ...
+        "properties": {
+            "brightness": {
+                "description": "The current brightness setting",
+                "@type": [
+                    "iot:CurrentLevel",
+                    "iot:LevelData"
+                ],
+                "type": "integer",
+                "minimum": -64,
+                "maximum": 64,
+                "observable": true,
+                "readOnly" : false,
+                "writeOnly": false,
+                "forms": [
+                    {
+                        "href": "http://example.org:9191/api/brightness",
+                        "contentType": "application/json",
+                        "op": ["readproperty"]
+                    },
+                    {
+                        "href": "http://example.org:9191/api/brightness",
+                        "contentType": "application/json",
+                        "op": ["writeproperty"],
+                        "http:methodName": "POST"
+                    },
+                    {
+                        "href": "http://example.org:9191/api/brightness/observe",
+                        "contentType": "application/json",
+                        "op": ["observeproperty"],
+                        "http:methodName": "GET",
+                        "subProtocol": "longpoll"
+                    }
+                ]
+            }
+        }
+    }</pre>
+        </aside>
+
+        <p>For the read operation, the deceleration follows the default assumption to execute an HTTP GET as defined  
+            in [[[!WOT-PROTOCOL-BINDING]]]. The write operation overwrites the default assumption (= HTTP PUT) and 
+            declares with the context extension the HTTP POST method to be used for this operation. In order to observe this property, the 
+            context extension is used here to announce that an HTTP GET is always running to follow the long poll mechanism.          
+        </p>
 
  </section>
 
@@ -1614,25 +2239,44 @@ The <code>output</code> of this action is the photo taken, which is available in
   <h2>Implementation Notes</h2>
 
   <section id="note-json-processing">
-  <h2>JSON Processing</h2>
+  <h2>Thing Description Processing and Interpretation</h2>
   <p>
   The minimum requirement to read the content of a Thing Description 
   instance is a (simple) JSON parser.
   </p>
 
-  <p><span class="rfc2119-assertion" id="td-readOnly-observable-default">
-  If the name terms <code>readOnly</code> and/or <code>observable</code> 
-  are not present within a <code>properties</code> definition,
-  the default value defined in <a href="#sec-vocabulary-definition"></a>
+ 
+
+  <p>
+        For reasons of simplification and/or compactness, exchanged Thing Descriptions instances may omit mandatory vocabulary 
+        terms that have default value assumptions (aka <i>Simple</i> Thing Description representation). 
+        In this case, the Thing Description Processor must 
+        follow the default assumptions for these vocabulary terms:
+ <span class="rfc2119-assertion" id="td-readOnly-observable-writeOnly-default">
+  If the name terms <code>readOnly</code>, <code>writeOnly</code>, and/or <code>observable</code> 
+  are not present within a <code>properties</code> interaction definition,
+  the default value defined in <a href="#json-serializiation-section"></a>
   MUST be assumed.
   </span></p>
+
+  <p><span class="rfc2119-assertion" id="td-readOnly-observable-default">
+        If the name terms <code>idempotent</code> and/or <code>safe</code> 
+        are not present within an <code>actions</code> interaction definition,
+        the default value defined in <a href="#json-serializiation-section"></a>
+        MUST be assumed.
+    </span></p>
   
-  <p><span class="rfc2119-assertion" id="td-media-type-default">
+  <p><span class="rfc2119-assertion" id="td-content-type-default">
   If the <code>contentType</code> name term is not present within a 
   <code>forms</code> definition, the default value as defined in
-  <a href="#sec-vocabulary-definition"></a>
+  <a href="#json-serializiation-section"></a>
   MUST be assumed.   
   </span></p>
+
+  <p>
+    The accompanying document [[!WOT-PROTOCOL-BINDING]] is recommended for interpreting the protocol-specific information that is typical defined within the <code>forms</code> container. 
+  </p>
+
 
   <p>
   To validate the semantic meaning and follow references to external 
@@ -1643,57 +2287,17 @@ The <code>output</code> of this action is the photo taken, which is available in
 
   </section>
 
-  <section id="note-jsonld-processing">
-  <h2>JSON-LD 1.1 Processing</h2>
 
-  <p>To interpret the semantic meaning of a Thing Description
-  in terms of RDF triples, 
-  a Thing Description instance first requires a valid JSON-LD 1.1 
-  representation based on this Thing Description specification. 
-  Then this representation can be passed to a JSON-LD 1.1 processor.
-  </p>
+  <section id="note-jsonld10-processing">
+        <h2>JSON-LD 1.0 Processing</h2>
 
-  <p><!-- The following is not marked as a testable assertion because it 
-          simply says the next three are assertions.
-          The subassertions have been reworded so they can be understood 
-          independently as referring to preprocessing.
-          This is why "must" is in lower case.  -->
-  The following pre-processing steps of a Thing Description instance 
-  must be executed before starting JSON-LD 1.1 processing:
-  <ul>
-  <li><span class="rfc2119-assertion" id="td-jsonld-preprocessing-context">
-     Before starting JSON-LD 1.1 processing of a Thing Description instance,
-     there MUST be a <code>@context</code> name from JSON-LD 1.1 as defined 
-     in Section 
-     <a href="#sec-thing-as-a-whole-json"></a>.
-  </span></li>
-  <li><span class="rfc2119-assertion" id="td-jsonld-preprocessing-prefix">
-     Before starting JSON-LD 1.1 processing of a Thing Description instance,
-     all external vocabulary terms used in the Thing Description MUST 
-     provide their context URIs as prefix or within the <code>@context</code>
-     member.
-  </span></li>
-  <li><span class="rfc2119-assertion" id="td-jsonld-preprocessing-defaults">
-     Before starting JSON-LD 1.1 processing of a Thing Description instance,
-     all mandatory vocabulary terms as defined in Section
-     <a href="#sec-vocabulary-definition"></a> that are missing from the instance
-     MUST be inserted explicitly with their default value.
-  </span></li>
-  </ul>
-  </p>
+        <p>To interpret the semantic meaning of a Thing Description
+                in terms of RDF triples, a Thing Description instance can be simple transformed into a RDF-based serializiation format by JSON-LD 1.0. 
+ 
+        </p>
 
-  <!-- FIX: Actually, the examples in the next section
-       are not that good because they
-       show semantic annotation in the "output" that is not in the "input"!
-       So I have redirected this to examples 1 and 2.
-  -->
-  <p>
-  Section <a href="#introduction"></a>
-  shows an example of how the input and output of such
-  preprocessing would appear.
-  </p>
+    </section>
 
-  </section>
   </section>
 
   </section> <!-- end of id="sec-td-serialization"-->
@@ -1702,7 +2306,20 @@ The <code>output</code> of this action is the photo taken, which is available in
   <h2>Example Thing Description Instances</h2>
 
   <section id="myLampThing-example-serialization">
-  <h3>MyLampThing Example</h3>
+  <h3>MyLampThing Example with CoAP Binding</h3>
+
+  <p>Feature list of the Thing:</p>
+
+  <ul>
+      <li>Name: MyLampThing</li>
+      <li>Context extension: none</li>
+      <li>Offered interactions: 1 property, 1 action, 1 event</li>
+      <li>Security: PSKSecurityScheme</li>
+      <li>Protocol binding: CoAP over TLS</li>
+      <li>Serializiation: JSON</li>
+      <li>Comment: none</li>
+
+  </ul>
 
 <pre class="example" title="MyLampThing represented as a compact JSON serialization">
 {
@@ -1739,58 +2356,47 @@ The <code>output</code> of this action is the photo taken, which is available in
     }
 }
 </pre>
+</section>
 
+  <section id="myLampThing-example-serialization">
+  <h3>MyLightSensor Example with MQTT Binding</h3>
 
-<pre class="example" title="MyLampThing with semantic annotations based on a valid JSON-LD 1.1 representation">
-{
-    "@context": ["http://www.w3.org/ns/td", 
-    		{"iot": "http://iotschema.org/"}],
-    "@type" : "Thing",
-    "id": "urn:dev:wot:com:example:servient:lamp",
-    "name": "MyLampThing",
-    "description" : "MyLampThing uses JSON-LD 1.1 serialization",
-    "securityDefinitions": {"psk_sc":{"scheme": "psk"}},
-    "security": ["psk_sc"],
-    "properties": {
-        "status": {
-            "@type" : "iot:SwitchStatus",
-            "description" : "Shows the current status of the lamp",
-            "readOnly": true,
-            "observable": false,
-            "type": "string",
-            "forms": [{
-                "href": "coaps://mylamp.example.com/status",
-                "contentType": "application/json"
-            }]
+  <p>Feature list of the Thing:</p>
+
+  <ul>
+      <li>Name: MyLightSensor</li>
+      <li>Context extension: none</li>
+      <li>Offered interactions: 1 event</li>
+      <li>Security: none</li>
+      <li>Protocol binding: MQTT</li>
+      <li>Serializiation: text </li>
+      <li>Comment: An MQTT client frequently publishes the light sensor data (number is serialized in text format) to 
+          the topic /lightSensor by the MQTT broker running behind the address 192.168.1.187:1883. </li>
+  </ul>
+
+<pre class="example" title="MyLightSensor with MQTT binding">
+        {
+            "name": "MyLightSensor",
+            "id": "urn:dev:wot:com:example:servient:lightsensor",
+            "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+            "security": ["nosec_sc"],
+            "events": {
+                "lightSensor": {
+                "type": "integer",
+                "forms": [
+                    {
+                        "href": "mqtt://192.168.1.187:1883/lightSensor",
+                        "contentType" : "text/plain"
+                    }
+                ]
+            }
+        } 
         }
-    },
-    "actions": {
-        "toggle": {
-            "@type" : "iot:SwitchStatus",
-            "description" : "Turn on or off the lamp",
-            "forms": [{
-                "href": "coaps://mylamp.example.com/toggle",
-                "contentType": "application/json"
-            }]
-        }
-    },
-    "events": {
-        "overheating": {
-            "@type" : "iot:TemperatureAlarm",
-            "description" : "Lamp reaches a critical temperature (overheating)",
-            "data": {"type": "string"},
-            "forms": [{
-                "href": "coaps://mylamp.example.com/oh",
-                "contentType": "application/json"
-            }]
-        }
-    }
-}
 </pre>
   </section>
 
   </section>
-     
+
   <section id="sec-security-consideration">
   <h4>Security and Privacy Considerations</h4>
   
@@ -1962,7 +2568,7 @@ The <code>output</code> of this action is the photo taken, which is available in
 
   <section id="json-schema-4-validation" class="appendix normative">
   <h1>JSON Schema for TD Instance Validation</h1>
-  Below is a JSON Schema [[?JSON-SCHEMA-VALIDATION]] for syntactically validating Thing Description instances serialized in JSON-LD 1.1.
+  Below is a JSON Schema [[?JSON-SCHEMA-VALIDATION]] for syntactically validating Thing Description instances serialized in JSON based format.
   <p class="ednote">
   This schema is known to be too permissive. This issue will be resolved in the next release of this document.
   </p>
@@ -1972,6 +2578,183 @@ The <code>output</code> of this action is the photo taken, which is available in
 </pre>
 
   </section>
+
+  <section id="Thing Templates" class="appendix">
+    <h1>Thing Templates</h1>
+      
+    <p>
+    A <em>Thing Template</em> is a description for a <em>class</em> of devices or things.
+    It describes the properties, actions, events and common metadata that are shared for an entire group of things,
+    to enable the common handling of thousands of devices by a cloud server, which is not practical on a per-thing basis.
+    The Thing Template uses the same core vocabulary and information model from section 5.
+    </p>
+    <p>
+    The Thing Template enables:
+    <ul>
+    <li> management of multiple things by a cloud service. </li>
+    <li> simulation of devices/things that have not yet been developed.</li>
+    <li> common applications across devices from different manufacturers that share a common thing model.</li>
+    <li> combining multiple models into a thing.
+    </ul>
+    </p>
+    <p>
+    The Thing Template is a logical description of the interface and possible interaction with devices
+    (properties, actions and events), however it does not contain device-specific
+    information, such as a serial number, GPS location, security information or concrete protocol endpoints.
+    </p><p>
+    Since a Thing Template does not contain a protocol binding to specific endpoints and 
+    does not define a specific security mechanism, the <em>forms</em> and <em>securityDefinitions</em> and 
+    <em>security</em> keys must not be present.
+    </p><p>
+     The same Thing Template can be implemented by things from multiple vendors,
+    a thing can implement multiple thing templates, define additional metadata
+    (vendor, location, security) and define bindings to concrete protocols.
+    To avoid conflicts between properties, actions and events from different thing templates
+    that are combined into a common thing, all thse identifiers must be unique within a thing.
+    </p><p>
+    A common Thing Template for a class of devices enables writing applications across vendors and
+    creates a more attractive market for application developers.
+    A concrete Thing Description can implement multiple <em>Thing Templates</em> and
+    thus can aggregate function blocks into a combined device.
+    </p><p>
+    The business models of cloud vendors are typically built on managing thousands of identical devices.
+    All devices with the same Thing Template can be managed in the same way by cloud applications.
+    It is easy to create multiple simulated devices, if the interface and the instance are treated separately.
+    </p><p>
+    Since a Thing Template is a Thing Description, where some optional parts are not present, it can be serialized in the same way 
+    and into the same formats as a thing description.
+    </p>
+    
+      <section id="thing-template-examples">
+     <h2>Thing Template Examples</h2>
+    
+    This section defines a Thing Template for a lamp and a Thing Template for a a buzzer.
+    The combined thing BuzzerLamp includes both thing templates.
+    
+      <section id="lamp-thing-template">
+      <h3>Thing Template: Lamp</h3>
+    
+    <pre class="example" title="MyLampThingTemplate serialized in JSON">
+    {
+        "@context": ["http://www.w3.org/ns/td"], 
+        "@type" : "ThingTemplate",
+        "id": "urn:dev:wot:com:example:servient:lamp:model",
+        "name": "Lamp Thing Template",
+        "description" : "Lamp Thing Template",
+        "properties": {
+            "status": {
+                "description" : "current status of the lamp (on|off)",
+                "type": "string",
+                "readOnly": true
+            }
+        },
+        "actions": {
+            "toggle": {
+                "description" : "Turn the lamp on or off"
+            }
+        },
+        "events": {
+            "overheating": {
+                "description" : "Lamp reaches a critical temperature (overheating)",
+                "data": {"type": "string"}
+            }
+        }
+    }
+    </pre>
+    </section>
+    
+    <section id="buzzer-thing-template">
+    <h3>Thing Template: Buzzer</h3>
+    
+    <pre class="example" title="MyLampThingTemplate serialized in JSON">
+    {
+        "@context": ["http://www.w3.org/ns/td"], 
+        "@type" : "ThingTemplate",
+        "id": "urn:dev:wot:com:example:servient:buzzer:template",
+        "name": "Buzzer Thing Template",
+        "description" : "Thing template of a buzzer that makes noise for 10 seconds",
+         "actions": {
+            "buzz": {
+                "description" : "buzz for 10 seconds"
+            }
+         }
+    }
+    </pre>
+    </section>
+    
+    <section id="combination-lamp-buzzer-thingl">
+    <h3>Combined Thing: Lamp + Buzzer</h3>
+    <p>
+    The following example illustrates how a combined thing can be defined using two different thing templates.
+    </p>
+    <pre class="example" title="Combined Thing: Lamp + Buzzer (JSON-LD1.1 serialisation)">
+    {
+       "@context": ["http://www.w3.org/ns/td"], 
+       "@type" : [
+            "Thing",
+            "urn:dev:wot:com:example:servient:lamp:template",
+            "urn:dev:wot:com:example:servient:buzzer:template"
+        ],
+        "id": "urn:dev:wot:com:example:servient:combinedBuzzerLamp1",
+        "name": "My Buzzing Lamp Thing",
+        "description" : "A lamp that can issue an alert",
+        "security": [{"scheme": "basic"}],
+        {
+            "id": "urn:dev:wot:com:example:servient:lamp:template",
+            "name": "Lamp Thing Template",
+            "description" : "Thing Template for a lamp",
+            "properties": {
+                "status": {
+                    "description" : "current status of the lamp (on|off)",
+                    "type": "string",
+                    "readOnly": true,
+                    "forms": [{
+                    "href": "coaps://buzzlamp.example.com/status",
+                    "contentType": "application/json"
+                    }]
+                }
+            },
+            "actions": {
+                "toggle": {
+                    "description" : "Turn on or off the lamp",
+                    "forms": [{
+                        "href": "coaps://buzzlamp.example.com/toggle",
+                        "contentType": "application/json"
+                    }]
+                }
+            },
+            "events": {
+                "overheating": {
+                    "@type" : "iot:TemperatureAlarm",
+                    "description" : "Lamp reaches a critical temperature (overheating)",
+                    "data": {"type": "string"},
+                    "forms": [{
+                        "href": "coaps://buzzlamp.example.com/oh",
+                        "contentType": "application/json"
+                    }]
+                }
+            }
+        },
+        {
+            "id": "urn:dev:wot:com:example:servient:buzzer:template",
+            "name": "Buzzer Thing Template",
+            "description" : "Thing Template of a buzzer that makes noise for 10 seconds",
+             "actions": {
+                "buzz": {
+                    "description" : "buzz for 10 seconds",
+                    "forms": [{
+                        "href": "coaps://buzzlamp.example.com/buzz",
+                        "contentType": "application/json"
+                    }]
+                }
+             }
+        }
+    }
+      </pre>
+      </section>
+     </section>   
+     </section> 
+    
 
   <section id="changes" class="appendix">
   <h1>Recent Specification Changes</h1>
