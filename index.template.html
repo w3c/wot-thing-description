@@ -1645,24 +1645,6 @@ The <code>output</code> of this action is the photo taken, which is available in
     </span>
     </p>
     <p>
-    Security configuration must accurately reflect the requirements of the Thing.
-    <span class="rfc2119-assertion" id="td-security-binding">
-    If a Thing requires a specific access mechanism for a resource, that 
-    mechanism MUST be specified in the Thing Description's security scheme configuration 
-    for that resource. 
-    </span>  
-    <span class="rfc2119-assertion" id="td-security-no-extras">
-    If a Thing does not require a specific access mechanism for a resource, that 
-    mechanism MUST NOT be specified in the Thing Description's security scheme configuration 
-    for that resource. 
-    </span>  
-    Some protocols can ask for authentication dynamically.  
-    If a protocol asks for
-    a form of security credentials not declared in the Thing Description 
-    then the Thing Description
-    is to be considered invalid.
-    </p>
-    <p>
     The <code>nosec</code> security scheme is provided for the case that 
     no security is needed.
     The minimal security configuration for a Thing is configuration 
@@ -1841,10 +1823,8 @@ The <code>output</code> of this action is the photo taken, which is available in
     ...
 </pre>
 
-  </section> <!-- end of id="security-serialization-json"-->
-
-
-  <section id="version-serialization-json">
+</section> <!-- end of id="security-serialization-json"-->
+<section id="version-serialization-json">
     <h2><code>version</code></h2>
 
     <p><span class="rfc2119-assertion" id="td-version">
@@ -2365,6 +2345,117 @@ If included namespaces are based on class definitions such as those provided by 
   </section>
 
   </section> <!-- end of id="sec-td-serialization"-->
+<section id="behavior">
+<h2>Behavioral Constraints</h2>
+ <p>
+ The following assertions relate to the behavior of components of a 
+ WoT system, as opposed to the representation or information model of the TD. 
+ However, note that TDs are descriptive, 
+ and must in particular may be used to describe pre-existing network interfaces. 
+ In these cases, assertions cannot be made that constrain the behaviour of such 
+ pre-existing interfaces.  Instead, the assertions must be interpreted as 
+ constraints on the TD to accurately represent such interfaces. 
+ </p> 
+<section id="behavior-security">
+<h3>Security Behavior</h3>
+ <p>
+ To enable secure interoperation, 
+ security configurations must accurately reflect the requirements of the Thing:
+<ul>
+<li>
+ <span class="rfc2119-assertion" id="td-security-binding">
+ If a Thing requires a specific access mechanism for a resource, that 
+ mechanism MUST be specified in the Thing Description's security scheme configuration 
+ for that resource. 
+ </span>  
+</li>
+<li>
+ <span class="rfc2119-assertion" id="td-security-no-extras">
+ If a Thing does not require a specific access mechanism for a resource, that 
+ mechanism MUST NOT be specified in the Thing Description's security scheme configuration 
+ for that resource. 
+ </span>  
+</li>
+</ul>
+ Some security protocols may ask for authentication 
+ information dynamically, including required encoding or encryption schemes. 
+ One consequence of the above is that if a protocol asks for
+ a form of security credentials or an encoding or encryption scheme 
+ not declared in the Thing Description 
+ then the Thing Description is to be considered invalid.
+ </p>
+</section> <!-- end of id="behavior-security"-->
+<section id="behavior-data">
+<h3>Data Constraints</h3>
+<p>The data schemas provided in the TD should accurately represent the 
+data payloads returned and accepted by the described Thing
+in the interactions specified in the TD.  In general, clients should
+follow the data schemas strictly, not generating anything not given
+in the WoT Thing Description, but should accept additional data from
+the server not given explicitly in the WoT Thing Decription for that
+server.  In general, servers are <em>described</em> by WoT Thing Descriptions,
+but clients are <em>constrained</em> to follow WoT Thing Descriptions when
+interacting with servers.
+<ul>
+<li>
+<span class="rfc2119-assertion" 
+      id="client-data-schema">
+A WoT Thing acting as a client when interacting with another target Thing 
+described in a WoT Thing Description MUST generate data  
+organized according to the data schemas given in the corresponding
+interactions.
+</span>
+</li>
+<li>
+<span class="rfc2119-assertion" 
+      id="server-data-schema">
+A WoT Thing Description describing a server MUST accurately describe the 
+data returned and accepted by each interaction.
+</span>
+</li>
+<li>
+<span class="rfc2119-assertion" 
+      id="server-data-schema-extras">
+A WoT Thing acting as a server MAY return additional data from an interaction  
+even when such data is 
+not described in the data schemas given in the target Thing's WoT Thing Description.
+</span>
+</li>
+<li>
+<span class="rfc2119-assertion" 
+      id="client-data-schema-accept-extras">
+A WoT Thing acting as a client when interacting with another Thing MUST accept without
+error any additional data  
+not described in the data schemas given in the target Thing's WoT Thing Description.
+</span>
+</li>
+<li>
+<span class="rfc2119-assertion" 
+      id="client-data-schema-no-extras">
+A WoT Thing acting as a client when interacting with another Thing MUST NOT generate data  
+not described in the data schemas given in that Thing's WoT Thing Description.
+</span>
+</li>
+<li>
+<span class="rfc2119-assertion" 
+      id="client-uri-template">
+A WoT Thing acting as a client when interacting with another Thing MUST generate URIs 
+according to the URI templates, base URLs, and form href parameters 
+given in the target Thing's WoT Thing Description.
+</span>
+</li>
+<li>
+<span class="rfc2119-assertion" 
+      id="server-uri-template">
+URI templates, base URLs, and form href parameters 
+in a WoT Thing Description MUST accurately describe URIs
+returned by a target Thing acting as a server.
+</span>
+</li>
+</ul>
+</p>
+</section> <!-- end of id="behavior-data"-->
+</section> <!-- end of id="behavior"-->
 
   <section id="example-serialization">
   <h2>Example Thing Description Instances</h2>
@@ -2824,6 +2915,7 @@ If included namespaces are based on class definitions such as those provided by 
   <h1>Recent Specification Changes</h1>
   <h2 id="changes3">Changes from Third Public Working Draft</h2>
   <ul>
+    <li>Behavioral constraints were added and organized in a new section.</li>
     <li><a href="#multilanguage">Multi-language</a> is supported for human-readable text such as <code>descriptions</code> and <code>titles</code>.</li>
     <!-- li>The type of <code>support</code> member in <a href="#thing">Thing</a> class was changed to "anyURI".</li -->
     <li><a href="#nullschema">NullSchema</a> class was added.</li>
@@ -2858,7 +2950,7 @@ members that define data that needs to be passed upon subscription and cancellat
 
   <section id="acknowledgements" class="appendix normative">
   <h1>Acknowledgements</h1>
-  <p>The editors would like to thank Dave Raggett, Matthias Kovatsch, Michael McCool, Michael Koster, Victor Charpenay, Kawaguchi Toru, Michael Lagally, Kazuyuki Ashimura, María Poveda, Daniel Peintner, Ben Francis for their contributions, comments, and guidance.</p>
+  <p>The editors would like to thank Dave Raggett, Matthias Kovatsch, Michael Koster, Kawaguchi Toru, Michael Lagally, Kazuyuki Ashimura, María Poveda, Daniel Peintner, Ben Francis for their contributions, comments, and guidance.</p>
   </section>
 
 </body>
