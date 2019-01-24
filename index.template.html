@@ -2343,10 +2343,9 @@ If included namespaces are based on class definitions such as those provided by 
 
 
   <p>
-  To validate the semantic meaning and follow references to external 
-  context vocabulary terms (e.g., iot.schema.org), use of JSON-LD or RDF-based  
-  tools and libraries is highly recommended 
-  as explained in the next sub-section. 
+  To integrate a Thing Description instance with external knowledge and contextual
+  information (like iot.schema.org annotations), the use of JSON-LD and RDF-based  
+  tools and libraries is highly recommended, as explained in the next sub-section. 
   </p>
 
   </section>
@@ -2355,9 +2354,177 @@ If included namespaces are based on class definitions such as those provided by 
   <section id="note-jsonld10-processing">
         <h2>JSON-LD 1.0 Processing</h2>
 
-        <p>To interpret the semantic meaning of a Thing Description
-                in terms of RDF triples, a Thing Description instance can be simple transformed into a RDF-based serializiation format by JSON-LD 1.0. 
- 
+        <p>
+        To interpret a Thing Description instance in terms of RDF triples, it must
+        first be processed to be transformed from plain JSON to JSON-LD 1.0. The
+        transformation consists in assigning the following values to every
+        object of a Thing Description instance:
+        <ul>
+            <li>
+                an identifer (<code>@id</code>) that would allow for the reverse
+                transformation from RDF back to JSON-LD
+            </li>
+            <li>
+                a type (<code>@type</code>) for RDF validation
+            </li>
+            <li>
+                a context (<code>@context</code>) for the transformation from
+                JSON-LD to RDF
+            </li>
+        </ul>
+        </p>
+
+        <p>
+        To implement this transformation, the input object can be
+        recursively traversed to compute a <em>JSON pointer</em>
+        [[rfc6901]], then interpreted as a relative IRI, for every nested object
+        included in the Thing Description instance. Some of the nested objects are
+        plain indexes and do not require an identifier (see
+        <a href="#json-ld-index-list">the first table</a>).
+        The mapping from pointers to types and contexts are also given in
+        <a href="#json-ld-type-map">the second</a> and
+        <a href="#json-ld-context-map">third</a> tables.
+        </p>
+
+        <table id="json-ld-index-list" class="def">
+            <thead>
+                <tr>
+                    <td>Regular Expression</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>/properties</code></td></tr>
+                <tr><td><code>/actions</code></td></tr>
+                <tr><td><code>/events</code></td></tr>
+                <tr><td><code>/properties(/.*)?/properties</code></td></tr>
+                <tr><td><code>/actions/[^/]*/input(/.*)?/properties</code></td></tr>
+                <tr><td><code>/actions/[^/]*/output(/.*)?/properties</code></td></tr>
+                <tr><td><code>/events/[^/]*/data(/.*)?/properties</code></td></tr>
+                <tr><td><code>/events/[^/]*/subscription(/.*)?/properties</code></td></tr>
+                <tr><td><code>/events/[^/]*/cancellation(/.*)?/properties</code></td></tr>
+            </tbody>
+            <caption>Indexed value list</caption>
+        </table>
+
+        <table id="json-ld-type-map" class="def">
+            <thead>
+                <tr>
+                    <td>Regular Expression</td>
+                    <td>Type</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><em>(empty string)</em></td>
+                    <td><code>Thing</code></td>
+                </tr>
+                <tr>
+                    <td><code>/properties/[^/]*</code></td>
+                    <td><code>Property</code></td>
+                </tr>
+                <tr>
+                    <td><code>/actions/[^/]*</code></td>
+                    <td><code>Action</code></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*</code></td>
+                    <td><code>Event</code></td>
+                </tr>
+                <tr>
+                    <td><code>(/.*)/forms/[0-9]*</code></td>
+                    <td><code>Form</code></td>
+                </tr>
+                <tr>
+                    <td><code>/properties/[^/]*</code></td>
+                    <td><code>DataSchema</code></td>
+                </tr>
+                <tr>
+                    <td><code>/actions/[^/]*/input</code></td>
+                    <td><code>DataSchema</code></td>
+                </tr>
+                <tr>
+                    <td><code>/actions/[^/]*/output</code></td>
+                    <td><code>DataSchema</code></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*/data</code></td>
+                    <td><code>DataSchema</code></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*/subscription</code></td>
+                    <td><code>DataSchema</code></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*/cancellation</code></td>
+                    <td><code>DataSchema</code></td>
+                </tr>
+            </tbody>
+            <caption>Type mapping</caption>
+        </table>
+
+        <table id="json-ld-context-map" class="def">
+            <thead>
+                <tr>
+                    <td>Regular Expression</td>
+                    <td>Context</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><em>(empty string)</em></td>
+                    <td><code>http://www.w3.org/ns/td</code></td>
+                </tr>
+                <tr>
+                    <td><code>/properties/[^/]*</code></td>
+                    <td><pre><code>
+{
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "jsonschema": "http://w3.org/ns/json-schema#"",
+    "type": "rdf:type",
+    "object": "jsonschema:ObjectSchema",
+    ...
+}
+                    </code></pre></td>
+                </tr>
+                <tr>
+                    <td><code>/actions/[^/]*/input</code></td>
+                    <td><em>idem</em></td>
+                </tr>
+                <tr>
+                    <td><code>/actions/[^/]*/output</code></td>
+                    <td><em>idem</em></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*/data</code></td>
+                    <td><em>idem</em></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*/subscription</code></td>
+                    <td><em>idem</em></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*/cancellation</code></td>
+                    <td><em>idem</em></td>
+                </tr>
+                <tr>
+                    <td><code>/security/[^/]*</code></td>
+                    <td><pre><code>
+{
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "wotsec": "http://w3.org/ns/wot-security#"",
+    "type": "rdf:type",
+    "object": "wotsec:NoSecurityScheme",
+    ...
+}
+                    </code></pre></td>
+                </tr>
+            </tbody>
+            <caption>Context mapping</caption>
+        </table>
+    
+        <p class="issue">
+        Currently, the context served at <code>http://www.w3.org/ns/td</code> is a
+        JSON-LD 1.1 context. The complete transformation will therefore fail.
         </p>
 
     </section>
