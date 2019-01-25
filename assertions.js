@@ -120,6 +120,30 @@ const src_raw = fs.readFileSync(src_htmlfile, 'UTF-8');
 var src_dom = cheerio.load(src_raw);
 var src_title = src_dom('title').text();
 
+// Check if an dom object is in an array.  Does deep comparison.
+// Used to check for assertion variants/duplicates.  We can't just 
+// use the built-in Set since it does not do a deep compare and there
+// is no way to customize it (insert swearing here).
+function is_object_in_array(o,a) {
+  let t1 = o.toString();
+  for (let i=0; i<a.length; i++) {
+    let t2 = a[i].toString();
+    if (t1 == t2) return true;
+  }
+  return false;
+}
+
+// push a new item onto an array only if it is unique, using above
+// deep compare to check for duplicates; return new array.
+// also converts undefined values to arrays with just one element.
+function push_uniq(a,o) {
+  if (undefined === a) return [o];
+  if (!is_object_in_array(o,a)) {
+    a.push(o);
+  }
+  return a;
+}
+
 // Extract span assertions
 // (Synchronous)
 var src_assertions = {};
@@ -128,7 +152,7 @@ src_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
     if (undefined === id) {
         if (warn_v) console.log("WARNING: rfc2119-assertion without id:",src_dom(this).html());
     } else {
-        src_assertions[id] = src_dom(this);
+        src_assertions[id] = push_uniq(src_assertions[id],src_dom(this));
     }
 });
 
@@ -146,12 +170,11 @@ src_dom('tr[class="rfc2119-table-assertion"]').each(function(i,elem) {
                       + assertion_data[0]         // vocab term
                       + ': ' + assertion_data[1]  // vocab text
                       + (("yes" === assertion_data[2]) ? '<hr/>\nMUST be included.' : '<hr/>\nMAY be included.')
-                      + (("." === assertion_data[3]) ? '' : '\nDefault: '+assertion_data[3]+'.')
-                      + ('\nType: '+assertion_data[4]+'.')
+                      + (("." === assertion_data[3]) ? '' : '\nType: '+assertion_data[3]+'.')
                       +'</span>';
         if (chatty_v) console.log("table assertion",id,"added");
         if (debug_v) console.log("  text:",assertion);
-        tab_assertions[id] = cheerio.load(assertion)("span");
+        tab_assertions[id] = push_uniq(tab_assertions[id],cheerio.load(assertion)("span"));
     }
 });
 
@@ -160,7 +183,7 @@ src_dom('tr[class="rfc2119-table-assertion"]').each(function(i,elem) {
 const ea_raw = fs.readFileSync(ea_htmlfile, 'UTF-8');
 var ea_dom = cheerio.load(ea_raw);
 
-// Extract assertions
+// Extract extra assertions, store in map
 // (Synchronous)
 var extra_assertions = {};
 ea_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
@@ -168,7 +191,7 @@ ea_dom('span[class="rfc2119-assertion"]').each(function(i,elem) {
     if (undefined === id) {
         if (warn_v) console.log("WARNING: rfc2119-assertion without id:", ea_dom(this).html());
     } else {
-        extra_assertions[id] = ea_dom(this);
+        extra_assertions[id] = push_uniq(extra_assertions[id],ea_dom(this));
     }
 });
 
@@ -263,7 +286,7 @@ function merge_results(done_callback) {
     done_callback(merged_results);
 }
 
-// Get depends
+// Get dependencies
 // (Asynchronous)
 var depends = new Map();
 function get_depends(done_callback) {
@@ -536,193 +559,199 @@ report_dom('head>title').append(src_title);
 // report_dom('body').append('<dl></dl>');
 function merge_assertions(assertions,ac,done_callback) {
   // insert assertions
-  for (a in assertions) {
-    if (chatty_v) console.log("Processing assertion "+a);
+  for (a_id in assertions) {
+    let n = assertions[a_id].length;
+    for (let i = 0; i < n; i++) { 
+      a_dom = assertions[a_id][i];
+      let a = a_id;
+      if (n > 1) a += "-" + (i+1);
+      if (chatty_v) console.log("Processing assertion "+a);
 
-    // Results template
-    fs.appendFileSync(results_csvfile, '"'+a+'","null",\n');
+      // Results template
+      fs.appendFileSync(results_csvfile, '"'+a+'","null",\n');
 
-    // Test Specifications Appendix
-    report_dom('#testspecs').append('\n<dt></dt>');
-    let report_dt = report_dom('#testspecs>dt:last-child');
-    report_dt.append('\n\t<a href="'+report_base+'#'+a+'">'+a+'</a>:');
-    if ("tabassertion" === ac) {
-       report_dt.append(' <em>(table)</em>');
-    }
-    if ("extraassertion" === ac) {
-       report_dt.append(' <em>(extra)</em>');
-    }
+      // Test Specifications Appendix
+      report_dom('#testspecs').append('\n<dt></dt>');
+      let report_dt = report_dom('#testspecs>dt:last-child');
+      report_dt.append('\n\t<a href="'+report_base+'#'+a+'">'+a+'</a>:');
+      if ("tabassertion" === ac) {
+        report_dt.append(' <em>(table)</em>');
+      }
+      if ("extraassertion" === ac) {
+        report_dt.append(' <em>(extra)</em>');
+      }
 
-    let category = undefined;
-    let req = false;
-    {
-	    if (assertions[a].text().indexOf('MUST') > -1) {
-		if (assertions[a].text().indexOf('MUST NOT') > -1) {
-		    category = 'MUST NOT';
-		} else {
-		    category = 'MUST';
-		}
-		req = true;
-	    }
-	    if (assertions[a].text().indexOf('SHOULD') > -1) {
-		if (assertions[a].text().indexOf('SHOULD NOT') > -1) {
-		    category = 'SHOULD NOT';
-		} else {
-		    category = 'SHOULD';
-		}
-	    }
-	    if (assertions[a].text().indexOf('MAY') > -1) {
-		category = 'MAY';
-	    }
-	    if (assertions[a].text().indexOf('REQUIRED') > -1) {
-		category = 'REQUIRED';
-		req = true;
-	    }
-	    if (assertions[a].text().indexOf('RECOMMENDED') > -1) {
-		category = 'RECOMMENDED';
-	    }
-	    if (assertions[a].text().indexOf('OPTIONAL') > -1) {
-		category = 'OPTIONAL';
-	    }
+      // Get text
+      let a_text = a_dom.text();
 
-	    if (undefined === category) {
-	        if (warn_v) console.log("WARNING: RFC2119 category is not defined for",a);
-            }
-            if (repeat_assertion_in_appendix) {
-	        if (undefined === category) {
-		    report_dt.append(': <strong>category is undefined</strong>');
-	        } else {
-		    report_dt.append(': <strong>'+category+'</strong>');
-	        }
-	    }
-    }
+      let category = undefined;
+      let req = false;
+      {
+        if (a_text.indexOf('MUST') > -1) {
+          if (a_text.indexOf('MUST NOT') > -1) {
+            category = 'MUST NOT';
+	  } else {
+            category = 'MUST';
+          }
+          req = true;
+        }
+        if (a_text.indexOf('SHOULD') > -1) {
+          if (a_text.indexOf('SHOULD NOT') > -1) {
+            category = 'SHOULD NOT';
+          } else {
+            category = 'SHOULD';
+          }
+        }
+        if (a_text.indexOf('MAY') > -1) {
+          category = 'MAY';
+        }
+        if (a_text.indexOf('REQUIRED') > -1) {
+          category = 'REQUIRED';
+          req = true;
+        }
+        if (a_text.indexOf('RECOMMENDED') > -1) {
+          category = 'RECOMMENDED';
+        }
+        if (a_text.indexOf('OPTIONAL') > -1) {
+          category = 'OPTIONAL';
+        }
 
-    // retreive text of assertion
-    a_text = assertions[a];
+        if (undefined === category) {
+          if (warn_v) console.log("WARNING: RFC2119 category is not defined for",a);
+        }
+        if (repeat_assertion_in_appendix) {
+          if (undefined === category) {
+            report_dt.append(': <strong>category is undefined</strong>');
+          } else {
+            report_dt.append(': <strong>'+category+'</strong>');
+          }
+        }
+      }
+  
+      // Make table
 
-    // Table
-
-    // ID
-    report_dom('table#testresults>tbody:last-child')
+      // ID
+      report_dom('table#testresults>tbody:last-child')
         .append('\n<tr id="'+a+'" class="'+ac+'"></tr>');
 
-    // Assertion
-    let report_tr = report_dom('tr#'+a);
-    report_tr.append('\n\t<td class="'+ac+'"><a target="spec" href="'+src_base+'#'+a+'">'+a+'</a></td>');
-    if (undefined != categories.get(a)) {
-       report_tr.append('\n\t<td class="'+ac+'">'+categories.get(a)+'</td>\n');
-    } else {
-       report_tr.append('\n\t<td class="'+ac+'"></td>');
-    }
-    if (undefined != risks.get(a)) {
-       report_tr.append('\n\t<td class="atrisk">'+a_text+'</td>');
-    } else {
-       report_tr.append('\n\t<td class="'+ac+'">'+a_text+'</td>');
-    }
+      // Assertion
+      let report_tr = report_dom('tr#'+a);
+      report_tr.append('\n\t<td class="'+ac+'"><a target="spec" href="'+src_base+'#'+a+'">'+a+'</a></td>');
+      if (undefined != categories.get(a)) {
+        report_tr.append('\n\t<td class="'+ac+'">'+categories.get(a)+'</td>\n');
+      } else {
+        report_tr.append('\n\t<td class="'+ac+'"></td>');
+      }
+      if (undefined != risks.get(a)) {
+        report_tr.append('\n\t<td class="atrisk">'+a_text+'</td>');
+      } else {
+        report_tr.append('\n\t<td class="'+ac+'">'+a_text+'</td>');
+      }
 
-    // Req
-    if (req) {
+      // Req
+      if (req) {
         report_tr.append('\n\t<td class="'+ac+'">Y</td>');
-    } else {
+      } else {
         report_tr.append('\n\t<td class="'+ac+'">N</td>');
-    }
+      }
 
-    // Parent(s) and Context(s)
-    let d = depends.get(a);
-    if (undefined != d) {
+      // Parent(s) and Context(s)
+      let d = depends.get(a);
+      if (undefined != d) {
         let p = d.parents;
         if (undefined != p && "null" !== p) {
-            let ps = p.split(' ');
-            let h = '\n\t<td class="'+ac+'">';
-            for (let i=0; i<ps.length; i++) {
-                h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a> ';
-            }
-            report_tr.append(h+'\n\t</td>');
+          let ps = p.split(' ');
+          let h = '\n\t<td class="'+ac+'">';
+          for (let i=0; i<ps.length; i++) {
+            h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a> ';
+          }
+          report_tr.append(h+'\n\t</td>');
         } else {
-            report_tr.append('\n\t<td class="'+ac+'"></td>');
+          report_tr.append('\n\t<td class="'+ac+'"></td>');
         }
         let c = d.contexts;
         if (undefined != c && "null" !== c) {
-            let cs = c.split(' ');
-            let h = '\n\t<td class="'+ac+'">';
-            for (let i=0; i<cs.length; i++) {
-                h = h + '\n\t\t<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a> ';
-            }
-            report_tr.append(h+'\n\t</td>');
-        } else {
-            report_tr.append('\n\t<td class="'+ac+'"></td>');
-        }
-    } else {
-        report_tr.append('\n\t<td class="'+ac+'"></td>');
-        report_tr.append('\n\t<td class="'+ac+'"></td>');
-    }
-
-    // Test Results
-    let result = merged_results.get(a);
-    if (undefined != result) {
-       // Number of reported pass statuses
-       let pass = result.pass;
-       if (undefined != pass) {
-          if (pass >= 2) {
-             report_tr.append('\n\t<td class="'+ac+'">'+pass+'</td>');
-          } else {
-             report_tr.append('\n\t<td class="failed">'+pass+'</td>');
+          let cs = c.split(' ');
+          let h = '\n\t<td class="'+ac+'">';
+          for (let i=0; i<cs.length; i++) {
+            h = h + '\n\t\t<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a> ';
           }
-       } else {
+          report_tr.append(h+'\n\t</td>');
+        } else {
+          report_tr.append('\n\t<td class="'+ac+'"></td>');
+        }
+      } else {
+        report_tr.append('\n\t<td class="'+ac+'"></td>');
+        report_tr.append('\n\t<td class="'+ac+'"></td>');
+      }
+
+      // Test Results
+      let result = merged_results.get(a);
+      if (undefined != result) {
+        // Number of reported pass statuses
+        let pass = result.pass;
+        if (undefined != pass) {
+          if (pass >= 2) {
+            report_tr.append('\n\t<td class="'+ac+'">'+pass+'</td>');
+          } else {
+            report_tr.append('\n\t<td class="failed">'+pass+'</td>');
+          }
+        } else {
           report_tr.append('\n\t<td class="missing"></td>');
 	  pass = 0;
-       }
-       // Number of reported fail statuses
-       let fail = result.fail;
-       if (undefined != fail) {
+        }
+        // Number of reported fail statuses
+        let fail = result.fail;
+        if (undefined != fail) {
           if (fail > 0) {
-             report_tr.append('\n\t<td class="failed">'+fail+'</td>');
+            report_tr.append('\n\t<td class="failed">'+fail+'</td>');
           } else {
-             report_tr.append('\n\t<td class="'+ac+'">'+fail+'</td>');
+            report_tr.append('\n\t<td class="'+ac+'">'+fail+'</td>');
           }
-       } else {
+        } else {
           report_tr.append('\n\t<td class="'+ac+'"></td>');
 	  fail = 0;
-       }
-       // Number of reported not implemented statuses
-       let notimpl = result.notimpl;
-       if (undefined != notimpl) {
+        }
+        // Number of reported not implemented statuses
+        let notimpl = result.notimpl;
+        if (undefined != notimpl) {
           report_tr.append('\n\t<td class="'+ac+'">'+notimpl+'</td>');
-       } else {
+        } else {
           report_tr.append('\n\t<td class="'+ac+'"></td>');
 	  notimpl = 0;
-       }
-       // Total number of reported statuses
-       let totals = pass + fail + notimpl;
-       if (0 == totals) {
-           report_tr.append('\n\t<td class="missing"></td>');
-       } else if (totals < 2) {
-           report_tr.append('\n\t<td class="failed">'+totals+'</td>');
-       } else {
-           report_tr.append('\n\t<td class="'+ac+'">'+totals+'</td>');
-       }
-    } else {
-       report_tr.append('\n\t<td class="missing"></td>');
-       report_tr.append('\n\t<td class="missing"></td>');
-       report_tr.append('\n\t<td class="missing"></td>');
-       report_tr.append('\n\t<td class="missing"></td>');
-    }
+        }
+        // Total number of reported statuses
+        let totals = pass + fail + notimpl;
+        if (0 == totals) {
+          report_tr.append('\n\t<td class="missing"></td>');
+        } else if (totals < 2) {
+          report_tr.append('\n\t<td class="failed">'+totals+'</td>');
+        } else {
+          report_tr.append('\n\t<td class="'+ac+'">'+totals+'</td>');
+        }
+      } else {
+        report_tr.append('\n\t<td class="missing"></td>');
+        report_tr.append('\n\t<td class="missing"></td>');
+        report_tr.append('\n\t<td class="missing"></td>');
+        report_tr.append('\n\t<td class="missing"></td>');
+      }
 
-    // Add to test spec appendix
-    report_dom('#testspecs').append('\n<dd id="'+a+'" class="'+ac+'"></dd>');
-    let report_dd = report_dom('dd#'+a);
-    if (repeat_assertion_in_appendix) {
+      // Add to test spec appendix
+      report_dom('#testspecs').append('\n<dd id="'+a+'" class="'+ac+'"></dd>');
+      let report_dd = report_dom('dd#'+a);
+      if (repeat_assertion_in_appendix) {
         report_dd.append(a_text);
         report_dd.append('\n\t<br/>');
-    }
-    a_spec = testspec[a];
-    report_dd.append('\n\t<span></span>');
-    let report_li = report_dom('dd#'+a+'>span:last-child');
-    if (undefined === a_spec) {
+      }
+      a_spec = testspec[a];
+      report_dd.append('\n\t<span></span>');
+      let report_li = report_dom('dd#'+a+'>span:last-child');
+      if (undefined === a_spec) {
         if (warn_v) console.log("WARNING: no test spec for",a);
         report_li.append('\n\t\t<p><strong>NO TEST SPECIFICATION</strong></p>');
-    } else {
+      } else {
         report_li.append('\n\t\t'+a_spec);
+      }
     }
   }
   done_callback();
