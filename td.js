@@ -50,9 +50,17 @@ function type(pointer) {
 const jsonschema = {
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'jsonschema': 'http://w3.org/ns/json-schema#',
-    'type': 'rdf:type',
+    'type': {
+        '@id': 'rdf:type',
+        '@type': '@vocab'
+    },
     'object': 'jsonschema:ObjectSchema',
-    // TODO 
+    'array': 'jsonschema:ArraySchema',
+    'boolean': 'jsonschema:BooleanSchema',
+    'string': 'jsonschema:StringSchema',
+    'number': 'jsonschema:NumberSchema',
+    'integer': 'jsonschema:IntegerSchema',
+    'null': 'jsonschema:NullSchema',
     'properties': {
         '@id': 'jsonsschema:properties',
         '@container': '@index'
@@ -62,9 +70,20 @@ const jsonschema = {
 const wotsec = {
     'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'wotsec': 'http://w3.org/ns/wot-security#',
-    'scheme': 'rdf:type',
-    'nosec': 'wotsec:NoSecurityScheme'
-    // TODO
+    'scheme': {
+        '@id': 'rdf:type',
+        '@type': '@vocab'
+    },
+    'nosec': 'wotsec:NoSecurityScheme',
+    'basic': 'wotsec:BasicSecurityScheme',
+    'digest': 'wotsec:DigestSecurityScheme',
+    'apikey': 'wotsec:APIKeySecurityScheme',
+    'bearer': 'wotsec:BearerSecurityScheme',
+    'cert': 'wotsec:CertSecurityScheme',
+    'psk': 'wotsec:PSKSecurityScheme',
+    'public': 'wotsec:PublicSecurityScheme',
+    'pop': 'wotsec:PoPSecurityScheme',
+    'oauth2': 'wotsec:OAuth2SecurityScheme'
 };
 
 const contexts = {
