@@ -63,7 +63,7 @@ const jsonschema = {
     'integer': 'jsonschema:IntegerSchema',
     'null': 'jsonschema:NullSchema',
     'properties': {
-        '@id': 'jsonsschema:properties',
+        '@id': 'jsonschema:properties',
         '@container': '@index'
     }
 };
