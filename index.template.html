@@ -338,7 +338,7 @@
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "securityDefinitions": {
-        "basic_sc": {"scheme": "basic"}
+        "basic_sc": {"scheme": "basic", "in":"header"}
     },
     "security": ["basic_sc"],
     "properties": {
@@ -366,7 +366,7 @@
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "securityDefinitions": {
-        "basic_sc": {"scheme": "basic"}
+        "basic_sc": {"scheme": "basic", "in":"header"}
     },
     "security": ["basic_sc"],
     "properties": {
@@ -1388,7 +1388,7 @@
   MUST be serialized as a JSON name.
   </span></p>
 
-  <p><span class="rfc2119-assertion" id="td-event-response-arrays">
+  <p><span class="rfc2119-assertion" id="td-event-response-object">
     If required, the type of the member <code>response</code> 
         MUST be serialized as a JSON object.
         </span>
@@ -1517,7 +1517,7 @@ The <code>output</code> of this action is the photo taken, which is available in
           "contentType": "application/json",
           "op": ["readallproperties"],
           "http:methodName": "GET"
-        }
+        },
         {
           "href": "https://mylamp.example.com/allproperties",
           "contentType": "application/json",
@@ -1619,6 +1619,7 @@ The <code>output</code> of this action is the photo taken, which is available in
            "proxy": "https://portal.example.com/"
         },
         "bearer_sc": {
+           "in":"header",
            "scheme": "bearer",
            "format": "jwt",
            "alg": "ES256",
@@ -1739,8 +1740,8 @@ The <code>output</code> of this action is the photo taken, which is available in
     "securityDefinitions": {
         "nosec_sc": {"scheme": "nosec"},
         "basic_sc": {"scheme": "basic"},
-        "digest_sc": {"scheme": "digest"},
-        "apikey_sc": {"scheme": "apikey"}
+        "digest_sc": {"scheme": "digest","qop":"auth","in":"header"},
+        "apikey_sc": {"scheme": "apikey","in":"header"}
     },
     "security": ["nosec_sc"]
     ...
@@ -2534,15 +2535,15 @@ returned by a target Thing acting as a server.
             "security": ["nosec_sc"],
             "events": {
                 "lightSensor": {
-                "type": "integer",
-                "forms": [
-                    {
-                        "href": "mqtt://192.168.1.187:1883/lightSensor",
-                        "contentType" : "text/plain"
-                    }
-                ]
-            }
-        } 
+                    "data":{"type": "integer"},
+                    "forms": [
+                        {
+                            "href": "mqtt://192.168.1.187:1883/lightSensor",
+                            "contentType" : "text/plain"
+                        }
+                    ]
+                }
+            } 
         }
 </pre>
   </section>
