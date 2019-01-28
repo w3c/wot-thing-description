@@ -91,22 +91,6 @@
                 , authors:  ["Tom Preston-Werner"]
                 , date: "26 December 2017"
                 }
-              , "BCP47": {
-                  title:    "Tags for Identifying Languages"
-                , href:     "https://tools.ietf.org/html/bcp47"
-                , authors:  [
-                    "A. Phillips"
-                  , "M. Davis"
-                  ]
-                , date: "2009"
-                , status:    "Request for Comments"
-                , publisher: "IETF"
-                }
-              , "MEDIATYPES": {
-                  title:    "Media Types"
-                , href:     "https://www.iana.org/assignments/media-types/media-types.xhtml"
-                , publisher: "IANA"
-                }
               , "WOT-ARCHITECTURE" : {
                   title: "Web of Things Architecture"
                 , href: "https://w3c.github.io/wot-architecture/"
@@ -138,7 +122,7 @@
                 , publisher: "W3C"
                 , date: "WIP"
                 }
-	          , "WOT-PROTOCOL-BINDING" : {
+	      , "WOT-PROTOCOL-BINDING" : {
                   title: "Web of Things Protocol Binding Templates"
                 , href: "https://w3c.github.io/wot-binding-templates/"
                 , authors:  [
@@ -146,6 +130,19 @@
                   ]
                 , publisher: "W3C"
                 , date: "12 January 2018"
+                }
+	      , "MQTT" : {
+                  title: "MQTT Version 5.0"
+                , href: "http://docs.oasis-open.org/mqtt/mqtt/v5.0/cos01/mqtt-v5.0-cos01.html"
+                , authors:  [
+                    "Andrew Banks",
+                    "Ed Briggs",
+                    "Ken Borgendale",
+                    "Rahul Gupta"
+                  ]
+                , publisher: "OASIS"
+                , date: "31 October 2018"
+                , status: "Candidate OASIS Standard 01"
                 }
               }
             , otherLinks: [
@@ -319,9 +316,9 @@
   Events are used for the push model of communication where notifications,
   discrete events, or streams of values are sent asynchronously to the receiver.
   In general, the TD provides metadata for different communication bindings 
-  identified by URI schemes (e.g., "http", "coap", "mqtt", etc.),
-  content types (e.g., "application/json", "application/xml", "application/cbor",
-  "application/exi" etc.), and security mechanisms (for authentication,
+  identified by URI schemes [[!IANA-URI-SCHEMES]] (e.g., "http", "coap", etc.),
+  content types based on media types (e.g., "application/json", "application/xml", "application/cbor",
+  "application/exi" etc.) [[!IANA-MEDIA-TYPES]], and security mechanisms (for authentication,
   authorization, confidentiality, etc.).
   Serialization of TD instances is based on JSON and includes at least 
   the TD core vocabulary as JSON names as defined in this specification document.
@@ -751,7 +748,7 @@
       Also, since OpenAPI primarily targets web services built around HTTP, it does not 
       cover the full set of use cases required for the IoT.  
       Security schemes appropriate 
-      for IoT-centered protocols such as CoAP and MQTT are therefore also included.
+      for IoT-centered protocols such as CoAP [[?RFC7252]] and MQTT [[?MQTT]] are therefore also included.
       </p>
     
       <p class="ednote" title="Security Scheme Extensions">
@@ -1393,7 +1390,7 @@
 
   <p><span class="rfc2119-assertion" id="td-event-response-arrays">
     If required, the type of the member <code>response</code> 
-        MUST be serialized as a JSON array.
+        MUST be serialized as a JSON object.
         </span>
     </p>
 
@@ -1466,7 +1463,7 @@
     </pre>
 
 
-   <p>The <code>contentType</code> is used to assign a media types [[!MEDIATYPES]] and MAY contain one or more parameters as 
+   <p>The <code>contentType</code> is used to assign a media types [[!IANA-MEDIA-TYPES]] and MAY contain one or more parameters as 
     attribute-value pair separated by a <code>;</code> character. Example:</p>
 
    <pre class="example">
@@ -1721,7 +1718,7 @@ The <code>output</code> of this action is the photo taken, which is available in
       <p>
       Security configurations can also can be specified for different elements
       at the same level.  This may be required for devices that support
-      multiple protocols, for example CoAP and HTTP, with support for different
+      multiple protocols, for example CoAP [[?RFC7252]] and HTTP, with support for different
       security mechanisms.  This is also useful when alternative authentication
       mechanisms are allowed.  Here is a TD snippet demonstrating three possible
       ways to access a resource: via HTTPS with basic authentication, via HTTPS
@@ -2254,7 +2251,7 @@ If included namespaces are based on class definitions such as those provided by 
 
   <p>
   The JSON-based serialization of the TD is identified by 
-  the media type [[!MEDIATYPES]] <code>application/td+json</code>.
+  the media type [[!IANA-MEDIA-TYPES]] <code>application/td+json</code>.
   </p>
 
   <p class="ednote" title="CoAP Content Format">
@@ -2470,7 +2467,7 @@ returned by a target Thing acting as a server.
       <li>Context extension: none</li>
       <li>Offered interactions: 1 property, 1 action, 1 event</li>
       <li>Security: PSKSecurityScheme</li>
-      <li>Protocol binding: CoAP over TLS</li>
+      <li>Protocol binding: CoAP [[?RFC7252]] over TLS</li>
       <li>Serializiation: JSON</li>
       <li>Comment: none</li>
 
@@ -2523,7 +2520,7 @@ returned by a target Thing acting as a server.
       <li>Context extension: none</li>
       <li>Offered interactions: 1 event</li>
       <li>Security: none</li>
-      <li>Protocol binding: MQTT</li>
+      <li>Protocol binding: MQTT [[?MQTT]]</li>
       <li>Serializiation: text </li>
       <li>Comment: An MQTT client frequently publishes the light sensor data (number is serialized in text format) to 
           the topic /lightSensor by the MQTT broker running behind the address 192.168.1.187:1883. </li>
@@ -2915,6 +2912,7 @@ returned by a target Thing acting as a server.
   <h1>Recent Specification Changes</h1>
   <h2 id="changes3">Changes from Third Public Working Draft</h2>
   <ul>
+<<<<<<< HEAD
     <li>Behavioral constraints were added and organized in a new section.</li>
     <li><a href="#multilanguage">Multi-language</a> is supported for human-readable text such as <code>descriptions</code> and <code>titles</code>.</li>
     <!-- li>The type of <code>support</code> member in <a href="#thing">Thing</a> class was changed to "anyURI".</li -->
@@ -2931,14 +2929,54 @@ returned by a target Thing acting as a server.
     <li><a href="#link">Link</a> class's <code>mediaType</code> member was renamed to <code>type</code>, and the member was given an improved description.</li>
     <li><a href="#form">Form</a> class's <code>mediaType</code> member was renamed to <code>contentType</code> to reflect that it can assign not only a media type but also its parameter settings.</li>
     <li><a href="#action">Action</a> class now has optional <code>safe</code> and <code>idempotent</code> members to provide information as to the safeness and idempotency of the action.</li>
+=======
+    <li>General</li>
+    <ul>
+    <li>The definition of TD format no longer depends on JSON-LD 1.1 which is under development at the time of the publication of this draft. Instead, the form of TD which does not depend on default value assumptions and can be used for semantic processing with JSON-LD 1.0 is now called "<i>Full</i> Thing Description".</li>
+    <li>Security and Privacy Considerations section (Section <a href="#sec-security-consideration"></a>) was added.</li>    </ul>
+
+    <li>Thing</li>
+    <ul>
+    <li>TD now supports <a href="#meta-interactions-of-thing">meta interactions</a> <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code> and <code>writemultipleproperties</code>.</li>
+>>>>>>> upstream/master
     <li><a href="#thing">Thing</a> class now has optional <code>created</code> and <code>lastModified</code> members to provide information as to when the TD instance was created (in the case of <code>created</code>) or was last modified (in the case of <code>lastModified</code>).</li>
+    <li><a href="#thing">Thing</a> class now has an optional <code>version</code> member for providing version information.</li>
+    </ul>
+    <li>InteractionPattern</li>
+    <ul>
+    <li><a href="#action">Action</a> class now has optional <code>safe</code> and <code>idempotent</code> members to provide information as to the safeness and idempotency of the action.</li>
     <li>Property interactions are now both readable and writable by default. This can be overridden through <code>readOnly</code> and <code>writeOnly</code> member settings available in <a href="#dataschema">DataSchema</a> class.</li>
-    <li><a href="#interactionpattern">InteractionPattern</a> class's <code>label</code> member was renamed as <code>title</code> to be consistent with JSON Schema.</li>
-    <li><a href="#form">Form</a> class's <code>rel</code> member was renamed as <code>op</code>.</li>
+
     <li><a href="#event">Event</a> class now has optional <code>subscription</code> and <code>cancellation</code> 
 members that define data that needs to be passed upon subscription and cancellation, respectively.</li>
+
+
+    <li><a href="#interactionpattern">InteractionPattern</a> class's <code>label</code> member was renamed as <code>title</code> to be consistent with JSON Schema.</li>
     <li><a href="#interactionpattern">InteractionPattern</a> class now has an optional <code>uriVariables</code> member where URI template variables can be defined.</li>
-    <li><a href="#thing">Thing</a> class now has an optional <code>version</code> member for providing version information.</li>
+    </ul>
+    <li>Form</li>
+    <ul>
+    <li><a href="#form">Form</a> class's now contains <code>response</code> member that can be used to describe metadata for response messages.</li>
+    <li><a href="#form">Form</a> class's <code>mediaType</code> member was renamed to <code>contentType</code> to reflect that it can assign not only a media type but also its parameter settings.</li>
+    <li><a href="#form">Form</a> class's <code>rel</code> member was renamed as <code>op</code>.</li>
+    </ul>
+    <li>DataSchema</li>
+    <ul>
+    <li><a href="#dataschema">DataSchema</a> class now has an optional <code>unit</code> member to provide unit informat    <li><a href="#nullschema">NullSchema</a> class was added.</li>
+    <li>A term "oneOf" was added in <a href="#dataschema">DataSchema</a> class.</li>
+ion.</li>
+    </ul>
+    <li>Security Scheme</li>
+    <ul>
+    <li>Make it clear that the top-level <a href="#security-serialization-json"><code>security</code></a> declaration is mandatory.</li>
+    <li>Add <code>securityDefinitions</code>, update examples using <code>security</code> to use defined names, not SecurityScheme objects.</li>
+    <li>Removed all "Url" postfixes in parameter names for security schemes.</li>
+    </ul>
+    <li>Miscellaneous</li>
+    <ul>
+    <li><a href="#multilanguage">Multi-language</a> is supported for human-readable text such as <code>descriptions</code> and <code>titles</code>.</li>
+    <li><a href="#link">Link</a> class's <code>mediaType</code> member was renamed to <code>type</code>, and the member was given an improved description.</li>
+    </ul>
   </ul>
 
   <h2 id="changes2">Changes from Second Public Working Draft</h2>
