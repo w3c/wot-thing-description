@@ -55,6 +55,9 @@ const src_base = "";
 const repeat_assertion_in_appendix = false;
 //=======================================================================
 
+// Map to track dependencies
+var depends = new Map();
+
 // Verbosity level
 const verbosity = 3;
 const silent_v = (verbosity == 0);
@@ -178,6 +181,34 @@ src_dom('tr[class="rfc2119-table-assertion"]').each(function(i,elem) {
     }
 });
 
+// Extract default assertions
+var def_assertions = {};
+src_dom('tr[class="rfc2119-default-assertion"]').each(function(i,elem) {
+    let id = src_dom(this).attr('id');
+    if (undefined === id) {
+        if (warn_v) console.log("WARNING: rfc2119-default-assertion without id:", src_dom(this).html());
+    } else {
+        let assertion_data = src_dom(this).children('td').map(function(i, el) {
+            return src_dom(this).html();
+        }).get();
+        let assertion = '<span class="rfc2119-default-assertion">' 
+                      + 'The value associated with member '
+                      + assertion_data[0]         // vocab term
+                      + ' if not given MUST be assumed to have the default value ' 
+                      + '"<code>' 
+                      + assertion_data[1]  // default value
+                      + '</code>".' 
+                      +'</span>';
+        depends.set(id,{
+          "parents": "td-serialization-default-values",
+          "contexts": assertion_data[2]
+        });
+        if (chatty_v) console.log("default assertion",id,"added");
+        if (debug_v) console.log("  text:",assertion);
+        def_assertions[id] = push_uniq(def_assertions[id],cheerio.load(assertion)("span"));
+    }
+});
+
 // Read in extra assertions and store as a dom
 // (Synchronous)
 const ea_raw = fs.readFileSync(ea_htmlfile, 'UTF-8');
@@ -288,7 +319,6 @@ function merge_results(done_callback) {
 
 // Get dependencies
 // (Asynchronous)
-var depends = new Map();
 function get_depends(done_callback) {
     if (info_v) console.log("processing dependencies in",depends_csvfile);
     var filedata = fs.readFileSync(depends_csvfile).toString();
@@ -794,15 +824,18 @@ get_results(0,function(results) {
           merge_interops(function() {
            merge_assertions(src_assertions,"baseassertion",function() {
             merge_assertions(tab_assertions,"tabassertion",function() {
-             merge_assertions(extra_assertions,"extraassertion",function() {
-              // Output report
-              fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
+             merge_assertions(def_assertions,"defassertion",function() {
+              merge_assertions(extra_assertions,"extraassertion",function() {
+               // Output report
+               fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
                 if (error) {
                   return console.log(err);
                 } else {
                   if (info_v) console.log("Report output to "+report_htmlfile);
                 }
-              }); 
+               }); 
+              });
+             }); 
             }); 
            }); 
           }); 
@@ -810,9 +843,8 @@ get_results(0,function(results) {
         }); 
        }); 
       }); 
-     }); 
+     });
     });
-   });
   });
 });
 
