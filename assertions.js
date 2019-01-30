@@ -193,7 +193,9 @@ src_dom('tr[class="rfc2119-default-assertion"]').each(function(i,elem) {
         }).get();
         let assertion = '<span class="rfc2119-default-assertion">' 
                       + 'The value associated with member '
-                      + assertion_data[0]         // vocab term
+                      + '"<code>'
+                      + assertion_data[0]  // vocab term
+                      + '</code>"'
                       + ' if not given MUST be assumed to have the default value ' 
                       + '"<code>' 
                       + assertion_data[1]  // default value
@@ -551,7 +553,7 @@ function merge_interops(done_callback) {
       let impl_org = "";
       let impl_name = "Unknown";
       if (undefined === impl) {
-         if (warn_v) console.log("no name available for impl",item);
+         if (warn_v) console.log("no name available for impl",producer);
       } else {
          impl_org = impl.org;
          impl_name = impl.name;
