@@ -584,9 +584,10 @@ function merge_interops(done_callback) {
   done_callback();
 }
 
-// Merge assertions, and test specs into report
+// Merge assertions into a single array
 // (Asynchronous)
 report_dom('head>title').append(src_title);
+var assertion_array = [];
 // report_dom('body>h2').append(src_title);
 // report_dom('body').append('<dl></dl>');
 function merge_assertions(assertions,ac,done_callback) {
@@ -595,9 +596,31 @@ function merge_assertions(assertions,ac,done_callback) {
     let n = assertions[a_id].length;
     for (let i = 0; i < n; i++) { 
       a_dom = assertions[a_id][i];
+      let assertion_object = {};
       let a = a_id;
       if (n > 1) a += "-" + (i+1);
       if (chatty_v) console.log("Processing assertion "+a);
+
+      assertion_object.id = a;
+      assertion_object.ac = ac;
+      assertion_object.text = a_dom.text();
+ 
+      assertion_array.push(assertion_object);
+    }
+  }
+  done_callback();
+}
+
+function format_assertions(done_callback) {
+    assertion_array.sort((a,b) => {
+      return (a.id < b.id) ? -1 : ((a.id > b.id) ? 1 : 0); 
+    });
+    let n = assertion_array.length;
+    for (let i = 0; i < n; i++) { 
+      a = assertion_array[i].id;
+      ac = assertion_array[i].ac;
+      a_text = assertion_array[i].text;
+      if (chatty_v) console.log("Formatting assertion "+a);
 
       // Results template
       fs.appendFileSync(results_csvfile, '"'+a+'","null",\n');
@@ -612,9 +635,6 @@ function merge_assertions(assertions,ac,done_callback) {
       if ("extraassertion" === ac) {
         report_dt.append(' <em>(extra)</em>');
       }
-
-      // Get text
-      let a_text = a_dom.text();
 
       let category = undefined;
       let req = false;
@@ -785,8 +805,7 @@ function merge_assertions(assertions,ac,done_callback) {
         report_li.append('\n\t\t'+a_spec);
       }
     }
-  }
-  done_callback();
+    done_callback();
 }
 
 get_results(0,function(results) {
@@ -828,14 +847,16 @@ get_results(0,function(results) {
             merge_assertions(tab_assertions,"tabassertion",function() {
              merge_assertions(def_assertions,"defassertion",function() {
               merge_assertions(extra_assertions,"extraassertion",function() {
-               // Output report
-               fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
-                if (error) {
+               format_assertions(function() {
+                // Output report
+                fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
+                 if (error) {
                   return console.log(err);
-                } else {
+                 } else {
                   if (info_v) console.log("Report output to "+report_htmlfile);
-                }
-               }); 
+                 }
+                }); 
+               });
               });
              }); 
             }); 
