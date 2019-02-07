@@ -402,9 +402,9 @@ function get_impls(done_callback) {
 
 // At-Risk Items
 // (Asynchronous)
-var risks_css = "";
 var risks = new Map();
 function get_risks(done_callback) {
+    var risks_css = "";
     if (info_v) console.log("processing risks in",atrisk_csvfile);
     var filedata = fs.readFileSync(atrisk_csvfile).toString();
     csvtojson()
