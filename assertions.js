@@ -202,9 +202,16 @@ src_dom('tr[class="rfc2119-default-assertion"]').each(function(i,elem) {
                       + assertion_data[1]  // default value
                       + '</code>".' 
                       +'</span>';
+        let contexts = assertion_data[2];
+        if (undefined !== contexts && "null" !== contexts) {
+           // get rid of any markup
+           contexts = contexts.replace(/<\/?code>/gi,'');
+           contexts = contexts.replace(/<br>/gi,' ');
+           contexts = contexts.replace(/<\/?br\/?>/gi,' ');
+        }
         depends.set(id,{
           "parents": "td-serialization-default-values",
-          "contexts": assertion_data[2]
+          "contexts": contexts
         });
         if (chatty_v) console.log("default assertion",id,"added");
         if (debug_v) console.log("  text:",assertion);
@@ -721,7 +728,10 @@ function format_assertions(done_callback) {
           let ps = p.split(' ');
           let h = '\n\t<td class="'+ac+'">';
           for (let i=0; i<ps.length; i++) {
-            h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a> ';
+            h += '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a>';
+            if (i+1 < ps.length) {
+              h += '<br> '
+            } 
           }
           report_tr.append(h+'\n\t</td>');
         } else {
@@ -732,7 +742,10 @@ function format_assertions(done_callback) {
           let cs = c.split(' ');
           let h = '\n\t<td class="'+ac+'">';
           for (let i=0; i<cs.length; i++) {
-            h = h + '\n\t\t<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a> ';
+            h += '\n\t\t<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a>';
+            if (i+1 < cs.length) {
+              h += '<br> '
+            } 
           }
           report_tr.append(h+'\n\t</td>');
         } else {
