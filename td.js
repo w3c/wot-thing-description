@@ -88,7 +88,7 @@ const wotsec = {
 };
 
 const contexts = [
-    ['', 'http://w3.org/ns/td'],
+    ['', 'http://www.w3.org/ns/td'],
     ['/properties/[^/]*', jsonschema],
     ['/actions/[^/]*/input', jsonschema],
     ['/actions/[^/]*/output', jsonschema],
@@ -108,7 +108,7 @@ function getContext(pointer) {
 function normalize(val) {
     if (!val) return [];
     else if (!(val instanceof Array)) return [val];
-    else return val;
+    else return [].concat(val); // return a copy
 }
 
 function transformByPointer(obj, pointer) {
@@ -120,6 +120,7 @@ function transformByPointer(obj, pointer) {
             transformed = {};
 
             if (!isIndexed(pointer) && !obj['@id']) transformed['@id'] = pointer;
+            else if (obj['@id']) transformed['@id'] = obj['@id'];
     
             var ts = getTypes(pointer);
             if (ts.length > 0) {
@@ -137,7 +138,7 @@ function transformByPointer(obj, pointer) {
         }
 
         for (var key in obj) {
-            if (!key.startsWith('@') && key != 'id') {
+            if (['id', '@id', '@type', '@context'].indexOf(key) === -1) {
                 transformed[key] = transformByPointer(obj[key], pointer + '/' + key);
             }
         }
