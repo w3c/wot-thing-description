@@ -624,6 +624,47 @@ function merge_assertions(assertions,ac,done_callback) {
   done_callback();
 }
 
+// Scan assertions to identify children; clear parents
+// of such child assertions, then rescan and assign to 
+// parent the minimum pass and maximum fails of any child.
+function process_children(done_callback) {
+  // Find set of all parents
+  let n = assertion_array.length;
+  let ps = new Set();
+  for (let i = 0; i < n; i++) { 
+    a = assertion_array[i].id;
+    if (a.indexOf('_') > -1) {
+      let p = a.substr(0,a.indexOf('_'));
+      ps.add(p);
+    }
+  }
+  console.log(ps);
+  // for every parent, clear data in merged assertions 
+  ps.forEach( p => {
+    merged_results.set(p,undefined);
+  });
+  // rescan children, rederive parent's scores
+  for (let i = 0; i < n; i++) { 
+    a = assertion_array[i].id;
+    if (a.indexOf('_') > -1) {
+      let p = a.substr(0,a.indexOf('_'));
+      let rp = merged_results.get(p);
+      let rc = merged_results.get(a);
+      if (undefined === rp) {
+        if (undefined !== rc) merged_results.set(p,rc);
+      } else {
+        if (undefined !== rc) merged_results.set(p,{
+          "pass":    Math.min(rp.pass,    rc.pass),
+          "fail":    Math.max(rp.fail,    rc.fail),
+          "notimpl": Math.max(rp.notimpl, rc.notimpl)
+        });
+      }
+    }
+  }
+  // next
+  done_callback();
+}
+
 function format_assertions(done_callback) {
     assertion_array.sort((a,b) => {
       return (a.id < b.id) ? -1 : ((a.id > b.id) ? 1 : 0); 
@@ -866,14 +907,16 @@ get_results(0,function(results) {
             merge_assertions(tab_assertions,"tabassertion",function() {
              merge_assertions(def_assertions,"defassertion",function() {
               merge_assertions(extra_assertions,"extraassertion",function() {
-               format_assertions(function() {
-                // Output report
-                fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
-                 if (error) {
-                  return console.log(err);
-                 } else {
-                  if (info_v) console.log("Report output to "+report_htmlfile);
-                 }
+               process_children(function() {
+                format_assertions(function() {
+                 // Output report
+                 fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
+                  if (error) {
+                   return console.log(err);
+                  } else {
+                   if (info_v) console.log("Report output to "+report_htmlfile);
+                  }
+                 }); 
                 }); 
                });
               });
