@@ -32,6 +32,7 @@ const ea_htmlfile = path.join(inputs_dir, "extra-asserts.html");     // extra no
 const depends_csvfile = path.join(inputs_dir, "depends.csv");        // assertion dependencies
 const categories_csvfile = path.join(inputs_dir, "categories.csv");  // assertion categories
 const atrisk_csvfile = path.join(inputs_dir, "atrisk.csv");          // at-risk assertions
+const atrisk_cssfile = path.join(testing_dir, "atrisk.css");         // at-risk assertion styling
 const impls_csvfile = path.join(inputs_dir, "impl.csv");             // structured implementation data
 //-----------------------------------------------------------------------
 
@@ -401,6 +402,7 @@ function get_impls(done_callback) {
 
 // At-Risk Items
 // (Asynchronous)
+var risks_css = "";
 var risks = new Map();
 function get_risks(done_callback) {
     if (info_v) console.log("processing risks in",atrisk_csvfile);
@@ -413,11 +415,15 @@ function get_risks(done_callback) {
                 let id = item["ID"];
                 if (undefined !== id) {
                     risks.set(id,true);
+                    risks_css += '#' + id + ' {\n'
+                               + '  background-color: yellow;\n'
+                               + '}\n';
                     if (chatty_v) console.log("add at-risk record for",id);
                 } else {
                     if (warn_v) console.log("WARNING: at-risk record for id",id,"in unexpected format");
                 }
             }
+            fs.writeFileSync(atrisk_cssfile,risks_css);
             done_callback();
         });
 }
