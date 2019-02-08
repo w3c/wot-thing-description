@@ -32,6 +32,7 @@ const ea_htmlfile = path.join(inputs_dir, "extra-asserts.html");     // extra no
 const depends_csvfile = path.join(inputs_dir, "depends.csv");        // assertion dependencies
 const categories_csvfile = path.join(inputs_dir, "categories.csv");  // assertion categories
 const atrisk_csvfile = path.join(inputs_dir, "atrisk.csv");          // at-risk assertions
+const atrisk_cssfile = path.join(testing_dir, "atrisk.css");         // at-risk assertion styling
 const impls_csvfile = path.join(inputs_dir, "impl.csv");             // structured implementation data
 //-----------------------------------------------------------------------
 
@@ -201,9 +202,14 @@ src_dom('tr[class="rfc2119-default-assertion"]').each(function(i,elem) {
                       + assertion_data[1]  // default value
                       + '</code>".' 
                       +'</span>';
+        let contexts = assertion_data[2];
+        if (undefined !== contexts && "null" !== contexts) {
+           // get rid of any markup (convert to spaces)
+           contexts = contexts.replace(/<\/?[a-zA-Z]+>/gi,' ');
+        }
         depends.set(id,{
           "parents": "td-serialization-default-values",
-          "contexts": assertion_data[2]
+          "contexts": contexts
         });
         if (chatty_v) console.log("default assertion",id,"added");
         if (debug_v) console.log("  text:",assertion);
@@ -403,6 +409,7 @@ function get_impls(done_callback) {
 // (Asynchronous)
 var risks = new Map();
 function get_risks(done_callback) {
+    var risks_css = "";
     if (info_v) console.log("processing risks in",atrisk_csvfile);
     var filedata = fs.readFileSync(atrisk_csvfile).toString();
     csvtojson()
@@ -413,11 +420,15 @@ function get_risks(done_callback) {
                 let id = item["ID"];
                 if (undefined !== id) {
                     risks.set(id,true);
+                    risks_css += '#' + id + ' {\n'
+                               + '  background-color: yellow;\n'
+                               + '}\n';
                     if (chatty_v) console.log("add at-risk record for",id);
                 } else {
                     if (warn_v) console.log("WARNING: at-risk record for id",id,"in unexpected format");
                 }
             }
+            fs.writeFileSync(atrisk_cssfile,risks_css);
             done_callback();
         });
 }
@@ -611,6 +622,55 @@ function merge_assertions(assertions,ac,done_callback) {
   done_callback();
 }
 
+// Scan assertions to identify children; clear parents
+// of such child assertions, then rescan and assign to 
+// parent the minimum pass and maximum fails of any child.
+function process_children(done_callback) {
+  // Find set of all parents
+  let n = assertion_array.length;
+  let ps = new Set();
+  for (let i = 0; i < n; i++) { 
+    a = assertion_array[i].id;
+    if (a.indexOf('_') > -1) {
+      let p = a.substr(0,a.indexOf('_'));
+      ps.add(p);
+    }
+  }
+  console.log(ps);
+  // for every parent, clear data in merged assertions 
+  ps.forEach( p => {
+    merged_results.set(p,undefined);
+  });
+  // rescan children, rederive parent's scores
+  for (let i = 0; i < n; i++) { 
+    a = assertion_array[i].id;
+    if (a.indexOf('_') > -1) {
+      let p = a.substr(0,a.indexOf('_'));
+      let rp = merged_results.get(p);
+      let rc = merged_results.get(a);
+      if (undefined === rp) {
+        if (undefined !== rc) merged_results.set(p,rc);
+      } else {
+        if (undefined !== rc) {
+          let rp_pass = (undefined === rp.pass) ? 0 : rp.pass;
+          let rp_fail = (undefined === rp.fail) ? 0 : rp.fail;
+          let rp_notimpl = (undefined === rp.notimpl) ? 0 : rp.notimpl;
+          let rc_pass = (undefined === rc.pass) ? 0 : rc.pass;
+          let rc_fail = (undefined === rc.fail) ? 0 : rc.fail;
+          let rc_notimpl = (undefined === rc.notimpl) ? 0 : rc.notimpl;
+          merged_results.set(p,{
+            "pass": Math.min(rp_pass, rc_pass),
+            "fail": Math.max(rp_fail, rc_fail),
+            "notimpl": Math.max(rp_notimpl, rc_notimpl)
+          });
+        }
+      }
+    }
+  }
+  // next
+  done_callback();
+}
+
 function format_assertions(done_callback) {
     assertion_array.sort((a,b) => {
       return (a.id < b.id) ? -1 : ((a.id > b.id) ? 1 : 0); 
@@ -715,7 +775,9 @@ function format_assertions(done_callback) {
           let ps = p.split(' ');
           let h = '\n\t<td class="'+ac+'">';
           for (let i=0; i<ps.length; i++) {
-            h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a> ';
+            if (0 != ps[i].trim().length) {
+              h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a><br>';
+            }
           }
           report_tr.append(h+'\n\t</td>');
         } else {
@@ -726,7 +788,9 @@ function format_assertions(done_callback) {
           let cs = c.split(' ');
           let h = '\n\t<td class="'+ac+'">';
           for (let i=0; i<cs.length; i++) {
-            h = h + '\n\t\t<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a> ';
+            if (0 != cs[i].trim().length) {
+              h = h + '\n\t\t<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a><br>';
+            }
           }
           report_tr.append(h+'\n\t</td>');
         } else {
@@ -746,10 +810,14 @@ function format_assertions(done_callback) {
           if (pass >= 2) {
             report_tr.append('\n\t<td class="'+ac+'">'+pass+'</td>');
           } else {
-            report_tr.append('\n\t<td class="failed">'+pass+'</td>');
+            if (pass == 0) {
+              report_tr.append('\n\t<td class="missing">'+pass+'</td>');
+            } else {
+              report_tr.append('\n\t<td class="failed">'+pass+'</td>');
+            }
           }
         } else {
-          report_tr.append('\n\t<td class="missing"></td>');
+          report_tr.append('\n\t<td class="missing">0</td>');
 	  pass = 0;
         }
         // Number of reported fail statuses
@@ -761,7 +829,7 @@ function format_assertions(done_callback) {
             report_tr.append('\n\t<td class="'+ac+'">'+fail+'</td>');
           }
         } else {
-          report_tr.append('\n\t<td class="'+ac+'"></td>');
+          report_tr.append('\n\t<td class="'+ac+'">0</td>');
 	  fail = 0;
         }
         // Number of reported not implemented statuses
@@ -769,23 +837,23 @@ function format_assertions(done_callback) {
         if (undefined != notimpl) {
           report_tr.append('\n\t<td class="'+ac+'">'+notimpl+'</td>');
         } else {
-          report_tr.append('\n\t<td class="'+ac+'"></td>');
+          report_tr.append('\n\t<td class="'+ac+'">0</td>');
 	  notimpl = 0;
         }
         // Total number of reported statuses
         let totals = pass + fail + notimpl;
         if (0 == totals) {
-          report_tr.append('\n\t<td class="missing"></td>');
+          report_tr.append('\n\t<td class="missing">0</td>');
         } else if (totals < 2) {
           report_tr.append('\n\t<td class="failed">'+totals+'</td>');
         } else {
           report_tr.append('\n\t<td class="'+ac+'">'+totals+'</td>');
         }
       } else {
-        report_tr.append('\n\t<td class="missing"></td>');
-        report_tr.append('\n\t<td class="missing"></td>');
-        report_tr.append('\n\t<td class="missing"></td>');
-        report_tr.append('\n\t<td class="missing"></td>');
+        report_tr.append('\n\t<td class="missing">0</td>');
+        report_tr.append('\n\t<td class="missing">0</td>');
+        report_tr.append('\n\t<td class="missing">0</td>');
+        report_tr.append('\n\t<td class="missing">0</td>');
       }
 
       // Add to test spec appendix
@@ -847,14 +915,16 @@ get_results(0,function(results) {
             merge_assertions(tab_assertions,"tabassertion",function() {
              merge_assertions(def_assertions,"defassertion",function() {
               merge_assertions(extra_assertions,"extraassertion",function() {
-               format_assertions(function() {
-                // Output report
-                fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
-                 if (error) {
-                  return console.log(err);
-                 } else {
-                  if (info_v) console.log("Report output to "+report_htmlfile);
-                 }
+               process_children(function() {
+                format_assertions(function() {
+                 // Output report
+                 fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
+                  if (error) {
+                   return console.log(err);
+                  } else {
+                   if (info_v) console.log("Report output to "+report_htmlfile);
+                  }
+                 }); 
                 }); 
                });
               });

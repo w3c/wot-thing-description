@@ -70,6 +70,7 @@ const txtFiles = [
 
 const src = fs.readFileSync('index.template.html', 'UTF-8');
 const jsonSchemaValidation = fs.readFileSync('validation/td-json-schema-validation.json', 'UTF-8');
+const atriskCSS = fs.readFileSync('testing/atrisk.css', 'UTF-8');
 
 const updateEndpoint = process.env.WOT_SPARUL_ENDPOINT;
 const queryEndpoint = process.env.WOT_SPARQL_ENDPOINT;
@@ -130,6 +131,7 @@ load(updateEndpoint, null)
         return Promise.resolve();
     }).then(() => {
         rendered = rendered.replace('{td.json-schema.validation}', jsonSchemaValidation);
+        rendered = rendered.replace('{atriskCSS}', atriskCSS);
 
         // beautify html
         /*var html = rendered.querySelector("body").outerHTML;
