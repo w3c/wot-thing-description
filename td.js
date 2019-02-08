@@ -72,7 +72,7 @@ function normalize(val) {
     else return [].concat(val); // return a copy
 }
 
-function transformByPointer(obj, pointer) {
+function transformByPointer(obj, id, pointer) {
     var transformed = null;
     if (obj instanceof Object) {
         if (obj instanceof Array) {
@@ -80,7 +80,7 @@ function transformByPointer(obj, pointer) {
         } else {
             transformed = {};
 
-            if (!isIndexed(pointer) && !obj['@id']) transformed['@id'] = pointer;
+            if (!isIndexed(pointer) && !obj['@id']) transformed['@id'] = id + pointer;
             else if (obj['@id']) transformed['@id'] = obj['@id'];
     
             var ts = getTypes(pointer);
@@ -100,7 +100,7 @@ function transformByPointer(obj, pointer) {
 
         for (var key in obj) {
             if (['id', '@id', '@type', '@context'].indexOf(key) === -1) {
-                transformed[key] = transformByPointer(obj[key], pointer + '/' + key);
+                transformed[key] = transformByPointer(obj[key], id, pointer + '/' + key);
             }
         }
     } else {
@@ -110,11 +110,7 @@ function transformByPointer(obj, pointer) {
 }
 
 function transform(desc) {
-    var transformed = transformByPointer(desc, '');
-    transformed['@context'].push({
-        '@base': desc.id + '/'
-    });
-    return transformed;
+    return transformByPointer(desc, desc.id, '');
 }
 
 module.exports.transform = transform;
