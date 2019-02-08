@@ -810,7 +810,11 @@ function format_assertions(done_callback) {
           if (pass >= 2) {
             report_tr.append('\n\t<td class="'+ac+'">'+pass+'</td>');
           } else {
-            report_tr.append('\n\t<td class="failed">'+pass+'</td>');
+            if (pass == 0) {
+              report_tr.append('\n\t<td class="missing">'+pass+'</td>');
+            } else {
+              report_tr.append('\n\t<td class="failed">'+pass+'</td>');
+            }
           }
         } else {
           report_tr.append('\n\t<td class="missing">0</td>');
