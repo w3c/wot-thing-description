@@ -1,5 +1,7 @@
 'use strict';
 
+const url = require('url');
+
 function matches(pointer, pattern) {
     return new RegExp('^' + pattern + '$').test(pointer);
 }
@@ -66,13 +68,25 @@ function getContext(pointer) {
     return null;
 }
 
+const hrefs = [
+    '/links/[0-9]*/href',
+    '(/.*)?/forms/[0-9]*/href'
+];
+
+function isHref(pointer) {
+    for (var pattern in hrefs) {
+        if (matches(pointer, pattern)) return true;
+    }
+    return false;
+}
+
 function normalize(val) {
     if (!val) return [];
     else if (!(val instanceof Array)) return [val];
     else return [].concat(val); // return a copy
 }
 
-function transformByPointer(obj, id, pointer) {
+function transformByPointer(obj, id, base, pointer) {
     var transformed = null;
     if (obj instanceof Object) {
         if (obj instanceof Array) {
@@ -100,17 +114,19 @@ function transformByPointer(obj, id, pointer) {
 
         for (var key in obj) {
             if (['id', '@id', '@type', '@context'].indexOf(key) === -1) {
-                transformed[key] = transformByPointer(obj[key], id, pointer + '/' + key);
+                var p = pointer + '/' + key;
+                transformed[key] = transformByPointer(obj[key], id, base, p);
             }
         }
     } else {
-        transformed = obj;
+        if (isHref(pointer) && base) transformed = url.resolve(base, obj);
+        else transformed = obj;
     }
     return transformed;
 }
 
 function transform(desc) {
-    return transformByPointer(desc, desc.id, '');
+    return transformByPointer(desc, desc.id, desc.base, '');
 }
 
 module.exports.transform = transform;
