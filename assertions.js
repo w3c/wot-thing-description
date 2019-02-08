@@ -204,10 +204,8 @@ src_dom('tr[class="rfc2119-default-assertion"]').each(function(i,elem) {
                       +'</span>';
         let contexts = assertion_data[2];
         if (undefined !== contexts && "null" !== contexts) {
-           // get rid of any markup
-           contexts = contexts.replace(/<\/?code>/gi,'');
-           contexts = contexts.replace(/<br>/gi,' ');
-           contexts = contexts.replace(/<\/?br\/?>/gi,' ');
+           // get rid of any markup (convert to spaces)
+           contexts = contexts.replace(/<\/?[a-zA-Z]+>/gi,' ');
         }
         depends.set(id,{
           "parents": "td-serialization-default-values",
@@ -653,11 +651,19 @@ function process_children(done_callback) {
       if (undefined === rp) {
         if (undefined !== rc) merged_results.set(p,rc);
       } else {
-        if (undefined !== rc) merged_results.set(p,{
-          "pass":    Math.min(rp.pass,    rc.pass),
-          "fail":    Math.max(rp.fail,    rc.fail),
-          "notimpl": Math.max(rp.notimpl, rc.notimpl)
-        });
+        if (undefined !== rc) {
+          let rp_pass = (undefined === rp.pass) ? 0 : rp.pass;
+          let rp_fail = (undefined === rp.fail) ? 0 : rp.fail;
+          let rp_notimpl = (undefined === rp.notimpl) ? 0 : rp.notimpl;
+          let rc_pass = (undefined === rc.pass) ? 0 : rc.pass;
+          let rc_fail = (undefined === rc.fail) ? 0 : rc.fail;
+          let rc_notimpl = (undefined === rc.notimpl) ? 0 : rc.notimpl;
+          merged_results.set(p,{
+            "pass": Math.min(rp_pass, rc_pass),
+            "fail": Math.max(rp_fail, rc_fail),
+            "notimpl": Math.max(rp_notimpl, rc_notimpl)
+          });
+        }
       }
     }
   }
@@ -769,10 +775,9 @@ function format_assertions(done_callback) {
           let ps = p.split(' ');
           let h = '\n\t<td class="'+ac+'">';
           for (let i=0; i<ps.length; i++) {
-            h += '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a>';
-            if (i+1 < ps.length) {
-              h += '<br> '
-            } 
+            if (0 != ps[i].trim().length) {
+              h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a><br>';
+            }
           }
           report_tr.append(h+'\n\t</td>');
         } else {
@@ -783,10 +788,9 @@ function format_assertions(done_callback) {
           let cs = c.split(' ');
           let h = '\n\t<td class="'+ac+'">';
           for (let i=0; i<cs.length; i++) {
-            h += '\n\t\t<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a>';
-            if (i+1 < cs.length) {
-              h += '<br> '
-            } 
+            if (0 != cs[i].trim().length) {
+              h = h + '\n\t\t<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a><br>';
+            }
           }
           report_tr.append(h+'\n\t</td>');
         } else {
@@ -809,7 +813,7 @@ function format_assertions(done_callback) {
             report_tr.append('\n\t<td class="failed">'+pass+'</td>');
           }
         } else {
-          report_tr.append('\n\t<td class="missing"></td>');
+          report_tr.append('\n\t<td class="missing">0</td>');
 	  pass = 0;
         }
         // Number of reported fail statuses
@@ -821,7 +825,7 @@ function format_assertions(done_callback) {
             report_tr.append('\n\t<td class="'+ac+'">'+fail+'</td>');
           }
         } else {
-          report_tr.append('\n\t<td class="'+ac+'"></td>');
+          report_tr.append('\n\t<td class="'+ac+'">0</td>');
 	  fail = 0;
         }
         // Number of reported not implemented statuses
@@ -829,23 +833,23 @@ function format_assertions(done_callback) {
         if (undefined != notimpl) {
           report_tr.append('\n\t<td class="'+ac+'">'+notimpl+'</td>');
         } else {
-          report_tr.append('\n\t<td class="'+ac+'"></td>');
+          report_tr.append('\n\t<td class="'+ac+'">0</td>');
 	  notimpl = 0;
         }
         // Total number of reported statuses
         let totals = pass + fail + notimpl;
         if (0 == totals) {
-          report_tr.append('\n\t<td class="missing"></td>');
+          report_tr.append('\n\t<td class="missing">0</td>');
         } else if (totals < 2) {
           report_tr.append('\n\t<td class="failed">'+totals+'</td>');
         } else {
           report_tr.append('\n\t<td class="'+ac+'">'+totals+'</td>');
         }
       } else {
-        report_tr.append('\n\t<td class="missing"></td>');
-        report_tr.append('\n\t<td class="missing"></td>');
-        report_tr.append('\n\t<td class="missing"></td>');
-        report_tr.append('\n\t<td class="missing"></td>');
+        report_tr.append('\n\t<td class="missing">0</td>');
+        report_tr.append('\n\t<td class="missing">0</td>');
+        report_tr.append('\n\t<td class="missing">0</td>');
+        report_tr.append('\n\t<td class="missing">0</td>');
       }
 
       // Add to test spec appendix
