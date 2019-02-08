@@ -15,7 +15,9 @@ const jsonld = require('jsonld');
 
 const td = require('../td.js');
 
-const ctx10 = JSON.parse(fs.readFileSync('context/td-context-1.0.jsonld', 'utf-8'));
+const tdCtx = JSON.parse(fs.readFileSync('context/td-context-1.0.jsonld', 'utf-8'));
+const jsonschemaCtx = JSON.parse(fs.readFileSync('context/json-schema-context.jsonld', 'utf-8'));
+const wotSecCtx = JSON.parse(fs.readFileSync('context/wot-security-context.jsonld', 'utf-8'));
 const shapes = fs.readFileSync('validation/td-validation.ttl', 'utf-8');
 
 const dirTD = '../wot/testfest';
@@ -38,16 +40,20 @@ function forEachTD(dir, fn) {
     });
 }
 
-function substitute(ctx) {
-    if (ctx instanceof Array) return ctx.map(substitute);
-    else if (ctx === 'http://w3.org/ns/td') return ctx10;
-    else return ctx;
+// substitutes context URIs with local context objects
+function substitute(obj) {
+    if (obj === 'http://www.w3.org/ns/td') return tdCtx['@context'];
+    else if (obj === 'http://www.w3.org/ns/json-schema') return jsonschemaCtx['@context'];
+    else if (obj === 'http://www.w3.org/ns/wot-security') return wotSecCtx['@context'];
+    else if (!(obj instanceof Object)) return obj;
+    
+    for (let k in obj) obj[k] = substitute(obj[k]);
+    return obj;
 }
 
 forEachTD(dirTD, desc => {
-    // TODO desc.id as @base
     let transformed = td.transform(desc);
-    transformed['@context'] = substitute(transformed['@context']);
+    transformed = substitute(transformed);
     let str = JSON.stringify(transformed);
     
     jsonld.toRDF(transformed, {

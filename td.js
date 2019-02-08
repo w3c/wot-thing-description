@@ -48,54 +48,15 @@ function getTypes(pointer) {
     return match;
 }
 
-const jsonschema = {
-    'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-    'jsonschema': 'http://w3.org/ns/json-schema#',
-    'type': {
-        '@id': 'rdf:type',
-        '@type': '@vocab'
-    },
-    'object': 'jsonschema:ObjectSchema',
-    'array': 'jsonschema:ArraySchema',
-    'boolean': 'jsonschema:BooleanSchema',
-    'string': 'jsonschema:StringSchema',
-    'number': 'jsonschema:NumberSchema',
-    'integer': 'jsonschema:IntegerSchema',
-    'null': 'jsonschema:NullSchema',
-    'properties': {
-        '@id': 'jsonschema:properties',
-        '@container': '@index'
-    }
-};
-
-const wotsec = {
-    'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-    'wotsec': 'http://w3.org/ns/wot-security#',
-    'scheme': {
-        '@id': 'rdf:type',
-        '@type': '@vocab'
-    },
-    'nosec': 'wotsec:NoSecurityScheme',
-    'basic': 'wotsec:BasicSecurityScheme',
-    'digest': 'wotsec:DigestSecurityScheme',
-    'apikey': 'wotsec:APIKeySecurityScheme',
-    'bearer': 'wotsec:BearerSecurityScheme',
-    'cert': 'wotsec:CertSecurityScheme',
-    'psk': 'wotsec:PSKSecurityScheme',
-    'public': 'wotsec:PublicSecurityScheme',
-    'pop': 'wotsec:PoPSecurityScheme',
-    'oauth2': 'wotsec:OAuth2SecurityScheme'
-};
-
 const contexts = [
     ['', 'http://www.w3.org/ns/td'],
-    ['/properties/[^/]*', jsonschema],
-    ['/actions/[^/]*/input', jsonschema],
-    ['/actions/[^/]*/output', jsonschema],
-    ['/events/[^/]*/data', jsonschema],
-    ['/events/[^/]*/subscription', jsonschema],
-    ['/events/[^/]*/cancellation', jsonschema],
-    ['/security/[^/]*', wotsec]
+    ['/properties/[^/]*', 'http://www.w3.org/ns/json-schema'],
+    ['/actions/[^/]*/input', 'http://www.w3.org/ns/json-schema'],
+    ['/actions/[^/]*/output', 'http://www.w3.org/ns/json-schema'],
+    ['/events/[^/]*/data', 'http://www.w3.org/ns/json-schema'],
+    ['/events/[^/]*/subscription', 'http://www.w3.org/ns/json-schema'],
+    ['/events/[^/]*/cancellation', 'http://www.w3.org/ns/json-schema'],
+    ['/security/[^/]*', 'http://www.w3.org/ns/wot-security']
 ];
 
 function getContext(pointer) {
