@@ -50,6 +50,12 @@ function load(ep, ttl) {
     });
 }
 
+const ctxFiles = [
+    'context/td-context.jsonld',
+    'context/json-schema-context.jsonld',
+    'context/wot-security-context.jsonld'
+];
+
 const ttlFiles = [
     'ontology/td.ttl',
 	'ontology/json-schema.ttl',
@@ -78,11 +84,11 @@ load(updateEndpoint, null)
     let promises = ttlFiles.map((f) => {
         let ttl = fs.readFileSync(f, 'utf-8');
         return load(updateEndpoint, ttl);
-    });
-
-    const context = fs.readFileSync('context/td-context.jsonld', 'UTF-8');
-    let ttl = jsonld.toRDF(JSON.parse(context));
-    promises.push(load(updateEndpoint, ttl));
+    }).concat(ctxFiles.map(f => {
+        const context = fs.readFileSync(f, 'UTF-8');
+        let ttl = jsonld.toRDF(JSON.parse(context));
+        return load(updateEndpoint, ttl);
+    }));
 
     return Promise.all(promises);
 })

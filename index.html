@@ -566,6 +566,8 @@
     <div class="selectors">
       <button class="selected" data-selects="original">Simple</button>
       <button data-selects="expanded">Full</button>
+      <button data-selects="ex-json-ld">JSON-LD</button>
+      <button data-selects="ex-rdf">RDF</button>
     </div>
     <pre class="original selected">{
     "id": "urn:dev:wot:com:example:servient:lamp",
@@ -635,6 +637,168 @@
         }
     }
 }</pre>
+<pre class="ex-json-ld">{
+    "@id": "",
+    "@type": "Thing",
+    "@context": [
+        "http://w3.org/ns/td",
+        {
+            "@base": "urn:dev:wot:com:example:servient:lamp/"
+        }
+    ],
+    "name": "MyLampThing",
+    "securityDefinitions": {
+        "@id": "/securityDefinitions",
+        "basic_sc": {
+            "@id": "/securityDefinitions/basic_sc",
+            "scheme": "basic"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
+    "properties": {
+        "status": {
+            "@id": "/properties/status",
+            "@type": ["Property", "DataSchema"],
+            "@context": {
+                "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "jsonschema": "http://w3.org/ns/json-schema#",
+                "type": {
+                    "@id": "rdf:type",
+                    "@type": "@vocab"
+                },
+                "object": "jsonschema:ObjectSchema",
+                "array": "jsonschema:ArraySchema",
+                "boolean": "jsonschema:BooleanSchema",
+                "string": "jsonschema:StringSchema",
+                "number": "jsonschema:NumberSchema",
+                "integer": "jsonschema:IntegerSchema",
+                "null": "jsonschema:NullSchema",
+                "properties": {
+                    "@id": "jsonsschema:properties",
+                    "@container": "@index"
+                }
+            },
+            "readOnly": false,
+            "writeOnly": false,
+            "observable": false,
+            "type": "string",
+            "forms": [
+                {
+                    "@id": "/properties/status/forms/0",
+                    "@type": "Form",
+                    "href": "https://mylamp.example.com/status",
+                    "contentType": "application/json"
+                }
+            ]
+        }
+    },
+    "actions": {
+        "toggle": {
+            "@id": "/actions/toggle",
+            "@type": "Action",
+            "idempotent": false,
+            "safe": false,
+            "forms": [
+                {
+                    "@id": "/actions/toggle/forms/0",
+                    "@type": "Form",
+                    "href": "https://mylamp.example.com/toggle",
+                    "contentType": "application/json"
+                }
+            ]
+        }
+    },
+    "events": {
+        "overheating": {
+            "@id": "/events/overheating",
+            "@type": "Event",
+            "data": {
+                "@id": "/events/overheating/data",
+                "@type": "DataSchema",
+                "@context": {
+                    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                    "jsonschema": "http://w3.org/ns/json-schema#",
+                    "type": {
+                        "@id": "rdf:type",
+                        "@type": "@vocab"
+                    },
+                    "object": "jsonschema:ObjectSchema",
+                    "array": "jsonschema:ArraySchema",
+                    "boolean": "jsonschema:BooleanSchema",
+                    "string": "jsonschema:StringSchema",
+                    "number": "jsonschema:NumberSchema",
+                    "integer": "jsonschema:IntegerSchema",
+                    "null": "jsonschema:NullSchema",
+                    "properties": {
+                        "@id": "jsonsschema:properties",
+                        "@container": "@index"
+                    }
+                },
+                "type": "string"
+            },
+            "forms": [
+                {
+                    "@id": "/events/overheating/forms/0",
+                    "@type": "Form",
+                    "href": "https://mylamp.example.com/oh",
+                    "contentType": "application/json",
+                    "subprotocol": "longpoll"
+                }
+            ]
+        }
+    }
+}</pre>
+<pre class="ex-rdf">
+@prefix td: &lt;http://www.w3.org/ns/td#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+@prefix jsonschema: &lt;http://www.w3.org/ns/json-schema#&gt; .
+@base &lt;urn:dev:wot:com:example:servient:lamp/&gt; .
+
+&lt;/actions/toggle/forms/0&gt;
+    a td:Form ;
+    td:contentType &quot;application/json&quot; ;
+    td:href &quot;https://mylamp.example.com/toggle&quot;^^xsd:anyURI .
+
+&lt;/actions/toggle&gt;
+    a td:Action ;
+    td:forms &lt;urn:/actions/toggle/forms/0&gt; ;
+    td:idempotent false ;
+    td:safe false .
+
+&lt;/events/overheating/data&gt; a jsonschema:DataSchema, jsonschema:StringSchema .
+&lt;/events/overheating/forms/0&gt;
+    a td:Form ;
+    td:contentType &quot;application/json&quot; ;
+    td:href &quot;https://mylamp.example.com/oh&quot;^^xsd:anyURI ;
+    td:subprotocol &quot;longpoll&quot; .
+
+&lt;/events/overheating&gt;
+    a td:Event ;
+    td:data &lt;/events/overheating/data&gt; ;
+    td:forms &lt;/events/overheating/forms/0&gt; .
+
+&lt;/properties/status/forms/0&gt;
+    a td:Form ;
+    td:contentType &quot;application/json&quot; ;
+    td:href &quot;https://mylamp.example.com/status&quot;^^xsd:anyURI .
+
+&lt;/properties/status&gt;
+    a td:Property, jsonschema:DataSchema, jsonschema:StringSchema ;
+    jsonschema:readOnly false ;
+    jsonschema:writeOnly false ;
+    td:forms &lt;/properties/status/forms/0&gt; ;
+    td:observable false .
+
+&lt;&gt;
+    a td:Thing ;
+    td:actions &lt;/actions/toggle&gt; ;
+    td:events &lt;/events/overheating&gt; ;
+    td:name &quot;MyLampThing&quot; ;
+    td:properties &lt;/properties/status&gt; ;
+    td:security &lt;/securityDefinitions/basic_sc&gt; .
+</pre>
 </aside>
   <p>
   Based on this content, 
@@ -709,6 +873,8 @@
         <div class="selectors">
                 <button class="selected" data-selects="original">Simple</button>
                 <button data-selects="expanded">Full</button>
+                <button data-selects="ex-json-ld">JSON-LD</button>
+                <button data-selects="ex-rdf">RDF</button>
               </div>
               <pre class="original selected">
     {
@@ -798,6 +964,174 @@
             }
         }
     }</pre>
+    <pre class="ex-json-ld">{
+    "@id": "",
+    "@type": "Thing",
+    "@context": [
+        "http://w3.org/ns/td",
+        {
+            "@base": "urn:dev:wot:com:example:servient:lamp/"
+        }
+    ],
+    "name": "MyLampThing",
+    "securityDefinitions": {
+        "@id": "/securityDefinitions",
+        "basic_sc": {
+            "@id": "/securityDefinitions/basic_sc",
+            "scheme": "basic",
+            "in": "header"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
+    "properties": {
+        "status": {
+            "@id": "/properties/status",
+            "@type": ["Property", "DataSchema"],
+            "@context": {
+                "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "jsonschema": "http://w3.org/ns/json-schema#",
+                "type": {
+                    "@id": "rdf:type",
+                    "@type": "@vocab"
+                },
+                "object": "jsonschema:ObjectSchema",
+                "array": "jsonschema:ArraySchema",
+                "boolean": "jsonschema:BooleanSchema",
+                "string": "jsonschema:StringSchema",
+                "number": "jsonschema:NumberSchema",
+                "integer": "jsonschema:IntegerSchema",
+                "null": "jsonschema:NullSchema",
+                "properties": {
+                    "@id": "jsonsschema:properties",
+                    "@container": "@index"
+                }
+            },
+            "readOnly": false,
+            "writeOnly": false,
+            "observable": false,
+            "type": "string",
+            "forms": [
+                {
+                    "@id": "/properties/status/forms/0",
+                    "@type": "Form",
+                    "href": "https://mylamp.example.com/status",
+                    "http:methodName": "GET",
+                    "contentType": "application/json"
+                }
+            ]
+        }
+    },
+    "actions": {
+        "toggle": {
+            "@id": "/actions/toggle",
+            "@type": "Action",
+            "idempotent": false,
+            "safe": false,
+            "forms": [
+                {
+                    "@id": "/actions/toggle/forms/0",
+                    "@type": "Form",
+                    "href": "https://mylamp.example.com/toggle",
+                    "http:methodName": "POST",
+                    "contentType": "application/json"
+                }
+            ]
+        }
+    },
+    "events": {
+        "overheating": {
+            "@id": "/events/overheating",
+            "@type": "Event",
+            "data": {
+                "@id": "/events/overheating/data",
+                "@type": "DataSchema",
+                "@context": {
+                    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                    "jsonschema": "http://w3.org/ns/json-schema#",
+                    "type": {
+                        "@id": "rdf:type",
+                        "@type": "@vocab"
+                    },
+                    "object": "jsonschema:ObjectSchema",
+                    "array": "jsonschema:ArraySchema",
+                    "boolean": "jsonschema:BooleanSchema",
+                    "string": "jsonschema:StringSchema",
+                    "number": "jsonschema:NumberSchema",
+                    "integer": "jsonschema:IntegerSchema",
+                    "null": "jsonschema:NullSchema",
+                    "properties": {
+                        "@id": "jsonsschema:properties",
+                        "@container": "@index"
+                    }
+                },
+                "type": "string"
+            },
+            "forms": [
+                {
+                    "@id": "/events/overheating/forms/0",
+                    "@type": "Form",
+                    "href": "https://mylamp.example.com/oh",
+                    "subprotocol": "longpoll",
+                    "contentType": "application/json"
+                }
+            ]
+        }
+    }
+}</pre>
+    <pre class="ex-rdf">
+@prefix http: &lt;http://www.w3.org/2011/http#&gt; .
+@prefix td: &lt;http://www.w3.org/ns/td#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+@prefix jsonschema: &lt;http://www.w3.org/ns/json-schema#&gt; .
+@base &lt;urn:dev:wot:com:example:servient:lamp/&gt; .
+
+&lt;/actions/toggle/forms/0&gt;
+    a td:Form ;
+    http:methodName &quot;POST&quot; ;
+    td:contentType &quot;application/json&quot; ;
+    td:href &quot;https://mylamp.example.com/toggle&quot;^^xsd:anyURI .
+
+&lt;/actions/toggle&gt;
+    a td:Action ;
+    td:forms &lt;urn:/actions/toggle/forms/0&gt; ;
+    td:idempotent false ;
+    td:safe false .
+
+&lt;/events/overheating/data&gt; a jsonschema:StringSchema, jsonschema:DataSchema .
+&lt;/events/overheating/forms/0&gt;
+    a td:Form ;
+    td:contentType &quot;application/json&quot; ;
+    td:href &quot;https://mylamp.example.com/oh&quot;^^xsd:anyURI ;
+    td:subprotocol &quot;longpoll&quot; .
+
+&lt;/events/overheating&gt;
+    a td:Event ;
+    td:data &lt;/events/overheating/data&gt; ;
+    td:forms &lt;/events/overheating/forms/0&gt; .
+
+&lt;/properties/status/forms/0&gt;
+    a td:Form ;
+    http:methodName &quot;GET&quot; ;
+    td:contentType &quot;application/json&quot; ;
+    td:href &quot;https://mylamp.example.com/status&quot;^^xsd:anyURI .
+
+&lt;/properties/status&gt;
+    a td:Property, jsonschema:StringSchema, jsonschema:DataSchema ;
+    jsonschema:readOnly false ;
+    jsonschema:writeOnly false ;
+    td:forms &lt;/properties/status/forms/0&gt; ;
+    td:observable false .
+
+&lt;&gt;
+    a td:Thing ;
+    td:actions &lt;/actions/toggle&gt; ;
+    td:events &lt;/events/overheating&gt; ;
+    td:name &quot;MyLampThing&quot; ;
+    td:properties &lt;/properties/status&gt; ;
+    td:security &lt;/securityDefinitions/basic_sc&gt; .    
+    </pre>
           </aside>
 
 
@@ -2734,6 +3068,8 @@ If included namespaces are based on class definitions such as those provided by 
 
   </section>
 
+</section> <!-- end of id="sec-td-serialization"-->
+
   <section id="Implementation-Note-section">
   <h2>Implementation Notes</h2>
 
@@ -2778,28 +3114,262 @@ If included namespaces are based on class definitions such as those provided by 
 
 
   <p>
-  To validate the semantic meaning and follow references to external 
-  context vocabulary terms (e.g., iot.schema.org), use of JSON-LD or RDF-based  
-  tools and libraries is highly recommended 
-  as explained in the next sub-section. 
+  To integrate a Thing Description instance with external knowledge and contextual
+  information (like iot.schema.org annotations), the use of JSON-LD and RDF-based  
+  tools and libraries is highly recommended, as explained in the next sub-section.
   </p>
 
   </section>
 
 
-  <section id="note-jsonld10-processing">
-        <h2>JSON-LD 1.0 Processing</h2>
+  <section id="note-jsonld10-processing" class="algorithm">
+        <h2>Transformation to JSON-LD &amp; RDF</h2>
 
-        <p>To interpret the semantic meaning of a Thing Description
-                in terms of RDF triples, a Thing Description instance can be simple transformed into a RDF-based serializiation format by JSON-LD 1.0. 
- 
+        <p>
+            <span class="rfc2119-assertion" id="rdf-transformation">
+                A Thing Description instance MAY also be represented in RDF
+                for further integration with other RDF datasets and ontologies.
+            </span>
+            A bidirectional transformation exists between the plain JSON representation
+            of a Thing Description instance and its alternative RDF representation.
+            More details on the RDF representation are given in the TD ontology
+            documentation [[wot-td-ontology]],
+            In terms of implementation, the JSON representation can first be
+            turned into JSON-LD 1.0, for which a standard transformation to RDF
+            exists with numerous implementations [[json-ld-api]]. In contrast to
+            plain JSON, a JSON-LD object can have a context (<code>@context</code>),
+            an identifier (<code>@id</code>) and a type (<code>@type</code>).
+            In this section, we define a procedure to add these three keys to the
+            JSON objects of a Thing Description instance.
+        </p>
+
+        <p>
+            Because the data models of JSON and RDF are not strictly equivalent, a
+            pure transformation to JSON-LD would not be fully reversible. The
+            original structure of the Thing Description instance can be preserved
+            by using <em>JSON pointers</em> as JSON-LD identifiers [[rfc6901]]. A
+            JSON pointer is a string encoding a path in a JSON document, like
+            <code>/properties/status</code> that "points" to the status property in
+            the examples of Sec. <a href="#sec-vocabulary-definition"></a>. JSON
+            pointers can be defined as relative to a base IRI to be valid JSON-LD
+            identifiers.
+        </p>
+
+        <p>
+            A JSON document is a tree of JSON values. JSON objects and arrays can have
+            edges to children values, annotated with JSON keys (plain strings or
+            integers). JSON strings, numbers, integers and booleans, as well as null
+            values, are leaf nodes. The transformation algorithm from plain JSON to
+            JSON-LD is a traversal of a Thing Description instance (a JSON document),
+            as follows:
+        </p>
+
+        <ol>
+            <li>
+                <p>
+                    Let <var>identifier</var> be the <code>id</code> value and
+                    <var>base</var> the <code>base</code> value of the Thing Description
+                    instance's root object. For every JSON object <var>object</var> in
+                    the Thing Description instance:
+                </p>
+
+                <ol>
+                    <li>
+                        Contruct a JSON pointer <var>pointer</var> for the current JSON value.
+                        If <var>object</var> is not an index container (see
+                        <a href="#json-ld-index-list"> index container list</a> below) and if
+                        <var>object</var> has no <code>@id</code> key, assign the concatenation
+                        of <var>identifier</var> and <var>pointer</var> to the <code>@id</code>
+                        key of <var>object</var>.
+                    </li>
+                    <li>
+                        If <var>object</var> is an instance of one of the classes from Sec.
+                        <a href="#information-model"></a> (see <a href="#json-ld-type-map">
+                        type mapping</a> below), initialize <var>type</var> with
+                        the corresponding class names. Let <var>type definition</var> be the
+                        value of <var>object</var> for the key <code>@type</code>. If
+                        <var>type definition</var> is not defined, initialize it as an empty
+                        array. If it is not an array, define it as a singleton array
+                        containing <var>type definition</var>. Then, append <var>type</var>
+                        to it.
+                    </li>
+                    <li>
+                        If <var>object</var> is the root object of the Thing Description instance,
+                        the root object of a data schema or a security definition, initialize
+                        <var>context</var> with the corresponding JSON-LD context (see
+                        <a href="#json-ld-context-map"> index container list</a> below). Let
+                        <var>context definition</var> be the value of <var>object</var> for
+                        the key <code>@context</code>. If <var>context definition</var> is not
+                        defined, initialize it as an empty array. If it is not an array,
+                        define it as a singleton array containing
+                        <var>context definition</var>. Then, append <var>context</var> to it.
+                    </li>
+                    <li>
+                        If <var>object</var> has key <code>href</code>, resolve its value with
+                        <var>base</var> as a base URI, as per Sec. 5 of [[rfc3986]].
+                    </li>
+                </ol>
+            </li>
+        </ol>
+
+        <p>
+            The following tables give regular expressions on JSON pointers to implement
+            the conditionals above.
+        </p>
+
+        <table id="json-ld-index-list" class="def">
+            <thead>
+                <tr>
+                    <th>Regular Expression</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>/properties</code></td></tr>
+                <tr><td><code>/actions</code></td></tr>
+                <tr><td><code>/events</code></td></tr>
+                <tr><td><code>/properties(/.*)?/properties</code></td></tr>
+                <tr><td><code>/actions/[^/]*/input(/.*)?/properties</code></td></tr>
+                <tr><td><code>/actions/[^/]*/output(/.*)?/properties</code></td></tr>
+                <tr><td><code>/events/[^/]*/data(/.*)?/properties</code></td></tr>
+                <tr><td><code>/events/[^/]*/subscription(/.*)?/properties</code></td></tr>
+                <tr><td><code>/events/[^/]*/cancellation(/.*)?/properties</code></td></tr>
+            </tbody>
+            <caption>Index container list</caption>
+        </table>
+
+        <table id="json-ld-type-map" class="def">
+            <thead>
+                <tr>
+                    <th>Regular Expression</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><em>(empty string)</em></td>
+                    <td><code>Thing</code></td>
+                </tr>
+                <tr>
+                    <td><code>/properties/[^/]*</code></td>
+                    <td><code>Property</code></td>
+                </tr>
+                <tr>
+                    <td><code>/actions/[^/]*</code></td>
+                    <td><code>Action</code></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*</code></td>
+                    <td><code>Event</code></td>
+                </tr>
+                <tr>
+                    <td><code>(/.*)?/forms/[0-9]*</code></td>
+                    <td><code>Form</code></td>
+                </tr>
+                <tr>
+                    <td><code>(/.*)?/forms/[0-9]*/response</code></td>
+                    <td><code>ExpectedResponse</code></td>
+                </tr>
+                <tr>
+                    <td><code>/links/[0-9]*</code></td>
+                    <td><code>Link</code></td>
+                </tr>
+                <tr>
+                    <td><code>/version</code></td>
+                    <td><code>Versioning</code></td>
+                </tr>
+                <tr>
+                    <td><code>/properties/[^/]*</code></td>
+                    <td><code>DataSchema</code></td>
+                </tr>
+                <tr>
+                    <td><code>/actions/[^/]*/input</code></td>
+                    <td><code>DataSchema</code></td>
+                </tr>
+                <tr>
+                    <td><code>/actions/[^/]*/output</code></td>
+                    <td><code>DataSchema</code></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*/data</code></td>
+                    <td><code>DataSchema</code></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*/subscription</code></td>
+                    <td><code>DataSchema</code></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*/cancellation</code></td>
+                    <td><code>DataSchema</code></td>
+                </tr>
+            </tbody>
+            <caption>Type mapping</caption>
+        </table>
+
+        <table id="json-ld-context-map" class="def">
+            <thead>
+                <tr>
+                    <th>Regular Expression</th>
+                    <th>Context</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><em>(empty string)</em></td>
+                    <td><code>http://www.w3.org/ns/td</code></td>
+                </tr>
+                <tr>
+                    <td><code>/properties/[^/]*</code></td>
+                    <td><code>http://www.w3.org/ns/json-schema</code></td>
+                </tr>
+                <tr>
+                    <td><code>/actions/[^/]*/input</code></td>
+                    <td><em>idem</em></td>
+                </tr>
+                <tr>
+                    <td><code>/actions/[^/]*/output</code></td>
+                    <td><em>idem</em></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*/data</code></td>
+                    <td><em>idem</em></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*/subscription</code></td>
+                    <td><em>idem</em></td>
+                </tr>
+                <tr>
+                    <td><code>/events/[^/]*/cancellation</code></td>
+                    <td><em>idem</em></td>
+                </tr>
+                <tr>
+                    <td><code>/security/[^/]*</code></td>
+                    <td><code>http://www.w3.org/ns/wot-security</code></td>
+                </tr>
+            </tbody>
+            <caption>Context mapping</caption>
+        </table>
+    
+        <p class="issue">
+        Currently, the context served at <code>http://www.w3.org/ns/td</code> is a
+        JSON-LD 1.1 context. The complete transformation will therefore fail.
+        </p>
+    
+        <p class="issue">
+        Currently, no context is served at
+        <code>http://www.w3.org/ns/json-schema</code> and
+        <code>http://www.w3.org/ns/wot-security</code>.
+        </p>
+
+        <p class="issue">
+        The algorithm will not correctly process TD identifiers (IRIs) that do not
+        finish with the path component (e.g.
+        <code>urn:example:thing#someFragment</code>).
         </p>
 
     </section>
 
   </section>
 
-  </section> <!-- end of id="sec-td-serialization"-->
 <section id="behavior">
 <h2>Behavioral Constraints</h2>
  <p>
