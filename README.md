@@ -40,7 +40,7 @@ To generate the implementation report,
 including a list of normative assertions,
 issue the following command:
 ```sh
-npm run report
+npm run assertions
 ```
 A draft implementation report will be generated and output to
 [testing/report.html](testing/report.html)
@@ -82,6 +82,9 @@ and this is less ambigious anyway.
 For example, instead of using "this serialization", use
 "a JSON-TD serialization".
 
+Also, assertions should ideally only constrain one item.
+Multiple constraints should be stated in separate sentences.
+
 Note that the above rendering process also assigns each
 table entry a unique ID and these are also listed in the 
 table included in the implementation report.
@@ -90,3 +93,10 @@ Other data, e.g. data from test results, test specifications,
 and implementation descriptions, are also needed to complete the 
 implementation report.  See [testing/README.md](testing/README.md)
 for details.
+
+The generation of the implementation report also generates a CSS file
+`testing/atrisk.css`
+that highlights at-risk items in the generated `index.html`.  The at-risk
+items are listed in `testing/inputs/atrisk.csv`.  If at-risk items are
+updated, to update the at-risk highlighting the implementation report
+needs to be generated first, and then the rendering.
