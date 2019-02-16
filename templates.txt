@@ -133,14 +133,23 @@ template :field(?class) {
             format { "%s" if(?mandatory, "yes", "no") }
         "</td>"
         "<td>"
-            format {
-                "%s%s%s"
-                if(?prop = <http://www.w3.org/ns/td#op>,
-                    "array of ", # string or array of strings
-                    if(?array, "array of ", ""))
-                if(?hasType, st:call-template(:type, ?class, ?prop), "any type")
-                if(?prop = <http://www.w3.org/ns/td#op>,
-                    "  Each entry representing an interaction verb", "")
+            format { 
+               "%s%s%s"
+               if(?prop = <http://www.w3.org/ns/td#properties>
+                ||?prop = <http://www.w3.org/ns/td#actions>
+                ||?prop = <http://www.w3.org/ns/td#events>
+                ||?prop = <http://www.w3.org/ns/td#uriVariables>
+                ||?prop = <http://www.w3.org/ns/td#securityDefinitions>
+                ||?prop = <http://www.w3.org/ns/json-schema#properties>,
+                  "map of ", 
+                  if(?prop = <http://www.w3.org/ns/td#op>,
+                      "array of ", # string or array of strings
+                      if(?array, "array of ", "")
+                  )
+               )
+               if(?hasType, st:call-template(:type, ?class, ?prop), "any type")
+               if(?prop = <http://www.w3.org/ns/td#op>,
+                  "  Each entry representing an interaction verb", "")
             }
             format {
                 "%s%s%s"
