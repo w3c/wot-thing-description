@@ -137,7 +137,9 @@ template :field(?class) {
                 "%s%s%s"
                 if(?prop = <http://www.w3.org/ns/td#op>,
                     "array of ", # string or array of strings
-                    if(?array, "array of ", ""))
+                    if(?array,
+                        "array of ",
+                        if(?map, "map of ", "")))
                 if(?hasType, st:call-template(:type, ?class, ?prop), "any type")
                 if(?prop = <http://www.w3.org/ns/td#op>,
                     "  Each entry representing an interaction verb", "")
@@ -158,9 +160,14 @@ template :field(?class) {
     optional { ?propShape sh:datatype|sh:class ?type }
     optional { ?propShape sh:minCount ?count }
     optional {
-        ?m a jsonld:Mapping ;
+        ?mSet a jsonld:Mapping ;
         jsonld:iri ?prop ;
         jsonld:container jsonld:set
+    }
+    optional {
+        ?mIndex a jsonld:Mapping ;
+        jsonld:iri ?prop ;
+        jsonld:container jsonld:index
     }
     optional {
         ?propShape sh:in ?list
@@ -168,7 +175,8 @@ template :field(?class) {
     optional { ?propShape sh:defaultValue ?def  }
     bind (bound(?count) as ?mandatory)
     bind (bound(?def) as ?hasDef)
-    bind (bound(?m) as ?array)
+    bind (bound(?mSet) as ?array)
+    bind (bound(?mIndex) as ?map)
     bind (bound(?type) as ?hasType)
     bind (bound(?list) as ?hasEnum)
     optional { ?propShape sh:order ?predefined }

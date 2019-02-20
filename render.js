@@ -51,7 +51,7 @@ function load(ep, ttl) {
 }
 
 const ctxFiles = [
-    'context/td-context.jsonld',
+    'context/td-context-1.0.jsonld',
     'context/json-schema-context.jsonld',
     'context/wot-security-context.jsonld'
 ];
