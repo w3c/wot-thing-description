@@ -25,7 +25,7 @@ template :classes(?ns) {
             concat("<tr><td align=\"left\" bgcolor=\"#ddeeff\">",
                 "<font color=\"#c83500\" face=\"mono\">@context</font>",
                 " : ",
-                "<i>array of </i><font color=\"#c83500\" face=\"mono\">context</font>",
+                "<i>array</i>",
                 " <i>(mandatory)</i>",
                 "</td></tr>",
                 "<tr><td align=\"left\" bgcolor=\"#ddeeff\">",
@@ -51,7 +51,7 @@ template :classes(?ns) {
             concat("<tr><td align=\"left\" bgcolor=\"#ddeeff\">",
                 "<font color=\"#c83500\" face=\"mono\">@context</font>",
                 " : ",
-                "<i>array of </i><font color=\"#c83500\" face=\"mono\">context</font>",
+                "<i>array</i>",
                 " <i>(mandatory)</i>",
                 "</td></tr>",
                 "<tr><td align=\"left\" bgcolor=\"#ddeeff\">",
@@ -64,7 +64,7 @@ template :classes(?ns) {
             concat("<tr><td align=\"left\" bgcolor=\"#ddeeff\">",
                 "<font color=\"#c83500\" face=\"mono\">@context</font>",
                 " : ",
-                "<i>array of </i><font color=\"#c83500\" face=\"mono\">context</font>",
+                "<i>array</i>",
                 " <i>(mandatory)</i>",
                 "</td></tr>",
                 "<tr><td align=\"left\" bgcolor=\"#ddeeff\">",
@@ -110,7 +110,9 @@ template :attribute(?class ?prop) {
     " : "
     format {
         "%s<font color=\"#c83500\" face=\"mono\">%s</font>"
-        if(?array, "array of ", "")
+        if(?array,
+            "array of ",
+            if(?map, "map of ", ""))
         ?type
     }
     format { "%s" if(?mandatory, " <i>(mandatory)</i>", "") }
@@ -122,14 +124,20 @@ template :attribute(?class ?prop) {
                sh:datatype ?datatype ;
     optional { ?propShape sh:minCount ?count }
     optional {
-        ?m a jsonld:Mapping ;
+        ?mSet a jsonld:Mapping ;
            jsonld:iri ?prop ;
            jsonld:container jsonld:set
+    }
+    optional {
+        ?mIndex a jsonld:Mapping ;
+        jsonld:iri ?prop ;
+        jsonld:container jsonld:index
     }
     bind (strafter(str(?prop), "#") as ?name)
     bind (strafter(str(?datatype), "#") as ?type)
     bind (bound(?count) as ?mandatory)
-    bind (bound(?m) as ?array)
+    bind (bound(?mSet) as ?array)
+    bind (bound(?mIndex) as ?map)
     bind (bound(?def) as ?hasDef)
 }
 

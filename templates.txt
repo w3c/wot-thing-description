@@ -44,9 +44,9 @@ template :fields(?class) {
             if(?class = <http://www.w3.org/ns/td#Thing>,
                 concat("<tr>",
                        "<td><code>@context</code></td>",
-                       "<td>Known from JSON-LD, <code>@context</code> is used to define short-hand names called terms that are used throughout a TD document.<br/><br/><span class=\"rfc2119-assertion\" id=\"td-context-ns-thing\">The first item in the JSON-LD context array MUST be the namespace <code>\"http://www.w3.org/ns/td\"</code></span>, optionally followed by one or more local namespaces. <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-prefix\">Each optional namespace specifed for a Thing context MUST be bound to an unique prefix.</span></td>",
+                       "<td>Known from JSON-LD, <code>@context</code> is used to define short-hand names called terms that are used throughout a TD document.</td>",
                        "<td>yes</td>",
-                       "<td>array of JSON-LD contexts</td>",
+                       "<td>array</td>",
                        "</tr>",
                        "<tr>",
                        "<td><code>@type</code></td>",
@@ -72,9 +72,9 @@ template :fields(?class) {
             if(?class = <http://www.w3.org/ns/json-schema#DataSchema>,
                 concat("<tr>",
                        "<td><code>@context</code></td>",
-                       "<td>Known from JSON-LD, <code>@context</code> is used to define short-hand names called terms that are used in a DataSchema.<br/><br/><span class=\"rfc2119-assertion\" id=\"td-context-ns-dataschema\">The first item in the JSON-LD context array MUST be the namespace <code>\"https://www.w3.org/ns/json-schema\"</code></span>, optionally followed by one or more local namespaces. <span class=\"rfc2119-assertion\" id=\"td-context-ns-dataschema-prefix\">Each optional namespace specified for a DataSchema context MUST be bound to an unique prefix.</span></td>",
+                       "<td>Known from JSON-LD, <code>@context</code> is used to define short-hand names called terms that are used in a DataSchema.</td>",
                        "<td>yes</td>",
-                       "<td>array of JSON-LD contexts</td>",
+                       "<td>array</td>",
                        "</tr>",
                        "<tr>",
                        "<td><code>@type</code></td>",
@@ -86,9 +86,9 @@ template :fields(?class) {
             if(?class = <http://www.w3.org/ns/wot-security#SecurityScheme>,
                 concat("<tr>",
                        "<td><code>@context</code></td>",
-                       "<td>Known from JSON-LD, <code>@context</code> is used to define short-hand names called terms that are used in a SecurityScheme.<br/><br/><span class=\"rfc2119-assertion\" id=\"td-context-ns-securityscheme\">The first item in the JSON-LD context array MUST be the namespace <code>\"https://www.w3.org/ns/wot-security\"</code></span>, optionally followed by one or more local namespaces. <span class=\"rfc2119-assertion\" id=\"td-context-ns-securityscheme-prefix\">Each optional namespace specified for a SecurityScheme context MUST be bound to an unique prefix.</span></td>",
+                       "<td>Known from JSON-LD, <code>@context</code> is used to define short-hand names called terms that are used in a SecurityScheme.</td>",
                        "<td>yes</td>",
-                       "<td>array of JSON-LD contexts</td>",
+                       "<td>array</td>",
                        "</tr>",
                        "<tr>",
                        "<td><code>@type</code></td>",
@@ -137,7 +137,9 @@ template :field(?class) {
                 "%s%s%s"
                 if(?prop = <http://www.w3.org/ns/td#op>,
                     "array of ", # string or array of strings
-                    if(?array, "array of ", ""))
+                    if(?array,
+                        "array of ",
+                        if(?map, "map of ", "")))
                 if(?hasType, st:call-template(:type, ?class, ?prop), "any type")
                 if(?prop = <http://www.w3.org/ns/td#op>,
                     "  Each entry representing an interaction verb", "")
@@ -158,9 +160,14 @@ template :field(?class) {
     optional { ?propShape sh:datatype|sh:class ?type }
     optional { ?propShape sh:minCount ?count }
     optional {
-        ?m a jsonld:Mapping ;
+        ?mSet a jsonld:Mapping ;
         jsonld:iri ?prop ;
         jsonld:container jsonld:set
+    }
+    optional {
+        ?mIndex a jsonld:Mapping ;
+        jsonld:iri ?prop ;
+        jsonld:container jsonld:index
     }
     optional {
         ?propShape sh:in ?list
@@ -168,7 +175,8 @@ template :field(?class) {
     optional { ?propShape sh:defaultValue ?def  }
     bind (bound(?count) as ?mandatory)
     bind (bound(?def) as ?hasDef)
-    bind (bound(?m) as ?array)
+    bind (bound(?mSet) as ?array)
+    bind (bound(?mIndex) as ?map)
     bind (bound(?type) as ?hasType)
     bind (bound(?list) as ?hasEnum)
     optional { ?propShape sh:order ?predefined }
