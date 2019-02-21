@@ -29,24 +29,75 @@ prefix jsonld: <http://www.w3.org/ns/json-ld#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :fields(?class) {
+    if(?class = <http://www.w3.org/ns/td#Thing>, 
+        "<p>When a concrete Thing is defined in a Thing Description, it is called a <dfn>thing resource</dfn></p>",
+        "")
     "<table class=\"def\">"
         "<thead>"
             "<tr>"
-                "<th>Vocabulary term</th>"
+                "<th><a>Vocabulary term</a></th>"
                 "<th>Description</th>"
                 "<th>Mandatory</th>"
                 "<th>Type</th>"
             "</tr>"
         "</thead>"
         format {
-            "<tbody>%s%s</tbody>"
+            "<tbody>%s%s%s%s%s</tbody>"
             # custom property for Thing (id = @id = IRI)
             if(?class = <http://www.w3.org/ns/td#Thing>,
                 concat("<tr>",
+                       "<td><code>@context</code></td>",
+                       "<td>Known from JSON-LD, <code>@context</code> is used to define short-hand names called terms that are used throughout a TD document.</td>",
+                       "<td>yes</td>",
+                       "<td>array</td>",
+                       "</tr>",
+                       "<tr>",
+                       "<td><code>@type</code></td>",
+                       "<td>Known from JSON-LD, <code>@type</code> is used to state that a thing resource is an instance of a class. One or more classes can be specified.<br/><br/> Each string in the value array represents a class.</td>",
+                       "<td>no</td>",
+                       "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
+                       "</tr>",
+                       "<tr>",
                        "<td><code>id</code></td>",
                        "<td>unique identifier of the Thing (URI, e.g. custom URN).</td>",
                        "<td>yes</td>",
                        "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI\"><code>anyURI</code></a></td>",
+                       "</tr>"
+                ), "")
+            if(?class = <http://www.w3.org/ns/td#InteractionPattern>,
+                concat("<tr>",
+                       "<td><code>@type</code></td>",
+                       "<td>Known from JSON-LD, <code>@type</code> is used to state that an interaction resource is an instance of a class. One or more classes can be specified.<br/><br/> Each string in the value array represents a class.</td>",
+                       "<td>no</td>",
+                       "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
+                       "</tr>"
+                ), "")
+            if(?class = <http://www.w3.org/ns/json-schema#DataSchema>,
+                concat("<tr>",
+                       "<td><code>@context</code></td>",
+                       "<td>Known from JSON-LD, <code>@context</code> is used to define short-hand names called terms that are used in a DataSchema.</td>",
+                       "<td>yes</td>",
+                       "<td>array</td>",
+                       "</tr>",
+                       "<tr>",
+                       "<td><code>@type</code></td>",
+                       "<td>Known from JSON-LD, <code>@type</code> is used to state that values described by the DataSchema are instances of a class. One or more classes can be specified.<br/><br/> Each string in the value array represents a class.</td>",
+                       "<td>no</td>",
+                       "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
+                       "</tr>"
+                ), "")
+            if(?class = <http://www.w3.org/ns/wot-security#SecurityScheme>,
+                concat("<tr>",
+                       "<td><code>@context</code></td>",
+                       "<td>Known from JSON-LD, <code>@context</code> is used to define short-hand names called terms that are used in a SecurityScheme.</td>",
+                       "<td>yes</td>",
+                       "<td>array</td>",
+                       "</tr>",
+                       "<tr>",
+                       "<td><code>@type</code></td>",
+                       "<td>Known from JSON-LD, <code>@type</code> is used to state that a security mechanism configured by the SecurityScheme is an instance of a class. One or more classes can be specified.<br/><br/> Each string in the value array represents a class.</td>",
+                       "<td>no</td>",
+                       "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>"
                 ), "")
             st:call-template(:field, ?class)
@@ -89,7 +140,9 @@ template :field(?class) {
                 "%s%s%s"
                 if(?prop = <http://www.w3.org/ns/td#op>,
                     "array of ", # string or array of strings
-                    if(?array, "array of ", ""))
+                    if(?array,
+                        "array of ",
+                        if(?map, "map of ", "")))
                 if(?hasType, st:call-template(:type, ?class, ?prop), "any type")
                 if(?prop = <http://www.w3.org/ns/td#op>,
                     "  Each entry representing an interaction verb", "")
@@ -110,9 +163,14 @@ template :field(?class) {
     optional { ?propShape sh:datatype|sh:class ?type }
     optional { ?propShape sh:minCount ?count }
     optional {
-        ?m a jsonld:Mapping ;
+        ?mSet a jsonld:Mapping ;
         jsonld:iri ?prop ;
         jsonld:container jsonld:set
+    }
+    optional {
+        ?mIndex a jsonld:Mapping ;
+        jsonld:iri ?prop ;
+        jsonld:container jsonld:index
     }
     optional {
         ?propShape sh:in ?list
@@ -120,7 +178,8 @@ template :field(?class) {
     optional { ?propShape sh:defaultValue ?def  }
     bind (bound(?count) as ?mandatory)
     bind (bound(?def) as ?hasDef)
-    bind (bound(?m) as ?array)
+    bind (bound(?mSet) as ?array)
+    bind (bound(?mIndex) as ?map)
     bind (bound(?type) as ?hasType)
     bind (bound(?list) as ?hasEnum)
     optional { ?propShape sh:order ?predefined }
@@ -285,8 +344,12 @@ prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :desc(?term) {
     format {
-        "%s"
+        "%s%s"
         if(strends(?desc, "."), ?desc, concat(?desc, "."))
+        if(?term = <http://www.w3.org/ns/td#MultiLanguage>, 
+            " See <a href=\"#titles-descriptions-serialization-json\"></a> for example usages of this container in a Thing Description instance.",
+            "")
+
     } ; separator = " "
 } where {
     ?term rdfs:comment ?desc .

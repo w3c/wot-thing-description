@@ -50,6 +50,12 @@ function load(ep, ttl) {
     });
 }
 
+const ctxFiles = [
+    'context/td-context.jsonld',
+    'context/json-schema-context.jsonld',
+    'context/wot-security-context.jsonld'
+];
+
 const ttlFiles = [
     'ontology/td.ttl',
 	'ontology/json-schema.ttl',
@@ -64,6 +70,7 @@ const txtFiles = [
 
 const src = fs.readFileSync('index.template.html', 'UTF-8');
 const jsonSchemaValidation = fs.readFileSync('validation/td-json-schema-validation.json', 'UTF-8');
+const atriskCSS = fs.readFileSync('testing/atrisk.css', 'UTF-8');
 
 const updateEndpoint = process.env.WOT_SPARUL_ENDPOINT;
 const queryEndpoint = process.env.WOT_SPARQL_ENDPOINT;
@@ -77,11 +84,11 @@ load(updateEndpoint, null)
     let promises = ttlFiles.map((f) => {
         let ttl = fs.readFileSync(f, 'utf-8');
         return load(updateEndpoint, ttl);
-    });
-
-    const context = fs.readFileSync('context/td-context.jsonld', 'UTF-8');
-    let ttl = jsonld.toRDF(JSON.parse(context));
-    promises.push(load(updateEndpoint, ttl));
+    }).concat(ctxFiles.map(f => {
+        const context = fs.readFileSync(f, 'UTF-8');
+        let ttl = jsonld.toRDF(JSON.parse(context));
+        return load(updateEndpoint, ttl);
+    }));
 
     return Promise.all(promises);
 })
@@ -124,6 +131,7 @@ load(updateEndpoint, null)
         return Promise.resolve();
     }).then(() => {
         rendered = rendered.replace('{td.json-schema.validation}', jsonSchemaValidation);
+        rendered = rendered.replace('{atriskCSS}', atriskCSS);
 
         // beautify html
         /*var html = rendered.querySelector("body").outerHTML;

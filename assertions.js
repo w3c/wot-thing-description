@@ -32,6 +32,7 @@ const ea_htmlfile = path.join(inputs_dir, "extra-asserts.html");     // extra no
 const depends_csvfile = path.join(inputs_dir, "depends.csv");        // assertion dependencies
 const categories_csvfile = path.join(inputs_dir, "categories.csv");  // assertion categories
 const atrisk_csvfile = path.join(inputs_dir, "atrisk.csv");          // at-risk assertions
+const atrisk_cssfile = path.join(testing_dir, "atrisk.css");         // at-risk assertion styling
 const impls_csvfile = path.join(inputs_dir, "impl.csv");             // structured implementation data
 //-----------------------------------------------------------------------
 
@@ -54,6 +55,9 @@ const src_base = "";
 // Off by default since it is redundant, but is convenient sometimes.
 const repeat_assertion_in_appendix = false;
 //=======================================================================
+
+// Map to track dependencies
+var depends = new Map();
 
 // Verbosity level
 const verbosity = 3;
@@ -178,6 +182,41 @@ src_dom('tr[class="rfc2119-table-assertion"]').each(function(i,elem) {
     }
 });
 
+// Extract default assertions
+var def_assertions = {};
+src_dom('tr[class="rfc2119-default-assertion"]').each(function(i,elem) {
+    let id = src_dom(this).attr('id');
+    if (undefined === id) {
+        if (warn_v) console.log("WARNING: rfc2119-default-assertion without id:", src_dom(this).html());
+    } else {
+        let assertion_data = src_dom(this).children('td').map(function(i, el) {
+            return src_dom(this).html();
+        }).get();
+        let assertion = '<span class="rfc2119-default-assertion">' 
+                      + 'The value associated with member '
+                      + '"<code>'
+                      + assertion_data[0]  // vocab term
+                      + '</code>"'
+                      + ' if not given MUST be assumed to have the default value ' 
+                      + '"<code>' 
+                      + assertion_data[1]  // default value
+                      + '</code>".' 
+                      +'</span>';
+        let contexts = assertion_data[2];
+        if (undefined !== contexts && "null" !== contexts) {
+           // get rid of any markup (convert to spaces)
+           contexts = contexts.replace(/<\/?[a-zA-Z]+>/gi,' ');
+        }
+        depends.set(id,{
+          "parents": "td-serialization-default-values",
+          "contexts": contexts
+        });
+        if (chatty_v) console.log("default assertion",id,"added");
+        if (debug_v) console.log("  text:",assertion);
+        def_assertions[id] = push_uniq(def_assertions[id],cheerio.load(assertion)("span"));
+    }
+});
+
 // Read in extra assertions and store as a dom
 // (Synchronous)
 const ea_raw = fs.readFileSync(ea_htmlfile, 'UTF-8');
@@ -288,7 +327,6 @@ function merge_results(done_callback) {
 
 // Get dependencies
 // (Asynchronous)
-var depends = new Map();
 function get_depends(done_callback) {
     if (info_v) console.log("processing dependencies in",depends_csvfile);
     var filedata = fs.readFileSync(depends_csvfile).toString();
@@ -371,6 +409,7 @@ function get_impls(done_callback) {
 // (Asynchronous)
 var risks = new Map();
 function get_risks(done_callback) {
+    var risks_css = "";
     if (info_v) console.log("processing risks in",atrisk_csvfile);
     var filedata = fs.readFileSync(atrisk_csvfile).toString();
     csvtojson()
@@ -381,11 +420,15 @@ function get_risks(done_callback) {
                 let id = item["ID"];
                 if (undefined !== id) {
                     risks.set(id,true);
+                    risks_css += '#' + id + ' {\n'
+                               + '  background-color: yellow;\n'
+                               + '}\n';
                     if (chatty_v) console.log("add at-risk record for",id);
                 } else {
                     if (warn_v) console.log("WARNING: at-risk record for id",id,"in unexpected format");
                 }
             }
+            fs.writeFileSync(atrisk_cssfile,risks_css);
             done_callback();
         });
 }
@@ -521,7 +564,7 @@ function merge_interops(done_callback) {
       let impl_org = "";
       let impl_name = "Unknown";
       if (undefined === impl) {
-         if (warn_v) console.log("no name available for impl",item);
+         if (warn_v) console.log("no name available for impl",producer);
       } else {
          impl_org = impl.org;
          impl_name = impl.name;
@@ -552,9 +595,10 @@ function merge_interops(done_callback) {
   done_callback();
 }
 
-// Merge assertions, and test specs into report
+// Merge assertions into a single array
 // (Asynchronous)
 report_dom('head>title').append(src_title);
+var assertion_array = [];
 // report_dom('body>h2').append(src_title);
 // report_dom('body').append('<dl></dl>');
 function merge_assertions(assertions,ac,done_callback) {
@@ -563,9 +607,80 @@ function merge_assertions(assertions,ac,done_callback) {
     let n = assertions[a_id].length;
     for (let i = 0; i < n; i++) { 
       a_dom = assertions[a_id][i];
+      let assertion_object = {};
       let a = a_id;
       if (n > 1) a += "-" + (i+1);
       if (chatty_v) console.log("Processing assertion "+a);
+
+      assertion_object.id = a;
+      assertion_object.ac = ac;
+      assertion_object.text = a_dom.text();
+ 
+      assertion_array.push(assertion_object);
+    }
+  }
+  done_callback();
+}
+
+// Scan assertions to identify children; clear parents
+// of such child assertions, then rescan and assign to 
+// parent the minimum pass and maximum fails of any child.
+function process_children(done_callback) {
+  // Find set of all parents
+  let n = assertion_array.length;
+  let ps = new Set();
+  for (let i = 0; i < n; i++) { 
+    a = assertion_array[i].id;
+    if (a.indexOf('_') > -1) {
+      let p = a.substr(0,a.indexOf('_'));
+      ps.add(p);
+    }
+  }
+  console.log(ps);
+  // for every parent, clear data in merged assertions 
+  ps.forEach( p => {
+    merged_results.set(p,undefined);
+  });
+  // rescan children, rederive parent's scores
+  for (let i = 0; i < n; i++) { 
+    a = assertion_array[i].id;
+    if (a.indexOf('_') > -1) {
+      let p = a.substr(0,a.indexOf('_'));
+      let rp = merged_results.get(p);
+      let rc = merged_results.get(a);
+      if (undefined === rp) {
+        if (undefined !== rc) merged_results.set(p,rc);
+      } else {
+        if (undefined !== rc) {
+          let rp_pass = (undefined === rp.pass) ? 0 : rp.pass;
+          let rp_fail = (undefined === rp.fail) ? 0 : rp.fail;
+          let rp_notimpl = (undefined === rp.notimpl) ? 0 : rp.notimpl;
+          let rc_pass = (undefined === rc.pass) ? 0 : rc.pass;
+          let rc_fail = (undefined === rc.fail) ? 0 : rc.fail;
+          let rc_notimpl = (undefined === rc.notimpl) ? 0 : rc.notimpl;
+          merged_results.set(p,{
+            "pass": Math.min(rp_pass, rc_pass),
+            "fail": Math.max(rp_fail, rc_fail),
+            "notimpl": Math.max(rp_notimpl, rc_notimpl)
+          });
+        }
+      }
+    }
+  }
+  // next
+  done_callback();
+}
+
+function format_assertions(done_callback) {
+    assertion_array.sort((a,b) => {
+      return (a.id < b.id) ? -1 : ((a.id > b.id) ? 1 : 0); 
+    });
+    let n = assertion_array.length;
+    for (let i = 0; i < n; i++) { 
+      a = assertion_array[i].id;
+      ac = assertion_array[i].ac;
+      a_text = assertion_array[i].text;
+      if (chatty_v) console.log("Formatting assertion "+a);
 
       // Results template
       fs.appendFileSync(results_csvfile, '"'+a+'","null",\n');
@@ -580,9 +695,6 @@ function merge_assertions(assertions,ac,done_callback) {
       if ("extraassertion" === ac) {
         report_dt.append(' <em>(extra)</em>');
       }
-
-      // Get text
-      let a_text = a_dom.text();
 
       let category = undefined;
       let req = false;
@@ -663,7 +775,9 @@ function merge_assertions(assertions,ac,done_callback) {
           let ps = p.split(' ');
           let h = '\n\t<td class="'+ac+'">';
           for (let i=0; i<ps.length; i++) {
-            h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a> ';
+            if (0 != ps[i].trim().length) {
+              h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a><br>';
+            }
           }
           report_tr.append(h+'\n\t</td>');
         } else {
@@ -674,7 +788,9 @@ function merge_assertions(assertions,ac,done_callback) {
           let cs = c.split(' ');
           let h = '\n\t<td class="'+ac+'">';
           for (let i=0; i<cs.length; i++) {
-            h = h + '\n\t\t<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a> ';
+            if (0 != cs[i].trim().length) {
+              h = h + '\n\t\t<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a><br>';
+            }
           }
           report_tr.append(h+'\n\t</td>');
         } else {
@@ -694,10 +810,14 @@ function merge_assertions(assertions,ac,done_callback) {
           if (pass >= 2) {
             report_tr.append('\n\t<td class="'+ac+'">'+pass+'</td>');
           } else {
-            report_tr.append('\n\t<td class="failed">'+pass+'</td>');
+            if (pass == 0) {
+              report_tr.append('\n\t<td class="missing">'+pass+'</td>');
+            } else {
+              report_tr.append('\n\t<td class="failed">'+pass+'</td>');
+            }
           }
         } else {
-          report_tr.append('\n\t<td class="missing"></td>');
+          report_tr.append('\n\t<td class="missing">0</td>');
 	  pass = 0;
         }
         // Number of reported fail statuses
@@ -709,7 +829,7 @@ function merge_assertions(assertions,ac,done_callback) {
             report_tr.append('\n\t<td class="'+ac+'">'+fail+'</td>');
           }
         } else {
-          report_tr.append('\n\t<td class="'+ac+'"></td>');
+          report_tr.append('\n\t<td class="'+ac+'">0</td>');
 	  fail = 0;
         }
         // Number of reported not implemented statuses
@@ -717,23 +837,23 @@ function merge_assertions(assertions,ac,done_callback) {
         if (undefined != notimpl) {
           report_tr.append('\n\t<td class="'+ac+'">'+notimpl+'</td>');
         } else {
-          report_tr.append('\n\t<td class="'+ac+'"></td>');
+          report_tr.append('\n\t<td class="'+ac+'">0</td>');
 	  notimpl = 0;
         }
         // Total number of reported statuses
         let totals = pass + fail + notimpl;
         if (0 == totals) {
-          report_tr.append('\n\t<td class="missing"></td>');
+          report_tr.append('\n\t<td class="missing">0</td>');
         } else if (totals < 2) {
           report_tr.append('\n\t<td class="failed">'+totals+'</td>');
         } else {
           report_tr.append('\n\t<td class="'+ac+'">'+totals+'</td>');
         }
       } else {
-        report_tr.append('\n\t<td class="missing"></td>');
-        report_tr.append('\n\t<td class="missing"></td>');
-        report_tr.append('\n\t<td class="missing"></td>');
-        report_tr.append('\n\t<td class="missing"></td>');
+        report_tr.append('\n\t<td class="missing">0</td>');
+        report_tr.append('\n\t<td class="missing">0</td>');
+        report_tr.append('\n\t<td class="missing">0</td>');
+        report_tr.append('\n\t<td class="missing">0</td>');
       }
 
       // Add to test spec appendix
@@ -753,8 +873,7 @@ function merge_assertions(assertions,ac,done_callback) {
         report_li.append('\n\t\t'+a_spec);
       }
     }
-  }
-  done_callback();
+    done_callback();
 }
 
 get_results(0,function(results) {
@@ -794,15 +913,22 @@ get_results(0,function(results) {
           merge_interops(function() {
            merge_assertions(src_assertions,"baseassertion",function() {
             merge_assertions(tab_assertions,"tabassertion",function() {
-             merge_assertions(extra_assertions,"extraassertion",function() {
-              // Output report
-              fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
-                if (error) {
-                  return console.log(err);
-                } else {
-                  if (info_v) console.log("Report output to "+report_htmlfile);
-                }
-              }); 
+             merge_assertions(def_assertions,"defassertion",function() {
+              merge_assertions(extra_assertions,"extraassertion",function() {
+               process_children(function() {
+                format_assertions(function() {
+                 // Output report
+                 fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
+                  if (error) {
+                   return console.log(err);
+                  } else {
+                   if (info_v) console.log("Report output to "+report_htmlfile);
+                  }
+                 }); 
+                }); 
+               });
+              });
+             }); 
             }); 
            }); 
           }); 
@@ -810,9 +936,8 @@ get_results(0,function(results) {
         }); 
        }); 
       }); 
-     }); 
+     });
     });
-   });
   });
 });
 
