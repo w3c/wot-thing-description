@@ -166,13 +166,25 @@ load(updateEndpoint, null)
     let jsonschemaPrefix = { type: 'literal', value: 'jsonschema' };
     let wotsecPrefix = { type: 'literal', value: 'wotsec' };
 
+    let process = (ns, html) => {
+        let tpl = 'ontology/' + ns + '.template.html';
+        let f = 'ontology/' + ns + '.html';
+        rendered = fs.readFileSync(tpl, 'utf-8').replace('{axioms}', html);
+        fs.writeFileSync(f, rendered);
+    };
+
     tpl3 = 'http://w3c.github.io/wot-thing-description/ontology#main';
     sttl.callTemplate(tpl3, td, tdPrefix)
     .then(html => {
-        rendered = fs.readFileSync('ontology/td.template.html', 'utf-8')
-            .replace('{td}', html);
-        fs.writeFileSync('ontology/td.html', rendered);
-        //return sttl.callTemplate(tpl3, jsonschema);
+        process('td', html);
+        return sttl.callTemplate(tpl3, jsonschema, jsonschemaPrefix);
+    })
+    .then(html => {
+        process('jsonschema', html);
+        return sttl.callTemplate(tpl3, wotsec, wotsecPrefix);
+    })
+    .then(html => {
+        process('wotsec', html);
     })
     .catch(e => console.error('HTML (ontology) rendering error: ' + e.message));
 
