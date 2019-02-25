@@ -169,8 +169,8 @@ load(updateEndpoint, null)
     let process = (ns, html) => {
         let tpl = 'ontology/' + ns + '.template.html';
         let f = 'ontology/' + ns + '.html';
-        rendered = fs.readFileSync(tpl, 'utf-8').replace('{axioms}', html);
-        fs.writeFileSync(f, rendered);
+        let doc = fs.readFileSync(tpl, 'utf-8').replace('{axioms}', html);
+        fs.writeFileSync(f, doc);
     };
 
     tpl3 = 'http://w3c.github.io/wot-thing-description/ontology#main';
