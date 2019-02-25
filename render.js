@@ -53,13 +53,15 @@ function load(ep, ttl) {
 const ctxFiles = [
     'context/td-context.jsonld',
     'context/json-schema-context.jsonld',
-    'context/wot-security-context.jsonld'
+    'context/wot-security-context.jsonld',
+    'context/web-linking-context.jsonld'
 ];
 
 const ttlFiles = [
     'ontology/td.ttl',
 	'ontology/json-schema.ttl',
 	'ontology/wot-security.ttl',
+    'ontology/web-linking.ttl',
 	'validation/td-validation.ttl'
 ];
 
@@ -114,6 +116,7 @@ load(updateEndpoint, null)
     let td = { type: 'uri', value: 'http://www.w3.org/ns/td#' };
     let jsonschema = { type: 'uri', value: 'http://www.w3.org/ns/json-schema#' };
     let wotsec = { type: 'uri', value: 'http://www.w3.org/ns/wot-security#' };
+    let lnk = { type: 'uri', value: 'http://www.w3.org/ns/web-linking#' };
 
     // HTML rendering
 
@@ -129,8 +132,13 @@ load(updateEndpoint, null)
     })
     .then(html => {
         rendered = rendered.replace('{wot-security}', html);
+        return sttl.callTemplate(tpl1, lnk);
+    })
+    .then(html => {
+        rendered = rendered.replace('{web-linking}', html);
         return Promise.resolve();
-    }).then(() => {
+    })
+    .then(() => {
         rendered = rendered.replace('{td.json-schema.validation}', jsonSchemaValidation);
         rendered = rendered.replace('{atriskCSS}', atriskCSS);
 
@@ -157,6 +165,10 @@ load(updateEndpoint, null)
     })
     .then(dot => {
         fs.writeFileSync('visualization/wot-security.dot', dot);
+        return sttl.callTemplate(tpl2, lnk);
+    })
+    .then(dot => {
+        fs.writeFileSync('visualization/web-linking.dot', dot);
     })
     .catch(e => console.error('DOT rendering error: ' + e.message));
 
@@ -165,6 +177,7 @@ load(updateEndpoint, null)
     let tdPrefix = { type: 'literal', value: 'td' };
     let jsonschemaPrefix = { type: 'literal', value: 'jsonschema' };
     let wotsecPrefix = { type: 'literal', value: 'wotsec' };
+    let lnkPrefix = { type: 'literal', value: 'lnk' };
 
     let process = (ns, html) => {
         let tpl = 'ontology/' + ns + '.template.html';
@@ -185,6 +198,10 @@ load(updateEndpoint, null)
     })
     .then(html => {
         process('wotsec', html);
+        return sttl.callTemplate(tpl3, lnk, lnkPrefix);
+    })
+    .then(html => {
+        process('lnk', html);
     })
     .catch(e => console.error('HTML (ontology) rendering error: ' + e.message));
 
