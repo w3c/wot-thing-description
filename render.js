@@ -65,7 +65,8 @@ const ttlFiles = [
 
 const txtFiles = [
     'templates.txt',
-    'visualization/templates.txt'
+    'visualization/templates.txt',
+    'ontology/templates.txt'
 ];
 
 const src = fs.readFileSync('index.template.html', 'UTF-8');
@@ -158,6 +159,23 @@ load(updateEndpoint, null)
         fs.writeFileSync('visualization/wot-security.dot', dot);
     })
     .catch(e => console.error('DOT rendering error: ' + e.message));
+
+    // HTML rendering (ontology documents)
+ 
+    let tdPrefix = { type: 'literal', value: 'td' };
+    let jsonschemaPrefix = { type: 'literal', value: 'jsonschema' };
+    let wotsecPrefix = { type: 'literal', value: 'wotsec' };
+
+    tpl3 = 'http://w3c.github.io/wot-thing-description/ontology#main';
+    sttl.callTemplate(tpl3, td, tdPrefix)
+    .then(html => {
+        rendered = fs.readFileSync('ontology/td.template.html', 'utf-8')
+            .replace('{td}', html);
+        fs.writeFileSync('ontology/td.html', rendered);
+        //return sttl.callTemplate(tpl3, jsonschema);
+    })
+    .catch(e => console.error('HTML (ontology) rendering error: ' + e.message));
+
 })
 .catch((e) => {
     console.error('Initialization error: ' + e.message);
