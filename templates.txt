@@ -4,7 +4,19 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :classes(?ns) {
     "<section>"
-        format { "<h3><code>%s</code></h3>" st:call-template(:label, ?class) }
+        if(?class = <http://www.w3.org/ns/td#PropertyAffordance> ||
+           ?class = <http://www.w3.org/ns/td#ActionAffordance> ||
+           ?class = <http://www.w3.org/ns/td#EventAffordance>,
+            "<h4>",
+            "<h3>"
+        )
+        format { "<code>%s</code>" st:call-template(:label, ?class) }
+        if(?class = <http://www.w3.org/ns/td#PropertyAffordance> ||
+           ?class = <http://www.w3.org/ns/td#ActionAffordance> ||
+           ?class = <http://www.w3.org/ns/td#EventAffordance>,
+            "</h4>",
+            "</h3>"
+        )
         format { "<p>%s</p>" st:call-template(:desc, ?class) }
 
         format { "%s" st:call-template(:fields, ?class) }
@@ -12,7 +24,14 @@ template :classes(?ns) {
         format { "%s" st:call-template(:subclasses, ?class) }
 
         format { "%s" st:call-template(:notes, ?class) }
-    "</section>"
+
+    if(?class = <http://www.w3.org/ns/td#InteractionAffordance>,
+        "",
+        if(?class = <http://www.w3.org/ns/td#EventAffordance>,
+            "</section></section>",
+            "</section>"
+        )
+    )
 } where {
     ?shape a sh:NodeShape ;
            sh:targetClass ?class .
@@ -30,7 +49,10 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :fields(?class) {
     if(?class = <http://www.w3.org/ns/td#Thing>, 
-        "<p>When a concrete Thing is defined in a Thing Description, it is called a <dfn>thing resource</dfn></p>",
+        "<p>When a concrete Thing is defined in a Thing Description, it is called a <dfn>thing resource</dfn>.</p>",
+        "")
+    if(?class = <http://www.w3.org/ns/td#InteractionAffordance>, 
+        "<p>When a concrete Property-, Action- or Event-based affordance is defined in a Thing Description, it is called an <dfn>interaction resource</dfn>.</p>",
         "")
     "<table class=\"def\">"
         "<thead>"
@@ -47,13 +69,13 @@ template :fields(?class) {
             if(?class = <http://www.w3.org/ns/td#Thing>,
                 concat("<tr>",
                        "<td><code>@context</code></td>",
-                       "<td>Known from JSON-LD, <code>@context</code> is used to define short-hand names called terms that are used throughout a TD document.</td>",
+                       "<td>Known from JSON-LD [[!json-ld]], <code>@context</code> is used to define short-hand names called terms that are used throughout a TD document.</td>",
                        "<td>yes</td>",
                        "<td>array</td>",
                        "</tr>",
                        "<tr>",
                        "<td><code>@type</code></td>",
-                       "<td>Known from JSON-LD, <code>@type</code> is used to state that a thing resource is an instance of a class. One or more classes can be specified.<br/><br/> Each string in the value array represents a class.</td>",
+                       "<td>Known from JSON-LD [[!json-ld]], <code>@type</code> is used to state that a thing resource is an instance of a class.<br/><br/> Each string in the value array represents a class.</td>",
                        "<td>no</td>",
                        "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>",
@@ -67,7 +89,7 @@ template :fields(?class) {
             if(?class = <http://www.w3.org/ns/td#InteractionAffordance>,
                 concat("<tr>",
                        "<td><code>@type</code></td>",
-                       "<td>Known from JSON-LD, <code>@type</code> is used to state that an interaction resource is an instance of a class. One or more classes can be specified.<br/><br/> Each string in the value array represents a class.</td>",
+                       "<td>Known from JSON-LD [[!json-ld]], <code>@type</code> is used to state that an <a>interaction resource</a> is an instance of a class.<br/><br/> Each string in the value array represents a class.</td>",
                        "<td>no</td>",
                        "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>"
@@ -75,13 +97,13 @@ template :fields(?class) {
             if(?class = <http://www.w3.org/ns/json-schema#DataSchema>,
                 concat("<tr>",
                        "<td><code>@context</code></td>",
-                       "<td>Known from JSON-LD, <code>@context</code> is used to define short-hand names called terms that are used in a DataSchema.</td>",
+                       "<td>Known from JSON-LD [[!json-ld]], <code>@context</code> is used to define short-hand names called terms that are used in a DataSchema.</td>",
                        "<td>yes</td>",
                        "<td>array</td>",
                        "</tr>",
                        "<tr>",
                        "<td><code>@type</code></td>",
-                       "<td>Known from JSON-LD, <code>@type</code> is used to state that values described by the DataSchema are instances of a class. One or more classes can be specified.<br/><br/> Each string in the value array represents a class.</td>",
+                       "<td>Known from JSON-LD [[!json-ld]], <code>@type</code> is used to state that values described by the DataSchema are instances of a class. <br/><br/> Each string in the value array represents a class.</td>",
                        "<td>no</td>",
                        "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>"
@@ -89,13 +111,13 @@ template :fields(?class) {
             if(?class = <http://www.w3.org/ns/wot-security#SecurityScheme>,
                 concat("<tr>",
                        "<td><code>@context</code></td>",
-                       "<td>Known from JSON-LD, <code>@context</code> is used to define short-hand names called terms that are used in a SecurityScheme.</td>",
+                       "<td>Known from JSON-LD [[!json-ld]], <code>@context</code> is used to define short-hand names called terms that are used in a SecurityScheme.</td>",
                        "<td>yes</td>",
                        "<td>array</td>",
                        "</tr>",
                        "<tr>",
                        "<td><code>@type</code></td>",
-                       "<td>Known from JSON-LD, <code>@type</code> is used to state that a security mechanism configured by the SecurityScheme is an instance of a class. One or more classes can be specified.<br/><br/> Each string in the value array represents a class.</td>",
+                       "<td>Known from JSON-LD [[!json-ld]], <code>@type</code> is used to state that a security mechanism configured by the SecurityScheme is an instance of a class.<br/><br/> Each string in the value array represents a class.</td>",
                        "<td>no</td>",
                        "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>"
@@ -128,7 +150,7 @@ template :field(?class) {
             format { "%s" st:call-template(:desc, ?prop) }
             if (?prop = <http://www.w3.org/ns/td#forms>,
                 if(?class = <http://www.w3.org/ns/td#Thing>,
-                  " In this version of TD, all operations that can be described at the Thing level are concerning how to interact with the Thing's <a href=\"#property\">Property</a> interaction resources collectively at once.", ""
+                  " In this version of TD, all operations that can be described at the Thing level are concerning how to interact with the Thing's <a href=\"#property\">Property</a> <a>interaction resources</a> collectively at once.", ""
                 ) , ""
             )
         "</td>"
