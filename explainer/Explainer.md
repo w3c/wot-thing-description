@@ -10,7 +10,7 @@ With TD, the clients are informed of the choice to make in interacting with the 
 
 Through PlugFest activities in WoT Interest Group, the group learned that essentially such a manifest has to serve to answer questions such as the ones shown in the below figure. The WoT Working Group formalized this concept, and gave it the name Thing Description (TD) .
 
-![explainer_how_to_interact](C:\My_Programs\WoT\wot-thing-description\explainer\explainer_how_to_interact.png)
+![explainer_how_to_interact](explainer_how_to_interact.png)
 
 Below shows a figure borrowed from WoT Architecture document, showing the entire WoT building blocks. Each building block is concerned with addressing one of the four aspects of interoperability issues identified in the scope of the WoT WG's work for the current charter. 
 
