@@ -20,6 +20,19 @@ As mentioned above, TD is about how to describe *Interaction Affordance*s of Thi
 - *Security Configuration* that describes security schemes required to access a Thing. Well-established security schemes are directly supported as part of the core *Thing Description* vocabulary. Other security schemes can be supported as extensions. 
 - *Protocol Binding Templates* that describes how concrete protocols are mapped to abstract terms defined in *Thing Description* specification.![WoT Building Blocks](https://cdn.staticaly.com/gh/w3c/wot-architecture/ce8a2b8624ffd60d913cd7aa2d36ad321e605ed7/images/wot-building-blocks.png)
 
-## Description
+## What does TD contribute to IoT Interoperability? 
 
-Narrow Waist in Systems Design
+IoT connectivity frameworks such as *IIC (Industry Internet Consortium) connectivity stack* (shown below), have a hourglass shape, and the network layer (i.e. IP - Internet Protocol) is called a narrow waist, therein IP serves as a focal point where diverse lower level networking protocols are bound to IP, and all the upper layer can depend on IP regardless what lower networking protocols are actually used underneath. This hourglass model is generally considered a significant contributing factor in the success of the internet.
+
+![Industrial Internet Connectivity Stack Model (from IIC's IICF)](explainer_iic_hourglass.png)
+
+When we think about the situation where many IoT ecosystems are developed in silos, there is a need for a narrow-waist architecture for IoT ecosystem interoperability in order to avoid ending up in N-times-N translation gateway solution where N is the number of IoT ecosystems involved. This is a serious problem in building cross industry domain application in which each domain likely is using an ecosystem unique to the industry domain. 
+
+Thing Description (TD) attempts bring an order to this IoT ecosystem fragmentation and address the interoperability issue by positioning itself as the narrow waist of the new hourglass interoperability architecture for IoT ecosystems. 
+
+In the figure below, even though IoT ecosystems employs different protocols, payloads and security schemes, TD provides a common description system where the uniqueness of each ecosystem can be described in the same TD format. Therefore, cross-domain applications that spans across multiple ecosystems can be developed by interacting with ecosystems according to the description given in the TDs regardless of the number of ecosystems involved.
+
+Applications, on the other hand, often use different terminologies in their data models. This again tend to end up in N-times-N translation between data models when those applications want to talk to each other. Semantic Web technology is known to help address this issue. TD embraces Semantic Web technologies by allowing semantic annotations to various elements in TD instances, enabling applications to understand other applications data by applying semantic processing.
+
+![explainer_wot_hourglass](explainer_wot_hourglass.png)
+
