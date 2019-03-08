@@ -58,7 +58,8 @@ const contexts = [
     ['/events/[^/]*/data', 'http://www.w3.org/ns/json-schema'],
     ['/events/[^/]*/subscription', 'http://www.w3.org/ns/json-schema'],
     ['/events/[^/]*/cancellation', 'http://www.w3.org/ns/json-schema'],
-    ['/security/[^/]*', 'http://www.w3.org/ns/wot-security']
+    ['/security/[^/]*', 'http://www.w3.org/ns/wot-security'],
+    ['/links/[0-9]*', 'http://www.w3.org/ns/web-linking']
 ];
 
 function getContext(pointer) {
