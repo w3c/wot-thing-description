@@ -109,7 +109,9 @@ This section summarizes a number of design choices that the WoT Working Group sp
 
 Note that the WoT Working Group has been talking with JSON-LD WG in regards to a missing feature in JSON-LD 1.1. The discussion is on-going in [HutGub](https://github.com/w3c/json-ld-api/issues/65). 
 
-While JSON-LD 1.1 supports the use of the same name in different context as described in [Scoped Context](https://w3c.github.io/json-ld-syntax/#scoped-contexts), the WoT Working Group found that although the feature is helpful, it still does not fully address what TD Serialization needs. The issue essentially is that the RDF document transformed from JSON-LD 1.1 if TD were a JSON-LD 1.1 document, does not round-trip to the same TD in JSON-LD 1.1 format. 
+While JSON-LD 1.1 supports the use of the same name in different context as described in [Scoped Context](https://w3c.github.io/json-ld-syntax/#scoped-contexts), the WoT Working Group's understanding is that although the feature is helpful, it still does not fully address what TD Serialization needs. The issue essentially is that the RDF document transformed from JSON-LD 1.1 if TD were a JSON-LD 1.1 document, does not round-trip to the same TD in JSON-LD 1.1 format. 
+
+This is a problem in implementing common WoT use cases in which TDs are stored in a Thing Directory in the form of RDF to allow for semantics-based Thing discovery, while TDs can be served from the Thing Directory in the form of TD after transforming back to the original form.
 
 For this reason, TD Serialization is in JSON format, and it is not in JSON-LD 1.1 format. When the requirements WoT Working Group presented to JSON-LD Working Group are addressed and implemented in JSON-LD 1.1 draft specification as a stable feature, WoT WG will be able to say TD conforms to JSON-LD 1.1 format. 
 
