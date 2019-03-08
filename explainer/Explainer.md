@@ -115,6 +115,10 @@ While JSON-LD 1.1 supports the use of the same name in different context as desc
 
 For this reason, TD Serialization is in JSON format, and it is not in JSON-LD 1.1 format. When the requirements WoT Working Group presented to JSON-LD Working Group are addressed and implemented in JSON-LD 1.1 draft specification as a stable feature, WoT WG will be delighted to declare TD is in JSON-LD 1.1 format. 
 
+## Examples
+
+
+
 ## Features at Risk
 
 
