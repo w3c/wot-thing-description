@@ -598,6 +598,10 @@
   background-color: yellow;
 }
 
+.at-risk-example {
+  background-color: yellow;
+}
+
 </style>
 <!-- END ASSERTION HIGHLIGHTING -->
 
@@ -634,6 +638,17 @@
   <a href="https://github.com/w3c/wot-thing-description">repository</a>
   and take part in the discussions.
   </p>
+<!--
+  <p>This document is governed by the <a id=
+  "w3c_process_revision" href=
+  "https://www.w3.org/2019/Process-20190301/">1 March 2019
+  <abbr title="World Wide Web Consortium">W3C</abbr> Process
+  Document</a>.</p>
+-->
+  <p><span class="at-risk-example">Text and table entries highlighted with a yellow background
+  indicates a feature associated with an at-risk assertion for which
+  insufficient implementation experience exists.</span></p>
+
    
   </section>
 
@@ -756,8 +771,8 @@
         }
     ],
     "name": "MyLampThing",
+    "id": "urn:dev:wot:com:example:servient:lamp1",
     "securityDefinitions": {
-        "@id": "/securityDefinitions",
         "basic_sc": {
             "@id": "/securityDefinitions/basic_sc",
             "scheme": "basic"
@@ -1083,8 +1098,8 @@
         }
     ],
     "name": "MyLampThing",
+    "id": "urn:dev:wot:com:example:servient:lamp1",
     "securityDefinitions": {
-        "@id": "/securityDefinitions",
         "basic_sc": {
             "@id": "/securityDefinitions/basic_sc",
             "scheme": "basic",
@@ -1275,7 +1290,26 @@
 
   </section>
 
-  <section id="conformance">
+  <section>
+  <h1>Conformance</h1>
+  <p>
+  As well as all sections marked as non-normative, 
+  all authoring guidelines, diagrams, examples, and notes in this specification 
+  are non-normative. 
+  Everything else in this specification is normative.
+  </p>
+  <p>
+  The key words 
+  <em title="MUST" class="rfc2119">MUST</em>, 
+  <em title="MUST NOT" class="rfc2119">MUST NOT</em>, 
+  <em title="REQUIRED" class="rfc2119">REQUIRED</em>, 
+  <em title="SHOULD" class="rfc2119">SHOULD</em>, 
+  <em title="SHOULD NOT" class="rfc2119">SHOULD NOT</em>, 
+  <em title="RECOMMENDED" class="rfc2119">RECOMMENDED</em>, 
+  <em title="MAY" class="rfc2119">MAY</em>,
+  and <em title="OPTIONAL" class="rfc2119">OPTIONAL</em> 
+  in this specification are to be interpreted as described in [[!RFC2119]].
+  </p>
   <p>
   A Thing Description instance complies with this specification if it follows 
   the normative statements in Section 
@@ -1864,7 +1898,7 @@ when the texts are served as a result such negotiation.
   TD Serialization described in this section is in JSON format, and it is not in JSON-LD 1.1 format.
   The WoT WG is making a request to JSON-LD Working Group for a feature that would allow the WoT WG 
   to declare that TD instances that carry all mandatory vocabulary terms are JSON-LD 1.1 documents.
-  The discussion between the two groups is going-on. When the requirements WoT Working Group presented 
+  The discussion between the two groups is on-going. When the requirements WoT Working Group presented 
   to JSON-LD Working Group are addressed and implemented in JSON-LD 1.1 draft specification as a stable 
   feature, the WoT WG will be able to say that TD conforms to JSON-LD 1.1 format.
   </p>
@@ -3719,7 +3753,7 @@ returned by a target Thing acting as a server.
 
 <pre class="advisement">
 {
-    "title": "WoT TD Schema - January 2019",
+    "title": "WoT TD Schema - March 2019",
     "description": "JSON Schema representation of the TD serialisation format.",
     "$schema ": "http://json-schema.org/draft-06/schema#",
     "type": "object",
@@ -3808,7 +3842,7 @@ returned by a target Thing acting as a server.
             "$ref": "#/definitions/type_declaration"
         },
         "@context": {
-            "$ref": "#/definitions/context"
+            "$ref": "#/definitions/thing-context"
         }
     },
     "required": [
@@ -3819,13 +3853,11 @@ returned by a target Thing acting as a server.
     ],
     "additionalProperties": true,
     "definitions": {
-        "context": {
-            "oneOf": [
-                {
+        "thing-context": {
+            "oneOf": [{
                     "type": "array",
                     "items": {
-                        "anyOf": [
-                            {
+                        "anyOf": [{
                                 "$ref": "#/definitions/url"
                             },
                             {
@@ -3849,8 +3881,7 @@ returned by a target Thing acting as a server.
             ]
         },
         "type_declaration": {
-            "oneOf": [
-                {
+            "oneOf": [{
                     "type": "string"
                 },
                 {
@@ -3877,7 +3908,10 @@ returned by a target Thing acting as a server.
                     "$ref": "#/definitions/titles"
                 },
                 "uriVariables": {
-                    "$ref": "#/definitions/dataSchema"
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/dataSchema"
+                    }
                 },
                 "@type": {
                     "$ref": "#/definitions/type_declaration"
@@ -3911,6 +3945,9 @@ returned by a target Thing acting as a server.
                     "type": "array",
                     "minItems": 1,
                     "uniqueItems": true
+                },
+                "format": {
+                    "type": "string"
                 },
                 "const": {},
                 "type": {
@@ -3975,7 +4012,10 @@ returned by a target Thing acting as a server.
                     "$ref": "#/definitions/titles"
                 },
                 "uriVariables": {
-                    "$ref": "#/definitions/dataSchema"
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/dataSchema"
+                    }
                 },
                 "@type": {
                     "$ref": "#/definitions/type_declaration"
@@ -4011,6 +4051,9 @@ returned by a target Thing acting as a server.
                 "description": {
                     "type": "string"
                 },
+                "title": {
+                    "type": "string"
+                },
                 "descriptions": {
                     "$ref": "#/definitions/descriptions"
                 },
@@ -4018,10 +4061,10 @@ returned by a target Thing acting as a server.
                     "$ref": "#/definitions/titles"
                 },
                 "uriVariables": {
-                    "$ref": "#/definitions/dataSchema"
-                },
-                "title": {
-                    "type": "string"
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/dataSchema"
+                    }
                 },
                 "@type": {
                     "$ref": "#/definitions/type_declaration"
@@ -4064,8 +4107,7 @@ returned by a target Thing acting as a server.
                     "$ref": "#/definitions/url"
                 },
                 "op": {
-                    "oneOf": [
-                        {
+                    "oneOf": [{
                             "type": "string",
                             "enum": [
                                 "readproperty",
@@ -4106,7 +4148,9 @@ returned by a target Thing acting as a server.
                 "subProtocol": {
                     "type": "string",
                     "enum": [
-                        "longpoll"
+                        "longpoll",
+                        "websub",
+                        "sse"
                     ]
                 },
                 "response": {
@@ -4130,8 +4174,7 @@ returned by a target Thing acting as a server.
                     "$ref": "#/definitions/url"
                 },
                 "op": {
-                    "oneOf": [
-                        {
+                    "oneOf": [{
                             "type": "string",
                             "enum": [
                                 "invokeaction"
@@ -4166,7 +4209,9 @@ returned by a target Thing acting as a server.
                 "subProtocol": {
                     "type": "string",
                     "enum": [
-                        "longpoll"
+                        "longpoll",
+                        "websub",
+                        "sse"
                     ]
                 },
                 "response": {
@@ -4190,8 +4235,7 @@ returned by a target Thing acting as a server.
                     "$ref": "#/definitions/url"
                 },
                 "op": {
-                    "oneOf": [
-                        {
+                    "oneOf": [{
                             "type": "string",
                             "enum": [
                                 "subscribeevent",
@@ -4228,7 +4272,9 @@ returned by a target Thing acting as a server.
                 "subProtocol": {
                     "type": "string",
                     "enum": [
-                        "longpoll"
+                        "longpoll",
+                        "websub",
+                        "sse"
                     ]
                 },
                 "response": {
@@ -4252,8 +4298,7 @@ returned by a target Thing acting as a server.
                     "$ref": "#/definitions/url"
                 },
                 "op": {
-                    "oneOf": [
-                        {
+                    "oneOf": [{
                             "type": "string",
                             "enum": [
                                 "readallproperties",
@@ -4294,7 +4339,9 @@ returned by a target Thing acting as a server.
                 "subProtocol": {
                     "type": "string",
                     "enum": [
-                        "longpoll"
+                        "longpoll",
+                        "websub",
+                        "sse"
                     ]
                 },
                 "response": {
@@ -4357,6 +4404,9 @@ returned by a target Thing acting as a server.
                     "type": "array",
                     "minItems": 1,
                     "uniqueItems": true
+                },
+                "format": {
+                    "type": "string"
                 },
                 "const": {},
                 "type": {
@@ -4423,8 +4473,7 @@ returned by a target Thing acting as a server.
             "additionalProperties": true
         },
         "securityScheme": {
-            "oneOf": [
-                {
+            "oneOf": [{
                     "type": "object",
                     "properties": {
                         "description": {
@@ -4467,12 +4516,7 @@ returned by a target Thing acting as a server.
                         },
                         "in": {
                             "type": "string",
-                            "enum": [
-                                "header",
-                                "query",
-                                "body",
-                                "cookie"
-                            ]
+                            "enum": ["header", "query", "body", "cookie"]
                         },
                         "name": {
                             "type": "string"
@@ -4528,19 +4572,11 @@ returned by a target Thing acting as a server.
                         },
                         "qop": {
                             "type": "string",
-                            "enum": [
-                                "auth",
-                                "auth-int"
-                            ]
+                            "enum": ["auth", "auth-int"]
                         },
                         "in": {
                             "type": "string",
-                            "enum": [
-                                "header",
-                                "query",
-                                "body",
-                                "cookie"
-                            ]
+                            "enum": ["header", "query", "body", "cookie"]
                         },
                         "name": {
                             "type": "string"
@@ -4573,28 +4609,15 @@ returned by a target Thing acting as a server.
                         },
                         "alg": {
                             "type": "string",
-                            "enum": [
-                                "MD5",
-                                "ES256",
-                                "ES512-256"
-                            ]
+                            "enum": ["MD5", "ES256", "ES512-256"]
                         },
                         "format": {
                             "type": "string",
-                            "enum": [
-                                "jwt",
-                                "jwe",
-                                "jws"
-                            ]
+                            "enum": ["jwt", "jwe", "jws"]
                         },
                         "in": {
                             "type": "string",
-                            "enum": [
-                                "header",
-                                "query",
-                                "body",
-                                "cookie"
-                            ]
+                            "enum": ["header", "query", "body", "cookie"]
                         },
                         "name": {
                             "type": "string"
@@ -4691,12 +4714,7 @@ returned by a target Thing acting as a server.
                         },
                         "flow": {
                             "type": "string",
-                            "enum": [
-                                "implicit",
-                                "password",
-                                "client",
-                                "code"
-                            ]
+                            "enum": ["implicit", "password", "client", "code"]
                         }
                     },
                     "required": [
@@ -4723,12 +4741,7 @@ returned by a target Thing acting as a server.
                         },
                         "in": {
                             "type": "string",
-                            "enum": [
-                                "header",
-                                "query",
-                                "body",
-                                "cookie"
-                            ]
+                            "enum": ["header", "query", "body", "cookie"]
                         },
                         "name": {
                             "type": "string"
@@ -4761,28 +4774,15 @@ returned by a target Thing acting as a server.
                         },
                         "format": {
                             "type": "string",
-                            "enum": [
-                                "jwt",
-                                "jwe",
-                                "jws"
-                            ]
+                            "enum": ["jwt", "jwe", "jws"]
                         },
                         "alg": {
                             "type": "string",
-                            "enum": [
-                                "MD5",
-                                "ES256",
-                                "ES512-256"
-                            ]
+                            "enum": ["MD5", "ES256", "ES512-256"]
                         },
                         "in": {
                             "type": "string",
-                            "enum": [
-                                "header",
-                                "query",
-                                "body",
-                                "cookie"
-                            ]
+                            "enum": ["header", "query", "body", "cookie"]
                         },
                         "name": {
                             "type": "string"
@@ -4916,7 +4916,8 @@ returned by a target Thing acting as a server.
     </p>
     <pre class="example" title="Combined Thing: Lamp + Buzzer (JSON-LD1.1 serialisation)">
     {
-       "@context": ["http://www.w3.org/ns/td"], 
+       "@context": ["http://www.w3.org/ns/td",
+       		    { "thing-templates": "http://www.w3.org/ns/thing-templates"] }, 
        "@type" : [
             "Thing",
             "urn:dev:wot:com:example:servient:lamp:template",
@@ -4925,8 +4926,9 @@ returned by a target Thing acting as a server.
         "id": "urn:dev:wot:com:example:servient:combinedBuzzerLamp1",
         "name": "My Buzzing Lamp Thing",
         "description" : "A lamp that can issue an alert",
-        "security": [{"scheme": "basic"}],
-        {
+        "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+        "security": ["nosec_sc"],
+        "thing-templates:components": [{
             "id": "urn:dev:wot:com:example:servient:lamp:template",
             "name": "Lamp Thing Template",
             "description" : "Thing Template for a lamp",
@@ -4975,7 +4977,7 @@ returned by a target Thing acting as a server.
                     }]
                 }
              }
-        }
+        }]
     }
       </pre>
       </section>
