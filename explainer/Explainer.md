@@ -83,14 +83,41 @@ What the specification defines primarily consists of the TD Information Model, a
 
     Web Linking Vocabulary, as modeled after CoRE Link format,  is in its own namespace for modularity.
 
+  TD Information Model borrows two keywords from JSON-LD `@context` and `@type` as extension points in order to allow the use of semantic vocabularies and tools.
+
   Note that the TD specification does not define communications metadata. TD instances can use external vocabularies such as [HTTP Vocabulary in RDF 1.0](https://www.w3.org/TR/HTTP-in-RDF10/) to identify the methods and options. See more on the WoT WG Note [Web of Things (WoT) Protocol Binding Templates](https://w3c.github.io/wot-binding-templates/).
 
 - **[TD Serialization](https://w3c.github.io/wot-thing-description/#sec-td-serialization)** (Section 6)
 
   Describes the serialization of instances of TD Information Model.
 
-- **[Thing Description Information Model](https://w3c.github.io/wot-thing-description/#sec-vocabulary-definition)** (Section 5)
+  Serialization of TD is in JSON format. There is a normative [JSON Schema](https://w3c.github.io/wot-thing-description/#json-schema-4-validation) provided for TD serialization that can be used for validating TD instances.
 
-  The Thing Description Information model serves as the conceptual basis for the serialization and processing of Thing Description.
+  In light of Open-World assumption, TD Serialization defines a class of TD serialization "Full Thing Description". Full Thing Description instances carry all mandatory vocabulary terms in the instances (i.e. values are present even when there are default values defined in TD specification.) Therefore, a Full Thing Description instance at least contains @context at the [Thing](https://w3c.github.io/wot-thing-description/#sec-thing-as-a-whole-json) level.
 
-- [**Thing Description Serialization**](https://w3c.github.io/wot-thing-description/#sec-td-serialization) (Section 6)
+  Full Thing Description thus enables semantic processing such as by RDF tools. TD specification defines Transformation to JSON-LD & RDF (<!--need URL here-->) rules by itself in the Appendix for transforming TD into a form (JSON-LD 1.0 & RDF) appropriate for feeding into semantic processing tools.
+
+### What Else are There in Thing Description (TD) Specification?
+
+
+
+
+
+## Important Design Choices
+
+This section summarizes a number of design choices that the WoT Working Group spent a considerable amount of time debating.
+
+### TD Serialization's relationship to JSON-LD 1.1
+
+Note that the WoT Working Group has been talking with JSON-LD WG with regards a missing feature in JSON-LD 1.1. The discussion is on-going in [HutGub issue #65](https://github.com/w3c/json-ld-api/issues/65) in the json-ld-api repository. Though JSON-LD 1.1 supports the use of the same name in different context as described in [Scoped Context](https://w3c.github.io/json-ld-syntax/#scoped-contexts), the WoT Working Group found that the feature is helpful, however, it still does not fully address what TD Serialization needs. The issue essentially is that the RDF transformed from JSON-LD 1.1 if TD were a JSON-LD 1.1 document, does not round-trip to the same TD. For this reason, TD Serialization is in JSON format, however, is not a JSON-LD 1.1 format. When the requirement WoT Working Group presented to JSON-LD Working Group is addressed and implemented in JSON-LD 1.1 draft specification as a stable feature, WoT WG will be glad to declare TD is in JSON-LD 1.1 format. 
+
+## Features at Risk
+
+
+
+
+
+## Implementations
+
+
+
