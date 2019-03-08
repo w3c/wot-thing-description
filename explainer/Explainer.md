@@ -55,5 +55,42 @@ At the same time, TD has to pay attention to the following requirements.
 - Application- and domain-specific metadata vocabularies.
 - Modification of existing protocols.
 
+## What is inside Thing Description (TD) specification
 
+The TD draft specification is available for review [here](https://w3c.github.io/wot-thing-description/).
 
+What the specification defines primarily consists of the TD Information Model, and TD Serialization.
+
+- **[TD Information Model](https://w3c.github.io/wot-thing-description/#sec-vocabulary-definition)** (Section 5)
+
+  The Thing Description Information model serves as the conceptual basis for the serialization and processing of Thing. It consists of the four vocabularies listed below. 
+
+  - [**Core Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-core-vocabulary-definition)
+
+    TD Information Model's core vocabulary that includes terms for: *[Thing](https://w3c.github.io/wot-thing-description/#thing)*, [*Interaction Affordance*](https://w3c.github.io/wot-thing-description/#interactionaffordance), *[Form](https://w3c.github.io/wot-thing-description/#form)*, *[Version Information](https://w3c.github.io/wot-thing-description/#versioninfo)*, *[Expected Response](https://w3c.github.io/wot-thing-description/#expectedresponse)* (media type of response messages), *[Multi Language](https://w3c.github.io/wot-thing-description/#multilanguage)* (Container to provide human-readable text in different languages).
+
+  - [**Data Schema Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-data-schema-vocabulary-definition)
+
+    Vocabulary for Data Schema Definition for both scalar and structured data.
+
+  - [**Security Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-security-vocabulary-definition)
+
+    Vocabulary of well-established security mechanisms considered appropriate to be built-in in TD Information Model.
+
+  - [**Web Linking Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-web-linking-vocabulary-definition)
+
+    Vocabulary for Web links exposed by a Thing. 
+
+    Web Linking Vocabulary, as modeled after CoRE Link format,  is in its own namespace for modularity.
+
+  Note that the TD specification does not define communications metadata. TD instances can use external vocabularies such as [HTTP Vocabulary in RDF 1.0](https://www.w3.org/TR/HTTP-in-RDF10/) to identify the methods and options. See more on the WoT WG Note [Web of Things (WoT) Protocol Binding Templates](https://w3c.github.io/wot-binding-templates/).
+
+- **[TD Serialization](https://w3c.github.io/wot-thing-description/#sec-td-serialization)** (Section 6)
+
+  Describes the serialization of instances of TD Information Model.
+
+- **[Thing Description Information Model](https://w3c.github.io/wot-thing-description/#sec-vocabulary-definition)** (Section 5)
+
+  The Thing Description Information model serves as the conceptual basis for the serialization and processing of Thing Description.
+
+- [**Thing Description Serialization**](https://w3c.github.io/wot-thing-description/#sec-td-serialization) (Section 6)
