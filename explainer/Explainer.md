@@ -109,7 +109,11 @@ This section summarizes a number of design choices that the WoT Working Group sp
 
 ### TD Serialization's relationship to JSON-LD 1.1
 
-Note that the WoT Working Group has been talking with JSON-LD WG with regards a missing feature in JSON-LD 1.1. The discussion is on-going in [HutGub issue #65](https://github.com/w3c/json-ld-api/issues/65) in the json-ld-api repository. Though JSON-LD 1.1 supports the use of the same name in different context as described in [Scoped Context](https://w3c.github.io/json-ld-syntax/#scoped-contexts), the WoT Working Group found that the feature is helpful, however, it still does not fully address what TD Serialization needs. The issue essentially is that the RDF transformed from JSON-LD 1.1 if TD were a JSON-LD 1.1 document, does not round-trip to the same TD. For this reason, TD Serialization is in JSON format, however, is not a JSON-LD 1.1 format. When the requirement WoT Working Group presented to JSON-LD Working Group is addressed and implemented in JSON-LD 1.1 draft specification as a stable feature, WoT WG will be glad to declare TD is in JSON-LD 1.1 format. 
+Note that the WoT Working Group has been talking with JSON-LD WG with regards a missing feature in JSON-LD 1.1. The discussion is on-going in [HutGub issue #65](https://github.com/w3c/json-ld-api/issues/65) in the json-ld-api repository. 
+
+While JSON-LD 1.1 supports the use of the same name in different context as described in [Scoped Context](https://w3c.github.io/json-ld-syntax/#scoped-contexts), the WoT Working Group found that although the feature is helpful, it still does not fully address what TD Serialization needs. The issue essentially is that the RDF document transformed from JSON-LD 1.1 if TD were a JSON-LD 1.1 document, does not round-trip to the same TD in JSON-LD 1.1 format. 
+
+For this reason, TD Serialization is in JSON format, and it is not in JSON-LD 1.1 format. When the requirements WoT Working Group presented to JSON-LD Working Group are addressed and implemented in JSON-LD 1.1 draft specification as a stable feature, WoT WG will be delighted to declare TD is in JSON-LD 1.1 format. 
 
 ## Features at Risk
 
