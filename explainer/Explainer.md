@@ -89,7 +89,7 @@ What the specification defines primarily consists of the TD Information Model, a
 
   Describes the serialization of instances of TD Information Model.
 
-  Serialization of TD is in JSON format. There is a normative [JSON Schema](https://w3c.github.io/wot-thing-description/#json-schema-4-validation) provided for TD serialization that can be used for validating TD instances.
+  Serialization of TD is in JSON format. There is a [JSON Schema](https://w3c.github.io/wot-thing-description/#json-schema-4-validation) provided for TD serialization that can be used for validating TD instances.
 
   In light of Open-World assumption, TD Serialization defines a class of TD serialization "Full Thing Description". Full Thing Description instances carry all mandatory vocabulary terms in the instances (i.e. values are present even when there are default values defined in TD specification.) Therefore, a Full Thing Description instance at least contains @context at the [Thing](https://w3c.github.io/wot-thing-description/#sec-thing-as-a-whole-json) level.
 
@@ -107,7 +107,7 @@ This section summarizes a number of design choices that the WoT Working Group sp
 
 ### TD Serialization's relationship to JSON-LD 1.1
 
-Note that the WoT Working Group has been talking with JSON-LD WG in regards to a missing feature in JSON-LD 1.1. The discussion is on-going in [HutGub](https://github.com/w3c/json-ld-api/issues/65). 
+Note that the WoT Working Group has been talking with JSON-LD WG in regards to a missing feature in JSON-LD 1.1. The discussion is on-going in [GitHub](https://github.com/w3c/json-ld-api/issues/65). 
 
 While JSON-LD 1.1 supports the use of the same name in different context as described in [Scoped Context](https://w3c.github.io/json-ld-syntax/#scoped-contexts), the WoT Working Group's understanding is that although the feature is helpful, it still does not fully address what TD Serialization needs. The issue essentially is that the RDF document transformed from JSON-LD 1.1 if TD were a JSON-LD 1.1 document, does not round-trip to the same TD in JSON-LD 1.1 format. 
 
