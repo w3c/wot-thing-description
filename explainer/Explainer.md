@@ -119,9 +119,77 @@ For this reason, TD Serialization is in JSON format, and it is not in JSON-LD 1.
 
 TD specification does not define communications metadata. TD instances can use external vocabularies such as [HTTP Vocabulary in RDF 1.0](https://www.w3.org/TR/HTTP-in-RDF10/) to identify the methods and options. See more on the WoT WG Note [Web of Things (WoT) Protocol Binding Templates](https://w3c.github.io/wot-binding-templates/).
 
-## Examples
+## Example
 
-TBD
+```
+{
+    "@context": [
+        "http://w3.org/ns/td",
+        { "saref": "https://w3id.org/saref#" },
+        { "htv": "http://www.w3.org/2011/http#" }
+    ],
+    "@type": [ "Thing", "saref#LightingDevice" ],
+    "id": "urn:dev:wot:com:example:servient:lamp",
+    "name": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {"scheme": "basic", "in":"header"}
+    },
+    "security": ["basic_sc"],
+    "properties": {
+        "status" : {
+            "@type": "saref#OnOffState",
+            "readOnly": false,
+            "writeOnly": false,
+            "observable": false,
+            "type": "string",
+            "forms": [{
+                "href": "https://mylamp.example.com/status",
+                "contentType": "application/json",
+                "htv:methodName": "GET",
+                "op": "readproperty"
+            }]
+        }
+    },
+    "actions": {
+        "toggle" : {
+            "@type": "saref#ToggleCommand",
+            "idempotent" : false,
+            "safe" : false,
+            "forms": [{
+                "href": "https://mylamp.example.com/toggle",
+                "contentType": "application/json"
+                "htv:methodName": "POST",
+                "op": "invokeaction"
+            }]
+        }
+    },
+    "events":{
+        "overheating":{
+            "data": {"type": "string"},
+            "forms": [{
+                "href": "https://mylamp.example.com/oh",
+                "contentType": "application/json",
+                "subprotocol": "longpoll",
+                "op": "subscribeevent"
+            }]
+        }
+    }
+} 
+```
+
+By reading the above example TD, one can obtain knowledge about the Thing of name `MyLampThing` including the followings.
+
+- The Thing provides one Property interaction resource with the name `status`.
+  - The property `status` is accessible via HTTP protocol with a GET method at URI `https://mylamp.example.com/status`.
+  - Reading the property `status` will return a string value.
+  - The `status` property resource is an instance of  SAREF ontology's `OnOffState` class.
+- The Thing provides one idempotent Action interaction resource with the name `toggle`. 
+  - The action `toggle` is accessible via HTTP protocol with a POST method at URI `https://mylamp.example.com/toggle`.
+  - The `toggle` action resource is an an instance of  SAREF ontology's `ToggleCommand` class.
+- The Thing provides one Event interaction resource with the name `overheating`.
+  - The event `overheating` can be obtained at URI `https://mylamp.example.com/oh` by using HTTP with its long polling sub-protocol.
+  - Each message pushed by the Thing is a string value.
+- The Thing requires to use HTTP Basic Authentication when accessing the above three interaction resources.
 
 ## Features at Risk
 
