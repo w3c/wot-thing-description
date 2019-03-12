@@ -84,7 +84,7 @@ Semantic annotations can be added to various elements in TD instances,
 enabling applications to understand other applications' data by applying
 semantic processing.
 
-![WoT Hourglass](images/explainer_wot_hourglass.png)
+![TD Hourglass](images/td_hourglass.png)
 
 ## Goals of Thing Description (TD) 
 
