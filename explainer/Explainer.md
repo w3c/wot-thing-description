@@ -16,7 +16,7 @@ Through PlugFest activities in the WoT Interest Group, the group learned that su
 to answer questions such as the ones shown in the figure below. 
 The WoT Working Group formalized the TD concept in the current specification.
 
-![explainer_how_to_interact](explainer_how_to_interact.png)
+![How to Interact with IoT Devices](images/explainer_how_to_interact.png)
 
 Below shows a figure borrowed from the WoT Architecture document showing the WoT building blocks and
 how they relate to four key architectural aspects of a Thing.
@@ -48,8 +48,6 @@ At the application level, the combination of HTML and HTTP likewise provides a n
 a myriad of different applications, both M2H (browsers and web pages) and M2M (web services).
 This hourglass model is generally considered a significant contributing factor in the success of both the web and the internet.
 
-![Web_and_Internet_Hourglass](web_and_internet_hourglass.png)
-
 In IoT many IoT ecosystems have been developed in silos.
 Currently each domain is likely is using a standards unique to that industry domain and ecosystem. 
 Even worse, many IoT devices already deployed cannot be easily converted to a different standard,
@@ -60,7 +58,7 @@ There is a corresponding need for a narrow-waist architecture for IoT ecosystem 
 Such a narrow waist would avoid requiring N^2 peer-to-peer translations
 (where N is the number of IoT ecosystems involved). 
 
-![IoT_Hourglass](iot_hourglass.png)
+![Internet, Web, and WoT Hourglass](images/ip_http_td_hourglass.png)
 
 The Thing Description (TD) addresses the IoT ecosystem fragmentation problem
 not by defining yet another standard that everyone has to convert to,
@@ -86,11 +84,11 @@ Semantic annotations can be added to various elements in TD instances,
 enabling applications to understand other applications' data by applying
 semantic processing.
 
-![explainer_wot_hourglass](explainer_wot_hourglass.png)
+![WoT Hourglass](images/explainer_wot_hourglass.png)
 
 ## Goals of Thing Description (TD) 
 
-According to the WoT Working Group [Charter](https://www.w3.org/2016/12/wot-wg-2016.html), 
+According to the [WoT Working Group Charter](https://www.w3.org/2016/12/wot-wg-2016.html), 
 the goals of the Thing Description (TD) are to:
 
 - describe Things through metadata and declarations of their capabilities (e.g., possible interactions); and
@@ -128,9 +126,9 @@ Structured payloads are supported but should be conceptually interconvertible wi
 
 ## What is inside the Thing Description (TD) specification
 
-The TD draft specification is available for review [here](https://w3c.github.io/wot-thing-description/).
+The TD draft specification is [available for review](https://w3c.github.io/wot-thing-description/).
 
-The specification primarily defines the TD Information Model and the TD Serialization as JSON:
+This specification primarily defines the TD Information Model and the TD Serialization as JSON:
 
 - **[TD Information Model](https://w3c.github.io/wot-thing-description/#sec-vocabulary-definition)** (Section 5)
 
@@ -144,8 +142,10 @@ The specification primarily defines the TD Information Model and the TD Serializ
       - *[Interaction Affordance](https://w3c.github.io/wot-thing-description/#interactionaffordance)*, 
       - *[Form](https://w3c.github.io/wot-thing-description/#form)*, 
       - *[Version Information](https://w3c.github.io/wot-thing-description/#versioninfo)*, 
-      - *[Expected Response](https://w3c.github.io/wot-thing-description/#expectedresponse)* (media type of response messages), 
-      - *[Multi Language](https://w3c.github.io/wot-thing-description/#multilanguage)* (Container to provide human-readable text in different languages).
+      - *[Expected Response](https://w3c.github.io/wot-thing-description/#expectedresponse)* 
+        (media type of response messages), 
+      - *[Multi Language](https://w3c.github.io/wot-thing-description/#multilanguage)* 
+        (Container to provide human-readable text in different languages).
   - [**Data Schema Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-data-schema-vocabulary-definition)
       - Vocabulary for Data Schema Definitions of both scalar and structured payload data.
   - [**Security Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-security-vocabulary-definition)
@@ -167,12 +167,14 @@ In light of the Open-World assumption used by RDF, and to allow TDs to be easily
 TD Serialization defines a two classes of TD serialization, the "Simple Thing Description" and the "Full Thing Description". 
 The Full Thing Description instances carry all mandatory vocabulary terms in the instances 
 (i.e. values are present even when there are default values defined in TD specification.) 
-Therefore, a Full Thing Description instance at least contains @context at the [Thing](https://w3c.github.io/wot-thing-description/#sec-thing-as-a-whole-json) level.
-In a Simple Thing Description elements with default values can be omitted, even if they are technically mandatory in the 
-information model.
+Therefore, a Full Thing Description instance at least contains `@context` 
+at the [Thing](https://w3c.github.io/wot-thing-description/#sec-thing-as-a-whole-json) level.
+In a Simple Thing Description elements with default values can be omitted,
+even if they are technically mandatory in the information model.
 
 The Full Thing Description  enables semantic processing such as by RDF tools. 
-The TD specification also defines its own [Transformation to JSON-LD & RDF](https://w3c.github.io/wot-thing-description/#note-jsonld10-processing) 
+The TD specification also defines its own 
+[Transformation to JSON-LD & RDF](https://w3c.github.io/wot-thing-description/#note-jsonld10-processing) 
 rules (in an Appendix) for transforming TD instances into a form (JSON-LD 1.0 & RDF) 
 adequate for feeding into semantic processing tools.
 The syntax of the TD is also aligned with the current JSON-LD 1.1 draft but cannot
@@ -184,7 +186,8 @@ TBD
 
 ## Important Design Choices
 
-This section summarizes a number of design choices that the WoT Working Group spent a considerable amount of time debating.
+This section summarizes a number of design choices that the WoT Working Group
+spent a considerable amount of time debating.
 
 TODO: See second point in WoT Architecture's explainer; should be moved here.
 
@@ -222,7 +225,8 @@ TD specification does not define communications metadata.
 TD instances can use external vocabularies such as 
 the [HTTP Vocabulary in RDF 1.0](https://www.w3.org/TR/HTTP-in-RDF10/)
 to identify the methods and options in particular concrete protocols.
-See more on the WoT WG Note [Web of Things (WoT) Protocol Binding Templates](https://w3c.github.io/wot-binding-templates/).
+See more on the WoT WG Note 
+[Web of Things (WoT) Protocol Binding Templates](https://w3c.github.io/wot-binding-templates/).
 
 ## Example
 
@@ -298,10 +302,39 @@ By reading the above example TD, one can obtain knowledge about the Thing of nam
 
 ## Features at Risk
 
-TBD
+The specification itself contains highlights and notations that indicate the details of 
+features at risk due to insufficient implementation experience.
+In summary, these are:
+* The APIKey, Cert, PSK, OAuth2, PoP, and Public security schemes.
+* The `scopes` field in forms since it is only used with OAuth2.
+* Certain options for security, such as proxy fields and some specialized options.
+If two more more implementations for a security scheme, including examples that 
+support and exercise all the options, are not available before PR transition
+they will be removed but can be supported later via the extension mechanisms
+included in the specification.
 
+The following are included for completeness as less than two implementations exist for some
+of these.  However, these issues should be resolved before CR transition:
+* uriVariables
+* multilingual support for names, titles, and descriptions
+* use of `const` in data schemas and properties names (possible testing error)
+* use of `@context` and `@type` in DataSchema and SecurityScheme 
 
 ## Implementations
 
-TBD
+Implementations were built by Smart Things, ERCIM, Hitachi, Intel, Oracle, Panasonic,
+and Siemens.  
+Some organizations built more than one implementation; in total 15 implementations were developed.
+The `node-wot` implementation open-sourced by Siemens was one of the most complete
+implementations and can be considered a "reference implementation".
+
+Each implementation represents a working system with a distinct code base 
+that either exposes or consumes at least one WoT Thing Description.
+In most cases multiple applications, devices or services were developed with each implementation.
+Implementations that expose a Thing Description act as a network server with an interface 
+as described in the Thing Description it exposes. 
+Implementations that consume a Thing Description act as a network client and issue network 
+requests consistent with the target Thing Description. 
+In some cases a given implementation may be used for multiple Things and a single Thing 
+may also act as both client and server on multiple interfaces.
 
