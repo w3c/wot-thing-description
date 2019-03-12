@@ -81,19 +81,20 @@ regardless of what lower level link and physical mechanisms
 are actually being used to implement the network.
 At the application level, 
 the HTTP likewise provides a narrow waist for
-a myriad of different web applications,
+many different web applications,
 both M2H (browsers and web pages) 
 and M2M (web services).
-A myriad of applications can depend on the functionality
+Many different applications can depend on the functionality
 provided by HTTP and services based on it 
 independent of the technology used on the 
 servers to provide that functionality.
 The narrow waist model is generally considered a significant contributing 
 factor to the success of both the internet and the web.
 
-In the IoT many IoT ecosystems have been developed in silos.
-Currently each domain is likely already using one or more
-standards unique to that industry domain and ecosystem.
+Many IoT ecosystems have been developed in silos, with
+solutions unique application domain.
+Currently in the IoT each application domain is likely already using one or more
+standards unique to that domain and ecosystem.
 This fragmentation is a serious problem in building cross
 industry domain IoT applications.
 Even worse, many IoT devices already deployed cannot be easily
@@ -104,7 +105,7 @@ this is known as the "brownfield" problem.
 In order to acheive IoT interoperabilty,
 there is a corresponding need for a narrow waist.
 This narrow waist does not seem to be currently acheivable in the IoT
-at the level of protocols due to the existing domain requirements diversity.
+at the level of concrete protocols.
 However, the key observation of the WoT is that to acheive
 interoperability, what we really need is a common *abstraction layer* to
 separate low-level concerns from high-level applications.
@@ -112,7 +113,7 @@ separate low-level concerns from high-level applications.
 ![Internet, Web, and WoT Narrow Waist](images/ip_http_td_narrow_waist.png)
 
 The Thing Description (TD) addresses the IoT ecosystem fragmentation problem
-not by defining yet another protocol,
+not by defining yet another low-level protocol,
 but by providing a common set of abstractions and
 a metadata framework to describe IoT services in terms of those abstractions.
 Rather than providing interoperability at the protocol level,
@@ -126,23 +127,26 @@ interacting with IoT services and devices
 according to the description given in the TDs,
 regardless of the number of ecosystems involved.
 Systems using a TD can interact with services using the abstraction provided by 
-the TD, rather than by the concrete protocol.  
+the TD, rather than by the concrete protocol.
 Translations from the higher level of abstraction provided in the TD 
 to lower-level protocols can be provided automatically.
 
-Note that we assume the user of a service adapts to the target device's
-protocol using the information provided in the TD.
+We assume the consumer of an IoT service adapts to the target service's
+concrete protocol using the information provided in the TD.
 Although specialized translation or proxy services _can_ be used, this is not
 _necessary_; applications can use the information provided in the TD to talk
 to an endpoint device directly.
 Rather than build _O(N^2)_ translators to interconvert between _N_ protocols,
 this direct model requires only that applications be able to communicate
 using the abstractions provided in the TD combined with a set of _N_ protocol
-adapters.  
+adapters.
 A protocol translation approach can still be used, in fact is
-enabled by the metadata in the TD (by consuming one TD and exposing another
+enabled by the metadata in the TD 
+(such a translator could consume one TD and expose another
 in a different concrete protocol), and is useful in many cases.
-However, again, protocol translation is not a requirement for interoperability itself.
+However, again, protocol translation is not a _requirement_ 
+for interoperability itself in the WoT architecture.
+
 
 Applications also often use different terminologies in their data models.
 This again tends to lead to an _O(N^2)_ translation cost 
@@ -182,11 +186,13 @@ At the same time, the TD has to pay attention to the following requirements:
   (e.g., Linked Open Data, Schema.org,
   Resource Description Framework (RDF), semantic reasoners, etc..).
 
-These two goals are naturally somewhat in conflict, but as will
-be described, the specification attempts to address them simply by providing a
+These last two goals are naturally somewhat in conflict, but as will
+be described, the specification simply provides a
 set of core functionality that does not require RDF.
-The extension points mean however that TDs still support
-(optional) semantic annotations and simple integration into RDF systems.
+However, TDs still support an information model that can be used with RDF
+when it is useful,
+while
+optional extension points support semantic annotation.
 
 ### Non-Goals of Thing Description (TD)
 
@@ -216,7 +222,7 @@ and the TD Serialization as JSON:
 
   The Thing Description Information model serves as the conceptual basis
   for the serialization and processing of a Thing Description. 
-  It consists of the four vocabularies listed below. 
+  It consists of the four vocabularies listed below: 
 
   - [**Core Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-core-vocabulary-definition)
 
@@ -226,16 +232,18 @@ and the TD Serialization as JSON:
       - *[Form](https://w3c.github.io/wot-thing-description/#form)*, 
       - *[Version Information](https://w3c.github.io/wot-thing-description/#versioninfo)*, 
       - *[Expected Response](https://w3c.github.io/wot-thing-description/#expectedresponse)* 
-        (media type of response messages), 
+        (media type of response messages), and
       - *[Multi Language](https://w3c.github.io/wot-thing-description/#multilanguage)* 
         (Container to provide human-readable text in different languages).
   - [**Data Schema Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-data-schema-vocabulary-definition)
-      - Vocabulary for Data Schema Definitions of both scalar and structured payload data.
+      - Vocabulary for Data Schema definitions of 
+        both scalar and structured payload data.
   - [**Security Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-security-vocabulary-definition)
       - Vocabulary of well-established security mechanisms considered appropriate to be built-in in TD Information Model.
   - [**Web Linking Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-web-linking-vocabulary-definition)
-      - Vocabulary for Web links exposed by a Thing. 
-      - The Web Linking Vocabulary, modeled after the CoRE Link format, is in its own namespace for modularity.
+      - Vocabulary for web links exposed by a Thing. 
+      - The Web Linking Vocabulary, modeled after the CoRE Link format,
+        is in its own namespace for modularity.
 
 The TD Information Model borrows two keywords from JSON-LD, `@context` and `@type`,
 as extension points in order to allow the use of semantic vocabularies and tools.
@@ -275,7 +283,7 @@ be considered a JSON-LD 1.1 document as that standard is not yet final.
 This section summarizes a number of design choices that the WoT Working Group
 spent a considerable amount of time debating.
 
-### TD is Not Serialized Using JSON-LD 1.0 
+### No Direct TD Serialization Using JSON-LD 1.0
 
 An early design considered for the WoT Thing Description based it
 directly on JSON-LD 1.0.
@@ -290,7 +298,7 @@ we consulted with.
 The current proposal uses a more straightforward and "natural" JSON serialization
 which we are however attempting to align with the current JSON-LD 1.1 proposal.
 
-### TD Serialization's relationship to JSON-LD 1.1
+### TD Serialization's Relationship to JSON-LD 1.1
 
 Currently the TD specification only defines a JSON serialization.
 
@@ -322,7 +330,7 @@ If the requirements WoT Working Group presented to JSON-LD Working Group
 are addressed and implemented in JSON-LD 1.1 draft specification as a stable feature,
 the WoT WG will be able to say the TD conforms to JSON-LD 1.1 format.
 
-### Communications Metadata
+### Communications Metadata Defined Using External Vocabularies
 
 TD specification does not define communications metadata.
 TD instances must use external vocabularies such as 
@@ -336,7 +344,7 @@ specification to additional concrete communication protocols in the future.
 
 ## Example
 
-To make the discussion concrete, here is an example TD for an IoT-enable lamp.
+To make the discussion concrete, here is an example TD for an IoT-enabled lamp.
 An explanation follows the example:
 
 ```json
@@ -375,7 +383,7 @@ An explanation follows the example:
             "safe": false,
             "forms": [{
                 "href": "https://mylamp.example.com/toggle",
-                "contentType": "application/json"
+                "contentType": "application/json",
                 "htv:methodName": "POST",
                 "op": "invokeaction"
             }]
@@ -461,7 +469,7 @@ However, these issues should be resolved before CR transition:
 ## Implementations
 
 Implementations were built by
-Smart Things, ERCIM, Hitachi, Intel, Oracle, Panasonic, and Siemens.  
+Smart Things, ERCIM, Hitachi, Intel, Oracle, Panasonic, and Siemens.
 Some organizations built more than one implementation;
 in total 15 implementations were developed.
 The [`node-wot`](https://github.com/eclipse/thingweb.node-wot)
@@ -469,19 +477,19 @@ implementation open-sourced by Siemens
 via the Eclipse Foundation is one of the most complete
 implementations and can be considered a "reference implementation".
 
-Each implementation represents a working system with a distinct code base 
+Each implementation represents a working system with a distinct code base
 that either exposes or consumes at least one WoT Thing Description.
 In most cases multiple applications,
 devices or services were developed with each implementation.
 We refer to each of these as an "implementation instance".
 Altogether there were 65 implementation instances submitted for testing.
 Implementation instances that expose a Thing Description act as a
-network server with an interface 
-as described in the Thing Description it exposes. 
+network server with an interface
+as described in the Thing Description it exposes.
 Implementations that consume a Thing Description act as a network
-client and issue network 
-requests consistent with the target Thing Description. 
+client and issue network
+requests consistent with the target Thing Description.
 In some cases a given implementation may be used for multiple Things
-and a single Thing 
+and a single Thing
 may also act as both client and server on multiple interfaces.
 
