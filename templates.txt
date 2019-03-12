@@ -169,15 +169,20 @@ template :field(?class) {
         "</td>"
         "<td>"
             format {
-                "%s%s%s"
-                if(?prop = <http://www.w3.org/ns/td#op>,
-                    "array of ", # string or array of strings
-                    if(?array,
-                        "array of ",
-                        if(?map, "map of ", "")))
-                if(?hasType, st:call-template(:type, ?class, ?prop), "any type")
-                if(?prop = <http://www.w3.org/ns/td#op>,
-                    "  Each entry representing an interaction verb", "")
+                # TODO use path expressions like sh:oneOrMorePath instead?
+                "%s%s"
+                if(?prop = <http://www.w3.org/ns/td#op> ||
+                   ?prop = <http://www.w3.org/ns/json-schema#items>,
+                   concat(st:call-template(:type, ?class, ?prop),
+                          " or array of ",
+                          st:call-template(:type, ?class, ?prop)),
+                   if(?array,
+                      "array of ",
+                      if(?map, "map of ", "")))
+                if(?prop = <http://www.w3.org/ns/td#op> ||
+                   ?prop = <http://www.w3.org/ns/json-schema#items>,
+                   "",
+                   if(?hasType, st:call-template(:type, ?class, ?prop), "any type"))
             }
             format {
                 "%s%s%s"
