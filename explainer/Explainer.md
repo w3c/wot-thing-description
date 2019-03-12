@@ -58,7 +58,7 @@ There is a corresponding need for a narrow-waist architecture for IoT ecosystem 
 Such a narrow waist would avoid requiring N^2 peer-to-peer translations
 (where N is the number of IoT ecosystems involved). 
 
-![Internet, Web, and WoT Hourglass](images/ip_http_td_hourglass.png)
+![Internet, Web, and WoT Narrow Waist](images/ip_http_td_narrow_waist.png)
 
 The Thing Description (TD) addresses the IoT ecosystem fragmentation problem
 not by defining yet another standard that everyone has to convert to,
