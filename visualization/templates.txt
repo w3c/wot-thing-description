@@ -110,9 +110,11 @@ template :attribute(?class ?prop) {
     " : "
     format {
         "%s<font color=\"#c83500\" face=\"mono\">%s</font>"
-        if(?array,
-            "array of ",
-            if(?map, "map of ", ""))
+        if(?prop = <http://www.w3.org/ns/td#op>,
+           concat("(array of) "),
+           if(?array,
+              "array of ",
+              if(?map, "map of ", "")))
         ?type
     }
     format { "%s" if(?mandatory, " <i>(mandatory)</i>", "") }
@@ -153,7 +155,11 @@ template :associations(?ns) {
             format { "%s" ?name }
         "</font>"
     ">,headlabel="
-        format { "\"%s..%s\"" ?min ?max }
+        format {
+            "\"%s..%s\""
+            ?min
+            if(?prop = <http://www.w3.org/ns/json-schema#items>, "*", ?max)
+        }
     "];"
     (if (?ext, st:call-template(:externalClass, ?dest), ""))
 } where {
