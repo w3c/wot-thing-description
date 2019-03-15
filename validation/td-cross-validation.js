@@ -15,9 +15,10 @@ const jsonld = require('jsonld');
 
 const td = require('../td.js');
 
-const tdCtx = JSON.parse(fs.readFileSync('context/td-context-1.0.jsonld', 'utf-8'));
+const tdCtx = JSON.parse(fs.readFileSync('context/td-context.jsonld', 'utf-8'));
 const jsonschemaCtx = JSON.parse(fs.readFileSync('context/json-schema-context.jsonld', 'utf-8'));
 const wotSecCtx = JSON.parse(fs.readFileSync('context/wot-security-context.jsonld', 'utf-8'));
+const lnkCtx = JSON.parse(fs.readFileSync('context/web-linking-context.jsonld', 'utf-8'));
 const shapes = fs.readFileSync('validation/td-validation.ttl', 'utf-8');
 
 const dirTD = '../wot/testfest';
@@ -45,6 +46,7 @@ function substitute(obj) {
     if (obj === 'http://www.w3.org/ns/td') return tdCtx['@context'];
     else if (obj === 'http://www.w3.org/ns/json-schema') return jsonschemaCtx['@context'];
     else if (obj === 'http://www.w3.org/ns/wot-security') return wotSecCtx['@context'];
+    else if (obj === 'http://www.w3.org/ns/web-linking') return lnkCtx['@context'];
     else if (!(obj instanceof Object)) return obj;
     
     for (let k in obj) obj[k] = substitute(obj[k]);
