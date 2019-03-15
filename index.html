@@ -972,12 +972,9 @@
   that are not explicitly described. 
   For example, the content type of the 
   exchange format of the interactions is assumed to be JSON 
-  (=<code>contentType</code>) and the <code>Property</code> <i>status</i> 
-  resource is not <code>readOnly</code> as well as not <code>observable</code>. 
-  Specifically, 
-  the TD specification defines vocabulary terms 
-  (e.g., <code>readOnly</code>, <code>writeOnly</code>, <code>observable</code>, <code>contentType</code>) 
-  that have default values. 
+  (=<code>contentType</code>). 
+  Specifically, the TD specification defines vocabulary terms 
+  (e.g., <code>contentType</code>) that have default values. 
   If these vocabulary terms are not explicitly used in a Thing Description 
   instance,  
   the Thing Description processor follows default assumptions for 
@@ -1454,27 +1451,6 @@
                     <td>"https://www.w3.org/ns/wot-security"</td>
                     <td><code>SecurityScheme</code></td>
                 </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-readOnly">
-                    <td>
-                        <code>readOnly</code>
-                    </td>
-                    <td>false</td>
-                    <td></td>
-                </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-writeOnly">
-                    <td>
-                        <code>writeOnly</code>
-                    </td>
-                    <td>false</td>
-                    <td></td>
-                </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-observable">
-                    <td>
-                        <code>observable</code>
-                    </td>
-                    <td>false</td>
-                    <td></td>
-                </tr>
                 <tr class="rfc2119-default-assertion" id="td-default-contentType">
                     <td>
                         <code>contentType</code>
@@ -1495,6 +1471,28 @@
                     </td>
                     <td>false</td>
                     <td></td>
+                </tr>
+                <tr class="rfc2119-default-assertion" id="td-default-op-properties">
+                    <td>
+                        <code>op</code>
+                    </td>
+                    <td>Array of strings with values <code>readproperty</code> followed by 
+                        <code>writeproperty</code></td>
+                    <td><code>PropertyAffordance</code></td>
+                </tr>
+                <tr class="rfc2119-default-assertion" id="td-default-op-actions">
+                    <td>
+                        <code>op</code>
+                    </td>
+                    <td><code>invokeaction</code></td>
+                    <td><code>ActionAffordance</code></td>
+                </tr>
+                <tr class="rfc2119-default-assertion" id="td-default-op-events">
+                    <td>
+                        <code>op</code>
+                    </td>
+                    <td><code>subscribeevent</code></td>
+                    <td><code>EventAffordance</code></td>
                 </tr>
                 <tr class="rfc2119-default-assertion" id="td-default-in-1">
                     <td>
@@ -1646,7 +1644,7 @@
 
 </p>
 
-<section><h4><code>PropertyAffordance</code></h4><p>Properties expose internal state of a Thing that can be directly retrieved (get) and optionally modified (set). In addition, Things can also choose to make Properties observable by pushing the new state (not an event) after a change; this must follow eventual consistency (also see CAP Theorem).</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Mandatory</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-observable--PropertyAffordance"><td><code>observable</code></td><td>Indicates whether a remote servient can subscribe to ("observe") the Property, to receive change notifications or periodic updates (true/false).</td><td>yes</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#boolean"><code>boolean</code></a></td></tr></tbody></table>
+<section><h4><code>PropertyAffordance</code></h4><p>Properties expose internal state of a Thing that can be directly retrieved (get) and optionally modified (set). In addition, Things can also choose to make Properties observable by pushing the new state (not an event) after a change; this must follow eventual consistency (also see CAP Theorem).</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Mandatory</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-observable--PropertyAffordance"><td><code>observable</code></td><td>A hint that indicates whether a remote client can subscribe to ("observe") the Property, to receive change notifications or periodic updates (true/false).</td><td>no</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#boolean"><code>boolean</code></a></td></tr></tbody></table>
 <p>Property class is a subclass of the class <a href="#interactionaffordance" 
     class="sec-ref">InteractionAffordance</a>. 
     <span class="rfc2119-assertion" id="td-op-for-property">
@@ -1661,6 +1659,19 @@
     it can contain the <code>type</code>, <code>unit</code>,
     <code>readOnly</code> and <code>writeOnly</code> members, among
     others.
+</p>
+<p>
+    <span class="rfc2119-assertion" id="td-op-for-property-readonly">
+    When the value of <code>readOnly</code> member is true in an instance of PropertyAffordance, 
+    the value(s) in the <code>op</code> term member of the <code>forms</code> 
+    MUST NOT contain <code>writeproperty</code>.
+    </span>
+    Similarly, 
+    <span class="rfc2119-assertion" id="td-op-for-property-writeonly">
+    when the value of <code>writeOnly</code> member is true in an instance of PropertyAffordance, 
+    the value(s) in the <code>op</code> term member of the <code>forms</code> 
+    MUST NOT contain <code>readproperty</code>.
+    </span>
 </p>
 </section>
 <section><h4><code>ActionAffordance</code></h4><p>Actions offer functions of the Thing. These functions may manipulate the internal state of a Thing in a way that is not possible through setting Properties. Examples are changing internal state that is not exposed as a Property, changing multiple Properties, changing Properties over time or with a process that should not be disclosed. Actions may also be pure functions, that is, they may not use any internal state at all, and may simply process input data and return a result that directly depends only on the input given.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Mandatory</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-input--ActionAffordance"><td><code>input</code></td><td>Used to define the input data schema of the action.</td><td>no</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr>
@@ -1698,7 +1709,7 @@ For example, the Property interaction allows get and set operations.
 The protocol binding may contain a form for the get operation and a different form for the set operation.  
 The op attribute indicates which form is for which and allows the client to select the correct form for the operation required.
 
-op can be assigned one or more interaction verb(s) each representing a semantic intention of an operation.</td><td>no</td><td>array of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a>  Each entry representing an interaction verb (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, or <code>writemultipleproperties</code>)</td></tr>
+op can be assigned one or more interaction verb(s) each representing a semantic intention of an operation.</td><td>yes</td><td>array of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a>  Each entry representing an interaction verb (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, or <code>writemultipleproperties</code>)</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-subprotocol--Form"><td><code>subprotocol</code></td><td>Indicates the exact mechanism by which an interaction will be accomplished for a given protocol when there are multiple options.
      
 For example, for HTTP and Events, it indicates which of several available mechanisms should be used for asynchronous notifications such as long polling, websub (https://www.w3.org/TR/websub/), or server sent events (https://www.w3.org/TR/eventsource/).</td><td>no</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>longpoll</code>, <code>websub</code>, or <code>sse</code>)</td></tr>
@@ -1736,8 +1747,8 @@ when the texts are served as a result such negotiation.
 <tr class="rfc2119-table-assertion" id="td-vocab-unit--DataSchema"><td><code>unit</code></td><td>Provides unit information that is used, e.g., in international science, engineering, and business.</td><td>no</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-oneOf--DataSchema"><td><code>oneOf</code></td><td>Used to ensure that the data is valid against one of the specified schemas in the array.</td><td>no</td><td>array of <a href="#dataschema"><code>DataSchema</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-enum--DataSchema"><td><code>enum</code></td><td>Restricted set of values provided as an array.</td><td>no</td><td>array of any type</td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-readOnly--DataSchema"><td><code>readOnly</code></td><td>Boolean value that indicates whether a property interaction / value is read only (=true) or not (=false).</td><td>yes</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#boolean"><code>boolean</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-writeOnly--DataSchema"><td><code>writeOnly</code></td><td>Boolean value that indicates whether a property interaction / value is write only (=true) or not (=false).</td><td>yes</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#boolean"><code>boolean</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-readOnly--DataSchema"><td><code>readOnly</code></td><td>Boolean value that is a hint to indicate whether a property interaction / value is read only (=true) or not (=false).</td><td>no</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#boolean"><code>boolean</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-writeOnly--DataSchema"><td><code>writeOnly</code></td><td>Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false).</td><td>no</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#boolean"><code>boolean</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-format--DataSchema"><td><code>format</code></td><td>Defines format pattern validation on certain kinds of string values. It is open to use pattern values that may originate from JSON schema presets (e.g., date/time, email, URL) or other (customer-based) definitions. .</td><td>no</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table><p>The class <code>DataSchema</code> has the following subclasses:</p><ul><li><a href="#integerschema"><code>IntegerSchema</code></a></li>
 <li><a href="#arrayschema"><code>ArraySchema</code></a></li>
 <li><a href="#booleanschema"><code>BooleanSchema</code></a></li>
@@ -2945,7 +2956,7 @@ The <code>output</code> of this action is the photo taken, which is available in
         ...
         </pre>
 
-        <p>The terms <code>readOnly</code> and <code>writeOnly</code> MAY be used to signalize which data members are 
+        <p>The terms <code>readOnly</code> and <code>writeOnly</code> MAY be used as hints to signalize which data members are 
             exchanged for a read request (e.g., read an interaction property) and which one for a write process 
             (e.g. write an interaction property).     
         </p>
