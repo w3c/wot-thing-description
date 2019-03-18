@@ -13,11 +13,16 @@ const csvtojson=require('csvtojson'); // V2
 //=======================================================================
 // TODO: allow these to be specified with options, eg with commander
 
+// Flags
+const show_test_specs = false;                                       // include test specs appendix in report
+const show_interop_results = false;                                  // include interop test results in report
+
 // Directories
 const src_dir = __dirname;
 const testing_dir = path.join(__dirname, "testing");                 // test data directory
 const report_dir = testing_dir;                                      // target directory for report output
 const inputs_dir = path.join(testing_dir, "inputs");                 // location of other inputs
+const templates_dir = path.join(inputs_dir, "templates");            // location of HTML templates
 const descs_dir = path.join(inputs_dir, "implementations");          // implementation descriptions
 const results_dir = path.join(inputs_dir, "results");                // test results for each assertion and impl
 const interop_dir = path.join(inputs_dir, "interop");                // interop test results directory
@@ -25,7 +30,9 @@ const interop_dir = path.join(inputs_dir, "interop");                // interop 
 
 // Inputs
 const src_htmlfile = path.join(src_dir, "index.html");               // source specification (rendered)
-const template_htmlfile = path.join(inputs_dir, "template.html");    // report template
+const rt_htmlfile = path.join(templates_dir, "report.html");         // report template
+const tt_htmlfile = path.join(templates_dir, "testspec.html");       // report template
+const it_htmlfile = path.join(templates_dir, "interop.html");        // report template
 const ts_htmlfile = path.join(inputs_dir, "testspec.html");          // test specifications for assertions
 const ea_htmlfile = path.join(inputs_dir, "extra-asserts.html");     // extra non-spec assertions
 
@@ -115,8 +122,28 @@ get_descs();
 
 // Initialize report document dom with template
 // (Synchronous)
-const template_raw = fs.readFileSync(template_htmlfile, 'UTF-8');
-var report_dom = cheerio.load(template_raw);
+var report_template_raw = fs.readFileSync(rt_htmlfile, 'UTF-8');
+const testspec_template_raw = fs.readFileSync(tt_htmlfile, 'UTF-8');
+const interop_template_raw = fs.readFileSync(it_htmlfile, 'UTF-8');
+// Make conditional substitutions
+if (show_test_specs) {
+  report_template_raw = report_template_raw.replace("{{TestSpecTOC}}",
+    '<li class="tocline"><a href="testing/report.html#testspecsB" shape="rect">Test specifications</a></li>');
+  report_template_raw = report_template_raw.replace("{{TestSpec}}",testspec_template_raw); 
+} else {
+  report_template_raw = report_template_raw.replace("{{TestSpecTOC}}","");
+  report_template_raw = report_template_raw.replace("{{TestSpec}}",""); 
+}
+if (show_interop_results) {
+  report_template_raw = report_template_raw.replace("{{InteropTOC}}",
+    '<li class="tocline">8.2 <a href="testing/report.html#test_interop" shape="rect">Interoperability results</a></li>');
+  report_template_raw = report_template_raw.replace("{{Interop}}",interop_template_raw); 
+} else {
+  report_template_raw = report_template_raw.replace("{{InteropTOC}}","");
+  report_template_raw = report_template_raw.replace("{{Interop}}",""); 
+}
+
+var report_dom = cheerio.load(report_template_raw);
 
 // Read in index.html store as a dom
 // (Synchronous)
@@ -539,59 +566,61 @@ function merge_implementations(done_callback) {
 // Merge interop table
 // (Asynchronous)
 function merge_interops(done_callback) {
-  interop_consumers.forEach(function(consumer) {
-      if (chatty_v) console.log("merge_interops consumer:",consumer);
-      let report_tr = report_dom('table#testinterop>thead>tr:last-child');
-      let impl = impls.get(consumer);
-      let impl_org = "";
-      let impl_name = "Unknown";
-      if (undefined === impl) {
-         if (warn_v) console.log("no name available for impl",item);
-      } else {
-         impl_org = impl.org;
-         impl_name = impl.name;
-      }
-      report_tr.append('\n\t<th class="rotate" id="'
-                       +consumer
-                       +'"><div><span>'
-                       +impl_org
-                       +'</span><br/><span>'
-                       +impl_name
-                       +'</span></div></th>\n');
-  });
-  interop_producers.forEach(function(producer) { 
-      let impl = impls.get(producer);
-      let impl_org = "";
-      let impl_name = "Unknown";
-      if (undefined === impl) {
-         if (warn_v) console.log("no name available for impl",producer);
-      } else {
-         impl_org = impl.org;
-         impl_name = impl.name;
-      }
-      let report_tr = report_dom('table#testinterop>tbody:last-child');
-      report_tr.append('\n<tr><th id="'
-                       +producer
-                       +'">'
-                       + impl_org
-                       + '<br/>'
-                       + impl_name
-                       +'</th></tr>');
-      interop_consumers.forEach(function(consumer) {
-          let pair_id = producer+"=>"+consumer;
-          let item_status = interop_table.get(pair_id);
-          let report_elem = report_dom('table#testinterop>tbody>tr:last-child');
-          if (undefined === item_status) {
-              report_elem.append('\n\t<td class="notimpl">Not Impl</td>');
-          } else if ("Secure" === item_status) {
-              report_elem.append('\n\t<td class="secure">'+item_status+'</td>');
-          } else if ("Pass" === item_status) {
-              report_elem.append('\n\t<td class="passed">'+item_status+'</td>');
-          } else {
-              report_elem.append('\n\t<td class="failed">'+item_status+'</td>');
-          }
-      });
-  });
+  if (show_interop_results) {
+		interop_consumers.forEach(function(consumer) {
+				if (chatty_v) console.log("merge_interops consumer:",consumer);
+				let report_tr = report_dom('table#testinterop>thead>tr:last-child');
+				let impl = impls.get(consumer);
+				let impl_org = "";
+				let impl_name = "Unknown";
+				if (undefined === impl) {
+					 if (warn_v) console.log("no name available for impl",item);
+				} else {
+					 impl_org = impl.org;
+					 impl_name = impl.name;
+				}
+				report_tr.append('\n\t<th class="rotate" id="'
+												 +consumer
+												 +'"><div><span>'
+												 +impl_org
+												 +'</span><br/><span>'
+												 +impl_name
+												 +'</span></div></th>\n');
+		});
+		interop_producers.forEach(function(producer) { 
+				let impl = impls.get(producer);
+				let impl_org = "";
+				let impl_name = "Unknown";
+				if (undefined === impl) {
+					 if (warn_v) console.log("no name available for impl",producer);
+				} else {
+					 impl_org = impl.org;
+					 impl_name = impl.name;
+				}
+				let report_tr = report_dom('table#testinterop>tbody:last-child');
+				report_tr.append('\n<tr><th id="'
+												 +producer
+												 +'">'
+												 + impl_org
+												 + '<br/>'
+												 + impl_name
+												 +'</th></tr>');
+				interop_consumers.forEach(function(consumer) {
+						let pair_id = producer+"=>"+consumer;
+						let item_status = interop_table.get(pair_id);
+						let report_elem = report_dom('table#testinterop>tbody>tr:last-child');
+						if (undefined === item_status) {
+								report_elem.append('\n\t<td class="notimpl">Not Impl</td>');
+						} else if ("Secure" === item_status) {
+								report_elem.append('\n\t<td class="secure">'+item_status+'</td>');
+						} else if ("Pass" === item_status) {
+								report_elem.append('\n\t<td class="passed">'+item_status+'</td>');
+						} else {
+								report_elem.append('\n\t<td class="failed">'+item_status+'</td>');
+						}
+				});
+		});
+  }
   done_callback();
 }
 
@@ -685,15 +714,17 @@ function format_assertions(done_callback) {
       // Results template
       fs.appendFileSync(results_csvfile, '"'+a+'","null",\n');
 
-      // Test Specifications Appendix
-      report_dom('#testspecs').append('\n<dt></dt>');
-      let report_dt = report_dom('#testspecs>dt:last-child');
-      report_dt.append('\n\t<a href="'+report_base+'#'+a+'">'+a+'</a>:');
-      if ("tabassertion" === ac) {
-        report_dt.append(' <em>(table)</em>');
-      }
-      if ("extraassertion" === ac) {
-        report_dt.append(' <em>(extra)</em>');
+      if (show_test_specs) {
+        // Test Specifications Appendix
+        report_dom('#testspecs').append('\n<dt></dt>');
+	let report_dt = report_dom('#testspecs>dt:last-child');
+	report_dt.append('\n\t<a href="'+report_base+'#'+a+'">'+a+'</a>:');
+	if ("tabassertion" === ac) {
+	  report_dt.append(' <em>(table)</em>');
+	}
+	if ("extraassertion" === ac) {
+	  report_dt.append(' <em>(extra)</em>');
+	}
       }
 
       let category = undefined;
@@ -702,7 +733,7 @@ function format_assertions(done_callback) {
         if (a_text.indexOf('MUST') > -1) {
           if (a_text.indexOf('MUST NOT') > -1) {
             category = 'MUST NOT';
-	  } else {
+	        } else {
             category = 'MUST';
           }
           req = true;
@@ -731,11 +762,13 @@ function format_assertions(done_callback) {
         if (undefined === category) {
           if (warn_v) console.log("WARNING: RFC2119 category is not defined for",a);
         }
-        if (repeat_assertion_in_appendix) {
-          if (undefined === category) {
-            report_dt.append(': <strong>category is undefined</strong>');
-          } else {
-            report_dt.append(': <strong>'+category+'</strong>');
+        if (show_test_specs) {
+          if (repeat_assertion_in_appendix) {
+            if (undefined === category) {
+              report_dt.append(': <strong>category is undefined</strong>');
+            } else {
+              report_dt.append(': <strong>'+category+'</strong>');
+            }
           }
         }
       }
@@ -857,20 +890,22 @@ function format_assertions(done_callback) {
       }
 
       // Add to test spec appendix
-      report_dom('#testspecs').append('\n<dd id="'+a+'" class="'+ac+'"></dd>');
-      let report_dd = report_dom('dd#'+a);
-      if (repeat_assertion_in_appendix) {
-        report_dd.append(a_text);
-        report_dd.append('\n\t<br/>');
-      }
-      a_spec = testspec[a];
-      report_dd.append('\n\t<span></span>');
-      let report_li = report_dom('dd#'+a+'>span:last-child');
-      if (undefined === a_spec) {
-        if (warn_v) console.log("WARNING: no test spec for",a);
-        report_li.append('\n\t\t<p><strong>NO TEST SPECIFICATION</strong></p>');
-      } else {
-        report_li.append('\n\t\t'+a_spec);
+      if (show_test_specs) {
+	report_dom('#testspecs').append('\n<dd id="'+a+'" class="'+ac+'"></dd>');
+	let report_dd = report_dom('dd#'+a);
+	if (repeat_assertion_in_appendix) {
+	  report_dd.append(a_text);
+	  report_dd.append('\n\t<br/>');
+	}
+	a_spec = testspec[a];
+	report_dd.append('\n\t<span></span>');
+	let report_li = report_dom('dd#'+a+'>span:last-child');
+	if (undefined === a_spec) {
+	  if (warn_v) console.log("WARNING: no test spec for",a);
+	  report_li.append('\n\t\t<p><strong>NO TEST SPECIFICATION</strong></p>');
+	} else {
+	  report_li.append('\n\t\t'+a_spec);
+	}
       }
     }
     done_callback();
