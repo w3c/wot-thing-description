@@ -469,7 +469,7 @@ However, these issues should be resolved before CR transition:
 ## Implementations
 
 Implementations were built by
-Smart Things, ERCIM, Hitachi, Intel, Oracle, Panasonic, and Siemens.
+Smart Things, ERCIM, Hitachi, Intel, Oracle, Panasonic, Fujitsu and Siemens.
 Some organizations built more than one implementation;
 in total 15 implementations were developed.
 The [`node-wot`](https://github.com/eclipse/thingweb.node-wot)
