@@ -62,6 +62,7 @@ const ttlFiles = [
 	'ontology/json-schema.ttl',
 	'ontology/wot-security.ttl',
     'ontology/web-linking.ttl',
+    'ontology/alignments.ttl',
 	'validation/td-validation.ttl'
 ];
 
