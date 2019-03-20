@@ -2222,7 +2222,7 @@ when the texts are served as a result such negotiation.
   A TD snippet based on the defined members is given below:
   </p>
 
-  <aside class="example ds-selector-tabs changed" id="action-serialization-sample" title="Sample of a property interaction serialization">
+  <aside class="example ds-selector-tabs changed" id="action-serialization-sample" title="Sample of an action interaction serialization">
         <div class="selectors">
           <button class="selected" data-selects="original">Simple</button>
           <button data-selects="expanded">Full</button>
@@ -2339,7 +2339,7 @@ when the texts are served as a result such negotiation.
   A TD snippet based on the defined members is given below:
   </p>
 
-<aside class="example ds-selector-tabs changed" id="event-serialization-sample" title="Sample of a property interaction serialization">
+<aside class="example ds-selector-tabs changed" id="event-serialization-sample" title="Sample of a event interaction serialization">
         <div class="selectors">
           <button class="selected" data-selects="original">Simple</button>
           <button data-selects="expanded">Full</button>
@@ -2372,6 +2372,10 @@ when the texts are served as a result such negotiation.
 }</pre>
 </aside>
  
+Please note that the definition of the event affordance is flexibly defined in order to adopt existing (e.g. WebSub) or customer-oriented event mechanisms. 
+For this reason, <code>subscription</code> and <code>cancellation</code> can be defined according to the desired mechanism. Please find further details in [[!WOT-PROTOCOL-BINDING]].
+Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thing (T2T) use case that offers an event and uses <code>subscription</code> and <code>cancellation</code>.
+</p>
 
   </section> <!-- end of id="event-serialization-json"-->
 
@@ -3401,7 +3405,7 @@ returned by a target Thing acting as a server.
       <li>Offered interactions: 1 property, 1 action, 1 event</li>
       <li>Security: PSKSecurityScheme</li>
       <li>Protocol binding: CoAP [[?RFC7252]] over TLS</li>
-      <li>Serializiation: JSON</li>
+      <li>Serializiation: default (JSON)</li>
       <li>Comment: none</li>
 
   </ul>
@@ -3479,6 +3483,81 @@ returned by a target Thing acting as a server.
         }
 </pre>
   </section>
+
+
+  <section id="t2t-event-example-serialization">
+    <h3>Thing-2-Thing (T2T) Event Example</h3>
+  
+    <p>Feature list of the Thing:</p>
+  
+    <ul>
+        <li>Name: TemperatureForT2T</li>
+        <li>Context extension: include HTTP (by htv prefix) vocabulary set</li>
+        <li>Offered interactions: 1 event</li>
+        <li>Security: none</li>
+        <li>Protocol binding: HTTP</li>
+        <li>Serializiation: default (JSON) </li>
+        <li>Comment: <i>TemperatureForT2T</i> Thing provides an event <i>temperatureValueForT2T</i>, with which an instruction can be passed, to which other Thing the periodically provided temperature values are to be sent.
+            Doing this, the <code>subscription</code> container defines an input to which target URL the temperature value (defined within the <code>data</code> container) 
+            has to be sent. To submit such information, a client must call the resource http://192.168.0.124:8080/events/TempForT2T/subscribe (via the POST method) and 
+            provide the target URL information in the payload (JSON serialization).  As defined in the output container, 
+            the <i>TemperatureForT2T</i> Thing would response with a subscription ID that can be used, e.g., for cancellation the subscription (as defined in the <code>cancellation</code> 
+            container). 
+        </li>
+    </ul>
+  
+  <pre class="example" title="MyLightSensor with MQTT binding">
+        {
+            "@context": [
+                "http://www.w3.org/ns/td",
+                {"htv": "http://www.w3.org/2011/http#"}
+            ],
+            "id": "urn:dev:wot:org:eclipse:thingweb:event-example",
+            "name": "TemperatureForT2T",
+            "description": "Event with subscription / cancellation (Thing-2-Thing use case).",
+            "created": "Fr, 25 Jan 2019 12:45:26 GMT",
+            "lastModified": "2019-01-29T13:30:07.428Z",
+            "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+            "security": ["nosec_sc"],
+            "events": {"temperatureValueForT2T": {
+                "description": "Provides periodic temperature values as event affordance.",
+                "subscription": {
+                    "input": {"targetURL": {
+                        "type": "string",
+                        "description": "Requester provides target URL to initate T2T."
+                    }},
+                    "output": {"subscriptionID": {
+                        "type": "integer",
+                        "description": "Responses an unique subscription ID."
+                    }}
+                },
+                "data": {
+                    "type": "number",
+                    "description": "Actual temperature value that is sent to the target URL. "
+                },
+                "cancellation": {"input": {"subscriptionID": {
+                    "type": "integer",
+                    "writeOnly": true,
+                    "description": "Provide subscription ID that have to be cancelled."
+                }}},
+                "forms": [
+                    {
+                        "href": "http://192.168.0.124:8080/events/TempForT2T/subscribe",
+                        "op": ["subscribeevent"],
+                        "htv:methodName": "POST",
+                        "contentType": "application/json"
+                    },
+                    {
+                        "href": "http://192.168.0.124:8080/events/TempForT2T/unsubscribeevent",
+                        "op": ["unsubscribeevent"],
+                        "htv:methodName": "PUT",
+                        "contentType": "application/json"
+                    }
+                ]
+            }}
+        }
+  </pre>
+    </section>
 
   </section>
 
