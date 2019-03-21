@@ -87,7 +87,7 @@ template :fields(?class) {
                        "<td><code>@type</code></td>",
                        "<td>Known from JSON-LD [[!json-ld]], <code>@type</code> is used to state that a thing resource is an instance of a class.<br/><br/> Each string in the value array represents a class.</td>",
                        "<td>no</td>",
-                       "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
+                       "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a> or array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>",
                        "<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-id--Thing\">",
                        "<td><code>id</code></td>",
@@ -101,7 +101,7 @@ template :fields(?class) {
                        "<td><code>@type</code></td>",
                        "<td>Known from JSON-LD [[!json-ld]], <code>@type</code> is used to state that an <a>interaction resource</a> is an instance of a class.<br/><br/> Each string in the value array represents a class.</td>",
                        "<td>no</td>",
-                       "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
+                       "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a> or array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>"
                 ), "")
             if(?class = <http://www.w3.org/ns/json-schema#DataSchema>,
@@ -109,7 +109,7 @@ template :fields(?class) {
                        "<td><code>@type</code></td>",
                        "<td>Known from JSON-LD [[!json-ld]], <code>@type</code> is used to state that values described by the DataSchema are instances of a class. <br/><br/> Each string in the value array represents a class.</td>",
                        "<td>no</td>",
-                       "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
+                       "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a> or array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>"
                 ), "")
             if(?class = <http://www.w3.org/ns/wot-security#SecurityScheme>,
@@ -117,7 +117,7 @@ template :fields(?class) {
                        "<td><code>@type</code></td>",
                        "<td>Known from JSON-LD [[!json-ld]], <code>@type</code> is used to state that a security mechanism configured by the SecurityScheme is an instance of a class.<br/><br/> Each string in the value array represents a class.</td>",
                        "<td>no</td>",
-                       "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
+                       "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a> or array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>"
                 ), "")
             st:call-template(:field, ?class)
@@ -161,7 +161,9 @@ template :field(?class) {
                 # TODO use path expressions like sh:oneOrMorePath instead?
                 "%s%s"
                 if(?prop = <http://www.w3.org/ns/td#op> ||
-                   ?prop = <http://www.w3.org/ns/json-schema#items>,
+                   ?prop = <http://www.w3.org/ns/json-schema#items> ||
+                   ?prop = <http://www.w3.org/ns/td#security> ||
+                   ?prop = <http://www.w3.org/ns/wot-security#scopes>,
                    concat(st:call-template(:type, ?class, ?prop),
                           " or array of ",
                           st:call-template(:type, ?class, ?prop)),
@@ -169,7 +171,9 @@ template :field(?class) {
                       "array of ",
                       if(?map, "map of ", "")))
                 if(?prop = <http://www.w3.org/ns/td#op> ||
-                   ?prop = <http://www.w3.org/ns/json-schema#items>,
+                   ?prop = <http://www.w3.org/ns/json-schema#items> ||
+                   ?prop = <http://www.w3.org/ns/td#security> ||
+                   ?prop = <http://www.w3.org/ns/wot-security#scopes>,
                    "",
                    if(?hasType, st:call-template(:type, ?class, ?prop), "any type"))
             }
