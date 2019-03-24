@@ -348,14 +348,15 @@
   "application/exi" etc.) [[iana-media-types]], and security mechanisms (for authentication,
   authorization, confidentiality, etc.).
   Serialization of TD instances is based on JSON [[rfc8259]], where JSON keys refers to terms of
-  the TD core vocabulary, as defined in this specification document.
+  the TD core vocabulary, as defined in this specification document. In addition the JSON serialization of TDs 
+  follows the syntax of JSON-LD 1.1 [[json-ld11]] to enable context extension and RDF processing.
   </p>
   <p>
-  Example 1 shows a simple TD instance in such a JSON serializiation and
+  Example 1 shows a TD instance with its different equivalent representation options (<i>Simple</i>, <i>Full (JSON-LD 1.1)</i>, <i>RDF</i>) and
   illustrates the TD model's <code>Property</code>, <code>Action</code>,
-  and <code>Event</code> classes by describing a lamp Thing with the name <i>MyLampThing</i>.
+  and <code>Event</code> classes by describing a lamp Thing with the name <i>MyLampThing</i>. 
   </p>
-<aside class="example ds-selector-tabs changed" id="simple-thing-description-sample" title="Thing Description Sample with JSON serialization">
+<aside class="example ds-selector-tabs changed" id="simple-thing-description-sample" title="Thing Description Sample">
     <div class="selectors">
       <button class="selected" data-selects="ex-original">Simple</button>
       <button data-selects="ex-full">Full (JSON-LD 1.1)</button>
@@ -456,8 +457,10 @@ _:b4 &lt;http://www.w3.org/ns/td#op&gt; &quot;writeproperty&quot; .
 _:b6 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/status&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
 </pre>
 </aside>
+
+
   <p>
-  Based on this content, 
+  Based on the content that can be seen in the <i>Simple</i> tab, 
   we know there exists one <code>Property</code> <a>interaction resource</a> 
   with the name <i>status</i>. 
   In addition, 
@@ -465,7 +468,7 @@ _:b6 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/statu
   (the secure form of) the HTTP protocol with a GET method 
   at the URI <code>https://mylamp.example.com/status</code> 
   (announced within the <code>forms</code> structure by the 
-  <code>href</code> name), and will return a string status value.
+  <code>href</code> name), and will return a string-based status value.
   The use of the GET method is not stated explicitly, 
   but is one of the default assumptions defined by this document and explained in [[wot-protocol-binding]].
   </p>
@@ -482,6 +485,7 @@ _:b6 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/statu
   of the lamp can be obtained by using the HTTP with its long polling
   sub-protocol at <code>https://mylamp.example.com/oh</code>.
   </p>
+ 
   <p>
   This example also specifies the <code>basic</code> security scheme, 
   requiring a username and password for access.
@@ -499,20 +503,24 @@ _:b6 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/statu
   indicate that no access control mechanisms are used.
   Additional examples will be provided later.
   </p>
+ 
   <p>
-  The TD in <a href="#simple-thing-description-sample">Example 1</a>  reflects some additional defined default assumptions 
-  that are not explicitly described. 
-  For example, the content type of the 
-  exchange format of the interactions is assumed to be JSON 
-  (=<code>contentType</code>). 
-  Specifically, the TD specification defines vocabulary terms 
-  (e.g., <code>contentType</code>) that have default values. 
-  If these vocabulary terms are not explicitly used in a Thing Description 
-  instance,  
-  the Thing Description processor follows default assumptions for 
-  interpretation as defined in this specification. The <i>Full</i> tab in <a href="#simple-thing-description-sample">Example 1</a> shows the identical information of the 
-  simple form of the Thing Description instance, but includes these mentioned implicit vocabulary terms with its default values.
-  </p>
+    The TD in the <i>Simple</i> tab reflects some additional defined default assumptions 
+    that are not explicitly described. 
+    For example, the content type of the 
+    exchange format of the interactions is assumed to be JSON 
+    (=<code>contentType</code>). 
+    Specifically, the TD specification defines vocabulary terms 
+    (e.g., <code>contentType</code>, <code>op</code>, <code>@contex</code>) that have default values. 
+    If one or more of these vocabulary terms are not explicitly used in a Thing Description 
+    instance we will call it <i>Simple</i> and a Thing Description processor (e.g. based on a raw JSON parser) follows default 
+    assumptions for interpretation as defined in this specification. 
+    The <i>Full (JSON-LD 1.1)</i> tab shows the identical information of the 
+    simple form of the Thing Description instance, but includes these mentioned implicit vocabulary terms with its default values.
+    A TD instance that contains all corresponding mandatory vocabulary terms, we will call this representation as <i>Full</i> 
+    and can be passed, e.g, directly to a JSON-LD 1.1 processor for semantic interpretation. The <i>RDF</i> tab just shows 
+    the RDF triples from the JSON-LD 1.1 representation (as defined in [[json-ld11]]).   
+</p>
 
   <p>
         The Thing Description offers the possibility to add contextual definitions
@@ -3230,7 +3238,7 @@ ion.</li>
 
   <section id="acknowledgements" class="appendix normative">
   <h1>Acknowledgements</h1>
-  <p>The editors would like to thank Dave Raggett, Matthias Kovatsch, Michael Koster, Kawaguchi Toru, Michael Lagally, Kazuyuki Ashimura, María Poveda, Daniel Peintner, Ben Francis for their contributions, comments, and guidance.</p>
+  <p>The editors would like to thank Dave Raggett, Matthias Kovatsch, Michael Koster, Kawaguchi Toru, Michael Lagally, Kazuyuki Ashimura, Ege Korkan, María Poveda, Daniel Peintner, Ben Francis for their contributions, comments, and guidance.</p>
   </section>
 
 </body>
