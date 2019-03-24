@@ -51,10 +51,11 @@ function load(ep, ttl) {
 }
 
 const ctxFiles = [
-    'context/td-context.jsonld',
-    'context/json-schema-context.jsonld',
-    'context/wot-security-context.jsonld',
-    'context/web-linking-context.jsonld'
+    'context/td-context-1.1.jsonld'
+    // 'context/td-context.jsonld',
+    // 'context/json-schema-context.jsonld',
+    // 'context/wot-security-context.jsonld',
+    // 'context/web-linking-context.jsonld'
 ];
 
 const ttlFiles = [
@@ -83,6 +84,31 @@ if (!queryEndpoint) throw new Error('WOT_SPARQL_ENDPOINT not defined (SPARQL que
 
 ///////////////////////////////////////////////////////////// 1. clear endpoint
 load(updateEndpoint, null)
+///////////////////////////////////// 2. generate 1.1 context file with nesting
+.then(() => {
+    let td = JSON.parse(fs.readFileSync('context/td-context.jsonld'));
+    let jsonschema = JSON.parse(fs.readFileSync('context/json-schema-context.jsonld'));
+    let wotsec = JSON.parse(fs.readFileSync('context/wot-security-context.jsonld'));
+    let lnk = JSON.parse(fs.readFileSync('context/web-linking-context.jsonld'));
+
+    let ctx = td['@context'];
+    ctx['@version'] = 1.1;
+
+    ctx.properties['@context'] = jsonschema['@context'];
+    ctx.input['@context'] = jsonschema['@context'];
+    ctx.output['@context'] = jsonschema['@context'];
+    ctx.data['@context'] = jsonschema['@context'];
+    ctx.subscription['@context'] = jsonschema['@context'];
+    ctx.cancellation['@context'] = jsonschema['@context'];
+
+    ctx.security['@context'] = wotsec['@context'];
+
+    ctx.links['@context'] = lnk['@context'];
+
+    fs.writeFileSync('context/td-context-1.1.jsonld', JSON.stringify(td));
+
+    return Promise.resolve();
+}) 
 //////////////////////////// 2. generate RDF for context and load all RDF files
 .then(() => {
     let promises = ttlFiles.map((f) => {
