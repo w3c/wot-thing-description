@@ -27,7 +27,7 @@ In the Thing Description specification, text and table entries highlighted with 
 - The related [WoT Architecture](https://github.com/w3c/wot-architecture) document is being submitted for TAG review at the same time.
     - Tests of implementations will be associated with this document
 - The [WoT Binding Templates](https://github.com/w3c/wot-binding-templates) informative WG note describing an optional WoT building block.
-- The [WoT Scripting API](https://github.com/w3c/wot-binding-templates) informative WG note describing an optional WoT building block.
+- The [WoT Scripting API](https://github.com/w3c/wot-scripting-api) informative WG note describing an optional WoT building block.
 
 During the TAG review period, we plan to update the test results to reduce the number of at-risk assertions as much as possible before CR submission. 
 
@@ -36,10 +36,4 @@ We'd prefer the TAG provide feedback as (please select one):
   - [x] open issues in our Github repo for each point of feedback
   - [ ] open a single issue in our Github repo for the entire review
   - [ ] leave review feedback as a comment in this issue and @-notify [github usernames]
-
---------------------------
-
-_Please preview the issue and check that the links work before submitting_
-
-For background, see our [explanation of how to write a good explainer](https://w3ctag.github.io/explainers).
 
