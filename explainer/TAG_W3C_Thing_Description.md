@@ -3,7 +3,7 @@ Góðan dag TAG！
 I'm requesting a TAG review of:
 
   - Name: _Web of Things (WoT) Thing Description_
-  - Specification URL: http://w3c.github.io/wot-thing-description/
+  - Specification URL: http://w3c.github.io/wot-thing-description/tag-review.html
   - Explainer, Requirements Doc, or Example code:  https://github.com/w3c/wot-thing-description/blob/master/explainer/Explainer.md
   - Tests: https://w3c.github.io/wot-thing-description/testing/report.html
   - Primary contacts: @sebastiankb, @takuki, @mmccool, @vcharpenay
