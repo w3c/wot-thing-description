@@ -3,7 +3,7 @@ Góðan dag TAG！
 I'm requesting a TAG review of:
 
   - Name: _Web of Things (WoT) Thing Description_
-  - Specification URL: https://cdn.staticaly.com/gh/w3c/wot-thing-description/TAG-review/index.html
+  - Specification URL: https://cdn.staticaly.com/gh/w3c/wot-thing-description/TAG-review/index.html?env=dev
   - Explainer, Requirements Doc, or Example code:  https://github.com/w3c/wot-thing-description/blob/master/explainer/Explainer.md
   - Tests: https://w3c.github.io/wot-thing-description/testing/report.html
   - Primary contacts: @sebastiankb, @takuki, @mmccool, @vcharpenay
