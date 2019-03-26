@@ -117,7 +117,7 @@ not by defining yet another low-level protocol,
 but by providing a common set of abstractions and
 a metadata framework to describe IoT services in terms of those abstractions.
 Rather than providing interoperability at the protocol level,
-provides a narrow waist at the level of metadata.
+the WoT provides a narrow waist at the level of metadata.
 
 In the figure below, even though different IoT ecosystems employ different protocols,
 payloads and security schemes, the TD provides a common abstraction that
