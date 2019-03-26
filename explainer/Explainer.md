@@ -32,7 +32,7 @@ to contain this information.
 
 ![How to Interact with IoT Devices](images/explainer_how_to_interact.png)
 
-The figure below (from the WoT Architecture document) 
+The figure below 
 shows the WoT building blocks and
 how they relate to four key architectural aspects of a Thing.
 Each building block,
