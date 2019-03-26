@@ -212,34 +212,34 @@ conceptually interconvertible with JSON.
 ## What is inside the Thing Description (TD) specification
 
 The draft TD specification is
-[available for review](https://w3c.github.io/wot-thing-description/).
+[available for review](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev).
 
 This specification primarily defines the TD Information Model
 and the TD Serialization as JSON:
 
-- **[TD Information Model](https://w3c.github.io/wot-thing-description/#sec-vocabulary-definition)** (Section 5)
+- **[TD Information Model](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#sec-vocabulary-definition)** (Section 5)
 
   The Thing Description Information model serves as the conceptual basis
   for the serialization and processing of a Thing Description. 
   It consists of the four vocabularies listed below: 
 
-  - [**Core Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-core-vocabulary-definition)
+  - [**Core Vocabulary**](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#sec-core-vocabulary-definition)
 
     TD Information Model's core vocabulary includes terms for: 
-      - *[Thing](https://w3c.github.io/wot-thing-description/#thing)*, 
-      - *[Interaction Affordance](https://w3c.github.io/wot-thing-description/#interactionaffordance)*, 
-      - *[Form](https://w3c.github.io/wot-thing-description/#form)*, 
-      - *[Version Information](https://w3c.github.io/wot-thing-description/#versioninfo)*, 
-      - *[Expected Response](https://w3c.github.io/wot-thing-description/#expectedresponse)* 
+      - *[Thing](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#thing)*, 
+      - *[Interaction Affordance](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#interactionaffordance)*, 
+      - *[Form](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#form)*, 
+      - *[Version Information](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#versioninfo)*, 
+      - *[Expected Response](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#expectedresponse)* 
         (media type of response messages), and
-      - *[Multi Language](https://w3c.github.io/wot-thing-description/#multilanguage)* 
+      - *[Multi Language](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#multilanguage)* 
         (Container to provide human-readable text in different languages).
-  - [**Data Schema Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-data-schema-vocabulary-definition)
+  - [**Data Schema Vocabulary**](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#sec-data-schema-vocabulary-definition)
       - Vocabulary for Data Schema definitions of 
         both scalar and structured payload data.
-  - [**Security Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-security-vocabulary-definition)
+  - [**Security Vocabulary**](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#sec-security-vocabulary-definition)
       - Vocabulary of well-established security mechanisms considered appropriate to be built-in in TD Information Model.
-  - [**Web Linking Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-web-linking-vocabulary-definition)
+  - [**Web Linking Vocabulary**](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#sec-web-linking-vocabulary-definition)
       - Vocabulary for web links exposed by a Thing. 
       - The Web Linking Vocabulary, modeled after the CoRE Link format,
         is in its own namespace for modularity.
@@ -247,10 +247,10 @@ and the TD Serialization as JSON:
 The TD Information Model borrows two keywords from JSON-LD, `@context` and `@type`,
 as extension points in order to allow the use of semantic vocabularies and tools.
 
-- **[TD Serialization](https://w3c.github.io/wot-thing-description/#sec-td-serialization)** (Section 6)
+- **[TD Serialization](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#sec-td-serialization)** (Section 6)
    - Describes the serialization of instances of TD Information Model.
    - Serialization of TD is in JSON. 
-   - There is an (informative) [JSON Schema](https://w3c.github.io/wot-thing-description/#json-schema-4-validation) 
+   - There is an (informative) [JSON Schema](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#json-schema-4-validation) 
      provided for TD serialization that can be used for validating TD instances.
 
 In light of the Open-World assumption used by RDF,
@@ -266,12 +266,12 @@ in TD specification.
 In particular, 
 a Full Thing Description instance always at least contains an `@context` value 
 at the 
-[Thing](https://w3c.github.io/wot-thing-description/#sec-thing-as-a-whole-json) level.
+[Thing](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#sec-thing-as-a-whole-json) level.
 
 The Full Thing Description enables semantic processing,
 such as that supported by RDF tools. 
 The TD specification also provides
-[guidelines](https://w3c.github.io/wot-thing-description/#note-jsonld11-processing) 
+[guidelines](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev#note-jsonld11-processing) 
 (in an Appendix) for transforming TD instances into a form 
 adequate for feeding into such tools, i.e. RDF N-Triples.
 The TD is also aligned with the current JSON-LD 1.1 draft.
