@@ -147,7 +147,6 @@ in a different concrete protocol), and is useful in many cases.
 However, again, protocol translation is not a _requirement_ 
 for interoperability itself in the WoT architecture.
 
-
 Applications also often use different terminologies in their data models.
 This again tends to lead to an _O(N^2)_ translation cost 
 when those applications want to talk to each other.
@@ -275,8 +274,7 @@ The TD specification also defines its own
 [Transformation to JSON-LD & RDF](https://w3c.github.io/wot-thing-description/#note-jsonld10-processing) 
 rules (in an Appendix) for transforming TD instances into a form (JSON-LD 1.0 & RDF) 
 adequate for feeding into such tools.
-The syntax of the TD is also aligned with the current JSON-LD 1.1 draft but cannot
-be considered a JSON-LD 1.1 document as that standard is not yet final.
+The TD is also aligned with the current JSON-LD 1.1 draft.
 
 ## Important Design Choices
 
@@ -296,7 +294,7 @@ syntax which was verbose and was considered confusing by many of the web develop
 we consulted with.
 
 The current proposal uses a more straightforward and "natural" JSON serialization
-which we are however attempting to align with the current JSON-LD 1.1 proposal.
+which we are aligning with the current JSON-LD 1.1 proposal.
 
 ### TD Serialization's Relationship to JSON-LD 1.1
 
