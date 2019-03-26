@@ -270,10 +270,10 @@ at the
 
 The Full Thing Description enables semantic processing,
 such as that supported by RDF tools. 
-The TD specification also defines its own 
-[Transformation to JSON-LD & RDF](https://w3c.github.io/wot-thing-description/#note-jsonld10-processing) 
-rules (in an Appendix) for transforming TD instances into a form (JSON-LD 1.0 & RDF) 
-adequate for feeding into such tools.
+The TD specification also provides
+[guidelines](https://w3c.github.io/wot-thing-description/#note-jsonld11-processing) 
+(in an Appendix) for transforming TD instances into a form 
+adequate for feeding into such tools, i.e. RDF N-Triples.
 The TD is also aligned with the current JSON-LD 1.1 draft.
 
 ## Important Design Choices
@@ -310,8 +310,8 @@ are addressed and implemented in the JSON-LD 1.1 specification as a stable featu
 then the WoT WG will be able to state the TD conforms to JSON-LD 1.1 format.
 
 In the worst case, it will be still be straightforward to convert TDs to
-JSON-LD for semantic processing.  We provide informative guidance on how
-to accomplish this in the current specification.
+JSON-LD 1.0 for semantic processing. Informative guidance on how to accomplish this
+would then be included in the specification.
 
 ### Communications Metadata Defined Using External Vocabularies
 
