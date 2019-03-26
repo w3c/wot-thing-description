@@ -92,7 +92,7 @@ The narrow waist model is generally considered a significant contributing
 factor to the success of both the internet and the web.
 
 Many IoT ecosystems have been developed in silos, with
-solutions unique application domain.
+solutions unique to application domains.
 Currently in the IoT each application domain is likely already using one or more
 standards unique to that domain and ecosystem.
 This fragmentation is a serious problem in building cross
