@@ -32,7 +32,7 @@ to contain this information.
 
 ![How to Interact with IoT Devices](images/explainer_how_to_interact.png)
 
-The figure below (from the WoT Architecture document) 
+The figure below 
 shows the WoT building blocks and
 how they relate to four key architectural aspects of a Thing.
 Each building block,
@@ -92,7 +92,7 @@ The narrow waist model is generally considered a significant contributing
 factor to the success of both the internet and the web.
 
 Many IoT ecosystems have been developed in silos, with
-solutions unique application domain.
+solutions unique to application domains.
 Currently in the IoT each application domain is likely already using one or more
 standards unique to that domain and ecosystem.
 This fragmentation is a serious problem in building cross
@@ -117,7 +117,7 @@ not by defining yet another low-level protocol,
 but by providing a common set of abstractions and
 a metadata framework to describe IoT services in terms of those abstractions.
 Rather than providing interoperability at the protocol level,
-provides a narrow waist at the level of metadata.
+the WoT provides a narrow waist at the level of metadata.
 
 In the figure below, even though different IoT ecosystems employ different protocols,
 payloads and security schemes, the TD provides a common abstraction that
@@ -146,7 +146,6 @@ enabled by the metadata in the TD
 in a different concrete protocol), and is useful in many cases.
 However, again, protocol translation is not a _requirement_ 
 for interoperability itself in the WoT architecture.
-
 
 Applications also often use different terminologies in their data models.
 This again tends to lead to an _O(N^2)_ translation cost 
@@ -271,12 +270,11 @@ at the
 
 The Full Thing Description enables semantic processing,
 such as that supported by RDF tools. 
-The TD specification also defines its own 
-[Transformation to JSON-LD & RDF](https://w3c.github.io/wot-thing-description/#note-jsonld10-processing) 
-rules (in an Appendix) for transforming TD instances into a form (JSON-LD 1.0 & RDF) 
-adequate for feeding into such tools.
-The syntax of the TD is also aligned with the current JSON-LD 1.1 draft but cannot
-be considered a JSON-LD 1.1 document as that standard is not yet final.
+The TD specification also provides
+[guidelines](https://w3c.github.io/wot-thing-description/#note-jsonld11-processing) 
+(in an Appendix) for transforming TD instances into a form 
+adequate for feeding into such tools, i.e. RDF N-Triples.
+The TD is also aligned with the current JSON-LD 1.1 draft.
 
 ## Important Design Choices
 
@@ -296,39 +294,24 @@ syntax which was verbose and was considered confusing by many of the web develop
 we consulted with.
 
 The current proposal uses a more straightforward and "natural" JSON serialization
-which we are however attempting to align with the current JSON-LD 1.1 proposal.
+which we are aligning with the current JSON-LD 1.1 proposal.
 
 ### TD Serialization's Relationship to JSON-LD 1.1
 
-Currently the TD specification only defines a JSON serialization.
-
-However, the WoT Working Group has been talking with the JSON-LD WG
-regarding missing features in JSON-LD 1.1 needed for implementation of the
+The WoT Working Group has been talking with the JSON-LD WG
+regarding missing features in the JSON-LD 1.1 draft needed for implementation of the
 current TD specification directly using JSON-LD 1.1.
-The discussion is ongoing in [GitHub](https://github.com/w3c/json-ld-api/issues/65).
+See [GitHub](https://github.com/w3c/json-ld-api/issues/65).
+Very recently we have come to an agreement regarding a specific feature
+needed for reversible serialization of TDs as JSON-LD 1.1 documents.
 
-In particular, while JSON-LD 1.1 supports the use of the same name in
-different contexts as described in
-[Scoped Context](https://w3c.github.io/json-ld-syntax/#scoped-contexts),
-the WoT Working Group's understanding is that although the feature is helpful,
-it still does not fully address what TD Serialization needs to support a
-"natural" JSON serialization acceptable to web developers.
-
-The issue essentially means that if the TD were treated as a JSON-LD 1.1 document,
-it will not round-trip to the same TD in JSON-LD 1.1 format.
-
-This is a problem in implementing common WoT use cases in which TDs are
-stored in a Thing Directory in the form of RDF to allow for
-semantics-based Thing discovery,
-while TDs can be served from the Thing Directory
-in the form of TD after transforming back to the original form.
-
-For this reason,
-TD Serialization uses the JSON format,
-and it is technically not in the JSON-LD 1.1 format.
 If the requirements WoT Working Group presented to JSON-LD Working Group
-are addressed and implemented in JSON-LD 1.1 draft specification as a stable feature,
-the WoT WG will be able to say the TD conforms to JSON-LD 1.1 format.
+are addressed and implemented in the JSON-LD 1.1 specification as a stable feature,
+then the WoT WG will be able to state the TD conforms to JSON-LD 1.1 format.
+
+In the worst case, it will be still be straightforward to convert TDs to
+JSON-LD 1.0 for semantic processing. Informative guidance on how to accomplish this
+would then be included in the specification.
 
 ### Communications Metadata Defined Using External Vocabularies
 
