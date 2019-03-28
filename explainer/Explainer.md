@@ -39,7 +39,7 @@ Each building block,
 identified in the WoT WG's charter,
 is concerned with addressing specific interoperability issues. 
 
-![WoT Building Blocks](https://w3c.github.io/wot-architecture/images/wot-thing-with-scripting.png)
+![WoT Building Blocks](images/wot-thing-with-scripting.png)
 
 TDs are a WoT building block that consolidates metadata related
 to several of different architectural aspects of Things.
