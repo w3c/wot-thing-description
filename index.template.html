@@ -1980,6 +1980,8 @@ The <code>output</code> of this action is the photo taken, which is available in
         "oauth2_sc": {
             "scheme": "oauth2",
             ...
+            "flow": "implicit",
+            "authorization": "https://example.com/authorization",
             "scopes": ["limited","special"]
         }
     },
@@ -2009,6 +2011,66 @@ The <code>output</code> of this action is the photo taken, which is available in
         }
     },
     ...
+</pre>
+  <p>Finally,
+  new security schemes can be defined using the vocabulary extension
+  mechanism.
+  <span class="rfc2119-assertion" id="td-security-ns">
+  All security schemes defined in this document MAY
+  also be used via extension vocabularies, using namespace
+  URLs defined for them of the form 
+  <code>http://www.w3.org/ns/td/sec/</code><em>scheme</em> where <em>scheme</em>
+  is replaced by the scheme name.</span>
+  For this example, we will modify the previous example to use
+  OAuth2 via the extension mechanism.  
+  Note that vocabulary outside
+  the <a>SecurityScheme</a> object, in this case <code>oauth2:scope</code>,
+  can also be included as part of the definition.
+  To use the extension mechanism an `@context` also needs to be 
+  defined, including the default for TDs as well as a definition of
+  the vocabulary and prefix to be used for the security scheme.
+  </p>
+<pre class="example">
+{
+    @context: ["http://www.w3.org/ns/td",
+               {"oauth2v": "http://www.w3.org/ns/td/sec/oauth2"}],
+    ...
+    "securityDefinitions": {
+        "oauth2_sc": {
+            "scheme": "oauth2v:oauth2",
+            ...
+            "oauth2v:flow": "implicit",
+            "oauth2v:authorization": "https://example.com/authorization",
+            "oauth2v:scopes": ["limited","special"]
+        }
+    },
+    "security": ["oauth2_sc"],
+    "properties": {
+        "status": {
+            ...
+            "forms": [
+                {
+                    "href": "https://scopes.example.com/status",
+                    "contentType": "application/json",
+                    "oauth2v:scopes": ["limited"]
+                }
+            ]
+        }
+    },
+    "action": {
+        "configure": {
+            ...
+            "forms": [
+                {
+                    "href": "https://scopes.example.com/configure",
+                    "contentType": "application/json",
+                    "oauth2v:scopes": ["special"]
+                }
+            ]
+        }
+    },
+    ...
+}
 </pre>
 
 </section> <!-- end of id="security-serialization-json"-->
