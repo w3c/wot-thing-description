@@ -1444,20 +1444,16 @@ when the texts are served as a result such negotiation.
       or already in wide use with those protocols.  
       The current set of HTTP security schemes is partly based on 
       <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#securitySchemeObject">OpenAPI 3.0.1</a> (see also [[?OPENAPI]]). 
-      Note however that while the HTTP security schemes, 
+      However while the HTTP security schemes, 
       vocabulary and syntax given in this specification share many similarities 
-      with OpenAPI they are not fully compatible.  
-      Also, since OpenAPI primarily targets web services built around HTTP, it does not 
-      cover the full set of use cases required for the IoT.  
-      Security schemes appropriate 
-      for IoT-centered protocols such as CoAP [[?RFC7252]] and MQTT [[?MQTT]] are therefore also included.
+      with OpenAPI they are not compatible.  
       </p>
     
       <p class="ednote" title="Security Scheme Extensions">
       The vocabulary extension mechanism of the 
       WoT Thing Description allows for additional security schemes if needed.
-      However, for more information about what additional security schemes 
-      or modifications are under discussion for the core WoT vocabulary
+      For more information about what additional security schemes 
+      or modifications are under discussion
       (and to file issues if you have a request) please visit the 
       <a href="https://github.com/w3c/wot-security">WoT Security TF repository.</a>
       </p>
@@ -1508,8 +1504,10 @@ when the texts are served as a result such negotiation.
       <h2>Web Linking Vocabulary Definition</h2>
       <p>
         The present model provides a representation for (typed) Web links exposed by
-        a Thing. It is designed after the CoRE Link format [[RFC6690]].
-      </p>
+        a Thing. The web linking definition reflecting a very common subset of the terms defined in 
+        Web Linking [[RFC8288]]. The defined terms can be used, e.g., to describe the relation to another Thing such 
+        as a <i>Lamp Thing</i> is controlled by a <i>Switch Thing</i>.
+     </p>
 
         <section><h3><code>Link</code></h3><p>A link can be viewed as a statement of the form "link context has a link relation type resource at link target, which has target attributes".</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Mandatory</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-href--Link"><td><code>href</code></td><td>Each link-value conveys one target IRI as a URI-Reference (after conversion to one, if necessary; see RFC3987, Section 3.1) inside angle brackets ("<>").</td><td>yes</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-type--Link"><td><code>type</code></td><td>Target attribute providing a hint indicating what the media type [IANA-MEDIA-TYPES] of the result of dereferencing the link should be.</td><td>no</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
@@ -3556,8 +3554,8 @@ returned by a target Thing acting as a server.
     </p>
         <pre class="advisement">
     {
-    "title": "WoT TD Schema - March 2019",
-    "description": "JSON Schema representation of the TD serialisation format. This schema validates a plain JSON TD which doesn't have to contain vocabulary terms defined in 5.1.1",
+    "title": "WoT TD Schema - 29 March 2019",
+    "description": "JSON Schema representation of the TD serialisation format.This schema validates a plain JSON TD which doesn 't have to contain vocabulary terms defined in 5.1.1",
     "$schema ": "http://json-schema.org/draft-06/schema#",
     "type": "object",
     "properties": {
@@ -3684,60 +3682,6 @@ returned by a target Thing acting as a server.
                 }
             ]
         },
-        "security-context": {
-            "oneOf": [{
-                    "type": "array",
-                    "items": {
-                        "anyOf": [{
-                                "$ref": "#/definitions/url"
-                            },
-                            {
-                                "type": "object"
-                            }
-                        ]
-                    },
-                    "contains": {
-                        "type": "string",
-                        "enum": [
-                            "https://www.w3.org/ns/wot-security", "https://w3.org/ns/wot-security"
-                        ]
-                    }
-                },
-                {
-                    "type": "string",
-                    "enum": [
-                        "https://www.w3.org/ns/wot-security", "https://w3.org/ns/wot-security"
-                    ]
-                }
-            ]
-        },
-        "data-context": {
-            "oneOf": [{
-                    "type": "array",
-                    "items": {
-                        "anyOf": [{
-                                "$ref": "#/definitions/url"
-                            },
-                            {
-                                "type": "object"
-                            }
-                        ]
-                    },
-                    "contains": {
-                        "type": "string",
-                        "enum": [
-                            "https://www.w3.org/ns/json-schema", "https://w3.org/ns/json-schema"
-                        ]
-                    }
-                },
-                {
-                    "type": "string",
-                    "enum": [
-                        "https://www.w3.org/ns/json-schema", "https://w3.org/ns/json-schema"
-                    ]
-                }
-            ]
-        },
         "type_declaration": {
             "oneOf": [{
                     "type": "string"
@@ -3753,9 +3697,6 @@ returned by a target Thing acting as a server.
         "property_element": {
             "type": "object",
             "properties": {
-                "@context": {
-                    "$ref": "#/definitions/data-context"
-                },
                 "@type": {
                     "$ref": "#/definitions/type_declaration"
                 },
@@ -4358,9 +4299,6 @@ returned by a target Thing acting as a server.
             "oneOf": [{
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -4387,9 +4325,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -4423,9 +4358,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -4455,9 +4387,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -4495,9 +4424,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -4542,9 +4468,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -4574,9 +4497,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -4606,9 +4526,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -4654,9 +4571,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -4690,9 +4604,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -4753,7 +4664,7 @@ returned by a target Thing acting as a server.
     </p>
         <pre class="advisement">
         {
-    "title": "WoT TD Schema - March 2019",
+    "title": "WoT TD Schema - 29 March 2019",
     "description": "JSON Schema representation of the TD serialisation in JSON-LD format. For a TD to validate this schema it must contain all the term defined in section 5.1.1",
     "$schema ": "http://json-schema.org/draft-06/schema#",
     "type": "object",
@@ -4951,9 +4862,6 @@ returned by a target Thing acting as a server.
         "property_element": {
             "type": "object",
             "properties": {
-                "@context": {
-                    "$ref": "#/definitions/data-context"
-                },
                 "@type": {
                     "$ref": "#/definitions/type_declaration"
                 },
@@ -5060,10 +4968,7 @@ returned by a target Thing acting as a server.
                 }
             },
             "required": [
-                "forms",
-                "observable",
-                "writeOnly",
-                "readOnly"
+                "forms"
             ],
             "additionalProperties": true
         },
@@ -5559,9 +5464,6 @@ returned by a target Thing acting as a server.
             "oneOf": [{
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -5588,9 +5490,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -5624,9 +5523,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -5656,9 +5552,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -5696,9 +5589,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -5743,9 +5633,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -5775,9 +5662,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -5807,9 +5691,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -5849,15 +5730,12 @@ returned by a target Thing acting as a server.
                         }
                     },
                     "required": [
-                        "scheme", "format", "alg", "in"
+                        "scheme", "flow"
                     ]
                 },
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -5891,9 +5769,6 @@ returned by a target Thing acting as a server.
                 {
                     "type": "object",
                     "properties": {
-                        "@context": {
-                            "$ref": "#/definitions/security-context"
-                        },
                         "@type": {
                             "$ref": "#/definitions/type_declaration"
                         },
@@ -5932,7 +5807,7 @@ returned by a target Thing acting as a server.
                         }
                     },
                     "required": [
-                        "scheme"
+                        "scheme","in","alg","format"
                     ]
                 }
             ]
