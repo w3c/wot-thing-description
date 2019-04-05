@@ -2,6 +2,8 @@
 
 Each commit here will sync it to the master, which will expose the content to http://w3c.github.io/wot-thing-description/.
 
+For the draft TD specification for TAG review, please access this [URL](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev).
+
 To make contributions, please provide pull-requests to the appropriate files,
 keeping in mind that some files, most notably `index.html` and `testing/report.html', 
 as well as most files under `visualization`, are

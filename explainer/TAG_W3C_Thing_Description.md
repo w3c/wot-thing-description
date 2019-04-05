@@ -3,8 +3,8 @@ Góðan dag TAG！
 I'm requesting a TAG review of:
 
   - Name: _Web of Things (WoT) Thing Description_
-  - Specification URL: https://cdn.staticaly.com/gh/w3c/wot-thing-description/TAG-review/index.html
-  - Explainer, Requirements Doc, or Example code:  https://github.com/w3c/wot-thing-description/blob/master/explainer/Explainer.md
+  - Specification URL: https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev
+  - Explainer, Requirements Doc, or Example code:  https://github.com/w3c/wot-thing-description/blob/TD-TAG-review/explainer/Explainer.md
   - Tests: https://w3c.github.io/wot-thing-description/testing/report.html
   - Primary contacts: @sebastiankb, @takuki, @mmccool, @vcharpenay
 
@@ -29,7 +29,7 @@ In the Thing Description specification, text and table entries highlighted with 
 - The [WoT Binding Templates](https://github.com/w3c/wot-binding-templates) informative WG note describing an optional WoT building block.
 - The [WoT Scripting API](https://github.com/w3c/wot-scripting-api) informative WG note describing an optional WoT building block.
 
-During the TAG review period, we plan to update the test results to reduce the number of at-risk assertions as much as possible before CR submission. 
+During the TAG review period, we plan to update the test results to reduce the number of at-risk assertions as much as possible before CR submission.  The link above refers to the master branch of the repository, not the TAG-review branch.
 
 We'd prefer the TAG provide feedback as (please select one):
 
