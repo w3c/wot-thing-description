@@ -180,18 +180,18 @@
 		clear: both;
 	}
 
-.example.with-default .with-default-control {
+.with-default .with-default-control {
     margin-top: 1em;
     margin-bottom: 1em;
 }
 
-.example.with-default pre.selected {
+.with-default pre.selected {
     margin-top: 0;
     margin-bottom: 1em;
     height: auto;
 }
 
-.example.with-default pre {
+.with-default pre {
     margin-top: 0;
     margin-bottom: 0;
     height: 0;
@@ -207,35 +207,23 @@
                 let w = n.querySelector('pre:nth-of-type(2)');
                 let cbox = n.querySelector('.with-default-control input[type="checkbox"]');
 
-                w.className = 'selected';
+                w.classList.add('selected');
                 cbox.checked = true;
 
                 cbox.addEventListener('change', e => {
                     if (e.target.checked) {
                         // with default
-                        w.className = 'selected';
-                        wo.className = '';
+                        w.classList.add('selected');
+                        wo.classList.remove('selected');
                     } else {
                         // without
-                        w.className = '';
-                        wo.className = 'selected';
+                        w.classList.remove('selected');
+                        wo.classList.add('selected');
                     }
                 });
             });
         });
     });
-
-  document.addEventListener("DOMContentLoaded", () => {
-    for (const button of document.querySelectorAll(".ds-selector-tabs .selectors button")) {
-      button.onclick = () => {
-        const ex = button.closest(".ds-selector-tabs");
-        ex.querySelector("button.selected").classList.remove("selected");
-        ex.querySelector(".selected").classList.remove("selected");
-        button.classList.add('selected');
-        ex.querySelector("." + button.dataset.selects).classList.add("selected");
-      }
-    }
-  })
 </script>
 <style>
   /* example tab selection */
@@ -3420,14 +3408,20 @@ returned by a target Thing acting as a server.
     order to perform a stricter validation in case no external vocabularies are used.
 </p>
 
-<section id="json-schema-4-validation-simple">
-        <h2>Without Default Values</h2>
-        <p>
-        JSON Schema for validating TD instances in <i>Simple</i> form 
-        (checks, if all manditory terms without default values from the TD model are present; also see <a href="#json-serializiation-section"></a>).  
-    </p>
-        <pre class="advisement">
-    {
+<p>
+    The following JSON Schema for validating TD instances has two forms: it either 
+    performs checks by assuming default values from the TD model are not present
+    (see also <a href="#json-serializiation-section"></a>) or it performs the same
+    checks without any assumption on default values, thus expected all mandatory
+    terms to be present, including terms with defaults.
+</p>
+
+<div class="with-default">
+    <div class="with-default-control">
+        <input type="checkbox">
+        <span><i>without assumption on default values (full schema)</i></span>
+    </div>
+    <pre class="advisement">{
     "title": "WoT TD Schema - 29 March 2019",
     "description": "JSON Schema for validating TD instances WITH default value assumptions (checks, if all mandatory terms without default values from the TD model are present",
     "$schema ": "http://json-schema.org/draft-06/schema#",
@@ -4527,17 +4521,8 @@ returned by a target Thing acting as a server.
         "@context"
     ],
     "additionalProperties": true
-}
-    </pre>
-</section>
-
-<section id="json-schema-4-validation-full">
-        <h2>With Default Values</h2>
-        <p>
-        JSON Schema for validating TD instances in <i>Full</i> form (checks, if all manditory terms from the TD model are present; also see <a href="#json-serializiation-section"></a>).  
-    </p>
-        <pre class="advisement">
-        {
+}</pre>
+    <pre class="advisement">{
     "title": "WoT TD Schema - 29 March 2019",
     "description": "JSON Schema for validating TD instances WITHOUT any default value assumptions (checks, if all mandatory terms from the TD model are present",
     "$schema ": "http://json-schema.org/draft-06/schema#",
@@ -5691,9 +5676,8 @@ returned by a target Thing acting as a server.
         "@context"
     ],
     "additionalProperties": true
-}
-        </pre>  
-</section>
+}</pre>
+</div>
 
   </section>
 
