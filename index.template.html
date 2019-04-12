@@ -2327,18 +2327,18 @@ If included namespaces are based on class definitions such as those provided by 
 </section> <!-- end of id="sec-td-serialization"-->
 
 <section id="behavior">
-<h2>Behavioral Constraints</h2>
+<h2>Behavioral Assertions</h2>
  <p>
  The following assertions relate to the behavior of components of a 
  WoT system, as opposed to the representation or information model of the TD. 
- However, note that TDs are descriptive, 
- and must in particular may be used to describe pre-existing network interfaces. 
- In these cases, assertions cannot be made that constrain the behaviour of such 
- pre-existing interfaces.  Instead, the assertions must be interpreted as 
- constraints on the TD to accurately represent such interfaces. 
+ However, note that TDs are descriptive, and may in particular be used to
+ describe pre-existing network interfaces. In these cases, assertions cannot
+ be made that constrain the behaviour of such pre-existing interfaces.  Instead,
+ the assertions must be interpreted as constraints on the TD to accurately
+ represent such interfaces. 
  </p> 
 <section id="behavior-security">
-<h3>Security Behavior</h3>
+<h3>Security Configurations</h3>
  <p>
  To enable secure interoperation, 
  security configurations must accurately reflect the requirements of the Thing:
@@ -2367,7 +2367,7 @@ If included namespaces are based on class definitions such as those provided by 
  </p>
 </section> <!-- end of id="behavior-security"-->
 <section id="behavior-data">
-<h3>Data Constraints</h3>
+<h3>Data Schemas</h3>
 <p>The data schemas provided in the TD should accurately represent the 
 data payloads returned and accepted by the described Thing
 in the interactions specified in the TD.  In general, clients should
@@ -2438,68 +2438,173 @@ returned by a target Thing acting as a server.
 </section> <!-- end of id="behavior-data"-->
 
 <section>
-  <h3>Protocol Constraints</h3>
+  <h3>Protocol Bindings</h3>
 
-  <section>
-    <h4>Constraints on HTTP</h4>
-
-    <p>
-        
-        Every form of a WoT Thing Description describing a server that
-        implements the HTTP protocol binding [[wot-binding-templates]]
-        is associated to an HTTP method name, either explicitly via
-        <code>htv:methodName</code> (<em>explicit</em> HTTP binding)
-        or via implicit binding rules (<em>implicit</em> HTTP binding).
-        The following constraints apply:
-    </p>
+  <p>
+    Every form in a WoT Thing Description must have a submission target URI,
+    given by the <code>href</code> vocabulary term. The URI scheme of this
+    submission target indicates what protocol binding the Thing implements
+    [[wot-binding-templates]].
+    For instance, if the target starts with <code>http</code> or
+    <code>https</code>, a client can then infer the Thing implements the
+    HTTP binding and it should expect HTTP-specific terms in the
+    form definition (see next section, <a href="#http-binding-assertions"></a>).
     <ul>
         <li>
-            <span class="rfc2119-assertion">
-                A Thing acting as server implementing an <em>explicit</em>
-                HTTP binding MUST declare which method to use to perform
-                an operation.
+            <span class="rfc2119-assertion" id="bindings-requirements-scheme">
+                Every form in a WoT Thing Description MUST follow the requirements
+                of the protocol binding indicated by the URI scheme of its
+                <code>href</code>.
             </span>
         </li>
         <li>
-            <span class="rfc2119-assertion">
-                A Thing acting as server implementing the <em>implicit</em>
-                HTTP binding MUST implement a <code>readproperty</code>
-                operation with the HTTP GET method.
-            </span>
-        </li>
-        <li>
-            <span class="rfc2119-assertion">
-                A Thing acting as server implementing the <em>implicit</em>
-                HTTP binding MUST implement a <code>writeproperty</code>
-                operation with the HTTP PUT method.
-            </span>
-        </li>
-        <li>
-            <span class="rfc2119-assertion">
-                A Thing acting as server implementing the <em>implicit</em>
-                HTTP binding MUST implement a <code>invokeaction</code>
-                operation with the HTTP POST method.
+            <span class="rfc2119-assertion" id="bindings-server-accept">
+                Every form in a WoT Thing Description MUST accurately describe requests
+                (including request headers, if present) accepted by the Thing in an
+                interaction.
             </span>
         </li>
     </ul>
+  </p>
+
+  <section id="http-binding-assertions">
+    <h4>HTTP Protocol Binding</h4>
 
     <p>
-        Form definitions in the introductory TD example are equivalent to the
-        following definitions:
+        To interact with a Thing that implements the HTTP protocol binding, a client
+        must know what HTTP method to use when submitting a form. In the general case,
+        a Thing Description can explicitly include a term giving the method name, like
+        <code>htv:methodName</code>, for each form [[wot-binding-templates]]. For the
+        sake of conciseness, this term can be omitted in certain cases, like reading a
+        property with GET or writing it with PUT.
+        <span class="rfc2119-assertion" id="td-default-http-method">
+            When no method name is present in a form implementing the HTTP
+            protocol binding, a default value MUST be assumed as shown in
+            the following table.
+        </span>
     </p>
 
-    <aside class="example">
-        <pre>{
-    ...
+    <table class="def">
+        <thead>
+            <tr>
+                <th><a>Vocabulary term</a></th>
+                <th>Default value</th>
+                <th>Context</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="rfc2119-default-assertion" id="td-default-http-method-get">
+                <td>
+                    <code>htv:methodName</code>
+                </td>
+                <td><code>GET</code></td>
+                <td>
+                    <code>Form</code> with <code>&quot;op&quot;: &quot;readproperty&quot;</code>
+                </td>
+            </tr>
+            <tr class="rfc2119-default-assertion" id="td-default-http-method-get">
+                <td>
+                    <code>htv:methodName</code>
+                </td>
+                <td><code>PUT</code></td>
+                <td>
+                    <code>Form</code> with <code>&quot;op&quot;: &quot;writeproperty&quot;</code>
+                </td>
+            </tr>
+            <tr class="rfc2119-default-assertion" id="td-default-http-method-get">
+                <td>
+                    <code>htv:methodName</code>
+                </td>
+                <td><code>POST</code></td>
+                <td>
+                    <code>Form</code> with <code>&quot;op&quot;: &quot;invokeaction&quot;</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        For example, the following default values should be assumed for forms in the introductory TD example:
+    </p>
+
+    <aside class="example with-default">
+            <div class="with-default-control">
+                <input type="checkbox">
+                <span><i>with default HTTP binding values</i></span>
+            </div>
+            <pre>{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:dev:wot:com:example:servient:lamp",
+    "name": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
     "properties": {
         "status": {
-            ...
+            "type": "string",
+            "forms": [
+                {
+                    "href": "https://mylamp.example.com/status"
+                }
+            ]
+        }
+    },
+    "actions": {
+        "toggle": {
+            "forms": [
+                {
+                    "href": "https://mylamp.example.com/toggle"
+                }
+            ]
+        }
+    },
+    "events": {
+        "overheating": {
+            "data": {
+                "type": "string"
+            },
+            "forms": [
+                {
+                    "href": "https://mylamp.example.com/oh",
+                    "subprotocol": "longpoll"
+                }
+            ]
+        }
+    }
+}</pre>
+        <pre>{
+    "@context": [
+    "https://www.w3.org/2019/wot/td/v1",
+    {
+        "htv": "http://www.w3.org/2011/http#"
+    }],
+    "id": "urn:dev:wot:com:example:servient:lamp",
+    "name": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
+    "properties": {
+        "status": {
+            "type": "string",
             "forms": [
                 {
                     "href": "https://mylamp.example.com/status",
                     "op": "readproperty",
                     "htv:methodName": "GET"
-                }, {
+                },
+                {
                     "href": "https://mylamp.example.com/status",
                     "op": "writeproperty",
                     "htv:methodName": "PUT"
@@ -2517,14 +2622,26 @@ returned by a target Thing acting as a server.
                 }
             ]
         }
+    },
+    "events": {
+        "overheating": {
+            "data": {
+                "type": "string"
+            },
+            "forms": [
+                {
+                    "href": "https://mylamp.example.com/oh",
+                    "subprotocol": "longpoll"
+                }
+            ]
+        }
     }
-    ...
 }</pre>
     </aside>
   </section>
 
   <section>
-      <h4>Other Communication Protocols</h4>
+      <h4>Other Protocol Bindings</h4>
 
       <p>
           The number of WoT protocol bindings a WoT Thing can implement
