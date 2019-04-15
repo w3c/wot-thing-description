@@ -3218,30 +3218,238 @@ returned by a target Thing acting as a server.
             To integrate a Thing Description instance with external knowledge and
             contextual information (like iot.schema.org annotations), the use of
             JSON-LD 1.1 and its processing API [[json-ld11-api]], as well as RDF-based
-            tools [[rdf11-concepts]] and libraries is highly recommended.
+            tools [[rdf11-concepts]] and libraries is highly recommended. This appendix
+            introduces two non-normative elements of the Thing Description model that
+            allow for a transformation to RDF: the default JSON-LD context for TD and
+            the TD ontology.
         </p>
 
-        <p>
-            TD classes and properties have RDF foundations, in the form of a Web
-            ontology [[wot-td-ontology]]. On this basis, it is possible to represent
-            a JSON TD document in RDF to then be uploaded to an RDF store for further
-            analytics. In terms of implementation, the JSON-LD API specifies the procedure
-            <a href="https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm">
-                <code>JsonLdProcessor.toRdf</code>
-            </a>
-            to obtain an RDF representation of the JSON-serialized Thing Description instance.
-        </p>
+        <section>
+            <h3>Thing Description JSON-LD Context</h3>
 
-        <p class="ednote">
-            To make the transformation reversible, <code>@index</code> must be kept in RDF.
-            See Github issue <a href="https://github.com/w3c/json-ld-api/issues/65">w3c/json-ld-api#65</a>.
-        </p>
+            <p>
+                A JSON TD document can be transformed in RDF (to then be uploaded
+                to an RDF store for further analytics) by a standard JSON-LD processor.
+                The following procedure loads the context of the TD, given by the
+                term <code>@context</code>, and generates RDF triples:
+            </p>
+
+            <p>
+                <a href="https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm">
+                    <code>JsonLdProcessor.toRdf</code>
+                </a>
+            </p>
+            
+            <p>
+                When applying this procedure to the introductory TD example with all default values,
+                the following triples are obtained:
+            </p>
+            
+            <aside class="example with-default" id="simple-thing-description-rdf">
+                <div class="with-default-control">
+                    <input type="checkbox"/>
+                    <span><i>after transformation to RDF</i></span>
+                </div>
+                <pre>{
+    "@context": [
+        "https://www.w3.org/2019/wot/td/v1",
+        { "htv": "http://www.w3.org/2011/http#" }
+    ],
+    "id": "urn:dev:wot:com:example:servient:lamp",
+    "name": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [
+                {
+                    "href": "https://mylamp.example.com/status",
+                    "contentType": "application/json",
+                    "op": "readproperty",
+                    "htv:methodName": "GET"
+                },
+                {
+                    "href": "https://mylamp.example.com/status",
+                    "contentType": "application/json",
+                    "op": "writeproperty",
+                    "htv:methodName": "PUT"
+                }
+            ]
+        }
+    },
+    "actions": {
+        "toggle": {
+            "safe": false,
+            "idempotent": false,
+            "forms": [
+                {
+                    "href": "https://mylamp.example.com/toggle",
+                    "contentType": "application/json",
+                    "op": "invokeaction",
+                    "htv:methodName": "POST"
+                }
+            ]
+        }
+    },
+    "events": {
+        "overheating": {
+            "data": {
+                "type": "string"
+            },
+            "forms": [
+                {
+                    "href": "https://mylamp.example.com/oh",
+                    "contentType": "application/json",
+                    "subprotocol": "longpoll",
+                    "op": "subscribeevent"
+                }
+            ]
+        }
+    }
+}</pre><pre>
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#name&gt; &quot;MyLampThing&quot; .
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#security&gt; &lt;_:b8&gt; .
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#properties&gt; _:b5 .
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#actions&gt; _:b0 .
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#events&gt; _:b2 .
+_:b0 &lt;http://www.w3.org/ns/td#forms&gt; _:b1 .
+_:b0 &lt;http://www.w3.org/ns/td#idempotent&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
+_:b0 &lt;http://www.w3.org/ns/td#safe&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
+_:b1 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;POST&quot; .
+_:b1 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
+_:b1 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/toggle&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
+_:b1 &lt;http://www.w3.org/ns/td#op&gt; &quot;invokeaction&quot; .
+_:b2 &lt;http://www.w3.org/ns/td#data&gt; _:b3 .
+_:b2 &lt;http://www.w3.org/ns/td#forms&gt; _:b4 .
+_:b3 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.w3.org/ns/json-schema#StringSchema&gt; .
+_:b4 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
+_:b4 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/oh&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
+_:b4 &lt;http://www.w3.org/ns/td#op&gt; &quot;subscribeevent&quot; .
+_:b4 &lt;http://www.w3.org/ns/td#subprotocol&gt; &quot;longpoll&quot; .
+_:b5 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.w3.org/ns/json-schema#StringSchema&gt; .
+_:b5 &lt;http://www.w3.org/ns/td#forms&gt; _:b6 .
+_:b5 &lt;http://www.w3.org/ns/td#forms&gt; _:b7 .
+_:b6 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;GET&quot; .
+_:b6 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
+_:b6 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/status&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
+_:b6 &lt;http://www.w3.org/ns/td#op&gt; &quot;readproperty&quot; .
+_:b7 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;PUT&quot; .
+_:b7 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
+_:b7 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/status&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
+_:b7 &lt;http://www.w3.org/ns/td#op&gt; &quot;writeproperty&quot; .
+_:b8 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.w3.org/ns/wot-security#BasicSecurityScheme&gt; .
+_:b8 &lt;http://www.w3.org/ns/wot-security#in&gt; &quot;header&quot; .</pre>
+            </aside>
+
+            <p>
+                Most importantly, the JSON-LD context maps JSON strings to RDF IRIs (hence, the notion
+                of <em>context</em>: in two different contexts, the same string can have different
+                meanings). The mapping here is rather straightforward: every vocabulary of the TD
+                information model is defined its own namespace and every vocabulary term maps to some
+                name, appended to the corresponding namespace. Strings that are not part of any
+                vocabulary map to RDF literals (strings with an optional datatype). For instance,
+                <code>name</code> maps to <code>http://www.w3.org/ns/td#name</code> and
+                <code>MyLampThing</code> remains unchanged. Applying this mapping is called
+                <a href="https://www.w3.org/TR/json-ld11/#expanded-document-form">context expansion</a>.
+            </p>
+
+            <p>
+                The following table gives the correspondance between a vocabulary and its namespace:
+            </p>
+
+            <table class="def">
+                <thead>
+                    <tr>
+                        <th>Vocabulary</th>
+                        <th>Namespace</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Core</td>
+                        <td><code>https://www.w3.org/ns/td#</code></td>
+                    </tr>
+                    <tr>
+                        <td>Data Schema</td>
+                        <td><code>https://www.w3.org/ns/json-schema#</code></td>
+                    </tr>
+                    <tr>
+                        <td>Security</td>
+                        <td><code>https://www.w3.org/2019/ns/wot-security#</code></td>
+                    </tr>
+                    <tr>
+                        <td>Web Linking</td>
+                        <td><code>https://www.w3.org/2019/wot/web-linking#</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>
+                Then, after expanding JSON strings to full IRIs, all map structures of the JSON
+                TD document must be turned into RDF triples. In a simple case, a
+                triple is produced for every key/value pair in the map. For instance, the
+                very first triple of the example above was produced from <code>"name": "myLampThing"</code>.
+            </p>
+
+            <p>
+                Other cases rely on specific JSON-LD features. Most of these features were
+                introduced in the 1.1 version of the standard and thus require an appropriate
+                JSON-LD 1.1 implementation. They are listed below:
+            </p>
+
+            <ul>
+                <li>
+                    <a href="https://www.w3.org/TR/json-ld11/#aliasing-keywords"><em>Aliasing keywords</em></a>:
+
+                </li>
+                <li>
+                    <a href="https://www.w3.org/TR/json-ld11/#scoped-contexts"><em>Scoped contexts</em></a>:
+                </li>
+                <li>
+                    <a href="https://github.com/w3c/json-ld-api/issues/65"><em>Property-based data indexing</em></a>:
+                </li>
+                <li>
+                    <a href="https://github.com/w3c/json-ld-syntax/issues/19"><em>Indexing without a predicate</em></a>:
+                    
+                </li>
+            </ul>
+
+            <p class="ednote">
+                The last two JSON-LD features (property-based data indexing and indexing without a
+                predicate) are still experimental; they have not been published in any Editor's
+                Draft yet.
+            </p>
     
-        <p class="issue">
-            An experimental JSON-LD 1.1 context for the TD model is provided in the
-            repository: <code>td-context-1.1.jsonld</code>. Currently, it is not the
-            context served at <code>https://www.w3.org/2019/wot/td/v1</code>, though.
-        </p>
+            <p class="issue">
+                An experimental JSON-LD 1.1 context for the TD model is provided in the
+                repository: <code>td-context-1.1.jsonld</code>. Currently, it is not the
+                context served at <code>https://www.w3.org/2019/wot/td/v1</code>, though.
+            </p>
+        </section>
+
+        <section>
+            <h3>Thing Description Ontology</h3>
+
+            <p>
+                TD classes and properties have RDF foundations, in the form of a Web
+                ontology in the Web Ontology Language [[owl2-overview]]. Some assertions of
+                this document are also expressed as OWL axioms.
+            </p>
+
+            <p class="issue">
+                Currently, the ontology documentation is available
+                <a href="https://w3c.github.io/wot-thing-description/ontology/td.html">on w3c.github.io</a>
+                but it should eventually be put under the TD namespace, on w3.org.
+            </p>
+        </section>
 
     </section>
 
