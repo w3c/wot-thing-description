@@ -1546,7 +1546,12 @@ The <code>output</code> of this action is the photo taken, which is available in
     ...
 </pre>
 
-<p>When <code>forms</code> is present at the top level, it can be used to describe meta interactions supported by a <a href="#thing" class="sec-ref"><code>Thing</code></a> instance. For example, operations "readallproperties" and "writeallproperties" are meta interactions by which clients can read and write all properties of the thing at once. In the example below, <code>forms</code> is used at the top level, and the clients can access end point (i.e. <code>https://mylamp.example.com/allproperties</code>) both to read or write all properties (i.e. <code>"on"</code>, <code>"brightness"</code> and <code>"timer"</code> property) of the thing in a single interaction.</p>
+<p>When <code>forms</code> is present at the top level, it can be used to describe meta interactions supported by a <a href="#thing" class="sec-ref"><code>Thing</code></a> instance. For example, the operation types "readallproperties" and "writeallproperties" are for meta 
+    interactions with the Thing by which Consumers can read and write all properties at once. In the example below, 
+    <code>forms</code> is used at the top level, and the Consumer can use the submission target  
+    <code>https://mylamp.example.com/allproperties</code> both to read or write all 
+    Properties (i.e., <code>on</code>, <code>brightness</code> and <code>timer</code> property) of 
+    the Thing in a single interaction.</p>
 
 <pre class="example" id="td-forms-readall-example">
 {
@@ -2370,18 +2375,17 @@ If included namespaces are based on class definitions such as those provided by 
 <h3>Data Schemas</h3>
 <p>The data schemas provided in the TD should accurately represent the 
 data payloads returned and accepted by the described Thing
-in the interactions specified in the TD.  In general, clients should
+in the interactions specified in the TD.  In general, Consumers should
 follow the data schemas strictly, not generating anything not given
 in the WoT Thing Description, but should accept additional data from
-the server not given explicitly in the WoT Thing Decription for that
-server.  In general, servers are <em>described</em> by WoT Thing Descriptions,
-but clients are <em>constrained</em> to follow WoT Thing Descriptions when
-interacting with servers.
+the Thing not given explicitly in the WoT Thing Decription.  In general, Things are <em>described</em> by WoT Thing Descriptions,
+but Consumers are <em>constrained</em> to follow WoT Thing Descriptions when
+interacting with Things.
 <ul>
 <li>
 <span class="rfc2119-assertion" 
       id="client-data-schema">
-A WoT Thing acting as a client when interacting with another target Thing 
+A WoT Thing acting as a Consumer when interacting with another target Thing 
 described in a WoT Thing Description MUST generate data  
 organized according to the data schemas given in the corresponding
 interactions.
@@ -2390,22 +2394,22 @@ interactions.
 <li>
 <span class="rfc2119-assertion" 
       id="server-data-schema">
-A WoT Thing Description describing a server MUST accurately describe the 
+A WoT Thing Description MUST accurately describe the 
 data returned and accepted by each interaction.
 </span>
 </li>
 <li>
 <span class="rfc2119-assertion" 
       id="server-data-schema-extras">
-A WoT Thing acting as a server MAY return additional data from an interaction  
+A Thing MAY return additional data from an interaction  
 even when such data is 
-not described in the data schemas given in the target Thing's WoT Thing Description.
+not described in the data schemas given in its WoT Thing Description.
 </span>
 </li>
 <li>
 <span class="rfc2119-assertion" 
       id="client-data-schema-accept-extras">
-A WoT Thing acting as a client when interacting with another Thing MUST accept without
+A WoT Thing acting as a Consumer when interacting with another Thing MUST accept without
 error any additional data  
 not described in the data schemas given in the target Thing's WoT Thing Description.
 </span>
@@ -2413,24 +2417,23 @@ not described in the data schemas given in the target Thing's WoT Thing Descript
 <li>
 <span class="rfc2119-assertion" 
       id="client-data-schema-no-extras">
-A WoT Thing acting as a client when interacting with another Thing MUST NOT generate data  
+A WoT Thing acting as a Consumer when interacting with another Thing MUST NOT generate data  
 not described in the data schemas given in that Thing's WoT Thing Description.
 </span>
 </li>
 <li>
 <span class="rfc2119-assertion" 
       id="client-uri-template">
-A WoT Thing acting as a client when interacting with another Thing MUST generate URIs 
-according to the URI templates, base URLs, and form href parameters 
+A WoT Thing acting as a Consumer when interacting with another Thing MUST generate URIs 
+according to the URI templates, base URIs, and form href parameters 
 given in the target Thing's WoT Thing Description.
 </span>
 </li>
 <li>
 <span class="rfc2119-assertion" 
       id="server-uri-template">
-URI templates, base URLs, and form href parameters 
-in a WoT Thing Description MUST accurately describe URIs
-returned by a target Thing acting as a server.
+URI templates, base URIs, and href members 
+in a WoT Thing Description MUST accurately describe the WoT Interace of the Thing.
 </span>
 </li>
 </ul>
@@ -2443,17 +2446,17 @@ returned by a target Thing acting as a server.
   <p>
     Every form in a WoT Thing Description must have a submission target URI,
     given by the <code>href</code> vocabulary term. The URI scheme of this
-    submission target indicates what protocol binding the Thing implements
-    [[wot-binding-templates]].
+    submission target indicates what Protocol Binding the Thing implements
+    [[wot-architecture]].
     For instance, if the target starts with <code>http</code> or
-    <code>https</code>, a client can then infer the Thing implements the
+    <code>https</code>, a Consumer can then infer the Thing implements the
     HTTP binding and it should expect HTTP-specific terms in the
     form definition (see next section, <a href="#http-binding-assertions"></a>).
     <ul>
         <li>
             <span class="rfc2119-assertion" id="bindings-requirements-scheme">
                 Every form in a WoT Thing Description MUST follow the requirements
-                of the protocol binding indicated by the URI scheme of its
+                of the Protocol Binding indicated by the URI scheme of its
                 <code>href</code>.
             </span>
         </li>
@@ -2471,7 +2474,7 @@ returned by a target Thing acting as a server.
     <h4>HTTP Protocol Binding</h4>
 
     <p>
-        To interact with a Thing that implements the HTTP protocol binding, a client
+        To interact with a Thing that implements the HTTP Protocol Binding, a Consumer
         must know what HTTP method to use when submitting a form. In the general case,
         a Thing Description can explicitly include a term giving the method name, like
         <code>htv:methodName</code>, for each form [[wot-binding-templates]]. For the
@@ -2479,7 +2482,7 @@ returned by a target Thing acting as a server.
         property with GET or writing it with PUT.
         <span class="rfc2119-assertion" id="td-default-http-method">
             When no method name is present in a form implementing the HTTP
-            protocol binding, a default value MUST be assumed as shown in
+            Protocol Binding, a default value MUST be assumed as shown in
             the following table.
         </span>
     </p>
@@ -2644,10 +2647,12 @@ returned by a target Thing acting as a server.
       <h4>Other Protocol Bindings</h4>
 
       <p>
-          The number of WoT protocol bindings a WoT Thing can implement
+
+          The number of WoT Protocol Bindings a WoT Thing can implement
           is not restricted. Other bindings, e.g. for CoAP, MQTT or OPC UA
-          will be standardized in separate documents, including implicit
-          binding rules, as per the protocol binding template guidelines
+          will be standardized in separate documents such as a protocol vocabulary similar to HTTP in RDF [[HTTP-in-RDF10]]
+          or specifications including default value definitions. Such protocols can be simply integrated into the TD by the 
+          usage of the context extension mechanism [].   A general guideline for Protocol Bindings is given in
           [[wot-binding-templates]].
       </p>
   </section>
@@ -2668,7 +2673,7 @@ returned by a target Thing acting as a server.
       <li>Context extension: none</li>
       <li>Offered interactions: 1 property, 1 action, 1 event</li>
       <li>Security: PSKSecurityScheme</li>
-      <li>Protocol binding: CoAP [[?RFC7252]] over TLS</li>
+      <li>Protocol Binding: CoAP [[?RFC7252]] over TLS</li>
       <li>Serializiation: default (JSON)</li>
       <li>Comment: none</li>
 
@@ -2721,7 +2726,7 @@ returned by a target Thing acting as a server.
       <li>Context extension: none</li>
       <li>Offered interactions: 1 event</li>
       <li>Security: none</li>
-      <li>Protocol binding: MQTT [[?MQTT]]</li>
+      <li>Protocol Binding: MQTT [[?MQTT]]</li>
       <li>Serializiation: text </li>
       <li>Comment: An MQTT client frequently publishes the light sensor data (number is serialized in text format) to 
           the topic /lightSensor by the MQTT broker running behind the address 192.168.1.187:1883. </li>
@@ -2759,12 +2764,13 @@ returned by a target Thing acting as a server.
         <li>Context extension: include HTTP (by htv prefix) vocabulary set</li>
         <li>Offered interactions: 1 event</li>
         <li>Security: none</li>
-        <li>Protocol binding: HTTP</li>
+        <li>Protocol Binding: HTTP</li>
         <li>Serializiation: default (JSON) </li>
-        <li>Comment: <i>TemperatureForT2T</i> Thing provides an event <i>temperatureValueForT2T</i>, with which an instruction can be passed, to which other Thing the periodically provided temperature values are to be sent.
-            Doing this, the <code>subscription</code> container defines an input to which target URL the temperature value (defined within the <code>data</code> container) 
-            has to be sent. To submit such information, a client must call the resource http://192.168.0.124:8080/events/TempForT2T/subscribe (via the POST method) and 
-            provide the target URL information in the payload (JSON serialization).  As defined in the output container, 
+        <li>Comment: <i>TemperatureForT2T</i> Thing provides an event <i>temperatureValueForT2T</i>, with which an instruction can be passed, to which other Thing the periodically 
+            provided temperature values are to be sent.
+            Doing this, the <code>subscription</code> container defines an input to which callback URI the temperature value (defined within the <code>data</code> container) 
+            has to be sent. To subscibe a Consumer must submit a POST request to http://192.168.0.124:8080/events/TempForT2T/subscribe and 
+            provide the callback URI in the payload as JSON object with the member <code>targetURL</code>.  As defined in the output container, 
             the <i>TemperatureForT2T</i> Thing would response with a subscription ID that can be used, e.g., for cancellation the subscription (as defined in the <code>cancellation</code> 
             container). 
         </li>
@@ -2941,7 +2947,7 @@ returned by a target Thing acting as a server.
       <dl><dt>Mitigation:</dt><dd>
           Obtain Thing Descriptions only through
           mutually authenticated channels.
-          This ensures that the client and the server are both sure of the 
+          This ensures that the Consumer and the server are both sure of the 
           identity of the other party to the communication.
           This is also necessary in order to deliver TDs only to authorized users.
       </dd></dl>
@@ -3044,7 +3050,7 @@ returned by a target Thing acting as a server.
     (properties, actions and events), however it does not contain device-specific
     information, such as a serial number, GPS location, security information or concrete protocol endpoints.
     </p><p>
-    Since a Thing Template does not contain a protocol binding to specific endpoints and 
+    Since a Thing Template does not contain a Protocol Binding to specific endpoints and 
     does not define a specific security mechanism, the <em>forms</em> and <em>securityDefinitions</em> and 
     <em>security</em> keys must not be present.
     </p><p>
