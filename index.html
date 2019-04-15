@@ -6084,6 +6084,7 @@ returned by a target Thing acting as a server.
 &lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#properties&gt; _:b5 .
 &lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#actions&gt; _:b0 .
 &lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#events&gt; _:b2 .
+_:b0 &lt;http://www.w3.org/ns/td#name&gt; &quot;toggle&quot; .
 _:b0 &lt;http://www.w3.org/ns/td#forms&gt; _:b1 .
 _:b0 &lt;http://www.w3.org/ns/td#idempotent&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
 _:b0 &lt;http://www.w3.org/ns/td#safe&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
@@ -6091,6 +6092,7 @@ _:b1 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;POST&quot; .
 _:b1 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
 _:b1 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/toggle&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
 _:b1 &lt;http://www.w3.org/ns/td#op&gt; &quot;invokeaction&quot; .
+_:b2 &lt;http://www.w3.org/ns/td#name&gt; &quot;overheating&quot; .
 _:b2 &lt;http://www.w3.org/ns/td#data&gt; _:b3 .
 _:b2 &lt;http://www.w3.org/ns/td#forms&gt; _:b4 .
 _:b3 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.w3.org/ns/json-schema#StringSchema&gt; .
@@ -6099,6 +6101,7 @@ _:b4 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/oh&qu
 _:b4 &lt;http://www.w3.org/ns/td#op&gt; &quot;subscribeevent&quot; .
 _:b4 &lt;http://www.w3.org/ns/td#subprotocol&gt; &quot;longpoll&quot; .
 _:b5 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.w3.org/ns/json-schema#StringSchema&gt; .
+_:b2 &lt;http://www.w3.org/ns/td#name&gt; &quot;status&quot; .
 _:b5 &lt;http://www.w3.org/ns/td#forms&gt; _:b6 .
 _:b5 &lt;http://www.w3.org/ns/td#forms&gt; _:b7 .
 _:b6 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;GET&quot; .
@@ -6110,6 +6113,7 @@ _:b7 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
 _:b7 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/status&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
 _:b7 &lt;http://www.w3.org/ns/td#op&gt; &quot;writeproperty&quot; .
 _:b8 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.w3.org/ns/wot-security#BasicSecurityScheme&gt; .
+_:b8 &lt;http://www.w3.org/ns/wot-security#schemeName&gt; &quot;basic_sc&quot; .</pre>
 _:b8 &lt;http://www.w3.org/ns/wot-security#in&gt; &quot;header&quot; .</pre>
             </aside>
 
@@ -6172,17 +6176,38 @@ _:b8 &lt;http://www.w3.org/ns/wot-security#in&gt; &quot;header&quot; .</pre>
             <ul>
                 <li>
                     <a href="https://www.w3.org/TR/json-ld11/#aliasing-keywords"><em>Aliasing keywords</em></a>:
-
+                    JSON-LD reserved keywords always start with <code>@</code> but in certain cases, it is
+                    more convenient to define aliases for these keywords, e.g. to more easily process JSON-LD
+                    document in a specific programming environment. In the TD core vocabulary, <code>id</code>
+                    is an alias for <code>@id</code>, which must be an IRI used as the subject of triples when
+                    producing RDF. For this reason, the first triples in the example have
+                    <code>urn:dev:wot:com:example:servient:lamp</code> as a subject instead of an arbitrary
+                    blank node.
                 </li>
                 <li>
                     <a href="https://www.w3.org/TR/json-ld11/#scoped-contexts"><em>Scoped contexts</em></a>:
+                    The term <code>properties</code> is used both in the core vocabulary and in the data schema
+                    vocabulary. Yet, a JSON string cannot map to two IRIs simultaneously in the same context
+                    definition. The mapping from <code>properties</code> to
+                    <code>https://www.w3.org/ns/json-schema#properties</code> must therefore be <em>scoped</em>
+                    to instances of <code>DataSchema</code> only.
                 </li>
                 <li>
                     <a href="https://github.com/w3c/json-ld-api/issues/65"><em>Property-based data indexing</em></a>:
+                    in the example above, <code>status</code>, <code>toggle</code> and <code>overheating</code>
+                    appear as keys in a map but they do not produce triples in which they become predicates. This special
+                    structure is called an <a href="https://www.w3.org/TR/json-ld11/#data-indexing">index map</a>.
+                    Without any indication in the context, the index key is lost when an index map is turned into RDF.
+                    To make the transformation to RDF reversible, it is possible to indicate that index keys should
+                    produce triples with a given predicate. Each vocabulary can include an RDF term for this purpose.
+                    In the core vocabulary, the property <code>http://www.w3.org/ns/td#name</code> is used.
                 </li>
                 <li>
                     <a href="https://github.com/w3c/json-ld-syntax/issues/19"><em>Indexing without a predicate</em></a>:
-                    
+                    in a TD, the security definitions container is mostly syntactic sugar to avoid redundancy
+                    in the <code>security</code> definitions. JSON-LD 1.1 includes another indexing mechanism for
+                    that purpose. In the above example, <code>securityDefinitions</code> does not produce any
+                    triple.
                 </li>
             </ul>
 
@@ -6206,6 +6231,11 @@ _:b8 &lt;http://www.w3.org/ns/wot-security#in&gt; &quot;header&quot; .</pre>
                 TD classes and properties have RDF foundations, in the form of a Web
                 ontology in the Web Ontology Language [[owl2-overview]]. Some assertions of
                 this document are also expressed as OWL axioms.
+            </p>
+
+            <p>
+                Default values require special care when translating the TD information model
+                into OWL.
             </p>
 
             <p class="issue">
