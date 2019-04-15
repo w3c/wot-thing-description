@@ -2443,21 +2443,26 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
 <section>
   <h3>Protocol Bindings</h3>
 
+  <p>A Protocol Binding is the mapping from an Interaction Affordance to concrete messages of a 
+      specific protocol such as HTTP [[!RFC7231]], CoAP [[!RFC7252]], or MQTT [[!MQTT]]. Protocol Bindings of 
+      Interaction Affordances are serialized as <code>forms</code> as defined in <a href="#form-serialization-json"></a>.
+    </p>
+
   <p>
-    Every form in a WoT Thing Description must have a submission target URI,
-    given by the <code>href</code> vocabulary term. The URI scheme of this
+    Every form in a WoT Thing Description must have a submission target,
+    given by the <code>href</code> member. The URI scheme of this
     submission target indicates what Protocol Binding the Thing implements
     [[wot-architecture]].
     For instance, if the target starts with <code>http</code> or
     <code>https</code>, a Consumer can then infer the Thing implements the
     HTTP binding and it should expect HTTP-specific terms in the
-    form definition (see next section, <a href="#http-binding-assertions"></a>).
+    form instance (see next section, <a href="#http-binding-assertions"></a>).
     <ul>
         <li>
             <span class="rfc2119-assertion" id="bindings-requirements-scheme">
                 Every form in a WoT Thing Description MUST follow the requirements
                 of the Protocol Binding indicated by the URI scheme of its
-                <code>href</code>.
+                <code>href</code> member.
             </span>
         </li>
         <li>
@@ -2474,14 +2479,20 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     <h4>HTTP Protocol Binding</h4>
 
     <p>
+        Per default the Thing Description supports the HTTP protocol binding and 
+        includes the HTTP RDF vocabulary set definitions from [[HTTP-in-RDF10]] and can be 
+        directly used within TD instances by the usage of the prefix <code>htv</code>, which 
+        points to <code>http://www.w3.org/2011/http#</code>. 
+    </p>
+    <p>
         To interact with a Thing that implements the HTTP Protocol Binding, a Consumer
-        must know what HTTP method to use when submitting a form. In the general case,
-        a Thing Description can explicitly include a term giving the method name, like
-        <code>htv:methodName</code>, for each form [[wot-binding-templates]]. For the
-        sake of conciseness, this term can be omitted in certain cases, like reading a
-        property with GET or writing it with PUT.
+        needs to know what HTTP method to use when submitting a form. In the general case,
+        a Thing Description can explicitly include a term indicating the method, i.e.,
+        <code>htv:methodName</code>. For the
+        sake of conciseness, the HTTP Protocol Binding defines default values for each operation type, 
+        which also aims at convergence of the methods expected by Things (e.g., GET to read, PUT to write).
         <span class="rfc2119-assertion" id="td-default-http-method">
-            When no method name is present in a form implementing the HTTP
+            When no method is indicated in a form representing an HTTP
             Protocol Binding, a default value MUST be assumed as shown in
             the following table.
         </span>
@@ -2502,7 +2513,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
                 </td>
                 <td><code>GET</code></td>
                 <td>
-                    <code>Form</code> with <code>&quot;op&quot;: &quot;readproperty&quot;</code>
+                    <code>Form</code> with operation type <code>readproperty</code>
                 </td>
             </tr>
             <tr class="rfc2119-default-assertion" id="td-default-http-method-get">
@@ -2511,7 +2522,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
                 </td>
                 <td><code>PUT</code></td>
                 <td>
-                    <code>Form</code> with <code>&quot;op&quot;: &quot;writeproperty&quot;</code>
+                    <code>Form</code> with operation type <code>writeproperty</code>
                 </td>
             </tr>
             <tr class="rfc2119-default-assertion" id="td-default-http-method-get">
@@ -2520,7 +2531,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
                 </td>
                 <td><code>POST</code></td>
                 <td>
-                    <code>Form</code> with <code>&quot;op&quot;: &quot;invokeaction&quot;</code>
+                    <code>Form</code> with operation type <code>invokeaction</code>
                 </td>
             </tr>
         </tbody>
@@ -2652,7 +2663,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
           is not restricted. Other bindings, e.g. for CoAP, MQTT or OPC UA
           will be standardized in separate documents such as a protocol vocabulary similar to HTTP in RDF [[HTTP-in-RDF10]]
           or specifications including default value definitions. Such protocols can be simply integrated into the TD by the 
-          usage of the context extension mechanism [].   A general guideline for Protocol Bindings is given in
+          usage of the context extension mechanism (<a href="#content-extension-section"></a>). A general guideline for Protocol Bindings is given in
           [[wot-binding-templates]].
       </p>
   </section>
