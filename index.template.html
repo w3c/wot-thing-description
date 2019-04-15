@@ -122,7 +122,7 @@
                 , publisher: "W3C"
                 , date: "WIP"
                 }
-	      , "WOT-PROTOCOL-BINDING" : {
+	      , "WoT-Binding-Templates" : {
                   title: "Web of Things Protocol Binding Templates"
                 , href: "https://w3c.github.io/wot-binding-templates/"
                 , authors:  [
@@ -439,7 +439,7 @@
   (announced within the <code>forms</code> structure by the 
   <code>href</code> name), and will return a string-based status value.
   The use of the GET method is not stated explicitly, 
-  but is one of the default assumptions defined by this document and explained in [[WOT-PROTOCOL-BINDING]].
+  but is one of the default assumptions defined by this document and explained in [[WoT-Binding-Templates]].
   </p>
   <p>
   In a similar manner, an <a href="#actionaffordance">action affordance</a> is specified to toggle the
@@ -1099,6 +1099,12 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
 </pre>
     </aside>
 
+    <p>
+    Please note that, depending on the underlying protocol binding, additional protocol-specific terms 
+    can be used that are associated with 
+    default value assumptions and can be omitted similar as explained in this subsection. 
+    Further information can be found in the section <a href="#protocol-bindings"></a>.
+    </p>
     </section>
 
   </section> <!-- end of section "Basic assumptions" -->
@@ -1416,7 +1422,7 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
 </aside>
  
 Please note that the definition of the event affordance is flexibly defined in order to adopt existing (e.g. WebSub) or customer-oriented event mechanisms. 
-For this reason, <code>subscription</code> and <code>cancellation</code> can be defined according to the desired mechanism. Please find further details in [[WOT-PROTOCOL-BINDING]].
+For this reason, <code>subscription</code> and <code>cancellation</code> can be defined according to the desired mechanism. Please find further details in [[WoT-Binding-Templates]].
 Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thing (T2T) use case that offers an event and uses <code>subscription</code> and <code>cancellation</code>.
 </p>
 
@@ -1442,16 +1448,15 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
   MAY be supplemented with protocol-specific vocabulary terms 
   identified with a prefix. 
   </span>
-  See also <a href="#content-extension-section"></a>.
+  See also <a href="#protocol-bindings"></a>.
   </p>
 
 
   <p>A TD snippet based on the defined members is given below:</p>
 <pre class="example">
 {
-  "@context": ["https://www.w3.org/2019/wot/td/v1",
-    {"htv": "http://www.w3.org/2011/http#"}],
-  ...
+  "@context": "https://www.w3.org/2019/wot/td/v1",
+    ...
   "securityDefinitions": {
       "basic_sc": {"scheme":"basic", "in":"header"}
   },
@@ -1487,7 +1492,6 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
 
     <pre class="example">
         "@context": ["https://www.w3.org/2019/wot/td/v1",
-            {"htv": "http://www.w3.org/2011/http#"},
             {"eg": "http://www.example.org/iot"}],
         ...
         "actions": {
@@ -1529,8 +1533,7 @@ The <code>output</code> of this action is the photo taken, which is available in
 <p>A <code>form</code> snippet with the <code>response</code> member is listed below based on the use case of the action 'takePhoto' described above:</p>
 
 <pre class="example">
-    "@context": ["https://www.w3.org/2019/wot/td/v1",
-        {"htv": "http://www.w3.org/2011/http#"}],
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     ...
     "forms": [
         {
@@ -1555,8 +1558,7 @@ The <code>output</code> of this action is the photo taken, which is available in
 
 <pre class="example" id="td-forms-readall-example">
 {
-    "@context": ["https://www.w3.org/2019/wot/td/v1",
-        {"htv": "http://www.w3.org/2011/http#"}],
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "id": "urn:dev:wot:com:example:servient:lamp",
     ...
     "forms": [
@@ -2251,11 +2253,15 @@ If included namespaces are based on class definitions such as those provided by 
     </pre>
 
     <p>
-    With the context extension in the Thing Description, communication metadata can be supplemented or specified in the declarations <code>forms</code>. 
-    This is useful when default assumptions as defined in [[WOT-PROTOCOL-BINDING]] need to be overwritten.</p>
+    With the context extension in the Thing Description, communication metadata can be supplemented or specified in the 
+    declarations <code>forms</code> (also see <a href="#protocol-bindings"></a>). 
+   </p>
     
-    <p>The following example shows
-    a property "brightness" that offers a read, write, and observe operation within the <code>forms</code> declaration. 
+    <p>The following TD example uses the CoAP protocol binding based on [[!WoT-Binding-Templates]] 
+        and assumes that there is a CoAP RDF vocabulary set definition which is accessable 
+        via the namespace <code>http://www.example.org/coap-binding#</code>. 
+        The supplemented <code>cov:methodCode</code> guides the Consumer which CoAP method has to be applied, e.g., 
+        methodCode=1 corresponds to a CoAP GET to read the brightness value or methodCode=2 corresponds to a CoAP POST to write/change the brightness value.
     </p>
 
     <aside class="example" id="context-extension-for-forms" title="Specialization of the form definition by context extension.">
@@ -2263,49 +2269,32 @@ If included namespaces are based on class definitions such as those provided by 
         "@context": [
             "https://www.w3.org/2019/wot/td/v1",
             {
-                "iot": "http://www.example.org/iot/",
-                "htv": "http://www.w3.org/2011/http#"
+                "cov": "http://www.example.org/coap-binding#"
             }
         ],
         ...
         "properties": {
             "brightness": {
                 "description": "The current brightness setting",
-                "@type": [
-                    "iot:CurrentLevel",
-                    "iot:LevelData"
-                ],
                 "type": "integer",
                 "minimum": -64,
                 "maximum": 64,
-                "observable": true,
                     "forms": [
                     {
-                        "href": "http://example.org:9191/api/brightness",
-                        "op": ["readproperty"]
+                        "href": "coap://example.org:9191/api/brightness",
+                        "op": ["readproperty"],
+                        "cov:methodCode": 1
                     },
                     {
-                        "href": "http://example.org:9191/api/brightness",
+                        "href": "coap://example.org:9191/api/brightness",
                         "op": ["writeproperty"],
-                        "htv:methodName": "POST"
-                    },
-                    {
-                        "href": "http://example.org:9191/api/brightness/observe",
-                        "op": ["observeproperty"],
-                        "htv:methodName": "GET",
-                        "subProtocol": "longpoll"
+                        "cov:methodCode": 2
                     }
                 ]
             }
         }
     }</pre>
         </aside>
-
-        <p>For the read operation, the corresponding form declaration follows the default assumption to execute an HTTP GET as defined  
-            in [[[WOT-PROTOCOL-BINDING]]]. The write operation overwrites the default assumption (= HTTP PUT) and 
-            declares with the context extension the HTTP POST method to be used for this operation. In order to observe this property, the 
-            context extension is used here to announce that an HTTP GET is always running to follow the long poll mechanism.          
-        </p>
 
  </section>
 
@@ -2452,7 +2441,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     Every form in a WoT Thing Description must have a submission target,
     given by the <code>href</code> member. The URI scheme of this
     submission target indicates what Protocol Binding the Thing implements
-    [[wot-architecture]].
+    [[WoT-Architecture]].
     For instance, if the target starts with <code>http</code> or
     <code>https</code>, a Consumer can then infer the Thing implements the
     HTTP binding and it should expect HTTP-specific terms in the
@@ -2593,11 +2582,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     }
 }</pre>
         <pre>{
-    "@context": [
-    "https://www.w3.org/2019/wot/td/v1",
-    {
-        "htv": "http://www.w3.org/2011/http#"
-    }],
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "securityDefinitions": {
@@ -2664,7 +2649,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
           will be standardized in separate documents such as a protocol vocabulary similar to HTTP in RDF [[HTTP-in-RDF10]]
           or specifications including default value definitions. Such protocols can be simply integrated into the TD by the 
           usage of the context extension mechanism (<a href="#content-extension-section"></a>). A general guideline for Protocol Bindings is given in
-          [[wot-binding-templates]].
+          [[WoT-Binding-Templates]].
       </p>
   </section>
 </section>
@@ -2789,9 +2774,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
   
   <pre class="example" title="Temperature event with subscripton and cancellation for a Thing-2-Thing interaction">
         {
-            "@context": [
-                "https://www.w3.org/2019/wot/td/v1",
-                {"htv": "http://www.w3.org/2011/http#"}],
+            "@context": "https://www.w3.org/2019/wot/td/v1",
             "id": "urn:dev:wot:org:eclipse:thingweb:event-example",
             "name": "TemperatureForT2T",
             "description": "Event with subscription / cancellation (Thing-2-Thing use case).",
@@ -3257,10 +3240,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
                     <span><i>after transformation to RDF</i></span>
                 </div>
                 <pre>{
-    "@context": [
-        "https://www.w3.org/2019/wot/td/v1",
-        { "htv": "http://www.w3.org/2011/http#" }
-    ],
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "securityDefinitions": {
