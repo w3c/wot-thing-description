@@ -122,7 +122,7 @@
                 , publisher: "W3C"
                 , date: "WIP"
                 }
-	      , "WOT-PROTOCOL-BINDING" : {
+	      , "WoT-Binding-Templates" : {
                   title: "Web of Things Protocol Binding Templates"
                 , href: "https://w3c.github.io/wot-binding-templates/"
                 , authors:  [
@@ -718,7 +718,7 @@
   (announced within the <code>forms</code> structure by the 
   <code>href</code> name), and will return a string-based status value.
   The use of the GET method is not stated explicitly, 
-  but is one of the default assumptions defined by this document and explained in [[WOT-PROTOCOL-BINDING]].
+  but is one of the default assumptions defined by this document and explained in [[WoT-Binding-Templates]].
   </p>
   <p>
   In a similar manner, an <a href="#actionaffordance">action affordance</a> is specified to toggle the
@@ -759,23 +759,29 @@
         e.g. logic rules for a specific domain of application, can be found under the
         given namespace. Contextual information can also help specify some configurations and 
         behavior of the underlying communication protocols declared in the <code>forms</code> field.
-        <a href="#thing-description-full-serialization">Example 2</a> extends the TD sample from Example 1 by introducing a second defintion in the <code>@context</code> to declare the prefix <code>htv</code> as referring to the HTTP vocabulary namespace.
-        This namespace is used here to specify explicitly the HTTP methods for the property and
-        action within the <code>forms</code>. The declaration mechanism inside some
-        <code>@context</code> is specified by JSON-LD. A TD instance complies to version 1.1 of
-        this specification [[json-ld11]]. The TD instance can be also processed as an RDF
-        document (details are given in <a href="#note-jsonld11-processing"></a>).
+        <a href="#thing-description-full-serialization">Example 2</a> extends the TD sample from
+        Example 1 by introducing a second defintion in the <code>@context</code> to declare the
+        prefix <code>saref</code> as referring to the SAREF vocabulary namespace [[!smartM2M]].
+        The SAREF vocabulary includes terms to describe lighting devices and other home automation
+        devices that one can embed in a TD as semantic labels as values for the <code>@type</code>
+        property. In the present example, the Thing is labelled with <code>saref:LightingDevice</code>,
+        the <code>status</code> property affordance is labelled with <code>saref:OnOffState</code>
+        and the <code>toggle</code> action affordance with <code>saref:ToggleCommand</code>.
   </p>
 
+
+ 
  <aside class="example" id="thing-description-full-serialization" title="Thing Description with context extension">
               <pre>
     {
         "@context": [
             "https://www.w3.org/2019/wot/td/v1",
-            {"htv": "http://www.w3.org/2011/http#"}
-        ],
+            {
+            "saref": "https://w3id.org/saref#"
+        }],
         "id": "urn:dev:wot:com:example:servient:lamp",
         "name": "MyLampThing",
+        "@type": "saref:LightingDevice",
         "securityDefinitions": {"basic_sc": {
             "scheme": "basic",
             "in": "header"
@@ -783,44 +789,95 @@
         "security": ["basic_sc"],
         "properties": {
             "status": {
+                "@type": "saref:OnOffState",
                 "type": "string",
                 "forms": [{
-                    "href": "https://mylamp.example.com/status",
-                    "htv:methodName": "GET"
+                    "href": "https://mylamp.example.com/status"
                 }]
             }
         },
         "actions": {
             "toggle": {
+                "@type": "saref:ToggleCommand",
                 "forms": [{
-                    "href": "https://mylamp.example.com/toggle",
-                    "http:methodName": "POST"
+                    "href": "https://mylamp.example.com/toggle"
                 }]
             }
         },
         "events": {
             "overheating": {
+                "@type": "saref:NotifyCommand",
                 "data": {"type": "string"},
                 "forms": [{
-                    "href": "https://mylamp.example.com/oh",
-                    "subprotocol": "longpoll"
+                    "href": "https://mylamp.example.com/oh"
                 }]
             }
         }
     }</pre>
 </aside>
 
+<p>
+        The declaration mechanism inside some
+        <code>@context</code> is specified by JSON-LD. A TD instance complies to version 1.1 of
+        this specification [[json-ld11]]. The TD instance can be also processed as an RDF
+        document (details are given in <a href="#note-jsonld11-processing"></a>).
+</p>
+
   </section>
 
   <section id="terminology"> 
   <h2>Terminology</h2>
-  <p>Generic WoT terminology is defined in [[WOT-ARCHITECTURE]]: 
+  <p>The generic WoT terminology is defined in [[WOT-ARCHITECTURE]]: 
   <dfn data-lt="Things">Thing</dfn>, 
   <dfn data-lt="Thing Descriptions">Thing Description</dfn> 
     (in short <dfn>TD</dfn>), 
   <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  
   <dfn>WoT Interface</dfn> etc.
   </p>
+
+  <p>
+      In addition, this document introduces the following definitions:
+  </p>
+
+  <dl>
+    <dt>
+        <dfn id="dfn-inf-model">TD Information Model</dfn>
+    </dt>
+    <dd>
+        Set of constraints and equivalence relations applying to pre-defined vocabularies 
+        (i.e., a core vocabulary with extension like JSON Schema, Web Linking and WoT Security),
+        thus defining the semantics of these vocabularies. Constraints and
+        equivalence relations are typically expressed in terms of class membership
+        and property value assignment on arbitrary object-oriented data structures.
+    </dd>
+    <dt>
+    <dfn id="dfn-td-processor">TD Processor</dfn>
+    </dt>
+    <dd>
+        A system that can serialize some internal representation of a TD
+        (an arbitrary data structure) in a given format and deserialize it from
+        that format. If two TDs have different serializations but are semantically
+        equivalent, their internal representation by a TD processor must be strictly
+        identical. For instance, a TD in which default values were omitted is equivalent
+        to a TD that would include default values. Moreover, a TD processor must
+        also detect semantically inconsistent TDs, for which no representation should
+        exist. A TD processor is typically a sub-system of a WoT runtime.
+        The reference serialization format for TDs is JSON.
+    </dd>
+    <dt>
+        <dfn id="dfn-vocab">Vocabulary</dfn>
+    </dt>
+    <dd>
+        A collection of vocabulary terms, identified by a namespace IRI.
+    </dd>
+    <dt>
+        <dfn id="dfn-vocab-term">Vocabulary Term</dfn>
+    </dt>
+    <dd>
+        A class name (like <code>Thing</code>), a property name (like
+        <code>forms</code>) or a property value (like <code>readproperty</code>).
+    </dd>
+  </dl>
   </section>
 
   <section>
@@ -869,7 +926,7 @@
   <section id="sec-vocabulary-definition" class="normative">
     <h1>Information Model</h1>
     <!-- h1>Vocabulary</h1 -->
-    <p>This section introduces the <dfn>Thing Description information model</dfn>. 
+    <p>This section introduces the Thing Description information model. 
       The Thing Description Information model serves as the conceptual basis 
       for the serialization and processing of Thing Description described 
       in later sections in this document.<p>
@@ -896,7 +953,7 @@
       <p>
       An overview of this vocabulary with its class context and class relation 
       is given by the following three figures. 
-      <dfn>Vocabulary term</dfn>s identify members within the TD information model.
+      Vocabulary terms identify members within the TD information model.
       Both the terms shown on the left side of "<code> : </code>" (i.e. colon) in the boxes 
       representing classes and the terms labelling the arrows constitute 
       the vocabulary terms of Thing Description information model.
@@ -939,11 +996,29 @@
         sub-sections.</p>
 
       <p>
-            <span class="rfc2119-assertion" id="td-vocabulary">
-                    All vocabulary restrictions noted in tables in Section <a href="#sec-core-vocabulary-definition"></a>, <a href="#sec-data-schema-vocabulary-definition"></a>, and <a href="#sec-security-vocabulary-definition"></a> MUST be followed, 
-                    including mandatory items. 
-                    </span>
+          <span class="rfc2119-assertion" id="td-vocabulary-defaults">
+            All equivalence relations expressed in Tables in Section <a href="#sec-default-values"></a>
+            MUST be followed by a TD processor.
+          </span>
+          These equivalences are implicitely defined as default value assignments
+          for certain vocabulary terms. 
       </p>
+
+      <p>
+            <span class="rfc2119-assertion" id="td-vocabulary">
+                All vocabulary constraints noted in tables in Section <a href="#sec-core-vocabulary-definition"></a>, <a href="#sec-data-schema-vocabulary-definition"></a>, <a href="#sec-security-vocabulary-definition"></a>, and <a href="#sec-zeb-linking-vocabulary-definition"></a> MUST be followed by a TD processor. 
+            </span>
+      </p>
+
+      <p>
+          The constraints noted in all tables are the following:
+      </p>
+
+      <ul>
+          <li>class membership</li>
+          <li>property value assignment</li>
+          TODO
+      </ul>
 
       <p>
         The <a href="#sec-td-serialization"></a> section explains how to serialize these vocabulary terms to a Thing Description instance using a 
@@ -953,11 +1028,12 @@
 
       <section id="sec-default-values">
         <h3>Default Values for Vocabulary Terms</h3>
+        
         <p>
-        <span class="rfc2119-assertion" id="td-vocabulary-default-values">
-        When values are not present for certain mandatory <a>vocabulary term</a>s in an instance of <a>Thing Description information model</a>, default values MUST be assumed as shown in the following table.
-        </span>
+            The follow table gives default value assignments when a TD does not
+            assign certain property to any value. 
         </p>
+
         <table class="def">
             <thead>
                 <tr>
@@ -1081,7 +1157,7 @@
       within <code>security</code> blocks in which case this requirement may be relaxed.
       </p>
 
-        <section><h3><code>Thing</code></h3><p>Describes a physical and/or virtual Thing (may represent one or more physical and/or virtual Things) in the Web of Things context.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-at-context--Thing"><td><code>@context</code></td><td>Known from JSON-LD [[json-ld]], <code>@context</code> is used to define short-hand names called terms that are used throughout a TD document.</td><td>mandatory</td><td>string or array</td></tr><tr class="rfc2119-table-assertion" id="td-vocab-at-type--Thing"><td><code>@type</code></td><td>Known from JSON-LD [[json-ld]], <code>@type</code> is used to state that a thing is an instance of a class.<br/><br/> Each string in the value array represents a class.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or array of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-id--Thing"><td><code>id</code></td><td>unique identifier of the Thing (URI, e.g. custom URN).</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-name--Thing"><td><code>name</code></td><td>Name of the Thing.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+        <section><h3><code>Thing</code></h3><p>An abstraction of a physical or a virtual entity whose metadata and interfaces are described by a WoT Thing Description, whereas a virtual entity is the composition of one or more Things.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-at-context--Thing"><td><code>@context</code></td><td>Known from JSON-LD [[json-ld11]], <code>@context</code> is used to define short-hand names called terms that are used throughout a TD document.</td><td>mandatory</td><td>string or array</td></tr><tr class="rfc2119-table-assertion" id="td-vocab-at-type--Thing"><td><code>@type</code></td><td>Known from JSON-LD [[json-ld11]], <code>@type</code> is used to state that a thing is an instance of a class.<br/><br/> Each string in the value array represents a class.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or array of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-id--Thing"><td><code>id</code></td><td>unique identifier of the Thing (URI, e.g. custom URN).</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-name--Thing"><td><code>name</code></td><td>Name of the Thing.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-description--Thing"><td><code>description</code></td><td>Provides additional (human-readable) information based on a default language.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-descriptions--Thing"><td><code>descriptions</code></td><td>Can be used to support (human-readable) information in different languages.</td><td>optional</td><td><a href="#multilanguage"><code>MultiLanguage</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-version--Thing"><td><code>version</code></td><td>Provides version information.</td><td>optional</td><td><a href="#versioninfo"><code>VersionInfo</code></a></td></tr>
@@ -1142,7 +1218,7 @@
     The Thing's <a href="#propertyaffordance">property affordances</a>.
 </p>
 </section>
-<section><h3><code>InteractionAffordance</code></h3><p>Three interaction affordance are defined as subclasses: Property-, Action- and Event-based affordances (also see [[WOT-ARCHITECTURE]]). Interactions between Things can be as simple as one Thing accessing another Thing's data to get or (in the case the data is also writable) change the representation of data such as metadata, status or mode. A Thing may also be interested in getting asynchronously notified of future changes in another Thing, or may want to initiate a process served in another Thing that may take some time to complete and monitor the progress. Interactions between Things may involve exchanges of data between them. This data can be either given as input by the client Thing, returned as output by the server Thing or both.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-at-type--InteractionAffordance"><td><code>@type</code></td><td>Known from JSON-LD [[json-ld]], <code>@type</code> is used to state that an <a>interaction resource</a> is an instance of a class.<br/><br/> Each string in the value array represents a class.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or array of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-title--InteractionAffordance"><td><code>title</code></td><td>Provides a human-readable title (e.g., display a text for UI representation) of the interaction pattern based on a default language.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<section><h3><code>InteractionAffordance</code></h3><p>Metadata of a Thing that shows the possible choices to clients, thereby suggesting how clients may interact with the Thing. There are many types of potential affordances, but W3C WoT defines three types of Interaction Affordances: Properties, Actions, and Events.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-at-type--InteractionAffordance"><td><code>@type</code></td><td>Known from JSON-LD [[json-ld11]], <code>@type</code> is used to state that an <a>interaction resource</a> is an instance of a class.<br/><br/> Each string in the value array represents a class.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or array of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-title--InteractionAffordance"><td><code>title</code></td><td>Provides a human-readable title (e.g., display a text for UI representation) of the interaction pattern based on a default language.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-titles--InteractionAffordance"><td><code>titles</code></td><td>Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages) of the interaction pattern.</td><td>optional</td><td><a href="#multilanguage"><code>MultiLanguage</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-description--InteractionAffordance"><td><code>description</code></td><td>Provides additional (human-readable) information based on a default language.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-descriptions--InteractionAffordance"><td><code>descriptions</code></td><td>Can be used to support (human-readable) information in different languages.</td><td>optional</td><td><a href="#multilanguage"><code>MultiLanguage</code></a></td></tr>
@@ -1158,8 +1234,8 @@
     </span>
 
 </p>
-
-<section><h4><code>PropertyAffordance</code></h4><p>Properties expose internal state of a Thing that can be directly retrieved (get) and optionally modified (set). In addition, Things can also choose to make Properties observable by pushing the new state (not an event) after a change; this must follow eventual consistency.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-observable--PropertyAffordance"><td><code>observable</code></td><td>A hint that indicates whether a remote client can subscribe to ("observe") the Property, to receive change notifications or periodic updates (true/false).</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#boolean"><code>boolean</code></a></td></tr></tbody></table>
+</section>
+<section><h3><code>PropertyAffordance</code></h3><p>An Interaction Affordance that exposes state of the Thing. This state can then be retrieved (read) and optionally updated (write). Things can also choose to make Properties observable by pushing the new state after a change.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-observable--PropertyAffordance"><td><code>observable</code></td><td>A hint that indicates whether a remote client can subscribe to ("observe") the Property, to receive change notifications or periodic updates (true/false).</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#boolean"><code>boolean</code></a></td></tr></tbody></table>
 <p><code>Property</code> class is a subclass of the class <a href="#interactionaffordance" 
     class="sec-ref">InteractionAffordance</a>. 
     <span class="rfc2119-assertion" id="td-op-for-property">
@@ -1189,7 +1265,7 @@
     </span>
 </p>
 </section>
-<section><h4><code>ActionAffordance</code></h4><p>Actions offer functions of the Thing. These functions may manipulate the internal state of a Thing in a way that is not possible through setting Properties. Examples are changing internal state that is not exposed as a Property, changing multiple Properties, changing Properties over time or with a process that should not be disclosed. Actions may also be pure functions, that is, they may not use any internal state at all, and may simply process input data and return a result that directly depends only on the input given.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-input--ActionAffordance"><td><code>input</code></td><td>Used to define the input data schema of the action.</td><td>optional</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr>
+<section><h3><code>ActionAffordance</code></h3><p>An Interaction Affordance that allows to invoke a function of the Thing, which manipulates state (e.g., toggling a lamp on or off) or triggers a process on the Thing (e.g., dimm a lamp over time).</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-input--ActionAffordance"><td><code>input</code></td><td>Used to define the input data schema of the action.</td><td>optional</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-output--ActionAffordance"><td><code>output</code></td><td>Used to define the output data schema of the action.</td><td>optional</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-safe--ActionAffordance"><td><code>safe</code></td><td>Signals if the action is safe (=true) or not. Used to signal if there is no internal state (cf. resource state) is changed when invoking an Action. In that case responses can be cached as example.</td><td><a href="#sec-default-values">with default</a></td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#boolean"><code>boolean</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-idempotent--ActionAffordance"><td><code>idempotent</code></td><td>Indicates whether the action is idempotent (=true) or not. Informs whether the action can be called repeatedly with the same result, if present, based on the same input.</td><td><a href="#sec-default-values">with default</a></td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#boolean"><code>boolean</code></a></td></tr></tbody></table>
@@ -1202,7 +1278,7 @@
     </span>
 </p>
 </section>
-<section><h4><code>EventAffordance</code></h4><p>Events describe event sources that asynchronously push messages. Here not state, but state transitions (events) are communicated (e.g., "clicked"). Events may be triggered by internal state changes that are not exposed as Properties. Events usually follow strong consistency, where messages need to be queued to ensure eventual delivery of all events that have occurred.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-subscription--EventAffordance"><td><code>subscription</code></td><td>Defines data that needs to be passed upon subscription, e.g., filters or message format for setting up Webhooks.</td><td>optional</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr>
+<section><h3><code>EventAffordance</code></h3><p>An Interaction Affordance that describes an event source, which asynchronously pushes event data to clients (e.g., overheating alerts).</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-subscription--EventAffordance"><td><code>subscription</code></td><td>Defines data that needs to be passed upon subscription, e.g., filters or message format for setting up Webhooks.</td><td>optional</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-data--EventAffordance"><td><code>data</code></td><td>Defines the data schema of the Event instance messages pushed by the Thing.</td><td>optional</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-cancellation--EventAffordance"><td><code>cancellation</code></td><td>Defines any data that needs to be passed to cancel a subscription, e.g., a specific message to remove a Webhook.</td><td>optional</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table>
 <p>Event class is a subclass of the class <a href="#interactionaffordance" 
@@ -1213,9 +1289,10 @@
     <code>subscribeevent</code> or/and <code>unsubscribeevent</code>.
     </span>
 </p>
-</section></section>
+</section>
 <section><h3><code>Form</code></h3><p>Communication metadata indicating where a service can be accessed by a client application. An interaction might have more than one form.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-href--Form"><td><code>href</code></td><td>URI of the endpoint where an interaction pattern is provided.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-contentType--Form"><td><code>contentType</code></td><td>Assign a content type based on a media type [[IANA-MEDIA-TYPES]] (e.g., 'application/json) and (optional) parameters (e.g., 'charset=utf-8').</td><td><a href="#sec-default-values">with default</a></td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-contentCoding--Form"><td><code>contentCoding</code></td><td>Content coding values indicate an encoding transformation that has been or can be applied to a representation. Content codings are primarily used to allow a representation to be compressed or otherwise usefully transformed without losing the identity of its underlying media type and without loss of information. Examples of content coding include "gzip", "deflate", etc. .</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-response--Form"><td><code>response</code></td><td>This optional term can be used if, e.g., the output communication metadata differ from input metdata (e.g., output contentType differ from the
      input contentType). The response name contains metadata that is only valid for the reponse messages.</td><td>optional</td><td><a href="#expectedresponse"><code>ExpectedResponse</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-op--Form"><td><code>op</code></td><td>Indicates the semantic intention of performing the operation(s) described by the form.
@@ -1253,7 +1330,7 @@ when the texts are served as a result such negotiation.
         <a href="#content-extension-section"></a>, otherwise these terms are semantically ignored (also see <a href="#note-jsonld11-processing"></a>).
       </p>
 
-        <section><h3><code>DataSchema</code></h3><p>A JSON specification.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-at-type--DataSchema"><td><code>@type</code></td><td>Known from JSON-LD [[json-ld]], <code>@type</code> is used to state that values described by the DataSchema are instances of a class. <br/><br/> Each string in the value array represents a class.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or array of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-title--DataSchema"><td><code>title</code></td><td>Provides a human-readable title (e.g., display a text for UI representation) of the interaction pattern based on a default language.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+        <section><h3><code>DataSchema</code></h3><p>A JSON specification.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-at-type--DataSchema"><td><code>@type</code></td><td>Known from JSON-LD [[json-ld11]], <code>@type</code> is used to state that values described by the DataSchema are instances of a class. <br/><br/> Each string in the value array represents a class.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or array of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-title--DataSchema"><td><code>title</code></td><td>Provides a human-readable title (e.g., display a text for UI representation) of the interaction pattern based on a default language.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-titles--DataSchema"><td><code>titles</code></td><td>Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages) of the interaction pattern.</td><td>optional</td><td><a href="#multilanguage"><code>MultiLanguage</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-description--DataSchema"><td><code>description</code></td><td>Provides additional (human-readable) information based on a default language.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-descriptions--DataSchema"><td><code>descriptions</code></td><td>Can be used to support (human-readable) information in different languages.</td><td>optional</td><td><a href="#multilanguage"><code>MultiLanguage</code></a></td></tr>
@@ -1309,7 +1386,7 @@ when the texts are served as a result such negotiation.
       <a href="https://github.com/w3c/wot-security">WoT Security TF repository.</a>
       </p>
     
-        <section><h3><code>SecurityScheme</code></h3><p></p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-at-type--SecurityScheme"><td><code>@type</code></td><td>Known from JSON-LD [[json-ld]], <code>@type</code> is used to state that a security mechanism configured by the SecurityScheme is an instance of a class.<br/><br/> Each string in the value array represents a class.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or array of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-scheme--SecurityScheme"><td><code>scheme</code></td><td>Identification of security mechanism being configured.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>nosec</code>, <code>basic</code>, <code>cert</code>, <code>digest</code>, <code>bearer</code>, <code>pop</code>, <code>psk</code>, <code>public</code>, <code>oauth2</code>, or <code>apikey</code>)</td></tr>
+        <section><h3><code>SecurityScheme</code></h3><p></p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-at-type--SecurityScheme"><td><code>@type</code></td><td>Known from JSON-LD [[json-ld11]], <code>@type</code> is used to state that a security mechanism configured by the SecurityScheme is an instance of a class.<br/><br/> Each string in the value array represents a class.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or array of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-scheme--SecurityScheme"><td><code>scheme</code></td><td>Identification of security mechanism being configured.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>nosec</code>, <code>basic</code>, <code>cert</code>, <code>digest</code>, <code>bearer</code>, <code>pop</code>, <code>psk</code>, <code>public</code>, <code>oauth2</code>, or <code>apikey</code>)</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-description--SecurityScheme"><td><code>description</code></td><td>Provides additional (human-readable) information based on a default language.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-descriptions--SecurityScheme"><td><code>descriptions</code></td><td>Can be used to support (human-readable) information in different languages.</td><td>optional</td><td><a href="#multilanguage"><code>MultiLanguage</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-proxy--SecurityScheme"><td><code>proxy</code></td><td>URI of the proxy server this security configuration provides access to.  If not given, the corresponding security configuration is for the endpoint.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr></tbody></table><p>The class <code>SecurityScheme</code> has the following subclasses:</p><ul><li><a href="#psksecurityscheme"><code>PSKSecurityScheme</code></a></li>
@@ -1376,11 +1453,23 @@ when the texts are served as a result such negotiation.
   <a href="#sec-vocabulary-definition"></a>.
 
 </p>
- 
+
+<p>
+    <span class="rfc2119-assertion" id="td-processor-serialization">
+        A TD processor MUST be able to serialize TDs in the JSON format and
+        deserialize TDs from that format, according to the rules noted
+        in Sections <a href="#td-basic-types-mapping"></a> and
+        <a href="#td-class-serialization"></a>.
+    </span>
+</p>
+
 <p>
   The JSON serialization of TDs follows the syntax of JSON-LD 1.1 [[json-ld11]] in order to streamline semantic evaluation. Hence, TD serializations can be processed either as raw JSON or with a JSON-LD 1.1 processor,
   as later developed in <a href="#note-jsonld11-processing"></a>.
 </p>
+
+
+
 
 <p>
 In order to support interoperable internationalization,
@@ -1480,16 +1569,9 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
         <h2>Omitting Default Values</h2>
 
 <p>
-        <span class="rfc2119-assertion" id="td-simple-form">
-                A Thing Description instance serialization MAY omit one ore more vocabulary 
-                terms (<a href="#sec-core-vocabulary-definition"></a>) that have default values assumed based on the table in <a href="#sec-default-values"></a>.
-        </span> 
-      </p>
-
-      <p>
-          <span class="rfc2119-assertion" id="td-processor-defaults">
-            A Thing Description processor MUST add default values whenever vocabulary terms are omitted in a serialized TD, as per information model assumptions.
-        </span>
+                A Thing Description instance serialization may omit one ore more vocabulary 
+                terms (<a href="#sec-core-vocabulary-definition"></a>) that have default values assumed based on 
+                the table in <a href="#sec-default-values"></a>.
       </p>
 
       <p>
@@ -1609,6 +1691,12 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
 </pre>
     </aside>
 
+    <p>
+    Please note that, depending on the underlying protocol binding, additional protocol-specific terms 
+    can be used that are associated with 
+    default value assumptions and can be omitted similar as explained in this subsection. 
+    Further information can be found in the section <a href="#protocol-bindings"></a>.
+    </p>
     </section>
 
   </section> <!-- end of section "Basic assumptions" -->
@@ -1926,7 +2014,7 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
 </aside>
  
 Please note that the definition of the event affordance is flexibly defined in order to adopt existing (e.g. WebSub) or customer-oriented event mechanisms. 
-For this reason, <code>subscription</code> and <code>cancellation</code> can be defined according to the desired mechanism. Please find further details in [[WOT-PROTOCOL-BINDING]].
+For this reason, <code>subscription</code> and <code>cancellation</code> can be defined according to the desired mechanism. Please find further details in [[WoT-Binding-Templates]].
 Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thing (T2T) use case that offers an event and uses <code>subscription</code> and <code>cancellation</code>.
 </p>
 
@@ -1952,16 +2040,15 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
   MAY be supplemented with protocol-specific vocabulary terms 
   identified with a prefix. 
   </span>
-  See also <a href="#content-extension-section"></a>.
+  See also <a href="#protocol-bindings"></a>.
   </p>
 
 
   <p>A TD snippet based on the defined members is given below:</p>
 <pre class="example">
 {
-  "@context": ["https://www.w3.org/2019/wot/td/v1",
-    {"htv": "http://www.w3.org/2011/http#"}],
-  ...
+  "@context": "https://www.w3.org/2019/wot/td/v1",
+    ...
   "securityDefinitions": {
       "basic_sc": {"scheme":"basic", "in":"header"}
   },
@@ -1997,7 +2084,6 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
 
     <pre class="example">
         "@context": ["https://www.w3.org/2019/wot/td/v1",
-            {"htv": "http://www.w3.org/2011/http#"},
             {"eg": "http://www.example.org/iot"}],
         ...
         "actions": {
@@ -2039,8 +2125,7 @@ The <code>output</code> of this action is the photo taken, which is available in
 <p>A <code>form</code> snippet with the <code>response</code> member is listed below based on the use case of the action 'takePhoto' described above:</p>
 
 <pre class="example">
-    "@context": ["https://www.w3.org/2019/wot/td/v1",
-        {"htv": "http://www.w3.org/2011/http#"}],
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     ...
     "forms": [
         {
@@ -2056,12 +2141,16 @@ The <code>output</code> of this action is the photo taken, which is available in
     ...
 </pre>
 
-<p>When <code>forms</code> is present at the top level, it can be used to describe meta interactions supported by a <a href="#thing" class="sec-ref"><code>Thing</code></a> instance. For example, operations "readallproperties" and "writeallproperties" are meta interactions by which clients can read and write all properties of the thing at once. In the example below, <code>forms</code> is used at the top level, and the clients can access end point (i.e. <code>https://mylamp.example.com/allproperties</code>) both to read or write all properties (i.e. <code>"on"</code>, <code>"brightness"</code> and <code>"timer"</code> property) of the thing in a single interaction.</p>
+<p>When <code>forms</code> is present at the top level, it can be used to describe meta interactions supported by a <a href="#thing" class="sec-ref"><code>Thing</code></a> instance. For example, the operation types "readallproperties" and "writeallproperties" are for meta 
+    interactions with the Thing by which Consumers can read and write all properties at once. In the example below, 
+    <code>forms</code> is used at the top level, and the Consumer can use the submission target  
+    <code>https://mylamp.example.com/allproperties</code> both to read or write all 
+    Properties (i.e., <code>on</code>, <code>brightness</code> and <code>timer</code> property) of 
+    the Thing in a single interaction.</p>
 
 <pre class="example" id="td-forms-readall-example">
 {
-    "@context": ["https://www.w3.org/2019/wot/td/v1",
-        {"htv": "http://www.w3.org/2011/http#"}],
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "id": "urn:dev:wot:com:example:servient:lamp",
     ...
     "forms": [
@@ -2734,9 +2823,10 @@ If included namespaces are based on class definitions such as those provided by 
         {
             "@context": [
                 "https://www.w3.org/2019/wot/td/v1",
-                {"om": "http://www.wurvoc.org/vocabularies/om-1.8/"},
-                {"saref": "https://w3id.org/saref#"}
-            ],
+                {
+                "om": "http://www.wurvoc.org/vocabularies/om-1.8/",
+                "saref": "https://w3id.org/saref#"
+            }],
             "@type": "Thing",
             ...
             "properties": {
@@ -2756,11 +2846,15 @@ If included namespaces are based on class definitions such as those provided by 
     </pre>
 
     <p>
-    With the context extension in the Thing Description, communication metadata can be supplemented or specified in the declarations <code>forms</code>. 
-    This is useful when default assumptions as defined in [[WOT-PROTOCOL-BINDING]] need to be overwritten.</p>
+    With the context extension in the Thing Description, communication metadata can be supplemented or specified in the 
+    declarations <code>forms</code> (also see <a href="#protocol-bindings"></a>). 
+   </p>
     
-    <p>The following example shows
-    a property "brightness" that offers a read, write, and observe operation within the <code>forms</code> declaration. 
+    <p>The following TD example uses the CoAP protocol binding based on [[!WoT-Binding-Templates]] 
+        and assumes that there is a CoAP RDF vocabulary set definition which is accessable 
+        via the namespace <code>http://www.example.org/coap-binding#</code>. 
+        The supplemented <code>cov:methodCode</code> guides the Consumer which CoAP method has to be applied, e.g., 
+        methodCode=1 corresponds to a CoAP GET to read the brightness value or methodCode=2 corresponds to a CoAP POST to write/change the brightness value.
     </p>
 
     <aside class="example" id="context-extension-for-forms" title="Specialization of the form definition by context extension.">
@@ -2768,49 +2862,32 @@ If included namespaces are based on class definitions such as those provided by 
         "@context": [
             "https://www.w3.org/2019/wot/td/v1",
             {
-                "iot": "http://www.example.org/iot/",
-                "htv": "http://www.w3.org/2011/http#"
+                "cov": "http://www.example.org/coap-binding#"
             }
         ],
         ...
         "properties": {
             "brightness": {
                 "description": "The current brightness setting",
-                "@type": [
-                    "iot:CurrentLevel",
-                    "iot:LevelData"
-                ],
                 "type": "integer",
                 "minimum": -64,
                 "maximum": 64,
-                "observable": true,
                     "forms": [
                     {
-                        "href": "http://example.org:9191/api/brightness",
-                        "op": ["readproperty"]
+                        "href": "coap://example.org:9191/api/brightness",
+                        "op": ["readproperty"],
+                        "cov:methodCode": 1
                     },
                     {
-                        "href": "http://example.org:9191/api/brightness",
+                        "href": "coap://example.org:9191/api/brightness",
                         "op": ["writeproperty"],
-                        "htv:methodName": "POST"
-                    },
-                    {
-                        "href": "http://example.org:9191/api/brightness/observe",
-                        "op": ["observeproperty"],
-                        "htv:methodName": "GET",
-                        "subProtocol": "longpoll"
+                        "cov:methodCode": 2
                     }
                 ]
             }
         }
     }</pre>
         </aside>
-
-        <p>For the read operation, the corresponding form declaration follows the default assumption to execute an HTTP GET as defined  
-            in [[[WOT-PROTOCOL-BINDING]]]. The write operation overwrites the default assumption (= HTTP PUT) and 
-            declares with the context extension the HTTP POST method to be used for this operation. In order to observe this property, the 
-            context extension is used here to announce that an HTTP GET is always running to follow the long poll mechanism.          
-        </p>
 
  </section>
 
@@ -2880,18 +2957,17 @@ If included namespaces are based on class definitions such as those provided by 
 <h3>Data Schemas</h3>
 <p>The data schemas provided in the TD should accurately represent the 
 data payloads returned and accepted by the described Thing
-in the interactions specified in the TD.  In general, clients should
+in the interactions specified in the TD.  In general, Consumers should
 follow the data schemas strictly, not generating anything not given
 in the WoT Thing Description, but should accept additional data from
-the server not given explicitly in the WoT Thing Decription for that
-server.  In general, servers are <em>described</em> by WoT Thing Descriptions,
-but clients are <em>constrained</em> to follow WoT Thing Descriptions when
-interacting with servers.
+the Thing not given explicitly in the WoT Thing Decription.  In general, Things are <em>described</em> by WoT Thing Descriptions,
+but Consumers are <em>constrained</em> to follow WoT Thing Descriptions when
+interacting with Things.
 <ul>
 <li>
 <span class="rfc2119-assertion" 
       id="client-data-schema">
-A WoT Thing acting as a client when interacting with another target Thing 
+A WoT Thing acting as a Consumer when interacting with another target Thing 
 described in a WoT Thing Description MUST generate data  
 organized according to the data schemas given in the corresponding
 interactions.
@@ -2900,22 +2976,22 @@ interactions.
 <li>
 <span class="rfc2119-assertion" 
       id="server-data-schema">
-A WoT Thing Description describing a server MUST accurately describe the 
+A WoT Thing Description MUST accurately describe the 
 data returned and accepted by each interaction.
 </span>
 </li>
 <li>
 <span class="rfc2119-assertion" 
       id="server-data-schema-extras">
-A WoT Thing acting as a server MAY return additional data from an interaction  
+A Thing MAY return additional data from an interaction  
 even when such data is 
-not described in the data schemas given in the target Thing's WoT Thing Description.
+not described in the data schemas given in its WoT Thing Description.
 </span>
 </li>
 <li>
 <span class="rfc2119-assertion" 
       id="client-data-schema-accept-extras">
-A WoT Thing acting as a client when interacting with another Thing MUST accept without
+A WoT Thing acting as a Consumer when interacting with another Thing MUST accept without
 error any additional data  
 not described in the data schemas given in the target Thing's WoT Thing Description.
 </span>
@@ -2923,24 +2999,23 @@ not described in the data schemas given in the target Thing's WoT Thing Descript
 <li>
 <span class="rfc2119-assertion" 
       id="client-data-schema-no-extras">
-A WoT Thing acting as a client when interacting with another Thing MUST NOT generate data  
+A WoT Thing acting as a Consumer when interacting with another Thing MUST NOT generate data  
 not described in the data schemas given in that Thing's WoT Thing Description.
 </span>
 </li>
 <li>
 <span class="rfc2119-assertion" 
       id="client-uri-template">
-A WoT Thing acting as a client when interacting with another Thing MUST generate URIs 
-according to the URI templates, base URLs, and form href parameters 
+A WoT Thing acting as a Consumer when interacting with another Thing MUST generate URIs 
+according to the URI templates, base URIs, and form href parameters 
 given in the target Thing's WoT Thing Description.
 </span>
 </li>
 <li>
 <span class="rfc2119-assertion" 
       id="server-uri-template">
-URI templates, base URLs, and form href parameters 
-in a WoT Thing Description MUST accurately describe URIs
-returned by a target Thing acting as a server.
+URI templates, base URIs, and href members 
+in a WoT Thing Description MUST accurately describe the WoT Interace of the Thing.
 </span>
 </li>
 </ul>
@@ -2950,21 +3025,26 @@ returned by a target Thing acting as a server.
 <section>
   <h3>Protocol Bindings</h3>
 
+  <p>A Protocol Binding is the mapping from an Interaction Affordance to concrete messages of a 
+      specific protocol such as HTTP [[!RFC7231]], CoAP [[!RFC7252]], or MQTT [[!MQTT]]. Protocol Bindings of 
+      Interaction Affordances are serialized as <code>forms</code> as defined in <a href="#form-serialization-json"></a>.
+    </p>
+
   <p>
-    Every form in a WoT Thing Description must have a submission target URI,
-    given by the <code>href</code> vocabulary term. The URI scheme of this
-    submission target indicates what protocol binding the Thing implements
-    [[wot-binding-templates]].
+    Every form in a WoT Thing Description must have a submission target,
+    given by the <code>href</code> member. The URI scheme of this
+    submission target indicates what Protocol Binding the Thing implements
+    [[WoT-Architecture]].
     For instance, if the target starts with <code>http</code> or
-    <code>https</code>, a client can then infer the Thing implements the
+    <code>https</code>, a Consumer can then infer the Thing implements the
     HTTP binding and it should expect HTTP-specific terms in the
-    form definition (see next section, <a href="#http-binding-assertions"></a>).
+    form instance (see next section, <a href="#http-binding-assertions"></a>).
     <ul>
         <li>
             <span class="rfc2119-assertion" id="bindings-requirements-scheme">
                 Every form in a WoT Thing Description MUST follow the requirements
-                of the protocol binding indicated by the URI scheme of its
-                <code>href</code>.
+                of the Protocol Binding indicated by the URI scheme of its
+                <code>href</code> member.
             </span>
         </li>
         <li>
@@ -2981,15 +3061,21 @@ returned by a target Thing acting as a server.
     <h4>HTTP Protocol Binding</h4>
 
     <p>
-        To interact with a Thing that implements the HTTP protocol binding, a client
-        must know what HTTP method to use when submitting a form. In the general case,
-        a Thing Description can explicitly include a term giving the method name, like
-        <code>htv:methodName</code>, for each form [[wot-binding-templates]]. For the
-        sake of conciseness, this term can be omitted in certain cases, like reading a
-        property with GET or writing it with PUT.
+        Per default the Thing Description supports the HTTP protocol binding and 
+        includes the HTTP RDF vocabulary set definitions from [[HTTP-in-RDF10]] and can be 
+        directly used within TD instances by the usage of the prefix <code>htv</code>, which 
+        points to <code>http://www.w3.org/2011/http#</code>. 
+    </p>
+    <p>
+        To interact with a Thing that implements the HTTP Protocol Binding, a Consumer
+        needs to know what HTTP method to use when submitting a form. In the general case,
+        a Thing Description can explicitly include a term indicating the method, i.e.,
+        <code>htv:methodName</code>. For the
+        sake of conciseness, the HTTP Protocol Binding defines default values for each operation type, 
+        which also aims at convergence of the methods expected by Things (e.g., GET to read, PUT to write).
         <span class="rfc2119-assertion" id="td-default-http-method">
-            When no method name is present in a form implementing the HTTP
-            protocol binding, a default value MUST be assumed as shown in
+            When no method is indicated in a form representing an HTTP
+            Protocol Binding, a default value MUST be assumed as shown in
             the following table.
         </span>
     </p>
@@ -3009,7 +3095,7 @@ returned by a target Thing acting as a server.
                 </td>
                 <td><code>GET</code></td>
                 <td>
-                    <code>Form</code> with <code>&quot;op&quot;: &quot;readproperty&quot;</code>
+                    <code>Form</code> with operation type <code>readproperty</code>
                 </td>
             </tr>
             <tr class="rfc2119-default-assertion" id="td-default-http-method-get">
@@ -3018,7 +3104,7 @@ returned by a target Thing acting as a server.
                 </td>
                 <td><code>PUT</code></td>
                 <td>
-                    <code>Form</code> with <code>&quot;op&quot;: &quot;writeproperty&quot;</code>
+                    <code>Form</code> with operation type <code>writeproperty</code>
                 </td>
             </tr>
             <tr class="rfc2119-default-assertion" id="td-default-http-method-get">
@@ -3027,7 +3113,7 @@ returned by a target Thing acting as a server.
                 </td>
                 <td><code>POST</code></td>
                 <td>
-                    <code>Form</code> with <code>&quot;op&quot;: &quot;invokeaction&quot;</code>
+                    <code>Form</code> with operation type <code>invokeaction</code>
                 </td>
             </tr>
         </tbody>
@@ -3089,11 +3175,7 @@ returned by a target Thing acting as a server.
     }
 }</pre>
         <pre>{
-    "@context": [
-    "https://www.w3.org/2019/wot/td/v1",
-    {
-        "htv": "http://www.w3.org/2011/http#"
-    }],
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "id": "urn:dev:wot:com:example:servient:lamp",
     "name": "MyLampThing",
     "securityDefinitions": {
@@ -3154,11 +3236,13 @@ returned by a target Thing acting as a server.
       <h4>Other Protocol Bindings</h4>
 
       <p>
-          The number of WoT protocol bindings a WoT Thing can implement
+
+          The number of WoT Protocol Bindings a WoT Thing can implement
           is not restricted. Other bindings, e.g. for CoAP, MQTT or OPC UA
-          will be standardized in separate documents, including implicit
-          binding rules, as per the protocol binding template guidelines
-          [[wot-binding-templates]].
+          will be standardized in separate documents such as a protocol vocabulary similar to HTTP in RDF [[HTTP-in-RDF10]]
+          or specifications including default value definitions. Such protocols can be simply integrated into the TD by the 
+          usage of the context extension mechanism (<a href="#content-extension-section"></a>). A general guideline for Protocol Bindings is given in
+          [[WoT-Binding-Templates]].
       </p>
   </section>
 </section>
@@ -3178,7 +3262,7 @@ returned by a target Thing acting as a server.
       <li>Context extension: none</li>
       <li>Offered interactions: 1 property, 1 action, 1 event</li>
       <li>Security: PSKSecurityScheme</li>
-      <li>Protocol binding: CoAP [[?RFC7252]] over TLS</li>
+      <li>Protocol Binding: CoAP [[?RFC7252]] over TLS</li>
       <li>Serializiation: default (JSON)</li>
       <li>Comment: none</li>
 
@@ -3231,7 +3315,7 @@ returned by a target Thing acting as a server.
       <li>Context extension: none</li>
       <li>Offered interactions: 1 event</li>
       <li>Security: none</li>
-      <li>Protocol binding: MQTT [[?MQTT]]</li>
+      <li>Protocol Binding: MQTT [[?MQTT]]</li>
       <li>Serializiation: text </li>
       <li>Comment: An MQTT client frequently publishes the light sensor data (number is serialized in text format) to 
           the topic /lightSensor by the MQTT broker running behind the address 192.168.1.187:1883. </li>
@@ -3269,12 +3353,13 @@ returned by a target Thing acting as a server.
         <li>Context extension: include HTTP (by htv prefix) vocabulary set</li>
         <li>Offered interactions: 1 event</li>
         <li>Security: none</li>
-        <li>Protocol binding: HTTP</li>
+        <li>Protocol Binding: HTTP</li>
         <li>Serializiation: default (JSON) </li>
-        <li>Comment: <i>TemperatureForT2T</i> Thing provides an event <i>temperatureValueForT2T</i>, with which an instruction can be passed, to which other Thing the periodically provided temperature values are to be sent.
-            Doing this, the <code>subscription</code> container defines an input to which target URL the temperature value (defined within the <code>data</code> container) 
-            has to be sent. To submit such information, a client must call the resource http://192.168.0.124:8080/events/TempForT2T/subscribe (via the POST method) and 
-            provide the target URL information in the payload (JSON serialization).  As defined in the output container, 
+        <li>Comment: <i>TemperatureForT2T</i> Thing provides an event <i>temperatureValueForT2T</i>, with which an instruction can be passed, to which other Thing the periodically 
+            provided temperature values are to be sent.
+            Doing this, the <code>subscription</code> container defines an input to which callback URI the temperature value (defined within the <code>data</code> container) 
+            has to be sent. To subscibe a Consumer must submit a POST request to http://192.168.0.124:8080/events/TempForT2T/subscribe and 
+            provide the callback URI in the payload as JSON object with the member <code>targetURL</code>.  As defined in the output container, 
             the <i>TemperatureForT2T</i> Thing would response with a subscription ID that can be used, e.g., for cancellation the subscription (as defined in the <code>cancellation</code> 
             container). 
         </li>
@@ -3282,9 +3367,7 @@ returned by a target Thing acting as a server.
   
   <pre class="example" title="Temperature event with subscripton and cancellation for a Thing-2-Thing interaction">
         {
-            "@context": [
-                "https://www.w3.org/2019/wot/td/v1",
-                {"htv": "http://www.w3.org/2011/http#"}],
+            "@context": "https://www.w3.org/2019/wot/td/v1",
             "id": "urn:dev:wot:org:eclipse:thingweb:event-example",
             "name": "TemperatureForT2T",
             "description": "Event with subscription / cancellation (Thing-2-Thing use case).",
@@ -3451,7 +3534,7 @@ returned by a target Thing acting as a server.
       <dl><dt>Mitigation:</dt><dd>
           Obtain Thing Descriptions only through
           mutually authenticated channels.
-          This ensures that the client and the server are both sure of the 
+          This ensures that the Consumer and the server are both sure of the 
           identity of the other party to the communication.
           This is also necessary in order to deliver TDs only to authorized users.
       </dd></dl>
@@ -3507,38 +3590,28 @@ returned by a target Thing acting as a server.
 
   </section>
 
-  <section id="json-schema-4-validation" class="appendix normative">
+  <section id="json-schema-for-validation" class="appendix normative">
   <h1>JSON Schema for TD Instance Validation</h1>
-  <p>
-      Below are two JSON Schema [[?JSON-SCHEMA-VALIDATION]] documents for syntactically validating Thing Description instances serialized in JSON based format.
-      The first JSON schema does not enforce default values to be added while the second does, hence being a stricter schema for TDs.
-</p>
-  <p class="note">The Thing Description defined by this document allows for 
-    adding external vocabularies by using <code>@context</code> mechanism 
-    known from JSON-LD [[json-ld11]], and the terms in those external vocabularies can be 
-    used in addition to the terms defined in Section <a href="#sec-vocabulary-definition"></a>. 
-    For this reason, the below JSON schema is intentionally non-strict in that 
-    regard. You can replace the value of <code>additionalProperties</code> schema 
-    property <code>true</code> with <code>false</code> in different scopes/levels in 
-    order to perform a stricter validation in case no external vocabularies are used.
-</p>
+    <p>
+        Below is a JSON Schema [[?JSON-SCHEMA-VALIDATION]] document for syntactically validating Thing Description instances serialized in JSON based format.
+    </p>
+    <p class="note">The Thing Description defined by this document allows for 
+        adding external vocabularies by using <code>@context</code> mechanism 
+        known from JSON-LD [[json-ld11]], and the terms in those external vocabularies can be 
+        used in addition to the terms defined in Section <a href="#sec-vocabulary-definition"></a>. 
+        For this reason, the below JSON schema is intentionally non-strict in that 
+        regard. You can replace the value of <code>additionalProperties</code> schema 
+        property <code>true</code> with <code>false</code> in different scopes/levels in 
+        order to perform a stricter validation in case no external vocabularies are used.
+    </p>
 
-<p>
-    The following JSON Schema for validating TD instances has two forms: it either 
-    performs checks by assuming default values from the TD model are not present
-    (see also <a href="#json-serializiation-section"></a>) or it performs the same
-    checks without any assumption on default values, thus expected all mandatory
-    terms to be present, including terms with defaults.
-</p>
+    <p>
+        The following JSON Schema for validating TD instances does not require the terms with default values to be present. Thus the terms with default values are optional. (see also <a href="#sec-default-values"></a>)
 
-<div class="with-default">
-    <div class="with-default-control">
-        <input type="checkbox">
-        <span><i>without assumption on default values (full schema)</i></span>
-    </div>
-    <pre class="advisement">{
+    <pre class="advisement">
+    {
     "title": "WoT TD Schema - 29 March 2019",
-    "description": "JSON Schema for validating TD instances WITH default value assumptions (checks, if all mandatory terms without default values from the TD model are present",
+    "description": "JSON Schema for validating TD instances against the TD model. TD instances can be with or without terms that have default values",
     "$schema ": "http://json-schema.org/draft-06/schema#",
     "definitions": {
         "thing-context": {
@@ -4636,1163 +4709,8 @@ returned by a target Thing acting as a server.
         "@context"
     ],
     "additionalProperties": true
-}</pre>
-    <pre class="advisement">{
-    "title": "WoT TD Schema - 29 March 2019",
-    "description": "JSON Schema for validating TD instances WITHOUT any default value assumptions (checks, if all mandatory terms from the TD model are present",
-    "$schema ": "http://json-schema.org/draft-06/schema#",
-    "definitions": {
-        "thing-context": {
-            "oneOf": [{
-                    "type": "array",
-                    "items": {
-                        "anyOf": [{
-                                "$ref": "#/definitions/url"
-                            },
-                            {
-                                "type": "object"
-                            }
-                        ]
-                    },
-                    "contains": {
-                        "type": "string",
-                        "enum": [
-                            "http://www.w3.org/ns/td", "http://w3.org/ns/td"
-                        ]
-                    }
-                },
-                {
-                    "type": "string",
-                    "enum": [
-                        "http://www.w3.org/ns/td", "http://w3.org/ns/td"
-                    ]
-                }
-            ]
-        },
-        "security-context": {
-            "oneOf": [{
-                    "type": "array",
-                    "items": {
-                        "anyOf": [{
-                                "$ref": "#/definitions/url"
-                            },
-                            {
-                                "type": "object"
-                            }
-                        ]
-                    },
-                    "contains": {
-                        "type": "string",
-                        "enum": [
-                            "https://www.w3.org/ns/wot-security", "https://w3.org/ns/wot-security"
-                        ]
-                    }
-                },
-                {
-                    "type": "string",
-                    "enum": [
-                        "https://www.w3.org/ns/wot-security", "https://w3.org/ns/wot-security"
-                    ]
-                }
-            ]
-        },
-        "data-context": {
-            "oneOf": [{
-                    "type": "array",
-                    "items": {
-                        "anyOf": [{
-                                "$ref": "#/definitions/url"
-                            },
-                            {
-                                "type": "object"
-                            }
-                        ]
-                    },
-                    "contains": {
-                        "type": "string",
-                        "enum": [
-                            "https://www.w3.org/ns/json-schema", "https://w3.org/ns/json-schema"
-                        ]
-                    }
-                },
-                {
-                    "type": "string",
-                    "enum": [
-                        "https://www.w3.org/ns/json-schema", "https://w3.org/ns/json-schema"
-                    ]
-                }
-            ]
-        },
-        "type_declaration": {
-            "oneOf": [{
-                    "type": "string"
-                },
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            ]
-        },
-        "property_element": {
-            "type": "object",
-            "properties": {
-                "@type": {
-                    "$ref": "#/definitions/type_declaration"
-                },
-                "description": {
-                    "$ref": "#/definitions/description"
-                },
-                "title": {
-                    "$ref": "#/definitions/title"
-                },
-                "descriptions": {
-                    "$ref": "#/definitions/descriptions"
-                },
-                "titles": {
-                    "$ref": "#/definitions/titles"
-                },
-                "uriVariables": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/dataSchema"
-                    }
-                },
-                "forms": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/form_element_property"
-                    }
-                },
-                "observable": {
-                    "type": "boolean"
-                },
-                "writeOnly": {
-                    "type": "boolean"
-                },
-                "readOnly": {
-                    "type": "boolean"
-                },
-                "oneOf": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dataSchema"
-                    }
-                },
-                "unit": {
-                    "type": "string"
-                },
-                "enum": {
-                    "type": "array",
-                    "minItems": 1,
-                    "uniqueItems": true
-                },
-                "format": {
-                    "type": "string"
-                },
-                "const": {},
-                "type": {
-                    "type": "string",
-                    "enum": [
-                        "boolean",
-                        "integer",
-                        "number",
-                        "string",
-                        "object",
-                        "array",
-                        "null"
-                    ]
-                },
-                "items": {
-                    "oneOf": [{
-                            "$ref": "#/definitions/dataSchema"
-                        },
-                        {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/dataSchema"
-                            }
-                        }
-                    ]
-                },
-                "maxItems": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "minItems": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "minimum": {
-                    "type": "number"
-                },
-                "maximum": {
-                    "type": "number"
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "$ref": "#/definitions/dataSchema"
-                    }
-                },
-                "required": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "forms"
-            ],
-            "additionalProperties": true
-        },
-        "action_element": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "descriptions": {
-                    "$ref": "#/definitions/descriptions"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "titles": {
-                    "$ref": "#/definitions/titles"
-                },
-                "uriVariables": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/dataSchema"
-                    }
-                },
-                "@type": {
-                    "$ref": "#/definitions/type_declaration"
-                },
-                "forms": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/form_element_action"
-                    }
-                },
-                "input": {
-                    "$ref": "#/definitions/dataSchema"
-                },
-                "output": {
-                    "$ref": "#/definitions/dataSchema"
-                },
-                "safe": {
-                    "type": "boolean"
-                },
-                "idempotent": {
-                    "type": "boolean"
-                }
-            },
-            "required": [
-                "forms", "safe", "idempotent"
-            ],
-            "additionalProperties": true
-        },
-        "event_element": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "descriptions": {
-                    "$ref": "#/definitions/descriptions"
-                },
-                "titles": {
-                    "$ref": "#/definitions/titles"
-                },
-                "uriVariables": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/dataSchema"
-                    }
-                },
-                "@type": {
-                    "$ref": "#/definitions/type_declaration"
-                },
-                "forms": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/form_element_event"
-                    }
-                },
-                "subscription": {
-                    "$ref": "#/definitions/dataSchema"
-                },
-                "data": {
-                    "$ref": "#/definitions/dataSchema"
-                },
-                "cancellation": {
-                    "$ref": "#/definitions/dataSchema"
-                },
-                "type": {
-                    "not": {}
-                },
-                "enum": {
-                    "not": {}
-                },
-                "const": {
-                    "not": {}
-                }
-            },
-            "required": [
-                "forms"
-            ],
-            "additionalProperties": true
-        },
-        "form_element_property": {
-            "type": "object",
-            "properties": {
-                "href": {
-                    "$ref": "#/definitions/url"
-                },
-                "op": {
-                    "oneOf": [{
-                            "type": "string",
-                            "enum": [
-                                "readproperty",
-                                "writeproperty",
-                                "observeproperty",
-                                "unobserveproperty"
-                            ]
-                        },
-                        {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": [
-                                    "readproperty",
-                                    "writeproperty",
-                                    "observeproperty",
-                                    "unobserveproperty"
-                                ]
-                            }
-                        }
-                    ]
-                },
-                "contentType": {
-                    "type": "string"
-                },
-                "security": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "scopes": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "subProtocol": {
-                    "type": "string",
-                    "enum": [
-                        "longpoll",
-                        "websub",
-                        "sse"
-                    ]
-                },
-                "response": {
-                    "type": "object",
-                    "properties": {
-                        "contentType": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "required": [
-                "href", "contentType", "op"
-            ],
-            "additionalProperties": true
-        },
-        "form_element_action": {
-            "type": "object",
-            "properties": {
-                "href": {
-                    "$ref": "#/definitions/url"
-                },
-                "op": {
-                    "oneOf": [{
-                            "type": "string",
-                            "enum": [
-                                "invokeaction"
-                            ]
-                        },
-                        {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": [
-                                    "invokeaction"
-                                ]
-                            }
-                        }
-                    ]
-                },
-                "contentType": {
-                    "type": "string"
-                },
-                "security": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "scopes": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "subProtocol": {
-                    "type": "string",
-                    "enum": [
-                        "longpoll",
-                        "websub",
-                        "sse"
-                    ]
-                },
-                "response": {
-                    "type": "object",
-                    "properties": {
-                        "contentType": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "required": [
-                "href", "contentType", "op"
-            ],
-            "additionalProperties": true
-        },
-        "form_element_event": {
-            "type": "object",
-            "properties": {
-                "href": {
-                    "$ref": "#/definitions/url"
-                },
-                "op": {
-                    "oneOf": [{
-                            "type": "string",
-                            "enum": [
-                                "subscribeevent",
-                                "unsubscribeevent"
-                            ]
-                        },
-                        {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": [
-                                    "subscribeevent",
-                                    "unsubscribeevent"
-                                ]
-                            }
-                        }
-                    ]
-                },
-                "contentType": {
-                    "type": "string"
-                },
-                "security": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "scopes": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "subProtocol": {
-                    "type": "string",
-                    "enum": [
-                        "longpoll",
-                        "websub",
-                        "sse"
-                    ]
-                },
-                "response": {
-                    "type": "object",
-                    "properties": {
-                        "contentType": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "required": [
-                "href", "contentType", "op"
-            ],
-            "additionalProperties": true
-        },
-        "form_element_root": {
-            "type": "object",
-            "properties": {
-                "href": {
-                    "$ref": "#/definitions/url"
-                },
-                "op": {
-                    "oneOf": [{
-                            "type": "string",
-                            "enum": [
-                                "readallproperties",
-                                "writeallproperties",
-                                "readmultipleproperties",
-                                "writemultipleproperties"
-                            ]
-                        },
-                        {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": [
-                                    "readallproperties",
-                                    "writeallproperties",
-                                    "readmultipleproperties",
-                                    "writemultipleproperties"
-                                ]
-                            }
-                        }
-                    ]
-                },
-                "contentType": {
-                    "type": "string"
-                },
-                "security": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "scopes": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "subProtocol": {
-                    "type": "string",
-                    "enum": [
-                        "longpoll",
-                        "websub",
-                        "sse"
-                    ]
-                },
-                "response": {
-                    "type": "object",
-                    "properties": {
-                        "contentType": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "required": [
-                "href", "contentType", "op"
-            ],
-            "additionalProperties": true
-        },
-        "description": {
-            "type": "string"
-        },
-        "title": {
-            "type": "string"
-        },
-        "descriptions": {
-            "type": "object"
-        },
-        "titles": {
-            "type": "object"
-        },
-        "dataSchema": {
-            "type": "object",
-            "properties": {
-                "@type": {
-                    "$ref": "#/definitions/type_declaration"
-                },
-                "description": {
-                    "$ref": "#/definitions/description"
-                },
-                "title": {
-                    "$ref": "#/definitions/title"
-                },
-                "descriptions": {
-                    "$ref": "#/definitions/descriptions"
-                },
-                "titles": {
-                    "$ref": "#/definitions/titles"
-                },
-                "writeOnly": {
-                    "type": "boolean"
-                },
-                "readOnly": {
-                    "type": "boolean"
-                },
-                "oneOf": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dataSchema"
-                    }
-                },
-                "unit": {
-                    "type": "string"
-                },
-                "enum": {
-                    "type": "array",
-                    "minItems": 1,
-                    "uniqueItems": true
-                },
-                "format": {
-                    "type": "string"
-                },
-                "const": {},
-                "type": {
-                    "type": "string",
-                    "enum": [
-                        "boolean",
-                        "integer",
-                        "number",
-                        "string",
-                        "object",
-                        "array",
-                        "null"
-                    ]
-                },
-                "items": {
-                    "oneOf": [{
-                            "$ref": "#/definitions/dataSchema"
-                        },
-                        {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/dataSchema"
-                            }
-                        }
-                    ]
-                },
-                "maxItems": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "minItems": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "minimum": {
-                    "type": "number"
-                },
-                "maximum": {
-                    "type": "number"
-                },
-                "properties": {
-                    "additionalProperties": {
-                        "$ref": "#/definitions/dataSchema"
-                    }
-                },
-                "required": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "link_element": {
-            "type": "object",
-            "properties": {
-                "anchor": {
-                    "$ref": "#/definitions/url"
-                },
-                "href": {
-                    "$ref": "#/definitions/url"
-                },
-                "rel": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "href"
-            ],
-            "additionalProperties": true
-        },
-        "securityScheme": {
-            "oneOf": [{
-                    "type": "object",
-                    "properties": {
-                        "@type": {
-                            "$ref": "#/definitions/type_declaration"
-                        },
-                        "description": {
-                            "$ref": "#/definitions/description"
-                        },
-                        "descriptions": {
-                            "$ref": "#/definitions/descriptions"
-                        },
-                        "proxy": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "scheme": {
-                            "type": "string",
-                            "enum": [
-                                "nosec"
-                            ]
-                        }
-                    },
-                    "required": [
-                        "scheme"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "@type": {
-                            "$ref": "#/definitions/type_declaration"
-                        },
-                        "description": {
-                            "$ref": "#/definitions/description"
-                        },
-                        "descriptions": {
-                            "$ref": "#/definitions/descriptions"
-                        },
-                        "proxy": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "scheme": {
-                            "type": "string",
-                            "enum": [
-                                "basic"
-                            ]
-                        },
-                        "in": {
-                            "type": "string",
-                            "enum": ["header", "query", "body", "cookie"]
-                        },
-                        "name": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "scheme", "in"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "@type": {
-                            "$ref": "#/definitions/type_declaration"
-                        },
-                        "description": {
-                            "$ref": "#/definitions/description"
-                        },
-                        "descriptions": {
-                            "$ref": "#/definitions/descriptions"
-                        },
-                        "proxy": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "scheme": {
-                            "type": "string",
-                            "enum": [
-                                "cert"
-                            ]
-                        },
-                        "identity": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "scheme"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "@type": {
-                            "$ref": "#/definitions/type_declaration"
-                        },
-                        "description": {
-                            "$ref": "#/definitions/description"
-                        },
-                        "descriptions": {
-                            "$ref": "#/definitions/descriptions"
-                        },
-                        "proxy": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "scheme": {
-                            "type": "string",
-                            "enum": [
-                                "digest"
-                            ]
-                        },
-                        "qop": {
-                            "type": "string",
-                            "enum": ["auth", "auth-int"]
-                        },
-                        "in": {
-                            "type": "string",
-                            "enum": ["header", "query", "body", "cookie"]
-                        },
-                        "name": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "scheme", "qop", "in"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "@type": {
-                            "$ref": "#/definitions/type_declaration"
-                        },
-                        "description": {
-                            "$ref": "#/definitions/description"
-                        },
-                        "descriptions": {
-                            "$ref": "#/definitions/descriptions"
-                        },
-                        "proxy": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "scheme": {
-                            "type": "string",
-                            "enum": [
-                                "bearer"
-                            ]
-                        },
-                        "authorization": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "alg": {
-                            "type": "string",
-                            "enum": ["MD5", "ES256", "ES512-256"]
-                        },
-                        "format": {
-                            "type": "string",
-                            "enum": ["jwt", "jwe", "jws"]
-                        },
-                        "in": {
-                            "type": "string",
-                            "enum": ["header", "query", "body", "cookie"]
-                        },
-                        "name": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "scheme", "in", "alg", "format"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "@type": {
-                            "$ref": "#/definitions/type_declaration"
-                        },
-                        "description": {
-                            "$ref": "#/definitions/description"
-                        },
-                        "descriptions": {
-                            "$ref": "#/definitions/descriptions"
-                        },
-                        "proxy": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "scheme": {
-                            "type": "string",
-                            "enum": [
-                                "psk"
-                            ]
-                        },
-                        "identity": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "scheme"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "@type": {
-                            "$ref": "#/definitions/type_declaration"
-                        },
-                        "description": {
-                            "$ref": "#/definitions/description"
-                        },
-                        "descriptions": {
-                            "$ref": "#/definitions/descriptions"
-                        },
-                        "proxy": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "scheme": {
-                            "type": "string",
-                            "enum": [
-                                "public"
-                            ]
-                        },
-                        "identity": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "scheme"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "@type": {
-                            "$ref": "#/definitions/type_declaration"
-                        },
-                        "description": {
-                            "$ref": "#/definitions/description"
-                        },
-                        "descriptions": {
-                            "$ref": "#/definitions/descriptions"
-                        },
-                        "proxy": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "scheme": {
-                            "type": "string",
-                            "enum": [
-                                "oauth2"
-                            ]
-                        },
-                        "authorization": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "token": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "refresh": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "scopes": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "flow": {
-                            "type": "string",
-                            "enum": ["implicit", "password", "client", "code"]
-                        }
-                    },
-                    "required": [
-                        "scheme", "flow"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "@type": {
-                            "$ref": "#/definitions/type_declaration"
-                        },
-                        "description": {
-                            "$ref": "#/definitions/description"
-                        },
-                        "descriptions": {
-                            "$ref": "#/definitions/descriptions"
-                        },
-                        "proxy": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "scheme": {
-                            "type": "string",
-                            "enum": [
-                                "apikey"
-                            ]
-                        },
-                        "in": {
-                            "type": "string",
-                            "enum": ["header", "query", "body", "cookie"]
-                        },
-                        "name": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "scheme", "in"
-                    ]
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "@type": {
-                            "$ref": "#/definitions/type_declaration"
-                        },
-                        "description": {
-                            "$ref": "#/definitions/description"
-                        },
-                        "descriptions": {
-                            "$ref": "#/definitions/descriptions"
-                        },
-                        "proxy": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "scheme": {
-                            "type": "string",
-                            "enum": [
-                                "pop"
-                            ]
-                        },
-                        "authorization": {
-                            "$ref": "#/definitions/url"
-                        },
-                        "format": {
-                            "type": "string",
-                            "enum": ["jwt", "jwe", "jws"]
-                        },
-                        "alg": {
-                            "type": "string",
-                            "enum": ["MD5", "ES256", "ES512-256"]
-                        },
-                        "in": {
-                            "type": "string",
-                            "enum": ["header", "query", "body", "cookie"]
-                        },
-                        "name": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "scheme", "in", "alg", "format"
-                    ]
-                }
-            ]
-        },
-        "url": {
-            "type": "string",
-            "format": "uri-reference"
-        }
-    },
-    "type": "object",
-    "properties": {
-        "id": {
-            "type": "string",
-            "format": "uri"
-        },
-        "name": {
-            "type": "string"
-        },
-        "properties": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/property_element"
-            }
-        },
-        "actions": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/action_element"
-            }
-        },
-        "events": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/event_element"
-            }
-        },
-        "description": {
-            "$ref": "#/definitions/description"
-        },
-        "descriptions": {
-            "$ref": "#/definitions/descriptions"
-        },
-        "version": {
-            "type": "object",
-            "properties": {
-                "instance": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "instance"
-            ]
-        },
-        "links": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/link_element"
-            }
-        },
-        "forms": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-                "$ref": "#/definitions/form_element_root"
-            }
-        },
-        "base": {
-            "$ref": "#/definitions/url"
-        },
-        "securityDefinitions": {
-            "type": "object",
-            "minProperties": 1,
-            "additionalProperties": {
-                "$ref": "#/definitions/securityScheme"
-            }
-        },
-        "support": {
-            "type": "string"
-        },
-        "created": {
-            "type": "string"
-        },
-        "lastModified": {
-            "type": "string"
-        },
-        "security": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-                "type": "string"
-            }
-        },
-        "@type": {
-            "$ref": "#/definitions/type_declaration"
-        },
-        "@context": {
-            "$ref": "#/definitions/thing-context"
-        }
-    },
-    "required": [
-        "name",
-        "id",
-        "security",
-        "securityDefinitions",
-        "@context"
-    ],
-    "additionalProperties": true
-}</pre>
-</div>
+}
+    </pre>
 
   </section>
 
@@ -5819,7 +4737,7 @@ returned by a target Thing acting as a server.
     (properties, actions and events), however it does not contain device-specific
     information, such as a serial number, GPS location, security information or concrete protocol endpoints.
     </p><p>
-    Since a Thing Template does not contain a protocol binding to specific endpoints and 
+    Since a Thing Template does not contain a Protocol Binding to specific endpoints and 
     does not define a specific security mechanism, the <em>forms</em> and <em>securityDefinitions</em> and 
     <em>security</em> keys must not be present.
     </p><p>
@@ -5982,30 +4900,265 @@ returned by a target Thing acting as a server.
             To integrate a Thing Description instance with external knowledge and
             contextual information (like iot.schema.org annotations), the use of
             JSON-LD 1.1 and its processing API [[json-ld11-api]], as well as RDF-based
-            tools [[rdf11-concepts]] and libraries is highly recommended.
+            tools [[rdf11-concepts]] and libraries is highly recommended. This appendix
+            introduces two non-normative elements of the Thing Description model that
+            allow for a transformation to RDF: the default JSON-LD context for TD and
+            the TD ontology.
         </p>
 
-        <p>
-            TD classes and properties have RDF foundations, in the form of a Web
-            ontology [[wot-td-ontology]]. On this basis, it is possible to represent
-            a JSON TD document in RDF to then be uploaded to an RDF store for further
-            analytics. In terms of implementation, the JSON-LD API specifies the procedure
-            <a href="https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm">
-                <code>JsonLdProcessor.toRdf</code>
-            </a>
-            to obtain an RDF representation of the JSON-serialized Thing Description instance.
-        </p>
+        <section>
+            <h3>Thing Description JSON-LD Context</h3>
 
-        <p class="ednote">
-            To make the transformation reversible, <code>@index</code> must be kept in RDF.
-            See Github issue <a href="https://github.com/w3c/json-ld-api/issues/65">w3c/json-ld-api#65</a>.
-        </p>
+            <p>
+                A JSON TD document can be transformed in RDF (to then be uploaded
+                to an RDF store for further analytics) by a standard JSON-LD processor.
+                The following procedure loads the context of the TD, given by the
+                term <code>@context</code>, and generates RDF triples:
+            </p>
+
+            <p>
+                <a href="https://www.w3.org/TR/json-ld11-api/#deserialize-json-ld-to-rdf-algorithm">
+                    <code>JsonLdProcessor.toRdf</code>
+                </a>
+            </p>
+            
+            <p>
+                When applying this procedure to the introductory TD example with all default values,
+                the following triples are obtained:
+            </p>
+            
+            <aside class="example with-default" id="simple-thing-description-rdf">
+                <div class="with-default-control">
+                    <input type="checkbox"/>
+                    <span><i>after transformation to RDF</i></span>
+                </div>
+                <pre>{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:dev:wot:com:example:servient:lamp",
+    "name": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [
+                {
+                    "href": "https://mylamp.example.com/status",
+                    "contentType": "application/json",
+                    "op": "readproperty",
+                    "htv:methodName": "GET"
+                },
+                {
+                    "href": "https://mylamp.example.com/status",
+                    "contentType": "application/json",
+                    "op": "writeproperty",
+                    "htv:methodName": "PUT"
+                }
+            ]
+        }
+    },
+    "actions": {
+        "toggle": {
+            "safe": false,
+            "idempotent": false,
+            "forms": [
+                {
+                    "href": "https://mylamp.example.com/toggle",
+                    "contentType": "application/json",
+                    "op": "invokeaction",
+                    "htv:methodName": "POST"
+                }
+            ]
+        }
+    },
+    "events": {
+        "overheating": {
+            "data": {
+                "type": "string"
+            },
+            "forms": [
+                {
+                    "href": "https://mylamp.example.com/oh",
+                    "contentType": "application/json",
+                    "subprotocol": "longpoll",
+                    "op": "subscribeevent"
+                }
+            ]
+        }
+    }
+}</pre><pre>
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#name&gt; &quot;MyLampThing&quot; .
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#security&gt; &lt;_:b8&gt; .
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#properties&gt; _:b5 .
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#actions&gt; _:b0 .
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#events&gt; _:b2 .
+_:b0 &lt;http://www.w3.org/ns/td#name&gt; &quot;toggle&quot; .
+_:b0 &lt;http://www.w3.org/ns/td#forms&gt; _:b1 .
+_:b0 &lt;http://www.w3.org/ns/td#idempotent&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
+_:b0 &lt;http://www.w3.org/ns/td#safe&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
+_:b1 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;POST&quot; .
+_:b1 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
+_:b1 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/toggle&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
+_:b1 &lt;http://www.w3.org/ns/td#op&gt; &quot;invokeaction&quot; .
+_:b2 &lt;http://www.w3.org/ns/td#name&gt; &quot;overheating&quot; .
+_:b2 &lt;http://www.w3.org/ns/td#data&gt; _:b3 .
+_:b2 &lt;http://www.w3.org/ns/td#forms&gt; _:b4 .
+_:b3 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.w3.org/ns/json-schema#StringSchema&gt; .
+_:b4 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
+_:b4 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/oh&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
+_:b4 &lt;http://www.w3.org/ns/td#op&gt; &quot;subscribeevent&quot; .
+_:b4 &lt;http://www.w3.org/ns/td#subprotocol&gt; &quot;longpoll&quot; .
+_:b5 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.w3.org/ns/json-schema#StringSchema&gt; .
+_:b2 &lt;http://www.w3.org/ns/td#name&gt; &quot;status&quot; .
+_:b5 &lt;http://www.w3.org/ns/td#forms&gt; _:b6 .
+_:b5 &lt;http://www.w3.org/ns/td#forms&gt; _:b7 .
+_:b6 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;GET&quot; .
+_:b6 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
+_:b6 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/status&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
+_:b6 &lt;http://www.w3.org/ns/td#op&gt; &quot;readproperty&quot; .
+_:b7 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;PUT&quot; .
+_:b7 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
+_:b7 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/status&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
+_:b7 &lt;http://www.w3.org/ns/td#op&gt; &quot;writeproperty&quot; .
+_:b8 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.w3.org/ns/wot-security#BasicSecurityScheme&gt; .
+_:b8 &lt;http://www.w3.org/ns/wot-security#schemeName&gt; &quot;basic_sc&quot; .
+_:b8 &lt;http://www.w3.org/ns/wot-security#in&gt; &quot;header&quot; .</pre>
+            </aside>
+
+            <p>
+                Most importantly, the JSON-LD context maps JSON strings to RDF IRIs (hence, the notion
+                of <em>context</em>: in two different contexts, the same string can have different
+                meanings). The mapping here is rather straightforward: every vocabulary of the TD
+                information model is defined its own namespace and every vocabulary term maps to some
+                name, appended to the corresponding namespace. Strings that are not part of any
+                vocabulary map to RDF literals (strings with an optional datatype). For instance,
+                <code>name</code> maps to <code>http://www.w3.org/ns/td#name</code> and
+                <code>MyLampThing</code> remains unchanged. Applying this mapping is called
+                <a href="https://www.w3.org/TR/json-ld11/#expanded-document-form">context expansion</a>.
+            </p>
+
+            <p>
+                The following table gives the correspondance between a vocabulary and its namespace:
+            </p>
+
+            <table class="def">
+                <thead>
+                    <tr>
+                        <th>Vocabulary</th>
+                        <th>Namespace</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Core</td>
+                        <td><code>https://www.w3.org/ns/td#</code></td>
+                    </tr>
+                    <tr>
+                        <td>Data Schema</td>
+                        <td><code>https://www.w3.org/ns/json-schema#</code></td>
+                    </tr>
+                    <tr>
+                        <td>Security</td>
+                        <td><code>https://www.w3.org/2019/ns/wot-security#</code></td>
+                    </tr>
+                    <tr>
+                        <td>Web Linking</td>
+                        <td><code>https://www.w3.org/2019/wot/web-linking#</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>
+                Then, after expanding JSON strings to full IRIs, all map structures of the JSON
+                TD document must be turned into RDF triples. In a simple case, a
+                triple is produced for every key/value pair in the map. For instance, the
+                very first triple of the example above was produced from <code>"name": "myLampThing"</code>.
+            </p>
+
+            <p>
+                Other cases rely on specific JSON-LD features. Most of these features were
+                introduced in the 1.1 version of the standard and thus require an appropriate
+                JSON-LD 1.1 implementation. They are listed below:
+            </p>
+
+            <ul>
+                <li>
+                    <a href="https://www.w3.org/TR/json-ld11/#aliasing-keywords"><em>Aliasing keywords</em></a>:
+                    JSON-LD reserved keywords always start with <code>@</code> but in certain cases, it is
+                    more convenient to define aliases for these keywords, e.g. to more easily process JSON-LD
+                    document in a specific programming environment. In the TD core vocabulary, <code>id</code>
+                    is an alias for <code>@id</code>, which must be an IRI used as the subject of triples when
+                    producing RDF. For this reason, the first triples in the example have
+                    <code>urn:dev:wot:com:example:servient:lamp</code> as a subject instead of an arbitrary
+                    blank node.
+                </li>
+                <li>
+                    <a href="https://www.w3.org/TR/json-ld11/#scoped-contexts"><em>Scoped contexts</em></a>:
+                    The term <code>properties</code> is used both in the core vocabulary and in the data schema
+                    vocabulary. Yet, a JSON string cannot map to two IRIs simultaneously in the same context
+                    definition. The mapping from <code>properties</code> to
+                    <code>https://www.w3.org/ns/json-schema#properties</code> must therefore be <em>scoped</em>
+                    to instances of <code>DataSchema</code> only.
+                </li>
+                <li>
+                    <a href="https://github.com/w3c/json-ld-api/issues/65"><em>Property-based data indexing</em></a>:
+                    in the example above, <code>status</code>, <code>toggle</code> and <code>overheating</code>
+                    appear as keys in a map but they do not produce triples in which they become predicates. This special
+                    structure is called an <a href="https://www.w3.org/TR/json-ld11/#data-indexing">index map</a>.
+                    Without any indication in the context, the index key is lost when an index map is turned into RDF.
+                    To make the transformation to RDF reversible, it is possible to indicate that index keys should
+                    produce triples with a given predicate. Each vocabulary can include an RDF term for this purpose.
+                    In the core vocabulary, the property <code>http://www.w3.org/ns/td#name</code> is used.
+                </li>
+                <li>
+                    <a href="https://github.com/w3c/json-ld-syntax/issues/19"><em>Indexing without a predicate</em></a>:
+                    in a TD, the security definitions container is mostly syntactic sugar to avoid redundancy
+                    in the <code>security</code> definitions. JSON-LD 1.1 includes another indexing mechanism for
+                    that purpose. In the above example, <code>securityDefinitions</code> does not produce any
+                    triple.
+                </li>
+            </ul>
+
+            <p class="ednote">
+                The last two JSON-LD features (property-based data indexing and indexing without a
+                predicate) are still experimental; they have not been published in any Editor's
+                Draft yet.
+            </p>
     
-        <p class="issue">
-            An experimental JSON-LD 1.1 context for the TD model is provided in the
-            repository: <code>td-context-1.1.jsonld</code>. Currently, it is not the
-            context served at <code>https://www.w3.org/2019/wot/td/v1</code>, though.
-        </p>
+            <p class="issue">
+                An experimental JSON-LD 1.1 context for the TD model is provided in the
+                repository: <code>td-context-1.1.jsonld</code>. Currently, it is not the
+                context served at <code>https://www.w3.org/2019/wot/td/v1</code>, though.
+            </p>
+        </section>
+
+        <section>
+            <h3>Thing Description Ontology</h3>
+
+            <p>
+                TD classes and properties have RDF foundations, in the form of a Web
+                ontology in the Web Ontology Language [[owl2-overview]]. Some assertions of
+                this document are also expressed as OWL axioms.
+            </p>
+
+            <p>
+                Default values require special care when translating the TD information model
+                into OWL.
+            </p>
+
+            <p class="issue">
+                Currently, the ontology documentation is available
+                <a href="https://w3c.github.io/wot-thing-description/ontology/td.html">on w3c.github.io</a>
+                but it should eventually be put under the TD namespace, on w3.org.
+            </p>
+        </section>
 
     </section>
 
