@@ -759,23 +759,26 @@
         e.g. logic rules for a specific domain of application, can be found under the
         given namespace. Contextual information can also help specify some configurations and 
         behavior of the underlying communication protocols declared in the <code>forms</code> field.
-        <a href="#thing-description-full-serialization">Example 2</a> extends the TD sample from Example 1 by introducing a second defintion in the <code>@context</code> to declare the prefix <code>htv</code> as referring to the HTTP vocabulary namespace.
-        This namespace is used here to specify explicitly the HTTP methods for the property and
-        action within the <code>forms</code>. The declaration mechanism inside some
-        <code>@context</code> is specified by JSON-LD. A TD instance complies to version 1.1 of
-        this specification [[json-ld11]]. The TD instance can be also processed as an RDF
-        document (details are given in <a href="#note-jsonld11-processing"></a>).
+        <a href="#thing-description-full-serialization">Example 2</a> extends the TD sample from Example 1 by introducing a 
+        second defintion in the <code>@context</code> to declare the prefix <code>saref</code> as referring to the SAREF vocabulary namespace [[!smartM2M]].
+        This namespace is used here to to give via <code>@type</code> the Thing a <code>saref:LighingDevice</code> semantic label (corresponds to a RDF class)  as well as to 
+        semantically specify the affordance interactions such as <code>saref:OnOffState</code> for the <code>status</code> Property and <code>saref:ToggleCommand</code>
+        for the <code>toggle</code> Action.
   </p>
 
+
+ 
  <aside class="example" id="thing-description-full-serialization" title="Thing Description with context extension">
               <pre>
     {
         "@context": [
             "https://www.w3.org/2019/wot/td/v1",
-            {"htv": "http://www.w3.org/2011/http#"}
-        ],
+            {
+            "saref": "https://w3id.org/saref#"
+        }],
         "id": "urn:dev:wot:com:example:servient:lamp",
         "name": "MyLampThing",
+        "@type": "saref:LightingDevice",
         "securityDefinitions": {"basic_sc": {
             "scheme": "basic",
             "in": "header"
@@ -783,32 +786,39 @@
         "security": ["basic_sc"],
         "properties": {
             "status": {
+                "@type": "saref:OnOffState",
                 "type": "string",
                 "forms": [{
-                    "href": "https://mylamp.example.com/status",
-                    "htv:methodName": "GET"
+                    "href": "https://mylamp.example.com/status"
                 }]
             }
         },
         "actions": {
             "toggle": {
+                "@type": "saref:ToggleCommand",
                 "forms": [{
-                    "href": "https://mylamp.example.com/toggle",
-                    "http:methodName": "POST"
+                    "href": "https://mylamp.example.com/toggle"
                 }]
             }
         },
         "events": {
             "overheating": {
+                "@type": "saref:NotifyCommand",
                 "data": {"type": "string"},
                 "forms": [{
-                    "href": "https://mylamp.example.com/oh",
-                    "subprotocol": "longpoll"
+                    "href": "https://mylamp.example.com/oh"
                 }]
             }
         }
     }</pre>
 </aside>
+
+<p>
+        The declaration mechanism inside some
+        <code>@context</code> is specified by JSON-LD. A TD instance complies to version 1.1 of
+        this specification [[json-ld11]]. The TD instance can be also processed as an RDF
+        document (details are given in <a href="#note-jsonld11-processing"></a>).
+</p>
 
   </section>
 
@@ -2741,9 +2751,10 @@ If included namespaces are based on class definitions such as those provided by 
         {
             "@context": [
                 "https://www.w3.org/2019/wot/td/v1",
-                {"om": "http://www.wurvoc.org/vocabularies/om-1.8/"},
-                {"saref": "https://w3id.org/saref#"}
-            ],
+                {
+                "om": "http://www.wurvoc.org/vocabularies/om-1.8/",
+                "saref": "https://w3id.org/saref#"
+            }],
             "@type": "Thing",
             ...
             "properties": {
