@@ -898,8 +898,9 @@
         Set of constraints and equivalence relations applying to pre-defined vocabularies 
         (i.e., a core vocabulary with extension like JSON Schema, Web Linking and WoT Security),
         thus defining the semantics of these vocabularies. Constraints and
-        equivalence relations are typically expressed in terms of class membership
-        and property value assignment on arbitrary object-oriented data structures.
+        equivalence relations are typically expressed in terms of class signature,
+        property value assignment and property type on arbitrary object-oriented data
+        structures.
     </dd>
     <dt>
     <dfn id="dfn-td-processor">TD Processor</dfn>
@@ -907,12 +908,12 @@
     <dd>
         A system that can serialize some internal representation of a TD
         in a given format and deserialize it from that format. If two TDs have different
-        serializations but are semantically equivalent, a TD processor must construct the
-        same internal representation when deserializing them. For instance, a TD in which
-        default values were omitted is equivalent to a TD that would include default
-        values. Moreover, a TD processor must also detect semantically inconsistent TDs,
-        for which no representation should exist. A TD processor is typically a sub-system
-        of a WoT runtime.
+        serializations but are semantically equivalent, a TD processor must be able to
+        construct a canonical (i.e., identical) representation when deserializing them.
+        For instance, a TD in which default values were omitted is equivalent to a TD that
+        would include default values. Moreover, a TD processor must also detect semantically
+        inconsistent TDs, for which no representation should exist. A TD processor is
+        typically a sub-system of a WoT runtime.
     </dd>
     <dt>
         <dfn id="dfn-td-serialization">TD Serialization</dfn>
@@ -986,8 +987,8 @@
   <section id="sec-vocabulary-definition" class="normative">
     <h1>Information Model</h1>
     <!-- h1>Vocabulary</h1 -->
-    <p>This section introduces the Thing Description information model. 
-      The Thing Description Information model serves as the conceptual basis 
+    <p>This section introduces the TD information model. 
+      The TD information model serves as the conceptual basis 
       for the serialization and processing of Thing Description described 
       in later sections in this document.<p>
 
@@ -995,33 +996,87 @@
       <h2>Overview</h2>
     
       <p>
-      The W3C Thing Description provides a set of vocabulary for describing 
-      physical and virtual Things. In general, the Thing Description vocabulary set is grouped in three modules: 
+        The TD information model is built upon the following, independent vocabularies: 
         <ul>
-            <li>the core Thing Description vocabulary reflecting WoT's paradigm of 
-                    <code>Properties</code>, <code>Actions</code>, and <code>Events</code> affordances (also see [[!WOT-ARCHITECTURE]])</li>
-            <li> the data schema vocabulary reflecting a subset of the terms defined in 
-                    JSON Schema [[?JSON-SCHEMA-VALIDATION]],</li>
-            <li>      and the security vocabulary used to define security mechanism 
-                    configuration requirements. </li>                    
+            <li>
+                the <em>core</em> TD vocabulary, which reflects the
+                <a href="https://www.w3.org/TR/wot-architecture/#sec-interaction-model">WoT interaction model</a> 
+                including property, action and event affordances [[!WOT-ARCHITECTURE]]
+            </li>
+            <li>
+                the <em>Data Schema</em> vocabulary, including (a subset of) the terms defined in 
+                JSON Schema [[?JSON-SCHEMA-VALIDATION]]
+            </li>
+            <li>
+                the <em>WoT Security</em> vocabulary, defining security mechanisms 
+                and configuration requirements to implement them
+            </li>
+            <li>
+                the <em>Web Linking</em> vocabulary, encoding the main principles of RESTful
+                communication using Web links and forms
+            </li>
         </ul>
-
       </p>
 
-
-     
       <p>
-      An overview of this vocabulary with its class context and class relation 
-      is given by the following three figures. 
-      Vocabulary terms identify members within the TD information model.
-      Both the terms shown on the left side of "<code> : </code>" (i.e. colon) in the boxes 
-      representing classes and the terms labelling the arrows constitute 
-      the vocabulary terms of Thing Description information model.
-      Please note that the figures reflect the vocabulary terms and structure 
-      as they would be used in a Thing Description 
-      instance (see Section <a href="#sec-td-serialization"></a>).
-       
+          Each of these vocabularies is essentially a set of terms that can
+          be used to build data structures, interpreted as objects in the
+          traditional object-oriented sense. Formally, an object is either denoted
+          by a term or a set of property-value pairs such that properties are terms
+          and values denote other objects. Terms may also denote classes (or sets)
+          of objects.
       </p>
+
+      <p>
+          In this context, the TD information model is to be understood as a
+          set of constraints and equivalence relations between such data structures
+          that specifically denote WoT Things, i.e. physical world objects.
+          The constraints of the TD information model are threefolds:
+          <ul>
+              <li>
+                  <em>class signature</em>: for all objects denoted by a set of
+                  property-value pairs in the same class, there is a unique set of
+                  terms such that all property names for an object are in this set
+                  (the signature of the class).
+              </li>
+              <li>
+                  <em>property value assignment</em>: for all objects denoted by
+                  a set of property-value pairs in the same class, there is a set
+                  of terms such that every term in this set is the property of
+                  some property-value pair for each object (mandatory terms).
+              </li>
+              <li>
+                  <em>property type</em>: for all objects denoted by a set of
+                  property-value pairs in the same class, if two pairs for two
+                  distinct objects have the same property, their respective values
+                  must be in the same class (same type).
+              </li>
+          </ul>
+          In turn, the equivalence relations of the TD information model express
+          that two distinct data structures denote the same object. In practice,
+          equivalences are defined between data structures that omit certain
+          property-value pairs, assuming default values, and data structures that
+          explicitly include these values.
+      </p>
+
+      <p>
+          These abstract constraints can be intuitively represented as a UML
+          class diagram, in which classes are shown as tables, each row
+          giving a property name and a simple type, separated by a colon
+          (<code>:</code>). A simple type is a class with no signature.
+          Classes are connected with arrows if there is a property type constraint
+          between them (associations) or if one denotes a subset of the other
+          (inheritance).
+      </p>
+
+      <!-- TODO mention cardinalities -->
+
+      <p>
+          The diagram shown next represents all constraints on WoT Things included
+          in the TD information model. For the sake of readability, the diagram was
+          split in four parts, one for each of the four base vocabularies.
+      </p>
+      
       <!--<p><a href="http://visualdataweb.de/webvowl/#iri=https://rawgit.com/w3c/wot-thing-description/TD-JSON-LD-1.1/ontology/td.ttl">Click here for the visualization</a></p>-->
      
 
@@ -1051,43 +1106,25 @@
     </figure>
     
     
-      <p>A detailed description of the vocabulary of the TD core model, 
-        TD data schema model and TD security model is given in the following 
-        sub-sections.</p>
-
       <p>
-          <span class="rfc2119-assertion" id="td-vocabulary-defaults">
-            All equivalence relations expressed in Tables in Section <a href="#sec-default-values"></a>
-            MUST be followed by a TD processor.
-          </span>
-          These equivalences are implicitely defined as default value assignments
-          for certain vocabulary terms. 
+          Details on the TD information model are given next as tables. First, equivalence relations
+          are provided in the form of default values for properties for some class. Second, constraints
+          on the vocabularies mentioned above are provided as class definitions where each table
+          gives the signature of a class and each row of a table gives some value assignment and
+          some type for each property, along with a description.
       </p>
 
-      <p>
-            <span class="rfc2119-assertion" id="td-vocabulary">
-                All vocabulary constraints noted in tables in Section <a href="#sec-core-vocabulary-definition"></a>, <a href="#sec-data-schema-vocabulary-definition"></a>, <a href="#sec-security-vocabulary-definition"></a>, and <a href="#sec-zeb-linking-vocabulary-definition"></a> MUST be followed by a TD processor. 
-            </span>
-      </p>
-
-      <p>
-          The constraints noted in all tables are the following:
-      </p>
-
-      <ul>
-          <li>class membership</li>
-          <li>property value assignment</li>
-          TODO
-      </ul>
-
-      <p>
-        The <a href="#sec-td-serialization"></a> section explains how to serialize these vocabulary terms to a Thing Description instance using a 
-        JSON-based representation. It also defines default values for some mandatory vocabulary and explains the options how they can be serialized.
-      </p>
-      
+    </section>
 
       <section id="sec-default-values">
         <h3>Default Values for Vocabulary Terms</h3>
+
+        <p>
+            <span class="rfc2119-assertion" id="td-vocabulary-defaults">
+              All equivalence relations expressed in Tables in Section <a href="#sec-default-values"></a>
+              MUST be followed by a TD processor.
+            </span>
+        </p>
         
         <p>
             The follow table gives default value assignments when a TD does not
@@ -1196,11 +1233,19 @@
             </tbody>
         </table>
       </section>
-
-      </section>
     
+      <section>
+
+        <h2>Class Definitions</h2>
+
+        <p>
+            <span class="rfc2119-assertion" id="td-vocabulary">
+                All vocabulary constraints noted in tables in Section <a href="#sec-core-vocabulary-definition"></a>, <a href="#sec-data-schema-vocabulary-definition"></a>, <a href="#sec-security-vocabulary-definition"></a>, and <a href="#sec-zeb-linking-vocabulary-definition"></a> MUST be followed by a TD processor. 
+            </span>
+        </p>
+
       <section id="sec-core-vocabulary-definition">
-      <h2>Core Vocabulary Definition</h2>
+      <h2>Core Vocabulary Definitions</h2>
       <p>In the following tables, 
       a type given as "map of X" should be interpreted as defining
       an unordered collection of name-value pairs associating unique names
@@ -1382,7 +1427,7 @@ when the texts are served as a result such negotiation.
       </section>
     
       <section id="sec-data-schema-vocabulary-definition">
-      <h2>Data Schema Vocabulary Definition</h2>
+      <h2>Data Schema Vocabulary Definitions</h2>
       <p>
         The data schema definition reflecting a very common subset of the terms defined in JSON Schema [[?JSON-SCHEMA-VALIDATION]]. It is noted
         that data schema definitions within Thing Description instances are not limited to this defined subset and MAY use additional terms you 
@@ -1424,7 +1469,7 @@ when the texts are served as a result such negotiation.
       </section>
     
       <section id="sec-security-vocabulary-definition">
-      <h2>Security Vocabulary Definition</h2>
+      <h2>Security Vocabulary Definitions</h2>
     
       <p>
       For the core TD vocabulary only well-established security  
@@ -1489,7 +1534,7 @@ when the texts are served as a result such negotiation.
       </section>
     
       <section id="sec-web-linking-vocabulary-definition">
-      <h2>Web Linking Vocabulary Definition</h2>
+      <h2>Web Linking Vocabulary Definitions</h2>
       <p>
         The present model provides a representation for (typed) Web links exposed by
         a Thing. The web linking definition reflecting a very common subset of the terms defined in 
@@ -1502,6 +1547,8 @@ when the texts are served as a result such negotiation.
 <tr class="rfc2119-table-assertion" id="td-vocab-rel--Link"><td><code>rel</code></td><td>A link relation type identifies the semantics of a link.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-anchor--Link"><td><code>anchor</code></td><td>By default, the context, or anchor, of a link conveyed in the Link header field is the URL of the representation it is associated with, as defined in RFC7231, Section 3.1.4.1, and is serialized as a URI.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr></tbody></table></section>
       </section>
+
+    </section>
 
     </section>
 
