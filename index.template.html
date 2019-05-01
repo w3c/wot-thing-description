@@ -990,15 +990,6 @@
       with OpenAPI they are not compatible.  
       </p>
     
-      <p class="ednote" title="Security Scheme Extensions">
-      The vocabulary extension mechanism of the 
-      WoT Thing Description allows for additional security schemes if needed.
-      For more information about what additional security schemes 
-      or modifications are under discussion
-      (and to file issues if you have a request) please visit the 
-      <a href="https://github.com/w3c/wot-security">WoT Security TF repository.</a>
-      </p>
-    
         {wot-security}
       </section>
     
@@ -1994,68 +1985,6 @@ The <code>output</code> of this action is the photo taken, which is available in
     },
     ...
 </pre>
-  <p>Finally,
-  new security schemes can be defined using the vocabulary extension
-  mechanism.
-<!--
-  <span class="rfc2119-assertion" id="td-security-ns">
-  All security schemes defined in this document MAY
-  also be used via extension vocabularies, using namespace
-  URLs defined for them of the form 
-  <code>http://www.w3.org/ns/td/sec/</code><em>scheme</em> where <em>scheme</em>
-  is replaced by the scheme name.</span>
--->
-  For this example, we will use
-  OAuth2 via the extension mechanism.  
-  Note that vocabulary outside
-  <code>SecurityScheme</code> objects, in this case <code>oauth2v:scope</code>,
-  can also be included as part of the definition.
-  To use the extension mechanism an <code>@context</code> also needs to be 
-  defined, including the default for TDs as well as a definition of
-  the vocabulary and prefix to be used for the security scheme.
-  </p>
-<pre class="example">
-{
-    @context: ["https://www.w3.org/2019/td/v1",
-               {"oauth2v": "http://example.org/sec/oauth2"}],
-    ...
-    "securityDefinitions": {
-        "oauth2_sc": {
-            "scheme": "oauth2v:oauth2",
-            ...
-            "oauth2v:flow": "implicit",
-            "oauth2v:authorization": "https://example.com/authorization",
-            "oauth2v:scopes": ["limited","special"]
-        }
-    },
-    "security": ["oauth2_sc"],
-    "properties": {
-        "status": {
-            ...
-            "forms": [
-                {
-                    "href": "https://scopes.example.com/status",
-                    "contentType": "application/json",
-                    "oauth2v:scopes": ["limited"]
-                }
-            ]
-        }
-    },
-    "action": {
-        "configure": {
-            ...
-            "forms": [
-                {
-                    "href": "https://scopes.example.com/configure",
-                    "contentType": "application/json",
-                    "oauth2v:scopes": ["special"]
-                }
-            ]
-        }
-    },
-    ...
-}
-</pre>
 
 </section> <!-- end of id="security-serialization-json"-->
 <section id="version-serialization-json">
@@ -2338,6 +2267,10 @@ The <code>output</code> of this action is the photo taken, which is available in
     within the Thing Description is specified in Section <a href="#sec-thing-as-a-whole-json"></a>.
  </p>
 
+ <section>
+
+    <h4>Semantic Tagging</h4>
+
  <p>
 When adding additional vocabulary to a Thing Description instance, it is recommended that these vocabulary be linked to a namespace context that is within 
 the JSON name <code>@context</code> container is specified.
@@ -2374,6 +2307,12 @@ If included namespaces are based on class definitions such as those provided by 
             }
         }
     </pre>
+
+    </section>
+
+    <section>
+
+        <h4>Adding Protocol Bindings</h4>
 
     <p>
     With the context extension in the Thing Description, communication metadata can be supplemented or specified in the 
@@ -2418,6 +2357,85 @@ If included namespaces are based on class definitions such as those provided by 
         }
     }</pre>
         </aside>
+
+    </section>
+
+    <section>
+
+        <h4>Adding Security Schemes</h4>
+
+        <p>Finally,
+        new security schemes can be defined using the vocabulary extension
+        mechanism.
+      <!--
+        <span class="rfc2119-assertion" id="td-security-ns">
+        All security schemes defined in this document MAY
+        also be used via extension vocabularies, using namespace
+        URLs defined for them of the form 
+        <code>http://www.w3.org/ns/td/sec/</code><em>scheme</em> where <em>scheme</em>
+        is replaced by the scheme name.</span>
+      -->
+        For this example, we will use
+        OAuth2 via the extension mechanism.  
+        Note that vocabulary outside
+        <code>SecurityScheme</code> objects, in this case <code>wotsec:scope</code>,
+        can also be included as part of the definition.
+        To use the extension mechanism an <code>@context</code> also needs to be 
+        defined, including the default for TDs as well as a definition of
+        the vocabulary and prefix to be used for the security scheme.
+        </p>
+      <pre class="example">
+      {
+          @context: ["https://www.w3.org/2019/td/v1",
+                     {"wotsec:": "https://www.w3.org/2019/wot-security#"}],
+          ...
+          "securityDefinitions": {
+              "oauth2_sc": {
+                  "scheme": "wotsec:OAuth2SecurityScheme",
+                  ...
+                  "wotsec:flow": "implicit",
+                  "wotsecv:authorization": "https://example.com/authorization",
+                  "wotsec:scopes": ["limited","special"]
+              }
+          },
+          "security": ["oauth2_sc"],
+          "properties": {
+              "status": {
+                  ...
+                  "forms": [
+                      {
+                          "href": "https://scopes.example.com/status",
+                          "contentType": "application/json",
+                          "wotsec:scopes": ["limited"]
+                      }
+                  ]
+              }
+          },
+          "action": {
+              "configure": {
+                  ...
+                  "forms": [
+                      {
+                          "href": "https://scopes.example.com/configure",
+                          "contentType": "application/json",
+                          "wotsec:scopes": ["special"]
+                      }
+                  ]
+              }
+          },
+          ...
+      }
+      </pre>
+
+        <p>
+            For convenience, the W3C vocabulary giving security schemes itself
+            includes non-standards but widely used schemes like API key, public
+            key, proof-of-possession (PoP), certificates, pre-shared key (PSK)
+            or OAuth 2, as in the above example. For any other security scheme,
+            a dedicated vocabulary must be designed and referenced by TDs.
+        </p>
+
+    </section>
 
  </section>
 
