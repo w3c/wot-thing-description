@@ -118,7 +118,6 @@ load(updateEndpoint, null)
     }).concat(ctxFiles.map(f => {
         const context = fs.readFileSync(f, 'UTF-8');
         let ttl = jsonld.toRDF(JSON.parse(context));
-        console.log(ttl)
         return load(updateEndpoint, ttl);
     }));
 

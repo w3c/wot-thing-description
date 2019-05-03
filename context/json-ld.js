@@ -37,7 +37,9 @@ function context(obj, id) {
         txt += `_:${scope}${k} <${ld}term> "${k}" .\r\n`;
         
         let iri = fullIRI(v instanceof Object ? v['@id'] : v, ctx);
-        txt+= `_:${scope}${k} <${ld}iri> <${iri}> .\r\n`;
+        if (!iri.startsWith('@')) {
+            txt+= `_:${scope}${k} <${ld}iri> <${iri}> .\r\n`;
+        }
         
         if (v instanceof Object) {
             if (v['@container']) {
