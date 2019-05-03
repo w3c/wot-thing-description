@@ -398,7 +398,7 @@
 <aside class="example" id="simple-thing-description-sample" title="Thing Description Sample">
     <pre>{
     "@context": "https://www.w3.org/2019/td/v1",
-    "id": "urn:dev:wot:com:example:servient:lamp",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
     "name": "MyLampThing",
     "securityDefinitions": {
         "basic_sc": {"scheme": "basic", "in":"header"}
@@ -498,9 +498,10 @@
         "@context": [
             "https://www.w3.org/2019/td/v1",
             {
-            "saref": "https://w3id.org/saref#"
-        }],
-        "id": "urn:dev:wot:com:example:servient:lamp",
+                "saref": "https://w3id.org/saref#"
+            }
+        ],
+        "id": "urn:dev:ops:32473-WoTLamp-1234",
         "name": "MyLampThing",
         "@type": "saref:LightingDevice",
         "securityDefinitions": {"basic_sc": {
@@ -568,8 +569,9 @@
         Set of constraints and equivalence relations applying to pre-defined vocabularies 
         (i.e., a core vocabulary with extension like JSON Schema, Web Linking and WoT Security),
         thus defining the semantics of these vocabularies. Constraints and
-        equivalence relations are typically expressed in terms of class membership
-        and property value assignment on arbitrary object-oriented data structures.
+        equivalence relations are typically expressed in terms of class signature,
+        property value assignment and property type on arbitrary object-oriented data
+        structures.
     </dd>
     <dt>
     <dfn id="dfn-td-processor">TD Processor</dfn>
@@ -577,12 +579,12 @@
     <dd>
         A system that can serialize some internal representation of a TD
         in a given format and deserialize it from that format. If two TDs have different
-        serializations but are semantically equivalent, a TD processor must construct the
-        same internal representation when deserializing them. For instance, a TD in which
-        default values were omitted is equivalent to a TD that would include default
-        values. Moreover, a TD processor must also detect semantically inconsistent TDs,
-        for which no representation should exist. A TD processor is typically a sub-system
-        of a WoT runtime.
+        serializations but are semantically equivalent, a TD processor must be able to
+        construct a canonical (i.e., identical) representation when deserializing them.
+        For instance, a TD in which default values were omitted is equivalent to a TD that
+        would include default values. Moreover, a TD processor must also detect semantically
+        inconsistent TDs, for which no representation should exist. A TD processor is
+        typically a sub-system of a WoT runtime.
     </dd>
     <dt>
         <dfn id="dfn-td-serialization">TD Serialization</dfn>
@@ -730,8 +732,8 @@
   <section id="sec-vocabulary-definition" class="normative">
     <h1>Information Model</h1>
     <!-- h1>Vocabulary</h1 -->
-    <p>This section introduces the Thing Description information model. 
-      The Thing Description Information model serves as the conceptual basis 
+    <p>This section introduces the TD information model. 
+      The TD information model serves as the conceptual basis 
       for the serialization and processing of Thing Description described 
       in later sections in this document.<p>
 
@@ -739,33 +741,87 @@
       <h2>Overview</h2>
     
       <p>
-      The W3C Thing Description provides a set of vocabulary for describing 
-      physical and virtual Things. In general, the Thing Description vocabulary set is grouped in three modules: 
+        The TD information model is built upon the following, independent vocabularies: 
         <ul>
-            <li>the core Thing Description vocabulary reflecting WoT's paradigm of 
-                    <code>Properties</code>, <code>Actions</code>, and <code>Events</code> affordances (also see [[!WOT-ARCHITECTURE]])</li>
-            <li> the data schema vocabulary reflecting a subset of the terms defined in 
-                    JSON Schema [[?JSON-SCHEMA-VALIDATION]],</li>
-            <li>      and the security vocabulary used to define security mechanism 
-                    configuration requirements. </li>                    
+            <li>
+                the <em>core</em> TD vocabulary, which reflects the
+                <a href="https://www.w3.org/TR/wot-architecture/#sec-interaction-model">WoT interaction model</a> 
+                including property, action and event affordances [[!WOT-ARCHITECTURE]]
+            </li>
+            <li>
+                the <em>Data Schema</em> vocabulary, including (a subset of) the terms defined in 
+                JSON Schema [[?JSON-SCHEMA-VALIDATION]]
+            </li>
+            <li>
+                the <em>WoT Security</em> vocabulary, defining security mechanisms 
+                and configuration requirements to implement them
+            </li>
+            <li>
+                the <em>Web Linking</em> vocabulary, encoding the main principles of RESTful
+                communication using Web links and forms
+            </li>
         </ul>
-
       </p>
 
-
-     
       <p>
-      An overview of this vocabulary with its class context and class relation 
-      is given by the following three figures. 
-      Vocabulary terms identify members within the TD information model.
-      Both the terms shown on the left side of "<code> : </code>" (i.e. colon) in the boxes 
-      representing classes and the terms labelling the arrows constitute 
-      the vocabulary terms of Thing Description information model.
-      Please note that the figures reflect the vocabulary terms and structure 
-      as they would be used in a Thing Description 
-      instance (see Section <a href="#sec-td-serialization"></a>).
-       
+          Each of these vocabularies is essentially a set of terms that can
+          be used to build data structures, interpreted as objects in the
+          traditional object-oriented sense. Formally, an object is either denoted
+          by a term or a set of property-value pairs such that properties are terms
+          and values denote other objects. Terms may also denote classes (or sets)
+          of objects.
       </p>
+
+      <p>
+          In this context, the TD information model is to be understood as a
+          set of constraints and equivalence relations between such data structures
+          that specifically denote WoT Things, i.e. physical world objects.
+          The constraints of the TD information model are threefolds:
+          <ul>
+              <li>
+                  <em>class signature</em>: for all objects denoted by a set of
+                  property-value pairs in the same class, there is a unique set of
+                  terms such that all property names for an object are in this set
+                  (the signature of the class).
+              </li>
+              <li>
+                  <em>property value assignment</em>: for all objects denoted by
+                  a set of property-value pairs in the same class, there is a set
+                  of terms such that every term in this set is the property of
+                  some property-value pair for each object (mandatory terms).
+              </li>
+              <li>
+                  <em>property type</em>: for all objects denoted by a set of
+                  property-value pairs in the same class, if two pairs for two
+                  distinct objects have the same property, their respective values
+                  must be in the same class (same type).
+              </li>
+          </ul>
+          In turn, the equivalence relations of the TD information model express
+          that two distinct data structures denote the same object. In practice,
+          equivalences are defined between data structures that omit certain
+          property-value pairs, assuming default values, and data structures that
+          explicitly include these values.
+      </p>
+
+      <p>
+          These abstract constraints can be intuitively represented as a UML
+          class diagram, in which classes are shown as tables, each row
+          giving a property name and a simple type, separated by a colon
+          (<code>:</code>). A simple type is a class with no signature.
+          Classes are connected with arrows if there is a property type constraint
+          between them (associations) or if one denotes a subset of the other
+          (inheritance).
+      </p>
+
+      <!-- TODO mention cardinalities -->
+
+      <p>
+          The diagram shown next represents all constraints on WoT Things included
+          in the TD information model. For the sake of readability, the diagram was
+          split in four parts, one for each of the four base vocabularies.
+      </p>
+      
       <!--<p><a href="http://visualdataweb.de/webvowl/#iri=https://rawgit.com/w3c/wot-thing-description/TD-JSON-LD-1.1/ontology/td.ttl">Click here for the visualization</a></p>-->
      
 
@@ -795,42 +851,25 @@
     </figure>
     
     
-      <p>A detailed description of the vocabulary of the TD core model, 
-        TD data schema model and TD security model is given in the following 
-        sub-sections.</p>
-
       <p>
-          <span class="rfc2119-assertion" id="td-vocabulary-defaults">
-            All equivalence relations expressed in Tables in Section <a href="#sec-default-values"></a>
-            MUST be followed by a TD processor.
-          </span>
-          These equivalences are implicitely defined as default value assignments
-          for certain vocabulary terms. 
+          Details on the TD information model are given next as tables. First, equivalence relations
+          are provided in the form of default values for properties for some class. Second, constraints
+          on the vocabularies mentioned above are provided as class definitions where each table
+          gives the signature of a class and each row of a table gives some value assignment and
+          some type for each property, along with a description.
       </p>
 
-      <p>
-            <span class="rfc2119-assertion" id="td-vocabulary">
-                All vocabulary constraints noted in tables in Section <a href="#sec-core-vocabulary-definition"></a>, <a href="#sec-data-schema-vocabulary-definition"></a>, <a href="#sec-security-vocabulary-definition"></a>, and <a href="#sec-zeb-linking-vocabulary-definition"></a> MUST be followed by a TD processor. 
-            </span>
-      </p>
-
-      <p>
-          The constraints noted in all tables are the following:
-      </p>
-
-      <ul>
-          <li>class membership</li>
-          <li>property value assignment</li>
-      </ul>
-
-      <p>
-        The <a href="#sec-td-serialization"></a> section explains how to serialize these vocabulary terms to a Thing Description instance using a 
-        JSON-based representation. It also defines default values for some mandatory vocabulary and explains the options how they can be serialized.
-      </p>
-      
+    </section>
 
       <section id="sec-default-values">
         <h3>Default Values for Vocabulary Terms</h3>
+
+        <p>
+            <span class="rfc2119-assertion" id="td-vocabulary-defaults">
+              All equivalence relations expressed in Tables in Section <a href="#sec-default-values"></a>
+              MUST be followed by a TD processor.
+            </span>
+        </p>
         
         <p>
             The follow table gives default value assignments when a TD does not
@@ -939,11 +978,19 @@
             </tbody>
         </table>
       </section>
-
-      </section>
     
+      <section>
+
+        <h2>Class Definitions</h2>
+
+        <p>
+            <span class="rfc2119-assertion" id="td-vocabulary">
+                All vocabulary constraints noted in tables in Section <a href="#sec-core-vocabulary-definition"></a>, <a href="#sec-data-schema-vocabulary-definition"></a>, <a href="#sec-security-vocabulary-definition"></a>, and <a href="#sec-zeb-linking-vocabulary-definition"></a> MUST be followed by a TD processor. 
+            </span>
+        </p>
+
       <section id="sec-core-vocabulary-definition">
-      <h2>Core Vocabulary Definition</h2>
+      <h2>Core Vocabulary Definitions</h2>
       <p>In the following tables, 
       a type given as "map of X" should be interpreted as defining
       an unordered collection of name-value pairs associating unique names
@@ -965,7 +1012,7 @@
       </section>
     
       <section id="sec-data-schema-vocabulary-definition">
-      <h2>Data Schema Vocabulary Definition</h2>
+      <h2>Data Schema Vocabulary Definitions</h2>
       <p>
         The data schema definition reflecting a very common subset of the terms defined in JSON Schema [[?JSON-SCHEMA-VALIDATION]]. It is noted
         that data schema definitions within Thing Description instances are not limited to this defined subset and MAY use additional terms you 
@@ -977,7 +1024,7 @@
       </section>
     
       <section id="sec-security-vocabulary-definition">
-      <h2>Security Vocabulary Definition</h2>
+      <h2>Security Vocabulary Definitions</h2>
     
       <p>
       For the core TD vocabulary only well-established security  
@@ -994,7 +1041,7 @@
       </section>
     
       <section id="sec-web-linking-vocabulary-definition">
-      <h2>Web Linking Vocabulary Definition</h2>
+      <h2>Web Linking Vocabulary Definitions</h2>
       <p>
         The present model provides a representation for (typed) Web links exposed by
         a Thing. The web linking definition reflecting a very common subset of the terms defined in 
@@ -1004,6 +1051,8 @@
 
         {web-linking}
       </section>
+
+    </section>
 
     </section>
 
@@ -1149,7 +1198,7 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
         </div>
         <pre>{
     "@context": "https://www.w3.org/2019/td/v1",
-    "id": "urn:dev:wot:com:example:servient:lamp",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
     "name": "MyLampThing",
     "securityDefinitions": {
         "basic_sc": {
@@ -1195,7 +1244,7 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
 </pre>
 <pre>{
     "@context": "https://www.w3.org/2019/td/v1",
-    "id": "urn:dev:wot:com:example:servient:lamp",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
     "name": "MyLampThing",
     "securityDefinitions": {
         "basic_sc": {
@@ -1307,7 +1356,7 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
   <pre class="example">
 {
     "@context": "https://www.w3.org/2019/wot/td/v1",
-    "id": "urn:dev:wot:com:example:servient:myThing",
+    "id": "urn:dev:ops:32473-Thing-1234",
     "name": "MyThing",
     "description": "Human readable information.",
     "descriptions": {...},
@@ -1672,7 +1721,7 @@ The <code>output</code> of this action is the photo taken, which is available in
 <pre class="example" id="td-forms-readall-example">
 {
     "@context": "https://www.w3.org/2019/td/v1",
-    "id": "urn:dev:wot:com:example:servient:lamp",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
     ...
     "forms": [
         {
@@ -1814,7 +1863,7 @@ The <code>output</code> of this action is the photo taken, which is available in
     </p>
 <pre class="example">
 {
-    "id": "urn:dev:wot:com:example:servient:myThing",
+    "id": "urn:dev:ops:32473-Thing-1234",
     "name": "MyThing",
     "description": "Human readable information.",
     "support": "https://servient.example.com/contact",
@@ -2160,9 +2209,48 @@ The <code>output</code> of this action is the photo taken, which is available in
 
 
     <section id="titles-descriptions-serialization-json">
-            <h2><code>titles</code> and <code>descriptions</code></h2>
+            <h2><code>title(s)</code> and <code>description(s)</code></h2>
 
-            <p>The vocabulary terms <code>titles</code> and <code>descriptions</code> enables human-readable text description in multi-languages using  
+            <p>The vocabulary terms <code>title</code> and <code>description</code> are 
+               used to provide human-readable texts for titles (e.g., a display 
+               text for UI) and additional information useful for Consumers of TDs. 
+               When an optional default language <code>@language</code> is specified 
+               in the <code>@context</code> of a <a href="#thing">Thing instance</a>, 
+               that default language is associated with the strings provided in the 
+               value of <code>title</code> and <code>description</code>.</p>
+
+            <p>A TD snippet using <code>title</code> and <code>description</code> is 
+               shown below. Note that there is a default language specified 
+               with a <code>@language</code> term member of value <code>"en"</code> 
+               within <code>@context</code>. This default language is associated 
+               with the string values of <code>description</code>, 
+               <code>title</code> (as well as <code>name</code>).</p>
+
+        <pre class="example">
+            {
+                "@context": [
+                    "https://www.w3.org/2019/wot/td/v1",
+                    {
+                        "@language" : "en"
+                    }
+                ]
+                "name": "MyThing",
+                "description": "Human readable information.",
+                ...
+                "properties": {
+                    "on": {
+                        "title" : "On/Off",
+                        "type": "boolean",
+                        "forms": [...]
+                    },
+                    "status": {
+                        "title" : "Status",
+                        "type": "object",
+                        ...
+            }
+        </pre>
+
+            <p>On the other hand, the vocabulary terms <code>titles</code> and <code>descriptions</code> enables human-readable text description in multi-languages using  
                 language tags described in [[!BCP47]].
               <span class="rfc2119-assertion" id="td-multi-languages">
                   Whenever the vocabulary terms <code>titles</code> and <code>descriptions</code> can be used, both MUST be serialized as JSON Object. The member names of the JSON Object MUST be 
@@ -2439,22 +2527,18 @@ If included namespaces are based on class definitions such as those provided by 
 
  </section>
 
-  <section id="media-type-section">  
-  <h1>Media Type</h1>
+  <section>
+  <h1>Identification</h1>
 
   <p>
   The JSON-based serialization of the TD is identified by 
-  the media type [[IANA-MEDIA-TYPES]] <code>application/td+json</code>.
+  the media type <code>application/td+json</code> or the
+  CoAP Content-Format ID <code>T.B.D.</code> (see <a href="#iana-section"></a>).
   </p>
 
-  <p class="ednote" title="CoAP Content Format">
+  <p class="ednote" title="CoAP Content-Format">
   CoAP-based WoT implementations can use the experimental Content-Format
-  <code>65100</code> until a proper identifier has been registered.
-  </p>
-
-  <p class="ednote" title="IANA Considerations">
-  Neither the <code>application/td+json</code> content type nor
-  a CoAP Content-Format identifier have been registered with IANA yet.
+  <code>65100</code> until the final Content-Format ID has been assigned.
   </p>
 
   </section>
@@ -2678,7 +2762,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
             </div>
             <pre>{
     "@context": "https://www.w3.org/2019/td/v1",
-    "id": "urn:dev:wot:com:example:servient:lamp",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
     "name": "MyLampThing",
     "securityDefinitions": {
         "basic_sc": {
@@ -2724,7 +2808,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
 }</pre>
         <pre>{
     "@context": "https://www.w3.org/2019/td/v1",
-    "id": "urn:dev:wot:com:example:servient:lamp",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
     "name": "MyLampThing",
     "securityDefinitions": {
         "basic_sc": {
@@ -2818,7 +2902,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
 
 <pre class="example" title="MyLampThing represented as a compact JSON serialization">
 {
-    "id": "urn:dev:wot:com:example:servient:lamp",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
     "name": "MyLampThing",
     "description" : "MyLampThing uses JSON serialization",
     "securityDefinitions": {"psk_sc":{"scheme": "psk"}},
@@ -2872,7 +2956,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
 <pre class="example" title="MyLightSensor with MQTT binding">
         {
             "name": "MyLightSensor",
-            "id": "urn:dev:wot:com:example:servient:lightsensor",
+            "id": "urn:dev:ops:32473-WoTLightSensor-1234",
             "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
             "security": ["nosec_sc"],
             "events": {
@@ -2916,7 +3000,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
   <pre class="example" title="Temperature event with subscripton and cancellation for a Thing-2-Thing interaction">
         {
             "@context": "https://www.w3.org/2019/td/v1",
-            "id": "urn:dev:wot:org:eclipse:thingweb:event-example",
+            "id": "urn:dev:ops:32473-Thing-1234",
             "name": "TemperatureForT2T",
             "description": "Event with subscription / cancellation (Thing-2-Thing use case).",
             "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
@@ -3138,6 +3222,137 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
 
   </section>
 
+  <section id="iana-section" class="normative">
+  <h1>IANA Considerations</h1>
+    <section id="media-type-section">
+    <h2><code>application/td+json</code> Media Type Registration</h2>
+    <dl>
+      <dt>Type name:</dt>
+      <dd>application</dd>
+      <dt>Subtype name:</dt>
+      <dd>td+json</dd>
+      <dt>Required parameters:</dt>
+      <dd>None</dd>
+      <dt>Optional parameters:</dt>
+      <dd>None</dd>
+      <dt>Encoding considerations:</dt>
+      <dd>See <a href="https://tools.ietf.org/html/rfc6839#section-3.1">RFC&nbsp;6839, section 3.1</a>.</dd>
+      <dt>Security considerations:</dt>
+      <dd>See <a href="https://tools.ietf.org/html/rfc8259">RFC&nbsp;8259</a>.
+        <p>
+          <span class="rfc2119-assertion" id="iana-security-execution">
+            Since WoT Thing Description is intended to be a pure data exchange format for
+            Thing metadata, the serialization SHOULD NOT be passed through a
+            code execution mechanism such as JavaScript's <code>eval()</code>
+            function to be parsed.
+          </span>
+          An (invalid) document may contain code that,
+          when executed, could lead to unexpected side effects compromising
+          the security of a system.
+        </p>
+        <p>
+          WoT Thing Descriptions can be evaluated with a JSON-LD 1.1 processor,
+          which typically follows links to remote contexts (i.e., TD context
+          extensions, see <a href="#content-extension-section"></a>)
+          automatically, resulting in the transfer of files
+          without the explicit request of the Consumer for each one. If remote
+          contexts are served by third parties, it may allow them to gather
+          usage patterns or similar information leading to privacy concerns.
+          <span class="rfc2119-assertion" id="iana-security-remote">
+          While implementations on resource-constrained devices are expected
+          to perform raw JSON processing (as opposed to JSON-LD processing),
+          implementations in general SHOULD statically cache vetted
+          versions of their supported context extensions and not to follow links
+          to remote contexts.
+          </span>
+          Supported context extensions can be managed
+          through a secure software update mechanism instead.
+        </p>
+        <p>
+          Context Extensions (see <a href="#content-extension-section"></a>)
+          that are loaded from the Web over non-secure connections,
+          such as HTTP, run the risk of being altered by an attacker such that
+          they may modify the TD Information Model in a way that could
+          compromise security.
+          <span class="rfc2119-assertion" id="iana-security-alter">
+          For this reason, Consumer again
+          SHOULD vet and cache remote contexts before allowing the system
+          to use it.
+          </span>
+        </p>
+        <p>
+          Given that JSON-LD processing usually includes the substitution of
+          long IRIs with short terms,
+          WoT Thing Descriptions may expand considerably when processed using
+          a JSON-LD 1.1 processor and, in the worst case, the resulting data
+          might consume all of the recipient's resources.
+          <span class="rfc2119-assertion" id="iana-security-expansion">
+          Consumers SHOULD treat any TD metadata with due skepticism.
+          </span>
+        </p>
+      </dd>
+      <dt>Interoperability considerations:</dt>
+      <dd>See <a href="https://tools.ietf.org/html/rfc8259">RFC&nbsp;8259</a>.
+        <p>
+        Rules for processing both conforming and non-conforming content are
+        defined in this specification.
+        </p>
+      </dd>
+      <dt>Published specification:</dt>
+      <dd><a href="https://w3c.github.io/wot-thing-description">https://w3c.github.io/wot-thing-description</a></dd>
+      <dt>Applications that use this media type:</dt>
+      <dd>
+        All participating entities in the W3C Web of Things, that is,
+        Things, Consumers, and Intermediaries as defined in the
+        <a href="https://w3c.github.io/wot-architecture">Web of Things (WoT) Architecture</a>.</dd>
+      <dt>Fragment identifier considerations:</dt>
+      <dd>See <a href="https://tools.ietf.org/html/rfc6839#section-3.1">RFC&nbsp;6839, section 3.1</a>.</dd>
+      <dt>Additional information:</dt>
+      <dd>
+        <dl>
+          <dt>Magic number(s):</dt>
+          <dd>Not Applicable</dd>
+          <dt>File extension(s):</dt>
+          <dd>.jsontd</dd>
+          <dt>Macintosh file type code(s):</dt>
+          <dd>TEXT</dd>
+        </dl>
+      </dd>
+      <dt>Person &amp; email address to contact for further information:</dt>
+      <dd>Matthias Kovatsch &lt;w3c@kovatsch.net&gt;</dd>
+      <dt>Intended usage:</dt>
+      <dd>COMMON</dd>
+      <dt>Restrictions on usage:</dt>
+      <dd>None</dd>
+      <dt>Author(s):</dt>
+      <dd>The WoT Thing Description specification is a product of the Web of Things Working Group.</dd>
+      <dt>Change controller:</dt>
+      <dd><abbr title="World Wide Web Consortium">W3C</abbr></dd>
+    </dl>
+
+    </section>
+    <section id="content-format-section">
+    <h2>CoAP Content-Format Registration</h2>
+    <p>
+      IANA assigns compact CoAP Content-Format IDs for media types in the
+      <a href="https://www.iana.org/assignments/core-parameters/core-parameters.xhtml#content-formats">CoAP Content-Formats</a>
+      subregistry within the
+      <a href="https://www.iana.org/assignments/core-parameters/core-parameters.xhtml">Constrained RESTful Environments (CoRE) Parameters</a>
+      registry [[RFC7252]].
+      The Content-Format ID for WoT Thing Description is (t.b.d.) in the 256-9999 range (IETF Review or IESG Approval).
+    </p>
+    <dl>
+      <dt>Media Type:</dt>
+      <dd>application/td+json</dd>
+      <dt>Encoding:</dt>
+      <dd>-</dd>
+      <dt>ID:</dt>
+      <dd>T.B.D.</dd>
+      <dt>Reference:</dt>
+      <dd>[<a href="https://w3c.github.io/wot-thing-description">"Web of Things (WoT) Thing Description", May 2019</a>]</dd>
+    </section>
+  </section>
+
   <section id="json-schema-for-validation" class="appendix normative">
   <h1>JSON Schema for TD Instance Validation</h1>
     <p>
@@ -3222,7 +3437,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     {
         "@context": ["https://www.w3.org/2019/td/v1"], 
         "@type" : "ThingTemplate",
-        "id": "urn:dev:wot:com:example:servient:lamp:model",
+        "id": "urn:dev:ops:32473-WoTLampTemplate-0000",
         "name": "Lamp Thing Template",
         "description" : "Lamp Thing Template",
         "properties": {
@@ -3250,11 +3465,11 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     <section id="buzzer-thing-template">
     <h3>Thing Template: Buzzer</h3>
     
-    <pre class="example" title="MyLampThingTemplate serialized in JSON">
+    <pre class="example" title="MyBuzzerThingTemplate serialized in JSON">
     {
         "@context": ["https://www.w3.org/2019/td/v1"], 
         "@type" : "ThingTemplate",
-        "id": "urn:dev:wot:com:example:servient:buzzer:template",
+        "id": "urn:dev:ops:32473-WoTBuzzerTemplate-0000",
         "name": "Buzzer Thing Template",
         "description" : "Thing template of a buzzer that makes noise for 10 seconds",
          "actions": {
@@ -3277,16 +3492,16 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
        		    { "thing-templates": "http://www.w3.org/ns/thing-templates"] }, 
        "@type" : [
             "Thing",
-            "urn:dev:wot:com:example:servient:lamp:template",
-            "urn:dev:wot:com:example:servient:buzzer:template"
+            "urn:dev:ops:32473-WoTLampTemplate-0000",
+            "urn:dev:ops:32473-WoTBuzzerTemplate-0000"
         ],
-        "id": "urn:dev:wot:com:example:servient:combinedBuzzerLamp1",
+        "id": "urn:dev:ops:32473-WoTLampBuzzerTemplate-0000",
         "name": "My Buzzing Lamp Thing",
         "description" : "A lamp that can issue an alert",
         "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
         "security": ["nosec_sc"],
         "thing-templates:components": [{
-            "id": "urn:dev:wot:com:example:servient:lamp:template",
+            "id": "urn:dev:ops:32473-WoTLampTemplate-0000",
             "name": "Lamp Thing Template",
             "description" : "Thing Template for a lamp",
             "properties": {
@@ -3322,7 +3537,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
             }
         },
         {
-            "id": "urn:dev:wot:com:example:servient:buzzer:template",
+            "id": "urn:dev:ops:32473-WoTBuzzerTemplate-0000",
             "name": "Buzzer Thing Template",
             "description" : "Thing Template of a buzzer that makes noise for 10 seconds",
              "actions": {
@@ -3382,7 +3597,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
                 </div>
                 <pre>{
     "@context": "https://www.w3.org/2019/td/v1",
-    "id": "urn:dev:wot:com:example:servient:lamp",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
     "name": "MyLampThing",
     "securityDefinitions": {
         "basic_sc": {
