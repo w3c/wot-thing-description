@@ -273,13 +273,7 @@ vs:term_status rdf:type owl:AnnotationProperty .
 
 # TODO: This is an ID, referencing a securityDefinition; 
 # therefore, is there a more appropriate type to use here, eg URI? ID?
-          rdfs:range xsd:string ;	
-         
-          rdfs:domain [ rdf:type owl:Class ;
-                        owl:unionOf ( :Form
-                                      :Thing
-                                    )
-                      ] .
+          rdfs:range xsd:string .
 
 
 ###  http://www.w3.org/2019/td#securityDefinitions	
@@ -392,26 +386,6 @@ vs:term_status rdf:type owl:AnnotationProperty .
        
        rdfs:range xsd:string .
 
-###  http://www.w3.org/2019/td#contentType
-
-:contentType rdf:type owl:DatatypeProperty ;
-           
-           rdfs:label "contentType" ;
-           
-           rdfs:comment "Assign a content type based on a media type [[IANA-MEDIA-TYPES]] (e.g., 'application/json) and (optional) parameters (e.g., 'charset=utf-8')"@en ;
-           
-           rdfs:range xsd:string ;
-           
-           rdfs:domain [ rdf:type owl:Class ;
-                         owl:unionOf ( :Form
-                                       
-                                     )
-                       ] .
-
-:contentCoding rdf:type owl:DatatypeProperty ;
-               rdfs:label "contentCoding" ;
-               rdfs:comment "Content coding values indicate an encoding transformation that has been or can be applied to a representation. Content codings are primarily used to allow a representation to be compressed or otherwise usefully transformed without losing the identity of its underlying media type and without loss of information. Examples of content coding include \"gzip\", \"deflate\", etc. "@en .
-
 ###  http://www.w3.org/2019/td#name
 
 :name rdf:type owl:DatatypeProperty ;
@@ -461,60 +435,6 @@ vs:term_status rdf:type owl:AnnotationProperty .
             rdfs:range xsd:boolean ;
             
             rdfs:domain :PropertyAffordance .
-
-###  http://www.w3.org/2019/td#op
-
-:op rdf:type owl:DatatypeProperty ;
-     
-     rdfs:label "op" ;
-     
-     rdfs:comment """Indicates the semantic intention of performing the operation(s) described by the form.
-
-For example, the Property interaction allows get and set operations.  
-The protocol binding may contain a form for the get operation and a different form for the set operation.  
-The op attribute indicates which form is for which and allows the client to select the correct form for the operation required.
-
-op can be assigned one or more interaction verb(s) each representing a semantic intention of an operation."""@en ;
-     
-     rdfs:range xsd:string ;
-     
-     rdfs:domain :Link .
-
-
-     ###  http://www.w3.org/2019/td#response
-
-:response rdf:type owl:DatatypeProperty ;
-     
-     rdfs:label "response" ;
-     
-     rdfs:comment """This optional term can be used if, e.g., the output communication metadata differ from input metdata (e.g., output contentType differ from the
-     input contentType). The response name contains metadata that is only valid for the reponse messages."""@en ;
-   
-     rdfs:domain :ExpectedResponse .
-
-
-
-###  http://www.w3.org/2019/td#subprotocol
-
-:subprotocol rdf:type owl:DatatypeProperty ;
-     
-     rdfs:label "subprotocol" ;
-     
-     rdfs:comment """Indicates the exact mechanism by which an interaction will be accomplished for a given protocol when there are multiple options.
-     
-For example, for HTTP and Events, it indicates which of several available mechanisms should be used for asynchronous notifications such as long polling, websub (also see https://www.w3.org/TR/websub/), or server sent events (also see https://www.w3.org/TR/eventsource/). Please note that there is no restriction on the sub-protocol selection and other mechanisms can also be announced by this subprotocol term."""@en ;
-     
-     rdfs:range xsd:string ;
-     
-     rdfs:domain :Form .
-
-
-
-###  http://www.w3.org/2019/td#href
-
-:href rdf:type owl:DatatypeProperty ;
-      rdfs:label "href" ;
-      rdfs:comment """URI of the endpoint where an interaction pattern is provided.""" .
 
 
 
@@ -610,37 +530,6 @@ For example, for HTTP and Events, it indicates which of several available mechan
 
 
 
-###  http://www.w3.org/2019/td#Form
-
-:Form rdf:type owl:Class ;
-      
-      rdfs:label "Form" ;
-      
-      rdfs:subClassOf [ rdf:type owl:Restriction ;
-                        owl:onProperty :contentType ;
-                        owl:allValuesFrom xsd:string
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :op ;
-                        owl:allValuesFrom xsd:string
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :subprotocol ;
-                        owl:allValuesFrom xsd:string
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :href ;
-                        owl:someValuesFrom xsd:anyURI
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :response ;
-                        owl:allValuesFrom :ExpectedResponse
-                      ]  ;
-      
-      rdfs:comment "Communication metadata indicating where a service can be accessed by a client application. An interaction might have more than one form."@en .
-
-
-
 ###  http://www.w3.org/2019/td#interactionaffordance
 
 :InteractionAffordance rdf:type owl:Class ;
@@ -656,10 +545,6 @@ For example, for HTTP and Events, it indicates which of several available mechan
                                       owl:allValuesFrom :MultiLanguage
                                     ] ,
                                     [ rdf:type owl:Restriction ;
-                                      owl:onProperty :forms ;
-                                      owl:allValuesFrom :Form
-                                    ] ,
-                                    [ rdf:type owl:Restriction ;
                                       owl:onProperty :description ;
                                       owl:allValuesFrom xsd:string
                                     ] ,
@@ -670,11 +555,7 @@ For example, for HTTP and Events, it indicates which of several available mechan
                                     [ rdf:type owl:Restriction ;
                                       owl:onProperty :uriVariables ;
                                       owl:someValuesFrom :DataSchema
-                                    ],
-                                    [ rdf:type owl:Restriction ;
-                                      owl:onProperty :uriVariables ;
-                                      owl:someValuesFrom :Form
-                                    ] ;
+                                    ];
                     
                     rdfs:comment "Metadata of a Thing that shows the possible choices to clients, thereby suggesting how clients may interact with the Thing. There are many types of potential affordances, but W3C WoT defines three types of Interaction Affordances: Properties, Actions, and Events."@en .
 
@@ -721,20 +602,6 @@ For example, for HTTP and Events, it indicates which of several available mechan
                       ] ;
       
       rdfs:comment "Carries version information about the TD instance. If required, additional version information such as firmware and hardware version (term definitions outside of the TD namespace) can be extended here."@en .
-
-
-###  http://www.w3.org/2019/td#ExpectedResponse
-
-:ExpectedResponse rdf:type owl:Class ;
-      
-      rdfs:label "ExpectedResponse" ;
-      
-      rdfs:subClassOf [ rdf:type owl:Restriction ;
-                        owl:onProperty :contentType ;
-                        owl:allValuesFrom xsd:string
-                      ] ;
-      
-      rdfs:comment "Communication metadata for response messages (e.g., contentType of the response)."@en .
 
 
 
@@ -792,10 +659,6 @@ For example, for HTTP and Events, it indicates which of several available mechan
                          owl:allValuesFrom xsd:anyURI
                        ] ,
                        [ rdf:type owl:Restriction ;
-                         owl:onProperty :links ;
-                         owl:allValuesFrom :Link
-                       ] ,
-                       [ rdf:type owl:Restriction ;
                          owl:onProperty :events ;
                          owl:allValuesFrom :EventAffordance
                        ] ,
@@ -830,11 +693,7 @@ For example, for HTTP and Events, it indicates which of several available mechan
                        [ rdf:type owl:Restriction ;
                          owl:onProperty :securityDefinitions ;
                          owl:allValuesFrom :SecurityScheme
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :forms ;
-                         owl:allValuesFrom :Form
-                       ];
+                       ] ;
        
        rdfs:comment "An abstraction of a physical or a virtual entity whose metadata and interfaces are described by a WoT Thing Description, whereas a virtual entity is the composition of one or more Things."@en .
 
