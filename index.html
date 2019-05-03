@@ -3045,22 +3045,18 @@ If included namespaces are based on class definitions such as those provided by 
 
  </section>
 
-  <section id="media-type-section">  
-  <h1>Media Type</h1>
+  <section>
+  <h1>Identification</h1>
 
   <p>
   The JSON-based serialization of the TD is identified by 
-  the media type [[IANA-MEDIA-TYPES]] <code>application/td+json</code>.
+  the media type <code>application/td+json</code> or the
+  CoAP Content-Format ID <code>T.B.D.</code> (see <a href="#iana-section"></a>).
   </p>
 
-  <p class="ednote" title="CoAP Content Format">
+  <p class="ednote" title="CoAP Content-Format">
   CoAP-based WoT implementations can use the experimental Content-Format
-  <code>65100</code> until a proper identifier has been registered.
-  </p>
-
-  <p class="ednote" title="IANA Considerations">
-  Neither the <code>application/td+json</code> content type nor
-  a CoAP Content-Format identifier have been registered with IANA yet.
+  <code>65100</code> until the final Content-Format ID has been assigned.
   </p>
 
   </section>
@@ -3742,6 +3738,136 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
       </dd></dt>
   </section>
 
+  </section>
+
+  <section id="iana-section" class="normative">
+  <h1>IANA Considerations</h1>
+    <section id="media-type-section">
+    <h2><code>application/td+json</code> Media Type Registration</h2>
+    <dl>
+      <dt>Type name:</dt>
+      <dd>application</dd>
+      <dt>Subtype name:</dt>
+      <dd>td+json</dd>
+      <dt>Required parameters:</dt>
+      <dd>None</dd>
+      <dt>Optional parameters:</dt>
+      <dd>None</dd>
+      <dt>Encoding considerations:</dt>
+      <dd>See <a href="https://tools.ietf.org/html/rfc6839#section-3.1">RFC&nbsp;6839, section 3.1</a>.</dd>
+      <dt>Security considerations:</dt>
+      <dd>See [[RFC8259]].
+        <p>
+          <span class="rfc2119-assertion" id="iana-security-execution">
+            Since WoT Thing Description is intended to be a pure data exchange format for
+            Thing metadata, the serialization SHOULD NOT be passed through a
+            code execution mechanism such as JavaScript's <code>eval()</code>
+            function to be parsed.
+          </span>
+          An (invalid) document may contain code that,
+          when executed, could lead to unexpected side effects compromising
+          the security of a system.
+        </p>
+        <p>
+          WoT Thing Descriptions can be evaluated with a JSON-LD 1.1 processor,
+          which typically follows links to remote contexts (i.e., TD context
+          extensions, see <a href="#content-extension-section"></a>)
+          automatically, resulting in the transfer of files
+          without the explicit request of the Consumer for each one. If remote
+          contexts are served by third parties, it may allow them to gather
+          usage patterns or similar information leading to privacy concerns.
+          <span class="rfc2119-assertion" id="iana-security-remote">
+          While implementations on resource-constrained devices are expected
+          to perform raw JSON processing (as opposed to JSON-LD processing),
+          implementations in general SHOULD statically cache vetted
+          versions of their supported context extensions and not to follow links
+          to remote contexts.
+          </span>
+          Supported context extensions can be managed
+          through a secure software update mechanism instead.
+        </p>
+        <p>
+          Context Extensions (see <a href="#content-extension-section"></a>)
+          that are loaded from the Web over non-secure connections,
+          such as HTTP, run the risk of being altered by an attacker such that
+          they may modify the TD Information Model in a way that could
+          compromise security.
+          <span class="rfc2119-assertion" id="iana-security-alter">
+          For this reason, Consumer again
+          SHOULD vet and cache remote contexts before allowing the system
+          to use it.
+          </span>
+        </p>
+        <p>
+          Given that JSON-LD processing usually includes the substitution of
+          long IRIs with short terms,
+          WoT Thing Descriptions may expand considerably when processed using
+          a JSON-LD 1.1 processor and, in the worst case, the resulting data
+          might consume all of the recipient's resources.
+          <span class="rfc2119-assertion" id="iana-security-expansion">
+          Consumers SHOULD treat any TD metadata with due skepticism.
+          </span>
+        </p>
+      </dd>
+      <dt>Interoperability considerations:</dt>
+      <dd>
+        See [[RFC8259]].
+        <p>
+        Rules for processing both conforming and non-conforming content are
+        defined in this specification.
+        </p>
+      </dd>
+      <dt>Published specification:</dt>
+      <dd><a href="https://w3c.github.io/wot-thing-description">https://w3c.github.io/wot-thing-description</a></dd>
+      <dt>Applications that use this media type:</dt>
+      <dd>
+        All participating entities in the W3C Web of Things, that is,
+        Things, Consumers, and Intermediaries as defined in the
+        <a href="https://w3c.github.io/wot-architecture">Web of Things (WoT) Architecture</a>.</dd>
+      <dt>Additional information:</dt>
+      <dd>
+        <dl>
+          <dt>Magic number(s):</dt>
+          <dd>Not Applicable</dd>
+          <dt>File extension(s):</dt>
+          <dd>.jsontd</dd>
+          <dt>Macintosh file type code(s):</dt>
+          <dd>TEXT</dd>
+        </dl>
+      </dd>
+      <dt>Person &amp; email address to contact for further information:</dt>
+      <dd>Matthias Kovatsch &lt;w3c@kovatsch.net&gt;</dd>
+      <dt>Intended usage:</dt>
+      <dd>Common</dd>
+      <dt>Restrictions on usage:</dt>
+      <dd>None</dd>
+      <dt>Author(s):</dt>
+      <dd>The WoT Thing Description specification is a product of the Web of Things Working Group.</dd>
+      <dt>Change controller:</dt>
+      <dd><abbr title="World Wide Web Consortium">W3C</abbr></dd>
+    </dl>
+
+    </section>
+    <section id="content-format-section">
+    <h2>CoAP Content-Format Registration</h2>
+    <p>
+      IANA assigns compact CoAP Content-Format IDs for media types in the
+      <a href="https://www.iana.org/assignments/core-parameters/core-parameters.xhtml#content-formats">CoAP Content-Formats</a>
+      subregistry within the
+      <a href="https://www.iana.org/assignments/core-parameters/core-parameters.xhtml">Constrained RESTful Environments (CoRE) Parameters</a>
+      registry [[RFC7252]].
+      The Content-Format ID for WoT Thing Description is (t.b.d.) in the 256-9999 range (IETF Review or IESG Approval).
+    </p>
+    <dl>
+      <dt>Media Type:</dt>
+      <dd>application/td+json</dd>
+      <dt>Encoding:</dt>
+      <dd>-</dd>
+      <dt>ID:</dt>
+      <dd>T.B.D.</dd>
+      <dt>Reference:</dt>
+      <dd>[<a href="https://w3c.github.io/wot-thing-description">"Web of Things (WoT) Thing Description", May 2019</a>]</dd>
+    </section>
   </section>
 
   <section id="json-schema-for-validation" class="appendix normative">
