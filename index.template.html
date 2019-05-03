@@ -397,7 +397,7 @@
   </p>
 <aside class="example" id="simple-thing-description-sample" title="Thing Description Sample">
     <pre>{
-    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "@context": "https://www.w3.org/2019/td/v1",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "name": "MyLampThing",
     "securityDefinitions": {
@@ -482,7 +482,7 @@
         behavior of the underlying communication protocols declared in the <code>forms</code> field.
         <a href="#thing-description-full-serialization">Example 2</a> extends the TD sample from
         Example 1 by introducing a second defintion in the <code>@context</code> to declare the
-        prefix <code>saref</code> as referring to the SAREF vocabulary namespace [[!smartM2M]].
+        prefix <code>saref</code> as referring to the SAREF vocabulary namespace [[smartM2M]].
         The SAREF vocabulary includes terms to describe lighting devices and other home automation
         devices that one can embed in a TD as semantic labels as values for the <code>@type</code>
         property. In the present example, the Thing is labelled with <code>saref:LightingDevice</code>,
@@ -496,7 +496,7 @@
               <pre>
     {
         "@context": [
-            "https://www.w3.org/2019/wot/td/v1",
+            "https://www.w3.org/2019/td/v1",
             {
                 "saref": "https://w3id.org/saref#"
             }
@@ -592,7 +592,7 @@
         <dfn id="dfn-td-document">TD document</dfn>
     </dt>
     <dd>
-        Textual or binary representation of a TD that can be stored or exchanged between
+        Textual or binary representation of a TD that can be stored and exchanged between
         servients. A TD serialization follows a given format, provided as a content type
         when exchanging it. The reference serialization format for TDs is JSON.
     </dd>
@@ -615,20 +615,119 @@
   <section>
   <h1>Namespaces</h1>
   <p>
-  The namespace for the W3C Thing Description vocabulary as defined in 
-  this document is
-  </p> 
-  <p>
-    <code>https://www.w3.org/2019/wot/td#</code>
+      The TD information model presented in this document has its foundations in
+      RDF, with a mapping to JSON. This mapping is provided as a JSON-LD context
+      file, available at the following URI:
   </p>
+
   <p>
-  Using content negotiation,  this namespace serves either the TD ontology file (Turtle) or an HTML documentation for the ontology. The JSON-LD context file for TD documents
-  is available under
+    <code>https://www.w3.org/2019/td/v1</code>
   </p>
-  <p>
-    <code>https://www.w3.org/2019/wot/td/v1</code>
-  </p>
+
+  <section>
+
+    <h2>Reference Namespaces</h2>
+
+    <p>
+        All terms defined in the context are grouped by vocabulary, mirroring the
+        structure of the present document (see
+        <a href="#thing-description-json-ld-context"></a> for more details on the
+        context). Each vocabulary is assigned a year-based namespace URI, as follows:
+    </p>
   
+    <table class="def">
+    <thead>
+        <tr>
+            <th>Vocabulary</th>
+            <th>Namespace URI</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Core</td>
+            <td><code>https://www.w3.org/2019/td#</code></td>
+        </tr>
+        <tr>
+            <td>Data Schema</td>
+            <td><code>https://www.w3.org/2019/json-schema#</code></td>
+        </tr>
+        <tr>
+            <td>Security</td>
+            <td><code>https://www.w3.org/2019/wot-security#</code></td>
+        </tr>
+        <tr>
+            <td>Web Linking</td>
+            <td><code>https://www.w3.org/2019/web-linking#</code></td>
+        </tr>
+    </tbody>
+    </table>
+  
+    <p>
+        Vocabularies are independent from each other. They may be reused and
+        extended in other W3C recommendations. For every breaking change in the
+        design of a vocabulary, it will be assigned a new year-based namespace URI.
+        Note that to maintain the general coherence of the TD information model,
+        the JSON-LD context itself is versioned, such that every version has its own URI
+        (<code>v1</code>, <code>v1.1</code>, <code>v2</code>, ...).
+    </p>
+
+    <p>
+        Because a vocabulary under some namespace URI can only undergo non-breaking
+        changes, its content can be safely cached or embedded in applications. One 
+        advantage of exposing relatively static content under a namespace URI is to
+        optimize payload sizes of messages exchanged between constrained devices. It
+        also avoids any privacy leakage resulting from devices accessing publicly
+        available vocabularies private networks (see also
+        <a href="#sec-security-consideration-context"></a>).
+    </p>
+
+  </section>
+  
+  <section class="informative">
+
+    <h2>Alternative Namespaces</h2>
+
+    <p>
+        For convenience, generic namespace URIs redirect to the latest year-based
+        URI for each vocabulary. They are defined as follows:
+    </p>
+  
+    <table class="def">
+    <thead>
+        <tr>
+            <th>Vocabulary</th>
+            <th>Namespace URI</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Core</td>
+            <td><code>https://www.w3.org/ns/td#</code></td>
+        </tr>
+        <tr>
+            <td>Data Schema</td>
+            <td><code>https://www.w3.org/ns/json-schema#</code></td>
+        </tr>
+        <tr>
+            <td>Security</td>
+            <td><code>https://www.w3.org/ns/wot-security#</code></td>
+        </tr>
+        <tr>
+            <td>Web Linking</td>
+            <td><code>https://www.w3.org/ns/web-linking#</code></td>
+        </tr>
+    </tbody>
+    </table>
+  
+    <p>
+        Embedding generic namespace URIs in applications is however not encouraged,
+        since newer versions of the vocabularies may break functionalities. Their
+        usage should be reserved for applications with powerful infrastructures, like
+        analytics on large production plants or buildings based on knowledge graphs
+        that may include devices referencing different versions of these vocabularies.
+    </p>
+
+  </section>
 
   </section>
 
@@ -642,7 +741,7 @@
   regarding Thing Description serialization.
   </p>
   <p>
-  A JSON Schema [[?JSON-SCHEMA-VALIDATION]] is provided in Annex 
+  A JSON Schema [[?JSON-SCHEMA-VALIDATION]] is provided in Appendix 
   <a href="#json-schema-4-validation"></a> 
   to validate Thing Description instances based on JSON serialization.
   </p>
@@ -963,15 +1062,6 @@
       with OpenAPI they are not compatible.  
       </p>
     
-      <p class="ednote" title="Security Scheme Extensions">
-      The vocabulary extension mechanism of the 
-      WoT Thing Description allows for additional security schemes if needed.
-      For more information about what additional security schemes 
-      or modifications are under discussion
-      (and to file issues if you have a request) please visit the 
-      <a href="https://github.com/w3c/wot-security">WoT Security TF repository.</a>
-      </p>
-    
         {wot-security}
       </section>
     
@@ -1132,7 +1222,7 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
             <span><i>with default values</i></span>
         </div>
         <pre>{
-    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "@context": "https://www.w3.org/2019/td/v1",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "name": "MyLampThing",
     "securityDefinitions": {
@@ -1178,7 +1268,7 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
 }
 </pre>
 <pre>{
-    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "@context": "https://www.w3.org/2019/td/v1",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "name": "MyLampThing",
     "securityDefinitions": {
@@ -1256,21 +1346,15 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
   <p><span class="rfc2119-assertion" id="td-context">
   The root object of a Thing Description instance MUST include the
   <code>@context</code> name known from JSON-LD [[json-ld11]] with the value URI of 
-  the Thing description context file <code>https://www.w3.org/2019/wot/td/v1</code>.
+  the Thing description context file <code>https://www.w3.org/2019/td/v1</code>.
   </span></p>
 
 <pre class="example">
 {  
-    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "@context": "https://www.w3.org/2019/td/v1",
     ...
 }
 </pre>
-
-  <p class="ednote">
-  <code>https://www.w3.org/2019/wot/td/v1</code> uses content negotiation to return the
-  context file. Thus, it must be fetched with an <code>Accept</code> header set
-  to <code>application/ld+json</code>.
-  </p>
 
   <p><span class="rfc2119-assertion" id="td-additional-contexts">
   When a single Thing Description instance involves several contexts, 
@@ -1281,7 +1365,7 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
   </p>
 <pre class="example">
 {
-    "@context": ["https://www.w3.org/2019/wot/td/v1",
+    "@context": ["https://www.w3.org/2019/td/v1",
                 {"iot": "http://example.org/iot"}],
     ...
 }
@@ -1294,6 +1378,28 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
   in the root object of the Thing Description instance.
   </span></p>
 
+  <pre class="example">
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:dev:ops:32473-Thing-1234",
+    "name": "MyThing",
+    "description": "Human readable information.",
+    "descriptions": {...},
+    "support": "mailto:support@example.com",
+    "securityDefinitions": {...},
+    "security": [...],
+    "base": "https://servient.example.com/",
+    "lastModified" : "2019-06-01T09:12:43.124Z",
+    "created" : "2018-11-14T19:10:23.824Z",
+    "version" : {...},
+    "properties": {...},
+    "actions": {...},
+    "events": {...},
+    "links": [...],
+    "forms": [...]
+}
+  </pre>
+
   <!-- should this be "the type" or "the elements of"? -->
   <p><span class="rfc2119-assertion" id="td-objects">
   The type of the members <code>properties</code>, <code>actions</code>, 
@@ -1305,63 +1411,6 @@ structured JSON type transformation in Section <a href="#td-class-serialization"
   <code>scopes</code>, and <code>security</code>
   MUST be a JSON array.
   </span></p>
-
-  <p>
-  A TD snippet based on the defined members of the class
-  <a href="#thing" class="sec-ref"><code>Thing</code></a>
-  without the optional member <code>@context</code> is given below:
-  </p>
-<pre class="example">
-{
-    "id": "urn:dev:ops:32473-Thing-1234",
-    "name": "MyThing",
-    "description": "Human readable information.",
-    "descriptions": {...},
-    "support": "mailto:support@example.com",
-    "securityDefinitions": {...},
-    "security": [...],
-    "base": "https://servient.example.com/",
-    "lastModified" : "2018-11-15T09:12:43.124Z",
-    "created" : "2018-11-14T19:10:23.824Z",
-    "version" : {...},
-    "properties": {...},
-    "actions": {...},
-    "events": {...},
-    "links": [...],
-    "forms": [...]
-}
-</pre>
-
-  <p>Alternatively, the same example can be written instead to 
-  explicitly include the (semantic) names used by JSON-LD [[!json-ld11]], namely <code>@context</code> and <code>@type</code>:
-  </p>
-<pre class="example">
-{
-    "@context": "https://www.w3.org/2019/wot/td/v1",
-    "@type": "Thing",
-    "id": "urn:dev:ops:32473-Thing-1234",
-    "name": "MyThing",
-    "description": "Human readable information.",
-    "descriptions": {...},
-    "support": "mailto:support@example.com",
-    "securityDefinitions": {...},
-    "security": [...],
-    "base": "https://servient.example.com/",
-    "lastModified" : "2018-11-15T09:12:43.124Z",
-    "created" : "2018-11-14T19:10:23.824Z",
-    "version" : {...},
-    "properties": {...},
-    "actions": {...},
-    "events": {...},
-    "links": [...],
-    "forms": [...]
-}
-</pre>
-
-<p>In that case the content can be directly associated as Thing Description based on the namespace  <code>http://www.w3.org/ns/td</code>  provided 
-    in the <code>@context</code>. The  <code>"@type": "Thing"</code> associates an instantiations of the Thing class as defined in Section <a href="#thing"></a>.
-
-</p>
 
  </section> <!-- end of id="sec-thing-as-a-whole-json"-->
 
@@ -1593,7 +1642,7 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
   <p>A TD snippet based on the defined members is given below:</p>
 <pre class="example">
 {
-  "@context": "https://www.w3.org/2019/wot/td/v1",
+  "@context": "https://www.w3.org/2019/td/v1",
     ...
   "securityDefinitions": {
       "basic_sc": {"scheme":"basic", "in":"header"}
@@ -1629,7 +1678,7 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
     <p>A TD snippet using URI template and <code>uriVariables</code> is given below:</p>
 
     <pre class="example">
-        "@context": ["https://www.w3.org/2019/wot/td/v1",
+        "@context": ["https://www.w3.org/2019/td/v1",
             {"eg": "http://www.example.org/iot"}],
         ...
         "actions": {
@@ -1671,7 +1720,7 @@ The <code>output</code> of this action is the photo taken, which is available in
 <p>A <code>form</code> snippet with the <code>response</code> member is listed below based on the use case of the action 'takePhoto' described above:</p>
 
 <pre class="example">
-    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "@context": "https://www.w3.org/2019/td/v1",
     ...
     "forms": [
         {
@@ -1696,7 +1745,7 @@ The <code>output</code> of this action is the photo taken, which is available in
 
 <pre class="example" id="td-forms-readall-example">
 {
-    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "@context": "https://www.w3.org/2019/td/v1",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     ...
     "forms": [
@@ -2010,68 +2059,6 @@ The <code>output</code> of this action is the photo taken, which is available in
     },
     ...
 </pre>
-  <p>Finally,
-  new security schemes can be defined using the vocabulary extension
-  mechanism.
-<!--
-  <span class="rfc2119-assertion" id="td-security-ns">
-  All security schemes defined in this document MAY
-  also be used via extension vocabularies, using namespace
-  URLs defined for them of the form 
-  <code>http://www.w3.org/ns/td/sec/</code><em>scheme</em> where <em>scheme</em>
-  is replaced by the scheme name.</span>
--->
-  For this example, we will use
-  OAuth2 via the extension mechanism.  
-  Note that vocabulary outside
-  <code>SecurityScheme</code> objects, in this case <code>oauth2v:scope</code>,
-  can also be included as part of the definition.
-  To use the extension mechanism an <code>@context</code> also needs to be 
-  defined, including the default for TDs as well as a definition of
-  the vocabulary and prefix to be used for the security scheme.
-  </p>
-<pre class="example">
-{
-    @context: ["https://www.w3.org/2019/wot/td/v1",
-               {"oauth2v": "http://example.org/sec/oauth2"}],
-    ...
-    "securityDefinitions": {
-        "oauth2_sc": {
-            "scheme": "oauth2v:oauth2",
-            ...
-            "oauth2v:flow": "implicit",
-            "oauth2v:authorization": "https://example.com/authorization",
-            "oauth2v:scopes": ["limited","special"]
-        }
-    },
-    "security": ["oauth2_sc"],
-    "properties": {
-        "status": {
-            ...
-            "forms": [
-                {
-                    "href": "https://scopes.example.com/status",
-                    "contentType": "application/json",
-                    "oauth2v:scopes": ["limited"]
-                }
-            ]
-        }
-    },
-    "action": {
-        "configure": {
-            ...
-            "forms": [
-                {
-                    "href": "https://scopes.example.com/configure",
-                    "contentType": "application/json",
-                    "oauth2v:scopes": ["special"]
-                }
-            ]
-        }
-    },
-    ...
-}
-</pre>
 
 </section> <!-- end of id="security-serialization-json"-->
 <section id="version-serialization-json">
@@ -2098,7 +2085,7 @@ The <code>output</code> of this action is the photo taken, which is available in
 
     <p>A TD snippet based on such additional version metadata from a <code>v</code> context is given below:</p>
     <pre class="example">
-        "@context": ["https://www.w3.org/2019/wot/td/v1",
+        "@context": ["https://www.w3.org/2019/td/v1",
                     {"v": "http://www.example.org/versioningTerms#"}],
         ...
         "version": {"instance":"1.2.1", "v:firmware": "0.9.1", "v:hardware": "1.0"}
@@ -2213,7 +2200,7 @@ The <code>output</code> of this action is the photo taken, which is available in
 
 <pre class="example">
     {
-    "@context": ["https://www.w3.org/2019/wot/td/v1",
+    "@context": ["https://www.w3.org/2019/td/v1",
                 {"om": "http://www.wurvoc.org/vocabularies/om-1.8/"}],
     ...
     "properties": {
@@ -2393,6 +2380,10 @@ The <code>output</code> of this action is the photo taken, which is available in
     within the Thing Description is specified in Section <a href="#sec-thing-as-a-whole-json"></a>.
  </p>
 
+ <section>
+
+    <h4>Semantic Tagging</h4>
+
  <p>
 When adding additional vocabulary to a Thing Description instance, it is recommended that these vocabulary be linked to a namespace context that is within 
 the JSON name <code>@context</code> container is specified.
@@ -2407,7 +2398,7 @@ If included namespaces are based on class definitions such as those provided by 
 <pre class="example">
         {
             "@context": [
-                "https://www.w3.org/2019/wot/td/v1",
+                "https://www.w3.org/2019/td/v1",
                 {
                 "om": "http://www.wurvoc.org/vocabularies/om-1.8/",
                 "saref": "https://w3id.org/saref#"
@@ -2430,6 +2421,12 @@ If included namespaces are based on class definitions such as those provided by 
         }
     </pre>
 
+    </section>
+
+    <section>
+
+        <h4>Adding Protocol Bindings</h4>
+
     <p>
     With the context extension in the Thing Description, communication metadata can be supplemented or specified in the 
     declarations <code>forms</code> (also see <a href="#protocol-bindings"></a>). 
@@ -2445,7 +2442,7 @@ If included namespaces are based on class definitions such as those provided by 
     <aside class="example" id="context-extension-for-forms" title="Specialization of the form definition by context extension.">
 <pre>{
         "@context": [
-            "https://www.w3.org/2019/wot/td/v1",
+            "https://www.w3.org/2019/td/v1",
             {
                 "cov": "http://www.example.org/coap-binding#"
             }
@@ -2473,6 +2470,85 @@ If included namespaces are based on class definitions such as those provided by 
         }
     }</pre>
         </aside>
+
+    </section>
+
+    <section>
+
+        <h4>Adding Security Schemes</h4>
+
+        <p>Finally,
+        new security schemes can be defined using the vocabulary extension
+        mechanism.
+      <!--
+        <span class="rfc2119-assertion" id="td-security-ns">
+        All security schemes defined in this document MAY
+        also be used via extension vocabularies, using namespace
+        URLs defined for them of the form 
+        <code>http://www.w3.org/ns/td/sec/</code><em>scheme</em> where <em>scheme</em>
+        is replaced by the scheme name.</span>
+      -->
+        For this example, we will use
+        OAuth2 via the extension mechanism.  
+        Note that vocabulary outside
+        <code>SecurityScheme</code> objects, in this case <code>wotsec:scope</code>,
+        can also be included as part of the definition.
+        To use the extension mechanism an <code>@context</code> also needs to be 
+        defined, including the default for TDs as well as a definition of
+        the vocabulary and prefix to be used for the security scheme.
+        </p>
+      <pre class="example">
+      {
+          @context: ["https://www.w3.org/2019/td/v1",
+                     {"wotsec:": "https://www.w3.org/2019/wot-security#"}],
+          ...
+          "securityDefinitions": {
+              "oauth2_sc": {
+                  "scheme": "wotsec:OAuth2SecurityScheme",
+                  ...
+                  "wotsec:flow": "implicit",
+                  "wotsec:authorization": "https://example.com/authorization",
+                  "wotsec:scopes": ["limited","special"]
+              }
+          },
+          "security": ["oauth2_sc"],
+          "properties": {
+              "status": {
+                  ...
+                  "forms": [
+                      {
+                          "href": "https://scopes.example.com/status",
+                          "contentType": "application/json",
+                          "wotsec:scopes": ["limited"]
+                      }
+                  ]
+              }
+          },
+          "action": {
+              "configure": {
+                  ...
+                  "forms": [
+                      {
+                          "href": "https://scopes.example.com/configure",
+                          "contentType": "application/json",
+                          "wotsec:scopes": ["special"]
+                      }
+                  ]
+              }
+          },
+          ...
+      }
+      </pre>
+
+        <p>
+            For convenience, the W3C vocabulary giving security schemes itself
+            includes non-standards but widely used schemes like API key, public
+            key, proof-of-possession (PoP), certificates, pre-shared key (PSK)
+            or OAuth 2, as in the above example. For any other security scheme,
+            a dedicated vocabulary must be designed and referenced by TDs.
+        </p>
+
+    </section>
 
  </section>
 
@@ -2710,7 +2786,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
                 <span><i>with default HTTP binding values</i></span>
             </div>
             <pre>{
-    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "@context": "https://www.w3.org/2019/td/v1",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "name": "MyLampThing",
     "securityDefinitions": {
@@ -2756,7 +2832,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     }
 }</pre>
         <pre>{
-    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "@context": "https://www.w3.org/2019/td/v1",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "name": "MyLampThing",
     "securityDefinitions": {
@@ -2948,7 +3024,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
   
   <pre class="example" title="Temperature event with subscripton and cancellation for a Thing-2-Thing interaction">
         {
-            "@context": "https://www.w3.org/2019/wot/td/v1",
+            "@context": "https://www.w3.org/2019/td/v1",
             "id": "urn:dev:ops:32473-Thing-1234",
             "name": "TemperatureForT2T",
             "description": "Event with subscription / cancellation (Thing-2-Thing use case).",
@@ -3384,7 +3460,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     
     <pre class="example" title="MyLampThingTemplate serialized in JSON">
     {
-        "@context": ["https://www.w3.org/2019/wot/td/v1"], 
+        "@context": ["https://www.w3.org/2019/td/v1"], 
         "@type" : "ThingTemplate",
         "id": "urn:dev:ops:32473-WoTLampTemplate-0000",
         "name": "Lamp Thing Template",
@@ -3416,7 +3492,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     
     <pre class="example" title="MyBuzzerThingTemplate serialized in JSON">
     {
-        "@context": ["https://www.w3.org/2019/wot/td/v1"], 
+        "@context": ["https://www.w3.org/2019/td/v1"], 
         "@type" : "ThingTemplate",
         "id": "urn:dev:ops:32473-WoTBuzzerTemplate-0000",
         "name": "Buzzer Thing Template",
@@ -3437,7 +3513,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     </p>
     <pre class="example" title="Combined Thing: Lamp + Buzzer (JSON-LD1.1 serialisation)">
     {
-       "@context": ["https://www.w3.org/2019/wot/td/v1",
+       "@context": ["https://www.w3.org/2019/td/v1",
        		    { "thing-templates": "http://www.w3.org/ns/thing-templates"] }, 
        "@type" : [
             "Thing",
@@ -3505,7 +3581,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
      </section>   
      </section>  computer keyboard have this Scroll Lock key that seems to serve no purpose whatsoever? In 15 years I don't remember ever pushing that button. I'm almost scared to touch it 
     
-  <section id="note-jsonld11-processing" class="algorithm">
+  <section id="note-jsonld11-processing">
         <h2>Transformation to RDF</h2>
 
         <p>
@@ -3545,7 +3621,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
                     <span><i>after transformation to RDF</i></span>
                 </div>
                 <pre>{
-    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "@context": "https://www.w3.org/2019/td/v1",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "name": "MyLampThing",
     "securityDefinitions": {
@@ -3606,42 +3682,42 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
         }
     }
 }</pre><pre>
-&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#name&gt; &quot;MyLampThing&quot; .
-&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#security&gt; &lt;_:b8&gt; .
-&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#properties&gt; _:b5 .
-&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#actions&gt; _:b0 .
-&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;http://www.w3.org/ns/td#events&gt; _:b2 .
-_:b0 &lt;http://www.w3.org/ns/td#name&gt; &quot;toggle&quot; .
-_:b0 &lt;http://www.w3.org/ns/td#forms&gt; _:b1 .
-_:b0 &lt;http://www.w3.org/ns/td#idempotent&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
-_:b0 &lt;http://www.w3.org/ns/td#safe&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;https://www.w3.org/2019/td#name&gt; &quot;MyLampThing&quot; .
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;https://www.w3.org/2019/td#security&gt; &lt;_:b8&gt; .
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;https://www.w3.org/2019/td#properties&gt; _:b5 .
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;https://www.w3.org/2019/td#actions&gt; _:b0 .
+&lt;urn:dev:wot:com:example:servient:lamp&gt; &lt;https://www.w3.org/2019/td#events&gt; _:b2 .
+_:b0 &lt;https://www.w3.org/2019/td#name&gt; &quot;toggle&quot; .
+_:b0 &lt;https://www.w3.org/2019/td#forms&gt; _:b1 .
+_:b0 &lt;https://www.w3.org/2019/td#idempotent&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
+_:b0 &lt;https://www.w3.org/2019/td#safe&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
 _:b1 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;POST&quot; .
-_:b1 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
-_:b1 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/toggle&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
-_:b1 &lt;http://www.w3.org/ns/td#op&gt; &quot;invokeaction&quot; .
-_:b2 &lt;http://www.w3.org/ns/td#name&gt; &quot;overheating&quot; .
-_:b2 &lt;http://www.w3.org/ns/td#data&gt; _:b3 .
-_:b2 &lt;http://www.w3.org/ns/td#forms&gt; _:b4 .
-_:b3 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.w3.org/ns/json-schema#StringSchema&gt; .
-_:b4 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
-_:b4 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/oh&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
-_:b4 &lt;http://www.w3.org/ns/td#op&gt; &quot;subscribeevent&quot; .
-_:b4 &lt;http://www.w3.org/ns/td#subprotocol&gt; &quot;longpoll&quot; .
-_:b5 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.w3.org/ns/json-schema#StringSchema&gt; .
-_:b2 &lt;http://www.w3.org/ns/td#name&gt; &quot;status&quot; .
-_:b5 &lt;http://www.w3.org/ns/td#forms&gt; _:b6 .
-_:b5 &lt;http://www.w3.org/ns/td#forms&gt; _:b7 .
+_:b1 &lt;https://www.w3.org/2019/td#contentType&gt; &quot;application/json&quot; .
+_:b1 &lt;https://www.w3.org/2019/td#href&gt; &quot;https://mylamp.example.com/toggle&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
+_:b1 &lt;https://www.w3.org/2019/td#op&gt; &quot;invokeaction&quot; .
+_:b2 &lt;https://www.w3.org/2019/td#name&gt; &quot;overheating&quot; .
+_:b2 &lt;https://www.w3.org/2019/td#data&gt; _:b3 .
+_:b2 &lt;https://www.w3.org/2019/td#forms&gt; _:b4 .
+_:b3 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/json-schema#StringSchema&gt; .
+_:b4 &lt;https://www.w3.org/2019/td#contentType&gt; &quot;application/json&quot; .
+_:b4 &lt;https://www.w3.org/2019/td#href&gt; &quot;https://mylamp.example.com/oh&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
+_:b4 &lt;https://www.w3.org/2019/td#op&gt; &quot;subscribeevent&quot; .
+_:b4 &lt;https://www.w3.org/2019/td#subprotocol&gt; &quot;longpoll&quot; .
+_:b5 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/json-schema#StringSchema&gt; .
+_:b2 &lt;https://www.w3.org/2019/td#name&gt; &quot;status&quot; .
+_:b5 &lt;https://www.w3.org/2019/td#forms&gt; _:b6 .
+_:b5 &lt;https://www.w3.org/2019/td#forms&gt; _:b7 .
 _:b6 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;GET&quot; .
-_:b6 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
-_:b6 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/status&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
-_:b6 &lt;http://www.w3.org/ns/td#op&gt; &quot;readproperty&quot; .
+_:b6 &lt;https://www.w3.org/2019/td#contentType&gt; &quot;application/json&quot; .
+_:b6 &lt;https://www.w3.org/2019/td#href&gt; &quot;https://mylamp.example.com/status&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
+_:b6 &lt;https://www.w3.org/2019/td#op&gt; &quot;readproperty&quot; .
 _:b7 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;PUT&quot; .
-_:b7 &lt;http://www.w3.org/ns/td#contentType&gt; &quot;application/json&quot; .
-_:b7 &lt;http://www.w3.org/ns/td#href&gt; &quot;https://mylamp.example.com/status&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
-_:b7 &lt;http://www.w3.org/ns/td#op&gt; &quot;writeproperty&quot; .
-_:b8 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.w3.org/ns/wot-security#BasicSecurityScheme&gt; .
-_:b8 &lt;http://www.w3.org/ns/wot-security#schemeName&gt; &quot;basic_sc&quot; .
-_:b8 &lt;http://www.w3.org/ns/wot-security#in&gt; &quot;header&quot; .</pre>
+_:b7 &lt;https://www.w3.org/2019/td#contentType&gt; &quot;application/json&quot; .
+_:b7 &lt;https://www.w3.org/2019/td#href&gt; &quot;https://mylamp.example.com/status&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
+_:b7 &lt;https://www.w3.org/2019/td#op&gt; &quot;writeproperty&quot; .
+_:b8 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot-security#BasicSecurityScheme&gt; .
+_:b8 &lt;https://www.w3.org/2019/wot-security#schemeName&gt; &quot;basic_sc&quot; .
+_:b8 &lt;https://www.w3.org/2019/wot-security#in&gt; &quot;header&quot; .</pre>
             </aside>
 
             <p>
@@ -3651,41 +3727,10 @@ _:b8 &lt;http://www.w3.org/ns/wot-security#in&gt; &quot;header&quot; .</pre>
                 information model is defined its own namespace and every vocabulary term maps to some
                 name, appended to the corresponding namespace. Strings that are not part of any
                 vocabulary map to RDF literals (strings with an optional datatype). For instance,
-                <code>name</code> maps to <code>http://www.w3.org/ns/td#name</code> and
+                <code>name</code> maps to <code>https://www.w3.org/2019/td#name</code> and
                 <code>MyLampThing</code> remains unchanged. Applying this mapping is called
                 <a href="https://www.w3.org/TR/json-ld11/#expanded-document-form">context expansion</a>.
             </p>
-
-            <p>
-                The following table gives the correspondance between a vocabulary and its namespace:
-            </p>
-
-            <table class="def">
-                <thead>
-                    <tr>
-                        <th>Vocabulary</th>
-                        <th>Namespace</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Core</td>
-                        <td><code>https://www.w3.org/ns/td#</code></td>
-                    </tr>
-                    <tr>
-                        <td>Data Schema</td>
-                        <td><code>https://www.w3.org/ns/json-schema#</code></td>
-                    </tr>
-                    <tr>
-                        <td>Security</td>
-                        <td><code>https://www.w3.org/2019/ns/wot-security#</code></td>
-                    </tr>
-                    <tr>
-                        <td>Web Linking</td>
-                        <td><code>https://www.w3.org/2019/wot/web-linking#</code></td>
-                    </tr>
-                </tbody>
-            </table>
 
             <p>
                 Then, after expanding JSON strings to full IRIs, all map structures of the JSON
@@ -3716,7 +3761,7 @@ _:b8 &lt;http://www.w3.org/ns/wot-security#in&gt; &quot;header&quot; .</pre>
                     The term <code>properties</code> is used both in the core vocabulary and in the data schema
                     vocabulary. Yet, a JSON string cannot map to two IRIs simultaneously in the same context
                     definition. The mapping from <code>properties</code> to
-                    <code>https://www.w3.org/ns/json-schema#properties</code> must therefore be <em>scoped</em>
+                    <code>https://www.w3.org/2019/json-schema#properties</code> must therefore be <em>scoped</em>
                     to instances of <code>DataSchema</code> only.
                 </li>
                 <li>
@@ -3727,7 +3772,7 @@ _:b8 &lt;http://www.w3.org/ns/wot-security#in&gt; &quot;header&quot; .</pre>
                     Without any indication in the context, the index key is lost when an index map is turned into RDF.
                     To make the transformation to RDF reversible, it is possible to indicate that index keys should
                     produce triples with a given predicate. Each vocabulary can include an RDF term for this purpose.
-                    In the core vocabulary, the property <code>http://www.w3.org/ns/td#name</code> is used.
+                    In the core vocabulary, the property <code>https://www.w3.org/2019/td#name</code> is used.
                 </li>
                 <li>
                     <a href="https://github.com/w3c/json-ld-syntax/issues/19"><em>Indexing without a predicate</em></a>:
@@ -3747,7 +3792,7 @@ _:b8 &lt;http://www.w3.org/ns/wot-security#in&gt; &quot;header&quot; .</pre>
             <p class="issue">
                 An experimental JSON-LD 1.1 context for the TD model is provided in the
                 repository: <code>td-context-1.1.jsonld</code>. Currently, it is not the
-                context served at <code>https://www.w3.org/2019/wot/td/v1</code>, though.
+                context served at <code>https://www.w3.org/2019/td/v1</code>, though.
             </p>
         </section>
 
