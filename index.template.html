@@ -606,7 +606,8 @@
     </dt>
     <dd>
         A class name (like <code>Thing</code>), a property name (like
-        <code>forms</code>) or a property value (like <code>readproperty</code>).
+        <code>forms</code>) or a name used as a single value (like
+        <code>readproperty</code>).
     </dd>
   </dl>
   </section>
@@ -1127,31 +1128,30 @@ In summary, this requires the following:
   <h1>Basic Representation Format Assumptions</h1>
    
   <p>
-  As a fundamental basis, 
-  all <a>vocabulary terms</a> defined in Section
-  <a href="#sec-core-vocabulary-definition"></a>
-  will have a JSON member serialization with the
-  <a>vocabulary term</a> as name and a value of the given type.
+    As a fundamental basis, every <a>object</a> denoted by a set of
+    property-value pairs is serialized as a JSON object whose members
+    are name-value pairs where the name is the <a>vocabulary term</a>
+    used as property and the value is the serialization of the abstract
+    value in the original pair.
   </p>
 
   <section id="td-basic-types-mapping">
       <h2>Mapping to JSON Types</h2>
 
   <p>
-  The data types of the vocabulary as defined in Section
-  <a href="#sec-data-schema-vocabulary-definition"></a>
-  will be transformed to JSON-based types. 
-  The following rules are used for vocabulary terms based on some simple type 
-  definitions:
+    Every <a>simple type</a> mentioned in Section
+    <a href="#sec-class-definitions"></a> maps to a JSON
+    type (string, number, boolean), as per the rules listed below. These
+    rules apply to values in property-value pairs:
   </p>
   <ul>
   <li><span class="rfc2119-assertion" id="td-string-type">
-        Vocabulary terms that use simple types string and anyURI
-        MUST be serialized as JSON string.
+        Values that are of type <code>string</code> or
+        <code>anyURI</code> MUST be serialized as JSON strings.
   </span></li>
   <li><span class="rfc2119-assertion" id="td-datetime-type">
-        Vocabulary terms that use simple type dateTime
-        MUST be serialized as JSON string and have the lexical
+        Values that are of type <code>dateTime</code>
+        MUST be serialized as JSON strings and have the lexical
         form <code><i>YYYY</i>-<i>MM</i>-<i>DD</i>T<i>hh</i>:<i>mm</i>:<i>ss</i>Z</code>,
         where <code><i>YYYY</i></code>, <code><i>MM</i></code> and <code><i>DD</i></code>
         respectively encode a year, a month and a day (i.e. a date) and where
@@ -1164,11 +1164,11 @@ In summary, this requires the following:
     XSD built-in dateTime datatype
   </a>, itself inspired by the ISO standard for dates and times [[ISO8601]].</li>
   <li><span class="rfc2119-assertion" id="td-integer-type">
-        Vocabulary terms that use simple type integer
-        MUST be serialized as JSON number without a fraction or exponent part.
+        Values that are of type <code>integer</code>
+        MUST be serialized as JSON numbers without a fraction or exponent part.
   </span></li>
   <li><span class="rfc2119-assertion" id="td-number-type">
-        Vocabulary terms that use simple type double
+        Values that are of type <code>double</code>
         MUST be serialized as JSON number.
   </span></li>
   </ul>
@@ -1185,10 +1185,8 @@ In summary, this requires the following:
   </p -->
 
   <p>
-  All vocabulary terms in Section
-  <a href="#sec-vocabulary-definition"></a>
-  associated with more complex class-based types are defined separately for
-  structured JSON type transformation in Section <a href="#td-class-serialization"></a>.
+    Values that are themselves sets of property-value pairs (i.e. not of a <a>simple
+    type</a>) will be dealt with individually in Section <a href="#td-class-serialization"></a>.
   </p>
 
   </section>
@@ -1197,9 +1195,8 @@ In summary, this requires the following:
   <h2>Omitting Default Values</h2>
 
   <p>
-  A Thing Description instance serialization may omit one ore more vocabulary
-  terms (<a href="#sec-core-vocabulary-definition"></a>) that have default values assumed based on 
-  the table in <a href="#sec-default-values"></a>.
+  A Thing Description instance serialization may omit vocabulary terms for which
+  default values can be assigned, as listed in the table of <a href="#sec-default-values"></a>.
   </p>
 
   <p>
