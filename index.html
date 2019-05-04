@@ -144,6 +144,20 @@
                 , date: "31 October 2018"
                 , status: "Candidate OASIS Standard 01"
                 }
+	      , "draft-ietf-ace-oauth-authz" : {
+                  title: "Authentication and Authorization for Constrained Environments (ACE) using the OAuth 2.0 Framework (ACE-OAuth)"
+                , href: "https://tools.ietf.org/html/draft-ietf-ace-oauth-authz-24"
+                , authors:  [
+                    "L. Seitz",
+                    "G. Selander",
+                    "E. Wahlstroem",
+                    "S. Erdtman",
+                    "H. Tschofenig"
+                  ]
+                , publisher: "IETF"
+                , date: "27 March 2019"
+                , status: "Internet-Draft"
+                }
               }
             , otherLinks: [
                 {
@@ -2990,22 +3004,24 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
     When a Thing Description uses multiple contexts,
     the <code>@context</code> member of the TD root object MUST be an array
     with the TD context URI followed by an object containing
-    the additional namespaces identified by their prefixs as JSON names.
+    the additional namespaces identified by their prefixes as JSON names.
     </span>
     </p>
 <pre class="example">
 {
-    "@context": [ "https://www.w3.org/2019/td/v1",
-                  {
-                    "iot": "http://example.org/iot",
-                    "cov": "http://www.example.org/coap-binding#" }
-                ],
+    "@context": [
+        "https://www.w3.org/2019/td/v1",
+        {
+            "iot": "http://example.org/iot",
+            "cov": "http://www.example.org/coap-binding#"
+        }
+    ],
     ...
 }
 </pre>
 
-    <section>
-    <h3>Semantic Annotations</h3>
+<section>
+<h3>Semantic Annotations</h3>
 
     <p>
     The context extension allows to add additional vocabulary to a Thing Description instance.
@@ -3019,9 +3035,10 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
     </span>
     <span class="rfc2119-assertion" id="td-at-type">
     The <code>@type</code> member MUST be of type string
-    or array of string for multiple annotations.
+    or array of strings for multiple annotations.
     </span>
     </p>
+
     <p>
     Additional vocabulary also allows to include additional <a>vocabulary terms</a>
     within any class of the Information Model, which are serialized as additional
@@ -3064,138 +3081,136 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
 }
 </pre>
 
-    </section>
+</section>
 
-    <section>
-    <h3>Adding Protocol Bindings</h3>
+<section class="informative">
+<h3>Adding Protocol Bindings</h3>
 
-    <p>
-    With the context extension in the Thing Description, communication metadata can be supplemented or specified in the 
-    declarations <code>forms</code> (also see <a href="#protocol-bindings"></a>). 
-   </p>
+  <p>
+  With the context extension in the Thing Description,
+  the communication metadata can be supplemented or new Protocol Bindings added
+  through additional <a>vocabulary terms</a> serialized into a form object
+  (see also <a href="#protocol-bindings"></a>).
+  </p>
     
-    <p>The following TD example uses the CoAP protocol binding based on [[!WoT-Binding-Templates]] 
-        and assumes that there is a CoAP RDF vocabulary set definition which is accessable 
-        via the namespace <code>http://www.example.org/coap-binding#</code>. 
-        The supplemented <code>cov:methodCode</code> guides the Consumer which CoAP method has to be applied, e.g., 
-        methodCode=1 corresponds to a CoAP GET to read the brightness value or methodCode=2 corresponds to a CoAP POST to write/change the brightness value.
-    </p>
+  <p>
+  The following TD example uses a fictional CoAP Protocol Binding,
+  as no such Protocol Binding is available at the time of writing of this specification.
+  It assumes that there is a CoAP RDF vocabulary similar to [[HTTP-in-RDF10]]
+  that is accessable via the namespace <code>http://www.example.org/coap-binding#</code>.
+  The supplemented <code>cov:methodName</code> member instructs the Consumer
+  which CoAP method has to be applied
+  (e.g., <code>GET</code> for the CoAP Method Code 0.01,
+  <code>POST</code> for the CoAP Method Code 0.02,
+  or <code>iPATCH</code> for CoAP Method Code 0.07).
+  </p>
 
-    <aside class="example" id="context-extension-for-forms" title="Specialization of the form definition by context extension.">
+<aside class="example" id="context-extension-for-forms" title="Specialization of the form definition by context extension.">
 <pre>{
-        "@context": [
-            "https://www.w3.org/2019/td/v1",
-            {
-                "cov": "http://www.example.org/coap-binding#"
-            }
-        ],
-        ...
-        "properties": {
-            "brightness": {
-                "description": "The current brightness setting",
-                "type": "integer",
-                "minimum": -64,
-                "maximum": 64,
-                    "forms": [
-                    {
-                        "href": "coap://example.org:9191/api/brightness",
-                        "op": ["readproperty"],
-                        "cov:methodCode": 1
-                    },
-                    {
-                        "href": "coap://example.org:9191/api/brightness",
-                        "op": ["writeproperty"],
-                        "cov:methodCode": 2
-                    }
-                ]
-            }
+    "@context": [
+        "https://www.w3.org/2019/td/v1",
+        { "cov": "http://www.example.org/coap-binding#" }
+    ],
+    ...
+    "properties": {
+        "brightness": {
+            "description": "The current brightness setting",
+            "type": "integer",
+            "minimum": -64,
+            "maximum": 64,
+            "forms": [
+                {
+                    "href": "coap://example.org:61616/api/brightness",
+                    "op": ["readproperty"],
+                    "cov:methodName": "GET"
+                }, {
+                    "href": "coap://example.org:61616/api/brightness",
+                    "op": ["writeproperty"],
+                    "cov:methodName": "POST"
+                }
+            ]
         }
-    }</pre>
-        </aside>
+    }
+}</pre>
+</aside>
 
-    </section>
+</section>
 
-    <section>
+<section class="informative">
+<h3>Adding Security Schemes</h3>
 
-        <h4>Adding Security Schemes</h4>
+  <p>
+  Finally, new security schemes that are not included in the TD context
+  (i.e., the context file at <code>https://www.w3.org/2019/td/v1</code>
+  for the version defined by this specification)
+  can be defined using the vocabulary extension mechanism.
+  For this example, we will use a fictional ACE security scheme
+  based on [[?draft-ietf-ace-oauth-authz]] and that is, for this example,
+  defined by the namespace at <code>http://www.example.org/ace-security#</code>.
+  Note that such addiational security schemes must be subclasses of the
+  class <a href="#securityscheme" class="sec-ref"><code>SecurityScheme</code></a>.
+  </p>
 
-        <p>Finally,
-        new security schemes can be defined using the vocabulary extension
-        mechanism.
-      <!--
-        <span class="rfc2119-assertion" id="td-security-ns">
-        All security schemes defined in this document MAY
-        also be used via extension vocabularies, using namespace
-        URLs defined for them of the form 
-        <code>http://www.w3.org/ns/td/sec/</code><em>scheme</em> where <em>scheme</em>
-        is replaced by the scheme name.</span>
-      -->
-        For this example, we will use
-        OAuth2 via the extension mechanism.  
-        Note that vocabulary outside
-        <code>SecurityScheme</code> objects, in this case <code>wotsec:scope</code>,
-        can also be included as part of the definition.
-        To use the extension mechanism an <code>@context</code> also needs to be 
-        defined, including the default for TDs as well as a definition of
-        the vocabulary and prefix to be used for the security scheme.
-        </p>
-      <pre class="example">
-      {
-          @context: ["https://www.w3.org/2019/td/v1",
-                     {"wotsec:": "https://www.w3.org/2019/wot-security#"}],
-          ...
-          "securityDefinitions": {
-              "oauth2_sc": {
-                  "scheme": "wotsec:OAuth2SecurityScheme",
-                  ...
-                  "wotsec:flow": "implicit",
-                  "wotsec:authorization": "https://example.com/authorization",
-                  "wotsec:scopes": ["limited","special"]
-              }
-          },
-          "security": ["oauth2_sc"],
-          "properties": {
-              "status": {
-                  ...
-                  "forms": [
-                      {
-                          "href": "https://scopes.example.com/status",
-                          "contentType": "application/json",
-                          "wotsec:scopes": ["limited"]
-                      }
-                  ]
-              }
-          },
-          "action": {
-              "configure": {
-                  ...
-                  "forms": [
-                      {
-                          "href": "https://scopes.example.com/configure",
-                          "contentType": "application/json",
-                          "wotsec:scopes": ["special"]
-                      }
-                  ]
-              }
-          },
-          ...
-      }
-      </pre>
+<pre class="example">
+{
+    @context: [
+        "https://www.w3.org/2019/td/v1",
+        {
+            "cov": "http://www.example.org/coap-binding#",
+            "ace": "http://www.example.org/ace-security#"
+        }
+    ],
+    ...
+    "securityDefinitions": {
+        "ace_sc": {
+            "scheme": "ace:ACESecurityScheme",
+            ...
+            "ace:as": "coaps://as.example.com/token",
+            "ace:audience": "coaps://rs.example.com",
+            "ace:scopes": ["limited", "special"],
+            "ace:cnonce": true
+        }
+    },
+    "security": ["ace_sc"],
+    "properties": {
+        "status": {
+            ...
+            "forms": [
+                {
+                    "href": "coaps://rs.example.com/status",
+                    "contentType": "application/cbor",
+                    "ace:scopes": ["limited"]
+                }
+            ]
+        }
+    },
+    "action": {
+        "configure": {
+            ...
+            "forms": [
+                {
+                    "href": "coaps://rs.example.com/configure",
+                    "contentType": "application/cbor",
+                    "ace:scopes": ["special"]
+                }
+            ]
+        }
+    },
+    ...
+}
+</pre>
 
-        <p>
-            For convenience, the W3C vocabulary giving security schemes itself
-            includes non-standards but widely used schemes like API key, public
-            key, proof-of-possession (PoP), certificates, pre-shared key (PSK)
-            or OAuth 2, as in the above example. For any other security scheme,
-            a dedicated vocabulary must be designed and referenced by TDs.
-        </p>
+  <p>
+  Note that all security schemes defined in <a href="#sec-security-vocabulary-definition"></a>
+  are already part of the TD context and need not to be included through a context extension.
+  </p>
 
-    </section>
+</section>
 
- </section>
+</section>
 
-  <section>
-  <h1>Identification</h1>
+<section>
+<h2>Identification</h2>
 
   <p>
   The JSON-based serialization of the TD is identified by 
