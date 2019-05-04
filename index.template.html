@@ -3229,12 +3229,18 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
         <li>Security: PSKSecurityScheme</li>
         <li>Protocol Binding: CoAP [[?RFC7252]] over TLS</li>
         <li>Serializiation: default (JSON)</li>
-        <li>Comment: none</li>
+        <li>Comment: Also see Section <a href="#adding-protocol-bindings">Adding Protocol Bindings</a>. </li>
   
     </ul>
   
   <pre class="example" title="MyLampThing represented as a compact JSON serialization">
   {
+     "@context": [
+        "https://www.w3.org/2019/td/v1",
+        {
+        "cov": "http://www.example.org/coap-binding#"
+        }
+      ],
       "id": "urn:dev:ops:32473-WoTLamp-1234",
       "name": "MyLampThing",
       "description" : "MyLampThing uses JSON serialization",
@@ -3245,7 +3251,8 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
               "description" : "Shows the current status of the lamp",
               "type": "string",
               "forms": [{
-                  "href": "coaps://mylamp.example.com/status"
+                  "href": "coaps://mylamp.example.com/status",
+                  "cov:methodName" : "GET" 
               }]
           }
       },
@@ -3253,7 +3260,8 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
           "toggle": {
               "description" : "Turn on or off the lamp",
               "forms": [{
-                  "href": "coaps://mylamp.example.com/toggle"
+                  "href": "coaps://mylamp.example.com/toggle",
+                  "cov:methodName" : "POST" 
               }]
           }
       },
@@ -3262,7 +3270,9 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
               "description" : "Lamp reaches a critical temperature (overheating)",
               "data": {"type": "string"},
               "forms": [{
-                  "href": "coaps://mylamp.example.com/oh"
+                  "href": "coaps://mylamp.example.com/oh",
+                  "cov:methodName" : "GET",
+                  "subprotocol" : "cov:observe" 
               }]
           }
       }
@@ -3287,7 +3297,8 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     </ul>
   
   <pre class="example" title="MyLightSensor with MQTT binding">
-          {
+          {   
+              "@context": "https://www.w3.org/2019/td/v1",
               "name": "MyLightSensor",
               "id": "urn:dev:ops:32473-WoTLightSensor-1234",
               "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
@@ -3386,7 +3397,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
   
     </section>
 
-  <section id="json-schema-for-validation" class="appendix normative">
+  <section id="json-schema-for-validation" class="appendix informative">
   <h1>JSON Schema for TD Instance Validation</h1>
     <p>
         Below is a JSON Schema [[?JSON-SCHEMA-VALIDATION]] document for syntactically validating Thing Description instances serialized in JSON based format.
@@ -3394,7 +3405,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     <p class="note">The Thing Description defined by this document allows for 
         adding external vocabularies by using <code>@context</code> mechanism 
         known from JSON-LD [[json-ld11]], and the terms in those external vocabularies can be 
-        used in addition to the terms defined in Section <a href="#sec-vocabulary-definition"></a>. 
+        used in addition to the terms defined in Section <a href="#sec-vocabulary-definition">Information Model</a>. 
         For this reason, the below JSON schema is intentionally non-strict in that 
         regard. You can replace the value of <code>additionalProperties</code> schema 
         property <code>true</code> with <code>false</code> in different scopes/levels in 
