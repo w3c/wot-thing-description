@@ -92,11 +92,15 @@ template :attributes(?class) {
 
 ---
 
+prefix st: <http://ns.inria.fr/sparql-template/>
 prefix sh: <http://www.w3.org/ns/shacl#>
 prefix jsonld: <http://www.w3.org/ns/json-ld#>
 prefix : <http://w3c.github.io/wot-thing-description/visualization#>
 template :attribute(?class ?prop) {
-    format { "<font color=\"#c83500\" face=\"mono\">%s</font>" ?name }
+    format {
+        "<font color=\"#c83500\" face=\"mono\">%s</font>"
+        st:call-template(:label, ?prop)
+    }
     " : "
     format {
         "%s<font color=\"#c83500\" face=\"mono\">%s</font>"
@@ -105,7 +109,7 @@ template :attribute(?class ?prop) {
            if(?array,
               "array of ",
               if(?map, "map of ", "")))
-        ?type
+        st:call-template(:label, ?datatype)
     }
     format { "%s" if(?mandatory, " <i>(mandatory)</i>", "") }
 } where {
@@ -125,8 +129,6 @@ template :attribute(?class ?prop) {
         jsonld:iri ?prop ;
         jsonld:container jsonld:index
     }
-    bind (strafter(str(?prop), "#") as ?name)
-    bind (strafter(str(?datatype), "#") as ?type)
     bind (bound(?count) as ?mandatory)
     bind (bound(?mSet) as ?array)
     bind (bound(?mIndex) as ?map)
@@ -142,7 +144,7 @@ prefix : <http://w3c.github.io/wot-thing-description/visualization#>
 template :associations(?ns) {
     ?source " -> " ?dest " [label=<"
         "<font color=\"#c83500\" face=\"mono\">"
-            format { "%s" ?name }
+            format { "%s" st:call-template(:label, ?prop) }
         "</font>"
     ">,headlabel="
         format {
@@ -168,7 +170,6 @@ template :associations(?ns) {
     filter (strstarts(str(?sourceClass), str(?ns)))
     bind (strafter(str(?sourceClass), "#") as ?source)
     bind (strafter(str(?destClass), "#") as ?dest)
-    bind (strafter(str(?prop), "#") as ?name)
     bind (!strstarts(str(?destClass), str(?ns)) as ?ext)
     bind (if(bound(?count), ?count, "0") as ?min)
     bind (if(bound(?m), "*", "1") as ?max)
@@ -205,4 +206,22 @@ template :subClassRelations(?ns) {
     filter(strstarts(str(?sourceClass), str(?ns)))
     bind (strafter(str(?sourceClass), "#") as ?source)
     bind (strafter(str(?destClass), "#") as ?dest)
+}
+
+---
+
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix jsonld: <http://www.w3.org/ns/json-ld#>
+prefix : <http://w3c.github.io/wot-thing-description/visualization#>
+template :label(?term) {
+    format { "%s" ?label }
+} where {
+    optional {
+        ?m a jsonld:Mapping ;
+            jsonld:iri ?term ;
+            jsonld:term ?name .
+        filter not exists { ?term a owl:Class }
+    }
+    bind (if(bound(?name), ?name, strafter(str(?term), "#")) as ?label)
 }
