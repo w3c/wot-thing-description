@@ -905,12 +905,10 @@ a[href].internalDFN {
         <dfn id="dfn-inf-model">TD Information Model</dfn>
     </dt>
     <dd>
-        Set of constraints and equivalence relations applying to pre-defined vocabularies 
-        (i.e., a core vocabulary with extension like JSON Schema, Web Linking and WoT Security),
-        thus defining the semantics of these vocabularies. Constraints and
-        equivalence relations are typically expressed in terms of class signature,
-        property value assignment and property type on arbitrary object-oriented data
-        structures.
+        Set of class definitions constructed from pre-defined vocabularies and
+        on which constraints apply, thus defining the semantics of these vocabularies.
+        Class definitions are typically expressed in terms of a signature (a set
+        of vocabulary terms) and relations over that signature.
     </dd>
     <dt>
     <dfn id="dfn-td-processor">TD Processor</dfn>
@@ -942,13 +940,21 @@ a[href].internalDFN {
         A collection of vocabulary terms, identified by a namespace IRI.
     </dd>
     <dt>
+        <dfn id="dfn-vocab-term">Term</dfn>
+        and
         <dfn id="dfn-vocab-term">Vocabulary Term</dfn>
     </dt>
     <dd>
-        A class name (like <code>Thing</code>), a property name (like
-        <code>forms</code>), or a property value (like <code>readproperty</code>).
+        A character string. When a term is part of a vocabulary, it is called
+        a vocabulary term. For the sake of readability, a vocabulary term is
+        always denoted with its local name in this document (i.e. without its
+        namespace IRI).
     </dd>
   </dl>
+
+  <p>
+      These definitions are further developed in Section <a href="#preliminary-definitions"></a>.
+  </p>
   </section>
 
   <section>
@@ -1130,60 +1136,22 @@ a[href].internalDFN {
       <p>
           Each of these vocabularies is essentially a set of terms that can
           be used to build data structures, interpreted as objects in the
-          traditional object-oriented sense. Formally, an object is either denoted
-          by a term or a set of property-value pairs such that properties are terms
-          and values denote other objects. Terms may also denote classes (or sets)
-          of objects.
+          traditional object-oriented sense. Objects are instances of classes
+          and have properties. In the context of WoT, they denote Things and
+          their affordances. A formal definition of objects is given in
+          Section <a href="#preliminary-definitions"></a>. The main elements of
+          the TD information model are then presented in Section
+          <a href="#class-definitions"></a>. Certain object properties may be
+          omitted in a <a>TD</a> when default values exist. A list of defaults
+          is given in Section <a href="#sec-default-values"></a>.
       </p>
 
       <p>
-          In this context, the TD information model is to be understood as a
-          set of constraints and equivalence relations between such data structures
-          that specifically denote WoT Things, i.e. physical world objects.
-          The constraints of the TD information model are threefolds:
-          <ul>
-              <li>
-                  <em>class signature</em>: for all objects denoted by a set of
-                  property-value pairs in the same class, there is a unique set of
-                  terms such that all property names for an object are in this set
-                  (the signature of the class).
-              </li>
-              <li>
-                  <em>property value assignment</em>: for all objects denoted by
-                  a set of property-value pairs in the same class, there is a set
-                  of terms such that every term in this set is the property of
-                  some property-value pair for each object (mandatory terms).
-              </li>
-              <li>
-                  <em>property type</em>: for all objects denoted by a set of
-                  property-value pairs in the same class, if two pairs for two
-                  distinct objects have the same property, their respective values
-                  must be in the same class (same type).
-              </li>
-          </ul>
-          In turn, the equivalence relations of the TD information model express
-          that two distinct data structures denote the same object. In practice,
-          equivalences are defined between data structures that omit certain
-          property-value pairs, assuming default values, and data structures that
-          explicitly include these values.
-      </p>
-
-      <p>
-          These abstract constraints can be intuitively represented as a UML
-          class diagram, in which classes are shown as tables, each row
-          giving a property name and a simple type, separated by a colon
-          (<code>:</code>). A simple type is a class with no signature.
-          Classes are connected with arrows if there is a property type constraint
-          between them (associations) or if one denotes a subset of the other
-          (inheritance).
-      </p>
-
-      <!-- TODO mention cardinalities -->
-
-      <p>
-          The diagram shown next represents all constraints on WoT Things included
-          in the TD information model. For the sake of readability, the diagram was
-          split in four parts, one for each of the four base vocabularies.
+          The UML diagram showed next gives an overview of the TD information model.
+          It represents all classes as tables and the assocations that exist between
+          classes, starting from the class <a href="#thing"><code>Thing</code></a>,
+          as directed arrows. For the sake of readability, the diagram was split in
+          four parts, one for each of the four base vocabularies.
       </p>
       
       <!--<p><a href="http://visualdataweb.de/webvowl/#iri=https://rawgit.com/w3c/wot-thing-description/TD-JSON-LD-1.1/ontology/td.ttl">Click here for the visualization</a></p>-->
@@ -1213,135 +1181,114 @@ a[href].internalDFN {
       <img src="visualization/web-linking.svg" alt="Web linking model figure"/>
       <figcaption>Web linking model (<a href="visualization/web-linking.svg">Click SVG file</a>)</figcaption>
     </figure>
-    
-    
-      <p>
-          Details on the TD information model are given next as tables. First, equivalence relations
-          are provided in the form of default values for properties for some class. Second, constraints
-          on the vocabularies mentioned above are provided as class definitions where each table
-          gives the signature of a class and each row of a table gives some value assignment and
-          some type for each property, along with a description.
-      </p>
 
     </section>
 
-      <section id="sec-default-values">
-        <h3>Default Values for Vocabulary Terms</h3>
+    <section id="preliminary-definitions">
+
+        <h2>Preliminaries</h2>
 
         <p>
-            <span class="rfc2119-assertion" id="td-vocabulary-defaults">
-              All equivalence relations expressed in Tables in Section <a href="#sec-default-values"></a>
-              MUST be followed by a TD processor.
-            </span>
-        </p>
-        
-        <p>
-            The follow table gives default value assignments when a TD does not
-            assign certain property to any value. 
+            All definitions in this section refer to <em>sets</em>, which
+            intuitively are collections of elements that can themselves be sets.
+            All arbitrarily complex data structures can be defined in terms
+            of sets. In particular, an <dfn>object</dfn> is a data structure
+            recursively defined as follows:
         </p>
 
-        <table class="def">
-            <thead>
-                <tr>
-                    <th><a>Vocabulary term</a></th>
-                    <th>Default value</th>
-                    <th>Context</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="rfc2119-default-assertion" id="td-default-contentType">
-                    <td>
-                        <code>contentType</code>
-                    </td>
-                    <td><code>application/json</code></td>
-                    <td></td>
-                </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-safe">
-                    <td>
-                        <code>safe</code>
-                    </td>
-                    <td><code>false</code></td>
-                    <td></td>
-                </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-idempotent">
-                    <td>
-                        <code>idempotent</code>
-                    </td>
-                    <td><code>false</code></td>
-                    <td></td>
-                </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-op-properties">
-                    <td>
-                        <code>op</code>
-                    </td>
-                    <td>Array of strings with values <code>readproperty</code> followed by 
-                        <code>writeproperty</code></td>
-                    <td><code>PropertyAffordance</code></td>
-                </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-op-actions">
-                    <td>
-                        <code>op</code>
-                    </td>
-                    <td><code>invokeaction</code></td>
-                    <td><code>ActionAffordance</code></td>
-                </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-op-events">
-                    <td>
-                        <code>op</code>
-                    </td>
-                    <td><code>subscribeevent</code></td>
-                    <td><code>EventAffordance</code></td>
-                </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-in-1">
-                    <td>
-                        <code>in</code>
-                    </td>
-                    <td><code>header</code></td>
-                    <td><code>BasicSecurityScheme</code></br>
-                        <code>DigestSecurityScheme</code></br>
-                        <code>BearerSecurityScheme</code></br>
-                        <code>PoPSecurityScheme</code></td>
-                </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-in-2">
-                    <td>
-                        <code>in</code>
-                    </td>
-                    <td><code>query</code></td>
-                    <td><code>APIKeySecurityScheme</code></td>
-                </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-qop">
-                    <td>
-                        <code>qop</code>
-                    </td>
-                    <td><code>auth</code></td>
-                    <td><code>DigestSecurityScheme</code></td>
-                </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-alg">
-                    <td>
-                        <code>alg</code>
-                    </td>
-                    <td><code>ES256</code></td>
-                    <td><code>BearerSecurityScheme</code></br>
-                        <code>PoPSecurityScheme</code></td>
-                </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-format">
-                    <td>
-                        <code>format</code>
-                    </td>
-                    <td><code>jwt</code></td>
-                    <td><code>BearerSecurityScheme</code></br>
-                        <code>PoPSecurityScheme</code></td>
-                </tr>
-                <tr class="rfc2119-default-assertion" id="td-default-flow">
-                    <td>
-                        <code>flow</code>
-                    </td>
-                    <td><code>implicit</code></td>
-                    <td><code>OAuth2SecurityScheme</code></td>
-                </tr>
-            </tbody>
-        </table>
-      </section>
+        <ul>
+            <li>
+                a <a>term</a> which may or not belong to a <a>vocabulary</a>,
+                is an <a>object</a>.
+            </li>
+            <li>
+                a set of name-value pairs where the name is a <a>term</a> and the
+                value is another <a>object</a>, is also an <a>object</a>.
+            </li>
+        </ul>
+
+        <p>
+            Though this definition does not prevent <a>object</a>s to include multiple
+            name-value pairs with the same name, they are generally not considered
+            in this specification. An <a>object</a> whose elements only have numbers
+            as names is called an <dfn>array</dfn>. Similarly, an <a>object</a> whose
+            elements only have <a>term</a>s that do not belong to any <a>vocabulary</a>
+            as names is called a <dfn>map</dfn>.
+        </p>
+
+        <p>
+            Moreover, <a>object</a>s can be instances of some <dfn>class</dfn> (also
+            called <dfn>type</dfn>). A <a>class</a>, which is denoted by a <a>term</a>, is
+            first defined by a set of <a>term</a>s called a <dfn>signature</dfn>. A
+            <a>class</a> whose <a>signature</a> is empty is called a <dfn>simple type</dfn>.
+        </p>
+
+        <p>
+            The <a>signature</a> of a class allows to construct two relations that further
+            define <a>class</a>es: an <dfn>assignment relation</dfn> and a <dfn>type
+            relation</dfn>. The <a>assignment relation</a> of a <a>class</a> takes a
+            <a>term</a> as input and returns either <code>true</code> or <code>false</code>
+            as output. The <a>type relation</a> of a <a>class</a> also takes a <a>term</a>
+            as input and returns another <a>class</a> as output.
+        </p>
+
+        <p>
+            On the basis of these two relations, constraints on <a>class</a> instantiation
+            can be defined as follows:
+            <ul>
+                <li>
+                    an <a>object</a> is an instance of a <a>class</a> if for every <a>term</a>
+                    for which the <a>assignment relation</a> of the <a>class</a> returns
+                    <code>true</code>, it includes a name-value pair with the <a>term</a>
+                    as name. In other words, the <a>assignment relation</a> indicates whether
+                    an assignment for every <a>term</a> in the <a>class</a>'s <a>signature</a>
+                    is mandatory or optional.
+                </li>
+                <li>
+                    an <a>object</a> is an instance of a <a>class</a> if for every <a>term</a>
+                    of the <a>class</a>'s signature used as name in some name-value pair
+                    of the <a>object</a>, the value of that pair is an instance of the
+                    <a>class</a> returned by the class's <a>type relation</a> for the 
+                    given <a>term</a>.
+                </li>
+            </ul>
+        </p>
+
+        <p>
+            A <a>class</a> is a <dfn>subclass</dfn> of some other <a>class</a> if every
+            instance of the former is also an instance of the latter.
+        </p>
+
+        <p>
+            Given all definitions above, the TD information model is to be understood
+            as a set of <a>class</a> definitions, which include a <a>class</a> name, a
+            <a>signature</a> (elements of which are called property names), an
+            <a>assignment relation</a> and a <a>type relation</a>. These class definitions
+            are provided as tables in Section <a href="#class-definitions"></a>.
+        </p>
+
+        <p>
+            In addition, the TD information model defines another relation for each
+            <a>class</a> that takes a <a>term</a> as input and returns an <a>object</a>,
+            i.e. a <dfn>default value</dfn> for some assignment. This relation allows
+            to relax the constraint defined above on the <a>assignment relation</a>:
+            an <a>object</a> is an instance of a <a>class</a> if it includes all mandatory
+            assignments <em>or</em> if <a>default value</a>s exist for the missing
+            assignments. All default values are given in a single table in Section
+            <a href="#sec-default-values"></a>.
+        </p>
+
+        <p>
+            The formalization introduced here does not consider the possible relation
+            between objects as abstract data structures and physical world objects
+            like WoT Things. However, care was given to the possibility of re-interpreting
+            all <a>vocabulary terms</a> involved in the TD information model as RDF
+            resources, so as to integrate them in a larger model of the physical world
+            (an ontology). This aspect is dealt with in Appendix
+            <a href="#thing-description-ontology"></a>.
+        </p>
+
+    </section>
     
       <section>
 
@@ -1349,22 +1296,17 @@ a[href].internalDFN {
 
         <p>
             <span class="rfc2119-assertion" id="td-vocabulary">
-                All vocabulary constraints noted in tables in Section <a href="#sec-core-vocabulary-definition"></a>,
+                A TD processor MUST be able to detect that a <a>TD</a> does not
+                meet class instantiation constraints on all classes defined in Section
+                <a href="#sec-core-vocabulary-definition"></a>,
                 <a href="#sec-data-schema-vocabulary-definition"></a>,
                 <a href="#sec-security-vocabulary-definition"></a>,
-                and <a href="#sec-web-linking-vocabulary-definition"></a> MUST be followed by a TD processor.
+                and <a href="#sec-web-linking-vocabulary-definition"></a>.
             </span>
         </p>
 
       <section id="sec-core-vocabulary-definition">
       <h2>Core Vocabulary Definitions</h2>
-      <p>In the following tables, 
-      a type given as "map of X" should be interpreted as defining
-      an unordered collection of name-value pairs associating unique names
-      with values of type X.
-      Likewise a type given as "array of X" should be interpreted as defining an ordered
-      collection of instances of type X. 
-      </p>
 
       <p class="ednote" title="Security Definitions Mandatory">
       Note that for now <code>securityDefinitions</code> are mandatory at the top level of a <code>Thing</code>
@@ -1664,6 +1606,126 @@ IANA HTTP content coding registry</a>.
 
     </section>
 
+    <section id="sec-default-values">
+      <h3>Default Value Definitions</h3>
+
+      <p>
+          <span class="rfc2119-assertion" id="td-vocabulary-defaults">
+            When assignments in a TD are missing, a TD processor MUST follow
+            the default value assignments expressed in the Table of Section
+            <a href="#sec-default-values"></a>.
+          </span>
+      </p>
+      
+      <p>
+          The following table gives all <a>default value</a>s defined in the
+          classes of the TD information model. An empty cell in the last column
+          must be interpreted as applying to all classes.
+      </p>
+
+      <table class="def">
+          <thead>
+              <tr>
+                  <th><a>Vocabulary term</a></th>
+                  <th>Default value</th>
+                  <th>Class</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr class="rfc2119-default-assertion" id="td-default-contentType">
+                  <td>
+                      <code>contentType</code>
+                  </td>
+                  <td><code>application/json</code></td>
+                  <td></td>
+              </tr>
+              <tr class="rfc2119-default-assertion" id="td-default-safe">
+                  <td>
+                      <code>safe</code>
+                  </td>
+                  <td><code>false</code></td>
+                  <td></td>
+              </tr>
+              <tr class="rfc2119-default-assertion" id="td-default-idempotent">
+                  <td>
+                      <code>idempotent</code>
+                  </td>
+                  <td><code>false</code></td>
+                  <td></td>
+              </tr>
+              <tr class="rfc2119-default-assertion" id="td-default-op-properties">
+                  <td>
+                      <code>op</code>
+                  </td>
+                  <td>Array of strings with values <code>readproperty</code> followed by 
+                      <code>writeproperty</code></td>
+                  <td><code>PropertyAffordance</code></td>
+              </tr>
+              <tr class="rfc2119-default-assertion" id="td-default-op-actions">
+                  <td>
+                      <code>op</code>
+                  </td>
+                  <td><code>invokeaction</code></td>
+                  <td><code>ActionAffordance</code></td>
+              </tr>
+              <tr class="rfc2119-default-assertion" id="td-default-op-events">
+                  <td>
+                      <code>op</code>
+                  </td>
+                  <td><code>subscribeevent</code></td>
+                  <td><code>EventAffordance</code></td>
+              </tr>
+              <tr class="rfc2119-default-assertion" id="td-default-in-1">
+                  <td>
+                      <code>in</code>
+                  </td>
+                  <td><code>header</code></td>
+                  <td><code>BasicSecurityScheme</code></br>
+                      <code>DigestSecurityScheme</code></br>
+                      <code>BearerSecurityScheme</code></br>
+                      <code>PoPSecurityScheme</code></td>
+              </tr>
+              <tr class="rfc2119-default-assertion" id="td-default-in-2">
+                  <td>
+                      <code>in</code>
+                  </td>
+                  <td><code>query</code></td>
+                  <td><code>APIKeySecurityScheme</code></td>
+              </tr>
+              <tr class="rfc2119-default-assertion" id="td-default-qop">
+                  <td>
+                      <code>qop</code>
+                  </td>
+                  <td><code>auth</code></td>
+                  <td><code>DigestSecurityScheme</code></td>
+              </tr>
+              <tr class="rfc2119-default-assertion" id="td-default-alg">
+                  <td>
+                      <code>alg</code>
+                  </td>
+                  <td><code>ES256</code></td>
+                  <td><code>BearerSecurityScheme</code></br>
+                      <code>PoPSecurityScheme</code></td>
+              </tr>
+              <tr class="rfc2119-default-assertion" id="td-default-format">
+                  <td>
+                      <code>format</code>
+                  </td>
+                  <td><code>jwt</code></td>
+                  <td><code>BearerSecurityScheme</code></br>
+                      <code>PoPSecurityScheme</code></td>
+              </tr>
+              <tr class="rfc2119-default-assertion" id="td-default-flow">
+                  <td>
+                      <code>flow</code>
+                  </td>
+                  <td><code>implicit</code></td>
+                  <td><code>OAuth2SecurityScheme</code></td>
+              </tr>
+          </tbody>
+      </table>
+    </section>
+
     </section>
 
   <section id="sec-td-serialization">
@@ -1713,63 +1775,52 @@ In summary, this requires the following:
   <h2>Basic Representation Format Assumptions</h2>
    
   <p>
-  As a fundamental basis, 
-  all <a>vocabulary terms</a> defined in
-  <a href="#sec-core-vocabulary-definition"></a>
-  will have a JSON member serialization with the
-  <a>vocabulary term</a> as name and a value of the given type.
+    As a fundamental basis, every <a>object</a> in a <a>TD</a>
+    is serialized as a JSON object and every name-value pair in the original
+    <a>object</a> is serialized as a member of the JSON object.
   </p>
 
   <section id="td-basic-types-mapping">
   <h3>Mapping to JSON Types</h3>
 
   <p>
-  The data types of the vocabulary defined in
-  <a href="#sec-data-schema-vocabulary-definition"></a>
-  will be transformed to JSON types.
-  The following rules are used for <a>vocabulary terms</a> based on simple type
-  definitions:
+    Every <a>simple type</a> mentioned in Section
+    <a href="#class-definitions"></a> maps to a JSON
+    type (string, number, boolean), as per the rules listed below. These
+    rules apply to values in name-value pairs:
   </p>
   <ul>
   <li><span class="rfc2119-assertion" id="td-string-type">
-    <a>Vocabulary terms</a> that use simple types
-    <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> and
-    <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a>
-    MUST be serialized as JSON string.
+        Values that are of type <code>string</code> or
+        <code>anyURI</code> MUST be serialized as JSON strings.
   </span></li>
   <li><span class="rfc2119-assertion" id="td-datetime-type">
-    <a>Vocabulary terms</a> that use simple type
-    <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#dateTime"><code>dateTime</code></a>
-    MUST be serialized as JSON string and have the lexical form
-    <code><i>YYYY</i>-<i>MM</i>-<i>DD</i>T<i>hh</i>:<i>mm</i>:<i>ss</i>Z</code>,
-    where <code><i>YYYY</i></code>, <code><i>MM</i></code> and <code><i>DD</i></code>
-    respectively encode a year, a month, and a day (i.e., a date) and where
-    <code><i>hh</i></code>, <code><i>mm</i></code>, and <code><i>ss</i></code>
-    respectively encode hours, minutes, and seconds (i.e., a time).
-    </span>
-    Other elements of the lexical form (<code>-</code>, <code>T</code>, <code>Z</code>)
-    are verbatim. In particular, <code>Z</code> is mandatory and must be interpreted
-    as the UTC+00 time zone. This lexical form represents a subset of the
-    <a href="https://www.w3.org/TR/xmlschema11-2/#dateTime-lexical-mapping">XSD built-in dateTime datatype</a>,
-    itself inspired by the ISO standard for dates and times [[ISO8601]].
-  </li>
+        Values that are of type <code>dateTime</code>
+        MUST be serialized as JSON strings and have the lexical
+        form <code><i>YYYY</i>-<i>MM</i>-<i>DD</i>T<i>hh</i>:<i>mm</i>:<i>ss</i>Z</code>,
+        where <code><i>YYYY</i></code>, <code><i>MM</i></code> and <code><i>DD</i></code>
+        respectively encode a year, a month and a day (i.e. a date) and where
+        <code><i>hh</i></code>, <code><i>mm</i></code> and <code><i>ss</i></code>
+        respectively encode hours, minutes and seconds (i.e. a time).
+  </span> Other elements of the lexical form (<code>-</code>, <code>T</code>, <code>Z</code>)
+  are verbatim. In particular, <code>Z</code> is mandatory and must be interpreted
+  as the UTC+00 time zone. This lexical form represents a subset of the
+  <a href="https://www.w3.org/TR/xmlschema11-2/#dateTime-lexical-mapping">
+    XSD built-in dateTime datatype
+  </a>, itself inspired by the ISO standard for dates and times [[ISO8601]].</li>
   <li><span class="rfc2119-assertion" id="td-integer-type">
-    <a>Vocabulary terms</a> that use simple type
-    <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#integer"><code>integer</code></a>
-    MUST be serialized as JSON number without a fraction or exponent part.
+        Values that are of type <code>integer</code>
+        MUST be serialized as JSON numbers without a fraction or exponent part.
   </span></li>
   <li><span class="rfc2119-assertion" id="td-number-type">
-    <a>Vocabulary terms</a> that use simple type
-    <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#double"><code>double</code></a>
-    MUST be serialized as JSON number.
+        Values that are of type <code>double</code>
+        MUST be serialized as JSON number.
   </span></li>
   </ul>
 
   <p>
-  All <a>vocabulary terms</a> in
-  <a href="#sec-vocabulary-definition"></a>
-  associated with complex, class-based types are defined separately for
-  structured JSON type serialization in <a href="#td-class-serialization"></a>.
+    Values that are themselves sets of property-value pairs (i.e. not of a <a>simple
+    type</a>) will be dealt with individually in Section <a href="#td-class-serialization"></a>.
   </p>
 
   </section>
@@ -1778,8 +1829,8 @@ In summary, this requires the following:
   <h3>Omitting Default Values</h3>
 
   <p>
-  A Thing Description serialization may omit <a>vocabulary terms</a>
-  that have default values assigned based on the table given in <a href="#sec-default-values"></a>.
+  A Thing Description instance serialization may omit <a>vocabulary term</a>s for which
+  default values can be assigned, as listed in the table given in <a href="#sec-default-values"></a>.
   </p>
 
   <p>
@@ -1907,8 +1958,15 @@ In summary, this requires the following:
   <h3>Thing Root Object</h3>
 
   <p>
+    A <a>TD</a> is a data structure rooted at an <a>object</a>
+    of type <code>Thing</code>. In turn, a JSON <a>TD serialization</a>
+    is a JSON object, which is the root of a syntax tree constructed
+    from the abstract TD structure.
+  </p>
+
+  <p>
   <span class="rfc2119-assertion" id="td-context">
-  The root object of a Thing Description instance MUST include
+  The root JSON object of a TD serialization MUST include
   a member with the name <code>@context</code> and a value of type
   string or array that contains
   <code>https://www.w3.org/2019/td/v1</code> to identify the
@@ -1927,11 +1985,9 @@ In summary, this requires the following:
 </pre>
 
   <p><span class="rfc2119-assertion" id="td-context-toplevel">
-  Each mandatory and, if present, optional <a>vocabulary term</a>
-  defined in the class <a href="#thing" class="sec-ref"><code>Thing</code></a>
-  MUST be serialized as a JSON member
-  of the TD root object
-  with the <a>vocabulary term</a> as name and a value of the specified type.
+    All name-value pairs of an instance of <code>Thing</code> where the name
+    is a <a>term</a> included in the signature of <code>Thing</code> MUST be
+    serialized as JSON members with the <a>term</a> as name.
   </span></p>
 
   <pre class="example">
@@ -1958,16 +2014,16 @@ In summary, this requires the following:
 
   <!-- should this be "the type" or "the elements of"? -->
   <p><span class="rfc2119-assertion" id="td-objects">
-  The value of the members
-  <code>properties</code>, <code>actions</code>, <code>events</code>,
-  <code>version</code>, and <code>securityDefinitions</code>
-  MUST be a JSON object.
+  All values assigned to <code>properties</code>,
+  <code>actions</code>, <code>events</code>, <code>version</code>,
+  and <code>securityDefinitions</code> in an instance of <code>Thing</code>
+  MUST be serialized as JSON objects.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-arrays">
-  The value of the members <code>forms</code>, <code>links</code>,
-  <code>scopes</code>, and <code>security</code>
-  MUST be a JSON array.
+  All values assigned to <code>forms</code>, <code>links</code>,
+  <code>scopes</code>, and <code>security</code> in an instance of
+  <code>Thing</code> MUST be serialized as JSON arrays.
   </span></p>
 
 </section> <!-- end of id="sec-thing-as-a-whole-json"-->
@@ -1975,41 +2031,33 @@ In summary, this requires the following:
 <section id="property-serialization-json">
 <h3><code>properties</code></h3>
   
-  <p><span class="rfc2119-assertion" id="td-properties">
-  Each Property affordance offered by a Thing MUST be serialized as object into
-  the JSON-object based <code>properties</code> member of the TD root object
-  with a (unique) JSON name to identify the Property object.
+  <p>
+  In a <code>Thing</code> instance, the value assigned to <code>properties</code> (at the
+  root level) is a map of instances of <code>PropertyAffordance</code>.
+  <span class="rfc2119-assertion" id="td-properties">
+  A map of <code>PropertyAffordance</code> instances MUST be serialized as an object
+  with a (unique) JSON name to identify each Property affordance object.
   </span></p>
 
   <p>
   <span class="rfc2119-assertion" id="td-property-names">
-  Each mandatory and, if present, optional <a>vocabulary term</a>
-  defined in the class <a href="#propertyaffordance" class="sec-ref"><code>PropertyAffordance</code></a>,
-  as well as its two superclasses
-  <a href="#interactionaffordance" class="sec-ref"><code>InteractionAffordance</code></a>
-  and <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>,
-  MUST be serialized as JSON member of the Property object
-  with the <a>vocabulary term</a> as name and a value of the specified type.
+    All name-value pairs of an instance of <code>PropertyAffordance</code> where the name
+    is a <a>term</a> included in the signatures of <code>PropertyAffordance</code>,
+    <code>InteractionAffordance</code> and <code>DataSchema</code> MUST be
+    serialized as JSON members with the <a>term</a> as name.
   </span>
-  See <a href="#data-schema-serialization-json"></a> for serializing <a>vocabulary terms</a>
-  of the <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a> superclass.
-  </p>
-
-  <p>
-  This means that the <a>vocabulary terms</a>
-  of <a href="#interactionaffordance" class="sec-ref"><code>InteractionAffordance</code></a>
-  and <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a> are serialized into
-  the same JSON object as the <a>vocabulary terms</a> of
-  <a href="#propertyaffordance" class="sec-ref"><code>PropertyAffordance</code></a>.
+  See <a href="#data-schema-serialization-json" class="sec-ref"></a> for
+  details on the <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a> superclass.
   </p>
 
   <p><span class="rfc2119-assertion" id="td-property-arrays">
-  The value of the member <code>forms</code> MUST be a JSON array
-  containing one or more object serializations as defined in <a href="#form-serialization-json"></a>.
+  The value assigned to <code>forms</code> in an instance of <code>PropertyAffordance</code>
+  MUST be serialized as a JSON array. Each element in the array must be a JSON
+  object as defined in <a href="#form-serialization-json" class="sec-ref"></a>
   </span></p>
 
   <p>
-  A TD snippet of two Property objects is given below:
+  A snippet for two Property affordances is given below:
   </p>
 
 <aside class="example" id="property-serialization-sample" title="Sample of Property serializations">
@@ -2052,36 +2100,38 @@ In summary, this requires the following:
 <section id="action-serialization-json">
 <h3><code>actions</code></h3>
 
-  <p><span class="rfc2119-assertion" id="td-actions">
-  Each Action affordance offered by a Thing MUST be serialized as object into
-  the JSON-object based <code>actions</code> member of the TD root object
-  with a (unique) JSON name to identify the Action object.
+  <p>
+    In a <code>Thing</code> instance, the value assigned to <code>actions</code>
+    is a map of instances of <code>ActionAffordance</code>.
+    <span class="rfc2119-assertion" id="td-actions">
+    A map of <code>ActionAffordance</code> instances MUST be serialized as an object
+    with a (unique) JSON name to identify each Action affordance object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-action-names">
-  Each mandatory and, if present, optional <a>vocabulary term</a>
-  defined in the class <a href="#actionaffordance" class="sec-ref"><code>ActionAffordance</code></a>
-  and its superclass
-  <a href="#interactionaffordance" class="sec-ref"><code>InteractionAffordance</code></a>
-  MUST be serialized as JSON member of the Action object
-  with the <a>vocabulary term</a> as name and a value of the specified type.
+    All name-value pairs of an instance of <code>ActionAffordance</code> where the name
+    is a <a>term</a> included in the signatures of <code>ActionAffordance</code> and
+    <code>InteractionAffordance</code> MUST be serialized as JSON members with the
+    <a>term</a> as name.
   </span></p>
 
   <p>
   <span class="rfc2119-assertion" id="td-action-objects">
-  The value of the members <code>input</code> and <code>output</code> MUST be a JSON object.
+    The values assigned to <code>input</code> and <code>output</code> in an instance of
+    <code>ActionAffordance</code> MUST be a JSON object.
   </span>
   They rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>,
   whose serialization is defined in <a href="#data-schema-serialization-json"></a>.
   </p>
 
   <p><span class="rfc2119-assertion" id="td-action-arrays">
-  The value of the member <code>forms</code> MUST be a JSON array
-  containing one or more object serializations as defined in <a href="#form-serialization-json"></a>.
+    The value assigned to <code>forms</code> in an instance of <code>ActionAffordance</code>
+    MUST be serialized as a JSON array. Each element in the array must be a JSON
+    object as defined in <a href="#form-serialization-json" class="sec-ref"></a>
   </span></p>
 
   <p>
-  A TD snippet of an Action object is given below:
+  A TD snippet of an Action affordance is given below:
   </p>
 
 <aside class="example" id="action-serialization-sample" title="Sample of an Action serialization">
@@ -2122,26 +2172,26 @@ In summary, this requires the following:
 <section id="event-serialization-json">
 <h3><code>events</code></h3>
 
-  <p><span class="rfc2119-assertion" id="td-events">
-  Each Event affordance offered by a Thing MUST be serialized as object into
-  the JSON-object based <code>events</code> member of the TD root object
-  with a (unique) JSON name to identify the Event object.
+  <p>
+    In a <code>Thing</code> instance, the value assigned to <code>events</code>
+    is a map of instances of <code>EventAffordance</code>.
+    <span class="rfc2119-assertion" id="td-events">
+    A map of <code>EventAffordance</code> instances MUST be serialized as an object
+    with a (unique) JSON name to identify each Event affordance object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-event-names">
-  Each mandatory and, if present, optional <a>vocabulary term</a>
-  defined in the class <a href="#eventaffordance" class="sec-ref"><code>EventAffordance</code></a>
-  and its superclass
-  <a href="#interactionaffordance" class="sec-ref"><code>InteractionAffordance</code></a>
-  MUST be serialized as JSON member of the Event object
-  with the <a>vocabulary term</a> as name and a value of the specified type.
+    All name-value pairs of an instance of <code>EventAffordance</code> where the name
+    is a <a>term</a> included in the signatures of <code>EventAffordance</code> and
+    <code>InteractionAffordance</code> MUST be serialized as JSON members with the
+    <a>term</a> as name.
   </span></p>
 
   <p>
   <span class="rfc2119-assertion" id="td-event-objects">
-  The values of the members <code>subscription</code>,
-  <code>data</code>,
-  and <code>cancellation</code>
+  The values assigned to <code>subscription</code>,
+  <code>data</code>, and <code>cancellation</code>
+  in an instance of <code>EventAffordance</code>
   MUST be a JSON object.
   </span>
   They rely on the the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>,
@@ -2149,7 +2199,7 @@ In summary, this requires the following:
   </p>
 
   <p><span class="rfc2119-assertion" id="td-event-arrays">
-  The value of the member <code>forms</code> MUST be a JSON array
+  The value assigned to <code>forms</code> in an instance of <code>EventAffordance</code> MUST be a JSON array
   containing one or more object serializations as defined in <a href="#form-serialization-json"></a>.
   </span></p>
 
@@ -2173,7 +2223,7 @@ In summary, this requires the following:
 </aside>
 
 <p>
-Please note that the definition of the Event affordance is defined flexible
+Event affordances have been defined in a flexible manner, 
 in order to adopt existing (e.g., WebSub) or customer-oriented event mechanisms (e.g., Webhooks).
 For this reason, <code>subscription</code> and <code>cancellation</code> can be defined according to the desired mechanism.
 Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thing (T2T) use case that offers an event and uses <code>subscription</code> and <code>cancellation</code>.
@@ -2185,10 +2235,9 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
 <h3><code>forms</code></h3>
 
   <p><span class="rfc2119-assertion" id="td-forms">
-  Each mandatory and, if present, optional <a>vocabulary term</a>
-  defined in the class <a href="#form" class="sec-ref"><code>Form</code></a>,
-  MUST be serialized as JSON member of a JSON object representing the form
-  with the <a>vocabulary term</a> as name and a value of the specified type.
+    All name-value pairs of an instance of <code>Form</code> where the name
+    is a <a>term</a> included in the signatures of <code>Form</code> MUST
+    be serialized as JSON members with the <a>term</a> as name.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-form-protocolbindings">
@@ -2228,7 +2277,8 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-uriVariables-dataschema">
-  The serialization of each value in the <code>uriVariables</code> map MUST
+  The serialization of each value in the map assigned to <code>uriVariables</code>
+  in an instance of <code>Form</code> MUST
   rely on the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>,
   whose serialization is defined in <a href="#data-schema-serialization-json"></a>.
   </span></p>
@@ -2287,11 +2337,13 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
 
   <p>
   <span class="rfc2119-assertion" id="td-form-response-object">
-  If present, the value of the member <code>response</code> MUST be a JSON object.
+  If present, the value assigned to <code>response</code> in an instance of
+  <code>Form</code> MUST be a JSON object.
   </span>
   <span class="rfc2119-assertion" id="td-forms-response">
   If present, the response object MUST contain a <code>contentType</code> member as
-  defined in the <a href="#expectedresponse" class="sec-ref"><code>ExpectedResponse</code></a> class.
+  defined in the class definition of
+  <a href="#expectedresponse" class="sec-ref"><code>ExpectedResponse</code></a>.
   </span>
   </p>
 
@@ -2369,10 +2421,9 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
 <h3><code>links</code></h3>
 
   <p><span class="rfc2119-assertion" id="td-links">
-  Each mandatory and, if present, optional <a>vocabulary term</a>
-  defined in the class <a href="#link" class="sec-ref"><code>Link</code></a>,
-  MUST be serialized as JSON member of a JSON object representing the link
-  with the <a>vocabulary term</a> as name and a value of the specified type.
+    All name-value pairs of an instance of <code>Link</code> where the name
+    is a <a>term</a> included in the signatures of <code>Link</code> MUST
+    be serialized as JSON members with the <a>term</a> as name.
   </span></p>
 
   <p>A TD snippet of a link object in the <code>links</code> array is given below:</p>
@@ -2394,18 +2445,20 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
 <section id="security-serialization-json">
 <h3><code>securityDefinitions</code> and <code>security</code></h3>
 
-  <p><span class="rfc2119-assertion" id="td-security">
-  Each security definition for a Thing MUST be serialized as object into
-  the JSON-object based <code>securityDefinitions</code> member of the TD root object
-  with a (unique) JSON name to identify the security definition object.
+  <p>
+    In a <code>Thing</code> instance, the value assigned to
+    <code>securityDefinitions</code> is a map of instances of
+    <code>SecurityScheme</code>.
+    <span class="rfc2119-assertion" id="td-security">
+    A map of <code>SecurityScheme</code> instances MUST be serialized as an object
+    with a (unique) JSON name to identify each Security configuration object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-security-schemes">
-  Each mandatory and, if present, optional <a>vocabulary term</a>
-  defined in the class <a href="#securityscheme" class="sec-ref"><code>SecurityScheme</code></a>
-  and its used subclass (e.g., <a href="#basicsecurityscheme" class="sec-ref"><code>BasicSecurityScheme</code></a>)
-  MUST be serialized as JSON member of the security definition object
-  with the <a>vocabulary term</a> as name and a value of the specified type.
+    All name-value pairs of an instance of one of the <a>subclass</a>es of
+    <code>SecurityScheme</code> where the name is a <a>term</a> included in the
+    signatures of that <a>subclass</a> and <code>SecurityScheme</code> MUST
+    be serialized as JSON members with the <a>term</a> as name.
   </span></p>
 
   <p>
@@ -2651,10 +2704,9 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
 <h3><code>version</code></h3>
 
   <p><span class="rfc2119-assertion" id="td-version">
-  The mandatory <a>vocabulary term</a>
-  defined in the class <a href="#versioninfo" class="sec-ref"><code>VersionInfo</code></a>
-  MUST be serialized as JSON member of a JSON object representing the version information
-  with the <a>vocabulary term</a> as name and a value of the specified type.
+    All name-value pairs of an instance of <code>VersionInfo</code> where the
+    name is a <a>term</a> included in the signatures of <code>VersionInfo</code>
+    MUST be serialized as JSON members with the <a>term</a> as name.
   </span></p>
 
   <p>The recommended version identification pattern value is to rely on the semantic versioning policy [[?SemVer]].</p>
@@ -2672,9 +2724,9 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
   <p>
   <span class="rfc2119-assertion" id="td-version-container">
   The <code>version</code> map MAY be used to provide additional application-
-  and/or device-specific version information based on terms from non-TD namespaces.
+  and/or device-specific version information based on terms from non-TD vocabularies.
   </span>
-  See <a href="#content-extension-section"></a> for how to include addition namespaces.
+  See <a href="#content-extension-section"></a> for how to include additional namespaces.
   </p>
 
 </section> <!-- end of id="version-json"-->
@@ -2692,34 +2744,36 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
 
   <p>
   Data schema serialization applies to <a href="#property-serialization-json">Property objects</a>,
-  the <code>input</code> and <code>output</code> members of <a href="#action-serialization-json">Action objects</a>,
-  the <code>subscription</code>, <code>data</code>, and <code>cancellation</code> members of <a href="#event-serialization-json">Event objects</a>,
-  and the <code>uriVariables</code> member of Interaction Affordance objects in general
+  the values assigned to <code>input</code> and <code>output</code> in
+  <a href="#action-serialization-json">Action objects</a>,
+  the values assigned to <code>subscription</code>, <code>data</code>, and <code>cancellation</code> in
+  <a href="#event-serialization-json">Event objects</a>,
+  and the value assigned to <code>uriVariables</code> in Interaction Affordance objects in general
   (when a <a href="#form-serialization-json">form object</a> uses a URI Template).
   </p>
 
   <p><span class="rfc2119-assertion" id="td-data-schema">
-  Each mandatory and, if present, optional <a>vocabulary term</a>
-  defined in the class <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a>
-  MUST be serialized as JSON member of the object representing the data schema
-  with the <a>vocabulary term</a> as name and a value of the specified type.
+    All name-value pairs of an instance of one of the <a>subclass</a>es of
+    <code>DataSchema</code> where the name is a <a>term</a> included in the
+    signatures of that <a>subclass</a> and <code>DataSchema</code> MUST
+    be serialized as JSON members with the <a>term</a> as name.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-data-schema-objects">
-  The value of the member <code>properties</code>
-  MUST be a JSON object.
+  The value assigned to <code>properties</code> in an instance of
+  <code>ObjectSchema</code> MUST be a JSON object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-data-schema-arrays">
-  The value of the members <code>enum</code>,
+  The values assigned to <code>enum</code>,
   <code>required</code>,
-  and <code>oneOf</code>
+  and <code>oneOf</code> in an instance of <code>DataSchema</code>
   MUST be a JSON array.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-data-schema-objects-arrays">
-  The value of the member <code>items</code>
-  MUST be a JSON object or a JSON array containing JSON objects.
+  The value assigned to <code>items</code> in an instance of
+  <code>ArraySchema</code> MUST be a JSON object or a JSON array containing JSON objects.
   </span></p>
 
   <p>
@@ -2823,11 +2877,11 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
   The vocabulary terms <code>title</code> and <code>description</code> are 
   used to provide human-readable texts for titles (e.g., a display
   text for UI) and additional information useful for Consumers of TDs.
-  When a default language is specified through the optional <code>@language</code> member
+  When a default language is specified by assigned a value to <code>@language</code>
   in the <code>@context</code> of a <a href="#sec-thing-as-a-whole-json">Thing object</a>,
-  that default language is associated with the string values provided by all
-  <code>title</code> and <code>description</code> members within the TD
-  and the <code>name</code> member of the Thing object.
+  that default language is associated with the string values assigned to
+  <code>title</code> and <code>description</code> within the TD
+  and to <code>name</code> in the Thing object.
   Another possibility is to set the default language with
   the language negotiation mechanism of HTTP
   (i.e., the <code>Accept-Language</code> header field).
@@ -2869,7 +2923,8 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
   The <a>vocabulary terms</a> <code>titles</code> and <code>descriptions</code>
   enable human-readable texts in multiple languages using language tags defined in [[!BCP47]].
   <span class="rfc2119-assertion" id="td-multi-languages">
-  If present, the vocabulary terms <code>titles</code> and <code>descriptions</code>
+  If present, the values assigned to <code>titles</code> and <code>descriptions</code>
+  in any <a>object</a> in a <a>TD</a> instance
   MUST be serialized as JSON objects.
   The names of their members MUST be language tags as defined in [[!BCP47]]
   (e.g., "en", "de", "ja", "zh-Hans", "zh-Hant")
