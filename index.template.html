@@ -1274,12 +1274,12 @@ In summary, this requires the following:
         "status": {
             "type": "string",
             "forms": [{
-                "href": "https://mylamp.example.com/status",
-                "contentType": "application/json",
                 "op": [
                     "readproperty",
                     "writeproperty"
-                ]
+                ],
+                "href": "https://mylamp.example.com/status",
+                "contentType": "application/json"
             }]
         }
     },
@@ -1288,9 +1288,9 @@ In summary, this requires the following:
             "safe": false,
             "idempotent": false,
             "forms": [{
+                "op": "invokeaction",
                 "href": "https://mylamp.example.com/toggle",
-                "contentType": "application/json",
-                "op": "invokeaction"
+                "contentType": "application/json"
             }]
         }
     },
@@ -1300,10 +1300,10 @@ In summary, this requires the following:
                 "type": "string"
             },
             "forms": [{
+                "op": "subscribeevent",
                 "href": "https://mylamp.example.com/oh",
                 "contentType": "application/json",
-                "subprotocol": "longpoll",
-                "op": "subscribeevent"
+                "subprotocol": "longpoll"
             }]
         }
     }
@@ -1626,10 +1626,10 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
 <pre>
     ...
     "forms": [{
+        "op": "writeproperty",
         "href" : "http://mytemp.example.com:5683/temp",
         "contentType": "application/json",
-        "htv:methodName": "POST",
-        "op": ["writeproperty"]
+        "htv:methodName": "POST"
     }]
     ...
 </pre>
@@ -1728,9 +1728,9 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
         "takePhoto": {
             ...
             "forms": [{
+                "op": "invokeaction",
                 "href": "http://camera.example.com/api/snapshot",
                 "contentType": "application/json",
-                "op": ["invokeaction"],
                 "response": {
                     "contentType": "image/jpeg"
                 }
@@ -1771,14 +1771,14 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
     },
     ...
     "forms": [{
+        "op": "readallproperties",
         "href": "https://mylamp.example.com/allproperties",
         "contentType": "application/json",
-        "op": ["readallproperties"],
         "htv:methodName": "GET"
     }, {
+        "op": "writeallproperties",
         "href": "https://mylamp.example.com/allproperties",
         "contentType": "application/json",
-        "op": ["writeallproperties"],
         "htv:methodName": "PUT"
     }]
 }
@@ -1802,8 +1802,8 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
 <pre>
     ...
     "links": [{
-        "href": "https://servient.example.com/things/lampController",
         "rel": "controlledBy",
+        "href": "https://servient.example.com/things/lampController",
         "type": "application/td+json"
     }]
     ...
@@ -1865,7 +1865,7 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
 <pre class="example" id="security-digest-example">
     ...
     "securityDefinitions": {
-        "basic_sc": {
+        "proxy_sc": {
            "scheme": "digest",
            "proxy": "https://portal.example.com/"
         },
@@ -1877,7 +1877,7 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
            "authorization": "https://servient.example.com:8443/"
         }
     },
-    "security": ["basic_sc", "bearer_sc"],
+    "security": ["proxy_sc", "bearer_sc"],
     ...
 </pre>
 
@@ -2139,7 +2139,7 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-data-schema-objects-arrays">
-  The value of the members <code>items</code>
+  The value of the member <code>items</code>
   MUST be a JSON object or a JSON array containing JSON objects.
   </span></p>
 
@@ -2539,12 +2539,12 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
             "minimum": -64,
             "maximum": 64,
             "forms": [{
+                "op": "readproperty",
                 "href": "coap://example.org:61616/api/brightness",
-                "op": ["readproperty"],
                 "cov:methodName": "GET"
             }, {
+                "op": "writeproperty",
                 "href": "coap://example.org:61616/api/brightness",
-                "op": ["writeproperty"],
                 "cov:methodName": "POST"
             }]
         },
@@ -2597,8 +2597,10 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
         "status": {
             ...
             "forms": [{
+                "op": "readproperty",
                 "href": "coaps://rs.example.com/status",
                 "contentType": "application/cbor",
+                "cov:methodName": "GET",
                 "ace:scopes": ["limited"]
             }]
         }
@@ -2607,8 +2609,10 @@ Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thin
         "configure": {
             ...
             "forms": [{
+                "op": "invokeaction",
                 "href": "coaps://rs.example.com/configure",
                 "contentType": "application/cbor",
+                "cov:methodName": "POST",
                 "ace:scopes": ["special"]
             }]
         }
@@ -2923,13 +2927,13 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
             "type": "string",
             "forms": [
                 {
-                    "href": "https://mylamp.example.com/status",
                     "op": "readproperty",
+                    "href": "https://mylamp.example.com/status",
                     "htv:methodName": "GET"
                 },
                 {
-                    "href": "https://mylamp.example.com/status",
                     "op": "writeproperty",
+                    "href": "https://mylamp.example.com/status",
                     "htv:methodName": "PUT"
                 }
             ]
@@ -2939,8 +2943,8 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
         "toggle": {
             "forms": [
                 {
-                    "href": "https://mylamp.example.com/toggle",
                     "op": "invokeaction",
+                    "href": "https://mylamp.example.com/toggle",
                     "htv:methodName": "POST"
                 }
             ]
@@ -3438,16 +3442,16 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
                       }}},
                       "forms": [
                           {
+                              "op": "subscribeevent",
                               "href": "http://192.168.0.124:8080/events/TempForT2T/subscribe",
-                              "op": ["subscribeevent"],
-                              "htv:methodName": "POST",
-                              "contentType": "application/json"
+                              "contentType": "application/json",
+                              "htv:methodName": "POST"
                           },
                           {
+                              "op": "unsubscribeevent",
                               "href": "http://192.168.0.124:8080/events/TempForT2T/unsubscribeevent",
-                              "op": ["unsubscribeevent"],
-                              "htv:methodName": "PUT",
-                              "contentType": "application/json"
+                              "contentType": "application/json",
+                              "htv:methodName": "PUT"
                           }
                       ]
               }}
@@ -3642,15 +3646,15 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
             "type": "string",
             "forms": [
                 {
+                    "op": "readproperty",
                     "href": "https://mylamp.example.com/status",
                     "contentType": "application/json",
-                    "op": "readproperty",
                     "htv:methodName": "GET"
                 },
                 {
+                    "op": "writeproperty",
                     "href": "https://mylamp.example.com/status",
                     "contentType": "application/json",
-                    "op": "writeproperty",
                     "htv:methodName": "PUT"
                 }
             ]
@@ -3662,9 +3666,9 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
             "idempotent": false,
             "forms": [
                 {
+                    "op": "invokeaction",
                     "href": "https://mylamp.example.com/toggle",
                     "contentType": "application/json",
-                    "op": "invokeaction",
                     "htv:methodName": "POST"
                 }
             ]
@@ -3677,10 +3681,10 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
             },
             "forms": [
                 {
+                    "op": "subscribeevent",
                     "href": "https://mylamp.example.com/oh",
                     "contentType": "application/json",
-                    "subprotocol": "longpoll",
-                    "op": "subscribeevent"
+                    "subprotocol": "longpoll"
                 }
             ]
         }
