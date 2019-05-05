@@ -2990,177 +2990,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
 
 </section> <!-- end of id="behavior"-->
 
-  <section id="example-serialization" class="informative">
-  <h2>Example Thing Description Instances</h2>
 
-  <section id="myLampThing-example-serialization">
-  <h3>MyLampThing Example with CoAP Binding</h3>
-
-  <p>Feature list of the Thing:</p>
-
-  <ul>
-      <li>Name: MyLampThing</li>
-      <li>Context extension: none</li>
-      <li>Offered interactions: 1 property, 1 action, 1 event</li>
-      <li>Security: PSKSecurityScheme</li>
-      <li>Protocol Binding: CoAP [[?RFC7252]] over TLS</li>
-      <li>Serializiation: default (JSON)</li>
-      <li>Comment: none</li>
-
-  </ul>
-
-<pre class="example" title="MyLampThing represented as a compact JSON serialization">
-{
-    "id": "urn:dev:ops:32473-WoTLamp-1234",
-    "name": "MyLampThing",
-    "description" : "MyLampThing uses JSON serialization",
-    "securityDefinitions": {"psk_sc":{"scheme": "psk"}},
-    "security": ["psk_sc"],
-    "properties": {
-        "status": {
-            "description" : "Shows the current status of the lamp",
-            "type": "string",
-            "forms": [{
-                "href": "coaps://mylamp.example.com/status"
-            }]
-        }
-    },
-    "actions": {
-        "toggle": {
-            "description" : "Turn on or off the lamp",
-            "forms": [{
-                "href": "coaps://mylamp.example.com/toggle"
-            }]
-        }
-    },
-    "events": {
-        "overheating": {
-            "description" : "Lamp reaches a critical temperature (overheating)",
-            "data": {"type": "string"},
-            "forms": [{
-                "href": "coaps://mylamp.example.com/oh"
-            }]
-        }
-    }
-}
-</pre>
-</section>
-
-  <section id="myLampThing-example-serialization">
-  <h3>MyLightSensor Example with MQTT Binding</h3>
-
-  <p>Feature list of the Thing:</p>
-
-  <ul>
-      <li>Name: MyLightSensor</li>
-      <li>Context extension: none</li>
-      <li>Offered interactions: 1 event</li>
-      <li>Security: none</li>
-      <li>Protocol Binding: MQTT [[?MQTT]]</li>
-      <li>Serializiation: text </li>
-      <li>Comment: An MQTT client frequently publishes the light sensor data (number is serialized in text format) to 
-          the topic /lightSensor by the MQTT broker running behind the address 192.168.1.187:1883. </li>
-  </ul>
-
-<pre class="example" title="MyLightSensor with MQTT binding">
-        {
-            "name": "MyLightSensor",
-            "id": "urn:dev:ops:32473-WoTLightSensor-1234",
-            "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
-            "security": ["nosec_sc"],
-            "events": {
-                "lightSensor": {
-                    "data":{"type": "integer"},
-                    "forms": [
-                        {
-                            "href": "mqtt://192.168.1.187:1883/lightSensor",
-                            "contentType" : "text/plain"
-                        }
-                    ]
-                }
-            } 
-        }
-</pre>
-  </section>
-
-
-  <section id="t2t-event-example-serialization">
-    <h3>Thing-2-Thing (T2T) Event Example</h3>
-  
-    <p>Feature list of the Thing:</p>
-  
-    <ul>
-        <li>Name: TemperatureForT2T</li>
-        <li>Context extension: include HTTP (by htv prefix) vocabulary set</li>
-        <li>Offered interactions: 1 event</li>
-        <li>Security: none</li>
-        <li>Protocol Binding: HTTP</li>
-        <li>Serializiation: default (JSON) </li>
-        <li>Comment: <i>TemperatureForT2T</i> Thing provides an event <i>temperatureValueForT2T</i>, with which an instruction can be passed, to which other Thing the periodically 
-            provided temperature values are to be sent.
-            Doing this, the <code>subscription</code> container defines an input to which callback URI the temperature value (defined within the <code>data</code> container) 
-            has to be sent. To subscibe a Consumer must submit a POST request to http://192.168.0.124:8080/events/TempForT2T/subscribe and 
-            provide the callback URI in the payload as JSON object with the member <code>targetURL</code>.  As defined in the output container, 
-            the <i>TemperatureForT2T</i> Thing would response with a subscription ID that can be used, e.g., for cancellation the subscription (as defined in the <code>cancellation</code> 
-            container). 
-        </li>
-    </ul>
-  
-  <pre class="example" title="Temperature event with subscripton and cancellation for a Thing-2-Thing interaction">
-        {
-            "@context": "https://www.w3.org/2019/td/v1",
-            "id": "urn:dev:ops:32473-Thing-1234",
-            "name": "TemperatureForT2T",
-            "description": "Event with subscription / cancellation (Thing-2-Thing use case).",
-            "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
-            "security": ["nosec_sc"],
-            "events": {
-                "temperatureValueForT2T": {
-                    "description": "Provides periodic temperature values as event affordance.",
-                    "subscription": {
-                        "input": {
-                            "targetURL": {
-                                "type": "string",
-                                "format": "uri",
-                                "description": "Requester provides target URL to initate T2T."
-                        }},
-                        "output": {
-                            "subscriptionID": {
-                                "type": "integer",
-                                "description": "Responses an unique subscription ID."
-                        }}
-                    },
-                    "data": {
-                        "type": "number",
-                        "description": "Actual temperature value that is sent to the target URL. "
-                    },
-                    "cancellation": {
-                        "input": {
-                            "subscriptionID": {
-                                "type": "integer",
-                                "writeOnly": true,
-                                "description": "Provide subscription ID that have to be cancelled."
-                    }}},
-                    "forms": [
-                        {
-                            "href": "http://192.168.0.124:8080/events/TempForT2T/subscribe",
-                            "op": ["subscribeevent"],
-                            "htv:methodName": "POST",
-                            "contentType": "application/json"
-                        },
-                        {
-                            "href": "http://192.168.0.124:8080/events/TempForT2T/unsubscribeevent",
-                            "op": ["unsubscribeevent"],
-                            "htv:methodName": "PUT",
-                            "contentType": "application/json"
-                        }
-                    ]
-            }}
-        }
-  </pre>
-    </section>
-
-  </section>
 
   <section id="sec-security-consideration" class="informative">
   <h4>Security and Privacy Considerations</h4>
@@ -3462,7 +3292,190 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     </section>
   </section>
 
-  <section id="json-schema-for-validation" class="appendix normative">
+  <section id="example-serialization" class="appendix informative">
+    <h2>Example Thing Description Instances</h2>
+  
+    <section id="myLampThing-example-serialization">
+    <h3>MyLampThing Example with CoAP Binding</h3>
+  
+    <p>Feature list of the Thing:</p>
+  
+    <ul>
+        <li>Name: MyLampThing</li>
+        <li>Context extension: none</li>
+        <li>Offered interactions: 1 property, 1 action, 1 event</li>
+        <li>Security: PSKSecurityScheme</li>
+        <li>Protocol Binding: CoAP [[?RFC7252]] over TLS</li>
+        <li>Serializiation: default (JSON)</li>
+        <li>Comment: Also see Section <a href="#adding-protocol-bindings">Adding Protocol Bindings</a>. </li>
+  
+    </ul>
+  
+  <pre class="example" title="MyLampThing represented as a compact JSON serialization">
+  {
+     "@context": [
+        "https://www.w3.org/2019/td/v1",
+        {
+        "cov": "http://www.example.org/coap-binding#"
+        }
+      ],
+      "id": "urn:dev:ops:32473-WoTLamp-1234",
+      "name": "MyLampThing",
+      "description" : "MyLampThing uses JSON serialization",
+      "securityDefinitions": {"psk_sc":{"scheme": "psk"}},
+      "security": ["psk_sc"],
+      "properties": {
+          "status": {
+              "description" : "Shows the current status of the lamp",
+              "type": "string",
+              "forms": [{
+                  "href": "coaps://mylamp.example.com/status",
+                  "cov:methodName" : "GET" 
+              }]
+          }
+      },
+      "actions": {
+          "toggle": {
+              "description" : "Turn on or off the lamp",
+              "forms": [{
+                  "href": "coaps://mylamp.example.com/toggle",
+                  "cov:methodName" : "POST" 
+              }]
+          }
+      },
+      "events": {
+          "overheating": {
+              "description" : "Lamp reaches a critical temperature (overheating)",
+              "data": {"type": "string"},
+              "forms": [{
+                  "href": "coaps://mylamp.example.com/oh",
+                  "cov:methodName" : "GET",
+                  "subprotocol" : "cov:observe" 
+              }]
+          }
+      }
+  }
+  </pre>
+  </section>
+  
+    <section id="myLampThing-example-serialization">
+    <h3>MyLightSensor Example with MQTT Binding</h3>
+  
+    <p>Feature list of the Thing:</p>
+  
+    <ul>
+        <li>Name: MyLightSensor</li>
+        <li>Context extension: none</li>
+        <li>Offered interactions: 1 event</li>
+        <li>Security: none</li>
+        <li>Protocol Binding: MQTT [[?MQTT]]</li>
+        <li>Serializiation: text </li>
+        <li>Comment: An MQTT client frequently publishes the light sensor data (number is serialized in text format) to 
+            the topic /lightSensor by the MQTT broker running behind the address 192.168.1.187:1883. </li>
+    </ul>
+  
+  <pre class="example" title="MyLightSensor with MQTT binding">
+          {   
+              "@context": "https://www.w3.org/2019/td/v1",
+              "name": "MyLightSensor",
+              "id": "urn:dev:ops:32473-WoTLightSensor-1234",
+              "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+              "security": ["nosec_sc"],
+              "events": {
+                  "lightSensor": {
+                      "data":{"type": "integer"},
+                      "forms": [
+                          {
+                              "href": "mqtt://192.168.1.187:1883/lightSensor",
+                              "contentType" : "text/plain"
+                          }
+                      ]
+                  }
+              } 
+          }
+  </pre>
+    </section>
+  
+  
+    <section id="t2t-event-example-serialization">
+      <h3>Thing-2-Thing (T2T) Event Example</h3>
+    
+      <p>Feature list of the Thing:</p>
+    
+      <ul>
+          <li>Name: TemperatureForT2T</li>
+          <li>Context extension: include HTTP (by htv prefix) vocabulary set</li>
+          <li>Offered interactions: 1 event</li>
+          <li>Security: none</li>
+          <li>Protocol Binding: HTTP</li>
+          <li>Serializiation: default (JSON) </li>
+          <li>Comment: <i>TemperatureForT2T</i> Thing provides an event <i>temperatureValueForT2T</i>, with which an instruction can be passed, to which other Thing the periodically 
+              provided temperature values are to be sent.
+              Doing this, the <code>subscription</code> container defines an input to which callback URI the temperature value (defined within the <code>data</code> container) 
+              has to be sent. To subscibe a Consumer must submit a POST request to http://192.168.0.124:8080/events/TempForT2T/subscribe and 
+              provide the callback URI in the payload as JSON object with the member <code>targetURL</code>.  As defined in the output container, 
+              the <i>TemperatureForT2T</i> Thing would response with a subscription ID that can be used, e.g., for cancellation the subscription (as defined in the <code>cancellation</code> 
+              container). 
+          </li>
+      </ul>
+    
+    <pre class="example" title="Temperature event with subscripton and cancellation for a Thing-2-Thing interaction">
+          {
+              "@context": "https://www.w3.org/2019/td/v1",
+              "id": "urn:dev:ops:32473-Thing-1234",
+              "name": "TemperatureForT2T",
+              "description": "Event with subscription / cancellation (Thing-2-Thing use case).",
+              "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+              "security": ["nosec_sc"],
+              "events": {
+                  "temperatureValueForT2T": {
+                      "description": "Provides periodic temperature values as event affordance.",
+                      "subscription": {
+                          "input": {
+                              "targetURL": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "Requester provides target URL to initate T2T."
+                          }},
+                          "output": {
+                              "subscriptionID": {
+                                  "type": "integer",
+                                  "description": "Responses an unique subscription ID."
+                          }}
+                      },
+                      "data": {
+                          "type": "number",
+                          "description": "Actual temperature value that is sent to the target URL. "
+                      },
+                      "cancellation": {
+                          "input": {
+                              "subscriptionID": {
+                                  "type": "integer",
+                                  "writeOnly": true,
+                                  "description": "Provide subscription ID that have to be cancelled."
+                      }}},
+                      "forms": [
+                          {
+                              "href": "http://192.168.0.124:8080/events/TempForT2T/subscribe",
+                              "op": ["subscribeevent"],
+                              "htv:methodName": "POST",
+                              "contentType": "application/json"
+                          },
+                          {
+                              "href": "http://192.168.0.124:8080/events/TempForT2T/unsubscribeevent",
+                              "op": ["unsubscribeevent"],
+                              "htv:methodName": "PUT",
+                              "contentType": "application/json"
+                          }
+                      ]
+              }}
+          }
+    </pre>
+      </section>
+  
+    </section>
+
+  <section id="json-schema-for-validation" class="appendix informative">
   <h1>JSON Schema for TD Instance Validation</h1>
     <p>
         Below is a JSON Schema [[?JSON-SCHEMA-VALIDATION]] document for syntactically validating Thing Description instances serialized in JSON based format.
@@ -3470,7 +3483,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     <p class="note">The Thing Description defined by this document allows for 
         adding external vocabularies by using <code>@context</code> mechanism 
         known from JSON-LD [[json-ld11]], and the terms in those external vocabularies can be 
-        used in addition to the terms defined in Section <a href="#sec-vocabulary-definition"></a>. 
+        used in addition to the terms defined in Section <a href="#sec-vocabulary-definition">Information Model</a>. 
         For this reason, the below JSON schema is intentionally non-strict in that 
         regard. You can replace the value of <code>additionalProperties</code> schema 
         property <code>true</code> with <code>false</code> in different scopes/levels in 
@@ -3486,8 +3499,8 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
 
   </section>
 
-  <section id="thing-templates" class="appendix">
-    <h1>Thing Templates</h1>
+  <section id="thing-templates" class="appendix informative">
+  <h1>Thing Templates</h1>
       
     <p>
     A <em>Thing Template</em> is a description for a <em>class</em> of devices or things.
@@ -3530,14 +3543,13 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     </p><p>
         Since a Thing Template is a subset of the Thing Description in which some optional and mandatory vocabulary terms 
         does not exist, however, it can be serialized in the same way and in the same formats as a Thing Description. Note that Thing 
-        Template instances cannot be validated in the same way as Thing Description instances due to missing mandatory terms.
+        Template instances cannot be validated in the same way as Thing Description instances due to some missing mandatory terms.
     </p>
     
       <section id="thing-template-examples">
      <h2>Thing Template Examples</h2>
     
-    This section defines a Thing Template for a lamp and a Thing Template for a a buzzer.
-    The combined thing BuzzerLamp includes both thing templates.
+    This section shows a Thing Template for a lamp and a Thing Template for a buzzer.
     
       <section id="lamp-thing-template">
       <h3>Thing Template: Lamp</h3>
@@ -3546,7 +3558,6 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     {
         "@context": ["https://www.w3.org/2019/td/v1"], 
         "@type" : "ThingTemplate",
-        "id": "urn:dev:ops:32473-WoTLampTemplate-0000",
         "name": "Lamp Thing Template",
         "description" : "Lamp Thing Template",
         "properties": {
@@ -3578,7 +3589,6 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     {
         "@context": ["https://www.w3.org/2019/td/v1"], 
         "@type" : "ThingTemplate",
-        "id": "urn:dev:ops:32473-WoTBuzzerTemplate-0000",
         "name": "Buzzer Thing Template",
         "description" : "Thing template of a buzzer that makes noise for 10 seconds",
          "actions": {
@@ -3590,82 +3600,10 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     </pre>
     </section>
     
-    <section id="combination-lamp-buzzer-thingl">
-    <h3>Combined Thing: Lamp + Buzzer</h3>
-    <p>
-    The following example illustrates how a combined thing can be defined using two different thing templates.
-    </p>
-    <pre class="example" title="Combined Thing: Lamp + Buzzer (JSON-LD1.1 serialisation)">
-    {
-       "@context": ["https://www.w3.org/2019/td/v1",
-       		    { "thing-templates": "http://www.w3.org/ns/thing-templates"] }, 
-       "@type" : [
-            "Thing",
-            "urn:dev:ops:32473-WoTLampTemplate-0000",
-            "urn:dev:ops:32473-WoTBuzzerTemplate-0000"
-        ],
-        "id": "urn:dev:ops:32473-WoTLampBuzzerTemplate-0000",
-        "name": "My Buzzing Lamp Thing",
-        "description" : "A lamp that can issue an alert",
-        "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
-        "security": ["nosec_sc"],
-        "thing-templates:components": [{
-            "id": "urn:dev:ops:32473-WoTLampTemplate-0000",
-            "name": "Lamp Thing Template",
-            "description" : "Thing Template for a lamp",
-            "properties": {
-                "status": {
-                    "description" : "current status of the lamp (on|off)",
-                    "type": "string",
-                    "readOnly": true,
-                    "forms": [{
-                    "href": "coaps://buzzlamp.example.com/status",
-                    "contentType": "application/json"
-                    }]
-                }
-            },
-            "actions": {
-                "toggle": {
-                    "description" : "Turn on or off the lamp",
-                    "forms": [{
-                        "href": "coaps://buzzlamp.example.com/toggle",
-                        "contentType": "application/json"
-                    }]
-                }
-            },
-            "events": {
-                "overheating": {
-                    "@type" : "iot:TemperatureAlarm",
-                    "description" : "Lamp reaches a critical temperature (overheating)",
-                    "data": {"type": "string"},
-                    "forms": [{
-                        "href": "coaps://buzzlamp.example.com/oh",
-                        "contentType": "application/json"
-                    }]
-                }
-            }
-        },
-        {
-            "id": "urn:dev:ops:32473-WoTBuzzerTemplate-0000",
-            "name": "Buzzer Thing Template",
-            "description" : "Thing Template of a buzzer that makes noise for 10 seconds",
-             "actions": {
-                "buzz": {
-                    "description" : "buzz for 10 seconds",
-                    "forms": [{
-                        "href": "coaps://buzzlamp.example.com/buzz",
-                        "contentType": "application/json"
-                    }]
-                }
-             }
-        }]
-    }
-      </pre>
-      </section>
      </section>   
      </section>  computer keyboard have this Scroll Lock key that seems to serve no purpose whatsoever? In 15 years I don't remember ever pushing that button. I'm almost scared to touch it 
     
-<section id="note-jsonld11-processing" class="appendix">
+<section id="note-jsonld11-processing" class="appendix informative">
 <h1>Transformation to RDF</h1>
 
         <p>
