@@ -1652,8 +1652,8 @@ In summary, this requires the following:
 <p>
 Event affordances have been defined in a flexible manner, 
 in order to adopt existing (e.g., WebSub) or customer-oriented event mechanisms (e.g., Webhooks).
-For this reason, <code>subscription</code> and <code>cancellation</code> can be defined according to the desired mechanism.
-Example <a href="#t2t-event-example-serialization"></a> provides a Thing-to-Thing (T2T) use case that offers an event and uses <code>subscription</code> and <code>cancellation</code>.
+For this reason, <code>subscription</code> and <code>cancellation</code> can be defined according to the desired mechanism. Please find further details in [[WoT-Binding-Templates]].
+Example <a href="#webhook-example-serialization"></a> illustrates how Events can use <code>subscription</code> and <code>cancellation</code> to describe Webhooks.
 </p>
 
 </section> <!-- end of id="event-serialization-json"-->
@@ -2833,7 +2833,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     [[WoT-Architecture]].
     For instance, if the target starts with <code>http</code> or
     <code>https</code>, a Consumer can then infer the Thing implements the
-    HTTP binding and it should expect HTTP-specific terms in the
+    HTTP Protocol Binding and it should expect HTTP-specific terms in the
     form instance (see next section, <a href="#http-binding-assertions"></a>).
     <ul>
         <li>
@@ -2857,7 +2857,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     <h4>HTTP Protocol Binding</h4>
 
     <p>
-        Per default the Thing Description supports the HTTP protocol binding and 
+        Per default the Thing Description supports the HTTP Protocol Binding and
         includes the HTTP RDF vocabulary set definitions from [[HTTP-in-RDF10]] and can be 
         directly used within TD instances by the usage of the prefix <code>htv</code>, which 
         points to <code>http://www.w3.org/2011/http#</code>. 
@@ -2922,7 +2922,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     <aside class="example with-default">
             <div class="with-default-control">
                 <input type="checkbox">
-                <span><i>with default HTTP binding values</i></span>
+                <span><i>with default HTTP Protocol Binding values</i></span>
             </div>
             <pre>{
     "@context": "https://www.w3.org/2019/td/v1",
@@ -3032,8 +3032,8 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
       <h4>Other Protocol Bindings</h4>
 
       <p>
-          The number of WoT Protocol Bindings a WoT Thing can implement
-          is not restricted. Other bindings, e.g., for CoAP, MQTT, or OPC UA
+          The number of Protocol Bindings a Thing can implement
+          is not restricted. Other Protocol Bindings, e.g., for CoAP, MQTT, or OPC UA
           will be standardized in separate documents such as a protocol vocabulary similar to HTTP in RDF [[HTTP-in-RDF10]]
           or specifications including default value definitions. Such protocols can be simply integrated into the TD by the 
           usage of the context extension mechanism (<a href="#content-extension-section"></a>).
@@ -3341,14 +3341,14 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     <h2>Example Thing Description Instances</h2>
   
     <section id="myLampThing-example-serialization">
-    <h3>MyLampThing Example with CoAP Binding</h3>
+    <h3>MyLampThing Example with CoAP Protocol Binding</h3>
   
     <p>Feature list of the Thing:</p>
   
     <ul>
         <li>Name: MyLampThing</li>
         <li>Context extension: none</li>
-        <li>Offered interactions: 1 property, 1 action, 1 event</li>
+        <li>Offered affordances: 1 Property, 1 Action, 1 Event</li>
         <li>Security: PSKSecurityScheme</li>
         <li>Protocol Binding: CoAP [[?RFC7252]] over TLS</li>
         <li>Serialization: default (JSON)</li>
@@ -3356,7 +3356,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
   
     </ul>
   
-  <pre class="example" title="MyLampThing with CoAP binding">
+  <pre class="example" title="MyLampThing with CoAP Protocol Binding">
   {
      "@context": [
         "https://www.w3.org/2019/td/v1",
@@ -3404,14 +3404,14 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
   </section>
   
     <section id="myLampThing-example-serialization">
-    <h3>MyLightSensor Example with MQTT Binding</h3>
+    <h3>MyLightSensor Example with MQTT Protocol Binding</h3>
   
     <p>Feature list of the Thing:</p>
   
     <ul>
         <li>Name: MyLightSensor</li>
         <li>Context extension: none</li>
-        <li>Offered interactions: 1 event</li>
+        <li>Offered affordances: 1 Event</li>
         <li>Security: none</li>
         <li>Protocol Binding: MQTT [[?MQTT]]</li>
         <li>Serialization: text </li>
@@ -3419,7 +3419,7 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
             the topic /lightSensor by the MQTT broker running behind the address 192.168.1.187:1883. </li>
     </ul>
   
-  <pre class="example" title="MyLightSensor with MQTT binding">
+  <pre class="example" title="MyLightSensor with MQTT Protocol Binding">
           {   
               "@context": "https://www.w3.org/2019/td/v1",
               "name": "MyLightSensor",
@@ -3442,83 +3442,98 @@ in a WoT Thing Description MUST accurately describe the WoT Interace of the Thin
     </section>
   
   
-    <section id="t2t-event-example-serialization">
-      <h3>Thing-2-Thing (T2T) Event Example</h3>
+    <section id="webhook-example-serialization">
+      <h3>Webhook Event Example</h3>
     
       <p>Feature list of the Thing:</p>
     
       <ul>
-          <li>Name: TemperatureForT2T</li>
-          <li>Context extension: include HTTP (by htv prefix) vocabulary set</li>
-          <li>Offered interactions: 1 event</li>
+          <li>Name: WebhookThing</li>
+          <li>Context extension: use HTTP Protocol Binding supplements (htv prefix already included in TD context)</li>
+          <li>Offered affordances: 1 Event</li>
           <li>Security: none</li>
           <li>Protocol Binding: HTTP</li>
-          <li>Serialization: default (JSON) </li>
-          <li>Comment: <i>TemperatureForT2T</i> Thing provides an event <i>temperatureValueForT2T</i>, with which an instruction can be passed, to which other Thing the periodically 
-              provided temperature values are to be sent.
-              Doing this, the <code>subscription</code> container defines an input to which callback URI the temperature value (defined within the <code>data</code> container) 
-              has to be sent. To subscibe a Consumer must submit a POST request to http://192.168.0.124:8080/events/TempForT2T/subscribe and 
-              provide the callback URI in the payload as JSON object with the member <code>targetURL</code>.  As defined in the output container, 
-              the <i>TemperatureForT2T</i> Thing would response with a subscription ID that can be used, e.g., for cancellation the subscription (as defined in the <code>cancellation</code> 
-              container). 
+          <li>Serializiation: default (JSON) </li>
+          <li>Comment: <i>WebhookThing</i> provides an Event affordance <code>temperature</code>
+              which periodically pushes the latest temperature value to the Consumer using a Webhook mechanism,
+              where the Thing sends POST requests to a callback URI provided by the Consumer.
+              To describe this, the <code>subscription</code> member defines a write-only parameter <code>callbackURL</code>,
+              which must be submitted through the <code>subscribeevent</code> form.
+              The read-only parameter <code>subscriptionID</code> is returned by the subscription.
+              The <i>WebhookThing</i> will then periodically POST to this callback URI with a payload defined by <code>data</code>.
+              To unsubscribe, the Consumer has to submit the <code>unsubscribeevent</code> form,
+              which makes use of a URI Template.
+              The <code>uriVariables</code> member informs the Consumer to include the <code>subscriptionID</code> string.
+              This can be further automated by using a context extension to include proper semantic annotations.
+              Alternatively, one can imagine unsubscribing using the <code>concellation</code> member similarly to <code>subscription</code>
+              and combine this with a <code>unsubscribeevent</code> form that describes a POST request with payload to unsubscribe.
           </li>
       </ul>
     
-    <pre class="example" title="Temperature event with subscripton and cancellation for a Thing-2-Thing interaction">
-          {
-              "@context": "https://www.w3.org/2019/td/v1",
-              "id": "urn:dev:ops:32473-Thing-1234",
-              "name": "TemperatureForT2T",
-              "description": "Event with subscription / cancellation (Thing-2-Thing use case).",
-              "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
-              "security": ["nosec_sc"],
-              "events": {
-                  "temperatureValueForT2T": {
-                      "description": "Provides periodic temperature values as event affordance.",
-                      "subscription": {
-                          "input": {
-                              "targetURL": {
-                                  "type": "string",
-                                  "format": "uri",
-                                  "description": "Requester provides target URL to initate T2T."
-                          }},
-                          "output": {
-                              "subscriptionID": {
-                                  "type": "integer",
-                                  "description": "Responses an unique subscription ID."
-                          }}
-                      },
-                      "data": {
-                          "type": "number",
-                          "description": "Actual temperature value that is sent to the target URL. "
-                      },
-                      "cancellation": {
-                          "input": {
-                              "subscriptionID": {
-                                  "type": "integer",
-                                  "writeOnly": true,
-                                  "description": "Provide subscription ID that have to be cancelled."
-                      }}},
-                      "forms": [
-                          {
-                              "op": "subscribeevent",
-                              "href": "http://192.168.0.124:8080/events/TempForT2T/subscribe",
-                              "contentType": "application/json",
-                              "htv:methodName": "POST"
-                          },
-                          {
-                              "op": "unsubscribeevent",
-                              "href": "http://192.168.0.124:8080/events/TempForT2T/unsubscribeevent",
-                              "contentType": "application/json",
-                              "htv:methodName": "PUT"
-                          }
-                      ]
-              }}
-          }
-    </pre>
-      </section>
-  
+<pre class="example" title="Temperature Event with subscripton and cancellation">
+{
+    "@context": "https://www.w3.org/2019/td/v1",
+    "id": "urn:dev:ops:32473-Thing-1234",
+    "name": "WebhookThing",
+    "description": "Webhook-based Event with subscription and unsubscribe form.",
+    "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+    "security": ["nosec_sc"],
+    "events": {
+        "temperature": {
+            "description": "Provides periodic temperature value updates.",
+            "subscription": {
+                "type": "object",
+                "properties": {
+                    "callbackURL": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "Callback URL provided by subscriber for Webhook notifications.",
+                        "writeOnly": true
+                    },
+                    "subscriptionID": {
+                        "type": "string",
+                        "description": "Unique subscription ID for cancellation provided by WebhookThing.",
+                        "readOnly": true
+                    }
+                }
+            },
+            "data": {
+                "type": "number",
+                "description": "Latest temperature value that is sent to the callback URL."
+            },
+            "cancellation": {
+                "type": "object",
+                "properties": {
+                    "subscriptionID": {
+                        "type": "integer",
+                        "description": "Required subscription ID to cancel subscription.",
+                        "writeOnly": true
+                    }
+                }
+            },
+            "uriVariables": {
+                "subscriptionID": { "type": "string" }
+            },
+            "forms": [
+                {
+                    "op": "subscribeevent",
+                    "href": "http://192.168.0.124:8080/events/temp/subscribe",
+                    "contentType": "application/json",
+                    "htv:methodName": "POST"
+                },
+                {
+                    "op": "unsubscribeevent",
+                    "href": "http://192.168.0.124:8080/events/temp/{subscriptionID}",
+                    "htv:methodName": "DELETE"
+                }
+            ]
+        }
+    }
+}
+</pre>
+
     </section>
+  </section>
 
   <section id="json-schema-for-validation" class="appendix informative">
   <h1>JSON Schema for TD Instance Validation</h1>
