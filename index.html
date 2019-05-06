@@ -1623,17 +1623,17 @@ op can be assigned one or more interaction verb(s) each representing a semantic 
 For example, for HTTP and Events, it indicates which of several available mechanisms should be used for asynchronous notifications such as long polling, websub (also see https://www.w3.org/TR/websub/), or server sent events (also see https://www.w3.org/TR/eventsource/). Please note that there is no restriction on the sub-protocol selection and other mechanisms can also be announced by this subprotocol term.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>longpoll</code>, <code>websub</code>, or <code>sse</code>)</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-security--Form"><td><code>security</code></td><td>Set of security definition names, chosen from those defined in securityDefinitions.  These must all be satisfied for access to resources.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or array of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-scopes--Form"><td><code>scopes</code></td><td>Set of authorization scope identifiers provided as an array.  These are provided in tokens returned by an authorization server and associated with forms in order to identify what resources a client may access and how.  The values associated with a form should be chosen from those defined in an OAuth2SecurityScheme active on that form.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or array of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table>
-<p>Possible values for the <code>contentCoding</code> property can be found e.g. in
-the <a href="https://www.iana.org/assignments/http-parameters/http-parameters.xhtml#content-coding">
-IANA HTTP content coding registry</a>.
-</p>
-
 <p>The list of possible operation types of a form is fixed. It only includes the
 well-known types necessary to implement the WoT interaction model described in
 [[WOT-ARCHITECTURE]]. Future versions of the standard may extend this list but
 <span class="rfc2119-assertion" id="well-known-operation-types-only">
 operations types SHOULD NOT be arbitrarily set by servients
 </span>.
+</p>
+
+<p>Possible values for the <code>contentCoding</code> property can be found e.g. in
+the <a href="https://www.iana.org/assignments/http-parameters/http-parameters.xhtml#content-coding">
+IANA HTTP content coding registry</a>.
 </p>
 </section>
 <section><h3><code>Link</code></h3><p>A link can be viewed as a statement of the form "link context has a link relation type resource at link target, which has target attributes".</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-href--Link"><td><code>href</code></td><td>target IRI of a link or submission target of a form.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr>
@@ -2007,8 +2007,8 @@ In summary, this requires the following:
 
   <p>
   <span class="rfc2119-assertion" id="td-context">
-  The root JSON object of a TD serialization MUST include
-  a member with the name <code>@context</code> and a value of type
+  The root element of a <a>TD Serialization</a> MUST be a JSON object and it MUST
+  include a member with the name <code>@context</code> and a value of type
   string or array that contains <code>https://www.w3.org/2019/td/v1</code>.
   </span>
   In general, this URI is used to identify the
@@ -2083,8 +2083,10 @@ In summary, this requires the following:
   The value assigned to <code>properties</code> in a <code>Thing</code> instance
   is a <a>Map</a> of instances of <code>PropertyAffordance</code>.
   <span class="rfc2119-assertion" id="td-properties">
-    A map of <code>PropertyAffordance</code> instances MUST be serialized as an object
-    with a (unique) JSON name to identify each Property affordance object.
+    All name-value pairs of a <a>Map</a> of <code>PropertyAffordance</code> instances
+    MUST be serialized as members of the JSON object that results from serializing the <a>Map</a>;
+    the name of a pair MUST be serialized as a JSON string and the value of the pair, an
+    instance of <code>PropertyAffordance</code>, MUST be serialized as a JSON object.
   </span></p>
 
   <p>
@@ -2092,10 +2094,12 @@ In summary, this requires the following:
     All name-value pairs of an instance of <code>PropertyAffordance</code>,
     where the name is a <a>Vocabulary Term</a> included in the <a>Signatures</a> of
     <code>PropertyAffordance</code>, <code>InteractionAffordance</code>, or <code>DataSchema</code>,
-    MUST be serialized as JSON members with the <a>Vocabulary Term</a> as name.
+    MUST be serialized as members of the JSON object that results from
+    serializing the <code>PropertyAffordance</code> instance, with the
+    <a>Vocabulary Term</a> as name.
   </span>
   See <a href="#data-schema-serialization-json" class="sec-ref"></a> for
-  details on the <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a> <a>Superclass</a>.
+  details on serializing <a href="#dataschema" class="sec-ref"><code>DataSchema</code></a> instances.
   </p>
 
   <p><span class="rfc2119-assertion" id="td-property-arrays">
@@ -2152,15 +2156,19 @@ In summary, this requires the following:
     In a <code>Thing</code> instance, the value assigned to <code>actions</code>
     is a <a>Map</a> of instances of <code>ActionAffordance</code>.
     <span class="rfc2119-assertion" id="td-actions">
-    A map of <code>ActionAffordance</code> instances MUST be serialized as an object
-    with a (unique) JSON name to identify each Action affordance object.
+    All name-value pairs of a <a>Map</a> of <code>ActionAffordance</code> instances
+    MUST be serialized as members of the JSON object that results from serializing the <a>Map</a>;
+    the name of a pair MUST be serialized as a JSON string and the value of the pair, an
+    instance of <code>ActionAffordance</code>, MUST be serialized as a JSON object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-action-names">
     All name-value pairs of an instance of <code>ActionAffordance</code>,
     where the name is a <a>Vocabulary Term</a> included in the <a>Signatures</a> of
     <code>ActionAffordance</code> or <code>InteractionAffordance</code>,
-    MUST be serialized as JSON members with the <a>Vocabulary Term</a> as name.
+    MUST be serialized as members of the JSON object that results from
+    serializing the <code>ActionAffordance</code> instance, with the
+    <a>Vocabulary Term</a> as name.
   </span></p>
 
   <p>
@@ -2225,15 +2233,19 @@ In summary, this requires the following:
     In a <code>Thing</code> instance, the value assigned to <code>events</code>
     is a map of instances of <code>EventAffordance</code>.
     <span class="rfc2119-assertion" id="td-events">
-    A map of <code>EventAffordance</code> instances MUST be serialized as an object
-    with a (unique) JSON name to identify each Event affordance object.
+    All name-value pairs of a <a>Map</a> of <code>EventAffordance</code> instances
+    MUST be serialized as members of the JSON object that results from serializing the <a>Map</a>;
+    the name of a pair MUST be serialized as a JSON string and the value of the pair, an
+    instance of <code>EventAffordance</code>, MUST be serialized as a JSON object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-event-names">
     All name-value pairs of an instance of <code>EventAffordance</code>,
     where the name is a <a>Vocabulary Term</a> included in the <a>Signatures</a> of
     <code>EventAffordance</code> or <code>InteractionAffordance</code>,
-    MUST be serialized as JSON members with the <a>Vocabulary Term</a> as name.
+    MUST be serialized as members of the JSON object that results from
+    serializing the <code>EventAffordance</code> instance, with the
+    <a>Vocabulary Term</a> as name.
   </span></p>
 
   <p>
@@ -2287,7 +2299,9 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
   <p><span class="rfc2119-assertion" id="td-forms">
     All name-value pairs of an instance of <code>Form</code>,
     where the name is a <a>Vocabulary Term</a> included in the <a>Signature</a> of <code>Form</code>,
-    MUST be serialized as JSON members with the <a>Vocabulary Term</a> as name.
+    MUST be serialized as members of the JSON object that results from
+    serializing the <code>Form</code> instance, with the
+    <a>Vocabulary Term</a> as name.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-form-protocolbindings">
@@ -2473,7 +2487,9 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
   <p><span class="rfc2119-assertion" id="td-links">
     All name-value pairs of an instance of <code>Link</code>,
     where the name is a <a>Vocabulary Term</a> included in the <a>Signature</a> of <code>Link</code>,
-    MUST be serialized as JSON members with the <a>Vocabulary Term</a> as name.
+    MUST be serialized as members of the JSON object that results from
+    serializing the <code>Link</code> instance, with the
+    <a>Vocabulary Term</a> as name.
   </span></p>
 
   <p>A TD snippet of a link object in the <code>links</code> array is given below:</p>
@@ -2500,8 +2516,10 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
     <code>securityDefinitions</code> is a <a>Map</a> of instances of
     <code>SecurityScheme</code>.
     <span class="rfc2119-assertion" id="td-security">
-    A <a>Map</a> of <code>SecurityScheme</code> instances MUST be serialized as JSON object
-    with a (unique) JSON name to identify each Security configuration object.
+    All name-value pairs of a <a>Map</a> of <code>SecurityScheme</code> instances
+    MUST be serialized as members of the JSON object that results from serializing the <a>Map</a>;
+    the name of a pair MUST be serialized as a JSON string and the value of the pair, an
+    instance of <code>SecurityScheme</code>, MUST be serialized as a JSON object.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-security-schemes">
@@ -2509,7 +2527,9 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
     <code>SecurityScheme</code>,
     where the name is a <a>Vocabulary Term</a> included in the
     <a>Signatures</a> of that <a>Subclass</a> or <code>SecurityScheme</code>,
-    MUST be serialized as JSON members with the <a>Vocabulary Term</a> as name.
+    MUST be serialized as members of the JSON object that results from
+    serializing the <code>SecurityScheme</code> <a>Subclass</a>'s instance, with the
+    <a>Vocabulary Term</a> as name.
   </span></p>
 
   <p>
@@ -2807,7 +2827,9 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
     All name-value pairs of an instance of one of the <a>Subclasses</a> of
     <code>DataSchema</code>, where the name is a <a>Vocabulary Term</a> included in the
     <a>Signatures</a> of that <a>Subclass</a> or <code>DataSchema</code>,
-    MUST be serialized as JSON members with the <a>Vocabulary Term</a> as name.
+    MUST be serialized as members of the JSON object that results from
+    serializing the <code>DataSchema</code> <a>Subclass</a>'s instance, with the
+    <a>Vocabulary Term</a> as name.
   </span></p>
 
   <p><span class="rfc2119-assertion" id="td-data-schema-objects">
