@@ -141,6 +141,17 @@
                 , publisher: "IETF"
                 , date: "27 March 2019"
                 , status: "Internet-Draft"
+                },
+                "Rijgersberg-et-al-2013": {
+                    "href": "http://www.semantic-web-journal.net/content/ontology-units-measure-and-related-concepts",
+                    "authors": [
+                        "Hajo Rijgersberg",
+                        "Mark van Assem",
+                        "Jan Top"
+                    ],
+                    "title": "Ontology of Units of Measure and Related Concepts",
+                    "publisher": "Semantic Web journal, IOS Press",
+                    "date": "2013"
                 }
               }
             , otherLinks: [
@@ -487,7 +498,7 @@ a[href].internalDFN {
         Example 1 by introducing a second defintion in the <code>@context</code> to declare the
         prefix <code>saref</code> as referring to the SAREF vocabulary namespace [[smartM2M]].
         The SAREF vocabulary includes terms to describe lighting devices and other home automation
-        devices that one can embed in a TD as semantic labels as values for the <code>@type</code>
+        devices that one can embed in a TD as semantic labels in the <code>@type</code>
         property. In the present example, the <a>Thing</a> is labelled with <code>saref:LightSwitch</code>,
         the form of the <code>status</code> property affordance is labelled with <code>saref:GetCommand</code>,
         the form of the <code>toggle</code> action affordance with <code>saref:ToggleCommand</code> and
@@ -2665,10 +2676,12 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
     <p>
         In many cases, context extension may be used to annotate pieces of
-        a data schema as in the TD snippet below. Note that value assigned to
-        <code>status</code> is a data schema and not the actual boolean
-        property of the physical world object (in this case, a lamp). More
-        details on this aspect can be found in Appendix
+        a data schema, as in the TD snippet below. The example references
+        SSN/SOSA [[vocab-ssn]] and OM 1.8, an ontology for units of measure
+        [[Rijgersberg-et-al-2013]]. Note
+        that object assigned to <code>temperature</code> is a data schema and not
+        the actual temperature property of the physical world object. More details
+        on modeling the physical world can be found in Appendix
         <a href="#thing-description-ontology"></a>.
     </p>
 
@@ -2677,22 +2690,26 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
     "@context": [
         "https://www.w3.org/2019/td/v1",
         {
+            "sosa": "http://www.w3.org/ns/sosa/",
             "ssn": "http://www.w3.org/ns/ssn/",
-            "saref": "https://w3id.org/saref#"
+            "om": "http://www.wurvoc.org/vocabularies/om-1.8/"
         }
     ],
-    "@type": ["Thing", "saref:LightingDevice"],
-    "id": "urn:dev:ops:32473-WoTLamp-1234",
-    "ssn:hasProperty": {
-        "@id": "urn:dev:ops:32473-WoTLamp-1234/status",
-        "@type": "saref:OnOffState"
+    "@type": "Thing",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "sosa:observes": {
+        "@id": "urn:dev:ops:32473-WoTStation-1234/temperature",
+        "@type": "om:Temperature"
     },
     ...
     "properties": {
-        "status": {
-            "ssn:forProperty": "urn:dev:ops:32473-WoTLamp-1234/status",
-            "description": "Temperature value of the weather station",
-            "type": "boolean",
+        "temperature": {
+            "ssn:forProperty": "urn:dev:ops:32473-WoTStation-1234/temperature",
+            "description": "Temperature measurement of the weather station",
+            "type": "number",
+            "minimum": -32.5,
+            "maximum": 55.2,
+            "unit": "om:degree_Celsius",
             "forms": [...]
         },
         ...
@@ -4078,13 +4095,17 @@ _:b8 &lt;https://www.w3.org/2019/wot-security#in&gt; &quot;header&quot; .</pre>
                 the client has no prior knowledge of the meaning of <code>status</code>,
                 it must infer possible operations from the semantic annotations available in the TD
                 and its domain-specific ontology, that includes SAREF. The following ontological
-                axioms can be formulated for SAREF:
+                axioms can be formulated for SAREF, in the OWL Manchester syntax
+                [[owl2-manchester-syntax]]:
             </p>
 
             <aside class="example">
 <pre>
-LightSwitch(X) → hasState(X, Y), OnOffState(Y) .
-ToggleCommand(X) → actsUpon(X, Y) OnOffState(Y) .
+Class: LightSwitch
+SubClassOf: hasState some OnOffState
+
+Class: ToggleCommand
+SubClassOf: actsUpon some OnOffState
 </pre>
             </aside>
 
