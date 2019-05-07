@@ -28,7 +28,7 @@
      the first item in the <code>@context</code> array.</span>
      <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-optional\">The mandatory
      context definition MAY be followed by one or more context definitions as strings or 
-     objects, and/or a default language definition as an object.</span>
+     objects and/or a default language definition as an object.</span>
 </p>
 <p>
      <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-dereferenceable-url\">
@@ -45,10 +45,40 @@
 </p>
 <p>
      <span class=\"rfc2119-assertion\" id=\"td-context-default-language\">
-     In the <code>@context</code> array, the optional default language that is 
-     used throughout a TD document is defined within an object as a member with 
-     a key <code>@language</code> whose value MUST be a string representing a [[!BCP47]] 
-     language code.</span>
+     In the <code>@context</code> array, the optional default language tag that is 
+     used throughout a Thing Description for human-readable strings 
+     outside of <a href="#multilanguage">MultiLanguage</a> instances
+     is also defined as a name-value pair with the name
+     <code>@language</code> whose value MUST be well-formed language tag from [[!BCP47]], 
+     possibly including a script subtag.</span>
+</p>
+<p>
+     Identification of the base direction of human-readable text in TDs 
+     is based on the following set of rules:
+     <ul>
+     <li><span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-default\">
+     If no default language tag is given, the base text direction MUST be assumed to be LTR (left-to-right).</span>
+     This implies that if the language used in human readable text uses a script
+     that is written RTL (right-to-left),
+     the default language tag, potentially including a script subtag, needs to be explicitly specified.</li>
+     <li><span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-inference\">
+     Outside of <a href="#multilanguage">MultiLanguage</a> instances
+     the base text direction MUST be inferred from the default language tag.
+     </span></li>
+     <li><span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-script\">
+     In cases where a language can be written in more than one script which use 
+     different writing directions, the value used for `@language` MUST
+     include a script subtag so that an appropriate base direction can be inferred. 
+     </span></li>
+     </ul>
+     Rules inside <a href="#multilanguage">MultiLanguage</a> instances are similar but use the 
+     language tags given inside such instances instead of the default language tag.</p>
+     <p>
+     <a>TD Processors</a> should also be aware of certain special cases that can arise
+     in processing bidirectional text.  In particular, producers of TDs should avoid numbers with
+     embedded spaces in bidirectional text.  Strings starting with embedded text using a script
+     with a writing direction opposite to that of the base direction (for example, English words
+     embedded in Arabic text) or with multidigit numbers should be avoided if possible.
 </p>
 <p id="meta-interactions-of-thing">Similar to <a href="#propertyaffordance" class="sec-ref">PropertyAffordance</a>, 
     <a href="#actionaffordance" class="sec-ref">ActionAffordance</a> and 
@@ -76,10 +106,16 @@
 </p>
 """^^rdf:HTML ;
     sh:property [
-        sh:path td:name ;
+        sh:path td:title ;
         sh:minCount 1 ;
         sh:datatype xsd:string ;
         sh:order "1"^^xsd:integer ;
+    ] ;
+    sh:property [
+        sh:path td:titles ;
+        sh:minCount 1 ;
+        sh:class td:MultiLanguage ;
+        sh:order "2"^^xsd:integer ;
     ] ;
     sh:property [
         sh:path td:description ;
@@ -108,7 +144,7 @@
     ] ;
     sh:property [
         sh:path td:support ;
-        sh:datatype xsd:string ;
+        sh:datatype xsd:anyURI ;
         sh:order "8"^^xsd:integer ;
     ] ;
     sh:property [
@@ -451,11 +487,18 @@ IANA HTTP content coding registry</a>.
     sh:description
 """
 <p>
-<span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-content-negotiation\">
-Note that in protocols such as HTTP that have an ability to negotiate content based on languages, 
-those terms (e.g. <code>description</code> and <code>title</code>) intended for carrying texts in a default language SHOULD be used instead of <code>MultiLanguage</code> container
-when the texts are served as a result such negotiation.
-</span>
+<span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-language-tag\"> 
+Each name of the <code>MultiLanguage</code> <a>Map</a> MUST be a language tag, potentially including 
+a script subtag, as defined in [[!BCP47]] 
+(e.g., <code>en</code>, <code>de</code>, <code>ja</code>, <code>zh-Hans</code>, <code>zh-Hant</code>, <code>az-Latn</code>, <code>az-Arab</code>).</span> 
+<span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-text-direction-infer\">
+The base text direction of each value in a <code>MultiLanguage</code> <a>Map</a> 
+MUST be inferred from the associated language tag.</span>
+<span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-text-direction-script-subtag\">
+If a language can be written in more than one script with different base directions 
+then a script subtag MUST be included so that the base direction can be inferred.</span>
+An example is Azeri, which is written LTR when Latin script is used (specified using <code>az-Latn</code>) 
+and RTL when Arabic script is used (specified using <code>az-Arab</code>).</span> 
 </p>
 """^^rdf:HTML ;
     sh:property [
