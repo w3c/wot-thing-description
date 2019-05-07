@@ -1,11 +1,11 @@
-@prefix : <http://www.w3.org/ns/web-linking#> .
+@prefix : <https://www.w3.org/2019/web-linking#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-<http://www.w3.org/ns/web-linking> rdf:type owl:Ontology ;
+<https://www.w3.org/2019/web-linking> rdf:type owl:Ontology ;
                                     rdfs:comment "Ontology designed to provide an RDF representation of Web links, in particular links expressed in the CoRE Link format." ;
                                     rdfs:label "Web Linking Ontology" .
 
@@ -13,45 +13,103 @@
 #    Data properties
 #################################################################
 
-###  http://www.w3.org/ns/web-linking#anchor
-:anchor rdf:type owl:DatatypeProperty ;
-        rdfs:domain :Link ;
-        rdfs:range xsd:anyURI ;
+###  https://www.w3.org/2019/web-linking#anchor
+:hasAnchor rdf:type owl:DatatypeProperty ;
         rdfs:comment "By default, the context, or anchor, of a link conveyed in the Link header field is the URL of the representation it is associated with, as defined in RFC7231, Section 3.1.4.1, and is serialized as a URI." ;
-        rdfs:label "anchor" .
+        rdfs:label "hasAnchor" .
 
 
-###  http://www.w3.org/ns/web-linking#href
-:href rdf:type owl:DatatypeProperty ;
-      rdfs:domain :Link ;
-      rdfs:range xsd:anyURI ;
-      rdfs:comment "Each link-value conveys one target IRI as a URI-Reference (after conversion to one, if necessary; see RFC3987, Section 3.1) inside angle brackets (\"<>\")." ;
-      rdfs:label "href" .
+###  https://www.w3.org/2019/web-linking#href
+:hasTarget rdf:type owl:DatatypeProperty ;
+      rdfs:comment "target IRI of a link or submission target of a form." ;
+      rdfs:label "hasTarget" .
 
 
-###  http://www.w3.org/ns/web-linking#rel
-:rel rdf:type owl:DatatypeProperty ;
-     rdfs:domain :Link ;
+###  https://www.w3.org/2019/web-linking#rel
+:hasRelationType rdf:type owl:DatatypeProperty ;
      rdfs:comment "A link relation type identifies the semantics of a link." ;
-     rdfs:label "rel" .
+     rdfs:label "hasRelationType" .
 
 
-###  http://www.w3.org/ns/web-linking#type
-:type rdf:type owl:DatatypeProperty ;
-      rdfs:domain :Link ;
-      rdfs:range xsd:string ;
+###  https://www.w3.org/2019/web-linking#type
+:hintsAtMediaType rdf:type owl:DatatypeProperty ;
       rdfs:comment "Target attribute providing a hint indicating what the media type [IANA-MEDIA-TYPES] of the result of dereferencing the link should be." ;
-      rdfs:label "type" .
+      rdfs:label "hintsAtMediaType" .
+
+###  https://www.w3.org/2019/web-linking#contentType
+
+:forContentType rdf:type owl:DatatypeProperty ;
+           
+           rdfs:label "forContentType" ;
+           
+           rdfs:comment "Assign a content type based on a media type [[IANA-MEDIA-TYPES]] (e.g., 'application/json) and (optional) parameters (e.g., 'charset=utf-8')"@en .
+
+:forContentCoding rdf:type owl:DatatypeProperty ;
+               rdfs:label "forContentCoding" ;
+               rdfs:comment "Content coding values indicate an encoding transformation that has been or can be applied to a representation. Content codings are primarily used to allow a representation to be compressed or otherwise usefully transformed without losing the identity of its underlying media type and without loss of information. Examples of content coding include \"gzip\", \"deflate\", etc. "@en .
+
+
+
+###  https://www.w3.org/2019/web-linking#subprotocol
+
+:forSubProtocol rdf:type owl:DatatypeProperty ;
+     
+     rdfs:label "forSubProtocol" ;
+     
+     rdfs:comment """Indicates the exact mechanism by which an interaction will be accomplished for a given protocol when there are multiple options.
+     
+For example, for HTTP and Events, it indicates which of several available mechanisms should be used for asynchronous notifications such as long polling, websub (also see https://www.w3.org/TR/websub/), or server sent events (also see https://www.w3.org/TR/eventsource/). Please note that there is no restriction on the sub-protocol selection and other mechanisms can also be announced by this subprotocol term."""@en .
+
+###  https://www.w3.org/2019/web-linking#op
+
+:forOperationType rdf:type owl:DatatypeProperty ;
+     
+     rdfs:label "forOperationType" ;
+     
+     rdfs:comment """Indicates the semantic intention of performing the operation(s) described by the form.
+
+For example, the Property interaction allows get and set operations.  
+The protocol binding may contain a form for the get operation and a different form for the set operation.  
+The op attribute indicates which form is for which and allows the client to select the correct form for the operation required.
+
+op can be assigned one or more interaction verb(s) each representing a semantic intention of an operation."""@en .
+
+
+     ###  https://www.w3.org/2019/web-linking#response
+
+:returns rdf:type owl:DatatypeProperty ;
+     
+     rdfs:label "returns" ;
+     
+     rdfs:comment """This optional term can be used if, e.g., the output communication metadata differ from input metdata (e.g., output contentType differ from the
+     input contentType). The response name contains metadata that is only valid for the reponse messages."""@en .
 
 
 #################################################################
 #    Classes
 #################################################################
 
-###  http://www.w3.org/ns/web-linking#Link
+###  https://www.w3.org/2019/web-linking#Link
 :Link rdf:type owl:Class ;
-      rdfs:comment "A link can be viewed as a statement of the form \"link context has a link relation type resource at link target, which has target attributes\"." ;
+      rdfs:comment "A link can be viewed as a statement of the form \"link context has a relation type resource at link target\", where the optional target attributes may further describe the resource." ;
       rdfs:label "Link" .
+
+
+###  https://www.w3.org/2019/web-linking#Form
+
+:Form rdf:type owl:Class ;
+      
+      rdfs:label "Form" ;
+      
+      rdfs:comment "A form can be viewed as a statement of \"To perform an operation type operation on form context , make a request method request to submission target\" where the optional form fields may further describe the required request."@en .
+
+###  https://www.w3.org/2019/web-linking#ExpectedResponse
+
+:ExpectedResponse rdf:type owl:Class ;
+      
+      rdfs:label "ExpectedResponse" ;
+      
+      rdfs:comment "Communication metadata for response messages (e.g., contentType of the response)."@en .
 
 
 ###  Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi

@@ -141,10 +141,10 @@ load(updateEndpoint, null)
 
     let rendered = src;
 
-    let td = { type: 'uri', value: 'http://www.w3.org/ns/td#' };
-    let jsonschema = { type: 'uri', value: 'http://www.w3.org/ns/json-schema#' };
-    let wotsec = { type: 'uri', value: 'http://www.w3.org/ns/wot-security#' };
-    let lnk = { type: 'uri', value: 'http://www.w3.org/ns/web-linking#' };
+    let td = { type: 'uri', value: 'https://www.w3.org/2019/td#' };
+    let jsonschema = { type: 'uri', value: 'https://www.w3.org/2019/json-schema#' };
+    let wotsec = { type: 'uri', value: 'https://www.w3.org/2019/wot-security#' };
+    let lnk = { type: 'uri', value: 'https://www.w3.org/2019/web-linking#' };
 
     // HTML rendering
 

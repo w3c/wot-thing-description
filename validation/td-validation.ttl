@@ -1,8 +1,8 @@
 @prefix : <http://www.w3.org/ns/td-validation#> .
-@prefix td: <http://www.w3.org/ns/td#> .
-@prefix jsonschema: <http://www.w3.org/ns/json-schema#> .
-@prefix wotsec: <http://www.w3.org/ns/wot-security#> .
-@prefix lnk: <http://www.w3.org/ns/web-linking#> .
+@prefix td: <https://www.w3.org/2019/td#> .
+@prefix jsonschema: <https://www.w3.org/2019/json-schema#> .
+@prefix wotsec: <https://www.w3.org/2019/wot-security#> .
+@prefix lnk: <https://www.w3.org/2019/web-linking#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix vs: <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -24,11 +24,11 @@
 """
 <p>
      <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-mandatory\">The mandatory
-     context definition of the string <code>"https://www.w3.org/2019/wot/td/v1"</code> MUST be 
+     context definition of the string <code>"https://www.w3.org/2019/td/v1"</code> MUST be 
      the first item in the <code>@context</code> array.</span>
      <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-optional\">The mandatory
      context definition MAY be followed by one or more context definitions as strings or 
-     objects.</span>
+     objects and/or a default language definition as an object.</span>
 </p>
 <p>
      <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-dereferenceable-url\">
@@ -42,6 +42,43 @@
      <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-prefix\">Each optional
      namespace specified in the <code>@context</code> array of a Thing MUST be bound 
      to an unique prefix.</span>
+</p>
+<p>
+     <span class=\"rfc2119-assertion\" id=\"td-context-default-language\">
+     In the <code>@context</code> array, the optional default language tag that is 
+     used throughout a Thing Description for human-readable strings 
+     outside of <a href="#multilanguage">MultiLanguage</a> instances
+     is also defined as a name-value pair with the name
+     <code>@language</code> whose value MUST be well-formed language tag from [[!BCP47]], 
+     possibly including a script subtag.</span>
+</p>
+<p>
+     Identification of the base direction of human-readable text in TDs 
+     is based on the following set of rules:
+     <ul>
+     <li><span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-default\">
+     If no default language tag is given, the base text direction MUST be assumed to be LTR (left-to-right).</span>
+     This implies that if the language used in human readable text uses a script
+     that is written RTL (right-to-left),
+     the default language tag, potentially including a script subtag, needs to be explicitly specified.</li>
+     <li><span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-inference\">
+     Outside of <a href="#multilanguage">MultiLanguage</a> instances
+     the base text direction MUST be inferred from the default language tag.
+     </span></li>
+     <li><span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-script\">
+     In cases where a language can be written in more than one script which use 
+     different writing directions, the value used for `@language` MUST
+     include a script subtag so that an appropriate base direction can be inferred. 
+     </span></li>
+     </ul>
+     Rules inside <a href="#multilanguage">MultiLanguage</a> instances are similar but use the 
+     language tags given inside such instances instead of the default language tag.</p>
+     <p>
+     <a>TD Processors</a> should also be aware of certain special cases that can arise
+     in processing bidirectional text.  In particular, producers of TDs should avoid numbers with
+     embedded spaces in bidirectional text.  Strings starting with embedded text using a script
+     with a writing direction opposite to that of the base direction (for example, English words
+     embedded in Arabic text) or with multidigit numbers should be avoided if possible.
 </p>
 <p id="meta-interactions-of-thing">Similar to <a href="#propertyaffordance" class="sec-ref">PropertyAffordance</a>, 
     <a href="#actionaffordance" class="sec-ref">ActionAffordance</a> and 
@@ -69,10 +106,16 @@
 </p>
 """^^rdf:HTML ;
     sh:property [
-        sh:path td:name ;
+        sh:path td:title ;
         sh:minCount 1 ;
         sh:datatype xsd:string ;
         sh:order "1"^^xsd:integer ;
+    ] ;
+    sh:property [
+        sh:path td:titles ;
+        sh:minCount 1 ;
+        sh:class td:MultiLanguage ;
+        sh:order "2"^^xsd:integer ;
     ] ;
     sh:property [
         sh:path td:description ;
@@ -95,13 +138,13 @@
         sh:order "6"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:lastModified ;
+        sh:path td:modified ;
         sh:datatype xsd:dateTime ;
         sh:order "7"^^xsd:integer ;
     ] ;
     sh:property [
         sh:path td:support ;
-        sh:datatype xsd:string ;
+        sh:datatype xsd:anyURI ;
         sh:order "8"^^xsd:integer ;
     ] ;
     sh:property [
@@ -131,7 +174,7 @@
     ] ;
     sh:property [
         sh:path td:forms ;
-        sh:class td:Form ;
+        sh:class lnk:Form ;
         sh:order "14"^^xsd:integer ;
     ] ;
     sh:property [
@@ -152,17 +195,6 @@
     sh:targetClass td:InteractionAffordance ;
     sh:closed "false"^^xsd:boolean ;
     sh:order "2"^^xsd:integer ;
-    sh:description
-"""
-<p>
-    <span class="rfc2119-assertion" id="td-unique-identifiers">
-        Each instance of a <code>Property</code>, <code>Action</code>,
-        and <code>Event</code> class MUST have an identifier that is
-        unique within the context of a Thing Description document.
-    </span>
-
-</p>
-"""^^rdf:HTML ;
     sh:property [
         sh:path td:title ;
         sh:datatype xsd:string ;
@@ -307,34 +339,60 @@
     ] .
 
 :FormShape a sh:NodeShape ;
-    sh:targetClass td:Form ;
+    sh:targetClass lnk:Form ;
     sh:closed "false"^^xsd:boolean ;
     sh:order "6"^^xsd:integer ;
+    sh:description
+"""
+<p>The list of possible operation types of a form is fixed. It only includes the
+well-known types necessary to implement the WoT interaction model described in
+[[WOT-ARCHITECTURE]]. Future versions of the standard may extend this list but
+<span class=\"rfc2119-assertion\" id=\"well-known-operation-types-only\">
+operations types SHOULD NOT be arbitrarily set by servients
+</span>.
+</p>
+<p>
+In some use cases such as for an <code>ActionAffordance</code> there is a different expectation about the content type for the <code>input</code> 
+and <code>output</code>. In such a case, the optional <code>response</code> name-value pair can describe the content type of the expected response.
+<span class="rfc2119-assertion" id="td-expectedResponse-contentType">
+If the content type of the expected response does not equal its <a>Default Value</a> and differs from the content type of the form,
+the <code>Form</code> instance MUST include a name-value pair with the name <code>response</code>.
+</span>
+</p>
+
+"""^^rdf:HTML ;
+    sh:description
+"""
+<p>Possible values for the <code>contentCoding</code> property can be found e.g. in
+the <a href=\"https://www.iana.org/assignments/http-parameters/http-parameters.xhtml#content-coding\">
+IANA HTTP content coding registry</a>.
+</p>
+"""^^rdf:HTML ;
     sh:property [
-        sh:path td:href ;
+        sh:path lnk:hasTarget ;
         sh:minCount 1 ;
         sh:datatype xsd:anyURI ;
         sh:order "1"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:contentType ;
+        sh:path lnk:forContentType ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:defaultValue "application/json"^^xsd:string ;
         sh:order "2"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:contentCoding ;
+        sh:path lnk:forContentCoding ;
         sh:datatype xsd:string ;
         sh:order "3"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:response ;
-        sh:class td:ExpectedResponse ;
+        sh:path lnk:returns ;
+        sh:class lnk:ExpectedResponse ;
         sh:order "4"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:op ;
+        sh:path lnk:forOperationType ;
         sh:minCount 1 ;
         sh:datatype xsd:string ;
         sh:in (
@@ -353,7 +411,7 @@
         sh:order "5"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:subprotocol ;
+        sh:path lnk:forSubProtocol ;
         sh:datatype xsd:string ;
         sh:in (
             "longpoll"
@@ -379,23 +437,23 @@
     sh:closed "false"^^xsd:boolean ;
     sh:order "7"^^xsd:integer ;
     sh:property [
-        sh:path lnk:href ;
+        sh:path lnk:hasTarget ;
         sh:minCount 1 ;
         sh:datatype xsd:anyURI ;
         sh:order "1"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path lnk:type ;
+        sh:path lnk:hintsAtMediaType ;
         sh:datatype xsd:string ;
         sh:order "2"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path lnk:rel ;
+        sh:path lnk:hasRelationType ;
         sh:datatype xsd:string ;
         sh:order "3"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path lnk:anchor ;
+        sh:path lnk:hasAnchor ;
         sh:datatype xsd:anyURI ;
         sh:order "4"^^xsd:integer ;
     ] .
@@ -411,11 +469,11 @@
     ] .
 
 :ExpectedResponseShape a sh:NodeShape ;
-    sh:targetClass td:ExpectedResponse ;
+    sh:targetClass lnk:ExpectedResponse ;
     sh:closed "false"^^xsd:boolean ;
     sh:order "9"^^xsd:integer ;
      sh:property [
-        sh:path td:contentType ;
+        sh:path lnk:forContentType ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:defaultValue "application/json"^^xsd:string ;
@@ -429,11 +487,18 @@
     sh:description
 """
 <p>
-<span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-content-negotiation\">
-Note that in protocols such as HTTP that have an ability to negotiate content based on languages, 
-those terms (e.g. <code>description</code> and <code>title</code>) intended for carrying texts in a default language SHOULD be used instead of <code>MultiLanguage</code> container
-when the texts are served as a result such negotiation.
-</span>
+<span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-language-tag\"> 
+Each name of the <code>MultiLanguage</code> <a>Map</a> MUST be a language tag, potentially including 
+a script subtag, as defined in [[!BCP47]] 
+(e.g., <code>en</code>, <code>de</code>, <code>ja</code>, <code>zh-Hans</code>, <code>zh-Hant</code>, <code>az-Latn</code>, <code>az-Arab</code>).</span> 
+<span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-text-direction-infer\">
+The base text direction of each value in a <code>MultiLanguage</code> <a>Map</a> 
+MUST be inferred from the associated language tag.</span>
+<span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-text-direction-script-subtag\">
+If a language can be written in more than one script with different base directions 
+then a script subtag MUST be included so that the base direction can be inferred.</span>
+An example is Azeri, which is written LTR when Latin script is used (specified using <code>az-Latn</code>) 
+and RTL when Arabic script is used (specified using <code>az-Arab</code>).</span> 
 </p>
 """^^rdf:HTML ;
     sh:property [
@@ -739,7 +804,6 @@ when the texts are served as a result such negotiation.
         sh:property [
         sh:path jsonschema:format ;
         sh:datatype xsd:string ;
-        sh:defaultValue "false"^^xsd:boolean ;
         sh:order "12"^^xsd:integer ;
     ] .
 
