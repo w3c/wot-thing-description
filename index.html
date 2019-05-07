@@ -1401,20 +1401,9 @@ a[href].internalDFN {
      <span class="rfc2119-assertion" id="td-context-default-language">
      In the <code>@context</code> array, the optional default language that is 
      used throughout a TD document for human-readable strings outside of a <a href="#multilanguage">MultiLanguage</a> object
-     is also defined within an object as a member with 
-     a key <code>@language</code> whose value MUST be a string representing a [[!BCP47]] 
-     language code.</span>
-     <span class="rfc2119-assertion" id="td-context-default-language-last">
-     The object used to define the default language MUST be the last object in
-     the `@context` array.
-     </span>
-     <span class="rfc2119-assertion" id="td-context-default-language-unique">
-     There MUST be only one object defining a default language in an `@context` array.
-     </span>
-     <span class="rfc2119-assertion" id="td-context-default-language-separate">
-     The object used to define the default language MUST NOT be combined with any other
-     objects defining context extensions (additional vocabulary terms).
-     </span>
+     is also defined as a name 
+     <code>@language</code> whose value MUST be language tag from [[!BCP47]], 
+     possibly including a script subtag.</span>
 </p>
 <p>
      Identification of the base direction of human-readable text in TDs 
@@ -1423,23 +1412,24 @@ a[href].internalDFN {
      <li><span class="rfc2119-assertion" id="td-context-default-language-direction-inference">
      The base text direction MUST be inferred from the default language.
      </span></li>
-     <li><span class="rfc2119-assertion" id="td-context-default-language-direction-inference">
+     <li><span class="rfc2119-assertion" id="td-context-default-language-direction-script">
      In cases where a language can be written in more than one script which use 
      different writing directions, the value used for `@language` MUST
      include a script subtag so that an appropriate base direction can be inferred. 
      </span></li>
      <li><span class="rfc2119-assertion" id="td-context-default-language-direction-default">
-     If no default language is given, the base text direction MUST be assumed to be LTR (left-to-right).
-     </span>  This implies that if the language used in human readable text uses a script
-     that is written RTL (right-to-left), the default language needs to be explicitly specified.</li>
+     If no default language is given, the base text direction MUST be assumed to be LTR (left-to-right).</span>
+     This implies that if the language used in human readable text uses a script
+     that is written RTL (right-to-left),
+     the default language, potentially including a script subtag, needs to be explicitly specified.</li>
      <li><span class="rfc2119-assertion" id="td-context-default-language-direction-independence">
-     Each human-readable string MUST be processed independently, starting from the base
+     Each human-readable string value MUST be processed independently, starting from the base
      direction defined for the TD.</span></li>
      </ul>
      Consumers and producers of TDs should be aware of certain special cases that can arise
      in processing bidirectional text.  In particular, producers of TDs should avoid numbers with
      embedded spaces in bidirectional text.  Strings starting with embedded text using a script
-     with a writing direction opposite to that of the base direction (for example, English terms
+     with a writing direction opposite to that of the base direction (for example, English words
      embedded in Arabic text) or with multidigit numbers should be avoided if possible.
 </p>
 <p id="meta-interactions-of-thing">Similar to <a href="#propertyaffordance" class="sec-ref">PropertyAffordance</a>, 
@@ -1533,23 +1523,25 @@ a[href].internalDFN {
 <section><h3><code>VersionInfo</code></h3><p>Carries version information about the TD instance. If required, additional version information such as firmware and hardware version (term definitions outside of the TD namespace) can be extended here.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-instance--VersionInfo"><td><code>instance</code></td><td>Provides a version identicator of this TD instance.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table></section>
 <section><h3><code>MultiLanguage</code></h3><p>Container to provide human-readable text in different languages using language tags described in [[BCP47]]. See <a href="#titles-descriptions-serialization-json"></a> for example usages of this container in a Thing Description instance.</p>
 <p>
-<span class="rfc2119-assertion" id="td-context-ns-multilanguage-language-tag">
-Each language tag code used MUST be declared as vocabulary term member of this container 
-(e.g., <code>en</code>, <code>de</code>, <code>ja</code>, <code>zh-Hans</code>, <code>zh-Hant</code>,
-<code>az-Latn</code>, <code>az-Arab</code>). </span>
+<span class="rfc2119-assertion" id="td-context-ns-multilanguage-language-tag"> 
+Each name of the <code>MultiLanguage</code> Map MUST be a language tag, potentially including 
+a script subtag, as defined in [[!BCP47]] 
+(e.g., en, de, ja, zh-Hans, zh-Hant, az-Latn, az-Arab).</span> 
 <span class="rfc2119-assertion" id="td-context-ns-multilanguage-text-direction-infer">
-The base text direction MUST be inferred from the language tag code.
-</span>
+The base text direction of each value in a <code>MultiLanguage</code> Map 
+MUST be inferred from the associated language tag.</span>
 <span class="rfc2119-assertion" id="td-context-ns-multilanguage-text-direction-script-subtag">
 If a language can be written in more than one script with different base directions 
-then a script subtag MUST be used so that the base direction can be inferred.
-</span>
+then a script subtag MUST be included so that the base direction can be inferred.</span>
+An example is Azeri, which is written LTR when Latin script is used (specified using az-Latn) 
+and RTL when Arabic script is used (specified using az-Arab).</span> 
 <span class="rfc2119-assertion" id="td-context-ns-multilanguage-content-negotiation">
-In protocols such as HTTP that have an ability to negotiate content based on languages, 
+In protocols such as HTTP that have an ability to negotiate content based on languages,  
 those terms (e.g. <code>description</code> and <code>title</code>) intended 
-for carrying texts in a default language SHOULD be used instead of <code>MultiLanguage</code> container
-when the texts are served as a result of such negotiation.
-</span>
+for carrying texts in a default language SHOULD be used instead of <code>MultiLanguage</code> container 
+when the texts are served as a result of such negotiation.</span>
+Note however that constrained devices may choose to not support dynamically-generated TDs 
+and do not need to support this feature.
 </p>
 </section>
 
@@ -3018,13 +3010,13 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 </section> <!-- end of id="data-schema-serialization-json"-->
 
 <section id="titles-descriptions-serialization-json">
-<h3><code>title(s)</code> and <code>description(s)</code></h3>
+<h3>Human-Readable Metadata</h3>
 
   <p>
   The vocabulary terms <code>title</code> and <code>description</code> are 
   used to provide human-readable texts for titles (e.g., a display
   text for UI) and additional information useful for <a>Consumers</a> of TDs.
-  When a default language is specified by assigned a value to <code>@language</code>
+  When a default language is specified by assigning a value to <code>@language</code>
   in the <code>@context</code> of a <a href="#sec-thing-as-a-whole-json">Thing object</a>,
   that default language is associated with the string values assigned to
   <code>title</code> and <code>description</code> within the TD
@@ -3032,12 +3024,18 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
   Another possibility is to set the default language with
   the language negotiation mechanism of HTTP
   (i.e., the <code>Accept-Language</code> header field).
+  As noted earlier, the base text direction used to display human-readable text is also inferred 
+  from the default language, and so if a language can be written in more than
+  one script with different text directions, a script subtag must be 
+  included in the language tag.
   </p>
 
   <p>
   A TD snippet using <code>title</code> and <code>description</code> is 
   shown below. The default language is set to <code>"en"</code> through the
-  <code>@language</code> member within the <code>@context</code>.
+  definition of the <code>@language</code> name within the <code>@context</code>.
+  This definition can be serialized either in its own object or
+  combined with other definitions.
   </p>
 
 <pre class="example">
@@ -3068,17 +3066,20 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
   <p>
   The <a>vocabulary terms</a> <code>titles</code> and <code>descriptions</code>
-  enable human-readable texts in multiple languages using language tags defined in [[!BCP47]].
+  enable human-readable texts in multiple languages using language tags defined in [[!BCP47]]
+  as described for the <code>MultiLanguage</code> Map.
   <span class="rfc2119-assertion" id="td-multi-languages">
   If present, the values assigned to <code>titles</code> and <code>descriptions</code>
   in any <a>Object</a> in a TD model
   MUST be serialized as JSON objects.
+  </span>
+<!-- The following is redundant given the definitions in MultiLanguage
   The names of their members MUST be language tags as defined in [[!BCP47]]
   (e.g., "en", "de", "ja", "zh-Hans", "zh-Hant")
   and the values JSON strings in the language indicated.
   If a script subtag changes the text direction of the JSON string,
   it MUST be included in the name of the member.
-  </span>
+-->
   </p>
 
   <p>A TD snippet using <code>titles</code> and <code>descriptions</code> in different levels is given below:</p>
@@ -5722,6 +5723,7 @@ _:b8 &lt;https://www.w3.org/2019/wot-security#in&gt; &quot;header&quot; .</pre>
     <li>General</li>
     <ul>
     <li>Added <a href="#multilanguage">multi-language</a> support for human-readable metadata (<code>descriptions</code> and <code>titles</code> <a>vocabulary terms</a>).</li>
+    <li>Added <code>@language</code> to declare a default language and specified how to infer text direction in human-readable metadata.</li>
     <li>Renamed the <code>InteractionPattern</code> <a>Class</a> to <a href="#interactionaffordance"><code>InteractionAffordance</code></a>.</li>
     <li>Added a <a href="#behavior">section</a> to describe behavioral constraints of a WoT system.</li>
     <li>Added a <a href="#sec-security-consideration">section</a> with security and privacy considerations.</li>
