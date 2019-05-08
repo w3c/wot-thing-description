@@ -40,9 +40,9 @@
         One <a>Map</a> contained in an <code>@context</code> Array SHOULD contain a name-value pair
         that defines the default language for the Thing Description,
         where the name is the <a>Term</a> <code>@language</code> and the value a well-formed language tag
-        as defined by [[!BCP47]], potentially including a script subtag
-        (e.g., <code>en</code>, <code>de</code>, <code>ja</code>,
-        <code>zh-Hans</code>, <code>zh-Hant</code>, <code>az-Arab</code>).
+        as defined by [[!BCP47]]
+        (e.g., <code>en</code>, <code>de-AT</code>, <code>gsw-CH</code>,
+        <code>zh-Hans</code>, <code>zh-Hant-HK</code>, <code>sl-nedis</code>).
     </span>
 </p>
 <p>
@@ -61,16 +61,18 @@
 <p>
     The computation of the base direction of all human-readable text strings
     is defined by the following set of rules,
-    which is based on the script subtag appraoch described in Section&nbsp;4.5 of [[?string-meta]]:
+    which is based on the script subtag approach described in <a href="">Section&nbsp;4.5</a> of [[?string-meta]]:
 </p>
 <ul>
     <li>
         <span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-default\">
             If no language tag is given,
-            the base direction MUST be assumed to be LTR (left-to-right).
+            the base direction SHOULD be assumed to be LTR (left-to-right).
         </span>
         This implies that if the language used in human-readable text uses a script that is written RTL (right-to-left),
         the default language needs to be specified explicitly, so that an appropriate base direction can be inferred.
+        In the absence of a default language tag,
+        it is encouraged to use first-strong heuristics or detection algorithm such as the CLDR Likely Subtags [[?LDML]].
     </li>
     <li>
         <span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-script\">
@@ -91,41 +93,33 @@
         MUST be inferred from the language tag given in the corresponding name.
     </span></li>
 </ul>
-<p>
-     Rules inside <code>MultiLanguage</code> instances are similar,
-     but use the language tags given inside such instances instead of the default language
-     (see <a href="#multilanguage"></a>).
-</p>
-<p>
-     <a>TD Processors</a> should also be aware of certain special cases that can arise
-     in processing bidirectional text.  In particular, producers of TDs should avoid numbers with
-     embedded spaces in bidirectional text.  Strings starting with embedded text using a script
-     with a writing direction opposite to that of the base direction (for example, English words
-     embedded in Arabic text) or with multidigit numbers should be avoided if possible.
-</p>
-<p id="meta-interactions-of-thing">Similar to <a href="#propertyaffordance" class="sec-ref">PropertyAffordance</a>, 
-    <a href="#actionaffordance" class="sec-ref">ActionAffordance</a> and 
-    <a href="#eventaffordance" class="sec-ref">EventAffordance</a> classes, all of which are 
-    subclasses of <a href="#interactionaffordance" class="sec-ref">
-    InteractionAffordance</a>, the definition of Thing class also contains 
-    the <code>forms</code> term. 
+
+<p id="meta-interactions-of-thing">
+    In addition to the explicitly provided <a>Interaction Affordances</a>
+    in the <code>properties</code>, <code>actions</code>, and <code>events</code> <a>Arrays</a>,
+    a <a>Thing</a> can also provide meta-interactions,
+    which are indicated by <code>Form</code> instances in its optional <code>forms</code> <a>Array</a>.
     <span class="rfc2119-assertion" id="td-op-for-thing">
-    When a <code>forms</code> term member is present in a Thing instance, 
-    the value(s) in the <code>op</code> term member of the <code>forms</code> MUST be one or more of 
+    When the <code>forms</code> <a>Array</a> of a <a>Thing</a> instance contains <code>Form</code> instances,
+    each value assigned to their <code>op</code> name-value pair
+    MUST be one of the following <em>opteration types</em>:
     <code>readallproperties</code>, <code>writeallproperties</code>, 
-    <code>readmultipleproperties</code> or <code>writemultipleproperties</code>.
+    <code>readmultipleproperties</code>, or <code>writemultipleproperties</code>.
     </span>
     (See <a href="#td-forms-readall-example"> an example</a> for an usage of <code>form</code> in a Thing instance.)
 </p>
 <p>
-    For <code>readallproperties</code> operation's output, 
-    <code>readmultipleproperties</code> operation's output,
-    <code>writeallproperties</code> operation's input and <code>writemultipleproperties</code>
-    operation's input, payloads are assigned an object type schema with its 
-    properties equal to the Thing's <a href="#propertyaffordance">property affordances</a>.
-    For <code>readmultipleproperties</code> operation's input, payloads are
-    assigned a string array type schema with its items each equal to one of the names of
-    The Thing's <a href="#propertyaffordance">property affordances</a>.
+    The data schema for each of these meta-interactions is constructed
+    by combing the data schemas of each <a href="#propertyaffordance"><code>PropertyAffordances</code></a> instance
+    in a single <code>ObjectSchema</code> instance,
+    where the <code>properties</code> <a>Map</a> of the <code>ObjectSchema</code> instance contains
+    each data schema of the <code>PropertyAffordances</code> identified by the name of the corresponding <code>PropertyAffordances</code> instance.
+</p>
+<p>
+    If not specified otherwise (e.g., through a <a>TD Context Extension</a>),
+    the request data of the <code>readmultipleproperties</code> operation
+    is an <a>Array</a> that contains the intended <code>PropertyAffordances</code> instance names,
+    which is serialized to the content type specified by the <code>Form</code> instance.
 </p>
 """^^rdf:HTML ;
     sh:property [
@@ -511,8 +505,7 @@ IANA HTTP content coding registry</a>.
 <p>
 <span class=\"rfc2119-assertion\" id=\"td-multilanguage-language-tag\"> 
     Each name of the <code>MultiLanguage</code> <a>Map</a>
-    MUST be a language tag as defined in [[!BCP47]],
-    potentially including a script subtag.
+    MUST be a language tag as defined in [[!BCP47]].
 </span>
 <span class=\"rfc2119-assertion\" id=\"td-multilanguage-value\"> 
     Each value of the <code>MultiLanguage</code> <a>Map</a>
