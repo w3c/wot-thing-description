@@ -23,56 +23,65 @@
     sh:description
 """
 <p>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-mandatory\">The mandatory
-     context definition of the string <code>"https://www.w3.org/2019/td/v1"</code> MUST be 
-     the first item in the <code>@context</code> array.</span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-optional\">The mandatory
-     context definition MAY be followed by one or more context definitions as strings or 
-     objects and/or a default language definition as an object.</span>
+    <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-mandatory\">
+        The <code>@context</code> name-value pair MUST contain the string <code>https://www.w3.org/2019/td/v1</code>
+        either directly when of type <code>string</code> or as first element when of type <a>Array</a>.
+    </span>
+    <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-optional\">
+        When <code>@context</code> is an Array, the string <code>https://www.w3.org/2019/td/v1</code>
+        MAY be followed by elements of type <code>anyUri</code> or type <a>Map</a> in any order,
+        while it is RECOMMENDED to include only one <a>Map</a> with all the name-value pairs in the <code>@context</code> <a>Array</a>.
+    </span>
+    <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-map-of-namespaces\">
+        <a>Maps</a> contained in an <code>@context</code> Array MAY contain name-value pairs,
+        where the value is a namespace identifier of type <code>anyUri</code> and the name a <a>Term</a> or prefix denoting that namespace.
+    </span>
+    <span class=\"rfc2119-assertion\" id=\"td-context-default-language\">
+        One <a>Map</a> contained in an <code>@context</code> Array SHOULD contain a name-value pair
+        that defines the default language for the Thing Description,
+        where the name is the <a>Term</a> <code>@language</code> and the value a well-formed language tag
+        as defined by [[!BCP47]], potentially including a script subtag
+        (e.g., <code>en</code>, <code>de</code>, <code>ja</code>,
+        <code>zh-Hans</code>, <code>zh-Hant</code>, <code>az-Arab</code>).
+    </span>
 </p>
 <p>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-dereferenceable-url\">
-     As suggested in JSON-LD [[json-ld]] specification, if a context definition is 
-     a string, it SHOULD be a dereferenceable URL.
-     </span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-map-of-namespaces\">
-     Likewise, if a context definition is an object, it SHOULD be a map of namespaces, 
-     in which keys are namespace prefixes. 
-     </span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-prefix\">Each optional
-     namespace specified in the <code>@context</code> array of a Thing MUST be bound 
-     to an unique prefix.</span>
+    The default language is used to compute the base direction for all
+    human-readable text values not otherwise associated with a language tag
+    (such as <code>MultiLanguage</code> <a>Maps</a> defined in <a href="#multilanguage"></a>).
 </p>
 <p>
-     <span class=\"rfc2119-assertion\" id=\"td-context-default-language\">
-     In the <code>@context</code> array, the optional default language tag that is 
-     used throughout a Thing Description for human-readable strings 
-     outside of <a href="#multilanguage">MultiLanguage</a> instances
-     is also defined as a name-value pair with the name
-     <code>@language</code> whose value MUST be well-formed language tag from [[!BCP47]], 
-     possibly including a script subtag
-     (e.g., <code>en</code>, <code>de</code>, <code>ja</code>,
-     <code>zh-Hans</code>, <code>zh-Hant</code>, <code>az-Arab</code>).</span>
-</p>
-<p>
-     Identification of the base direction of human-readable text in TDs 
-     is based on the following set of rules:
+    The computation of the base direction of all human-readable text strings
+    is defined by the following set of rules,
+    which is based on the script subtag appraoch described in Section&nbsp;4.5 of [[?string-meta]]:
 </p>
 <ul>
-     <li><span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-default\">
-     If no default language tag is given, the base text direction MUST be assumed to be LTR (left-to-right).</span>
-     This implies that if the language used in human readable text uses a script
-     that is written RTL (right-to-left),
-     the default language tag, potentially including a script subtag, needs to be explicitly specified.</li>
-     <li><span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-inference\">
-     Outside of <code>MultiLanguage</code> instances
-     the base text direction MUST be inferred from the default language tag.
-     </span></li>
-     <li><span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-script\">
-     In cases where a language can be written in more than one script which use 
-     different writing directions, the value used for `@language` MUST
-     include a script subtag so that an appropriate base direction can be inferred. 
-     </span></li>
+    <li>
+        <span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-default\">
+            If no language tag is given,
+            the base direction MUST be assumed to be LTR (left-to-right).
+        </span>
+        This implies that if the language used in human-readable text uses a script that is written RTL (right-to-left),
+        the default language needs to be specified explicitly, so that an appropriate base direction can be inferred.
+    </li>
+    <li>
+        <span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-script\">
+            In cases where a language can be written in more than one script with different base directions,
+            the corresponding language tag given in <code>@language</code> or <code>MultiLanguage</code> <a>Maps</a>
+            MUST include a script subtag, so that an appropriate base direction can be inferred. 
+        </span>
+        An example is Azeri, which is written LTR when Latin script is used (specified using <code>az-Latn</code>) 
+        and RTL when Arabic script is used (specified using <code>az-Arab</code>).
+    </li>
+    <li><span class=\"rfc2119-assertion\" id=\"td-context-default-language-direction-inference\">
+        Outside of <code>MultiLanguage</code> <a>Maps</a>,
+        the base direction MUST be inferred from the language tag of the default language.
+    </span></li>
+    <li><span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-text-direction-infer\">
+        Inside of <code>MultiLanguage</code> <a>Maps</a>,
+        the base direction of each value of the name-value pairs 
+        MUST be inferred from the language tag given in the corresponding name.
+    </span></li>
 </ul>
 <p>
      Rules inside <code>MultiLanguage</code> instances are similar,
@@ -492,17 +501,15 @@ IANA HTTP content coding registry</a>.
     sh:description
 """
 <p>
-<span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-language-tag\"> 
-Each name of the <code>MultiLanguage</code> <a>Map</a> MUST be a language tag, potentially including 
-a script subtag, as defined in [[!BCP47]].</span> 
-<span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-text-direction-infer\">
-The base text direction of each value in a <code>MultiLanguage</code> <a>Map</a> 
-MUST be inferred from the associated language tag.</span>
-<span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-text-direction-script-subtag\">
-If a language can be written in more than one script with different base directions 
-then a script subtag MUST be included so that the base direction can be inferred.</span>
-An example is Azeri, which is written LTR when Latin script is used (specified using <code>az-Latn</code>) 
-and RTL when Arabic script is used (specified using <code>az-Arab</code>).</span> 
+<span class=\"rfc2119-assertion\" id=\"td-multilanguage-language-tag\"> 
+    Each name of the <code>MultiLanguage</code> <a>Map</a>
+    MUST be a language tag as defined in [[!BCP47]],
+    potentially including a script subtag.
+</span>
+<span class=\"rfc2119-assertion\" id=\"td-multilanguage-value\"> 
+    Each value of the <code>MultiLanguage</code> <a>Map</a>
+    MUST be of type <code>string</code>.
+</span>
 </p>
 """^^rdf:HTML ;
     sh:property [
