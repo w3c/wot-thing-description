@@ -425,7 +425,7 @@ a[href].internalDFN {
   </p>
 <aside class="example" id="simple-thing-description-sample" title="Thing Description Sample">
     <pre>{
-    "@context": "https://www.w3.org/2019/td/v1",
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "title": "MyLampThing",
     "securityDefinitions": {
@@ -525,7 +525,7 @@ a[href].internalDFN {
               <pre>
     {
         "@context": [
-            "https://www.w3.org/2019/td/v1",
+            "https://www.w3.org/2019/wot/td/v1",
             { "saref": "https://w3id.org/saref#" }
         ],
         "id": "urn:dev:ops:32473-WoTLamp-1234",
@@ -1081,58 +1081,78 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 <tr class="rfc2119-table-assertion" id="td-vocab-security--Thing"><td><code>security</code></td><td>Set of security definition names, chosen from those defined in securityDefinitions.  These must all be satisfied for access to resources.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-securityDefinitions--Thing"><td><code>securityDefinitions</code></td><td>Set of named security configurations (definitions only).  Not actually applied unless names are used in a security section.</td><td>mandatory</td><td><a>Map</a> of <a href="#securityscheme"><code>SecurityScheme</code></a></td></tr></tbody></table>
 <p>
-     <span class="rfc2119-assertion" id="td-context-ns-thing-mandatory">The mandatory
-     context definition of the string <code>https://www.w3.org/2019/wot/td/v1</code> MUST be 
-     the first item in the <code>@context</code> array.</span>
-     <span class="rfc2119-assertion" id="td-context-ns-thing-optional">The mandatory
-     context definition MAY be followed by one or more context definitions as strings or 
-     objects and/or a default language definition as an object.</span>
+    <span class="rfc2119-assertion" id="td-context-ns-thing-mandatory">
+        The <code>@context</code> name-value pair MUST contain the string <code>https://www.w3.org/2019/wot/td/v1</code>
+        either directly when of type <code>string</code> or as first element when of type <a>Array</a>.
+    </span>
+    <span class="rfc2119-assertion" id="td-context-ns-thing-optional">
+        When <code>@context</code> is an Array, the string <code>https://www.w3.org/2019/wot/td/v1</code>
+        MAY be followed by elements of type <code>anyUri</code> or type <a>Map</a> in any order,
+        while it is RECOMMENDED to include only one <a>Map</a> with all the name-value pairs in the <code>@context</code> <a>Array</a>.
+    </span>
+    <span class="rfc2119-assertion" id="td-context-ns-thing-map-of-namespaces">
+        <a>Maps</a> contained in an <code>@context</code> Array MAY contain name-value pairs,
+        where the value is a namespace identifier of type <code>anyUri</code> and the name a <a>Term</a> or prefix denoting that namespace.
+    </span>
+    <span class="rfc2119-assertion" id="td-context-default-language">
+        One <a>Map</a> contained in an <code>@context</code> Array SHOULD contain a name-value pair
+        that defines the default language for the Thing Description,
+        where the name is the <a>Term</a> <code>@language</code> and the value a well-formed language tag
+        as defined by [[!BCP47]], potentially including a script subtag
+        (e.g., <code>en</code>, <code>de</code>, <code>ja</code>,
+        <code>zh-Hans</code>, <code>zh-Hant</code>, <code>az-Arab</code>).
+    </span>
 </p>
 <p>
-     <span class="rfc2119-assertion" id="td-context-ns-thing-dereferenceable-url">
-     As suggested in JSON-LD [[json-ld]] specification, if a context definition is 
-     a string, it SHOULD be a dereferenceable URL.
-     </span>
-     <span class="rfc2119-assertion" id="td-context-ns-thing-map-of-namespaces">
-     Likewise, if a context definition is an object, it SHOULD be a map of namespaces, 
-     in which keys are namespace prefixes. 
-     </span>
-     <span class="rfc2119-assertion" id="td-context-ns-thing-prefix">Each optional
-     namespace specified in the <code>@context</code> array of a Thing MUST be bound 
-     to an unique prefix.</span>
+    The default language is used to compute the base direction for all
+    human-readable text values not otherwise associated with a language tag
+    such as the <code>MultiLanguage</code> <a>Maps</a> defined in <a href="#multilanguage"></a>.
+</p>
+<p class="note">
+    Great care has to be given when assigning bidirectional text to the human-readable metadata of Thing Descriptions.
+    Producers of such texts are advised to include <em>bidi controls</em> as appropriate to try to ensure proper display.
+    Consumers of such texts are advised to apply <em>bidi isolation</em> when including human-readable metadata of TDs
+    in other text (e.g., for Web user interface).
+    <em>Strings on the Web: Language and Direction Metadata</em> [[?string-meta]]
+    provides some guidance and illustrates a number of pitfalls when using bidirectional text.
 </p>
 <p>
-     <span class="rfc2119-assertion" id="td-context-default-language">
-     In the <code>@context</code> array, the optional default language tag that is 
-     used throughout a Thing Description for human-readable strings 
-     outside of <a href="#multilanguage">MultiLanguage</a> instances
-     is also defined as a name-value pair with the name
-     <code>@language</code> whose value MUST be well-formed language tag from [[!BCP47]], 
-     possibly including a script subtag.</span>
+    The computation of the base direction of all human-readable text strings
+    is defined by the following set of rules,
+    which is based on the script subtag appraoch described in Section&nbsp;4.5 of [[?string-meta]]:
 </p>
+<ul>
+    <li>
+        <span class="rfc2119-assertion" id="td-context-default-language-direction-default">
+            If no language tag is given,
+            the base direction MUST be assumed to be LTR (left-to-right).
+        </span>
+        This implies that if the language used in human-readable text uses a script that is written RTL (right-to-left),
+        the default language needs to be specified explicitly, so that an appropriate base direction can be inferred.
+    </li>
+    <li>
+        <span class="rfc2119-assertion" id="td-context-default-language-direction-script">
+            In cases where a language can be written in more than one script with different base directions,
+            the corresponding language tag given in <code>@language</code> or <code>MultiLanguage</code> <a>Maps</a>
+            MUST include a script subtag, so that an appropriate base direction can be inferred. 
+        </span>
+        An example is Azeri, which is written LTR when Latin script is used (specified using <code>az-Latn</code>) 
+        and RTL when Arabic script is used (specified using <code>az-Arab</code>).
+    </li>
+    <li><span class="rfc2119-assertion" id="td-context-default-language-direction-inference">
+        Outside of <code>MultiLanguage</code> <a>Maps</a>,
+        the base direction MUST be inferred from the language tag of the default language.
+    </span></li>
+    <li><span class="rfc2119-assertion" id="td-context-ns-multilanguage-text-direction-infer">
+        Inside of <code>MultiLanguage</code> <a>Maps</a>,
+        the base direction of each value of the name-value pairs 
+        MUST be inferred from the language tag given in the corresponding name.
+    </span></li>
+</ul>
 <p>
-     Identification of the base direction of human-readable text in TDs 
-     is based on the following set of rules:
-     <ul>
-     <li><span class="rfc2119-assertion" id="td-context-default-language-direction-default">
-     If no default language tag is given, the base text direction MUST be assumed to be LTR (left-to-right).</span>
-     This implies that if the language used in human readable text uses a script
-     that is written RTL (right-to-left),
-     the default language tag, potentially including a script subtag, needs to be explicitly specified.</li>
-     <li><span class="rfc2119-assertion" id="td-context-default-language-direction-inference">
-     Outside of <a href="#multilanguage">MultiLanguage</a> instances
-     the base text direction MUST be inferred from the default language tag.
-     </span></li>
-     <li><span class="rfc2119-assertion" id="td-context-default-language-direction-script">
-     In cases where a language can be written in more than one script which use 
-     different writing directions, the value used for `@language` MUST
-     include a script subtag so that an appropriate base direction can be inferred. 
-     </span></li>
-     </ul>
-</p>
-<p>
-     Rules inside <a href="#multilanguage">MultiLanguage</a> instances are similar but use the 
-     language tags given inside such instances instead of the default language tag.
+     Rules inside <code>MultiLanguage</code> instances are similar,
+     but use the language tags given inside such instances instead of the default language
+     (see <a href="#multilanguage"></a>).
 </p>
 <p>
      <a>TD Processors</a> should also be aware of certain special cases that can arise
@@ -1232,18 +1252,15 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 <section><h3><code>VersionInfo</code></h3><p>Metadata of a Thing that provides version information about the TD document. If required, additional version information such as firmware and hardware version (term definitions outside of the TD namespace) can be extended here.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-instance--VersionInfo"><td><code>instance</code></td><td>Provides a version identicator of this TD instance.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table></section>
 <section><h3><code>MultiLanguage</code></h3><p>A <a>Map</a> providing a set of human-readable texts in different languages identified by language tags described in [[BCP47]]. See <a href="#titles-descriptions-serialization-json"></a> for example usages of this container in a Thing Description instance.</p>
 <p>
-<span class="rfc2119-assertion" id="td-context-ns-multilanguage-language-tag"> 
-Each name of the <code>MultiLanguage</code> <a>Map</a> MUST be a language tag, potentially including 
-a script subtag, as defined in [[!BCP47]] 
-(e.g., <code>en</code>, <code>de</code>, <code>ja</code>, <code>zh-Hans</code>, <code>zh-Hant</code>, <code>az-Latn</code>, <code>az-Arab</code>).</span> 
-<span class="rfc2119-assertion" id="td-context-ns-multilanguage-text-direction-infer">
-The base text direction of each value in a <code>MultiLanguage</code> <a>Map</a> 
-MUST be inferred from the associated language tag.</span>
-<span class="rfc2119-assertion" id="td-context-ns-multilanguage-text-direction-script-subtag">
-If a language can be written in more than one script with different base directions 
-then a script subtag MUST be included so that the base direction can be inferred.</span>
-An example is Azeri, which is written LTR when Latin script is used (specified using <code>az-Latn</code>) 
-and RTL when Arabic script is used (specified using <code>az-Arab</code>).</span> 
+<span class="rfc2119-assertion" id="td-multilanguage-language-tag"> 
+    Each name of the <code>MultiLanguage</code> <a>Map</a>
+    MUST be a language tag as defined in [[!BCP47]],
+    potentially including a script subtag.
+</span>
+<span class="rfc2119-assertion" id="td-multilanguage-value"> 
+    Each value of the <code>MultiLanguage</code> <a>Map</a>
+    MUST be of type <code>string</code>.
+</span>
 </p>
 </section>
 
@@ -1592,9 +1609,9 @@ In summary, this requires the following:
 <ul>
 <li><span class="rfc2119-assertion" id="td-json-open_utf-8">TDs MUST be encoded using UTF-8 [[!RFC3629]].</span</li>
 <li><span class="rfc2119-assertion" id="td-json-open_no-byte-order">Implementations MUST NOT 
- add a byte order mark (U+FEFF) to the beginning of a networked-transmitted TD.</span></li>
+  add a byte order mark (U+FEFF) to the beginning of a TD document.</span></li>
 <li><span class="rfc2119-assertion" id="td-json-open_accept-byte-order"><a>TD Processors</a> MAY ignore
- the presence of a byte order mark rather than treating it as an error.</span></li>
+  the presence of a byte order mark rather than treating it as an error.</span></li>
 </ul>
 </p>
 
@@ -1696,7 +1713,7 @@ In summary, this requires the following:
       <span><i>with Default Values</i></span>
     </div>
 <pre>{
-    "@context": "https://www.w3.org/2019/td/v1",
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "title": "MyLampThing",
     "securityDefinitions": {
@@ -1736,7 +1753,7 @@ In summary, this requires the following:
 }
 </pre>
 <pre>{
-    "@context": "https://www.w3.org/2019/td/v1",
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "title": "MyLampThing",
     "securityDefinitions": {
@@ -1815,7 +1832,7 @@ In summary, this requires the following:
   <p><span class="rfc2119-assertion" id="td-context">
   The root element of a <a>TD Serialization</a> MUST be a JSON object that
   includes a member with the name <code>@context</code> and a value of type
-  string or array that equals or respectively contains <code>https://www.w3.org/2019/td/v1</code>.
+  string or array that equals or respectively contains <code>https://www.w3.org/2019/wot/td/v1</code>.
   </span></p>
   
   <p>
@@ -1827,7 +1844,7 @@ In summary, this requires the following:
 
 <pre class="example">
 {  
-    "@context": "https://www.w3.org/2019/td/v1",
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     ...
 }
 </pre>
@@ -1844,7 +1861,7 @@ In summary, this requires the following:
 
 <pre class="example" id="thing-serialization-sample" title="Sample of Thing serializations">
 {
-    "@context": "https://www.w3.org/2019/td/v1",
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "@type": "Thing",
     "id": "urn:dev:ops:32473-Thing-1234",
     "title": "MyThing",
@@ -1940,7 +1957,7 @@ In summary, this requires the following:
 <pre class="example">
 {
     "@context": [
-        "https://www.w3.org/2019/td/v1",
+        "https://www.w3.org/2019/wot/td/v1",
         { "@language" : "en" }
     ],
     "title": "MyThing",
@@ -1984,7 +2001,7 @@ In summary, this requires the following:
     
 <pre class="example">
 {
-    "@context": "https://www.w3.org/2019/td/v1",
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "title": "MyThing",
     "titles": {
         "en":"MyThing",
@@ -2051,7 +2068,7 @@ In summary, this requires the following:
 <pre class="example">
 {
     "@context": [
-        "https://www.w3.org/2019/td/v1",
+        "https://www.w3.org/2019/wot/td/v1",
         { "@language" : "de" }
     ],
     "title": "MyThing",
@@ -2258,7 +2275,7 @@ In summary, this requires the following:
 
 <pre class="example">
 {
-    "@context": "https://www.w3.org/2019/td/v1",
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "id": "urn:dev:ops:32473-Thing-1234",
     "title": "MyThing",
     "description": "Human readable information.",
@@ -2724,7 +2741,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 <pre class="example">
 {
     "@context": [
-        "https://www.w3.org/2019/td/v1",
+        "https://www.w3.org/2019/wot/td/v1",
         { "eg": "http://www.example.org/iot" }
     ],
     ...
@@ -3046,7 +3063,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 <pre class="example">
 {
     "@context": [
-        "https://www.w3.org/2019/td/v1",
+        "https://www.w3.org/2019/wot/td/v1",
         {
             "iot": "http://example.org/iot",
             "cov": "http://www.example.org/coap-binding#"
@@ -3092,7 +3109,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 <pre class="example">
 {
     "@context": [
-        "https://www.w3.org/2019/td/v1",
+        "https://www.w3.org/2019/wot/td/v1",
         {
             "v": "http://www.example.org/versioningTerms#",
             "saref": "https://w3id.org/saref#",
@@ -3136,7 +3153,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 <pre class="example" id="saref-annotation-example">
 {
     "@context": [
-        "https://www.w3.org/2019/td/v1",
+        "https://www.w3.org/2019/wot/td/v1",
         {
             "sosa": "http://www.w3.org/ns/sosa/",
             "ssn": "http://www.w3.org/ns/ssn/",
@@ -3194,7 +3211,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 <pre>
 {
     "@context": [
-        "https://www.w3.org/2019/td/v1",
+        "https://www.w3.org/2019/wot/td/v1",
         { "cov": "http://www.example.org/coap-binding#" }
     ],
     ...
@@ -3239,7 +3256,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 <pre class="example">
 {
     @context: [
-        "https://www.w3.org/2019/td/v1",
+        "https://www.w3.org/2019/wot/td/v1",
         {
             "cov": "http://www.example.org/coap-binding#",
             "ace": "http://www.example.org/ace-security#"
@@ -3507,7 +3524,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                 <span><i>with default HTTP Protocol Binding values</i></span>
             </div>
             <pre>{
-    "@context": "https://www.w3.org/2019/td/v1",
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "title": "MyLampThing",
     "securityDefinitions": {
@@ -3553,7 +3570,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     }
 }</pre>
         <pre>{
-    "@context": "https://www.w3.org/2019/td/v1",
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "title": "MyLampThing",
     "securityDefinitions": {
@@ -3939,7 +3956,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   <pre class="example" title="MyLampThing with CoAP Protocol Binding">
   {
      "@context": [
-        "https://www.w3.org/2019/td/v1",
+        "https://www.w3.org/2019/wot/td/v1",
         {
         "cov": "http://www.example.org/coap-binding#"
         }
@@ -4000,7 +4017,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   
   <pre class="example" title="MyLightSensor with MQTT Protocol Binding">
           {   
-              "@context": "https://www.w3.org/2019/td/v1",
+              "@context": "https://www.w3.org/2019/wot/td/v1",
               "title": "MyLightSensor",
               "id": "urn:dev:ops:32473-WoTLightSensor-1234",
               "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
@@ -4050,7 +4067,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     
 <pre class="example" title="Temperature Event with subscripton and cancellation">
 {
-    "@context": "https://www.w3.org/2019/td/v1",
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "id": "urn:dev:ops:32473-Thing-1234",
     "title": "WebhookThing",
     "description": "Webhook-based Event with subscription and unsubscribe form.",
@@ -4128,23 +4145,30 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         order to perform a stricter validation in case no external vocabularies are used.
     </p>
 
+    <p class="note"> Please note that some JSON Schema validation tools do not support the <code>iri</code> string format.
+    </p>
+
     <p>
         The following JSON Schema for validating TD instances does not require the terms with <a>Default Values</a> to be present. Thus the terms with <a>Default Values</a> are optional. (see also <a href="#sec-default-values"></a>)
     </p>
     <pre class="advisement">
     {
-    "title": "WoT TD Schema - 29 March 2019",
+    "title": "WoT TD Schema - 08 May 2019",
     "description": "JSON Schema for validating TD instances against the TD model. TD instances can be with or without terms that have default values",
-    "$schema ": "http://json-schema.org/draft-06/schema#",
+    "$schema ": "http://json-schema.org/draft-07/schema#",
     "definitions": {
+        "thing-context-w3c-uri": {
+            "type": "string",
+            "enum": [
+                "https://www.w3.org/2019/td/v1"
+            ]
+        },
         "thing-context": {
             "oneOf": [{
                     "type": "array",
                     "items": {
                         "anyOf": [{
-
                                 "$ref": "#/definitions/anyUri"
-
                             },
                             {
                                 "type": "object"
@@ -4152,13 +4176,11 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                         ]
                     },
                     "contains": {
-                        "type": "string",
-                        "pattern": "^https?://(www\\.)?w3\\.org/2019/td/v1$"
+                        "$ref": "#/definitions/thing-context-w3c-uri"
                     }
                 },
                 {
-                    "type": "string",
-                    "pattern": "^https?://(www\\.)?w3\\.org/2019/td/v1$"
+                    "$ref": "#/definitions/thing-context-w3c-uri"
                 }
             ]
         },
@@ -4395,7 +4417,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             "type": "object",
             "properties": {
                 "href": {
-                    "$ref": "#/definitions/url"
+                    "$ref": "#/definitions/anyUri"
                 },
                 "op": {
                     "oneOf": [{
@@ -4462,7 +4484,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             "type": "object",
             "properties": {
                 "href": {
-                    "$ref": "#/definitions/url"
+                    "$ref": "#/definitions/anyUri"
                 },
                 "op": {
                     "oneOf": [{
@@ -4523,7 +4545,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             "type": "object",
             "properties": {
                 "href": {
-                    "$ref": "#/definitions/url"
+                    "$ref": "#/definitions/anyUri"
                 },
                 "op": {
                     "oneOf": [{
@@ -4586,7 +4608,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             "type": "object",
             "properties": {
                 "href": {
-                    "$ref": "#/definitions/url"
+                    "$ref": "#/definitions/anyUri"
                 },
                 "op": {
                     "oneOf": [{
@@ -4758,10 +4780,10 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             "type": "object",
             "properties": {
                 "anchor": {
-                    "$ref": "#/definitions/url"
+                    "$ref": "#/definitions/anyUri"
                 },
                 "href": {
-                    "$ref": "#/definitions/url"
+                    "$ref": "#/definitions/anyUri"
                 },
                 "rel": {
                     "type": "string"
@@ -4789,7 +4811,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                             "$ref": "#/definitions/descriptions"
                         },
                         "proxy": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "scheme": {
                             "type": "string",
@@ -4815,7 +4837,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                             "$ref": "#/definitions/descriptions"
                         },
                         "proxy": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "scheme": {
                             "type": "string",
@@ -4825,7 +4847,12 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                         },
                         "in": {
                             "type": "string",
-                            "enum": ["header", "query", "body", "cookie"]
+                            "enum": [
+                                "header",
+                                "query",
+                                "body",
+                                "cookie"
+                            ]
                         },
                         "name": {
                             "type": "string"
@@ -4848,7 +4875,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                             "$ref": "#/definitions/descriptions"
                         },
                         "proxy": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "scheme": {
                             "type": "string",
@@ -4877,7 +4904,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                             "$ref": "#/definitions/descriptions"
                         },
                         "proxy": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "scheme": {
                             "type": "string",
@@ -4887,11 +4914,19 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                         },
                         "qop": {
                             "type": "string",
-                            "enum": ["auth", "auth-int"]
+                            "enum": [
+                                "auth",
+                                "auth-int"
+                            ]
                         },
                         "in": {
                             "type": "string",
-                            "enum": ["header", "query", "body", "cookie"]
+                            "enum": [
+                                "header",
+                                "query",
+                                "body",
+                                "cookie"
+                            ]
                         },
                         "name": {
                             "type": "string"
@@ -4914,7 +4949,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                             "$ref": "#/definitions/descriptions"
                         },
                         "proxy": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "scheme": {
                             "type": "string",
@@ -4923,19 +4958,32 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                             ]
                         },
                         "authorization": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "alg": {
                             "type": "string",
-                            "enum": ["MD5", "ES256", "ES512-256"]
+                            "enum": [
+                                "MD5",
+                                "ES256",
+                                "ES512-256"
+                            ]
                         },
                         "format": {
                             "type": "string",
-                            "enum": ["jwt", "jwe", "jws"]
+                            "enum": [
+                                "jwt",
+                                "jwe",
+                                "jws"
+                            ]
                         },
                         "in": {
                             "type": "string",
-                            "enum": ["header", "query", "body", "cookie"]
+                            "enum": [
+                                "header",
+                                "query",
+                                "body",
+                                "cookie"
+                            ]
                         },
                         "name": {
                             "type": "string"
@@ -4958,7 +5006,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                             "$ref": "#/definitions/descriptions"
                         },
                         "proxy": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "scheme": {
                             "type": "string",
@@ -4987,7 +5035,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                             "$ref": "#/definitions/descriptions"
                         },
                         "proxy": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "scheme": {
                             "type": "string",
@@ -5016,7 +5064,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                             "$ref": "#/definitions/descriptions"
                         },
                         "proxy": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "scheme": {
                             "type": "string",
@@ -5025,13 +5073,13 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                             ]
                         },
                         "authorization": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "token": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "refresh": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "scopes": {
                             "type": "array",
@@ -5041,7 +5089,12 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                         },
                         "flow": {
                             "type": "string",
-                            "enum": ["implicit", "password", "client", "code"]
+                            "enum": [
+                                "implicit",
+                                "password",
+                                "client",
+                                "code"
+                            ]
                         }
                     },
                     "required": [
@@ -5061,7 +5114,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                             "$ref": "#/definitions/descriptions"
                         },
                         "proxy": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "scheme": {
                             "type": "string",
@@ -5071,7 +5124,12 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                         },
                         "in": {
                             "type": "string",
-                            "enum": ["header", "query", "body", "cookie"]
+                            "enum": [
+                                "header",
+                                "query",
+                                "body",
+                                "cookie"
+                            ]
                         },
                         "name": {
                             "type": "string"
@@ -5094,7 +5152,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                             "$ref": "#/definitions/descriptions"
                         },
                         "proxy": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "scheme": {
                             "type": "string",
@@ -5103,19 +5161,32 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                             ]
                         },
                         "authorization": {
-                            "$ref": "#/definitions/url"
+                            "$ref": "#/definitions/anyUri"
                         },
                         "format": {
                             "type": "string",
-                            "enum": ["jwt", "jwe", "jws"]
+                            "enum": [
+                                "jwt",
+                                "jwe",
+                                "jws"
+                            ]
                         },
                         "alg": {
                             "type": "string",
-                            "enum": ["MD5", "ES256", "ES512-256"]
+                            "enum": [
+                                "MD5",
+                                "ES256",
+                                "ES512-256"
+                            ]
                         },
                         "in": {
                             "type": "string",
-                            "enum": ["header", "query", "body", "cookie"]
+                            "enum": [
+                                "header",
+                                "query",
+                                "body",
+                                "cookie"
+                            ]
                         },
                         "name": {
                             "type": "string"
@@ -5127,9 +5198,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                 }
             ]
         },
-        "url": {
+        "anyUri": {
             "type": "string",
-            "format": "uri-reference"
+            "format": "iri-reference"
         }
     },
     "type": "object",
@@ -5193,7 +5264,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             }
         },
         "base": {
-            "$ref": "#/definitions/url"
+            "$ref": "#/definitions/anyUri"
         },
         "securityDefinitions": {
             "type": "object",
@@ -5295,7 +5366,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     
     <pre class="example" title="MyLampThingTemplate serialized in JSON">
     {
-        "@context": ["https://www.w3.org/2019/td/v1"], 
+        "@context": ["https://www.w3.org/2019/wot/td/v1"], 
         "@type" : "ThingTemplate",
         "title": "Lamp Thing Template",
         "description" : "Lamp Thing Template",
@@ -5326,7 +5397,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     
     <pre class="example" title="MyBuzzerThingTemplate serialized in JSON">
     {
-        "@context": ["https://www.w3.org/2019/td/v1"], 
+        "@context": ["https://www.w3.org/2019/wot/td/v1"], 
         "@type" : "ThingTemplate",
         "title": "Buzzer Thing Template",
         "description" : "Thing template of a buzzer that makes noise for 10 seconds",
@@ -5381,7 +5452,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                     <span><i>after transformation to RDF</i></span>
                 </div>
                 <pre>{
-    "@context": "https://www.w3.org/2019/td/v1",
+    "@context": "https://www.w3.org/2019/wot/td/v1",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "title": "MyLampThing",
     "securityDefinitions": {
@@ -5487,7 +5558,7 @@ _:b8 &lt;https://www.w3.org/2019/wot-security#in&gt; &quot;header&quot; .</pre>
                 information model is defined its own namespace and every vocabulary term maps to some
                 name, appended to the corresponding namespace. Strings that are not part of any
                 vocabulary map to RDF literals (strings with an optional datatype). For instance,
-                <code>base</code> maps to <code>https://www.w3.org/2019/td#base</code> and
+                <code>base</code> maps to <code>https://www.w3.org/2019/wot/td#base</code> and
                 <code>MyLampThing</code> remains unchanged. Applying this mapping is called
                 <a href="https://www.w3.org/TR/json-ld11/#expanded-document-form">context expansion</a>.
             </p>
@@ -5521,7 +5592,7 @@ _:b8 &lt;https://www.w3.org/2019/wot-security#in&gt; &quot;header&quot; .</pre>
                     The term <code>properties</code> is used both in the core vocabulary and in the data schema
                     vocabulary. Yet, a JSON string cannot map to two IRIs simultaneously in the same context
                     definition. The mapping from <code>properties</code> to
-                    <code>https://www.w3.org/2019/json-schema#properties</code> must therefore be <em>scoped</em>
+                    <code>https://www.w3.org/2019/wot/json-schema#properties</code> must therefore be <em>scoped</em>
                     to instances of <code>DataSchema</code> only.
                 </li>
                 <li>
@@ -5532,7 +5603,7 @@ _:b8 &lt;https://www.w3.org/2019/wot-security#in&gt; &quot;header&quot; .</pre>
                     Without any indication in the context, the index key is lost when an index map is turned into RDF.
                     To make the transformation to RDF reversible, it is possible to indicate that index keys should
                     produce triples with a given predicate. Each vocabulary can include an RDF term for this purpose.
-                    In the core vocabulary, the property <code>https://www.w3.org/2019/td#name</code> is used.
+                    In the core vocabulary, the property <code>https://www.w3.org/2019/wot/td#name</code> is used.
                 </li>
                 <li>
                     <a href="https://github.com/w3c/json-ld-syntax/issues/19"><em>Indexing without a predicate</em></a>:
@@ -5552,7 +5623,7 @@ _:b8 &lt;https://www.w3.org/2019/wot-security#in&gt; &quot;header&quot; .</pre>
             <!-- <p class="issue">
                 An experimental JSON-LD 1.1 context for the TD model is provided in the
                 repository: <code>td-context-1.1.jsonld</code>. Currently, it is not the
-                context served at <code>https://www.w3.org/2019/td/v1</code>, though.
+                context served at <code>https://www.w3.org/2019/wot/td/v1</code>, though.
             </p> -->
         </section>
 
@@ -5566,15 +5637,10 @@ _:b8 &lt;https://www.w3.org/2019/wot-security#in&gt; &quot;header&quot; .</pre>
                 As a result, the TD information model can be reformulated in the Web Ontology Language
                 (OWL) [[owl2-overview]]. <a>Class</a> definitions become OWL axioms defined on the
                 <a>Vocabulary Terms</a> of the TD model. The axioms that are particularly
-                of interest in the present document are those of the TD ontology, available at
-            </p>
-
-            <p><a href="https://www.w3.org/2019/td"><code>https://www.w3.org/2019/td</code></a></p>
-
-            <p>
-                both as an RDF file and as a human-readable HTML documentation. <a>Default Values</a>
-                cannot be directly translated to OWL, they are therefore ignored in the TD
-                ontology.
+                of interest in the present document are those of the TD ontology available under the
+                TD namespace IRI, both as an RDF file and as a human-readable HTML documentation.
+                <a>Default Values</a> cannot be directly translated to OWL, they are therefore ignored
+                in the TD ontology.
             </p>
 
             <p>
@@ -5633,7 +5699,7 @@ Class: LightSwitch
 SubClassOf: hasState some OnOffState
 
 Class: ToggleCommand
-    SubClassOf: actsUpon some OnOffState</pre>
+SubClassOf: actsUpon some OnOffState</pre>
             </aside>
 
             <p>
