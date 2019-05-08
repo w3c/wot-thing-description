@@ -104,6 +104,7 @@ load(updateEndpoint, null)
 
     ctx.security['@context'] = wotsec['@context'];
 
+    ctx.forms['@context'] = lnk['@context'];
     ctx.links['@context'] = lnk['@context'];
 
     fs.writeFileSync('context/td-context-1.1.jsonld', JSON.stringify(td));
