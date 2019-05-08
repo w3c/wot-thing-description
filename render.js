@@ -55,14 +55,14 @@ const ctxFiles = [
     // 'context/td-context.jsonld',
     // 'context/json-schema-context.jsonld',
     // 'context/wot-security-context.jsonld',
-    // 'context/web-linking-context.jsonld'
+    // 'context/hypermedia-context.jsonld'
 ];
 
 const ttlFiles = [
     'ontology/td.ttl',
 	'ontology/json-schema.ttl',
 	'ontology/wot-security.ttl',
-    'ontology/web-linking.ttl',
+    'ontology/hypermedia.ttl',
     'ontology/alignments.ttl',
 	'validation/td-validation.ttl'
 ];
@@ -90,7 +90,7 @@ load(updateEndpoint, null)
     let td = JSON.parse(fs.readFileSync('context/td-context.jsonld'));
     let jsonschema = JSON.parse(fs.readFileSync('context/json-schema-context.jsonld'));
     let wotsec = JSON.parse(fs.readFileSync('context/wot-security-context.jsonld'));
-    let hyperm = JSON.parse(fs.readFileSync('context/web-linking-context.jsonld'));
+    let hyperm = JSON.parse(fs.readFileSync('context/hypermedia-context.jsonld'));
 
     let ctx = td['@context'];
     ctx['@version'] = 1.1;
@@ -164,7 +164,7 @@ load(updateEndpoint, null)
         return sttl.callTemplate(tpl1, hyperm);
     })
     .then(html => {
-        rendered = rendered.replace('{web-linking}', html);
+        rendered = rendered.replace('{hypermedia}', html);
         return Promise.resolve();
     })
     .then(() => {
@@ -197,7 +197,7 @@ load(updateEndpoint, null)
         return sttl.callTemplate(tpl2, hyperm);
     })
     .then(dot => {
-        fs.writeFileSync('visualization/web-linking.dot', dot);
+        fs.writeFileSync('visualization/hypermedia.dot', dot);
     })
     .catch(e => console.error('DOT rendering error: ' + e.message));
 
