@@ -3958,8 +3958,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             </p>
             
             <p>
-                When applying this procedure to the introductory TD example with all <a>Default Values</a>,
-                (<a href="#thing-description-full-serialization"></a>) the following triples are obtained:
+                When applying this procedure to the introductory TD example
+                (<a href="#thing-description-full-serialization"></a>) with all
+                <a>Default Values</a>, the following triples are obtained:
             </p>
             
             <aside class="example with-default" id="simple-thing-description-rdf">
@@ -3968,103 +3969,99 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                     <span><i>after transformation to RDF</i></span>
                 </div>
                 <pre>{
-    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "@context": [
+        "https://www.w3.org/2019/wot/td/v1",
+        { 
+            "saref": "https://w3id.org/saref#",
+            "htv": "http://www.w3.org/2011/http#"
+        }
+    ],
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "title": "MyLampThing",
-    "securityDefinitions": {
-        "basic_sc": {
-            "scheme": "basic",
-            "in": "header"
-        }
-    },
-    "security": [
-        "basic_sc"
-    ],
+    "@type": "saref:LightSwitch",
+    "securityDefinitions": {"basic_sc": {
+        "scheme": "basic",
+        "in": "header"
+    }},
+    "security": ["basic_sc"],
     "properties": {
         "status": {
             "type": "string",
-            "forms": [
-                {
-                    "op": "readproperty",
-                    "href": "https://mylamp.example.com/status",
-                    "contentType": "application/json",
-                    "htv:methodName": "GET"
-                },
-                {
-                    "op": "writeproperty",
-                    "href": "https://mylamp.example.com/status",
-                    "contentType": "application/json",
-                    "htv:methodName": "PUT"
-                }
-            ]
+            "forms": [{
+                "@type": "saref:GetCommand",
+                "href": "https://mylamp.example.com/status",
+                "op": "readproperty",
+                "htv:methodName": "GET"
+            }, {
+                "href": "https://mylamp.example.com/status",
+                "op": "writeproperty",
+                "contentType": "application/json",
+                "htv:methodName": "PUT"
+            }]
         }
     },
     "actions": {
         "toggle": {
-            "safe": false,
+            "safe": false,
             "idempotent": false,
-            "forms": [
-                {
-                    "op": "invokeaction",
-                    "href": "https://mylamp.example.com/toggle",
-                    "contentType": "application/json",
-                    "htv:methodName": "POST"
-                }
-            ]
+            "forms": [{
+                "@type": "saref:ToggleCommand",
+                "href": "https://mylamp.example.com/toggle",
+                "op": "invokeaction",
+                "contentType": "application/json",
+                "htv:methodName": "POST"
+            }]
         }
     },
     "events": {
         "overheating": {
-            "data": {
-                "type": "string"
-            },
-            "forms": [
-                {
-                    "op": "subscribeevent",
-                    "href": "https://mylamp.example.com/oh",
-                    "contentType": "application/json",
-                    "subprotocol": "longpoll"
-                }
-            ]
+            "data": {"type": "string"},
+            "forms": [{
+                "@type": "saref:NotifyCommand",
+                "href": "https://mylamp.example.com/oh",
+                "op": "subscribeevent",
+                "contentType": "application/json"
+            }]
         }
     }
 }</pre><pre>
-&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/td#name&gt; &quot;MyLampThing&quot; .
-&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/td#security&gt; &lt;_:b8&gt; .
-&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/td#properties&gt; _:b5 .
-&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/td#actions&gt; _:b0 .
-&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/td#events&gt; _:b2 .
-_:b0 &lt;https://www.w3.org/2019/td#name&gt; &quot;toggle&quot; .
-_:b0 &lt;https://www.w3.org/2019/td#forms&gt; _:b1 .
-_:b0 &lt;https://www.w3.org/2019/td#idempotent&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
-_:b0 &lt;https://www.w3.org/2019/td#safe&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
+&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#LightSwitch&gt; .
+&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasActionAffordance&gt; _:b0 .
+&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasEventAffordance&gt; _:b2 .
+&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasPropertyAffordance&gt; _:b5 .
+&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasSecurityConfiguration&gt; &lt;urn:dev:ops:32473-WoTLamp-1234/basic_sc&gt; .
+&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#title&gt; &quot;MyLampThing&quot; .
+_:b0 &lt;https://www.w3.org/2019/wot/td#name&gt; &quot;toggle&quot; .
+_:b0 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b1 .
+_:b0 &lt;https://www.w3.org/2019/wot/td#isIdempotent&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
+_:b0 &lt;https://www.w3.org/2019/wot/td#isSafe&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
+_:b1 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#ToggleCommand&gt; .
 _:b1 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;POST&quot; .
-_:b1 &lt;https://www.w3.org/2019/td#contentType&gt; &quot;application/json&quot; .
-_:b1 &lt;https://www.w3.org/2019/td#href&gt; &quot;https://mylamp.example.com/toggle&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
-_:b1 &lt;https://www.w3.org/2019/td#op&gt; &quot;invokeaction&quot; .
-_:b2 &lt;https://www.w3.org/2019/td#name&gt; &quot;overheating&quot; .
-_:b2 &lt;https://www.w3.org/2019/td#data&gt; _:b3 .
-_:b2 &lt;https://www.w3.org/2019/td#forms&gt; _:b4 .
-_:b3 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/json-schema#StringSchema&gt; .
-_:b4 &lt;https://www.w3.org/2019/td#contentType&gt; &quot;application/json&quot; .
-_:b4 &lt;https://www.w3.org/2019/td#href&gt; &quot;https://mylamp.example.com/oh&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
-_:b4 &lt;https://www.w3.org/2019/td#op&gt; &quot;subscribeevent&quot; .
-_:b4 &lt;https://www.w3.org/2019/td#subprotocol&gt; &quot;longpoll&quot; .
-_:b5 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/json-schema#StringSchema&gt; .
-_:b2 &lt;https://www.w3.org/2019/td#name&gt; &quot;status&quot; .
-_:b5 &lt;https://www.w3.org/2019/td#forms&gt; _:b6 .
-_:b5 &lt;https://www.w3.org/2019/td#forms&gt; _:b7 .
+_:b1 &lt;https://www.w3.org/2019/wot/hypermedia#forContentType&gt; &quot;application/json&quot; .
+_:b1 &lt;https://www.w3.org/2019/wot/hypermedia#forOperationType&gt; &quot;invokeaction&quot; .
+_:b1 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/toggle&quot; .
+_:b2 &lt;https://www.w3.org/2019/wot/td#name&gt; &quot;overheating&quot; .
+_:b2 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b3 .
+_:b2 &lt;https://www.w3.org/2019/wot/td#hasNotificationSchema&gt; _:b4 .
+_:b3 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#NotifyCommand&gt; .
+_:b3 &lt;https://www.w3.org/2019/wot/hypermedia#forContentType&gt; &quot;application/json&quot; .
+_:b3 &lt;https://www.w3.org/2019/wot/hypermedia#forOperationType&gt; &quot;subscribeevent&quot; .
+_:b3 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/oh&quot; .
+_:b4 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/json-schema#StringSchema&gt; .
+_:b5 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/json-schema#StringSchema&gt; .
+_:b5 &lt;https://www.w3.org/2019/wot/td#name&gt; &quot;status&quot; .
+_:b5 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b6 .
+_:b5 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b7 .
+_:b6 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#GetCommand&gt; .
 _:b6 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;GET&quot; .
-_:b6 &lt;https://www.w3.org/2019/td#contentType&gt; &quot;application/json&quot; .
-_:b6 &lt;https://www.w3.org/2019/td#href&gt; &quot;https://mylamp.example.com/status&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
-_:b6 &lt;https://www.w3.org/2019/td#op&gt; &quot;readproperty&quot; .
+_:b6 &lt;https://www.w3.org/2019/wot/hypermedia#forOperationType&gt; &quot;readproperty&quot; .
+_:b6 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/status&quot; .
 _:b7 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;PUT&quot; .
-_:b7 &lt;https://www.w3.org/2019/td#contentType&gt; &quot;application/json&quot; .
-_:b7 &lt;https://www.w3.org/2019/td#href&gt; &quot;https://mylamp.example.com/status&quot;^^&lt;http://www.w3.org/2001/XMLSchema#anyURI&gt; .
-_:b7 &lt;https://www.w3.org/2019/td#op&gt; &quot;writeproperty&quot; .
-_:b8 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot-security#BasicSecurityScheme&gt; .
-_:b8 &lt;https://www.w3.org/2019/wot-security#schemeName&gt; &quot;basic_sc&quot; .
-_:b8 &lt;https://www.w3.org/2019/wot-security#in&gt; &quot;header&quot; .</pre>
+_:b7 &lt;https://www.w3.org/2019/wot/hypermedia#forContentType&gt; &quot;application/json&quot; .
+_:b7 &lt;https://www.w3.org/2019/wot/hypermedia#forOperationType&gt; &quot;writeproperty&quot; .
+_:b7 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/status&quot; .
+&lt;urn:dev:ops:32473-WoTLamp-1234/basic_sc&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/security#BasicSecurityScheme&gt; .
+&lt;urn:dev:ops:32473-WoTLamp-1234/basic_sc&gt; &lt;https://www.w3.org/2019/wot/security#in&gt; &quot;header&quot; .</pre>
             </aside>
 
             <p>
@@ -4074,7 +4071,7 @@ _:b8 &lt;https://www.w3.org/2019/wot-security#in&gt; &quot;header&quot; .</pre>
                 information model is defined its own namespace and every vocabulary term maps to some
                 name, appended to the corresponding namespace. Strings that are not part of any
                 vocabulary map to RDF literals (strings with an optional datatype). For instance,
-                <code>base</code> maps to <code>https://www.w3.org/2019/wot/td#base</code> and
+                <code>title</code> maps to <code>https://www.w3.org/2019/wot/td#title</code> and
                 <code>MyLampThing</code> remains unchanged. Applying this mapping is called
                 <a href="https://www.w3.org/TR/json-ld11/#expanded-document-form">context expansion</a>.
             </p>
