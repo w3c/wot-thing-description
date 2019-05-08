@@ -507,7 +507,7 @@ a[href].internalDFN {
 
 
  
- <aside class="example" id="thing-description-full-serialization" title="Thing Description with Context Extension for semantic annotations">
+ <aside class="example" id="thing-description-full-serialization" title="Thing Description with TD Context Extension for semantic annotations">
               <pre>
     {
         "@context": [
@@ -612,7 +612,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
   </p>
 
   <p>
-      In addition, this document introduces the following definitions:
+      In addition, this specification introduces the following definitions:
   </p>
 
   <dl>
@@ -1519,7 +1519,7 @@ In summary, this requires the following:
   </span></p>
 
   <p>
-    A snippet for a serialized root object with all defined members is given below:
+    A TD snippet for a serialized root object including all mandatory and optional members is given below:
   </p>
 
 <pre class="example" id="thing-serialization-sample" title="Sample of Thing serializations">
@@ -1584,8 +1584,8 @@ In summary, this requires the following:
   <p>
     JSON members named <code>title</code> and <code>description</code> are 
     used within a TD document to provide human-readable metadata.
-    It can be used as comments for developers inspecting a TD document
-    or display texts for user interface.
+    They can be used as comments for developers inspecting a TD document
+    or as display texts for user interface.
   </p>
 
   <p>
@@ -1651,9 +1651,13 @@ In summary, this requires the following:
     All name-value pairs of a <code>MultiLanguage</code> <a>Map</a>
     MUST be serialized as members of a JSON object,
     where the name is a well-formed language tag as defined by [[!BCP47]]
-    and the value the human-readable string.
+    and the value a human-readable string in the language indicated by the tag.
   </span>
   See <a href="#multilanguage"></a> for details.
+  <span class="rfc2119-assertion" id="td-multi-languages-consistent">
+    All <code>MultiLanguage</code> object within a TD document
+    SHOULD contain the same set of language members.
+  </span>
   </p>
 
   <p>A TD snippet using <code>titles</code> and <code>descriptions</code> at different levels is given below:</p>
@@ -1662,6 +1666,13 @@ In summary, this requires the following:
 {
     "@context": "https://www.w3.org/2019/td/v1",
     "title": "MyThing",
+    "titles": {
+        "en":"MyThing",
+        "de": "MeinDing",
+        "ja" : "私の事",
+        "zh-Hans" : "我的东西", 
+        "zh-Hant" : "我的東西"
+    },
     "descriptions": {
         "en":"Human readable information.",
         "de": "Menschenlesbare Informationen.",
@@ -1701,12 +1712,20 @@ In summary, this requires the following:
   TD instances may also combine the use of <code>title</code> and <code>description</code>
   with <code>titles</code> and <code>descriptions</code>.
   <span class="rfc2119-assertion" id="td-title-description">
-  When <code>title</code> and <code>titles</code> or
-  <code>description</code> and <code>descriptions</code>
-  are present within the same JSON object,
-  the values of <code>title</code> and <code>description</code> MAY be seen as the default text.
+    When <code>title</code> and <code>titles</code> or
+    <code>description</code> and <code>descriptions</code>
+    are present within the same JSON object,
+    the values of <code>title</code> and <code>description</code> MAY be seen as the default text.
   </span>
-  These values underly the default language, which is usually set by the creator of the Thing Description instance.
+  <span class="rfc2119-assertion" id="td-titles-descriptions">
+    When <code>title</code> and <code>titles</code> or
+    <code>description</code> and <code>descriptions</code>
+    are present in a TD document,
+    each <code>title</code> and <code>description</code> member
+    SHOULD have a corresponding <code>titles</code> and <code>descriptions</code> member, respectively.
+  </span>
+  The the language of the default text is indicated by the default language,
+  which is usually set by the creator of the Thing Description instance.
   </p>
     
 <pre class="example">
@@ -1716,6 +1735,13 @@ In summary, this requires the following:
         { "@language" : "de" }
     ],
     "title": "MyThing",
+    "titles": {
+        "en":"MyThing",
+        "de": "MeinDing",
+        "ja" : "私の事",
+        "zh-Hans" : "我的东西", 
+        "zh-Hant" : "我的東西"
+    },
     "description": "Menschenlesbare Informationen.",
     "descriptions": {
         "en":"Human readable information.",
@@ -1783,7 +1809,13 @@ In summary, this requires the following:
     MUST be serialized as JSON members with the <a>Vocabulary Term</a> as name.
   </span></p>
 
-  <p>The recommended version identification pattern value is to rely on the semantic versioning policy [[?SemVer]].</p>
+  <p>
+  <span class="rfc2119-assertion" id="td-semantic-version">
+    The version SHOULD be identified with a value based on the semantic versioning pattern,
+    where a sequence of three numbers separated by dots indicates the major version, minor version, and patch version, respectively.
+  </span>
+  See [[?SemVer]] for details.
+  </p>
 
   <p>A TD snippet of a version information object is given below:</p>
 
@@ -1834,10 +1866,10 @@ In summary, this requires the following:
   basic username/password authentication in the header.
   The value given for <code>in</code> is actually the <a>Default Value</a> (<code>header</code>)
   and could be omitted.
-  First, a named security configuration must be given
+  A named security configuration must be given
   in the <code>securityDefinitions</code> map.
-  Second, that definition must be activated by inclduing its JSON name in the
-  <code>security</code> array.
+  That definition must be activated by including its JSON name in the
+  <code>security</code> member, which can be of type string when only one definition is activated.
   </p>
 
 <pre class="example" id="security-basic-example">
@@ -1848,18 +1880,19 @@ In summary, this requires the following:
             "in": "header"
         }
     },
-    "security": ["basic_sc"],
+    "security": "basic_sc",
     ...
 </pre>
 
   <p>
   Here is a more complex example: a TD snippet showing digest authentication
   on a proxy combined with bearer token authentication on the <a>Thing</a>.
-  Here the <a>Default Value</a> of <code>in</code> in the <code>digest</code> scheme,
-  <code>header</code>, is omitted, but still applies.
+  In the <code>digest</code> scheme, the <a>Default Value</a> of <code>in</code>
+  (i.e., <code>header</code>) is omitted, but still applies.
   Note that the corresponding private security configuration
   such as username/password and tokens must be configured in the <a>Consumer</a>
   to interact successfully.
+  When activating multiple security definitions, the <code>security</code> member becomes an array.
   </p>
 
 <pre class="example" id="security-digest-example">
@@ -1911,7 +1944,7 @@ In summary, this requires the following:
     "description": "Human readable information.",
     "support": "https://servient.example.com/contact",
     "securityDefinitions": { "nosec_sc": { "scheme": "nosec" }},
-    "security": ["nosec_sc"],
+    "security": "nosec_sc",
     "properties": {...},
     "actions": {...},
     "events": {...},
@@ -2708,7 +2741,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 <h3>Semantic Annotations</h3>
 
     <p>
-    <a>TD Context Extensions</a> allow to add additional vocabulary to a Thing Description instance.
+    <a>TD Context Extensions</a> allow for additional <a>Vocabulary Terms</a> to a Thing Description instance.
     If the included namespaces are based on <a>Class</a> definitions
     such as those provided by the RDF Schema or OWL,
     they can be used to annotate any <a>Class</a> instance of a Thing Description semantically
@@ -2879,7 +2912,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
   This example uses a fictional ACE security scheme
   based on [[?draft-ietf-ace-oauth-authz]] that is, for this example,
   defined by the namespace at <code>http://www.example.org/ace-security#</code>.
-  Note that such addiational security schemes must be <a>Subclasses</a> of the
+  Note that such additional security schemes must be <a>Subclasses</a> of the
   <a>Class</a> <a href="#securityscheme" class="sec-ref"><code>SecurityScheme</code></a>.
   </p>
     
