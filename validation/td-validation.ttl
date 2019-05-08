@@ -360,21 +360,40 @@
     sh:order "7"^^xsd:integer ;
     sh:description
 """
-<p>The list of possible operation types of a form is fixed. It only includes the
+<p>The list of possible operation types of a form is fixed. As of this version of the specification, it only includes the
 well-known types necessary to implement the WoT interaction model described in
 [[WOT-ARCHITECTURE]]. Future versions of the standard may extend this list but
 <span class=\"rfc2119-assertion\" id=\"well-known-operation-types-only\">
 operations types SHOULD NOT be arbitrarily set by servients
 </span>.
 </p>
+
 <p>
-In some use cases such as for an <code>ActionAffordance</code> there is a different expectation about the content type for the <code>input</code> 
-and <code>output</code>. In such a case, the optional <code>response</code> name-value pair can describe the content type of the expected response.
-<span class="rfc2119-assertion" id="td-expectedResponse-contentType">
-If the content type of the expected response does not equal its <a>Default Value</a> and differs from the content type of the form,
-the <code>Form</code> instance MUST include a name-value pair with the name <code>response</code>.
-</span>
+The optional <code>response</code> name-value pair can be used to provide metadata for the expected response message.
+With the core vocabulary, it only includes content type information, but TD Context Extensions could be applied. 
+<span class="rfc2119-assertion" id="td-expectedResponse-default-contentType">
+If no <code>response</code> name-value pair is provided, it MUST be assumed that the content type of the 
+response is equal to the content type assigned to the Form instance.</span>
+Note that <code>contentType</code> within an <code>ExpectedResponse</code> <a>Class</a> does not have a <a>Default Value</a>. 
+For instance, if the value of the content type of the form is <code>application/xml</code> the assumed value of the content type of 
+the response will be also <code>application/xml</code>.
 </p>
+
+
+<p>
+In some use cases, input and output data might be represented in a different form, for instance an Action that accepts JSON, but returns an image. In such a case, the optional <code>response</code> name-value pair can describe the content type of the expected response.
+<span class="rfc2119-assertion" id="td-expectedResponse-contentType">
+If the content type of the expected response differs from the content type of the form,
+the <code>Form</code> instance MUST include a name-value pair with the name <code>response</code>.
+</span> 
+For instance, an <code>ActionAffordance</code> could only accept <code>application/json</code> for its input data, while it
+will respond with an <code>image/jpeg</code> content type for its output data. In that case the content types differ and the 
+<code>response</code> name-value pair has to be used to provide response content type (<code>image/jpeg</code>) information 
+to the <a>Consumer</a>.
+
+</p>
+
+
 
 """^^rdf:HTML ;
     sh:description
@@ -492,7 +511,6 @@ IANA HTTP content coding registry</a>.
         sh:path hyperm:forContentType ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
-        sh:defaultValue "application/json"^^xsd:string ;
     ] .
 
 
