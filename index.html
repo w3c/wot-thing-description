@@ -1405,7 +1405,7 @@ For example, for HTTP and Events, it indicates which of several available mechan
 <tr class="rfc2119-table-assertion" id="td-vocab-scopes--Form"><td><code>scopes</code></td><td>Set of authorization scope identifiers provided as an array.  These are provided in tokens returned by an authorization server and associated with forms in order to identify what resources a client may access and how.  The values associated with a form should be chosen from those defined in an OAuth2SecurityScheme active on that form.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-response--Form"><td><code>response</code></td><td>This optional term can be used if, e.g., the output communication metadata differ from input metdata (e.g., output contentType differ from the
      input contentType). The response name contains metadata that is only valid for the reponse messages.</td><td>optional</td><td><a href="#expectedresponse"><code>ExpectedResponse</code></a></td></tr></tbody></table>
-<p>The list of possible operation types of a form is fixed. It only includes the
+<p>The list of possible operation types of a form is fixed. As of this version of the specification, it only includes the
 well-known types necessary to implement the WoT interaction model described in
 [[WOT-ARCHITECTURE]]. Future versions of the standard may extend this list but
 <span class="rfc2119-assertion" id="well-known-operation-types-only">
@@ -1414,25 +1414,29 @@ operations types SHOULD NOT be arbitrarily set by servients
 </p>
 
 <p>
-The optional <code>response</code> name-value pair can be used to provide metadata, such as content type information, that is only itended for the reponse messages. 
+The optional <code>response</code> name-value pair can be used to provide metadata for the expected response message.
+With the core vocabulary, it only includes content type information, but TD Context Extensions could be applied. 
 <span class="rfc2119-assertion" id="td-expectedResponse-default-contentType">
-If no <code>response</code> name-value pair is provided it MUST be assumed that the content type of the 
-response is equal to the assigned content type of the form.</span>
-E.g., if the value of the content type of the form is <code>application/xml</code> the assumed value of the content type of the response will be also <code>application/xml</code>.
+If no <code>response</code> name-value pair is provided, it MUST be assumed that the content type of the 
+response is equal to the content type assigned to the Form instance.</span>
+Note that <code>contentType</code> within an <code>ExpectedResponse</code> <a>Class</a> does not have a <a>Default Value</a>. 
+For instance, if the value of the content type of the form is <code>application/xml</code> the assumed value of the content type of 
+the response will be also <code>application/xml</code>.
 </p>
 
 
 <p>
 In some use cases such as for an <code>ActionAffordance</code> there is a different expectation about the content type 
-for the <code>input</code> and <code>output</code>. In such a case, the optional <code>response</code> name-value pair can describe the content type of the expected response.
+for the <code>input</code> and <code>output</code> data. In such a case, the optional <code>response</code> name-value pair can describe the content type of the expected response.
 <span class="rfc2119-assertion" id="td-expectedResponse-contentType">
 If the content type of the expected response differs from the content type of the form,
-the <code>Form</code> instance MUST include a name-value pair with the name <code>response</code>. 
-E.g., the <code>input</code> of an <code>ActionAffordance</code> accept <code>application/json</code> as content type and its 
-corresponding <code>output</code> will response <code>image/jpeg</code> as content type. In that case the content types differe and the 
-<code>response</code> name-value pair has to be used to provide the response content type (<code>image/jpeg</code>) information 
+the <code>Form</code> instance MUST include a name-value pair with the name <code>response</code>.
+</span> 
+For instance, an <code>ActionAffordance</code> could only accept <code>application/json</code> for its input data, while it
+will respond with an <code>image/jpeg</code> content type for its output data. In that case the content types differ and the 
+<code>response</code> name-value pair has to be used to provide response content type (<code>image/jpeg</code>) information 
 to the <a>Consumer</a>.
-</span>
+
 </p>
 
 
