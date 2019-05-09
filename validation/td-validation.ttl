@@ -46,34 +46,26 @@
     </span>
 </p>
 <p>
-    The default language is used to compute the base direction for all
-    human-readable text values not otherwise associated with a language tag
-    such as the <code>MultiLanguage</code> <a>Maps</a> defined in <a href="#multilanguage"></a>.
-</p>
-<p class="note">
-    Great care has to be given when assigning bidirectional text to the human-readable metadata of Thing Descriptions.
-    Producers of such texts are advised to include <em>bidi controls</em> as appropriate to try to ensure proper display.
-    Consumers of such texts are advised to apply <em>bidi isolation</em> when including human-readable metadata of TDs
-    in other text (e.g., for Web user interface).
-    <em>Strings on the Web: Language and Direction Metadata</em> [[?string-meta]]
-    provides some guidance and illustrates a number of pitfalls when using bidirectional text.
-</p>
-<p>
     The computation of the base direction of all human-readable text strings
-    is defined by the following set of rules,
-    which is based on the script subtag approach described in <a href="">Section&nbsp;4.5</a> of [[?string-meta]]:
+    is defined by the following set of rules:
 </p>
 <ul>
     <li>
-        <span class="rfc2119-assertion" id="td-context-default-language-direction-default">
+        <span class="rfc2119-assertion" id="td-context-default-language-direction-heuristic">
             If no language tag is given,
-            the base direction SHOULD be assumed to be LTR (left-to-right).
+            the base direction SHOULD be inferred through 
+            first-strong heuristics or detection algorithms such as the CLDR Likely Subtags [[?LDML]].
         </span>
-        This implies that if the language used in human-readable text uses a script that is written RTL (right-to-left),
-        the default language needs to be specified explicitly, so that an appropriate base direction can be inferred.
-        In the absence of a default language tag,
-        it is encouraged to use first-strong heuristics or detection algorithm such as the CLDR Likely Subtags [[?LDML]].
     </li>
+    <li><span class="rfc2119-assertion" id="td-context-default-language-direction-inference">
+        Outside of <code>MultiLanguage</code> <a>Maps</a>,
+        the base direction MAY be inferred from the language tag of the default language.
+    </span></li>
+    <li><span class="rfc2119-assertion" id="td-context-ns-multilanguage-text-direction-infer">
+        Inside of <code>MultiLanguage</code> <a>Maps</a>,
+        the base direction of each value of the name-value pairs 
+        MAY be inferred from the language tag given in the corresponding name.
+    </span></li>
     <li>
         <span class="rfc2119-assertion" id="td-context-default-language-direction-script">
             In cases where a language can be written in more than one script with different base directions,
@@ -83,16 +75,24 @@
         An example is Azeri, which is written LTR when Latin script is used (specified using <code>az-Latn</code>) 
         and RTL when Arabic script is used (specified using <code>az-Arab</code>).
     </li>
-    <li><span class="rfc2119-assertion" id="td-context-default-language-direction-inference">
-        Outside of <code>MultiLanguage</code> <a>Maps</a>,
-        the base direction MUST be inferred from the language tag of the default language.
-    </span></li>
-    <li><span class="rfc2119-assertion" id="td-context-ns-multilanguage-text-direction-infer">
-        Inside of <code>MultiLanguage</code> <a>Maps</a>,
-        the base direction of each value of the name-value pairs 
-        MUST be inferred from the language tag given in the corresponding name.
-    </span></li>
 </ul>
+<p>
+<a>TD Processors</a> should be aware of certain special cases when processing bidirectional text.
+They should take care to use bidi isolation when presenting strings to users,
+particularly when embedding in surrounding text (e.g., for Web user interface).
+Mixed direction text can occur in any language,
+even when the language is properly identified.
+</p>
+<p>
+TD producers should attempt to provide mixed direction strings in a way that 
+can be displayed successfully by a naive user agent.
+For example, if an RTL string begins with an LTR run (such as a number or a brand or trade name in Latin script),
+including an RLM character at the start of the string or wrapping opposite direction runs in bidi controls can assist in proper display.
+</p>
+<p>
+    <em>Strings on the Web: Language and Direction Metadata</em> [[?string-meta]]
+    provides some guidance and illustrates a number of pitfalls when using bidirectional text.
+</p>
 
 <p id="meta-interactions-of-thing">
     In addition to the explicitly provided <a>Interaction Affordances</a>
