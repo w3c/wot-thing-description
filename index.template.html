@@ -1173,6 +1173,22 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 <td><code>application/json</code></td>
                 <td></td>
             </tr>
+            <tr class="rfc2119-default-assertion" id="td-default-readOnly">
+                <td><code>DataSchema</code></td>
+                <td>
+                    <code>readOnly</code>
+                </td>
+                <td><code>false</code></td>
+                <td>Is applied to <code>PropertyAffordance</code> and <code>DataSchema</code> instances</td>
+            </tr>
+            <tr class="rfc2119-default-assertion" id="td-default-idempotent">
+                <td><code>DataSchema</code></td>
+                <td>
+                    <code>writeOnly</code>
+                </td>
+                <td><code>false</code></td>
+                <td>Is applied to <code>PropertyAffordance</code> and <code>DataSchema</code> instances</td>
+            </tr>
             <tr class="rfc2119-default-assertion" id="td-default-safe">
                 <td><code>ActionAffordance</code></td>
                 <td>
@@ -1194,9 +1210,9 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 <td>
                     <code>op</code>
                 </td>
-                <td>Array of strings with values <code>readproperty</code> followed by 
-                    <code>writeproperty</code></td>
-                <td>if defined within an instance of <code>PropertyAffordance</code></td>
+                <td><a>Array</a> of <code>string</code> with the element <code>readproperty</code> followed by <code>writeproperty</code>
+                </td>
+                <td>If defined within an instance of <code>PropertyAffordance</code></td>
             </tr>
             <tr class="rfc2119-default-assertion" id="td-default-op-actions">
                 <td><code>Form</code></td>
@@ -1204,7 +1220,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                     <code>op</code>
                 </td>
                 <td><code>invokeaction</code></td>
-                <td>if defined within an instance of <code>ActionAffordance</code></td>
+                <td>If defined within an instance of <code>ActionAffordance</code></td>
             </tr>
             <tr class="rfc2119-default-assertion" id="td-default-op-events">
                 <td><code>Form</code></td>
@@ -1212,7 +1228,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                     <code>op</code>
                 </td>
                 <td><code>subscribeevent</code></td>
-                <td>if defined within an instance of <code>EventAffordance</code></td>
+                <td>If defined within an instance of <code>EventAffordance</code></td>
             </tr>
             <tr class="rfc2119-default-assertion" id="td-default-in-basic">
                 <td>
@@ -1331,7 +1347,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
     WoT Thing Descriptions represent Things and are modeled and structured based on
   <a href="#sec-vocabulary-definition"></a>.
   This section defines a JSON-based representation format for <a>Things</a>,
-  a serialization of the <a>TD Information Model</a>.
+  a serialization of instances of the <a>Class</a> <code>Thing</code> defined by the <a>TD Information Model</a>.
   </p>
 
   <p>
@@ -1521,6 +1537,8 @@ In summary, this requires the following:
     "properties": {
         "status": {
             "type": "string",
+            "readOnly" : false,
+            "writeOnly" : false,
             "forms": [{
                 "op": [
                     "readproperty",
@@ -1545,7 +1563,9 @@ In summary, this requires the following:
     "events": {
         "overheating": {
             "data": {
-                "type": "string"
+                "type": "string",
+                "readOnly" : false,
+                "writeOnly" : false
             },
             "forms": [{
                 "op": "subscribeevent",
@@ -1899,14 +1919,7 @@ In summary, this requires the following:
     MUST be serialized as JSON members with the <a>Vocabulary Term</a> as name.
   </span></p>
 
-  <p>
-  <span class="rfc2119-assertion" id="td-semantic-version">
-    The version SHOULD be identified with a value based on the semantic versioning pattern,
-    where a sequence of three numbers separated by dots indicates the major version, minor version, and patch version, respectively.
-  </span>
-  See [[?SemVer]] for details.
-  </p>
-
+  
   <p>A TD snippet of a version information object is given below:</p>
 
 <pre class="example">
@@ -1918,11 +1931,8 @@ In summary, this requires the following:
 </pre>
 
   <p>
-  <span class="rfc2119-assertion" id="td-version-container">
-  The <code>version</code> <a>Map</a> MAY be used to provide additional application-
-  and/or device-specific version information based on terms from non-TD vocabularies.
-  </span>
-  See <a href="#sec-context-extensions"></a> for how to include additional namespaces.
+        The <code>version</code> member is intended as container for additional application- and/or device-specific version information based 
+        on <a>TD Context Extensions</a>. See <a href="#semantic-annotations"></a> for details.
   </p>
 
 </section> <!-- end of id="version-json"-->
