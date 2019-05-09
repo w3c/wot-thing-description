@@ -1076,16 +1076,6 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       <section id="sec-core-vocabulary-definition">
       <h2>Core Vocabulary Definitions</h2>
 
-<!--
-      <p class="ednote" title="Security Definitions Mandatory">
-      Note that for now <code>securityDefinitions</code> are mandatory at the top level of a <code>Thing</code>
-      since there needs to be
-      at least one definition available for use in the top-level mandatory <code>security</code>
-      block.  However, a future extension may allow in-place anonymous definitions
-      within <code>security</code> blocks in which case this requirement may be relaxed.
-      </p>
--->
-
         {td}
 
       </section>
@@ -1409,19 +1399,18 @@ In summary, this requires the following:
   </span></li>
   <li><span class="rfc2119-assertion" id="td-datetime-type">
         Values that are of type <code>dateTime</code>
-        MUST be serialized as JSON strings  following the timestamp format
+        MUST be serialized as JSON strings  following the "date-time" format
         specified by [[RFC3339]].
     </span>
+        Examples would include <code>2019-05-24T13:12:45Z</code> and
+        <code>2015-07-11T09:32:26+08:00</code>.
     <span class="rfc2119-assertion" id="td-datetime-recommended-type">
-        Timestamps included in a TD SHOULD have
-        the lexical form <code><i>YYYY</i>-<i>MM</i>-<i>DD</i>T<i>hh</i>:<i>mm</i>:<i>ss</i>Z</code>,
-        where <code><i>YYYY</i></code>, <code><i>MM</i></code> and <code><i>DD</i></code>
-        respectively encode a year, a month and a day (i.e. a date) and where
-        <code><i>hh</i></code>, <code><i>mm</i></code> and <code><i>ss</i></code>
-        respectively encode hours, minutes and seconds (i.e. a time).
-  </span> Other elements of the lexical form (<code>-</code>, <code>T</code>, <code>Z</code>)
-  are verbatim. It implies that implementations need to support time zones, <code>Z</code>
-  being interpreted as the UTC+00 time zone.</li>
+        Values that are of type <code>dateTime</code>
+        SHOULD use the literal <code>Z</code> 
+        representing the UTC time zone instead 
+        of an offset.
+    </span>
+  </li>
   <li><span class="rfc2119-assertion" id="td-integer-type">
         Values that are of type <code>integer</code> or <code>unsignedInt</code>
         MUST be serialized as JSON numbers without a fraction or exponent part.
@@ -1700,25 +1689,29 @@ In summary, this requires the following:
 
   <p>
     As defined in <a href="#thing"></a>, the base text direction used to display human-readable metadata
-    is inferred from the default language.
-    The default language is defined by the value assigned to <code>@language</code> in the <code>@context</code>.
+    can either be estimated using heuristics such as the first-strong rule or inferred from language information.
+    In TD documents the default language is defined by a value assigned to <code>@language</code> in the <code>@context</code>,
+    and this, along with a script subtag if necessary, can be used to determine a base text direction.
     <span class="rfc2119-assertion" id="td-context-default-language-direction-independence">
-      Each human-readable string value MUST be processed independently, using the base
-      direction defined for that string.
+      However, when interpreting human-readable text,
+      each human-readable string value MUST be processed independently.
     </span>
     In other words, a <a>TD Processor</a> cannot carry forward changes in direction from one string to another,
     or infer direction for one string from another one elsewhere in the TD.
   </p>
 
   <p class="note">
-    Being aware that Strings on the Web [[?string-meta]] suggests 
-    to use Localizable dictionary structure as the best practice to support base 
-    direction metadata, given that Thing Description format is based on JSON-LD 1.1 
-    [[?json-ld11]], the approach described above is considered most appropriate 
-    at the time of this publication. When JSON-LD 1.1 adopts the design for supporting 
-    base direction metadata advised by [[?string-meta]] and implement as a feature 
-    in the future, Thing Description format should be updated to take advantage of 
-    that feature for cleanly supporting base direction metadata.
+    Strings on the Web [[?string-meta]] suggests 
+    both strong-first and language-based inferencing as means
+    to determine the base text direction.
+    Given that the Thing Description format is based on JSON-LD 1.1 
+    [[?json-ld11]], which currently lacks explicit direction metadata,
+    these approaches are currently considered appropriate 
+    at the time of this publication. 
+    However, if JSON-LD 1.1 adopts support for explicit
+    base direction metadata as recommended by [[?string-meta]],
+    the Thing Description format should be updated to take advantage of 
+    that feature.
   </p>
   
   <p>

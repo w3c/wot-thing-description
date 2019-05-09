@@ -1103,16 +1103,6 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       <section id="sec-core-vocabulary-definition">
       <h2>Core Vocabulary Definitions</h2>
 
-<!--
-      <p class="ednote" title="Security Definitions Mandatory">
-      Note that for now <code>securityDefinitions</code> are mandatory at the top level of a <code>Thing</code>
-      since there needs to be
-      at least one definition available for use in the top-level mandatory <code>security</code>
-      block.  However, a future extension may allow in-place anonymous definitions
-      within <code>security</code> blocks in which case this requirement may be relaxed.
-      </p>
--->
-
         <section><h3><code>Thing</code></h3><p>An abstraction of a physical or a virtual entity whose metadata and interfaces are described by a WoT Thing Description, whereas a virtual entity is the composition of one or more Things.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-at-context--Thing"><td><code>@context</code></td><td>JSON-LD keyword to define short-hand names called terms that are used throughout a TD document.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a> or <a>Array</a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-at-type--Thing"><td><code>@type</code></td><td>JSON-LD keyword to label the object with semantic tags (or types).</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-id--Thing"><td><code>id</code></td><td>unique identifier of the Thing (URI, e.g. custom URN).</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-title--Thing"><td><code>title</code></td><td>Provides a human-readable title (e.g., display a text for UI representation) based on a default language.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-titles--Thing"><td><code>titles</code></td><td>Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages).</td><td>optional</td><td><a href="#multilanguage"><code>MultiLanguage</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-description--Thing"><td><code>description</code></td><td>Provides additional (human-readable) information based on a default language.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
@@ -1153,34 +1143,26 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
     </span>
 </p>
 <p>
-    The default language is used to compute the base direction for all
-    human-readable text values not otherwise associated with a language tag
-    such as the <code>MultiLanguage</code> <a>Maps</a> defined in <a href="#multilanguage"></a>.
-</p>
-<p class="note">
-    Great care has to be given when assigning bidirectional text to the human-readable metadata of Thing Descriptions.
-    Producers of such texts are advised to include <em>bidi controls</em> as appropriate to try to ensure proper display.
-    Consumers of such texts are advised to apply <em>bidi isolation</em> when including human-readable metadata of TDs
-    in other text (e.g., for Web user interface).
-    <em>Strings on the Web: Language and Direction Metadata</em> [[?string-meta]]
-    provides some guidance and illustrates a number of pitfalls when using bidirectional text.
-</p>
-<p>
     The computation of the base direction of all human-readable text strings
-    is defined by the following set of rules,
-    which is based on the script subtag approach described in <a href="">Section&nbsp;4.5</a> of [[?string-meta]]:
+    is defined by the following set of rules:
 </p>
 <ul>
     <li>
-        <span class="rfc2119-assertion" id="td-context-default-language-direction-default">
+        <span class="rfc2119-assertion" id="td-context-default-language-direction-heuristic">
             If no language tag is given,
-            the base direction SHOULD be assumed to be LTR (left-to-right).
+            the base direction SHOULD be inferred through 
+            first-strong heuristics or detection algorithms such as the CLDR Likely Subtags [[?LDML]].
         </span>
-        This implies that if the language used in human-readable text uses a script that is written RTL (right-to-left),
-        the default language needs to be specified explicitly, so that an appropriate base direction can be inferred.
-        In the absence of a default language tag,
-        it is encouraged to use first-strong heuristics or detection algorithm such as the CLDR Likely Subtags [[?LDML]].
     </li>
+    <li><span class="rfc2119-assertion" id="td-context-default-language-direction-inference">
+        Outside of <code>MultiLanguage</code> <a>Maps</a>,
+        the base direction MAY be inferred from the language tag of the default language.
+    </span></li>
+    <li><span class="rfc2119-assertion" id="td-context-ns-multilanguage-text-direction-infer">
+        Inside of <code>MultiLanguage</code> <a>Maps</a>,
+        the base direction of each value of the name-value pairs 
+        MAY be inferred from the language tag given in the corresponding name.
+    </span></li>
     <li>
         <span class="rfc2119-assertion" id="td-context-default-language-direction-script">
             In cases where a language can be written in more than one script with different base directions,
@@ -1190,16 +1172,24 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
         An example is Azeri, which is written LTR when Latin script is used (specified using <code>az-Latn</code>) 
         and RTL when Arabic script is used (specified using <code>az-Arab</code>).
     </li>
-    <li><span class="rfc2119-assertion" id="td-context-default-language-direction-inference">
-        Outside of <code>MultiLanguage</code> <a>Maps</a>,
-        the base direction MUST be inferred from the language tag of the default language.
-    </span></li>
-    <li><span class="rfc2119-assertion" id="td-context-ns-multilanguage-text-direction-infer">
-        Inside of <code>MultiLanguage</code> <a>Maps</a>,
-        the base direction of each value of the name-value pairs 
-        MUST be inferred from the language tag given in the corresponding name.
-    </span></li>
 </ul>
+<p>
+<a>TD Processors</a> should be aware of certain special cases when processing bidirectional text.
+They should take care to use bidi isolation when presenting strings to users,
+particularly when embedding in surrounding text (e.g., for Web user interface).
+Mixed direction text can occur in any language,
+even when the language is properly identified.
+</p>
+<p>
+TD producers should attempt to provide mixed direction strings in a way that 
+can be displayed successfully by a naive user agent.
+For example, if an RTL string begins with an LTR run (such as a number or a brand or trade name in Latin script),
+including an RLM character at the start of the string or wrapping opposite direction runs in bidi controls can assist in proper display.
+</p>
+<p>
+    <em>Strings on the Web: Language and Direction Metadata</em> [[?string-meta]]
+    provides some guidance and illustrates a number of pitfalls when using bidirectional text.
+</p>
 
 <p id="meta-interactions-of-thing">
     In addition to the explicitly provided <a>Interaction Affordances</a>
@@ -1755,19 +1745,18 @@ In summary, this requires the following:
   </span></li>
   <li><span class="rfc2119-assertion" id="td-datetime-type">
         Values that are of type <code>dateTime</code>
-        MUST be serialized as JSON strings  following the timestamp format
+        MUST be serialized as JSON strings  following the "date-time" format
         specified by [[RFC3339]].
     </span>
+        Examples would include <code>2019-05-24T13:12:45Z</code> and
+        <code>2015-07-11T09:32:26+08:00</code>.
     <span class="rfc2119-assertion" id="td-datetime-recommended-type">
-        Timestamps included in a TD SHOULD have
-        the lexical form <code><i>YYYY</i>-<i>MM</i>-<i>DD</i>T<i>hh</i>:<i>mm</i>:<i>ss</i>Z</code>,
-        where <code><i>YYYY</i></code>, <code><i>MM</i></code> and <code><i>DD</i></code>
-        respectively encode a year, a month and a day (i.e. a date) and where
-        <code><i>hh</i></code>, <code><i>mm</i></code> and <code><i>ss</i></code>
-        respectively encode hours, minutes and seconds (i.e. a time).
-  </span> Other elements of the lexical form (<code>-</code>, <code>T</code>, <code>Z</code>)
-  are verbatim. It implies that implementations need to support time zones, <code>Z</code>
-  being interpreted as the UTC+00 time zone.</li>
+        Values that are of type <code>dateTime</code>
+        SHOULD use the literal <code>Z</code> 
+        representing the UTC time zone instead 
+        of an offset.
+    </span>
+  </li>
   <li><span class="rfc2119-assertion" id="td-integer-type">
         Values that are of type <code>integer</code> or <code>unsignedInt</code>
         MUST be serialized as JSON numbers without a fraction or exponent part.
@@ -2046,25 +2035,29 @@ In summary, this requires the following:
 
   <p>
     As defined in <a href="#thing"></a>, the base text direction used to display human-readable metadata
-    is inferred from the default language.
-    The default language is defined by the value assigned to <code>@language</code> in the <code>@context</code>.
+    can either be estimated using heuristics such as the first-strong rule or inferred from language information.
+    In TD documents the default language is defined by a value assigned to <code>@language</code> in the <code>@context</code>,
+    and this, along with a script subtag if necessary, can be used to determine a base text direction.
     <span class="rfc2119-assertion" id="td-context-default-language-direction-independence">
-      Each human-readable string value MUST be processed independently, using the base
-      direction defined for that string.
+      However, when interpreting human-readable text,
+      each human-readable string value MUST be processed independently.
     </span>
     In other words, a <a>TD Processor</a> cannot carry forward changes in direction from one string to another,
     or infer direction for one string from another one elsewhere in the TD.
   </p>
 
   <p class="note">
-    Being aware that Strings on the Web [[?string-meta]] suggests 
-    to use Localizable dictionary structure as the best practice to support base 
-    direction metadata, given that Thing Description format is based on JSON-LD 1.1 
-    [[?json-ld11]], the approach described above is considered most appropriate 
-    at the time of this publication. When JSON-LD 1.1 adopts the design for supporting 
-    base direction metadata advised by [[?string-meta]] and implement as a feature 
-    in the future, Thing Description format should be updated to take advantage of 
-    that feature for cleanly supporting base direction metadata.
+    Strings on the Web [[?string-meta]] suggests 
+    both strong-first and language-based inferencing as means
+    to determine the base text direction.
+    Given that the Thing Description format is based on JSON-LD 1.1 
+    [[?json-ld11]], which currently lacks explicit direction metadata,
+    these approaches are currently considered appropriate 
+    at the time of this publication. 
+    However, if JSON-LD 1.1 adopts support for explicit
+    base direction metadata as recommended by [[?string-meta]],
+    the Thing Description format should be updated to take advantage of 
+    that feature.
   </p>
   
   <p>
