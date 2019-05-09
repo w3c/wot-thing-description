@@ -23,7 +23,7 @@ echo "Generating vector graphics from DOT files..."
 dot -ovisualization/td.svg -Tsvg visualization/td.dot
 dot -ovisualization/json-schema.svg -Tsvg visualization/json-schema.dot
 dot -ovisualization/wot-security.svg -Tsvg visualization/wot-security.dot
-dot -ovisualization/web-linking.svg -Tsvg visualization/web-linking.dot
+dot -ovisualization/hypermedia.svg -Tsvg visualization/hypermedia.dot
 
 echo "Shutting down RDF store..."
 kill ${WOT_FUSEKI_PID}
