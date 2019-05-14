@@ -2929,7 +2929,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
         <a href="#thing-description-ontology"></a>.
     </p>
 
-<pre class="example" id="saref-annotation-example">
+<pre class="example" id="saref-state-annotation-example">
 {
     "@context": [
         "https://www.w3.org/2019/wot/td/v1",
@@ -4256,10 +4256,10 @@ _:b7 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://myla
                 As a result, the TD information model can be reformulated in the Web Ontology Language
                 (OWL) [[owl2-overview]]. <a>Class</a> definitions become OWL axioms defined on the
                 <a>Vocabulary Terms</a> of the TD model. The axioms that are particularly
-                of interest in the present document are those of the TD ontology available under the
-                TD namespace IRI, both as an RDF file and as a human-readable HTML documentation.
-                <a>Default Values</a> cannot be directly translated to OWL, they are therefore ignored
-                in the TD ontology.
+                of interest in the present document are those of the TD ontology (available under the
+                <a href="https://www.w3.org/2019/wot/td">TD namespace IRI</a>), both as an RDF file and
+                as a human-readable HTML documentation. <a>Default Values</a> cannot be directly translated
+                to OWL, they are therefore ignored in the TD ontology.
             </p>
 
             <p>
@@ -4268,15 +4268,16 @@ _:b7 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://myla
                 that would make clients behave in a more autonomous way, as desired in WoT
                 [[wot-architecture]]. A semantic description is nothing more than a description of the
                 physical world, in which WoT systems may have tangible effects. OWL should be the
-                preferred language for this purpose. OWL is indeed a language to specify <em>ontologies</em>,
+                preferred language for this purpose. It is indeed a language to specify <em>ontologies</em>,
                 that is, conceptualizations of the physical world. To this end, an ontology does not cover
                 one possible model of the physical world by constructing abstract data structures. Instead,
                 it provides necessary constraints on all possible models of the world for these models to
                 be sound. This principle, at the basis of <em>model theory</em>, is what the semantics of RDF
                 (and OWL) is based on [[rdf11-mt]]. In the following diagram, because the only fact
-                we know about <code>urn:dev:ops:32473-WoTLamp-1234</code> is that it is a light
-                switch with generic affordances, it could be any light switch, be it mechanical,
-                digital or even virtual.
+                we know about <code>urn:dev:ops:32473-WoTLamp-1234</code> is that it is a <a>Thing</a>
+                with generic affordances, it could be <em>any</em> thing, including intangible entities.
+                Even when knowing it is a light switch through TD annotations, it can still be a mechanical,
+                digital or even virtual device.
             </p>
             
             <figure>
@@ -4289,14 +4290,51 @@ _:b7 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://myla
                 as it would not suffice to describe physical world objects alone. An ontology is
                 generally designed for a specific domain of application, like transportation or home
                 automation. For the latter domain, the TD ontology can e.g. be
-                integrated with SAREF, as illustrated in several examples in this document.
+                integrated with SAREF, as illustrated in <a href="#saref-annotation-example"></a> and
+                <a href="#saref-state-annotation-example"></a>.
             </p>
+
+            <p>
+                In particular, the <a>Terms</a> included in the TD ontology may be used to express
+                what affordances should be <em>expected</em> from <a>Things</a> of a certain type,
+                like <code>saref:LightSwitch</code> or, more generally, anything that has a
+                state. The following rules can be read as sentences: a light switch exposes a property
+                affordance to access its on/off state and an action affordance to act on this state.
+            </p>
+
+            <aside class="example">
+<pre class="nohighlight">
+td:Thing(X), saref:hasState(X, Y)
+→ td:hasPropertyAffordance(X, Z), ssn:forProperty(Z, Y) .
+
+td:Thing(X), saref:hasState(X, Y)
+→ td:hasActionAffordance(X, Z), saref:actsUpon(Z, Y) .
+</pre>
+            </aside>
+
+            <p>
+                Note that these rules do not prevent one affordance from implying the other. In fact,
+                the TD ontology itself contains an rule specifying that every <a>Property</a> with
+                a <code>writeproperty</code> operation is conceptually equivalent to an (idempotent)
+                <a>Action</a> with the <a>Property</a>'s data schema as input. The rule can be
+                expressed as follows:
+            </p>
+
+            <aside class="example">
+<pre class="nohighlight">
+td:Thing(X), td:hasPropertyAffordance(X, Y),
+td:hasForm(Y, Z), hyperm:forOperationType(Z, "writeproperty")
+→ td:hasActionAffordance(X, Yp),
+  isIdempotent(Yp, true),
+  td:hasInputSchema(Yp, Y) .
+</pre>
+            </aside>
 
             <p>
                 An intelligent WoT client can be assigned the task of turning a light off
                 in ontological terms, using SAREF. For instance, the task could be expressed as
                 a post-condition on the <code>saref:OnOffState</code> of some <code>saref:LightSwitch</code>.
-                Assuming a server exposes the TD of <a href="#thing-description-full-serialization"></a>,
+                Assuming a server exposes the TD of <a href="#saref-state-annotation-example"></a>,
                 the client has two possibilities to perform this task: it can either write
                 the <code>status</code> property as <code>off</code> or it can invoke the action
                 <code>toggle</code> and see if the resulting <code>status</code> is indeed
@@ -4304,36 +4342,22 @@ _:b7 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://myla
             </p>
 
             <p>
-                Yet, in the TD example, the switch state is not directly exposed. Assuming
-                the client has no prior knowledge of the meaning of <code>status</code>,
-                it must infer possible operations from the semantic annotations available in the TD
-                and its domain-specific ontology, that includes SAREF. The following ontological
-                axioms can be formulated for SAREF, in the OWL Manchester syntax
-                [[owl2-manchester-syntax]]:
+                Given the TD of <a href="#saref-state-annotation-example"></a>, it is straightforward
+                for a client to infer what to do from the internal state description embedded in the TD.
+                However, provided the rules (or axioms) given above, it can be inferred that for all possible
+                models of the light switch described in the TD, an <a>Action</a> may also have the desired effect.
+                A client can therefore adaptively choose to operate on either affordance of the light switch
+                to perform the task. In fact, its behavoir would be unaltered even if the TD did not
+                exposed its state. A single type statement including <code>saref:LightSwitch</code> would
+                suffice, since all light switches behave the same way.
             </p>
 
-            <aside class="example">
-<pre class="nohighlight">
-Class: LightSwitch
-SubClassOf: hasState some OnOffState
-
-Class: ToggleCommand
-SubClassOf: actsUpon some OnOffState</pre>
-            </aside>
-
             <p>
-                They respectively state that a light switch must have an on/off state and that
-                a toggle command must act on some on/off state. They may seem intuitive
-                to humans but it is only possible for the client to know what to do from such
-                axioms. If we assume that a <code>saref:GetCommand</code>
-                always exposes the state of the <code>Thing</code>, the client can then
-                automatically infer what form(s) to submit to change the switch state: a
-                <code>writeproperty</code> on the <code>saref:GetCommand</code> or an
-                <code>invokeaction</code> on the <code>saref:ToggleCommand</code>. Note that the
-                result of the operation cannot be known for certain, as the TD does not expose
-                its internal state. However, by selecting certain models of the physical world,
+                Note that, in the case the internal state is hidden, the result of the operation cannot
+                be known for certain. However, by selecting certain models of the physical world,
                 either by statistical means or by further axiomatization, clients can still
-                reach a certain level of autonomy with an ontological approach.
+                reach a certain level of autonomy with an ontological approach and e.g. learn from their
+                own behavior via a trial and error procedure.
             </p>
 
             <!-- <p class="issue">
