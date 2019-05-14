@@ -4064,9 +4064,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             </p>
             
             <p>
-                When applying this procedure to the introductory TD example
-                (<a href="#thing-description-full-serialization"></a>) with all
-                <a>Default Values</a>, the following triples are obtained:
+                When applying this procedure to <a href="#saref-state-annotation-example"></a>,
+                including annotations and <a>Default Values</a>, the following triples are obtained:
             </p>
             
             <aside class="example with-default" id="simple-thing-description-rdf">
@@ -4085,6 +4084,10 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "title": "MyLampThing",
     "@type": "saref:LightSwitch",
+    "saref:hasState": {
+        "@id": "urn:dev:ops:32473-WoTLamp-1234/state",
+        "@type": "saref:OnOffState"
+    },
     "securityDefinitions": {"basic_sc": {
         "scheme": "basic",
         "in": "header"
@@ -4092,9 +4095,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     "security": ["basic_sc"],
     "properties": {
         "status": {
+            "ssn:forProperty": "urn:dev:ops:32473-WoTLamp-1234/state",
             "type": "string",
             "forms": [{
-                "@type": "saref:GetCommand",
                 "href": "https://mylamp.example.com/status",
                 "op": "readproperty",
                 "htv:methodName": "GET"
@@ -4111,7 +4114,6 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             "safe": false,
             "idempotent": false,
             "forms": [{
-                "@type": "saref:ToggleCommand",
                 "href": "https://mylamp.example.com/toggle",
                 "op": "invokeaction",
                 "contentType": "application/json",
@@ -4123,7 +4125,6 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         "overheating": {
             "data": {"type": "string"},
             "forms": [{
-                "@type": "saref:NotifyCommand",
                 "href": "https://mylamp.example.com/oh",
                 "op": "subscribeevent",
                 "contentType": "application/json"
@@ -4132,6 +4133,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     }
 }</pre><pre>
 &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#LightSwitch&gt; .
+&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://w3id.org/saref#hasState&gt; &lt;urn:dev:ops:32473-WoTLamp-1234/state&gt; .
 &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasActionAffordance&gt; _:b0 .
 &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasEventAffordance&gt; _:b2 .
 &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasPropertyAffordance&gt; _:b5 .
@@ -4141,7 +4143,6 @@ _:b0 &lt;https://www.w3.org/2019/wot/td#name&gt; &quot;toggle&quot; .
 _:b0 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b1 .
 _:b0 &lt;https://www.w3.org/2019/wot/td#isIdempotent&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
 _:b0 &lt;https://www.w3.org/2019/wot/td#isSafe&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
-_:b1 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#ToggleCommand&gt; .
 _:b1 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;POST&quot; .
 _:b1 &lt;https://www.w3.org/2019/wot/hypermedia#forContentType&gt; &quot;application/json&quot; .
 _:b1 &lt;https://www.w3.org/2019/wot/hypermedia#forOperationType&gt; &quot;invokeaction&quot; .
@@ -4149,16 +4150,15 @@ _:b1 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://myla
 _:b2 &lt;https://www.w3.org/2019/wot/td#name&gt; &quot;overheating&quot; .
 _:b2 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b3 .
 _:b2 &lt;https://www.w3.org/2019/wot/td#hasNotificationSchema&gt; _:b4 .
-_:b3 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#NotifyCommand&gt; .
 _:b3 &lt;https://www.w3.org/2019/wot/hypermedia#forContentType&gt; &quot;application/json&quot; .
 _:b3 &lt;https://www.w3.org/2019/wot/hypermedia#forOperationType&gt; &quot;subscribeevent&quot; .
 _:b3 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/oh&quot; .
 _:b4 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/json-schema#StringSchema&gt; .
 _:b5 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/json-schema#StringSchema&gt; .
 _:b5 &lt;https://www.w3.org/2019/wot/td#name&gt; &quot;status&quot; .
+_:b5 &lt;http://www.w3.org/ns/ssn/forProperty&gt; &quot;urn:dev:ops:32473-WoTLamp-1234/state&quot; .
 _:b5 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b6 .
 _:b5 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b7 .
-_:b6 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#GetCommand&gt; .
 _:b6 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;GET&quot; .
 _:b6 &lt;https://www.w3.org/2019/wot/hypermedia#forOperationType&gt; &quot;readproperty&quot; .
 _:b6 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/status&quot; .
@@ -4166,6 +4166,7 @@ _:b7 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;PUT&quot; .
 _:b7 &lt;https://www.w3.org/2019/wot/hypermedia#forContentType&gt; &quot;application/json&quot; .
 _:b7 &lt;https://www.w3.org/2019/wot/hypermedia#forOperationType&gt; &quot;writeproperty&quot; .
 _:b7 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/status&quot; .
+&lt;urn:dev:ops:32473-WoTLamp-1234/state&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#OnOffState&gt; .
 &lt;urn:dev:ops:32473-WoTLamp-1234/basic_sc&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/security#BasicSecurityScheme&gt; .
 &lt;urn:dev:ops:32473-WoTLamp-1234/basic_sc&gt; &lt;https://www.w3.org/2019/wot/security#in&gt; &quot;header&quot; .</pre>
             </aside>
