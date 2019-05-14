@@ -3140,7 +3140,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 }
 </pre>
 
-<section class="informative">
+<section>
 <h3>Semantic Annotations</h3>
 
     <p>
@@ -3168,8 +3168,8 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
     <p>
       As an example, the TD snippet given below extends the version information container
-      by addind version numbers for the hardware and firmware of the Thing,
-      semantically annotates a Property, and uses a well-defined value for the data schema unit.
+      by addind version numbers for the hardware and firmware of the Thing, and uses a
+      well-defined value for the data schema unit.
     </p>
 
 <pre class="example">
@@ -3177,9 +3177,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
     "@context": [
         "https://www.w3.org/2019/wot/td/v1",
         {
-            "v": "http://www.example.org/versioningTerms#",
-            "saref": "https://w3id.org/saref#",
-            "om": "http://www.wurvoc.org/vocabularies/om-1.8/"
+            "v": "http://www.example.org/versioningTerms#"
         }
     ],
     "@type": "Thing",
@@ -3191,52 +3189,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
     ...
     "properties": {
         "temperature": {
-            "@type": "saref:Temperature",
             "description": "Temperature value of the weather station",
-            "type": "number",
-            "minimum": -32.5,
-            "maximum": 55.2,
-            "unit": "om:degree_Celsius",
-            "forms": [...]
-        },
-        ...
-    },
-    ...
-}
-</pre>
-
-    <p>
-        In many cases, context extension may be used to annotate pieces of
-        a data schema, as in the TD snippet below. The example references
-        SSN/SOSA [[vocab-ssn]] and OM 1.8, an ontology for units of measure
-        [[Rijgersberg-et-al-2013]]. Note
-        that object assigned to <code>temperature</code> is a data schema and not
-        the actual temperature property of the physical world object. More details
-        on modeling the physical world can be found in Appendix
-        <a href="#thing-description-ontology"></a>.
-    </p>
-
-<pre class="example" id="saref-annotation-example">
-{
-    "@context": [
-        "https://www.w3.org/2019/wot/td/v1",
-        {
-            "sosa": "http://www.w3.org/ns/sosa/",
-            "ssn": "http://www.w3.org/ns/ssn/",
-            "om": "http://www.wurvoc.org/vocabularies/om-1.8/"
-        }
-    ],
-    "@type": "Thing",
-    "id": "urn:dev:ops:32473-WoTLamp-1234",
-    "sosa:observes": {
-        "@id": "urn:dev:ops:32473-WoTStation-1234/temperature",
-        "@type": "om:Temperature"
-    },
-    ...
-    "properties": {
-        "temperature": {
-            "ssn:forProperty": "urn:dev:ops:32473-WoTStation-1234/temperature",
-            "description": "Temperature measurement of the weather station",
             "type": "number",
             "minimum": -32.5,
             "maximum": 55.2,
@@ -3251,7 +3204,108 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
 </section>
 
-<section class="informative">
+<section>
+
+    <h3>Annotating Data Schemas</h3>
+
+    <p>
+        In many cases, context extension may be used to annotate pieces of
+        a data schema, to be able to semantically process actual data during
+        an interaction. The TD snippet below extends
+        <a href="#thing-description-full-serialization"></a> by including a
+        mapping between the JSON name <code>status</code> and an external
+        <a>Vocabulary Term</a> defined in SAREF.
+    </p>
+
+<pre class="example" id="saref-annotation-example">
+{
+    "@context": [
+        "https://www.w3.org/2019/wot/td/v1",
+        {
+            "saref": "https://w3id.org/saref#",
+            "jsonld": "http://www.w3.org/ns/json-ld#"
+        }
+    ],
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "@type": "saref:LightSwitch",
+    ...
+    "properties": {
+        "status": {
+            "jsonld:context": {
+                "@type": "jsonld:TermMapping",
+                "jsonld:term": "status",
+                "jsonld:id": "saref:hasState"
+            },
+            "type": "string",
+            "forms": [{
+                "@type": "saref:GetCommand",
+                "href": "https://mylamp.example.com/status"
+            }]
+        }
+    },
+    ...
+}
+</pre>
+
+    <p>
+        The mapping embedded in the TD snippet above is in fact a portion of a JSON-LD  
+        context that clients can use to transform data that validates the data schema being
+        described, while preserving its semantics. The value assigned to <code>jsonld:context</code>
+        may also be a URI, which clients can interpret as the URI of a (remote) JSON-LD context.
+        See the <a href="http://www.w3.org/ns/json-ld">JSON-LD namespace</a> for more details. 
+    </p>
+
+    <p>
+        One limitation of the approach presented above is that data exchanged during interactions
+        has no direct semantic relation with the <a>Thing</a> from the <a>TD Document</a> exposing
+        affordances for these interactions. For instance, it is not known whether <code>status</code>
+        exposes a simple on/off state or a dimming scale. To overcome this limitation, the internal
+        state of the <a>Thing</a>, semantically described in RDF, can be embedded in the
+        <a>TD Document</a> and pieces of a data schema can be individually annotated as referring to
+        specific parts of that internal state.
+    </p>
+        
+    <p>
+        The TD snippet below uses the well-known SAREF [[smartM2M]] external <a>Vocabulary</a> to
+        describe the state of a lamp. The external <a>Vocabulary Term</a> <code>ssn:forProperty</code>,
+        taken from the SSN <a>Vocabulary</a> [[vocab-ssn]], is being used to link the data schema of the
+        <code>status</code> <a>Property</a> with the actual on/off state of the physical world
+        object. Note that the two are distinct: a string is a <em>representation</em>
+        of the object's state. More details on modeling the physical world can be found in Appendix
+        <a href="#thing-description-ontology"></a>.
+    </p>
+
+<pre class="example" id="saref-annotation-example">
+{
+    "@context": [
+        "https://www.w3.org/2019/wot/td/v1",
+        {
+            "saref": "https://w3id.org/saref#",
+            "ssn": "http://www.w3.org/ns/ssn/"
+        }
+    ],
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "@type": "saref:LightSwitch",
+    "saref:hasState": {
+        "@id": "urn:dev:ops:32473-WoTLamp-1234/state",
+        "@type": "saref:OnOffState"
+    },
+    ...
+    "properties": {
+        "status": {
+            "ssn:forProperty": "urn:dev:ops:32473-WoTLamp-1234/state",
+            "type": "string",
+            "forms": [{"href": "https://mylamp.example.com/status"}]
+        },
+        ...
+    },
+    ...
+}
+</pre>
+
+</section>
+
+<section>
 <h3>Adding Protocol Bindings</h3>
 
   <p>
@@ -3306,7 +3360,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
     
 </section>
     
-<section class="informative">
+<section>
 <h2>Adding Security Schemes</h2>
     
   <p>
