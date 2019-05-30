@@ -1,8 +1,8 @@
 @prefix : <http://www.w3.org/ns/td-validation#> .
-@prefix td: <http://www.w3.org/ns/td#> .
-@prefix jsonschema: <http://www.w3.org/ns/json-schema#> .
-@prefix wotsec: <http://www.w3.org/ns/wot-security#> .
-@prefix lnk: <http://www.w3.org/ns/web-linking#> .
+@prefix td: <https://www.w3.org/2019/wot/td#> .
+@prefix jsonschema: <https://www.w3.org/2019/wot/json-schema#> .
+@prefix wotsec: <https://www.w3.org/2019/wot/security#> .
+@prefix hyperm: <https://www.w3.org/2019/wot/hypermedia#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix vs: <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -23,56 +23,115 @@
     sh:description
 """
 <p>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-mandatory\">The mandatory
-     context definition of the string <code>"https://www.w3.org/2019/wot/td/v1"</code> MUST be 
-     the first item in the <code>@context</code> array.</span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-optional\">The mandatory
-     context definition MAY be followed by one or more context definitions as strings or 
-     objects.</span>
+    <span class="rfc2119-assertion" id="td-context-ns-thing-mandatory">
+        The <code>@context</code> name-value pair MUST contain the anyURI <code>https://www.w3.org/2019/wot/td/v1</code>
+        either directly when of type <code>anyURI</code> or as first element when of type <a>Array</a>.
+    </span>
+    <span class="rfc2119-assertion" id="td-context-ns-thing-optional">
+        When <code>@context</code> is an <a>Array</a>, the anyURI <code>https://www.w3.org/2019/wot/td/v1</code>
+        MAY be followed by elements of type <code>anyURI</code> or type <a>Map</a> in any order,
+        while it is RECOMMENDED to include only one <a>Map</a> with all the name-value pairs in the <code>@context</code> <a>Array</a>.
+    </span>
+    <span class="rfc2119-assertion" id="td-context-ns-thing-map-of-namespaces">
+        <a>Maps</a> contained in an <code>@context</code> <a>Array</a> MAY contain name-value pairs,
+        where the value is a namespace identifier of type <code>anyURI</code> and the name a <a>Term</a> or prefix denoting that namespace.
+    </span>
+    <span class="rfc2119-assertion" id="td-context-default-language">
+        One <a>Map</a> contained in an <code>@context</code> <a>Array</a> SHOULD contain a name-value pair
+        that defines the default language for the Thing Description,
+        where the name is the <a>Term</a> <code>@language</code> and the value is a well-formed language tag
+        as defined by [[!BCP47]]
+        (e.g., <code>en</code>, <code>de-AT</code>, <code>gsw-CH</code>,
+        <code>zh-Hans</code>, <code>zh-Hant-HK</code>, <code>sl-nedis</code>).
+    </span>
 </p>
 <p>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-dereferenceable-url\">
-     As suggested in JSON-LD [[json-ld]] specification, if a context definition is 
-     a string, it SHOULD be a dereferenceable URL.
-     </span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-map-of-namespaces\">
-     Likewise, if a context definition is an object, it SHOULD be a map of namespaces, 
-     in which keys are namespace prefixes. 
-     </span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-prefix\">Each optional
-     namespace specified in the <code>@context</code> array of a Thing MUST be bound 
-     to an unique prefix.</span>
+    The computation of the base direction of all human-readable text strings
+    is defined by the following set of rules:
 </p>
-<p id="meta-interactions-of-thing">Similar to <a href="#propertyaffordance" class="sec-ref">PropertyAffordance</a>, 
-    <a href="#actionaffordance" class="sec-ref">ActionAffordance</a> and 
-    <a href="#eventaffordance" class="sec-ref">EventAffordance</a> classes, all of which are 
-    subclasses of <a href="#interactionaffordance" class="sec-ref">
-    InteractionAffordance</a>, the definition of Thing class also contains 
-    the <code>forms</code> term. 
+<ul>
+    <li>
+        <span class="rfc2119-assertion" id="td-context-default-language-direction-heuristic">
+            If no language tag is given,
+            the base direction SHOULD be inferred through 
+            first-strong heuristics or detection algorithms such as the CLDR Likely Subtags [[?LDML]].
+        </span>
+    </li>
+    <li><span class="rfc2119-assertion" id="td-context-default-language-direction-inference">
+        Outside of <code>MultiLanguage</code> <a>Maps</a>,
+        the base direction MAY be inferred from the language tag of the default language.
+    </span></li>
+    <li><span class="rfc2119-assertion" id="td-context-ns-multilanguage-text-direction-infer">
+        Inside of <code>MultiLanguage</code> <a>Maps</a>,
+        the base direction of each value of the name-value pairs 
+        MAY be inferred from the language tag given in the corresponding name.
+    </span></li>
+    <li>
+        <span class="rfc2119-assertion" id="td-context-default-language-direction-script">
+            In cases where a language can be written in more than one script with different base directions,
+            the corresponding language tag given in <code>@language</code> or <code>MultiLanguage</code> <a>Maps</a>
+            MUST include a script subtag, so that an appropriate base direction can be inferred. 
+        </span>
+        An example is Azeri, which is written LTR when Latin script is used (specified using <code>az-Latn</code>) 
+        and RTL when Arabic script is used (specified using <code>az-Arab</code>).
+    </li>
+</ul>
+<p>
+<a>TD Processors</a> should be aware of certain special cases when processing bidirectional text.
+They should take care to use bidi isolation when presenting strings to users,
+particularly when embedding in surrounding text (e.g., for Web user interface).
+Mixed direction text can occur in any language,
+even when the language is properly identified.
+</p>
+<p>
+TD producers should attempt to provide mixed direction strings in a way that 
+can be displayed successfully by a naive user agent.
+For example, if an RTL string begins with an LTR run (such as a number or a brand or trade name in Latin script),
+including an RLM character at the start of the string or wrapping opposite direction runs in bidi controls can assist in proper display.
+</p>
+<p>
+    <em>Strings on the Web: Language and Direction Metadata</em> [[?string-meta]]
+    provides some guidance and illustrates a number of pitfalls when using bidirectional text.
+</p>
+
+<p id="meta-interactions-of-thing">
+    In addition to the explicitly provided <a>Interaction Affordances</a>
+    in the <code>properties</code>, <code>actions</code>, and <code>events</code> <a>Arrays</a>,
+    a <a>Thing</a> can also provide meta-interactions,
+    which are indicated by <code>Form</code> instances in its optional <code>forms</code> <a>Array</a>.
     <span class="rfc2119-assertion" id="td-op-for-thing">
-    When a <code>forms</code> term member is present in a Thing instance, 
-    the value(s) in the <code>op</code> term member of the <code>forms</code> MUST be one or more of 
+    When the <code>forms</code> <a>Array</a> of a <a>Thing</a> instance contains <code>Form</code> instances,
+    the string values assigned to the name <code>op</code>, either directly or within an <a>Array</a>, 
+    MUST be one of the following <em>opteration types</em>:
     <code>readallproperties</code>, <code>writeallproperties</code>, 
-    <code>readmultipleproperties</code> or <code>writemultipleproperties</code>.
+    <code>readmultipleproperties</code>, or <code>writemultipleproperties</code>.
     </span>
     (See <a href="#td-forms-readall-example"> an example</a> for an usage of <code>form</code> in a Thing instance.)
 </p>
 <p>
-    For <code>readallproperties</code> operation's output, 
-    <code>readmultipleproperties</code> operation's output,
-    <code>writeallproperties</code> operation's input and <code>writemultipleproperties</code>
-    operation's input, payloads are assigned an object type schema with its 
-    properties equal to the Thing's <a href="#propertyaffordance">property affordances</a>.
-    For <code>readmultipleproperties</code> operation's input, payloads are
-    assigned a string array type schema with its items each equal to one of the names of
-    The Thing's <a href="#propertyaffordance">property affordances</a>.
+    The data schema for each of these meta-interactions is constructed
+    by combining the data schemas of each <a href="#propertyaffordance"><code>PropertyAffordance</code></a> instance
+    in a single <code>ObjectSchema</code> instance,
+    where the <code>properties</code> <a>Map</a> of the <code>ObjectSchema</code> instance contains
+    each data schema of the <code>PropertyAffordances</code> identified by the name of the corresponding <code>PropertyAffordances</code> instance.
+</p>
+<p>
+    If not specified otherwise (e.g., through a <a>TD Context Extension</a>),
+    the request data of the <code>readmultipleproperties</code> operation
+    is an <a>Array</a> that contains the intended <code>PropertyAffordances</code> instance names,
+    which is serialized to the content type specified by the <code>Form</code> instance.
 </p>
 """^^rdf:HTML ;
     sh:property [
-        sh:path td:name ;
+        sh:path td:title ;
         sh:minCount 1 ;
         sh:datatype xsd:string ;
         sh:order "1"^^xsd:integer ;
+    ] ;
+    sh:property [
+        sh:path td:titles ;
+        sh:class td:MultiLanguage ;
+        sh:order "2"^^xsd:integer ;
     ] ;
     sh:property [
         sh:path td:description ;
@@ -85,7 +144,7 @@
         sh:order "4"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:version ;
+        sh:path td:versionInfo ;
         sh:class td:VersionInfo ;
         sh:order "5"^^xsd:integer ;
     ] ;
@@ -95,47 +154,47 @@
         sh:order "6"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:lastModified ;
+        sh:path td:modified ;
         sh:datatype xsd:dateTime ;
         sh:order "7"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:support ;
-        sh:datatype xsd:string ;
+        sh:path td:supportContact ;
+        sh:datatype xsd:anyURI ;
         sh:order "8"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:base ;
+        sh:path td:baseUri ;
         sh:datatype xsd:anyURI ;
         sh:order "9"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:properties ;
+        sh:path td:hasPropertyAffordance ;
         sh:class td:PropertyAffordance ;
         sh:order "10"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:actions ;
+        sh:path td:hasActionAffordance ;
         sh:class td:ActionAffordance ;
         sh:order "11"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:events ;
+        sh:path td:hasEventAffordance ;
         sh:class td:EventAffordance ;
         sh:order "12"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:links ;
-        sh:class lnk:Link ;
+        sh:path td:hasLink ;
+        sh:class hyperm:Link ;
         sh:order "13"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:forms ;
-        sh:class td:Form ;
+        sh:path td:hasForm ;
+        sh:class hyperm:Form ;
         sh:order "14"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:security ;
+        sh:path td:hasSecurityConfiguration ;
         sh:minCount 1 ;
 #       sh:class wotsec:SecurityScheme ;
         sh:datatype xsd:string ;
@@ -152,17 +211,6 @@
     sh:targetClass td:InteractionAffordance ;
     sh:closed "false"^^xsd:boolean ;
     sh:order "2"^^xsd:integer ;
-    sh:description
-"""
-<p>
-    <span class="rfc2119-assertion" id="td-unique-identifiers">
-        Each instance of a <code>Property</code>, <code>Action</code>,
-        and <code>Event</code> class MUST have an identifier that is
-        unique within the context of a Thing Description document.
-    </span>
-
-</p>
-"""^^rdf:HTML ;
     sh:property [
         sh:path td:title ;
         sh:datatype xsd:string ;
@@ -184,13 +232,13 @@
         sh:order "4"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:forms ;
+        sh:path td:hasForm ;
         sh:minCount 1 ;
         sh:class td:Form ;
         sh:order "5"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:uriVariables ;
+        sh:path td:hasUriTemplateVariable ;
         sh:class td:DataSchema ;
         sh:order "6"^^xsd:integer ;
     ] .
@@ -201,14 +249,6 @@
     sh:order "3"^^xsd:integer ;
     sh:description
 """
-<p><code>Property</code> class is a subclass of the class <a href="#interactionaffordance" 
-    class="sec-ref">InteractionAffordance</a>. 
-    <span class="rfc2119-assertion" id="td-op-for-property">
-    When a <code>forms</code> term member is present in a Property instance, 
-    the value(s) in the <code>op</code> term member of the <code>forms</code> MUST be one or more of 
-    <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code> or <code>unobserveproperty</code>.
-    </span>
-</p>
 <p class="note">
     Property instances are also instances of the class
     <a href="#dataschema" class="sec-ref">DataSchema</a>. Therefore,
@@ -216,22 +256,17 @@
     <code>readOnly</code> and <code>writeOnly</code> members, among
     others.
 </p>
-<p>
-    <span class="rfc2119-assertion" id="td-op-for-property-readonly">
-    When the value of <code>readOnly</code> member is true in an instance of PropertyAffordance, 
-    the value(s) in the <code>op</code> term member of the <code>forms</code> 
-    MUST NOT contain <code>writeproperty</code>.
-    </span>
-    Similarly, 
-    <span class="rfc2119-assertion" id="td-op-for-property-writeonly">
-    when the value of <code>writeOnly</code> member is true in an instance of PropertyAffordance, 
-    the value(s) in the <code>op</code> term member of the <code>forms</code> 
-    MUST NOT contain <code>readproperty</code>.
+<p><code>PropertyAffordance</code> is a <a>Subclass</a> of the <code>InteractionAffordance</code> <a>Class</a> and the <code>DataSchema</code> <a>Class</a>. 
+    <span class="rfc2119-assertion" id="td-op-for-property">
+When a Form instance is within a <code>PropertyAffordance</code> <a>Class</a>, 
+the value assigned to <code>op</code> MUST be one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, 
+<code>unobserveproperty</code> or an  <a>Array</a> containing a combination of these terms.
     </span>
 </p>
+
 """^^rdf:HTML ;
     sh:property [
-        sh:path td:observable ;
+        sh:path td:isObservable ;
         sh:datatype xsd:boolean ;
     ] .
     
@@ -241,34 +276,32 @@
     sh:order "4"^^xsd:integer ;
     sh:description
 """
-<p>Action class is a subclass of the class <a href="#interactionaffordance" 
-    class="sec-ref">InteractionAffordance</a>.
+<p><code>ActionAffordance</code> is a <a>Subclass</a> of the <code>InteractionAffordance</code> <a>Class</a>.
     <span class="rfc2119-assertion" id="td-op-for-action">
-    When a <code>forms</code> term member is present in an Action instance, 
-    the value in the <code>op</code> term member of the <code>forms</code> MUST be 
-    <code>invokeaction</code>.
+When a Form instance is within an instance of the <code>ActionAffordance</code> <a>Class</a>, 
+the value assigned to op MUST be  <code>invokeaction</code>.
     </span>
 </p>
 """^^rdf:HTML ;
     sh:property [
-        sh:path td:input ;
+        sh:path td:hasInputSchema ;
         sh:class jsonschema:DataSchema ;
         sh:order "1"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:output ;
+        sh:path td:hasOutputSchema ;
         sh:class jsonschema:DataSchema ;
         sh:order "2"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:safe ;
+        sh:path td:isSafe ;
         sh:datatype xsd:boolean ;
         sh:minCount 1 ;
         sh:defaultValue "false"^^xsd:boolean ;
         sh:order "3"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:idempotent ;
+        sh:path td:isIdempotent ;
         sh:datatype xsd:boolean ;
         sh:minCount 1 ;
         sh:defaultValue "false"^^xsd:boolean ;
@@ -281,60 +314,103 @@
     sh:order "5"^^xsd:integer ;
     sh:description
 """
-<p>Event class is a subclass of the class <a href="#interactionaffordance" 
-    class="sec-ref">InteractionAffordance</a>.
+<p><code>EventAffordance</code> is a <a>Subclass</a> of the <code>InteractionAffordance</code> <a>Class</a>.
     <span class="rfc2119-assertion" id="td-op-for-event">
-    When a <code>forms</code> term member is present in an Event instance, 
-    the value(s) in the <code>op</code> term member of the <code>forms</code> MUST be either or both of 
-    <code>subscribeevent</code> or/and <code>unsubscribeevent</code>.
+    When a Form instance is within an instance of the <code>EventAffordance</code> <a>Class</a>, 
+    the value assigned to <code>op</code> MUST be either <code>subscribeevent</code>, <code>unsubscribeevent</code>, or both terms within an  <a>Array</a>.
     </span>
 </p>
 """^^rdf:HTML ;
     sh:property [
-        sh:path td:subscription ;
+        sh:path td:hasSubscriptionSchema ;
         sh:class jsonschema:DataSchema ;
         sh:order "1"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:data ;
+        sh:path td:hasNotificationSchema ;
         sh:class jsonschema:DataSchema ;
         sh:order "2"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:cancellation ;
+        sh:path td:hasCancellationSchema ;
         sh:class jsonschema:DataSchema ;
         sh:order "3"^^xsd:integer ;
     ] .
 
 :FormShape a sh:NodeShape ;
-    sh:targetClass td:Form ;
+    sh:targetClass hyperm:Form ;
     sh:closed "false"^^xsd:boolean ;
-    sh:order "6"^^xsd:integer ;
+    sh:order "7"^^xsd:integer ;
+    sh:description
+"""
+<p>The list of possible operation types of a form is fixed. As of this version of the specification, it only includes the
+well-known types necessary to implement the WoT interaction model described in
+[[WOT-ARCHITECTURE]]. Future versions of the standard may extend this list but
+<span class=\"rfc2119-assertion\" id=\"well-known-operation-types-only\">
+operations types SHOULD NOT be arbitrarily set by servients
+</span>.
+</p>
+
+<p>
+The optional <code>response</code> name-value pair can be used to provide metadata for the expected response message.
+With the core vocabulary, it only includes content type information, but TD Context Extensions could be applied. 
+<span class="rfc2119-assertion" id="td-expectedResponse-default-contentType">
+If no <code>response</code> name-value pair is provided, it MUST be assumed that the content type of the 
+response is equal to the content type assigned to the Form instance.</span>
+Note that <code>contentType</code> within an <code>ExpectedResponse</code> <a>Class</a> does not have a <a>Default Value</a>. 
+For instance, if the value of the content type of the form is <code>application/xml</code> the assumed value of the content type of 
+the response will be also <code>application/xml</code>.
+</p>
+
+
+<p>
+In some use cases, input and output data might be represented in a different form, for instance an Action that accepts JSON, but returns an image. In such a case, the optional <code>response</code> name-value pair can describe the content type of the expected response.
+<span class="rfc2119-assertion" id="td-expectedResponse-contentType">
+If the content type of the expected response differs from the content type of the form,
+the <code>Form</code> instance MUST include a name-value pair with the name <code>response</code>.
+</span> 
+For instance, an <code>ActionAffordance</code> could only accept <code>application/json</code> for its input data, while it
+will respond with an <code>image/jpeg</code> content type for its output data. In that case the content types differ and the 
+<code>response</code> name-value pair has to be used to provide response content type (<code>image/jpeg</code>) information 
+to the <a>Consumer</a>.
+
+</p>
+
+
+
+"""^^rdf:HTML ;
+    sh:description
+"""
+<p>Possible values for the <code>contentCoding</code> property can be found e.g. in
+the <a href=\"https://www.iana.org/assignments/http-parameters/http-parameters.xhtml#content-coding\">
+IANA HTTP content coding registry</a>.
+</p>
+"""^^rdf:HTML ;
     sh:property [
-        sh:path td:href ;
+        sh:path hyperm:hasTarget ;
         sh:minCount 1 ;
         sh:datatype xsd:anyURI ;
-        sh:order "1"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:contentType ;
-        sh:datatype xsd:string ;
-        sh:minCount 1 ;
-        sh:defaultValue "application/json"^^xsd:string ;
         sh:order "2"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:contentCoding ;
+        sh:path hyperm:forContentType ;
         sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:defaultValue "application/json"^^xsd:string ;
         sh:order "3"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:response ;
-        sh:class td:ExpectedResponse ;
+        sh:path hyperm:forContentCoding ;
+        sh:datatype xsd:string ;
         sh:order "4"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:op ;
+        sh:path hyperm:returns ;
+        sh:class hyperm:ExpectedResponse ;
+        sh:order "8"^^xsd:integer ;
+    ] ;
+    sh:property [
+        sh:path hyperm:forOperationType ;
         sh:minCount 1 ;
         sh:datatype xsd:string ;
         sh:in (
@@ -350,52 +426,52 @@
             "readmultipleproperties"
             "writemultipleproperties"
         );
-        sh:order "5"^^xsd:integer ;
+        sh:order "1"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:subprotocol ;
+        sh:path hyperm:forSubProtocol ;
         sh:datatype xsd:string ;
         sh:in (
             "longpoll"
             "websub"
             "sse"
         );
-        sh:order "6"^^xsd:integer ;
+        sh:order "5"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:security ;
+        sh:path td:hasSecurityConfiguration ;
 #       sh:class wotsec:SecurityScheme ;
         sh:datatype xsd:string ;
-        sh:order "7"^^xsd:integer ;
+        sh:order "6"^^xsd:integer ;
     ] ;
     sh:property [
         sh:path wotsec:scopes ;
         sh:datatype xsd:string ;
-        sh:order "8"^^xsd:integer ;
+        sh:order "7"^^xsd:integer ;
     ] .
     
 :LinkShape a sh:NodeShape ;
-    sh:targetClass lnk:Link ;
+    sh:targetClass hyperm:Link ;
     sh:closed "false"^^xsd:boolean ;
-    sh:order "7"^^xsd:integer ;
+    sh:order "6"^^xsd:integer ;
     sh:property [
-        sh:path lnk:href ;
+        sh:path hyperm:hasTarget ;
         sh:minCount 1 ;
         sh:datatype xsd:anyURI ;
         sh:order "1"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path lnk:type ;
+        sh:path hyperm:hintsAtMediaType ;
         sh:datatype xsd:string ;
         sh:order "2"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path lnk:rel ;
+        sh:path hyperm:hasRelationType ;
         sh:datatype xsd:string ;
         sh:order "3"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path lnk:anchor ;
+        sh:path hyperm:hasAnchor ;
         sh:datatype xsd:anyURI ;
         sh:order "4"^^xsd:integer ;
     ] .
@@ -404,21 +480,28 @@
     sh:targetClass td:VersionInfo ;
     sh:closed "false"^^xsd:boolean ;
     sh:order "8"^^xsd:integer ;
+    sh:description
+    """
+    <p>It is recommended that the values within instances of the <code>VersionInfo</code> <a>Class</a> follow the semantic versioning pattern,
+where a sequence of three numbers separated by a dot indicates the major version, minor version, and patch version, respectively. See [[?SemVer]] for details.
+    </p>
+    """^^rdf:HTML ;
     sh:property [
         sh:path td:instance ;
         sh:minCount 1 ;
         sh:datatype xsd:string ;
     ] .
 
+
+
 :ExpectedResponseShape a sh:NodeShape ;
-    sh:targetClass td:ExpectedResponse ;
+    sh:targetClass hyperm:ExpectedResponse ;
     sh:closed "false"^^xsd:boolean ;
     sh:order "9"^^xsd:integer ;
      sh:property [
-        sh:path td:contentType ;
+        sh:path hyperm:forContentType ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
-        sh:defaultValue "application/json"^^xsd:string ;
     ] .
 
 
@@ -429,10 +512,13 @@
     sh:description
 """
 <p>
-<span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-content-negotiation\">
-Note that in protocols such as HTTP that have an ability to negotiate content based on languages, 
-those terms (e.g. <code>description</code> and <code>title</code>) intended for carrying texts in a default language SHOULD be used instead of <code>MultiLanguage</code> container
-when the texts are served as a result such negotiation.
+<span class=\"rfc2119-assertion\" id=\"td-multilanguage-language-tag\"> 
+    Each name of the <code>MultiLanguage</code> <a>Map</a>
+    MUST be a language tag as defined in [[!BCP47]].
+</span>
+<span class=\"rfc2119-assertion\" id=\"td-multilanguage-value\"> 
+    Each value of the <code>MultiLanguage</code> <a>Map</a>
+    MUST be of type <code>string</code>.
 </span>
 </p>
 """^^rdf:HTML ;
@@ -491,6 +577,12 @@ when the texts are served as a result such negotiation.
     sh:property [
         sh:path wotsec:in ;
         sh:datatype xsd:string ;
+        sh:in (
+          "header"
+          "query"
+          "body"
+          "cookie"
+        );
         sh:minCount 1 ;
         sh:defaultValue "header"^^xsd:string ;
         sh:order "1"^^xsd:integer ;
@@ -507,6 +599,10 @@ when the texts are served as a result such negotiation.
     sh:property [
         sh:path wotsec:qop ;
         sh:datatype xsd:string ;
+        sh:in (
+          "auth"
+          "auth-int"
+        );
         sh:minCount 1 ;
         sh:defaultValue "auth"^^xsd:string ;
         sh:order "1"^^xsd:integer ;
@@ -514,6 +610,12 @@ when the texts are served as a result such negotiation.
     sh:property [
         sh:path wotsec:in ;
         sh:datatype xsd:string ;
+        sh:in (
+          "header"
+          "query"
+          "body"
+          "cookie"
+        );
         sh:minCount 1 ;
         sh:defaultValue "header"^^xsd:string ;
         sh:order "2"^^xsd:integer ;
@@ -530,6 +632,12 @@ when the texts are served as a result such negotiation.
     sh:property [
         sh:path wotsec:in ;
         sh:datatype xsd:string ;
+        sh:in (
+          "header"
+          "query"
+          "body"
+          "cookie"
+        );
         sh:minCount 1 ;
         sh:defaultValue "query"^^xsd:string ;
         sh:order "1"^^xsd:integer ;
@@ -551,6 +659,11 @@ when the texts are served as a result such negotiation.
     sh:property [
         sh:path wotsec:alg ;
         sh:datatype xsd:string ;
+        sh:in (
+          "MD5" 
+          "ES256"
+          "ES512-256"
+        );
         sh:minCount 1 ;
         sh:defaultValue "ES256"^^xsd:string ;
         sh:order "2"^^xsd:integer ;
@@ -558,6 +671,12 @@ when the texts are served as a result such negotiation.
     sh:property [
         sh:path wotsec:format ;
         sh:datatype xsd:string ;
+        sh:in (
+          "jwt" 
+          "cwt" 
+          "jwe"
+          "jws"
+        );
         sh:minCount 1 ;
         sh:defaultValue "jwt"^^xsd:string ;
         sh:order "3"^^xsd:integer ;
@@ -565,6 +684,12 @@ when the texts are served as a result such negotiation.
     sh:property [
         sh:path wotsec:in ;
         sh:datatype xsd:string ;
+        sh:in (
+          "header"
+          "query"
+          "body"
+          "cookie"
+        );
         sh:minCount 1 ;
         sh:defaultValue "header"^^xsd:string ;
         sh:order "4"^^xsd:integer ;
@@ -610,6 +735,11 @@ when the texts are served as a result such negotiation.
     sh:property [
         sh:path wotsec:alg ;
         sh:datatype xsd:string ;
+        sh:in (
+          "MD5" 
+          "ES256"
+          "ES512-256"
+        );
         sh:minCount 1 ;
         sh:defaultValue "ES256"^^xsd:string ;
         sh:order "2"^^xsd:integer ;
@@ -617,6 +747,12 @@ when the texts are served as a result such negotiation.
     sh:property [
         sh:path wotsec:format ;
         sh:datatype xsd:string ;
+        sh:in (
+          "jwt" 
+          "cwt" 
+          "jwe"
+          "jws"
+        );
         sh:minCount 1 ;
         sh:defaultValue "jwt"^^xsd:string ;
         sh:order "3"^^xsd:integer ;
@@ -624,6 +760,12 @@ when the texts are served as a result such negotiation.
     sh:property [
         sh:path wotsec:in ;
         sh:datatype xsd:string ;
+        sh:in (
+          "header"
+          "query"
+          "body"
+          "cookie"
+        );
         sh:minCount 1 ;
         sh:defaultValue "header"^^xsd:string ;
         sh:order "4"^^xsd:integer ;
@@ -661,6 +803,12 @@ when the texts are served as a result such negotiation.
         sh:path wotsec:flow ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
+        sh:in (
+            "implicit" 
+            "password" 
+            "client" 
+            "code"
+        );
         sh:defaultValue "implicit"^^xsd:string ;
         sh:order "5"^^xsd:integer ;
     ] .
@@ -671,6 +819,16 @@ when the texts are served as a result such negotiation.
     sh:order "1"^^xsd:integer ;
     sh:description
 """
+<p>The <code>format</code> string values are known from a fixed set of values and their corresponding format rules 
+defined in [[?JSON-SCHEMA-VALIDATION]] (Section 7.3 Defined Formats in particluar). 
+<span class="rfc2119-assertion" id="td-format-validation-known-values">
+Servients MAY use the <code>format</code> value to perform additional validation accordingly. 
+</span>
+<span class="rfc2119-assertion" id="td-format-validation-other-values">
+When a value that is not found in the known set of values is assigned to <code>format</code>, 
+such a validation SHOULD succeed.
+</span>
+</p>
 """^^rdf:HTML ;
     sh:property [
         sh:path td:title ;
@@ -711,7 +869,7 @@ when the texts are served as a result such negotiation.
         sh:order "6"^^xsd:integer ;
     ] ;
     sh:property [
-        sh:path td:unit ;
+        sh:path td:defaultUnit ;
         sh:class xsd:string;
         sh:order "7"^^xsd:integer ;
     ] ;
@@ -727,19 +885,20 @@ when the texts are served as a result such negotiation.
     sh:property [
         sh:path jsonschema:readOnly ;
         sh:datatype xsd:boolean ;
+        sh:minCount 1 ;
         sh:defaultValue "false"^^xsd:boolean ;
         sh:order "10"^^xsd:integer ;
     ] ;
     sh:property [
         sh:path jsonschema:writeOnly ;
         sh:datatype xsd:boolean ;
+        sh:minCount 1 ;
         sh:defaultValue "false"^^xsd:boolean ;
         sh:order "11"^^xsd:integer ;
     ] ;
         sh:property [
         sh:path jsonschema:format ;
         sh:datatype xsd:string ;
-        sh:defaultValue "false"^^xsd:boolean ;
         sh:order "12"^^xsd:integer ;
     ] .
 

@@ -1,4 +1,4 @@
-@prefix : <http://www.w3.org/ns/td#> .
+@prefix : <https://www.w3.org/2019/wot/td#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix vs: <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -12,7 +12,7 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 
 
-<http://www.w3.org/ns/td#> rdf:type owl:Ontology ;
+<http://www.w3.org/2019/td#> rdf:type owl:Ontology ;
                            
                            vann:preferredNamespacePrefix "td" ;
                            
@@ -22,33 +22,46 @@
                            
                            rdfs:comment "This ontology aims to model the Web of Things domain according to the W3C Interest Group (http://w3c.github.io/wot/)"@en ;
                            
-                           vann:preferredNamespaceUri "http://www.w3.org/ns/td#" ;
+                           vann:preferredNamespaceUri "http://www.w3.org/2019/wot/td#" ;
                            
                            dcterms:license <http://purl.org/NET/rdflicense/cc-by4.0> ;
                            
-                           dcterms:creator <http://purl.org/net/mpoveda> ,
-                                           <http://www.garcia-castro.com/foaf.rdf#me> ;
+                           dcterms:contributor <http://purl.org/net/mpoveda> ,
+                                           <http://www.garcia-castro.com/foaf.rdf#me>,
+                                           <http://www.oeg-upm.net/index.php/en/universitystaff/402-fserena/> ;
                            
-                           dcterms:contributor <http://www.oeg-upm.net/index.php/en/universitystaff/402-fserena/> ;
+                           dcterms:author <mailto:victor.charpenay@siemens.com> ;
                            
-                           dc:publisher <https://www.w3.org/WoT/WG/> ;
-                           
-                           dcterms:contributor <mailto:victor.charpenay@siemens.com> .
-
-
-#################################################################
-#
-#    Annotation properties
-#
-#################################################################
-
-
-###  http://www.w3.org/2003/06/sw-vocab-status/ns#term_status
-
-vs:term_status rdf:type owl:AnnotationProperty .
+                           dc:publisher <https://www.w3.org/WoT/WG/> .
 
 
 
+
+###  http://www.w3.org/2019/td#unit
+
+<https://www.w3.org/2019/wot/td#defaultUnit> rdf:type owl:AnnotationProperty ;
+                                        
+                                        rdfs:label "defaultUnit" ;
+                                        
+                                        rdfs:comment "Provides unit information that is used, e.g., in international science, engineering, and business."@en .
+
+
+
+###  http://www.w3.org/2019/td#support
+
+:supportContact rdf:type owl:AnnotationProperty ;
+         
+         rdfs:label "supportContact" ;
+         
+         rdfs:comment "Provides information about the TD maintainer as URI scheme (e.g., mailto [[RFC6068]], tel [[RFC3966]], https)."@en .
+
+###  http://www.w3.org/2019/td#version
+
+:versionInfo rdf:type owl:AnnotationProperty ;
+          
+          rdfs:label "versionInfo" ;
+          
+          rdfs:comment "Provides version information."@en .
 
 
 #################################################################
@@ -58,262 +71,174 @@ vs:term_status rdf:type owl:AnnotationProperty .
 #################################################################
 
 
-###  http://www.w3.org/ns/td#actions
+###  http://www.w3.org/2019/td#actions
 
-:actions rdf:type owl:ObjectProperty ;
+:hasActionAffordance rdf:type owl:ObjectProperty ;
          
-         rdfs:label "actions" ;
+         rdfs:label "hasActionAffordance" ;
+
+          rdfs:subPropertyOf :hasInteractionAffordance ;
          
          rdfs:comment "All Action-based interaction affordance of the Thing."@en ;
-         
-         rdfs:range :ActionAffordance ;
-         
-         rdfs:domain :Thing ;
          
          rdfs:subPropertyOf :interactions .
 
 
 
-###  http://www.w3.org/ns/td#events
+###  http://www.w3.org/2019/td#events
 
-:events rdf:type owl:ObjectProperty ;
+:hasEventAffordance rdf:type owl:ObjectProperty ;
         
-        rdfs:label "events" ;
+        rdfs:label "hasEventAffordance" ;
+
+        rdfs:subPropertyOf :hasInteractionAffordance ;
         
-        rdfs:comment "All Event-based interaction affordance of the Thing."@en ;
+        rdfs:comment "All Event-based interaction affordance of the Thing."@en .
+
+
+
+###  http://www.w3.org/2019/td#forms
+
+:hasForm rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "hasForm" ;
+       
+       rdfs:comment "Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings."@en .
+
+
+###  http://www.w3.org/2019/td#hasUriTemplateVariable
+
+:hasUriTemplateVariable rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "hasUriTemplateVariable" ;
+       
+       rdfs:comment "Define URI template variables as collection based on DataSchema declarations."@en .
+
+
+
+###  http://www.w3.org/2019/td#input
+
+:hasInputSchema rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "hasInputSchema" ;
+       
+       rdfs:comment "Used to define the input data schema of the action."@en .
+
+###  http://www.w3.org/2019/td#safe
+
+:isSafe rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "isSafe" ;
+       
+       rdfs:comment "Signals if the action is safe (=true) or not. Used to signal if there is no internal state (cf. resource state) is changed when invoking an Action. In that case responses can be cached as example."@en .
+
+
+###  http://www.w3.org/2019/td#idempotent
+
+:isIdempotent rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "isIdempotent" ;
+       
+       rdfs:comment "Indicates whether the action is idempotent (=true) or not. Informs whether the action can be called repeatedly with the same result, if present, based on the same input."@en .
+
+
+
+###  http://www.w3.org/2019/td#subscription
+
+:hasSubscriptionSchema rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "hasSubscriptionSchema" ;
+       
+       rdfs:comment "Defines data that needs to be passed upon subscription, e.g., filters or message format for setting up Webhooks."@en .
+
+###  http://www.w3.org/2019/td#data
+
+:hasNotificationSchema rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "hasNotificationSchema" ;
+       
+       rdfs:comment "Defines the data schema of the Event instance messages pushed by the Thing."@en .
+
+###  http://www.w3.org/2019/td#cancellation
+
+:hasCancellationSchema rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "hasCancellationSchema" ;
+       
+       rdfs:comment "Defines any data that needs to be passed to cancel a subscription, e.g., a specific message to remove a Webhook"@en .
+
+
+
+###  http://www.w3.org/2019/td#affordances
+
+:hasInteractionAffordance rdf:type owl:ObjectProperty .
+
+
+
+###  http://www.w3.org/2019/td#links
+
+:hasLink rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "hasLink" ;
+       
+       rdfs:comment "Provides Web links to arbitrary resources that relate to the specified Thing Description."@en .
+
+
+###  http://www.w3.org/2019/td#output
+
+:hasOutputSchema rdf:type owl:ObjectProperty ;
         
-        rdfs:range :EventAffordance ;
+        rdfs:label "hasOutputSchema" ;
         
-        rdfs:domain :Thing ;
-        
-        rdfs:subPropertyOf :interactions .
+        rdfs:comment "Used to define the output data schema of the action."@en .
 
 
 
-###  http://www.w3.org/ns/td#forms
+###  http://www.w3.org/2019/td#properties
 
-:forms rdf:type owl:ObjectProperty ;
-       
-       rdfs:label "forms" ;
-       
-       rdfs:comment "Indicates one or more endpoints at which operation(s) on this resource are accessible."@en ;
-       
-       rdfs:range :Form ;
-       
-       rdfs:domain :InteractionAffordance .
-
-
-###  http://www.w3.org/ns/td#uriVariables
-
-:uriVariables rdf:type owl:ObjectProperty ;
-       
-       rdfs:label "uriVariables" ;
-       
-       rdfs:comment "Define URI template variables as collection based on DataSchema declarations."@en ;
-       
-       rdfs:range :DataSchema ;
-       
-       rdfs:domain :InteractionAffordance .
-
-
-
-###  http://www.w3.org/ns/td#input
-
-:input rdf:type owl:ObjectProperty ;
-       
-       rdfs:label "input" ;
-       
-       rdfs:comment "Used to define the input data schema of the action."@en ;
-       
-       rdfs:domain :ActionAffordance;
-       
-       rdfs:range :Specification .
-
-###  http://www.w3.org/ns/td#safe
-
-:safe rdf:type owl:ObjectProperty ;
-       
-       rdfs:label "safe" ;
-       
-       rdfs:comment "Signals if the action is safe (=true) or not. Used to signal if there is no internal state (cf. resource state) is changed when invoking an Action. In that case responses can be cached as example."@en ;
-       
-       rdfs:domain :ActionAffordance;
-       
-       rdfs:range :Specification .
-
-
-###  http://www.w3.org/ns/td#idempotent
-
-:idempotent rdf:type owl:ObjectProperty ;
-       
-       rdfs:label "idempotent" ;
-       
-       rdfs:comment "Indicates whether the action is idempotent (=true) or not. Informs whether the action can be called repeatedly with the same result, if present, based on the same input."@en ;
-       
-       rdfs:domain :ActionAffordance ;
-       
-       rdfs:range :Specification .
-
-
-
-###  http://www.w3.org/ns/td#subscription
-
-:subscription rdf:type owl:ObjectProperty ;
-       
-       rdfs:label "subscription" ;
-       
-       rdfs:comment "Defines data that needs to be passed upon subscription, e.g., filters or message format for setting up Webhooks."@en ;
-       
-       rdfs:domain :EventAffordance ;
-       
-       rdfs:range :Specification .
-
-###  http://www.w3.org/ns/td#data
-
-:data rdf:type owl:ObjectProperty ;
-       
-       rdfs:label "data" ;
-       
-       rdfs:comment "Defines the data schema of the Event instance messages pushed by the Thing."@en ;
-       
-       rdfs:domain :EventAffordance ;
-       
-       rdfs:range :Specification .
-
-###  http://www.w3.org/ns/td#cancellation
-
-:cancellation rdf:type owl:ObjectProperty ;
-       
-       rdfs:label "cancellation" ;
-       
-       rdfs:comment "Defines any data that needs to be passed to cancel a subscription, e.g., a specific message to remove a Webhook"@en ;
-       
-       rdfs:domain :EventAffordance ;
-       
-       rdfs:range :Specification .
-
-
-
-###  http://www.w3.org/ns/td#interactions
-
-:interactions rdf:type owl:ObjectProperty ;
-              
-              rdfs:range :InteractionAffordance ;
-              
-              rdfs:domain :Thing .
-
-
-
-###  http://www.w3.org/ns/td#links
-
-:links rdf:type owl:ObjectProperty ;
-       
-       rdfs:label "links" ;
-       
-       rdfs:comment "Provides Web links to arbitrary resources that relate to the specified Thing Description."@en ;
-       
-       rdfs:range :Link ;
-       
-       rdfs:domain :Thing .
-
-###  http://www.w3.org/ns/td#version
-
-:version rdf:type owl:DatatypeProperty ,
-                   owl:FunctionalProperty ;
-          
-          rdfs:label "version" ;
-          
-          rdfs:comment "Provides version information."@en ;
-          
-          rdfs:range :VersionInfo ;
-          
-          rdfs:domain :Thing .
-
-
-###  http://www.w3.org/ns/td#output
-
-:output rdf:type owl:ObjectProperty ;
-        
-        rdfs:label "output" ;
-        
-        rdfs:comment "Used to define the output data schema of the action."@en ;
-        
-        rdfs:domain :ActionAffordance ;
-        
-        rdfs:range :Specification .
-
-
-
-###  http://www.w3.org/ns/td#properties
-
-:properties rdf:type owl:ObjectProperty ;
+:hasPropertyAffordance rdf:type owl:ObjectProperty ;
             
-            rdfs:label "properties" ;
+            rdfs:label "hasPropertyAffordance" ;
+
+            rdfs:subPropertyOf :hasInteractionAffordance ;
             
-            rdfs:comment "All Property-based interaction affordance of the Thing."@en ;
-            
-            rdfs:range :PropertyAffordance ;
-            
-            rdfs:domain :Thing ;
-            
-            rdfs:subPropertyOf :interactions .
+            rdfs:comment "All Property-based interaction affordance of the Thing."@en .
 
 
 
-###  http://www.w3.org/ns/td#security
+###  http://www.w3.org/2019/td#security
 
-:security rdf:type owl:ObjectProperty ;
+:hasSecurityConfiguration rdf:type owl:ObjectProperty ;
           
-          rdfs:label "security" ;
+          rdfs:label "hasSecurityConfiguration" ;
           
-          rdfs:comment "Set of security definition names, chosen from those defined in securityDefinitions.  These must all be satisfied for access to resources."@en ;
-
-# TODO: would really like to have a SecurityScheme object OR an id...
-         # rdfs:range :SecurityScheme ;	
-
-# TODO: This is an ID, referencing a securityDefinition; 
-# therefore, is there a more appropriate type to use here, eg URI? ID?
-          rdfs:range xsd:string ;	
-         
-          rdfs:domain [ rdf:type owl:Class ;
-                        owl:unionOf ( :Form
-                                      :Thing
-                                    )
-                      ] .
+          rdfs:comment "Set of security definition names, chosen from those defined in securityDefinitions.  These must all be satisfied for access to resources."@en .
 
 
-###  http://www.w3.org/ns/td#securityDefinitions	
+###  http://www.w3.org/2019/td#securityDefinitions	
 :securityDefinitions rdf:type owl:ObjectProperty ;	
             	
             rdfs:label "securityDefinitions" ;	
             	
-            rdfs:comment "Set of named security configurations (definitions only).  Not actually applied unless names are used in a security section."@en ;	
-            	
-            rdfs:range :SecurityScheme ;	
-            	
-            rdfs:domain :Thing .
+            rdfs:comment "Set of named security configurations (definitions only).  Not actually applied unless names are used in a security section."@en .
 
 
 
-###  http://www.w3.org/ns/td#specifiedBy
-
-:specifiedBy rdf:type owl:ObjectProperty ;
-             
-             rdfs:domain :Data ;
-             
-             rdfs:range :Specification .
-
-
-
-###  http://www.w3.org/ns/td#descriptions
+###  http://www.w3.org/2019/td#descriptions
 
 :descriptions rdf:type owl:ObjectProperty ;
              
              rdfs:label "descriptions" ;
              
-             rdfs:comment "Can be used to support (human-readable) information in different languages."@en ;
-             
-             rdfs:range :MultiLanguage .
+             rdfs:comment "Can be used to support (human-readable) information in different languages."@en .
+
+###  http://www.w3.org/2019/td#titles
+
+:titles rdf:type owl:ObjectProperty ;
+       
+       rdfs:label "titles" ;
+       
+       rdfs:comment "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages)."@en .
 
 
 
@@ -326,212 +251,71 @@ vs:term_status rdf:type owl:AnnotationProperty .
 
 
 
-###  http://www.w3.org/ns/td#base
+###  http://www.w3.org/2019/td#base
 
-:base rdf:type owl:DatatypeProperty ;
+:baseUri rdf:type owl:DatatypeProperty ;
       
-      rdfs:label "base"@en ;
+      rdfs:label "baseUri"@en ;
       
-      rdfs:comment "Define the base URI that is used for all relative URI references throughout a TD document. In TD instances, all relative URIs are resolved relative to the base URI using the algorithm defined in [[RFC3986]]."@en ;
-      
-      rdfs:range xsd:anyURI ;
-      
-      rdfs:domain :Thing .
+      rdfs:comment "Define the base URI that is used for all relative URI references throughout a TD document. In TD instances, all relative URIs are resolved relative to the base URI using the algorithm defined in [[RFC3986]]."@en .
 
 
 
-###  http://www.w3.org/ns/td#description
+###  http://www.w3.org/2019/td#description
 
 :description rdf:type owl:DatatypeProperty ;
              
              rdfs:label "description" ;
              
-             rdfs:comment "Provides additional (human-readable) information based on a default language."@en ;
-             
-             rdfs:range xsd:string .
+             rdfs:comment "Provides additional (human-readable) information based on a default language."@en .
 
 
 
-###  http://www.w3.org/ns/td#title
+###  http://www.w3.org/2019/td#title
 
 :title rdf:type owl:DatatypeProperty ;
        
        rdfs:label "title" ;
        
-       rdfs:comment "Provides a human-readable title (e.g., display a text for UI representation) of the interaction pattern based on a default language."@en ;
-       
-       rdfs:range xsd:string .
+       rdfs:comment "Provides a human-readable title (e.g., display a text for UI representation) based on a default language."@en .
 
-###  http://www.w3.org/ns/td#titles
-
-:titles rdf:type owl:DatatypeProperty ;
-       
-       rdfs:label "titles" ;
-       
-       rdfs:comment "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages) of the interaction pattern."@en ;
-       
-       rdfs:range :MultiLanguage .
-
-###  http://www.w3.org/ns/td#unit
-
-<http://www.w3.org/ns/td#unit> rdf:type owl:DatatypeProperty ;
-                                        
-                                        rdfs:label "unit" ;
-                                        
-                                        rdfs:comment "Provides unit information that is used, e.g., in international science, engineering, and business."@en ;
-                                        
-                                        rdfs:range rdfs:Literal .
-
-###  http://www.w3.org/ns/td#instance
+###  http://www.w3.org/2019/td#instance
 
 :instance rdf:type owl:DatatypeProperty ;
        
        rdfs:label "instance" ;
        
-       rdfs:comment "Provides a version identicator of this TD instance."@en ;
-       
-       rdfs:range xsd:string .
-
-###  http://www.w3.org/ns/td#contentType
-
-:contentType rdf:type owl:DatatypeProperty ;
-           
-           rdfs:label "contentType" ;
-           
-           rdfs:comment "Assign a content type based on a media type [[IANA-MEDIA-TYPES]] (e.g., 'application/json) and (optional) parameters (e.g., 'charset=utf-8')"@en ;
-           
-           rdfs:range xsd:string ;
-           
-           rdfs:domain [ rdf:type owl:Class ;
-                         owl:unionOf ( :Form
-                                       
-                                     )
-                       ] .
-
-:contentCoding rdf:type owl:DatatypeProperty ;
-               rdfs:label "contentCoding" ;
-               rdfs:comment "Content coding values indicate an encoding transformation that has been or can be applied to a representation. Content codings are primarily used to allow a representation to be compressed or otherwise usefully transformed without losing the identity of its underlying media type and without loss of information. Examples of content coding include \"gzip\", \"deflate\", etc. "@en .
-
-###  http://www.w3.org/ns/td#name
-
-:name rdf:type owl:DatatypeProperty ;
-      
-      rdfs:label "name" ;
-      
-      rdfs:comment "Name of the Thing."@en ;
-      
-      rdfs:range xsd:string ;
-      
-      rdfs:domain :Thing .
+       rdfs:comment "Provides a version identicator of this TD instance."@en .
 
 
-###  http://www.w3.org/ns/td#created
+###  http://www.w3.org/2019/td#created
 :created rdf:type owl:DatatypeProperty ;
       
       rdfs:label "created" ;
       
-      rdfs:comment "Provides information when the TD instance was created."@en ;
-      
-      rdfs:range xsd:string ;
-      
-      rdfs:domain :Thing .
+      rdfs:comment "Provides information when the TD instance was created."@en .
 
 
-###  http://www.w3.org/ns/td#lastModified
-:lastModified rdf:type owl:DatatypeProperty ;
+###  http://www.w3.org/2019/td#modified
+:modified rdf:type owl:DatatypeProperty ;
       
-      rdfs:label "lastModified" ;
+      rdfs:label "modified" ;
       
-      rdfs:comment "Provides information when the TD instance was last modified."@en ;
-      
-      rdfs:range xsd:string ;
-      
-      rdfs:domain :Thing .
+      rdfs:comment "Provides information when the TD instance was last modified."@en .
 
 
-###  http://www.w3.org/ns/td#observable
+###  http://www.w3.org/2019/td#observable
 
-:observable rdf:type owl:DatatypeProperty ,
-                     owl:FunctionalProperty ;
+:isObservable rdf:type owl:DatatypeProperty ;
             
-            rdfs:label "observable" ;
+            rdfs:label "isObservable" ;
             
-            rdfs:comment "A hint that indicates whether a remote client can subscribe to (\"observe\") the Property, to receive change notifications or periodic updates (true/false)."@en ;
-            
-            rdfs:range xsd:boolean ;
-            
-            rdfs:domain :PropertyAffordance .
-
-###  http://www.w3.org/ns/td#op
-
-:op rdf:type owl:DatatypeProperty ;
-     
-     rdfs:label "op" ;
-     
-     rdfs:comment """Indicates the semantic intention of performing the operation(s) described by the form.
-
-For example, the Property interaction allows get and set operations.  
-The protocol binding may contain a form for the get operation and a different form for the set operation.  
-The op attribute indicates which form is for which and allows the client to select the correct form for the operation required.
-
-op can be assigned one or more interaction verb(s) each representing a semantic intention of an operation."""@en ;
-     
-     rdfs:range xsd:string ;
-     
-     rdfs:domain :Link .
+            rdfs:comment "A hint that indicates whether Servients hosting the Thing and Intermediaries should provide a Protocol Binding that supports the <code>observeproperty</code> operation for this Property."@en .
 
 
-     ###  http://www.w3.org/ns/td#response
-
-:response rdf:type owl:DatatypeProperty ;
-     
-     rdfs:label "response" ;
-     
-     rdfs:comment """This optional term can be used if, e.g., the output communication metadata differ from input metdata (e.g., output contentType differ from the
-     input contentType). The response name contains metadata that is only valid for the reponse messages."""@en ;
-   
-     rdfs:domain :ExpectedResponse .
-
-
-
-###  http://www.w3.org/ns/td#subprotocol
-
-:subprotocol rdf:type owl:DatatypeProperty ;
-     
-     rdfs:label "subprotocol" ;
-     
-     rdfs:comment """Indicates the exact mechanism by which an interaction will be accomplished for a given protocol when there are multiple options.
-     
-For example, for HTTP and Events, it indicates which of several available mechanisms should be used for asynchronous notifications such as long polling, websub (also see https://www.w3.org/TR/websub/), or server sent events (also see https://www.w3.org/TR/eventsource/). Please note that there is no restriction on the sub-protocol selection and other mechanisms can also be announced by this subprotocol term."""@en ;
-     
-     rdfs:range xsd:string ;
-     
-     rdfs:domain :Form .
-
-
-
-###  http://www.w3.org/ns/td#href
-
-:href rdf:type owl:DatatypeProperty ;
-      rdfs:label "href" ;
-      rdfs:comment """URI of the endpoint where an interaction pattern is provided.""" .
-
-
-
-###  http://www.w3.org/ns/td#support
-
-:support rdf:type owl:DatatypeProperty ;
-         
-         rdfs:label "support" ;
-         
-         rdfs:comment "Provides information about the TD maintainer (e.g., author, link or telephone number to get support, etc)."@en ;
-         
-         rdfs:range xsd:string ;
-         
-         rdfs:domain :Thing .
-
-
-
+:name rdf:type owl:DatatypeProperty ;
+      rdfs:label "name" ;
+      rdfs:comment "Indexing property to store entity names when serializing them in a JSON-LD @index container."@en .
 
 
 #################################################################
@@ -541,311 +325,88 @@ For example, for HTTP and Events, it indicates which of several available mechan
 #################################################################
 
 
-###  http://www.w3.org/ns/td#Action
+###  http://www.w3.org/2019/td#Action
 
 :ActionAffordance rdf:type owl:Class ;
         
         rdfs:label "ActionAffordance" ;
-        
-        rdfs:subClassOf :InteractionAffordance ,
-                        [ rdf:type owl:Restriction ;
-                          owl:onProperty :input ;
-                          owl:allValuesFrom :Specification
-                        ] ,
-                        [ rdf:type owl:Restriction ;
-                          owl:onProperty :output ;
-                          owl:allValuesFrom :Specification
-                        ] ,
-                        [ rdf:type owl:Restriction ;
-                          owl:onProperty :scope ;
-                          owl:allValuesFrom :Specification
-                        ] ,
-                        [ rdf:type owl:Restriction ;
-                          owl:onProperty :idempotent ;
-                          owl:allValuesFrom :Specification
-                        ] ;
+
+        rdfs:subClassOf :InteractionAffordance ;
         
         rdfs:comment "An Interaction Affordance that allows to invoke a function of the Thing, which manipulates state (e.g., toggling a lamp on or off) or triggers a process on the Thing (e.g., dimm a lamp over time)."@en .
 
 
 
-###  http://www.w3.org/ns/td#Data
-
-:Data rdf:type owl:Class ;
-      
-      rdfs:label "Data" ;
-      
-      rdfs:subClassOf [ rdf:type owl:Restriction ;
-                        owl:onProperty :specifiedBy ;
-                        owl:someValuesFrom :Specification
-                      ] ;
-      
-      rdfs:comment "Any part of a Thing that is represented by some piece of data (e.g. a temperarture quantity represented by a JSON number). Data and Specification are related in the sense that the former can embed specification elements (for the sake of conciseness), thus being its own specification." ;
-      
-      rdfs:seeAlso <http://schema.org/PropertyValue> .
-
-
-
-###  http://www.w3.org/ns/td#eventaffordance
+###  http://www.w3.org/2019/td#eventaffordance
 
 :EventAffordance rdf:type owl:Class ;
        
        rdfs:label "EventAffordance" ;
+
+       rdfs:subClassOf :InteractionAffordance ;
        
-        rdfs:subClassOf :InteractionAffordance ,
-                        [ rdf:type owl:Restriction ;
-                          owl:onProperty :subscription ;
-                          owl:allValuesFrom :Specification
-                        ] ,
-                        [ rdf:type owl:Restriction ;
-                          owl:onProperty :data ;
-                          owl:allValuesFrom :Specification
-                        ] ,
-                        [ rdf:type owl:Restriction ;
-                          owl:onProperty :cancellation ;
-                          owl:allValuesFrom :Specification
-                        ] ;
-       
-       rdfs:comment "An Interaction Affordance that describes an event source, which asynchronously pushes event data to clients (e.g., overheating alerts)."@en .
+       rdfs:comment "An Interaction Affordance that describes an event source, which asynchronously pushes event data to <a>Consumers</a> (e.g., overheating alerts)."@en .
 
 
 
-###  http://www.w3.org/ns/td#Form
-
-:Form rdf:type owl:Class ;
-      
-      rdfs:label "Form" ;
-      
-      rdfs:subClassOf [ rdf:type owl:Restriction ;
-                        owl:onProperty :contentType ;
-                        owl:allValuesFrom xsd:string
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :op ;
-                        owl:allValuesFrom xsd:string
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :subprotocol ;
-                        owl:allValuesFrom xsd:string
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :href ;
-                        owl:someValuesFrom xsd:anyURI
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :response ;
-                        owl:allValuesFrom :ExpectedResponse
-                      ]  ;
-      
-      rdfs:comment "Communication metadata indicating where a service can be accessed by a client application. An interaction might have more than one form."@en .
-
-
-
-###  http://www.w3.org/ns/td#interactionaffordance
+###  http://www.w3.org/2019/td#interactionaffordance
 
 :InteractionAffordance rdf:type owl:Class ;
                     
                     rdfs:label "InteractionAffordance" ;
                     
-                    rdfs:subClassOf [ rdf:type owl:Restriction ;
-                                      owl:onProperty :title ;
-                                      owl:allValuesFrom xsd:string
-                                    ] ,
-                                    [ rdf:type owl:Restriction ;
-                                      owl:onProperty :titles ;
-                                      owl:allValuesFrom :MultiLanguage
-                                    ] ,
-                                    [ rdf:type owl:Restriction ;
-                                      owl:onProperty :forms ;
-                                      owl:allValuesFrom :Form
-                                    ] ,
-                                    [ rdf:type owl:Restriction ;
-                                      owl:onProperty :description ;
-                                      owl:allValuesFrom xsd:string
-                                    ] ,
-                                    [ rdf:type owl:Restriction ;
-                                      owl:onProperty :descriptions ;
-                                      owl:allValuesFrom :MultiLanguage
-                                    ] ,
-                                    [ rdf:type owl:Restriction ;
-                                      owl:onProperty :uriVariables ;
-                                      owl:someValuesFrom :DataSchema
-                                    ],
-                                    [ rdf:type owl:Restriction ;
-                                      owl:onProperty :uriVariables ;
-                                      owl:someValuesFrom :Form
-                                    ] ;
-                    
-                    rdfs:comment "Metadata of a Thing that shows the possible choices to clients, thereby suggesting how clients may interact with the Thing. There are many types of potential affordances, but W3C WoT defines three types of Interaction Affordances: Properties, Actions, and Events."@en .
+                    rdfs:comment "Metadata of a Thing that shows the possible choices to <a>Consumers</a>, thereby suggesting how <a>Consumers</a> may interact with the Thing. There are many types of potential affordances, but W3C WoT defines three types of Interaction Affordances: Properties, Actions, and Events."@en .
 
 
 
-###  http://www.w3.org/ns/td#Link
+###  http://www.w3.org/2019/td#Link
 
 :Link rdf:type owl:Class ;
       
       rdfs:label "Link" ;
       
-      rdfs:subClassOf [ rdf:type owl:Restriction ;
-                        owl:onProperty :anchor ;
-                        owl:allValuesFrom xsd:anyURI
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :rel ;
-                        owl:allValuesFrom xsd:string
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :href ;
-                        owl:someValuesFrom xsd:anyURI
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :type ;
-                        owl:allValuesFrom xsd:string
-                      ] ,
-                      [ rdf:type owl:Restriction ;
-                        owl:onProperty :href ;
-                        owl:allValuesFrom xsd:anyURI
-                      ] ;
-      
       rdfs:comment "A Web link, as specified by IETF RFC 8288 (https://tools.ietf.org/html/rfc8288)."@en .
 
-###  http://www.w3.org/ns/td#VersionInfo
+###  http://www.w3.org/2019/td#VersionInfo
 
 :VersionInfo rdf:type owl:Class ;
       
       rdfs:label "VersionInfo" ;
       
-      rdfs:subClassOf [ rdf:type owl:Restriction ;
-                        owl:onProperty :instance ;
-                        owl:allValuesFrom xsd:string
-                      ] ;
-      
-      rdfs:comment "Carries version information about the TD instance. If required, additional version information such as firmware and hardware version (term definitions outside of the TD namespace) can be extended here."@en .
-
-
-###  http://www.w3.org/ns/td#ExpectedResponse
-
-:ExpectedResponse rdf:type owl:Class ;
-      
-      rdfs:label "ExpectedResponse" ;
-      
-      rdfs:subClassOf [ rdf:type owl:Restriction ;
-                        owl:onProperty :contentType ;
-                        owl:allValuesFrom xsd:string
-                      ] ;
-      
-      rdfs:comment "Communication metadata for response messages (e.g., contentType of the response)."@en .
+      rdfs:comment "Metadata of a Thing that provides version information about the TD document. If required, additional version information such as firmware and hardware version (term definitions outside of the TD namespace) can be extended via the <a>TD Context Extension</a> mechanism."@en .
 
 
 
 
 
-###  http://www.w3.org/ns/td#Property
+###  http://www.w3.org/2019/td#Property
 
 :PropertyAffordance rdf:type owl:Class ;
           
           rdfs:label "PropertyAffordance" ;
-          
-          rdfs:subClassOf :Data ,
-                          :InteractionAffordance ,
-                          [ rdf:type owl:Restriction ;
-                            owl:onProperty :observable ;
-                            owl:allValuesFrom xsd:boolean
-                          ] ;
+
+          rdfs:subClassOf :InteractionAffordance ;
           
           rdfs:comment "An Interaction Affordance that exposes state of the Thing. This state can then be retrieved (read) and optionally updated (write). Things can also choose to make Properties observable by pushing the new state after a change."@en .
 
 
 
-###  http://www.w3.org/ns/td#Specification
-
-:Specification rdf:type owl:Class ;
-               
-               rdfs:label "Specification" ;
-               
-               rdfs:comment "Data specification (e.g. a JSON schema) to use for validation of concrete data exchanged between a Thing and its clients."@en ;
-               
-               rdfs:seeAlso <http://schema.org/PropertyValueSpecification> .
-
-
-
-###  http://www.w3.org/ns/td#Thing
+###  http://www.w3.org/2019/td#Thing
 
 :Thing rdf:type owl:Class ;
        
        rdfs:label "Thing"@en ;
        
-       rdfs:subClassOf [ rdf:type owl:Restriction ;
-                         owl:onProperty :support ;
-                         owl:allValuesFrom xsd:string
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :properties ;
-                         owl:allValuesFrom :PropertyAffordance
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :name ;
-                         owl:someValuesFrom xsd:string
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :base ;
-                         owl:allValuesFrom xsd:anyURI
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :links ;
-                         owl:allValuesFrom :Link
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :events ;
-                         owl:allValuesFrom :EventAffordance
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :actions ;
-                         owl:allValuesFrom :ActionAffordance
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :description ;
-                         owl:allValuesFrom xsd:string
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :descriptions ;
-                         owl:allValuesFrom :MultiLanguage
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :version ;
-                         owl:allValuesFrom :VersionInfo
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :created ;
-                         owl:allValuesFrom xsd:string
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :lastModified ;
-                         owl:allValuesFrom xsd:string
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :security ;
-                         owl:allValuesFrom xsd:string
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :securityDefinitions ;
-                         owl:allValuesFrom :SecurityScheme
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :forms ;
-                         owl:allValuesFrom :Form
-                       ];
-       
        rdfs:comment "An abstraction of a physical or a virtual entity whose metadata and interfaces are described by a WoT Thing Description, whereas a virtual entity is the composition of one or more Things."@en .
 
 
-###  http://www.w3.org/ns/td#MultiLanguage
+###  http://www.w3.org/2019/td#MultiLanguage
 
 :MultiLanguage rdf:type owl:Class ;
           
           rdfs:label "MultiLanguage" ;
          
-          rdfs:comment "Container to provide human-readable text in different languages using language tags described in [[BCP47]]. Each used language tags code MUST be decleared as vocabulary term member of this container (e.g., en, de, ja, zh-Hans, zh-Hant)."@en .
+          rdfs:comment "A <a>Map</a> providing a set of human-readable texts in different languages identified by language tags described in [[BCP47]]."@en .
 
 
 

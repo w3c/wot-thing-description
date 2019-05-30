@@ -55,14 +55,14 @@ const ctxFiles = [
     // 'context/td-context.jsonld',
     // 'context/json-schema-context.jsonld',
     // 'context/wot-security-context.jsonld',
-    // 'context/web-linking-context.jsonld'
+    // 'context/hypermedia-context.jsonld'
 ];
 
 const ttlFiles = [
     'ontology/td.ttl',
 	'ontology/json-schema.ttl',
 	'ontology/wot-security.ttl',
-    'ontology/web-linking.ttl',
+    'ontology/hypermedia.ttl',
     'ontology/alignments.ttl',
 	'validation/td-validation.ttl'
 ];
@@ -90,7 +90,7 @@ load(updateEndpoint, null)
     let td = JSON.parse(fs.readFileSync('context/td-context.jsonld'));
     let jsonschema = JSON.parse(fs.readFileSync('context/json-schema-context.jsonld'));
     let wotsec = JSON.parse(fs.readFileSync('context/wot-security-context.jsonld'));
-    let lnk = JSON.parse(fs.readFileSync('context/web-linking-context.jsonld'));
+    let hyperm = JSON.parse(fs.readFileSync('context/hypermedia-context.jsonld'));
 
     let ctx = td['@context'];
     ctx['@version'] = 1.1;
@@ -104,7 +104,8 @@ load(updateEndpoint, null)
 
     ctx.security['@context'] = wotsec['@context'];
 
-    ctx.links['@context'] = lnk['@context'];
+    ctx.forms['@context'] = hyperm['@context'];
+    ctx.links['@context'] = hyperm['@context'];
 
     fs.writeFileSync('context/td-context-1.1.jsonld', JSON.stringify(td));
 
@@ -141,10 +142,10 @@ load(updateEndpoint, null)
 
     let rendered = src;
 
-    let td = { type: 'uri', value: 'http://www.w3.org/ns/td#' };
-    let jsonschema = { type: 'uri', value: 'http://www.w3.org/ns/json-schema#' };
-    let wotsec = { type: 'uri', value: 'http://www.w3.org/ns/wot-security#' };
-    let lnk = { type: 'uri', value: 'http://www.w3.org/ns/web-linking#' };
+    let td = { type: 'uri', value: 'https://www.w3.org/2019/wot/td#' };
+    let jsonschema = { type: 'uri', value: 'https://www.w3.org/2019/wot/json-schema#' };
+    let wotsec = { type: 'uri', value: 'https://www.w3.org/2019/wot/security#' };
+    let hyperm = { type: 'uri', value: 'https://www.w3.org/2019/wot/hypermedia#' };
 
     // HTML rendering
 
@@ -160,10 +161,10 @@ load(updateEndpoint, null)
     })
     .then(html => {
         rendered = rendered.replace('{wot-security}', html);
-        return sttl.callTemplate(tpl1, lnk);
+        return sttl.callTemplate(tpl1, hyperm);
     })
     .then(html => {
-        rendered = rendered.replace('{web-linking}', html);
+        rendered = rendered.replace('{hypermedia}', html);
         return Promise.resolve();
     })
     .then(() => {
@@ -193,10 +194,10 @@ load(updateEndpoint, null)
     })
     .then(dot => {
         fs.writeFileSync('visualization/wot-security.dot', dot);
-        return sttl.callTemplate(tpl2, lnk);
+        return sttl.callTemplate(tpl2, hyperm);
     })
     .then(dot => {
-        fs.writeFileSync('visualization/web-linking.dot', dot);
+        fs.writeFileSync('visualization/hypermedia.dot', dot);
     })
     .catch(e => console.error('DOT rendering error: ' + e.message));
 
@@ -205,7 +206,7 @@ load(updateEndpoint, null)
     let tdPrefix = { type: 'literal', value: 'td' };
     let jsonschemaPrefix = { type: 'literal', value: 'jsonschema' };
     let wotsecPrefix = { type: 'literal', value: 'wotsec' };
-    let lnkPrefix = { type: 'literal', value: 'lnk' };
+    let hypermPrefix = { type: 'literal', value: 'hyperm' };
 
     let process = (ns, html) => {
         let tpl = 'ontology/' + ns + '.template.html';
@@ -226,10 +227,10 @@ load(updateEndpoint, null)
     })
     .then(html => {
         process('wotsec', html);
-        return sttl.callTemplate(tpl3, lnk, lnkPrefix);
+        return sttl.callTemplate(tpl3, hyperm, hypermPrefix);
     })
     .then(html => {
-        process('lnk', html);
+        process('hyperm', html);
     })
     .catch(e => console.error('HTML (ontology) rendering error: ' + e.message));
 
