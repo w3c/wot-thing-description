@@ -27,7 +27,6 @@ const descs_dir = path.join(inputs_dir, "implementations");          // implemen
 const results_dir = path.join(inputs_dir, "results");                // test results for each assertion and impl
 const interop_dir = path.join(inputs_dir, "interop");                // interop test results directory
 
-
 // Inputs
 const src_htmlfile = path.join(src_dir, "index.html");               // source specification (rendered)
 const rt_htmlfile = path.join(templates_dir, "report.html");         // report template
@@ -41,6 +40,7 @@ const categories_csvfile = path.join(inputs_dir, "categories.csv");  // assertio
 const atrisk_csvfile = path.join(inputs_dir, "atrisk.csv");          // at-risk assertions
 const atrisk_cssfile = path.join(testing_dir, "atrisk.css");         // at-risk assertion styling
 const impls_csvfile = path.join(inputs_dir, "impl.csv");             // structured implementation data
+const manual_csvfile = path.join(testing_dir, "manual.csv");          // assertions to be tested manually
 //-----------------------------------------------------------------------
 
 // Outputs
@@ -53,10 +53,8 @@ const results_csvfile = path.join(results_dir,"template.csv");
 // file...
 const report_base = "file://"+path.join(report_dir, "report.html");
 
-// Base URL for specification.  Empty since it is set in <base> in
-// the HTML template.   Should be updated to published spec when that 
-// URL is available.
-const src_base = "";
+// Base URL for specification. 
+const src_base = "https://www.w3.org/TR/wot-thing-description";
 
 // Whether or not to duplicate category and assertion in test spec appendix.
 // Off by default since it is redundant, but is convenient sometimes.
@@ -136,7 +134,7 @@ if (show_test_specs) {
 }
 if (show_interop_results) {
   report_template_raw = report_template_raw.replace("{{InteropTOC}}",
-    '<li class="tocline">8.2 <a href="testing/report.html#test_interop" shape="rect">Interoperability results</a></li>');
+    '<li class="tocline">8.3 <a href="testing/report.html#test_interop" shape="rect">Interoperability results</a></li>');
   report_template_raw = report_template_raw.replace("{{Interop}}",interop_template_raw); 
 } else {
   report_template_raw = report_template_raw.replace("{{InteropTOC}}","");
@@ -393,6 +391,30 @@ function get_categories(done_callback) {
                     if (chatty_v) console.log("add category record for id",id+":",categories.get(id));
                 } else {
                     if (warn_v) console.log("WARNING: category record for id",id,"in unexpected format");
+                }
+            }
+            done_callback();
+        });
+}
+
+// Get manual assertions
+// (Asynchronous)
+var manual = new Map();
+function get_manual(done_callback) {
+    if (info_v) console.log("processing manual assertions in",manual_csvfile);
+    var filedata = fs.readFileSync(manual_csvfile).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let id = item["ID"];
+                let cm = item["Comment"];
+                if (undefined !== id && undefined !== cm) {
+                    manual.set(id,cm);
+                    if (chatty_v) console.log("add manual record for id",id+":",manual.get(id));
+                } else {
+                    if (warn_v) console.log("WARNING: manual record for id",id,"in unexpected format");
                 }
             }
             done_callback();
@@ -709,6 +731,11 @@ function format_assertions(done_callback) {
       a = assertion_array[i].id;
       ac = assertion_array[i].ac;
       a_text = assertion_array[i].text;
+
+      // Determine if is manual assertion
+      let ma = (undefined !== manual.get(a));
+      let tid = (ma ? "manualresults" : "testresults");
+
       if (chatty_v) console.log("Formatting assertion "+a);
 
       // Results template
@@ -773,49 +800,31 @@ function format_assertions(done_callback) {
         }
       }
   
-      // Make table
+      // Make table row
+      let d = depends.get(a);
+      report_dom('table#'+tid+'>tbody:last-child')
+        .append('\n<tr id="'+a+'" class="'+ac+'"></tr>');
+      let report_tr = report_dom('tr#'+a);
 
       // ID
-      report_dom('table#testresults>tbody:last-child')
-        .append('\n<tr id="'+a+'" class="'+ac+'"></tr>');
-
-      // Assertion
-      let report_tr = report_dom('tr#'+a);
       report_tr.append('\n\t<td class="'+ac+'"><a target="spec" href="'+src_base+'#'+a+'">'+a+'</a></td>');
+
+      // Category
       if (undefined != categories.get(a)) {
         report_tr.append('\n\t<td class="'+ac+'">'+categories.get(a)+'</td>\n');
       } else {
         report_tr.append('\n\t<td class="'+ac+'"></td>');
       }
-      if (undefined != risks.get(a)) {
-        report_tr.append('\n\t<td class="atrisk">'+a_text+'</td>');
-      } else {
-        report_tr.append('\n\t<td class="'+ac+'">'+a_text+'</td>');
-      }
 
-      // Req
+      // Required
       if (req) {
         report_tr.append('\n\t<td class="'+ac+'">Y</td>');
       } else {
         report_tr.append('\n\t<td class="'+ac+'">N</td>');
       }
 
-      // Parent(s) and Context(s)
-      let d = depends.get(a);
+      // Context(s)
       if (undefined != d) {
-        let p = d.parents;
-        if (undefined != p && "null" !== p) {
-          let ps = p.split(' ');
-          let h = '\n\t<td class="'+ac+'">';
-          for (let i=0; i<ps.length; i++) {
-            if (0 != ps[i].trim().length) {
-              h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a><br>';
-            }
-          }
-          report_tr.append(h+'\n\t</td>');
-        } else {
-          report_tr.append('\n\t<td class="'+ac+'"></td>');
-        }
         let c = d.contexts;
         if (undefined != c && "null" !== c) {
           let cs = c.split(' ');
@@ -831,6 +840,31 @@ function format_assertions(done_callback) {
         }
       } else {
         report_tr.append('\n\t<td class="'+ac+'"></td>');
+      }
+
+      // Assertion
+      if (undefined != risks.get(a)) {
+        report_tr.append('\n\t<td class="atrisk">'+a_text+'</td>');
+      } else {
+        report_tr.append('\n\t<td class="'+ac+'">'+a_text+'</td>');
+      }
+
+      // Parent(s)
+      if (undefined != d) {
+        let p = d.parents;
+        if (undefined != p && "null" !== p) {
+          let ps = p.split(' ');
+          let h = '\n\t<td class="'+ac+'">';
+          for (let i=0; i<ps.length; i++) {
+            if (0 != ps[i].trim().length) {
+              h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a><br>';
+            }
+          }
+          report_tr.append(h+'\n\t</td>');
+        } else {
+          report_tr.append('\n\t<td class="'+ac+'"></td>');
+        }
+      } else {
         report_tr.append('\n\t<td class="'+ac+'"></td>');
       }
 
@@ -930,39 +964,38 @@ get_results(0,function(results) {
     get_risks(function() {
      get_depends(function() {
       get_categories(function() {
-        if (chatty_v) {
-            console.log("categories: ",categories);
-        }
-       get_impls(function() {
-         if (chatty_v) {
-            console.log("impls: ",impls);
-         }
-        get_interops(function() {
-         if (chatty_v) {
+       if (chatty_v) console.log("categories: ",categories);
+       get_manual(function() {
+        if (chatty_v) console.log("manual: ",manual);
+        get_impls(function() {
+         if (chatty_v) console.log("impls: ",impls);
+         get_interops(function() {
+          if (chatty_v) {
             console.log("interop: ",interop);
             console.log("interop producers: ",interop_producers);
             console.log("interop consumers: ",interop_consumers);
             console.log("interop table: ",interop_table);
-         }
-         merge_implementations(function() {
-          merge_interops(function() {
-           merge_assertions(src_assertions,"baseassertion",function() {
-            merge_assertions(tab_assertions,"tabassertion",function() {
-             merge_assertions(def_assertions,"defassertion",function() {
-              merge_assertions(extra_assertions,"extraassertion",function() {
-               process_children(function() {
-                format_assertions(function() {
-                 // Output report
-                 fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
-                  if (error) {
-                   return console.log(err);
-                  } else {
-                   if (info_v) console.log("Report output to "+report_htmlfile);
-                  }
+          }
+          merge_implementations(function() {
+           merge_interops(function() {
+            merge_assertions(src_assertions,"baseassertion",function() {
+             merge_assertions(tab_assertions,"tabassertion",function() {
+              merge_assertions(def_assertions,"defassertion",function() {
+               merge_assertions(extra_assertions,"extraassertion",function() {
+                process_children(function() {
+                 format_assertions(function() {
+                  // Output report
+                  fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
+                   if (error) {
+                    return console.log(err);
+                   } else {
+                    if (info_v) console.log("Report output to "+report_htmlfile);
+                   }
+                  }); 
                  }); 
-                }); 
+                });
                });
-              });
+              }); 
              }); 
             }); 
            }); 
