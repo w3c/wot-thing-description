@@ -773,49 +773,31 @@ function format_assertions(done_callback) {
         }
       }
   
-      // Make table
-
-      // ID
+      // Make table row
+      let d = depends.get(a);
       report_dom('table#testresults>tbody:last-child')
         .append('\n<tr id="'+a+'" class="'+ac+'"></tr>');
-
-      // Assertion
       let report_tr = report_dom('tr#'+a);
+
+      // ID
       report_tr.append('\n\t<td class="'+ac+'"><a target="spec" href="'+src_base+'#'+a+'">'+a+'</a></td>');
+
+      // Category
       if (undefined != categories.get(a)) {
         report_tr.append('\n\t<td class="'+ac+'">'+categories.get(a)+'</td>\n');
       } else {
         report_tr.append('\n\t<td class="'+ac+'"></td>');
       }
-      if (undefined != risks.get(a)) {
-        report_tr.append('\n\t<td class="atrisk">'+a_text+'</td>');
-      } else {
-        report_tr.append('\n\t<td class="'+ac+'">'+a_text+'</td>');
-      }
 
-      // Req
+      // Required
       if (req) {
         report_tr.append('\n\t<td class="'+ac+'">Y</td>');
       } else {
         report_tr.append('\n\t<td class="'+ac+'">N</td>');
       }
 
-      // Parent(s) and Context(s)
-      let d = depends.get(a);
+      // Context(s)
       if (undefined != d) {
-        let p = d.parents;
-        if (undefined != p && "null" !== p) {
-          let ps = p.split(' ');
-          let h = '\n\t<td class="'+ac+'">';
-          for (let i=0; i<ps.length; i++) {
-            if (0 != ps[i].trim().length) {
-              h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a><br>';
-            }
-          }
-          report_tr.append(h+'\n\t</td>');
-        } else {
-          report_tr.append('\n\t<td class="'+ac+'"></td>');
-        }
         let c = d.contexts;
         if (undefined != c && "null" !== c) {
           let cs = c.split(' ');
@@ -831,6 +813,31 @@ function format_assertions(done_callback) {
         }
       } else {
         report_tr.append('\n\t<td class="'+ac+'"></td>');
+      }
+
+      // Assertion
+      if (undefined != risks.get(a)) {
+        report_tr.append('\n\t<td class="atrisk">'+a_text+'</td>');
+      } else {
+        report_tr.append('\n\t<td class="'+ac+'">'+a_text+'</td>');
+      }
+
+      // Parent(s)
+      if (undefined != d) {
+        let p = d.parents;
+        if (undefined != p && "null" !== p) {
+          let ps = p.split(' ');
+          let h = '\n\t<td class="'+ac+'">';
+          for (let i=0; i<ps.length; i++) {
+            if (0 != ps[i].trim().length) {
+              h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a><br>';
+            }
+          }
+          report_tr.append(h+'\n\t</td>');
+        } else {
+          report_tr.append('\n\t<td class="'+ac+'"></td>');
+        }
+      } else {
         report_tr.append('\n\t<td class="'+ac+'"></td>');
       }
 
