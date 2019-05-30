@@ -134,7 +134,7 @@ if (show_test_specs) {
 }
 if (show_interop_results) {
   report_template_raw = report_template_raw.replace("{{InteropTOC}}",
-    '<li class="tocline">8.2 <a href="testing/report.html#test_interop" shape="rect">Interoperability results</a></li>');
+    '<li class="tocline">8.3 <a href="testing/report.html#test_interop" shape="rect">Interoperability results</a></li>');
   report_template_raw = report_template_raw.replace("{{Interop}}",interop_template_raw); 
 } else {
   report_template_raw = report_template_raw.replace("{{InteropTOC}}","");
