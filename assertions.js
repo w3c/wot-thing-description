@@ -220,14 +220,14 @@ src_dom('tr[class="rfc2119-default-assertion"]').each(function(i,elem) {
         let assertion = '<span class="rfc2119-default-assertion">' 
                       + 'The value associated with member '
                       + '"<code>'
-                      + assertion_data[0]  // vocab term
+                      + assertion_data[1]  // vocab term
                       + '</code>"'
                       + ' if not given MUST be assumed to have the default value ' 
                       + '"<code>' 
-                      + assertion_data[1]  // default value
+                      + assertion_data[2]  // default value
                       + '</code>".' 
                       +'</span>';
-        let contexts = assertion_data[2];
+        let contexts = assertion_data[0];
         if (undefined !== contexts && "null" !== contexts) {
            // get rid of any markup (convert to spaces)
            contexts = contexts.replace(/<\/?[a-zA-Z]+>/gi,' ');
