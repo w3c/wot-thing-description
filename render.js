@@ -147,6 +147,7 @@ load(updateEndpoint, null)
     let wotsec = { type: 'uri', value: 'https://www.w3.org/2019/wot/security#' };
     let hyperm = { type: 'uri', value: 'https://www.w3.org/2019/wot/hypermedia#' };
 
+/*
     // HTML rendering
 
     let tpl1 = 'http://w3c.github.io/wot-thing-description/#classes';
@@ -171,11 +172,6 @@ load(updateEndpoint, null)
         rendered = rendered.replace('{td.json-schema.validation}', jsonSchemaValidation);
         rendered = rendered.replace('{atriskCSS}', atriskCSS);
 
-        // beautify html
-        /*var html = rendered.querySelector("body").outerHTML;
-        var result = tidy_html5(html, options);
-        tidyHTML.tidy_html5(html, options);
-        */
         fs.writeFileSync('index.html', rendered, 'UTF-8');
     })
     .catch(e => console.error('HTML rendering error: ' + e.message));
@@ -200,6 +196,7 @@ load(updateEndpoint, null)
         fs.writeFileSync('visualization/hypermedia.dot', dot);
     })
     .catch(e => console.error('DOT rendering error: ' + e.message));
+*/
 
     // HTML rendering (ontology documents)
  
