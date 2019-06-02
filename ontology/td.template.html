@@ -51,6 +51,11 @@
             padding: 10px;
             border: 1px solid #ddd;
         }
+
+        pre.split-example {
+            box-shadow: 5px 5px #0002;
+            border: 1px solid #e0cb5299;
+        }
     </style>
 </head>
 
@@ -102,6 +107,44 @@
         sosa:Platform
         sosa:FeatureOfInterest
     )
+] .
+</pre>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+<pre class="nohighlight">
+?a a td:PropertyAffordance ;
+   td:hasForm ?form .
+?form hyperm:forOperationType
+    "readproperty" .
+</pre>
+                        </td>
+                        <td>
+<pre class="nohighlight">
+?a a [
+    a owl:Restriction ;
+    owl:onProperty ssn:forProperty ;
+    owl:someValuesFrom ssn:ObservableProperty
+] .
+</pre>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+<pre class="nohighlight">
+?a a td:PropertyAffordance ;
+   td:hasForm ?form .
+?form hyperm:forOperationType
+    "writeproperty" .
+</pre>
+                        </td>
+                        <td>
+<pre class="nohighlight">
+?a a [
+    a owl:Restriction ;
+    owl:onProperty ssn:forProperty ;
+    owl:someValuesFrom ssn:ActuatableProperty
 ] .
 </pre>
                         </td>
@@ -199,9 +242,57 @@
         <section>
             <h3>Merging Thing Descriptions</h3>
 
-            <p>
-                Into a knowledge graph. See BA example with a BIM.
-            </p>
+<aside class="example" title="Merging of two TD documents and a logical map of a building">
+<pre class="split-example">
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:epc:id:sgtin:900100.0003456.1234567",
+    "@type": "https://w3id.org/saref#HVAC",
+    "properties": {
+        "status": {
+            "type": "boolean",
+            "forms": [...]
+        }
+    }
+}
+</pre>
+<pre class="split-example">
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:epc:id:sgtin:900200.1234000.9876543",
+    "@type": "https://w3id.org/saref#TemperatureSensor",
+    "properties": {
+        "temperature": {
+            "type": "number",
+            "forms": [...]
+        }
+    }
+}
+</pre>
+<pre class="split-example">
+{
+    "@context": {
+        "bot": "https://w3id.org/bot#",
+        "brick": "https://brickschema.org/schema/1.0.3/BrickFrame#"
+    },
+    "@graph": [
+        {
+            "@id": "tag:room_101",
+            "@type": "bot:Space",
+            "bot:containsElement": {
+                "@id": "urn:epc:id:sgtin:900200.1234000.9876543"
+            }
+        },
+        {
+            "@id": "urn:epc:id:sgtin:900100.0003456.1234567",
+            "brick:feeds": {
+                "@id": "tag:room_101"
+            }
+        }
+    ]
+}
+</pre>
+</aside>
         </section>
 
         <section>
@@ -210,14 +301,38 @@
             <p>
                 Affordances relate to specific parts of a state (defined in SOSA/SAREF)
             </p>
+
+            <p>
+                Choose to follow different affordances for the same result
+                (writeproperty/invokeaction or observeproperty/subscribeevent)
+            </p>
         </section>
 
         <section>
             <h3>Specifying Affordances by Device Classes</h3>
 
-            <p>
-                E.g. a temperature sensor has an affordance
-            </p>
+<aside class="example" title="OWL axiom for affordances provided by a temperature sensor">
+<pre>
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
+@prefix owl: &lt;http://www.w3.org/2002/07/owl#&gt; .
+@prefix saref: &lt;https://w3id.org/saref#&gt; .
+@prefix td: &lt;https://www.w3.org/2019/wot/td#&gt; .
+@prefix ex: &lt;http://example.org/&gt; .
+@prefix ssn: &lt;http://www.w3.org/ns/ssn/&gt; .
+
+saref:TemperatureSensor rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty td:hasPropertyAffordance ;
+        owl:someValuesFrom ex:TemperatureAffordance
+    ] .
+
+ex:TemperatureAffordance rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty ssn:forProperty ;
+        owl:someValuesFrom saref:Temperature
+    ] .
+</pre>
+</aside>
         </section>
     </section>
 </body>

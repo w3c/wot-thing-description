@@ -10,6 +10,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix hyperm: <https://www.w3.org/2019/wot/hypermedia#> .
 
 
 <http://www.w3.org/2019/td#> rdf:type owl:Ontology ;
@@ -367,7 +368,85 @@
           
           rdfs:comment "An Interaction Affordance that exposes state of the Thing. This state can then be retrieved (read) and optionally updated (write). Things can also choose to make Properties observable by pushing the new state after a change."@en .
 
+:ChangePropertyAffordance rdf:type owl:Class ;
 
+          rdfs:label "ChangePropertyAffordance" ;
+
+          rdfs:subClassOf :ActionAffordance ;
+
+          rdfs:comment "A special case of Action Affordance, equivalent to an affordance to a writable property"@en .
+
+:PropertyChangedAffordance rdf:type owl:Class ;
+
+          rdfs:label "PropertyChangedAffordance" ;
+
+          rdfs:subClassOf :EventAffordance ;
+
+          rdfs:comment "A special case of Event Affordance, equivalent to an affordance to an observable property"@en .
+
+[
+       a owl:Class ;
+       owl:intersectionOf (
+              :Thing
+              [
+                     a owl:Restriction ;
+                     owl:onProperty :hasPropertyAffordance ;
+                     owl:someValuesFrom [
+                            a owl:Class ;
+                            owl:intersectionOf (
+                                   hyperm:Form
+                                   [
+                                          a owl:Restriction ;
+                                          owl:onProperty hyperm:forOperationType ;
+                                          owl:hasValue "writeproperty"
+                                   ]
+                            )
+                     ]
+              ]
+       )
+] owl:equivalentClass [
+       a owl:Class ;
+       owl:intersectionOf (
+              :Thing
+              [
+                     a owl:Restriction ;
+                     owl:onProperty :hasActionAffordance ;
+                     owl:someValuesFrom :ChangePropertyAffordance
+              ]
+       )
+] .
+
+[
+       a owl:Class ;
+       owl:intersectionOf (
+              :Thing
+              [
+                     a owl:Restriction ;
+                     owl:onProperty :hasPropertyAffordance ;
+                     owl:someValuesFrom [
+                            a owl:Class ;
+                            owl:intersectionOf (
+                                   hyperm:Form
+                                   [
+                                          a owl:Restriction ;
+                                          owl:onProperty hyperm:forOperationType ;
+                                          owl:hasValue "observeproperty"
+                                   ]
+                            )
+                     ]
+              ]
+       )
+] owl:equivalentClass [
+       a owl:Class ;
+       owl:intersectionOf (
+              :Thing
+              [
+                     a owl:Restriction ;
+                     owl:onProperty :hasEventAffordance ;
+                     owl:someValuesFrom :PropertyChangedAffordance
+              ]
+       )
+] .
 
 ###  http://www.w3.org/2019/td#Thing
 
@@ -376,15 +455,6 @@
        rdfs:label "Thing"@en ;
        
        rdfs:comment "An abstraction of a physical or a virtual entity whose metadata and interfaces are described by a WoT Thing Description, whereas a virtual entity is the composition of one or more Things."@en .
-
-
-###  http://www.w3.org/2019/td#MultiLanguage
-
-:MultiLanguage rdf:type owl:Class ;
-          
-          rdfs:label "MultiLanguage" ;
-         
-          rdfs:comment "A <a>Map</a> providing a set of human-readable texts in different languages identified by language tags described in [[BCP47]]."@en .
 
 
 
