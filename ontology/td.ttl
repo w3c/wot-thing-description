@@ -183,7 +183,9 @@
        
        rdfs:label "hasLink" ;
        
-       rdfs:comment "Provides Web links to arbitrary resources that relate to the specified Thing Description."@en .
+       rdfs:comment "Provides Web links to arbitrary resources that relate to the specified Thing Description."@en ;
+       
+       rdfs:range hyperm:Link .
 
 
 ###  http://www.w3.org/2019/td#output
@@ -234,7 +236,9 @@
        
        rdfs:label "isSafe" ;
        
-       rdfs:comment "Signals if the action is safe (=true) or not. Used to signal if there is no internal state (cf. resource state) is changed when invoking an Action. In that case responses can be cached as example."@en .
+       rdfs:comment "Signals if the action is safe (=true) or not. Used to signal if there is no internal state (cf. resource state) is changed when invoking an Action. In that case responses can be cached as example."@en ;
+       
+       rdfs:range xsd:boolean .
 
 
 ###  http://www.w3.org/2019/td#idempotent
@@ -243,7 +247,9 @@
        
        rdfs:label "isIdempotent" ;
        
-       rdfs:comment "Indicates whether the action is idempotent (=true) or not. Informs whether the action can be called repeatedly with the same result, if present, based on the same input."@en .
+       rdfs:comment "Indicates whether the action is idempotent (=true) or not. Informs whether the action can be called repeatedly with the same result, if present, based on the same input."@en ;
+       
+       rdfs:range xsd:boolean .
 
 
 ###  http://www.w3.org/2019/td#base
@@ -261,12 +267,16 @@
             
             rdfs:label "isObservable" ;
             
-            rdfs:comment "A hint that indicates whether Servients hosting the Thing and Intermediaries should provide a Protocol Binding that supports the <code>observeproperty</code> operation for this Property."@en .
+            rdfs:comment "A hint that indicates whether Servients hosting the Thing and Intermediaries should provide a Protocol Binding that supports the <code>observeproperty</code> operation for this Property."@en ;
+       
+       rdfs:range xsd:boolean .
 
 
 :name rdf:type owl:DatatypeProperty ;
       rdfs:label "name" ;
-      rdfs:comment "Indexing property to store entity names when serializing them in a JSON-LD @index container."@en .
+      rdfs:comment "Indexing property to store entity names when serializing them in a JSON-LD @index container."@en ;
+       
+       rdfs:range xsd:string .
 
 
 #################################################################
@@ -290,12 +300,18 @@
               a owl:Restriction ;
               owl:onProperty :hasInputSchema ;
               owl:cardinality "1"^^xsd:nonNegativeInteger
-       ] ;
-       
-       rdfs:subClassOf [
+       ], [
               a owl:Restriction ;
               owl:onProperty :hasOutputSchema ;
               owl:cardinality "1"^^xsd:nonNegativeInteger
+       ], [
+              a owl:Restriction  ;
+              owl:onProperty :hasForm ;
+              owl:allValuesFrom [
+                     a owl:Restriction ;
+                     owl:onProperty hyperm:forOperationType ;
+                     owl:hasValue "invokeaction"
+              ]
        ] .
 
 
@@ -314,18 +330,22 @@
               a owl:Restriction ;
               owl:onProperty :hasNotificationSchema ;
               owl:cardinality "1"^^xsd:nonNegativeInteger
-       ] ;
-       
-       rdfs:subClassOf [
+       ], [
               a owl:Restriction ;
               owl:onProperty :hasSubscriptionSchema ;
               owl:cardinality "1"^^xsd:nonNegativeInteger
-       ] ;
-       
-       rdfs:subClassOf [
+       ], [
               a owl:Restriction ;
               owl:onProperty :hasCancellationSchema ;
               owl:cardinality "1"^^xsd:nonNegativeInteger
+       ], [
+              a owl:Restriction  ;
+              owl:onProperty :hasForm ;
+              owl:allValuesFrom [
+                     a owl:Restriction ;
+                     owl:onProperty hyperm:forOperationType ;
+                     owl:hasValue "subscribeevent"
+              ]
        ] .
 
 
@@ -364,7 +384,32 @@
 
           rdfs:subClassOf :InteractionAffordance ;
           
-          rdfs:comment "An Interaction Affordance that exposes state of the Thing. This state can then be retrieved (read) and optionally updated (write). Things can also choose to make Properties observable by pushing the new state after a change."@en .
+          rdfs:comment "An Interaction Affordance that exposes state of the Thing. This state can then be retrieved (read) and optionally updated (write). Things can also choose to make Properties observable by pushing the new state after a change."@en ;
+          
+          rdfs:subClassOf [
+              a owl:Restriction  ;
+              owl:onProperty :hasForm ;
+              owl:allValuesFrom [
+                     a owl:Class ;
+                     owl:unionOf (
+                            [
+                                   a owl:Restriction ;
+                                   owl:onProperty hyperm:forOperationType ;
+                                   owl:hasValue "readproperty"
+                            ]
+                            [
+                                   a owl:Restriction ;
+                                   owl:onProperty hyperm:forOperationType ;
+                                   owl:hasValue "writeproperty"
+                            ]
+                            [
+                                   a owl:Restriction ;
+                                   owl:onProperty hyperm:forOperationType ;
+                                   owl:hasValue "observeproperty"
+                            ]
+                     )
+              ]
+       ] .
 
 :ChangePropertyAffordance rdf:type owl:Class ;
 
@@ -458,5 +503,33 @@
               a owl:Restriction ;
               owl:onProperty :hasInteractionAffordance ;
               owl:someValuesFrom :InteractionAffordance
+       ], [
+              a owl:Restriction  ;
+              owl:onProperty :hasForm ;
+              owl:allValuesFrom [
+                     a owl:Class ;
+                     owl:unionOf (
+                            [
+                                   a owl:Restriction ;
+                                   owl:onProperty hyperm:forOperationType ;
+                                   owl:hasValue "readallproperties"
+                            ]
+                            [
+                                   a owl:Restriction ;
+                                   owl:onProperty hyperm:forOperationType ;
+                                   owl:hasValue "writeallproperties"
+                            ]
+                            [
+                                   a owl:Restriction ;
+                                   owl:onProperty hyperm:forOperationType ;
+                                   owl:hasValue "readmultipleproperties"
+                            ]
+                            [
+                                   a owl:Restriction ;
+                                   owl:onProperty hyperm:forOperationType ;
+                                   owl:hasValue "writemultipleproperties"
+                            ]
+                     )
+              ]
        ] .
 
