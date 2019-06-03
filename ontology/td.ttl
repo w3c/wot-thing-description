@@ -33,7 +33,9 @@
                            
                            dcterms:author <mailto:victor.charpenay@siemens.com> ;
                            
-                           dc:publisher <https://www.w3.org/WoT/WG/> .
+                           dc:publisher <https://www.w3.org/WoT/WG/> ;
+
+                           owl:imports hyperm: .
 
 
 
@@ -64,6 +66,14 @@
           
           rdfs:comment "Provides version information."@en .
 
+###  http://www.w3.org/2019/td#instance
+
+:instance rdf:type owl:AnnotationProperty ;
+       
+       rdfs:label "instance" ;
+       
+       rdfs:comment "Provides a version identicator of this TD instance."@en .
+
 
 #################################################################
 #
@@ -82,7 +92,7 @@
          
          rdfs:comment "All Action-based interaction affordance of the Thing."@en ;
          
-         rdfs:subPropertyOf :interactions .
+         rdfs:range :ActionAffordance .
 
 
 
@@ -94,7 +104,9 @@
 
         rdfs:subPropertyOf :hasInteractionAffordance ;
         
-        rdfs:comment "All Event-based interaction affordance of the Thing."@en .
+        rdfs:comment "All Event-based interaction affordance of the Thing."@en ;
+         
+        rdfs:range :EventAffordance .
 
 
 
@@ -104,7 +116,9 @@
        
        rdfs:label "hasForm" ;
        
-       rdfs:comment "Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings."@en .
+       rdfs:comment "Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings."@en ;
+
+       rdfs:range hyperm:Form .
 
 
 ###  http://www.w3.org/2019/td#hasUriTemplateVariable
@@ -124,23 +138,6 @@
        rdfs:label "hasInputSchema" ;
        
        rdfs:comment "Used to define the input data schema of the action."@en .
-
-###  http://www.w3.org/2019/td#safe
-
-:isSafe rdf:type owl:ObjectProperty ;
-       
-       rdfs:label "isSafe" ;
-       
-       rdfs:comment "Signals if the action is safe (=true) or not. Used to signal if there is no internal state (cf. resource state) is changed when invoking an Action. In that case responses can be cached as example."@en .
-
-
-###  http://www.w3.org/2019/td#idempotent
-
-:isIdempotent rdf:type owl:ObjectProperty ;
-       
-       rdfs:label "isIdempotent" ;
-       
-       rdfs:comment "Indicates whether the action is idempotent (=true) or not. Informs whether the action can be called repeatedly with the same result, if present, based on the same input."@en .
 
 
 
@@ -207,7 +204,9 @@
 
             rdfs:subPropertyOf :hasInteractionAffordance ;
             
-            rdfs:comment "All Property-based interaction affordance of the Thing."@en .
+            rdfs:comment "All Property-based interaction affordance of the Thing."@en ;
+         
+        rdfs:range :PropertyAffordance .
 
 
 
@@ -229,6 +228,23 @@
 #################################################################
 
 
+###  http://www.w3.org/2019/td#safe
+
+:isSafe rdf:type owl:DatatypeProperty ;
+       
+       rdfs:label "isSafe" ;
+       
+       rdfs:comment "Signals if the action is safe (=true) or not. Used to signal if there is no internal state (cf. resource state) is changed when invoking an Action. In that case responses can be cached as example."@en .
+
+
+###  http://www.w3.org/2019/td#idempotent
+
+:isIdempotent rdf:type owl:DatatypeProperty ;
+       
+       rdfs:label "isIdempotent" ;
+       
+       rdfs:comment "Indicates whether the action is idempotent (=true) or not. Informs whether the action can be called repeatedly with the same result, if present, based on the same input."@en .
+
 
 ###  http://www.w3.org/2019/td#base
 
@@ -237,50 +253,6 @@
       rdfs:label "baseUri"@en ;
       
       rdfs:comment "Define the base URI that is used for all relative URI references throughout a TD document. In TD instances, all relative URIs are resolved relative to the base URI using the algorithm defined in [[RFC3986]]."@en .
-
-
-
-###  http://www.w3.org/2019/td#description
-
-:description rdf:type owl:DatatypeProperty ;
-             
-             rdfs:label "description" ;
-             
-             rdfs:comment "Provides additional (human-readable) information based on a default language."@en .
-
-
-
-###  http://www.w3.org/2019/td#title
-
-:title rdf:type owl:DatatypeProperty ;
-       
-       rdfs:label "title" ;
-       
-       rdfs:comment "Provides a human-readable title (e.g., display a text for UI representation) based on a default language."@en .
-
-###  http://www.w3.org/2019/td#instance
-
-:instance rdf:type owl:DatatypeProperty ;
-       
-       rdfs:label "instance" ;
-       
-       rdfs:comment "Provides a version identicator of this TD instance."@en .
-
-
-###  http://www.w3.org/2019/td#created
-:created rdf:type owl:DatatypeProperty ;
-      
-      rdfs:label "created" ;
-      
-      rdfs:comment "Provides information when the TD instance was created."@en .
-
-
-###  http://www.w3.org/2019/td#modified
-:modified rdf:type owl:DatatypeProperty ;
-      
-      rdfs:label "modified" ;
-      
-      rdfs:comment "Provides information when the TD instance was last modified."@en .
 
 
 ###  http://www.w3.org/2019/td#observable
@@ -312,7 +284,19 @@
 
         rdfs:subClassOf :InteractionAffordance ;
         
-        rdfs:comment "An Interaction Affordance that allows to invoke a function of the Thing, which manipulates state (e.g., toggling a lamp on or off) or triggers a process on the Thing (e.g., dimm a lamp over time)."@en .
+        rdfs:comment "An Interaction Affordance that allows to invoke a function of the Thing, which manipulates state (e.g., toggling a lamp on or off) or triggers a process on the Thing (e.g., dimm a lamp over time)."@en ;
+       
+       rdfs:subClassOf [
+              a owl:Restriction ;
+              owl:onProperty :hasInputSchema ;
+              owl:cardinality "1"^^xsd:nonNegativeInteger
+       ] ;
+       
+       rdfs:subClassOf [
+              a owl:Restriction ;
+              owl:onProperty :hasOutputSchema ;
+              owl:cardinality "1"^^xsd:nonNegativeInteger
+       ] .
 
 
 
@@ -324,7 +308,25 @@
 
        rdfs:subClassOf :InteractionAffordance ;
        
-       rdfs:comment "An Interaction Affordance that describes an event source, which asynchronously pushes event data to <a>Consumers</a> (e.g., overheating alerts)."@en .
+       rdfs:comment "An Interaction Affordance that describes an event source, which asynchronously pushes event data to <a>Consumers</a> (e.g., overheating alerts)."@en ;
+       
+       rdfs:subClassOf [
+              a owl:Restriction ;
+              owl:onProperty :hasNotificationSchema ;
+              owl:cardinality "1"^^xsd:nonNegativeInteger
+       ] ;
+       
+       rdfs:subClassOf [
+              a owl:Restriction ;
+              owl:onProperty :hasSubscriptionSchema ;
+              owl:cardinality "1"^^xsd:nonNegativeInteger
+       ] ;
+       
+       rdfs:subClassOf [
+              a owl:Restriction ;
+              owl:onProperty :hasCancellationSchema ;
+              owl:cardinality "1"^^xsd:nonNegativeInteger
+       ] .
 
 
 
@@ -334,17 +336,13 @@
                     
                     rdfs:label "InteractionAffordance" ;
                     
-                    rdfs:comment "Metadata of a Thing that shows the possible choices to <a>Consumers</a>, thereby suggesting how <a>Consumers</a> may interact with the Thing. There are many types of potential affordances, but W3C WoT defines three types of Interaction Affordances: Properties, Actions, and Events."@en .
+                    rdfs:comment "Metadata of a Thing that shows the possible choices to <a>Consumers</a>, thereby suggesting how <a>Consumers</a> may interact with the Thing. There are many types of potential affordances, but W3C WoT defines three types of Interaction Affordances: Properties, Actions, and Events."@en ;
 
-
-
-###  http://www.w3.org/2019/td#Link
-
-:Link rdf:type owl:Class ;
-      
-      rdfs:label "Link" ;
-      
-      rdfs:comment "A Web link, as specified by IETF RFC 8288 (https://tools.ietf.org/html/rfc8288)."@en .
+                     rdfs:subClassOf [
+                            a owl:Restriction ;
+                            owl:onProperty :hasForm ;
+                            owl:someValuesFrom hyperm:Form
+                     ] .
 
 ###  http://www.w3.org/2019/td#VersionInfo
 
@@ -454,9 +452,11 @@
        
        rdfs:label "Thing"@en ;
        
-       rdfs:comment "An abstraction of a physical or a virtual entity whose metadata and interfaces are described by a WoT Thing Description, whereas a virtual entity is the composition of one or more Things."@en .
+       rdfs:comment "An abstraction of a physical or a virtual entity whose metadata and interfaces are described by a WoT Thing Description, whereas a virtual entity is the composition of one or more Things."@en ;
+       
+       rdfs:subClassOf [
+              a owl:Restriction ;
+              owl:onProperty :hasInteractionAffordance ;
+              owl:someValuesFrom :InteractionAffordance
+       ] .
 
-
-
-
- 
