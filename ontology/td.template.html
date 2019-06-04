@@ -130,7 +130,7 @@
 ?a a [
     a owl:Restriction ;
     owl:onProperty ssn:forProperty ;
-    owl:someValuesFrom ssn:ObservableProperty
+    owl:someValuesFrom sosa:ObservableProperty
 ] .
 </pre>
                         </td>
@@ -149,7 +149,7 @@
 ?a a [
     a owl:Restriction ;
     owl:onProperty ssn:forProperty ;
-    owl:someValuesFrom ssn:ActuatableProperty
+    owl:someValuesFrom sosa:ActuatableProperty
 ] .
 </pre>
                         </td>
@@ -304,13 +304,68 @@
             <h3>Internal State of a Thing</h3>
 
             <p>
-                Affordances relate to specific parts of a state (defined in SOSA/SAREF)
+                Look for generic affordances using <code>td:hasInteractionAffordance</code>
+                and decide to perform an action based solely on the operation type.
             </p>
 
-            <p>
-                Choose to follow different affordances for the same result
-                (writeproperty/invokeaction or observeproperty/subscribeevent)
-            </p>
+<aside class="example" title="Alternative affordances to read/write a property value">
+<pre class="split-example">
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:epc:id:sgtin:900300.1234000.9876543",
+    "properties": {
+        "status": {
+            "ssn:forProperty": { "@type": "saref:OnOffState" },
+            "type": "boolean",
+            "forms": [
+                {
+                    "href": "http://example.org/status",
+                    "op": "writeproperty"
+                },
+                {
+                    "href": "http://example.org/status",
+                    "op": "observeproperty"
+                }
+            ]
+        }
+    }
+}
+</pre>
+<pre class="split-example">
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "actions": {
+        "change": {
+            "ssn:forProperty": { "@type": "saref:OnOffState" },
+            "input": { "type": "boolean" },
+            "forms": [
+                {
+                    "href": "http://example.org/status/change",
+                    "op": "invokeaction"
+                }
+            ]
+        }
+    }
+}
+</pre>
+<pre class="split-example">
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "events": {
+        "changed": {
+            "ssn:forProperty": { "@type": "saref:OnOffState" },
+            "data": { "type": "boolean" },
+            "forms": [
+                {
+                    "href": "http://example.org/status/changed",
+                    "op": "subscribeevent"
+                }
+            ]
+        }
+    }
+}
+</pre>
+</aside>
         </section>
 
         <section>
