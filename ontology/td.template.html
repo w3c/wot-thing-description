@@ -62,9 +62,11 @@
 <body>
     <section id='abstract'>
         <p>
-            Defined as a companion to the Thing Description model.
-            Can be used for alignment with other vocabularies, e.g. to provide
-            indications on the affordances exposed by devices of a certain type. 
+            The Thing Description (TD) ontology is an RDF axiomatization of the TD information model,
+            one of the building blocks of the Web of Things (WoT). Besides providing an alternative
+            to the standard JSON representation format for TD documents, the TD ontology can also
+            be used to process contextual information on Things and for alignments with other
+            WoT-related ontologies. 
         </p>
     </section>
     <section id='sotd'>
@@ -76,8 +78,14 @@
         <h2>Introduction</h2>
 
         <p>
-            note: no formal import of JSON schema in the TD ontology
-            (to allow for other schema languages?)
+            The TD ontology is an idiomatic RDF axiomatization of the TD information model [[wot-thing-description]],
+            which can be used to describe WoT things and their interaction affordances. The TD ontology imports
+            the <a href="https://www.w3.org/2019/wot/hypermedia">hypermedia controls</a> ontology.
+            However, although the TD information model also includes terms for data schemas and security
+            configurations, the TD ontology does not force the use of the corresponding
+            <a href="https://www.w3.org/2019/wot/json-schema">JSON schema</a> and
+            <a href="https://www.w3.org/2019/wot/security">WoT security</a> vocabularies. Other schema languages
+            like SHACL [[shacl]] can thus be leveraged to describe WoT Things.
         </p>
     </section>
 
@@ -85,6 +93,12 @@
 
     <section>
         <h2>Alignments</h2>
+
+        <p>
+            Alignments are definde as rules of the form "if <mi>P</mi>, then <mi>T</mi>",
+            where <mi>P</mi> is a SPARQL basic graph pattern and <mi>T</mi> a SPARQL
+            template.
+        </p>
 
         <section>
             <h3>SOSA &amp; SSN</h3>
@@ -247,6 +261,20 @@
         <section>
             <h3>Merging Thing Descriptions</h3>
 
+            <p>
+                The following example includes two TD documents in the standard TD JSON
+                representation format [[wot-thing-description]], identified by a unique
+                electronic product code [[rfc5134]].
+            </p>
+
+            <p>
+                If these two documents are being merged together with contextual information
+                in the form of an RDF graph that uses the same identifiers, it is possible
+                to retrieve form metadata of these TDs depending on the relations that
+                exist between Things. Here, the two Things share information on room 101
+                of some example building.
+            </p>
+
 <aside class="example" title="Merging of two TD documents and a logical map of a building">
 <pre class="split-example">
 {
@@ -304,8 +332,18 @@
             <h3>Internal State of a Thing</h3>
 
             <p>
-                Look for generic affordances using <code>td:hasInteractionAffordance</code>
-                and decide to perform an action based solely on the operation type.
+                It is possible for affordances of different kinds to have the same effect.
+                For instance, an affordance to a writable property may be equivalent to
+                an affordance to invoke an action that changes the property value.
+                Similarly, for every observable property, there may be an equivalent
+                affordance to subscribe to an event that occurs at every property value change.
+            </p>
+
+            <p>
+                WoT clients can avoid having to deal with these discrepancies by
+                using the generic <code>td:hasInteractionAffordance</code> predicate.
+                They can then decide to perform an action based solely on the operation type
+                of the form embedded in the affordance object.
             </p>
 
 <aside class="example" title="Alternative affordances to read/write a property value">
@@ -370,6 +408,15 @@
 
         <section>
             <h3>Specifying Affordances by Device Classes</h3>
+
+            <p>
+                It is possible to use the TD ontology to extend the definition of
+                well-known subclasses of <code>Thing</code> by defining expected
+                affordances that Things of such types should present. The
+                following example specifies that every temperature sensor presents
+                an affordance to a temperature property (expressed in the SAREF
+                vocabulary [[smartM2M]]).
+            </p>
 
 <aside class="example" title="OWL axiom for affordances provided by a temperature sensor">
 <pre>
