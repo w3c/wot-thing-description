@@ -40,7 +40,8 @@ const categories_csvfile = path.join(inputs_dir, "categories.csv");  // assertio
 const atrisk_csvfile = path.join(inputs_dir, "atrisk.csv");          // at-risk assertions
 const atrisk_cssfile = path.join(testing_dir, "atrisk.css");         // at-risk assertion styling
 const impls_csvfile = path.join(inputs_dir, "impl.csv");             // structured implementation data
-const manual_csvfile = path.join(testing_dir, "manual.csv");          // assertions to be tested manually
+const manual_csvfile = path.join(testing_dir, "manual.csv");         // assertions to be tested manually
+const suppressed_csvfile = path.join(testing_dir, "suppressed.csv"); // assertions to be suppressed from IR
 //-----------------------------------------------------------------------
 
 // Outputs
@@ -397,6 +398,30 @@ function get_categories(done_callback) {
         });
 }
 
+// Get suppressed assertions
+// (Asynchronous)
+var suppressed = new Map();
+function get_suppressed(done_callback) {
+    if (info_v) console.log("processing suppressed assertions in",suppressed_csvfile);
+    var filedata = fs.readFileSync(suppressed_csvfile).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let id = item["ID"];
+                let cm = item["Comment"];
+                if (undefined !== id && undefined !== cm) {
+                    suppressed.set(id,cm);
+                    if (chatty_v) console.log("add suppresseed record for id",id+":",suppressed.get(id));
+                } else {
+                    if (warn_v) console.log("WARNING: suppressed record for id",id,"in unexpected format");
+                }
+            }
+            done_callback();
+        });
+}
+
 // Get manual assertions
 // (Asynchronous)
 var manual = new Map();
@@ -732,6 +757,11 @@ function format_assertions(done_callback) {
       ac = assertion_array[i].ac;
       a_text = assertion_array[i].text;
 
+      // Determine if assertion is suppressed
+      if (undefined !== suppressed.get(a)) { 
+        if (chatty_v) console.log("Suppressing assertion "+a);
+      } else {
+
       // Determine if is manual assertion
       let ma = (undefined !== manual.get(a));
       let tid = (ma ? "manualresults" : "testresults");
@@ -817,10 +847,13 @@ function format_assertions(done_callback) {
       }
 
       // Required
+      let pass_threshold;
       if (req) {
         report_tr.append('\n\t<td class="'+ac+'">Y</td>');
+        pass_threshold = 2;
       } else {
         report_tr.append('\n\t<td class="'+ac+'">N</td>');
+        pass_threshold = 1;
       }
 
       // Context(s)
@@ -874,7 +907,7 @@ function format_assertions(done_callback) {
         // Number of reported pass statuses
         let pass = result.pass;
         if (undefined != pass) {
-          if (pass >= 2) {
+          if (pass >= pass_threshold) {
             report_tr.append('\n\t<td class="'+ac+'">'+pass+'</td>');
           } else {
             if (pass == 0) {
@@ -941,6 +974,7 @@ function format_assertions(done_callback) {
 	  report_li.append('\n\t\t'+a_spec);
 	}
       }
+      }
     }
     done_callback();
 }
@@ -967,30 +1001,33 @@ get_results(0,function(results) {
        if (chatty_v) console.log("categories: ",categories);
        get_manual(function() {
         if (chatty_v) console.log("manual: ",manual);
-        get_impls(function() {
-         if (chatty_v) console.log("impls: ",impls);
-         get_interops(function() {
-          if (chatty_v) {
+        get_suppressed(function() {
+         if (chatty_v) console.log("suppressed: ",suppressed);
+         get_impls(function() {
+          if (chatty_v) console.log("impls: ",impls);
+          get_interops(function() {
+           if (chatty_v) {
             console.log("interop: ",interop);
             console.log("interop producers: ",interop_producers);
             console.log("interop consumers: ",interop_consumers);
             console.log("interop table: ",interop_table);
-          }
-          merge_implementations(function() {
-           merge_interops(function() {
-            merge_assertions(src_assertions,"baseassertion",function() {
-             merge_assertions(tab_assertions,"tabassertion",function() {
-              merge_assertions(def_assertions,"defassertion",function() {
-               merge_assertions(extra_assertions,"extraassertion",function() {
-                process_children(function() {
-                 format_assertions(function() {
-                  // Output report
-                  fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
-                   if (error) {
-                    return console.log(err);
-                   } else {
-                    if (info_v) console.log("Report output to "+report_htmlfile);
-                   }
+           }
+           merge_implementations(function() {
+            merge_interops(function() {
+             merge_assertions(src_assertions,"baseassertion",function() {
+              merge_assertions(tab_assertions,"tabassertion",function() {
+               merge_assertions(def_assertions,"defassertion",function() {
+                merge_assertions(extra_assertions,"extraassertion",function() {
+                 process_children(function() {
+                  format_assertions(function() {
+                   // Output report
+                   fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
+                    if (error) {
+                     return console.log(err);
+                    } else {
+                     if (info_v) console.log("Report output to "+report_htmlfile);
+                    }
+                   }); 
                   }); 
                  }); 
                 });
