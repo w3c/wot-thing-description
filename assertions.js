@@ -707,9 +707,11 @@ function process_children(done_callback) {
   let ps = new Set();
   for (let i = 0; i < n; i++) { 
     a = assertion_array[i].id;
-    if (a.indexOf('_') > -1) {
-      let p = a.substr(0,a.indexOf('_'));
-      ps.add(p);
+    if (undefined === suppressed.get(a)) { 
+      if (a.indexOf('_') > -1) {
+        let p = a.substr(0,a.indexOf('_'));
+        ps.add(p);
+      }
     }
   }
   console.log(ps);
@@ -720,7 +722,8 @@ function process_children(done_callback) {
   // rescan children, rederive parent's scores
   for (let i = 0; i < n; i++) { 
     a = assertion_array[i].id;
-    if (a.indexOf('_') > -1) {
+    if (undefined === suppressed.get(a)) { 
+     if (a.indexOf('_') > -1) {
       let p = a.substr(0,a.indexOf('_'));
       let rp = merged_results.get(p);
       let rc = merged_results.get(a);
@@ -741,6 +744,7 @@ function process_children(done_callback) {
           });
         }
       }
+     }
     }
   }
   // next
