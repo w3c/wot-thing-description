@@ -212,8 +212,6 @@
           rdfs:comment "Set of security definition names, chosen from those defined in securityDefinitions.  These must all be satisfied for access to resources."@en .
 
 
-
-
 #################################################################
 #
 #    Data properties
@@ -494,3 +492,69 @@
               rdfs:label "UnsubscribeEventOperation" ;
               
               rdfs:comment """Operation type of forms used to read a property value"""@en .
+
+
+
+#################################################################
+#
+#    Complex axioms: DL rules and sub-constructs
+#
+#################################################################
+
+# td:Thing(X), td:hasPropertyAffordance(X, Y),
+# td:hasForm(Y, Z), td:WritePropertyOperation(Z)
+# → td:hasActionAffordance(X, Yp),
+#   td:hasInputSchema(Yp, Y) .
+
+:isWritablePropertyAffordance rdf:type owl:ObjectProperty .
+
+[
+       a owl:Class ;
+       owl:intersectionOf (
+              :PropertyAffordance
+              [
+                     a owl:Restriction ;
+                     owl:onProperty :hasForm ;
+                     owl:someValuesFrom :WritePropertyOperation
+              ]
+       )
+] rdfs:subClassOf [
+       a owl:Restriction ;
+       owl:onProperty :isWritablePropertyAffordance ;
+       owl:hasSelf "true"^^xsd:boolean
+] .
+
+:hasInputSchema owl:propertyChainAxiom (
+       [ owl:inverseOf :hasActionAffordance ]
+       :hasPropertyAffordance
+       :isWritablePropertyAffordance
+) .
+
+# td:Thing(X), td:hasPropertyAffordance(X, Y),
+# td:hasForm(Y, Z), td:ObservePropertyOperation(Z)
+# → td:hasEventAffordance(X, Yp),
+#   td:hasNotificationSchema(Yp, Y) .
+
+:isObservablePropertyAffordance rdf:type owl:ObjectProperty .
+
+[
+       a owl:Class ;
+       owl:intersectionOf (
+              :PropertyAffordance
+              [
+                     a owl:Restriction ;
+                     owl:onProperty :hasForm ;
+                     owl:someValuesFrom :ObservePropertyOperation
+              ]
+       )
+] rdfs:subClassOf [
+       a owl:Restriction ;
+       owl:onProperty :isObservablePropertyAffordance ;
+       owl:hasSelf "true"^^xsd:boolean
+] .
+
+:hasNotificationSchema owl:propertyChainAxiom (
+       [ owl:inverseOf :hasEventAffordance ]
+       :hasPropertyAffordance
+       :isObservablePropertyAffordance
+) .
