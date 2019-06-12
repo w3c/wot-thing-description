@@ -57,7 +57,9 @@ is not JSON), this file should be empty.
 The output data files are now in `outputs/*/*.csv`.
 Check that there are no zero-length files in this list using `ls -l`.
 If there are it means something has gone wrong, most likely an input
-`csv` file with a syntax error.
+`csv` file with a syntax error. An easy way to check for `csv` syntax errors
+is to open the file in github. If it does not render properly as a table,
+there is an error, and github will even point to the offending line.
 
 Go back to the `wot-thing-directory/testing` directory and update the
 inputs for the report generator in the `inputs/results` subdirectory:
