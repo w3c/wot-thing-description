@@ -31,7 +31,7 @@ but without a suffix.  See the `Intel` directory for an example of this;
 the `intel-ocf` directory contains many TDs, but only counts as
 one implementation. The test results for multiple TDs in a subdirectory
 will be automatically merged. 
-TDs are accepted with `json`, `jsonld` and `td` suffixes.
+TDs are accepted with `.jsontd`, `.jsonld` and `.json` suffixes.
 
 A file with the same name as an implementation but with a `csv`
 suffix can also be given to provide manual assertions.
@@ -61,17 +61,17 @@ If there are it means something has gone wrong, most likely an input
 is to open the file in github. If it does not render properly as a table,
 there is an error, and github will even point to the offending line.
 
-Go back to the `wot-thing-directory/testing` directory and update the
+Go back to the `wot-thing-description/testing` directory and update the
 inputs for the report generator in the `inputs/results` subdirectory:
 ```
-cd ~/wot-thing-directory/testing/inputs/results
+cd ./wot-thing-description/testing/inputs/results
 rm *.csv
-cp ~/wot/testing/tests/2019-05/outputs/*/*.csv .
+cp ../../../../wot/testing/tests/2019-05/outputs/*/*.csv .
 ```
-Now return to the main `wot-thing-directory` directory and regenerate the
+Now return to the main `wot-thing-description` directory and regenerate the
 report:
 ```
-cd ~/wot-thing-directory
+cd ../../../
 npm run assertions
 ```
 
