@@ -19,7 +19,7 @@ const show_interop_results = false;                                  // include 
 
 // Directories
 const src_dir = __dirname;
-const testing_dir = path.join(__dirname, "testing");                 // test data directory
+const testing_dir = path.join("testing");                            // test data directory
 const report_dir = testing_dir;                                      // target directory for report output
 const inputs_dir = path.join(testing_dir, "inputs");                 // location of other inputs
 const templates_dir = path.join(inputs_dir, "templates");            // location of HTML templates
@@ -52,7 +52,7 @@ const results_csvfile = path.join(results_dir,"template.csv");
 // the HTML template to resolve hyperlinks included from index.html,
 // so this needs to link back to the report from the location of that
 // file...
-const report_base = "file://"+path.join(report_dir, "report.html");
+const report_base = path.join(report_dir, "report.html");
 
 // Base URL for specification. 
 const src_base = "https://www.w3.org/TR/wot-thing-description";
@@ -127,7 +127,7 @@ const interop_template_raw = fs.readFileSync(it_htmlfile, 'UTF-8');
 // Make conditional substitutions
 if (show_test_specs) {
   report_template_raw = report_template_raw.replace("{{TestSpecTOC}}",
-    '<li class="tocline"><a href="testing/report.html#testspecsB" shape="rect">Test specifications</a></li>');
+    '<li class="tocline"><a href="testing/report.html#testspecsB">Test specifications</a></li>');
   report_template_raw = report_template_raw.replace("{{TestSpec}}",testspec_template_raw); 
 } else {
   report_template_raw = report_template_raw.replace("{{TestSpecTOC}}","");
@@ -135,7 +135,7 @@ if (show_test_specs) {
 }
 if (show_interop_results) {
   report_template_raw = report_template_raw.replace("{{InteropTOC}}",
-    '<li class="tocline">8.3 <a href="testing/report.html#test_interop" shape="rect">Interoperability results</a></li>');
+    '<li class="tocline">8.3 <a href="testing/report.html#test_interop">Interoperability results</a></li>');
   report_template_raw = report_template_raw.replace("{{Interop}}",interop_template_raw); 
 } else {
   report_template_raw = report_template_raw.replace("{{InteropTOC}}","");
@@ -603,7 +603,7 @@ function merge_implementations(done_callback) {
       let desc_name = desc_names[desc_id];
       report_dom('ul#systems-toc').append('<li class="tocline"></li>\n');
       let report_li = report_dom('ul#systems-toc>li:last-child');
-      report_li.append('\n\t6.'+i+' <a href="'+report_base+'#'+desc_id+'" shape="rect">'+desc_name+'</a>');
+      report_li.append('\n\t6.'+i+' <a href="'+report_base+'#'+desc_id+'">'+desc_name+'</a>');
       i++;
       report_dom('#systems-impl').append(desc);
   }
@@ -840,8 +840,14 @@ function format_assertions(done_callback) {
         .append('\n<tr id="'+a+'" class="'+ac+'"></tr>');
       let report_tr = report_dom('tr#'+a);
 
+      // Generated subassertions still must link to the actual assertion in the TD spec
+      let a_frag = a;
+      if (a_frag.indexOf("_") !== -1) {
+        a_frag = a_frag.split("_")[0];
+      }
+
       // ID
-      report_tr.append('\n\t<td class="'+ac+'"><a target="spec" href="'+src_base+'#'+a+'">'+a+'</a></td>');
+      report_tr.append('\n\t<td class="'+ac+'"><a target="spec" href="'+src_base+'#'+a_frag+'">'+a+'</a></td>');
 
       // Category
       if (undefined != categories.get(a)) {
@@ -868,7 +874,8 @@ function format_assertions(done_callback) {
           let h = '\n\t<td class="'+ac+'">';
           for (let i=0; i<cs.length; i++) {
             if (0 != cs[i].trim().length) {
-              h = h + '\n\t\t<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a><br>';
+              // link in column 4 to TD spec context -- must point to TD spec, where fragments are lower case
+              h = h + '\n\t\t<a target="spec" href="'+src_base+'#' + cs[i].toLowerCase() + '">' + cs[i] + '</a><br>';
             }
           }
           report_tr.append(h+'\n\t</td>');
@@ -890,10 +897,12 @@ function format_assertions(done_callback) {
       if (undefined != d) {
         let p = d.parents;
         if (undefined != p && "null" !== p) {
+          // mk: I cannot see how there should be multiple parents and there is no such case currently
           let ps = p.split(' ');
           let h = '\n\t<td class="'+ac+'">';
           for (let i=0; i<ps.length; i++) {
             if (0 != ps[i].trim().length) {
+              // link in column 6 to base assertion
               h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a><br>';
             }
           }
