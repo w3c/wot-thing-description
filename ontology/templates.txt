@@ -147,6 +147,12 @@ template :class-restriction(?c ?prefix) {
         ?rest owl:allValuesFrom ?d .
         bind ("ONLY" as ?quantifier)
     }
+    union
+    {
+        ?rest owl:cardinality ?card .
+        bind (concat("EXACTLY ", str(?card)) as ?quantifier)
+        bind (owl:Thing as ?d)
+    }
     filter (isIRI(?d)) # FIXME issue with owl:unionOf
     bind (strafter(str(?p), "#") as ?pl)
     bind (strafter(str(?d), "#") as ?dl)
@@ -229,7 +235,7 @@ template :property-range(?p ?prefix) {
         ?p schema:rangeIncludes ?range .
         bind ("Range Includes" as ?type)
     }
-    ?range a owl:Class .
+    ?range a owl:Class
     filter (isIRI(?range)) # FIXME issue with owl:unionOf
 }
 
@@ -260,20 +266,33 @@ template :term-header(?term ?prefix ?type) {
 ---
 
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix vann: <http://purl.org/vocab/vann/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
-template :term-link(?term ?prefix) {
+template :term-link(?term ?defaultPrefix) {
     format {
         "<a href=\"%s\">%s</a>"
-        if(?isXSD,
+        if(?prefix = "xsd",
             concat("http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#", ?label),
-            concat("#", ?prefix, "-", lcase(?label)))
-        if(?isXSD,
-            concat("xsd:", ?label),
-            concat(?prefix, ":", ?label))
+            if(?prefix = ?defaultPrefix,
+                concat("#", ?defaultPrefix, "-", lcase(?label)),
+                str(?term)))
+        if(?curie,
+            concat(?prefix, ":", ?label),
+            ?label)
     }
 } where {
     optional { ?term rdfs:label ?l }
     bind (if(bound(?l), ?l, strafter(str(?term), "#")) as ?label)
-    bind (strstarts(str(?term), str(xsd:)) as ?isXSD)
+    optional {
+        ?o a owl:Ontology ;
+            vann:preferredNamespacePrefix ?prefix .
+        filter (strstarts(str(?term), str(?o)))
+    }
+    optional {
+        bind ("xsd" as ?prefix)
+        filter (strstarts(str(?term), str(xsd:)))
+    }
+    bind (bound(?prefix) as ?curie)
 }
