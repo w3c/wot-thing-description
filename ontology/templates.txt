@@ -51,14 +51,14 @@ template :overview(?ns ?prefix) {
 
 ---
 
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix st: <http://ns.inria.fr/sparql-template/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
 template :overview-for-type(?ns ?prefix ?type) {
     st:call-template(:term-link, ?term, ?prefix) ; separator = " , "
 } where {
-    ?term a ?type .
+    ?term a ?type ; rdfs:label ?l .
     filter (strstarts(str(?term), str(?ns)))
-    bind (strafter(str(?term), "#") as ?label) # TODO not working when in its own template?
 }
 
 ---
@@ -132,7 +132,7 @@ template :class-restriction(?c ?prefix) {
         "%s <em><b>%s</b></em> %s"
         st:call-template(:term-link, ?p, ?prefix)
         ?quantifier
-        if(?qualified, st:call-template(:term-link, ?d, ?prefix), "")
+        if(?qualified, st:call-template(:class-expression, ?d, ?prefix), "")
     } ; separator = "<br>"
 } where {
     ?c rdfs:subClassOf ?rest .
@@ -153,7 +153,21 @@ template :class-restriction(?c ?prefix) {
         bind (concat("EXACTLY ", str(?card)) as ?quantifier)
     }
     bind (bound(?d) as ?qualified)
-    filter (!(?qualified) || isIRI(?d)) # FIXME issue with owl:unionOf
+    filter (!?qualified || isIRI(?d))
+}
+
+---
+
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix : <http://w3c.github.io/wot-thing-description/ontology#>
+template :class-expression(?c ?prefix) {
+    st:call-template(:term-link, ?c, ?prefix)
+} where {
+    ?c a owl:Class
+    filter (isIRI(?c))
+    # TODO owl:unionOf
 }
 
 ---
