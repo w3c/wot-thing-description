@@ -132,7 +132,7 @@ template :class-restriction(?c ?prefix) {
         "%s <em><b>%s</b></em> %s"
         st:call-template(:term-link, ?p, ?prefix)
         ?quantifier
-        st:call-template(:term-link, ?d, ?prefix)
+        if(?qualified, st:call-template(:term-link, ?d, ?prefix), "")
     } ; separator = "<br>"
 } where {
     ?c rdfs:subClassOf ?rest .
@@ -151,11 +151,9 @@ template :class-restriction(?c ?prefix) {
     {
         ?rest owl:cardinality ?card .
         bind (concat("EXACTLY ", str(?card)) as ?quantifier)
-        bind (owl:Thing as ?d)
     }
-    filter (isIRI(?d)) # FIXME issue with owl:unionOf
-    bind (strafter(str(?p), "#") as ?pl)
-    bind (strafter(str(?d), "#") as ?dl)
+    bind (bound(?d) as ?qualified)
+    filter (!(?qualified) || isIRI(?d)) # FIXME issue with owl:unionOf
 }
 
 ---
@@ -206,7 +204,6 @@ template :property-domain(?p ?prefix) {
         ?p schema:domainIncludes ?dom .
         bind ("Domain Includes" as ?type)
     }
-    ?dom a owl:Class .
     filter (isIRI(?dom)) # FIXME issue with owl:unionOf
 }
 
@@ -235,7 +232,6 @@ template :property-range(?p ?prefix) {
         ?p schema:rangeIncludes ?range .
         bind ("Range Includes" as ?type)
     }
-    ?range a owl:Class
     filter (isIRI(?range)) # FIXME issue with owl:unionOf
 }
 
