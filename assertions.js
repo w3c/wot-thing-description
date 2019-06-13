@@ -874,8 +874,13 @@ function format_assertions(done_callback) {
           let h = '\n\t<td class="'+ac+'">';
           for (let i=0; i<cs.length; i++) {
             if (0 != cs[i].trim().length) {
-              // link in column 4 to TD spec context -- must point to TD spec, where fragments are lower case
-              h = h + '\n\t\t<a target="spec" href="'+src_base+'#' + cs[i].toLowerCase() + '">' + cs[i] + '</a><br>';
+              if (cs[i].trim().startsWith("(")) {
+                // no link for higher-level contexts such as TD Producers
+                h = h + '\n\t\t' + cs[i] + '<br/>';
+              } else {
+                // link in column 4 to TD spec context -- must point to TD spec, where fragments are lower case
+                h = h + '\n\t\t<a target="spec" href="'+src_base+'#' + cs[i].toLowerCase() + '">' + cs[i] + '</a><br/>';
+              }
             }
           }
           report_tr.append(h+'\n\t</td>');
