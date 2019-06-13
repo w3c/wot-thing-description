@@ -21,10 +21,6 @@ template :main(?ns ?prefix) {
             st:call-template(:properties, ?ns, ?prefix, owl:DatatypeProperty)
         "</section>"
     "</section>"
-    "<section>"
-        "<h2>Term Mapping</h2>"
-        st:call-template(:context, ?ns, ?prefix)
-    "</section>"
 } where {}
 
 ---
@@ -235,36 +231,6 @@ template :property-range(?p ?prefix) {
     }
     ?range a owl:Class .
     filter (isIRI(?range)) # FIXME issue with owl:unionOf
-}
-
----
-
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix : <http://w3c.github.io/wot-thing-description/ontology#>
-template :context(?ns ?prefix) {
-    "<table>"
-        "<thead><tr><th>JSON String</th><th>Ontology Term</th></tr></thead>"
-        "<tbody>"
-            st:call-template(:mapping, ?ns, ?prefix)
-        "</tbody>"
-    "</table>"
-} where {}
-
----
-
-prefix jsonld: <http://www.w3.org/ns/json-ld#>
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix : <http://w3c.github.io/wot-thing-description/ontology#>
-template :mapping(?ns ?prefix) {
-    "<tr>"
-        format { "<td>%s</td>" ?string }
-        format { "<td>%s</td>" st:call-template(:term-link, ?term, ?prefix) }
-    "</tr>"
-} where {
-    ?m a jsonld:Mapping ;
-       jsonld:iri ?term ;
-       jsonld:term ?string .
-    filter (strstarts(str(?term), str(?ns)))
 }
 
 ---
