@@ -20,7 +20,7 @@
             , format:         "markdown"
             , wg:             "Web of Things Working Group"
             , wgURI:          "https://www.w3.org/WoT/WG/"
-            , charterDisclosureURI : "http://www.w3.org/2004/01/pp-impl/95969/status"
+            , charterDisclosureURI : "https://www.w3.org/2004/01/pp-impl/95969/status"
             , wgPublicList:   "public-wot-wg"
             , edDraftURI:     "https://w3c.github.io/wot-thing-description/"
             , github:         "https://github.com/w3c/wot-thing-description"
@@ -539,14 +539,15 @@ a[href].internalDFN {
         given namespace. Contextual information can also help specify some configurations and 
         behavior of the underlying communication protocols declared in the <code>forms</code> field.
         <a href="#thing-description-full-serialization">Example 2</a> extends the TD sample from
-        Example 1 by introducing a second definition in the <code>@context</code> to declare the
-        prefix <code>saref</code> as referring to the SAREF vocabulary namespace [[smartM2M]].
-        The SAREF vocabulary includes terms to describe lighting devices and other home automation
-        devices that one can embed in a TD as semantic labels in the <code>@type</code>
-        property. In the present example, the <a>Thing</a> is labelled with <code>saref:LightSwitch</code>,
-        the form of the <code>status</code> property affordance is labelled with <code>saref:GetCommand</code>,
-        the form of the <code>toggle</code> action affordance with <code>saref:ToggleCommand</code> and
-        the form the <code>overheating</code> event affordance with <code>saref:NotifyCommand</code>.
+        Example 1 by introducing a second defintion in the <code>@context</code> to declare the
+        prefix <code>saref</code> as referring to <a href="https://w3id.org/saref">SAREF</a>, the
+        Smart Appliance Reference Ontology [[smartM2M]]. This IoT ontology includes terms interpreted
+        as semantic labels that can be set as values of the
+        <code>@type</code> field, giving the semantics of <a>Things</a> and their
+        <a>Interaction Affordances</a>. In the example below, the <a>Thing</a> is labelled with
+        <code>saref:LightSwitch</code>, the <code>status</code> <a>Property</a> is labelled with
+        <code>saref:OnOffState</code> and the <code>toggle</code> <a>Action</a> with
+        <code>saref:ToggleCommand</code>.
   </p>
 
 
@@ -568,17 +569,17 @@ a[href].internalDFN {
         "security": ["basic_sc"],
         "properties": {
             "status": {
+                "@type": "saref:OnOffState",
                 "type": "string",
                 "forms": [{
-                    "@type": "saref:GetCommand",
                     "href": "https://mylamp.example.com/status"
                 }]
             }
         },
         "actions": {
             "toggle": {
+                "@type": "saref:ToggleCommand",
                 "forms": [{
-                    "@type": "saref:ToggleCommand",
                     "href": "https://mylamp.example.com/toggle"
                 }]
             }
@@ -587,7 +588,6 @@ a[href].internalDFN {
             "overheating": {
                 "data": {"type": "string"},
                 "forms": [{
-                    "@type": "saref:NotifyCommand",
                     "href": "https://mylamp.example.com/oh"
                 }]
             }
@@ -869,30 +869,29 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       
       <!--<p><a href="http://visualdataweb.de/webvowl/#iri=https://rawgit.com/w3c/wot-thing-description/TD-JSON-LD-1.1/ontology/td.ttl">Click here for the visualization</a></p>-->
 
-
     <figure id="td-core-model">
-      <img src="visualization/td.png" alt="UML diagram of the TD information model for the TD core vocabulary"/>
+      <img src="visualization/td.png" alt="UML diagram of the TD information model for the TD core vocabulary"/>
       <figcaption>TD core vocabulary</figcaption>
     </figure>
     
     <hr>
 
     <figure id="td-data-schema-model">
-      <img src="visualization/json-schema.png" alt="UML diagram of the TD information model for the JSON schema vocabulary"/>
+      <img src="visualization/json-schema.png" alt="UML diagram of the TD information model for the JSON schema vocabulary"/>
       <figcaption>JSON schema vocabulary</figcaption>
     </figure>
     
     <hr>
     
     <figure id="td-security-model">
-      <img src="visualization/wot-security.png" alt="UML diagram of the TD information model for the security vocabulary"/>
+      <img src="visualization/wot-security.png" alt="UML diagram of the TD information model for the WoT security vocabulary"/>
       <figcaption>WoT security vocabulary</figcaption>
     </figure>
     
     <hr>
     
     <figure id="hypermedia-model">
-      <img src="visualization/hypermedia.png" alt="UML diagram of the TD information model for the hypermedia controls vocabulary"/>
+      <img src="visualization/hypermedia.png" alt="UML diagram of the TD information model for the hypermedia controls vocabulary"/>
       <figcaption>Hypermedia controls vocabulary</figcaption>
     </figure>
 
@@ -2511,7 +2510,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 {
     "@context": [
         "https://www.w3.org/2019/wot/td/v1",
-        { "eg": "http://www.example.org/iot" }
+        { "eg": "http://www.example.org/iot#" }
     ],
     ...
     "actions": {
@@ -2771,11 +2770,8 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
   As an additional feature,
   a Thing Description instance allows the usage of a <code>unit</code> member within data schemas.
   This can be used to associate a unit of measure to a data item.
-  Its string value can be selected freely, however,
-  it is recommended to select units based on existing definitions
-  by integrating the corresponding namespace
-  (e.g., from Smart Appliances REFerence (SAREF) ontology or Ontology of units of Measure (OM)).
-  See <a href="#sec-context-extensions"></a> for details.
+  Its string value can be selected freely. However, it is recommended to select units defined in
+  well-known <a>Vocabularies</a>. See <a href="#sec-context-extensions"></a> for an example.
 </p>
 
 </section> <!-- end of id="data-schema-serialization-json"-->
@@ -2834,7 +2830,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
     "@context": [
         "https://www.w3.org/2019/wot/td/v1",
         {
-            "iot": "http://example.org/iot",
+            "eg": "http://example.org/iot#",
             "cov": "http://www.example.org/coap-binding#"
         },
         "https://schema.org/"
@@ -2843,7 +2839,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 }
 </pre>
 
-<section class="informative">
+<section>
 <h3>Semantic Annotations</h3>
 
     <p>
@@ -2871,8 +2867,13 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
     <p>
       As an example, the TD snippet given below extends the version information container
-      by adding version numbers for the hardware and firmware of the Thing,
-      semantically annotates a Property, and uses a well-defined value for the data schema unit.
+      by adding version numbers for the hardware and firmware of the <a>Thing</a>, and uses
+      values from external <a>Vocabularies</a> for the <a>Thing</a> and for the
+      data schema unit: <a href="https://w3id.org/saref">SAREF</a>,
+      also used in <a href="#thing-description-full-serialization"></a>, and 
+      <a href="http://www.ontology-of-units-of-measure.org/resource/om-2/">OM</a>, the
+      Ontology of Units of Measure [[Rijgersberg-et-al-2013]]. These <a>Vocabularies</a>
+      are used as examples—others may exist, in particular in the home automation domain.
     </p>
 
 <pre class="example">
@@ -2882,64 +2883,19 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
         {
             "v": "http://www.example.org/versioningTerms#",
             "saref": "https://w3id.org/saref#",
-            "om": "http://www.wurvoc.org/vocabularies/om-1.8/"
+            "om": "http://www.ontology-of-units-of-measure.org/resource/om-2/"
         }
     ],
-    "@type": "Thing",
     "version": {
         "instance": "1.2.1",
         "v:firmware": "0.9.1",
         "v:hardware": "1.0"
     },
     ...
+    "@type": "saref:TemperatureSensor",
     "properties": {
         "temperature": {
-            "@type": "saref:Temperature",
             "description": "Temperature value of the weather station",
-            "type": "number",
-            "minimum": -32.5,
-            "maximum": 55.2,
-            "unit": "om:degree_Celsius",
-            "forms": [...]
-        },
-        ...
-    },
-    ...
-}
-</pre>
-
-    <p>
-        In many cases, context extension may be used to annotate pieces of
-        a data schema, as in the TD snippet below. The example references
-        SSN/SOSA [[vocab-ssn]] and OM 1.8, an ontology for units of measure
-        [[Rijgersberg-et-al-2013]]. Note
-        that object assigned to <code>temperature</code> is a data schema and not
-        the actual temperature property of the physical world object. More details
-        on modeling the physical world can be found in Appendix
-        <a href="#thing-description-ontology"></a>.
-    </p>
-
-<pre class="example" id="saref-annotation-example">
-{
-    "@context": [
-        "https://www.w3.org/2019/wot/td/v1",
-        {
-            "sosa": "http://www.w3.org/ns/sosa/",
-            "ssn": "http://www.w3.org/ns/ssn/",
-            "om": "http://www.wurvoc.org/vocabularies/om-1.8/"
-        }
-    ],
-    "@type": "Thing",
-    "id": "urn:dev:ops:32473-WoTLamp-1234",
-    "sosa:observes": {
-        "@id": "urn:dev:ops:32473-WoTStation-1234/temperature",
-        "@type": "om:Temperature"
-    },
-    ...
-    "properties": {
-        "temperature": {
-            "ssn:forProperty": "urn:dev:ops:32473-WoTStation-1234/temperature",
-            "description": "Temperature measurement of the weather station",
             "type": "number",
             "minimum": -32.5,
             "maximum": 55.2,
@@ -2954,7 +2910,66 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
 </section>
 
-<section class="informative">
+<section>
+
+    <h3>Annotating Data Schemas</h3>
+
+    <p>
+        In many cases, context extension may be used to annotate pieces of a data schema, to be
+        able to semantically process actual data during an interaction. For example, the internal
+        state of the <a>Thing</a>, semantically described in RDF, can be embedded in the
+        <a>TD Document</a> and pieces of a data schema can be individually annotated as referring to
+        specific parts of that internal state.
+    </p>
+
+    <p>
+        The TD snippet below uses SAREF to describe the state of a lamp. The external <a>Vocabulary
+        Term</a> <code>ssn:forProperty</code>, taken from <a href="https://www.w3.org/TR/vocab-ssn/">SSN</a>,
+        the Semantic Sensor Network Ontology [[vocab-ssn]], is being used to link the data schema of
+        the <code>status</code> <a>Property</a> with the actual on/off state of the physical world object.
+    </p>
+
+<pre class="example" id="saref-state-annotation-example">
+{
+    "@context": [
+        "https://www.w3.org/2019/wot/td/v1",
+        {
+            "saref": "https://w3id.org/saref#",
+            "ssn": "http://www.w3.org/ns/ssn/"
+        }
+    ],
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "@type": "saref:LightSwitch",
+    "saref:hasState": {
+        "@id": "urn:dev:ops:32473-WoTLamp-1234/state",
+        "@type": "saref:OnOffState"
+    },
+    ...
+    "properties": {
+        "status": {
+            "ssn:forProperty": "urn:dev:ops:32473-WoTLamp-1234/state",
+            "type": "string",
+            "forms": [{"href": "https://mylamp.example.com/status"}]
+        },
+        ...
+    },
+    ...
+}
+</pre>
+
+    <p>
+        In <a href="#thing-description-full-serialization"></a>, the state of the <a>Thing</a>
+        is given by the <code>status</code> and <code>toggle</code> affordances themselves. In
+        other words, the object's internal state is its own affordance. This design
+        is satisfactory for simple cases like a light switch but in the general case, it is
+        considered a good practice to separate the state from interaction affordances, as
+        illustrated above with <code>ssn:forProperty</code>. More details on modeling the
+        physical world can be found in Appendix <a href="#thing-description-ontology"></a>.
+    </p>
+
+</section>
+
+<section>
 <h3>Adding Protocol Bindings</h3>
 
   <p>
@@ -3009,7 +3024,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
     
 </section>
     
-<section class="informative">
+<section>
 <h2>Adding Security Schemes</h2>
     
   <p>
@@ -4061,9 +4076,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             </p>
             
             <p>
-                When applying this procedure to the introductory TD example
-                (<a href="#thing-description-full-serialization"></a>) with all
-                <a>Default Values</a>, the following triples are obtained:
+                When applying this procedure to <a href="#saref-state-annotation-example"></a>,
+                including annotations and <a>Default Values</a>, the following triples are obtained:
             </p>
             
             <aside class="example with-default" id="simple-thing-description-rdf">
@@ -4076,12 +4090,17 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         "https://www.w3.org/2019/wot/td/v1",
         { 
             "saref": "https://w3id.org/saref#",
+            "ssn": "http://www.w3.org/ns/ssn/",
             "htv": "http://www.w3.org/2011/http#"
         }
     ],
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "title": "MyLampThing",
     "@type": "saref:LightSwitch",
+    "saref:hasState": {
+        "@id": "urn:dev:ops:32473-WoTLamp-1234/state",
+        "@type": "saref:OnOffState"
+    },
     "securityDefinitions": {"basic_sc": {
         "scheme": "basic",
         "in": "header"
@@ -4089,9 +4108,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     "security": ["basic_sc"],
     "properties": {
         "status": {
+            "ssn:forProperty": "urn:dev:ops:32473-WoTLamp-1234/state",
             "type": "string",
             "forms": [{
-                "@type": "saref:GetCommand",
                 "href": "https://mylamp.example.com/status",
                 "op": "readproperty",
                 "htv:methodName": "GET"
@@ -4108,7 +4127,6 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             "safe": false,
             "idempotent": false,
             "forms": [{
-                "@type": "saref:ToggleCommand",
                 "href": "https://mylamp.example.com/toggle",
                 "op": "invokeaction",
                 "contentType": "application/json",
@@ -4120,7 +4138,6 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         "overheating": {
             "data": {"type": "string"},
             "forms": [{
-                "@type": "saref:NotifyCommand",
                 "href": "https://mylamp.example.com/oh",
                 "op": "subscribeevent",
                 "contentType": "application/json"
@@ -4129,6 +4146,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     }
 }</pre><pre>
 &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#LightSwitch&gt; .
+&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://w3id.org/saref#hasState&gt; &lt;urn:dev:ops:32473-WoTLamp-1234/state&gt; .
 &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasActionAffordance&gt; _:b0 .
 &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasEventAffordance&gt; _:b2 .
 &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasPropertyAffordance&gt; _:b5 .
@@ -4138,7 +4156,6 @@ _:b0 &lt;https://www.w3.org/2019/wot/td#name&gt; &quot;toggle&quot; .
 _:b0 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b1 .
 _:b0 &lt;https://www.w3.org/2019/wot/td#isIdempotent&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
 _:b0 &lt;https://www.w3.org/2019/wot/td#isSafe&gt; &quot;false&quot;^^&lt;http://www.w3.org/2001/XMLSchema#boolean&gt; .
-_:b1 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#ToggleCommand&gt; .
 _:b1 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;POST&quot; .
 _:b1 &lt;https://www.w3.org/2019/wot/hypermedia#forContentType&gt; &quot;application/json&quot; .
 _:b1 &lt;https://www.w3.org/2019/wot/hypermedia#forOperationType&gt; &quot;invokeaction&quot; .
@@ -4146,16 +4163,15 @@ _:b1 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://myla
 _:b2 &lt;https://www.w3.org/2019/wot/td#name&gt; &quot;overheating&quot; .
 _:b2 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b3 .
 _:b2 &lt;https://www.w3.org/2019/wot/td#hasNotificationSchema&gt; _:b4 .
-_:b3 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#NotifyCommand&gt; .
 _:b3 &lt;https://www.w3.org/2019/wot/hypermedia#forContentType&gt; &quot;application/json&quot; .
 _:b3 &lt;https://www.w3.org/2019/wot/hypermedia#forOperationType&gt; &quot;subscribeevent&quot; .
 _:b3 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/oh&quot; .
 _:b4 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/json-schema#StringSchema&gt; .
 _:b5 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/json-schema#StringSchema&gt; .
 _:b5 &lt;https://www.w3.org/2019/wot/td#name&gt; &quot;status&quot; .
+_:b5 &lt;http://www.w3.org/ns/ssn/forProperty&gt; &quot;urn:dev:ops:32473-WoTLamp-1234/state&quot; .
 _:b5 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b6 .
 _:b5 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b7 .
-_:b6 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#GetCommand&gt; .
 _:b6 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;GET&quot; .
 _:b6 &lt;https://www.w3.org/2019/wot/hypermedia#forOperationType&gt; &quot;readproperty&quot; .
 _:b6 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/status&quot; .
@@ -4163,6 +4179,7 @@ _:b7 &lt;http://www.w3.org/2011/http#methodName&gt; &quot;PUT&quot; .
 _:b7 &lt;https://www.w3.org/2019/wot/hypermedia#forContentType&gt; &quot;application/json&quot; .
 _:b7 &lt;https://www.w3.org/2019/wot/hypermedia#forOperationType&gt; &quot;writeproperty&quot; .
 _:b7 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/status&quot; .
+&lt;urn:dev:ops:32473-WoTLamp-1234/state&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://w3id.org/saref#OnOffState&gt; .
 &lt;urn:dev:ops:32473-WoTLamp-1234/basic_sc&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/security#BasicSecurityScheme&gt; .
 &lt;urn:dev:ops:32473-WoTLamp-1234/basic_sc&gt; &lt;https://www.w3.org/2019/wot/security#in&gt; &quot;header&quot; .</pre>
             </aside>
@@ -4253,27 +4270,28 @@ _:b7 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://myla
                 As a result, the TD information model can be reformulated in the Web Ontology Language
                 (OWL) [[owl2-overview]]. <a>Class</a> definitions become OWL axioms defined on the
                 <a>Vocabulary Terms</a> of the TD model. The axioms that are particularly
-                of interest in the present document are those of the TD ontology available under the
-                TD namespace IRI, both as an RDF file and as a human-readable HTML documentation.
-                <a>Default Values</a> cannot be directly translated to OWL, they are therefore ignored
-                in the TD ontology.
+                of interest in the present document are those of the TD ontology (available under the
+                <a href="https://www.w3.org/2019/wot/td">TD namespace IRI</a>), both as an RDF file and
+                as a human-readable HTML documentation. <a>Default Values</a> cannot be directly translated
+                to OWL, they are therefore ignored in the TD ontology.
             </p>
 
             <p>
                 The axioms included in the TD ontology may be used to validate a TD but its primary
                 purpose is to serve as an entry point for a deeper semantic description of WoT Things
-                that would make clients behave in a more autonomous way, as desired in WoT
+                that would make <a>Consumers</a> behave in a more autonomous way, as desired in WoT
                 [[wot-architecture]]. A semantic description is nothing more than a description of the
                 physical world, in which WoT systems may have tangible effects. OWL should be the
-                preferred language for this purpose. OWL is indeed a language to specify <em>ontologies</em>,
+                preferred language for this purpose. It is indeed a language to specify <em>ontologies</em>,
                 that is, conceptualizations of the physical world. To this end, an ontology does not cover
                 one possible model of the physical world by constructing abstract data structures. Instead,
                 it provides necessary constraints on all possible models of the world for these models to
                 be sound. This principle, at the basis of <em>model theory</em>, is what the semantics of RDF
                 (and OWL) is based on [[rdf11-mt]]. In the following diagram, because the only fact
-                we know about <code>urn:dev:ops:32473-WoTLamp-1234</code> is that it is a light
-                switch with generic affordances, it could be any light switch, be it mechanical,
-                digital or even virtual.
+                we know about <code>urn:dev:ops:32473-WoTLamp-1234</code> is that it is a <a>Thing</a>
+                with generic affordances, it could be <em>any</em> <a>Thing</a>, including intangible entities.
+                Even when knowing it is a light switch through TD annotations, it can still be a mechanical,
+                digital or even virtual device.
             </p>
             
             <figure>
@@ -4286,51 +4304,74 @@ _:b7 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://myla
                 as it would not suffice to describe physical world objects alone. An ontology is
                 generally designed for a specific domain of application, like transportation or home
                 automation. For the latter domain, the TD ontology can e.g. be
-                integrated with SAREF, as illustrated in several examples in this document.
+                integrated with SAREF, as illustrated in <a href="#saref-state-annotation-example"></a>.
             </p>
 
             <p>
-                An intelligent WoT client can be assigned the task of turning a light off
+                In particular, the <a>Terms</a> included in the TD ontology may be used to express
+                what affordances should be <em>expected</em> from <a>Things</a> of a certain type,
+                like <code>saref:LightSwitch</code> or, more generally, anything that has a
+                state. The following rules can be read as sentences: a light switch exposes a property
+                affordance to access its on/off state and an action affordance to act on this state.
+            </p>
+
+            <aside class="example">
+<pre class="nohighlight">
+td:Thing(X), saref:hasState(X, Y)
+→ td:hasPropertyAffordance(X, Z), ssn:forProperty(Z, Y) .
+
+td:Thing(X), saref:hasState(X, Y)
+→ td:hasActionAffordance(X, Z), saref:actsUpon(Z, Y) .
+</pre>
+            </aside>
+
+            <p>
+                Note that these rules do not prevent one affordance from implying the other. In fact,
+                the TD ontology itself contains a rule specifying that every <a>Property</a> with
+                a <code>writeproperty</code> operation is conceptually equivalent to an (idempotent)
+                <a>Action</a> with the <a>Property</a>'s data schema as input. The rule can be
+                expressed as follows:
+            </p>
+
+            <aside class="example">
+<pre class="nohighlight">
+td:Thing(X), td:hasPropertyAffordance(X, Y),
+td:hasForm(Y, Z), hyperm:forOperationType(Z, "writeproperty")
+→ td:hasActionAffordance(X, Yp),
+  isIdempotent(Yp, true),
+  td:hasInputSchema(Yp, Y) .
+</pre>
+            </aside>
+
+            <p>
+                An intelligent WoT <a>Consumer</a> can be assigned the task of turning a light off
                 in ontological terms, using SAREF. For instance, the task could be expressed as
                 a post-condition on the <code>saref:OnOffState</code> of some <code>saref:LightSwitch</code>.
-                Assuming a server exposes the TD of <a href="#thing-description-full-serialization"></a>,
-                the client has two possibilities to perform this task: it can either write
+                Assuming a server exposes the TD of <a href="#saref-state-annotation-example"></a>,
+                the <a>Consumer</a> has two possibilities to perform this task: it can either write
                 the <code>status</code> property as <code>off</code> or it can invoke the action
                 <code>toggle</code> and see if the resulting <code>status</code> is indeed
                 equal to <code>off</code>.
             </p>
 
             <p>
-                Yet, in the TD example, the switch state is not directly exposed. Assuming
-                the client has no prior knowledge of the meaning of <code>status</code>,
-                it must infer possible operations from the semantic annotations available in the TD
-                and its domain-specific ontology, that includes SAREF. The following ontological
-                axioms can be formulated for SAREF, in the OWL Manchester syntax
-                [[owl2-manchester-syntax]]:
+                Given the TD of <a href="#saref-state-annotation-example"></a>, it is straightforward
+                for a <a>Consumer</a> to infer what to do from the internal state description embedded in the TD.
+                However, provided the rules (or axioms) given above, it can be inferred that for all possible
+                models of the light switch described in the TD, an <a>Action</a> may also have the desired effect.
+                A <a>Consumer</a> can therefore adaptively choose to operate on either affordance of the light switch
+                to perform the task. In fact, its behavoir would be unaltered even if the TD did not
+                exposed its state. A single type statement including <code>saref:LightSwitch</code> would
+                suffice, since all light switches behave the same way.
             </p>
 
-            <aside class="example">
-<pre class="nohighlight">
-Class: LightSwitch
-SubClassOf: hasState some OnOffState
-
-Class: ToggleCommand
-SubClassOf: actsUpon some OnOffState</pre>
-            </aside>
-
             <p>
-                They respectively state that a light switch must have an on/off state and that
-                a toggle command must act on some on/off state. They may seem intuitive
-                to humans but it is only possible for the client to know what to do from such
-                axioms. If we assume that a <code>saref:GetCommand</code>
-                always exposes the state of the <code>Thing</code>, the client can then
-                automatically infer what form(s) to submit to change the switch state: a
-                <code>writeproperty</code> on the <code>saref:GetCommand</code> or an
-                <code>invokeaction</code> on the <code>saref:ToggleCommand</code>. Note that the
-                result of the operation cannot be known for certain, as the TD does not expose
-                its internal state. However, by selecting certain models of the physical world,
-                either by statistical means or by further axiomatization, clients can still
-                reach a certain level of autonomy with an ontological approach.
+                Note that, in the case the internal state is hidden, the result of the operation cannot
+                be known for certain. However, by selecting certain models of the physical world,
+                either by statistical means or by further axiomatization, <a>Consumers</a> can still
+                reach a certain level of autonomy with an ontological approach and e.g. learn from their
+                own behavior via a trial and error procedure. In critical applications, it is however
+                strongly recommended that the internal state of a <a>Thing</a> be entirely exposed semantically.
             </p>
 
             <!-- <p class="issue">
