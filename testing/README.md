@@ -62,7 +62,13 @@ is to open the file in github. If it does not render properly as a table,
 there is an error, and github will even point to the offending line.
 
 Go back to the `wot-thing-description/testing` directory and update the
-inputs for the report generator in the `inputs/results` subdirectory:
+inputs for the report generator in the `inputs/implementations` subdirectory:
+```
+cd ./wot-thing-description/testing/inputs/implementations
+rm *.html
+cp ../../../../wot/testing/tests/2019-05/descriptions/*/*.html .
+```
+And in the `inputs/results` subdirectory:
 ```
 cd ./wot-thing-description/testing/inputs/results
 rm *.csv
