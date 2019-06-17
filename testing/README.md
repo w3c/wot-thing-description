@@ -68,7 +68,7 @@ cp ../../../../wot/testing/tests/2019-05/descriptions/*/*.html .
 ```
 And in the `inputs/results` subdirectory:
 ```
-cd ./wot-thing-description/testing/inputs/results
+cd ../results
 rm *.csv
 cp ../../../../wot/testing/tests/2019-05/outputs/*/*.csv .
 ```
