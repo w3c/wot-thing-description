@@ -52,7 +52,7 @@ const results_csvfile = path.join(results_dir,"template.csv");
 // the HTML template to resolve hyperlinks included from index.html,
 // so this needs to link back to the report from the location of that
 // file...
-const report_base = path.join(report_dir, "report.html");
+const report_base = ""; // path.join(report_dir, "report.html");
 
 // Base URL for specification. 
 const src_base = "https://www.w3.org/TR/wot-thing-description";
@@ -124,7 +124,16 @@ get_descs();
 var report_template_raw = fs.readFileSync(rt_htmlfile, 'UTF-8');
 const testspec_template_raw = fs.readFileSync(tt_htmlfile, 'UTF-8');
 const interop_template_raw = fs.readFileSync(it_htmlfile, 'UTF-8');
+
+// Set version date
+
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+let lastModified = new Date();
+let lastModifiedString = lastModified.getDate() + ' ' + monthNames[lastModified.getMonth()] + ' ' + lastModified.getFullYear();
+report_template_raw = report_template_raw.replace("{{LastModified}}", lastModifiedString);
+
 // Make conditional substitutions
+
 if (show_test_specs) {
   report_template_raw = report_template_raw.replace("{{TestSpecTOC}}",
     '<li class="tocline"><a href="testing/report.html#testspecsB">Test specifications</a></li>');
@@ -133,6 +142,7 @@ if (show_test_specs) {
   report_template_raw = report_template_raw.replace("{{TestSpecTOC}}","");
   report_template_raw = report_template_raw.replace("{{TestSpec}}",""); 
 }
+
 if (show_interop_results) {
   report_template_raw = report_template_raw.replace("{{InteropTOC}}",
     '<li class="tocline">8.3 <a href="testing/report.html#test_interop">Interoperability results</a></li>');
@@ -778,14 +788,14 @@ function format_assertions(done_callback) {
       if (show_test_specs) {
         // Test Specifications Appendix
         report_dom('#testspecs').append('\n<dt></dt>');
-	let report_dt = report_dom('#testspecs>dt:last-child');
-	report_dt.append('\n\t<a href="'+report_base+'#'+a+'">'+a+'</a>:');
-	if ("tabassertion" === ac) {
-	  report_dt.append(' <em>(table)</em>');
-	}
-	if ("extraassertion" === ac) {
-	  report_dt.append(' <em>(extra)</em>');
-	}
+        let report_dt = report_dom('#testspecs>dt:last-child');
+        report_dt.append('\n\t<a href="'+report_base+'#'+a+'">'+a+'</a>:');
+        if ("tabassertion" === ac) {
+          report_dt.append(' <em>(table)</em>');
+        }
+        if ("extraassertion" === ac) {
+          report_dt.append(' <em>(extra)</em>');
+        }
       }
 
       let category = undefined;
