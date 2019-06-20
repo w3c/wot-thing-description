@@ -192,7 +192,7 @@ to allow different features to be reported in different files.
 
 If you did not implement a feature on purpose please indicate this explicitly.
 
-Any other status will be ignored (e.g. `"null"` as used in the template).
+Any other status will be ignored (e.g., `"null"` as used in the template).
 If you have tested a feature in multiple
 implementations check in one file per implementation, using as a filename
 the id given in the template for the implementations' description.
