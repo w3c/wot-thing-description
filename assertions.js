@@ -158,7 +158,6 @@ var report_dom = cheerio.load(report_template_raw);
 // (Synchronous)
 const src_raw = fs.readFileSync(src_htmlfile, 'UTF-8');
 var src_dom = cheerio.load(src_raw);
-var src_title = src_dom('title').text();
 
 // Check if an dom object is in an array.  Does deep comparison.
 // Used to check for assertion variants/duplicates.  We can't just 
@@ -683,10 +682,8 @@ function merge_interops(done_callback) {
 
 // Merge assertions into a single array
 // (Asynchronous)
-report_dom('head>title').append(src_title);
 var assertion_array = [];
-// report_dom('body>h2').append(src_title);
-// report_dom('body').append('<dl></dl>');
+
 function merge_assertions(assertions,ac,done_callback) {
   // insert assertions
   for (a_id in assertions) {
