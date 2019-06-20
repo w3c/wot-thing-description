@@ -933,52 +933,52 @@ function format_assertions(done_callback) {
         let pass = result.pass;
         if (undefined != pass) {
           if (pass >= pass_threshold) {
-            report_tr.append('\n\t<td class="'+ac+'">'+pass+'</td>');
+            report_tr.append('\n\t<td class="result '+ac+'">'+pass+'</td>');
           } else {
             if (pass == 0) {
-              report_tr.append('\n\t<td class="missing">'+pass+'</td>');
+              report_tr.append('\n\t<td class="result missing">'+pass+'</td>');
             } else {
-              report_tr.append('\n\t<td class="failed">'+pass+'</td>');
+              report_tr.append('\n\t<td class="result failed">'+pass+'</td>');
             }
           }
         } else {
-          report_tr.append('\n\t<td class="missing">0</td>');
-	  pass = 0;
+          report_tr.append('\n\t<td class="result missing">0</td>');
+          pass = 0;
         }
         // Number of reported fail statuses
         let fail = result.fail;
         if (undefined != fail) {
           if (fail > 0) {
-            report_tr.append('\n\t<td class="failed">'+fail+'</td>');
+            report_tr.append('\n\t<td class="result failed">'+fail+'</td>');
           } else {
-            report_tr.append('\n\t<td class="'+ac+'">'+fail+'</td>');
+            report_tr.append('\n\t<td class="result '+ac+'">'+fail+'</td>');
           }
         } else {
-          report_tr.append('\n\t<td class="'+ac+'">0</td>');
-	  fail = 0;
+          report_tr.append('\n\t<td class="result '+ac+'">0</td>');
+          fail = 0;
         }
         // Number of reported not implemented statuses
         let notimpl = result.notimpl;
         if (undefined != notimpl) {
-          report_tr.append('\n\t<td class="'+ac+'">'+notimpl+'</td>');
+          report_tr.append('\n\t<td class="result '+ac+'">'+notimpl+'</td>');
         } else {
-          report_tr.append('\n\t<td class="'+ac+'">0</td>');
-	  notimpl = 0;
+          report_tr.append('\n\t<td class="result '+ac+'">0</td>');
+          notimpl = 0;
         }
         // Total number of reported statuses
         let totals = pass + fail + notimpl;
         if (0 == totals) {
-          report_tr.append('\n\t<td class="missing">0</td>');
+          report_tr.append('\n\t<td class="result missing">0</td>');
         } else if (totals < 2) {
-          report_tr.append('\n\t<td class="failed">'+totals+'</td>');
+          report_tr.append('\n\t<td class="result failed">'+totals+'</td>');
         } else {
-          report_tr.append('\n\t<td class="'+ac+'">'+totals+'</td>');
+          report_tr.append('\n\t<td class="result '+ac+'">'+totals+'</td>');
         }
       } else {
-        report_tr.append('\n\t<td class="missing">0</td>');
-        report_tr.append('\n\t<td class="missing">0</td>');
-        report_tr.append('\n\t<td class="missing">0</td>');
-        report_tr.append('\n\t<td class="missing">0</td>');
+        report_tr.append('\n\t<td class="result missing">0</td>');
+        report_tr.append('\n\t<td class="result missing">0</td>');
+        report_tr.append('\n\t<td class="result missing">0</td>');
+        report_tr.append('\n\t<td class="result missing">0</td>');
       }
 
       // Add to test spec appendix
