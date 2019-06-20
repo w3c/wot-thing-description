@@ -205,10 +205,11 @@ src_dom('tr[class="rfc2119-table-assertion"]').each(function(i,elem) {
         let assertion_data = src_dom(this).children('td').map(function(i, el) {
             return src_dom(this).html();
         }).get();
+        console.log("TTTTABLE " + assertion_data[2]);
         let assertion = '<span class="rfc2119-table-assertion">' 
                       + assertion_data[0]         // vocab term
                       + ': ' + assertion_data[1]  // vocab text
-                      + (("yes" === assertion_data[2]) ? '<hr/>\nMUST be included.' : '<hr/>\nMAY be included.')
+                      + (("mandatory" === assertion_data[2]) ? '<hr/>\nMUST be included.' : '<hr/>\nMAY be included.')
                       + (("." === assertion_data[3]) ? '' : '\nType: '+assertion_data[3]+'.')
                       +'</span>';
         if (chatty_v) console.log("table assertion",id,"added");
