@@ -440,13 +440,13 @@ a[href].internalDFN {
   </p>
   <p>
   In general, the TD provides metadata for different <a>Protocol Bindings</a>
-  identified by URI schemes [[iana-uri-schemes]] (e.g., <code>http</code>, <code>coap</code>, etc.),
-  content types based on media types (e.g., <code>application/json</code>, <code>application/xml</code>, <code>application/cbor</code>, <code>application/exi</code> etc.) [[iana-media-types]],
-  and security mechanisms (for authentication,
-  authorization, confidentiality, etc.).
-  Serialization of TD instances is based on JSON [[rfc8259]], where JSON names refer to terms of
+  identified by URI schemes [[RFC3986]] (e.g., <code>http</code>, <code>coap</code>, etc. [[?IANA-URI-SCHEMES]]),
+  content types based on media types [[RFC2046]]
+  (e.g., <code>application/json</code>, <code>application/xml</code>, <code>application/cbor</code>, <code>application/exi</code>, etc. [[?IANA-MEDIA-TYPES]]),
+  and security mechanisms (for authentication, authorization, confidentiality, etc.).
+  Serialization of TD instances is based on JSON [[RFC8259]], where JSON names refer to terms of
   the TD vocabulary, as defined in this specification document. In addition the JSON serialization of TDs
-  follows the syntax of JSON-LD 1.1 [[?json-ld11]] to enable extensions and rich semantic processing.
+  follows the syntax of JSON-LD 1.1 [[?JSON-LD11]] to enable extensions and rich semantic processing.
   </p>
   <p>
   <a href="#simple-thing-description-sample">Example 1</a> shows a TD instance and
@@ -2180,7 +2180,7 @@ In summary, this requires the following:
             }]
         }
     },
-    "action": {
+    "actions": {
         "configure": {
             ...
             "forms": [{
@@ -2521,7 +2521,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 </pre>
 
   <p>
-  The <code>contentType</code> member is used to assign a media types [[!IANA-MEDIA-TYPES]]
+  The <code>contentType</code> member is used to assign a media type [[!RFC2046]]
   including media type parameters as attribute-value pairs separated by a <code>;</code> character.
   Example:
   </p>
@@ -2898,18 +2898,19 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 </pre>
 
     <p>
-        In many cases, context extension may be used to annotate pieces of a data schema, to be
-        able to semantically process actual data during an interaction. For example, the internal
-        state of the <a>Thing</a>, semantically described in RDF, can be embedded in the
-        <a>TD Document</a> and pieces of a data schema can be individually annotated as referring to
-        specific parts of that internal state.
+        In many cases, <a>TD Context Extensions</a> may be used to annotate pieces of a data schema,
+        to be able to semantically process the state information of the physical world object,
+        which is represented by the data exchanged during an interaction (e.g., in the payload of a response).
+        For example, a semantical description of this state information in RDF
+        can be embedded in the <a>TD Document</a> and pieces of a data schema can be individually annotated
+        as referring to specific parts of that RDF-modeled state of the physical world object.
     </p>
 
     <p>
         The TD snippet below uses SAREF to describe the state of a lamp. The external <a>Vocabulary
         Term</a> <code>ssn:forProperty</code>, taken from <a href="https://www.w3.org/TR/vocab-ssn/">SSN</a>,
-        the Semantic Sensor Network Ontology [[vocab-ssn]], is being used to link the data schema of
-        the <code>status</code> <a>Property</a> with the actual on/off state of the physical world object.
+        the Semantic Sensor Network Ontology [[VOCAB-SSN]], is being used to link the data schema of
+        the <code>status</code> <a>Property</a> with the the actual on/off state of the physical world object.
     </p>
 
 <pre class="example" id="saref-state-annotation-example">
@@ -2942,11 +2943,12 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
     <p>
         In <a href="#thing-description-full-serialization"></a>, the state of the <a>Thing</a>
-        is given by the <code>status</code> and <code>toggle</code> affordances themselves. In
-        other words, the object's internal state is its own affordance. This design
-        is satisfactory for simple cases like a light switch but in the general case, it is
-        considered a good practice to separate the state from interaction affordances, as
-        illustrated above with <code>ssn:forProperty</code>.
+        is given by the <code>status</code> affordance itself
+        and possible state changes are given by the <code>toggle</code> affordances.
+        In other words, the state of the physical world object directly provides the <a>Interaction Affordances</a> of the <a>Thing</a>.
+        This design is satisfactory for simple cases like a light switch.
+        In the general case, however, it is considered a good practice to separate the state of the object from
+        the <a>Interaction Affordances</a> as illustrated above with <code>ssn:forProperty</code>.
     </p>
 
 </section>
@@ -2973,7 +2975,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
   or <code>iPATCH</code> for CoAP Method Code 0.07).
   </p>
     
-<aside class="example" id="context-extension-for-forms" title="Specialization of forms through context extension">
+<aside class="example" id="context-extension-for-forms" title="Specialization of forms through TD Context Extension">
 <pre>
 {
     "@context": [
@@ -3052,7 +3054,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
             }]
         }
     },
-    "action": {
+    "actions": {
         "configure": {
             ...
             "forms": [{
@@ -3070,7 +3072,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
   <p>
   Note that all security schemes defined in <a href="#sec-security-vocabulary-definition"></a>
-  are already part of the TD context and need not to be included through a context extension.
+  are already part of the TD context and need not to be included through a <a>TD Context Extension</a>.
   </p>
     
 </section>
@@ -3402,7 +3404,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
           is not restricted. Other <a>Protocol Bindings</a> (e.g., for CoAP, MQTT, or OPC UA)
           are intended to be standardized in separate documents such as a protocol <a>Vocabulary</a> similar to <em>HTTP Vocabulary in RDF 1.0</em> [[HTTP-in-RDF10]]
           or specifications including <a>Default Value</a> definitions. Such protocols can be simply integrated into the TD by the
-          usage of the context extension mechanism (<a href="#sec-context-extensions"></a>).
+          usage of the <a>TD Context Extension</a> mechanism (see <a href="#sec-context-extensions"></a>).
       </p>
   </section>
 </section>
@@ -3713,7 +3715,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   
     <ul>
         <li>Title: MyLampThing</li>
-        <li>Context extension: none</li>
+        <li>Context Extensions: none</li>
         <li>Offered affordances: 1 Property, 1 Action, 1 Event</li>
         <li>Security: PSKSecurityScheme</li>
         <li>Protocol Binding: CoAP [[?RFC7252]] over TLS</li>
@@ -3775,7 +3777,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   
     <ul>
         <li>Title: MyLightSensor</li>
-        <li>Context extension: none</li>
+        <li>Context Extensions: none</li>
         <li>Offered affordances: 1 Event</li>
         <li>Security: none</li>
         <li>Protocol Binding: MQTT [[?MQTT]]</li>
@@ -3813,7 +3815,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     
       <ul>
           <li>Title: WebhookThing</li>
-          <li>Context extension: use HTTP <a>Protocol Binding</a> supplements (htv prefix already included in TD context)</li>
+          <li>Context Extensions: use HTTP <a>Protocol Binding</a> supplements (htv prefix already included in TD context)</li>
           <li>Offered affordances: 1 Event</li>
           <li>Security: none</li>
           <li>Protocol Binding: HTTP</li>
@@ -3827,7 +3829,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
               To unsubscribe, the <a>Consumer</a> has to submit the <code>unsubscribeevent</code> form,
               which makes use of a URI Template.
               The <code>uriVariables</code> member informs the <a>Consumer</a> to include the <code>subscriptionID</code> string.
-              This can be further automated by using a context extension to include proper semantic annotations.
+              This can be further automated by using a <a>TD Context Extension</a> to include proper semantic annotations.
               Alternatively, one can imagine unsubscribing using the <code>cancellation</code> member similarly to <code>subscription</code>
               and combine this with a <code>unsubscribeevent</code> form that describes a POST request with payload to unsubscribe.
           </li>
@@ -4036,7 +4038,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <li>General</li>
     <ul>
         <li>Clarified definition of <a>TD Processor</a> and related text that implementations may be TD producer or TD consumer only as correctly assumed by all implementations (no impact on implementations).</li>
-        <li>Consistently refer to the WoT Security and Privacy building block and specification document as "WoT Security and Privacy Guidelines" to clearly distinguish from the "WoT Security and Privacy Considerations" sections of WoT specifications.</li>
+        <li>Clarified uniqueness and possible values for Thing <code>id</code>, in particular privacy-preserving values such as URIs with local IP addresses or temporary and mutable URIs.</li>
+        <li>Improved text on semantic annotations.</li>
+        <li>Made name and references to the WoT Security and Privacy building block and specification document consistent ("WoT Security and Privacy Guidelines" to clearly distinguish from the "WoT Security and Privacy Considerations" sections of WoT specifications).</li>
         <li>Updated <a href="#thing-description-full-serialization"></a> to fix bugs.</li>
         <ul>
             <li><code>name</code> was renamed to <code>title</code> to reflect a previous change of the <a href="#thing"></a> Class definition.</li>
@@ -4047,13 +4051,13 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             <li><code>op</code> was added to the form of the <code>status</code> Property to override the default value.</li>
             <li>The default value of <code>["readproperty", "writeproperty"]</code> would have caused both froms to have the method GET, which was not the intention.</li>
         </ul>
-        <li>Minor editorial text improvements.</li>
+        <li>Minor editorial text improvements and fixes.</li>
     </ul>
 
     <li>TD Information Model</li>
     <ul>
         <li>Adjusted location of a label in <a href="#td-core-model"></a>.</li>
-        <li>Fix uppercase 'MAY' to lowercase that was not part of an assertion sentence/markup (TD Context Extension for data schema; no impact on implementations).</li>
+        <li>Fix uppercase MAY to lowercase that was not part of an assertion sentence/markup (TD Context Extension for data schema; no impact on implementations).</li>
     </ul>
 
     <li>TD Context Extensions</li>
