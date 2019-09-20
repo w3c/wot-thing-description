@@ -410,7 +410,7 @@ including the following:
     it has side effects that change the state. 
 - The Thing provides one Event interaction resource with the name `overheating`.
   - The event `overheating` can be obtained at URI 
-    `https://mylamp.example.com/oh` by using HTTP with a long polling sub-protocol.
+    `https://mylamp.example.com/oh` by using HTTP with a long polling subprotocol.
     The subprotocol clarifies which of several possible mechanisms in HTTP
     are used to provide "push" notifications.
   - Each message pushed by the Thing is a string value.

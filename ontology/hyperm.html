@@ -2,21 +2,44 @@
 <html>
 
 <head>
-    <meta charset='utf-8'>
-    <title>Web Linking Ontology</title>
-    <script src='https://www.w3.org/Tools/respec/respec-w3c-common' class='remove'></script>
-    <script class='remove'>
+    <meta charset="utf-8">
+    <title>Hypermedia Controls Ontology</title>
+    <script src="https://www.w3.org/Tools/respec/respec-w3c-common" class="remove"></script>
+    <script class="remove">
         var respecConfig = {
-            specStatus: "WG-NOTE",
+            specStatus: "ED",
             editors: [{
                 name: "Victor Charpenay"
             }, {
-                name: "Maxime Lefrançois"
-            }, {
-                name: "María Poveda Villalón"
+                name: "Matthias Kovatsch"
             }],
-            edDraftURI: "http://github.com/w3c/wot-thing-description",
-            shortName: "wot-td-ontology"
+            edDraftURI: "https://www.w3.org/2019/wot/hypermedia",
+            shortName: "hypermedia-ontology",
+            localBiblio: {
+                "HYDRA": {
+                    href: "https://www.hydra-cg.com/spec/latest/core/",
+                    title: "Hydra Core Vocabulary",
+                    publisher: "Hydra W3C Community Group",
+                    authors: [
+                        "Markus Lanthaler"
+                    ]
+                },
+                "REST" : {
+                    title : "REST: Architectural Styles and the Design of Network-based Software Architectures",
+                    author : "Roy Thomas Fielding",
+                    status : "PhD thesis",
+                    publisher : "University of California, Irvine",
+                    date : "2000"
+                },
+                "CORAL" : {
+                    href : "https://tools.ietf.org/html/draft-hartke-t2trg-coral",
+                    title : "The Constrained RESTful Application Language (CoRAL)",
+                    authors : [ "Klaus Hartke" ],
+                    publisher : "IETF",
+                    status : "Internet-Draft",
+                    date : " March 2019"
+                }
+            }
         };
     </script>
     <style>
@@ -55,29 +78,60 @@
 </head>
 
 <body>
-    <section id='abstract'>
+    <section id="abstract">
         <p>
-            This is required.
+            This document introduces an ontology for links and forms, the main hypermedia
+            controls in use on the Web. This ontology offers, among others, a means to reify
+            RDF statements interpreted as links between Web resources. It also provides
+            a versatile exchange format for links and forms in RESTful Web applications.
+        </p>
+        <p>
+            Hypermedia controls are of importance in the fields of the Web of Things and
+            the Embedded Web, in particular in the W3C Thing Description model and the IETF
+            Constrained RESTful Application Language.
         </p>
     </section>
-    <section id='sotd'>
-        <p>
-            This is required.
+    <section id="sotd">
+        <p class="ednote" title="The W3C WoT WG is asking for feedback">
+            Please contribute to this draft using the <a href="https://github.com/w3c/wot-thing-description/issues">GitHub Issue</a> feature of the <a href="https://github.com/w3c/wot-thing-description/">WoT Thing Description</a> repository.
         </p>
     </section>
     <section>
         <h2>Introduction</h2>
+        <p>
+            The concept of Representational State Transfer (REST) [[REST]] is at the core of most modern
+            Web applications. The state of a Web resources, exposed via a collection of Web
+            resources, can be browsed by clients by following <em>links</em> and acted upon by submitting
+            <em>forms</em> to servers.
+        </p>
+        <p>
+            Links and forms have always be present in Web technologies, including HTML [[HTML]]. Web
+            linking [[RFC8288]] is a fundamental principle of the Web architecture that can be leveraged to
+            drive applications, e.g., when a server returns a link to a newly created resource as the
+            result of a client's request. Conversely, forms, are request templates that servers can expose
+            to clients for them to fill in with client-specific information and send back to servers.
+            Forms are similar in spirit to operation desriptions as defined by the Open API Specification
+            [[OPENAPIS]] or by the Hydra RDF vocabulary [[HYDRA]].
+        </p>
+        <p>
+            Links and forms are generically referred to as <em>hypermedia controls</em>. They are
+            of increasing importance in the fields of the Web of Things and the Embedded Web,
+            which respectively led to the standardization of the Thing Description (TD) model
+            [[WOT-THING-DESCRIPTION]] and the Constrained RESTful Application Language (CoRAL)
+            [[CORAL]]. The present hypermedia controls ontology is an attempt to formalize the
+            concepts these two standards specify.
+        </p>
     </section>
 
     <section><h2>Axiomatization</h2><section><h3>Overview of Classes and Properties</h3><div  class="azlist"><p>Classes: <a href="#hyperm-expectedresponse">hyperm:ExpectedResponse</a> , <a href="#hyperm-link">hyperm:Link</a> , <a href="#hyperm-form">hyperm:Form</a></p></div><div  class="azlist"><p>Object Properties: </p></div><div  class="azlist"><p>Datatype Properties: <a href="#hyperm-hintsatmediatype">hyperm:hintsAtMediaType</a> , <a href="#hyperm-hasrelationtype">hyperm:hasRelationType</a> , <a href="#hyperm-forcontentcoding">hyperm:forContentCoding</a> , <a href="#hyperm-forcontenttype">hyperm:forContentType</a> , <a href="#hyperm-forsubprotocol">hyperm:forSubProtocol</a> , <a href="#hyperm-foroperationtype">hyperm:forOperationType</a> , <a href="#hyperm-hastarget">hyperm:hasTarget</a> , <a href="#hyperm-returns">hyperm:returns</a> , <a href="#hyperm-hasanchor">hyperm:hasAnchor</a></p></div></section><section><h3>Classes</h3><section class="specterm"><h4><a href="#hyperm-expectedresponse">hyperm:ExpectedResponse</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#ExpectedResponse</p><p><strong>a OWL Class</strong></p><em>ExpectedResponse</em> - <span>Communication metadata describing the expected response message.</span><table><tbody></tbody></table></section>
 <section class="specterm"><h4><a href="#hyperm-link">hyperm:Link</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#Link</p><p><strong>a OWL Class</strong></p><em>Link</em> - <span>A link can be viewed as a statement of the form "<b><em>link context</em></b>  has a <b><em>relation type</em></b> resource at <b><em>link target</em></b>", where the optional <b><em>target attributes</em></b>  may further describe the resource.</span><table><tbody></tbody></table></section>
-<section class="specterm"><h4><a href="#hyperm-form">hyperm:Form</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#Form</p><p><strong>a OWL Class</strong></p><em>Form</em> - <span>A form can be viewed as a statement of "To perform an <b><em>operation type</em></b> operation on <b><em>form context</b></em>, make a <b><em>request method</b></em> request to <b><em>submission target</b></em>" where the optional <b><em>form fields</b></em> may further describe the required request. In Thing Descriptions, the <b><em>form context</b></em> is the surrounding Object, such as Properties, Actions, and Events or the Thing itself for meta-interactions.</span><table><tbody></tbody></table></section></section><section><h3>Object Properties</h3></section><section><h3>Datatype Properties</h3><section class="specterm"><h4><a href="#hyperm-hintsatmediatype">hyperm:hintsAtMediaType</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#hintsAtMediaType</p><p><strong>a OWL Class</strong></p><em>hintsAtMediaType</em> - <span>Target attribute providing a hint indicating what the media type [IANA-MEDIA-TYPES] of the result of dereferencing the link should be.</span><table><tbody></tbody></table></section>
+<section class="specterm"><h4><a href="#hyperm-form">hyperm:Form</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#Form</p><p><strong>a OWL Class</strong></p><em>Form</em> - <span>A form can be viewed as a statement of "To perform an <b><em>operation type</em></b> operation on <b><em>form context</b></em>, make a <b><em>request method</b></em> request to <b><em>submission target</b></em>" where the optional <b><em>form fields</b></em> may further describe the required request. In Thing Descriptions, the <b><em>form context</b></em> is the surrounding Object, such as Properties, Actions, and Events or the Thing itself for meta-interactions.</span><table><tbody></tbody></table></section></section><section><h3>Object Properties</h3></section><section><h3>Datatype Properties</h3><section class="specterm"><h4><a href="#hyperm-hintsatmediatype">hyperm:hintsAtMediaType</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#hintsAtMediaType</p><p><strong>a OWL Class</strong></p><em>hintsAtMediaType</em> - <span>Target attribute providing a hint indicating what the media type [[RFC2046]] of the result of dereferencing the link should be.</span><table><tbody></tbody></table></section>
 <section class="specterm"><h4><a href="#hyperm-hasrelationtype">hyperm:hasRelationType</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#hasRelationType</p><p><strong>a OWL Class</strong></p><em>hasRelationType</em> - <span>A link relation type identifies the semantics of a link.</span><table><tbody></tbody></table></section>
 <section class="specterm"><h4><a href="#hyperm-forcontentcoding">hyperm:forContentCoding</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#forContentCoding</p><p><strong>a OWL Class</strong></p><em>forContentCoding</em> - <span>Content coding values indicate an encoding transformation that has been or can be applied to a representation. Content codings are primarily used to allow a representation to be compressed or otherwise usefully transformed without losing the identity of its underlying media type and without loss of information. Examples of content coding include "gzip", "deflate", etc. </span><table><tbody></tbody></table></section>
-<section class="specterm"><h4><a href="#hyperm-forcontenttype">hyperm:forContentType</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#forContentType</p><p><strong>a OWL Class</strong></p><em>forContentType</em> - <span>Assign a content type based on a media type [[IANA-MEDIA-TYPES]] (e.g., 'text/plain') and potential parameters (e.g., 'charset=utf-8') for the media type.</span><table><tbody></tbody></table></section>
+<section class="specterm"><h4><a href="#hyperm-forcontenttype">hyperm:forContentType</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#forContentType</p><p><strong>a OWL Class</strong></p><em>forContentType</em> - <span>Assign a content type based on a media type (e.g., <code>text/plain</code>) and potential parameters (e.g., <code>charset=utf-8</code>) for the media type [[RFC2046]].</span><table><tbody></tbody></table></section>
 <section class="specterm"><h4><a href="#hyperm-forsubprotocol">hyperm:forSubProtocol</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#forSubProtocol</p><p><strong>a OWL Class</strong></p><em>forSubProtocol</em> - <span>Indicates the exact mechanism by which an interaction will be accomplished for a given protocol when there are multiple options.
      
-For example, for HTTP and Events, it indicates which of several available mechanisms should be used for asynchronous notifications such as long polling, websub (also see https://www.w3.org/TR/websub/), or server sent events (also see https://www.w3.org/TR/eventsource/). Please note that there is no restriction on the sub-protocol selection and other mechanisms can also be announced by this subprotocol term.</span><table><tbody></tbody></table></section>
+For example, for HTTP and Events, it indicates which of several available mechanisms should be used for asynchronous notifications such as long polling (<code>longpoll</code>), <a href="https://www.w3.org/TR/websub/">WebSub</a> (<code>websub</code>), <a href="https://www.w3.org/TR/eventsource/">Server-Sent Events</a> (<code>sse</code>). Please note that there is no restriction on the subprotocol selection and other mechanisms can also be announced by this subprotocol term.</span><table><tbody></tbody></table></section>
 <section class="specterm"><h4><a href="#hyperm-foroperationtype">hyperm:forOperationType</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#forOperationType</p><p><strong>a OWL Class</strong></p><em>forOperationType</em> - <span>Indicates the semantic intention of performing the operation(s) described by the form.
 
 For example, the Property interaction allows get and set operations.  
@@ -85,21 +139,21 @@ The protocol binding may contain a form for the get operation and a different fo
 The op attribute indicates which form is for which and allows the client to select the correct form for the operation required.
 
 op can be assigned one or more interaction verb(s) each representing a semantic intention of an operation.</span><table><tbody></tbody></table></section>
-<section class="specterm"><h4><a href="#hyperm-hastarget">hyperm:hasTarget</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#hasTarget</p><p><strong>a OWL Class</strong></p><em>hasTarget</em> - <span>target IRI of a link or submission target of a form.</span><table><tbody></tbody></table></section>
-<section class="specterm"><h4><a href="#hyperm-returns">hyperm:returns</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#returns</p><p><strong>a OWL Class</strong></p><em>returns</em> - <span>This optional term can be used if, e.g., the output communication metadata differ from input metdata (e.g., output contentType differ from the
-     input contentType). The response name contains metadata that is only valid for the reponse messages.</span><table><tbody></tbody></table></section>
-<section class="specterm"><h4><a href="#hyperm-hasanchor">hyperm:hasAnchor</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#hasAnchor</p><p><strong>a OWL Class</strong></p><em>hasAnchor</em> - <span>By default, the context, or anchor, of a link conveyed in the Link header field is the URL of the representation it is associated with, as defined in RFC7231, Section 3.1.4.1, and is serialized as a URI.</span><table><tbody></tbody></table></section></section></section><section><h2>Term Mapping</h2><table><thead><tr><th>JSON String</th><th>Ontology Term</th></tr></thead><tbody><tr><td>hyperm</td><td><a href="#hyperm-hypermedia controls ontology">hyperm:Hypermedia Controls Ontology</a></td></tr>
-<tr><td>response</td><td><a href="#hyperm-returns">hyperm:returns</a></td></tr>
-<tr><td>Form</td><td><a href="#hyperm-form">hyperm:Form</a></td></tr>
-<tr><td>subprotocol</td><td><a href="#hyperm-forsubprotocol">hyperm:forSubProtocol</a></td></tr>
-<tr><td>Link</td><td><a href="#hyperm-link">hyperm:Link</a></td></tr>
-<tr><td>type</td><td><a href="#hyperm-hintsatmediatype">hyperm:hintsAtMediaType</a></td></tr>
-<tr><td>anchor</td><td><a href="#hyperm-hasanchor">hyperm:hasAnchor</a></td></tr>
-<tr><td>rel</td><td><a href="#hyperm-hasrelationtype">hyperm:hasRelationType</a></td></tr>
+<section class="specterm"><h4><a href="#hyperm-hastarget">hyperm:hasTarget</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#hasTarget</p><p><strong>a OWL Class</strong></p><em>hasTarget</em> - <span>Target IRI of a link or submission target of a form.</span><table><tbody></tbody></table></section>
+<section class="specterm"><h4><a href="#hyperm-returns">hyperm:returns</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#returns</p><p><strong>a OWL Class</strong></p><em>returns</em> - <span>This optional term can be used if, e.g., the output communication metadata differ from input metadata (e.g., output contentType differ from the
+     input contentType). The response name contains metadata that is only valid for the response messages.</span><table><tbody></tbody></table></section>
+<section class="specterm"><h4><a href="#hyperm-hasanchor">hyperm:hasAnchor</a></h4><p>IRI: https://www.w3.org/2019/wot/hypermedia#hasAnchor</p><p><strong>a OWL Class</strong></p><em>hasAnchor</em> - <span>Overrides the link context (by default the Thing itself identified by its <code>id</code>) with the given URI or IRI.</span><table><tbody></tbody></table></section></section></section><section><h2>Term Mapping</h2><table><thead><tr><th>JSON String</th><th>Ontology Term</th></tr></thead><tbody><tr><td>hyperm</td><td><a href="#hyperm-hypermedia controls ontology">hyperm:Hypermedia Controls Ontology</a></td></tr>
+<tr><td>href</td><td><a href="#hyperm-hastarget">hyperm:hasTarget</a></td></tr>
 <tr><td>contentCoding</td><td><a href="#hyperm-forcontentcoding">hyperm:forContentCoding</a></td></tr>
-<tr><td>op</td><td><a href="#hyperm-foroperationtype">hyperm:forOperationType</a></td></tr>
 <tr><td>contentType</td><td><a href="#hyperm-forcontenttype">hyperm:forContentType</a></td></tr>
-<tr><td>href</td><td><a href="#hyperm-hastarget">hyperm:hasTarget</a></td></tr></tbody></table></section>
+<tr><td>type</td><td><a href="#hyperm-hintsatmediatype">hyperm:hintsAtMediaType</a></td></tr>
+<tr><td>Link</td><td><a href="#hyperm-link">hyperm:Link</a></td></tr>
+<tr><td>rel</td><td><a href="#hyperm-hasrelationtype">hyperm:hasRelationType</a></td></tr>
+<tr><td>Form</td><td><a href="#hyperm-form">hyperm:Form</a></td></tr>
+<tr><td>response</td><td><a href="#hyperm-returns">hyperm:returns</a></td></tr>
+<tr><td>op</td><td><a href="#hyperm-foroperationtype">hyperm:forOperationType</a></td></tr>
+<tr><td>anchor</td><td><a href="#hyperm-hasanchor">hyperm:hasAnchor</a></td></tr>
+<tr><td>subprotocol</td><td><a href="#hyperm-forsubprotocol">hyperm:forSubProtocol</a></td></tr></tbody></table></section>
     
 </body>
 

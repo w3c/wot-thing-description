@@ -12,8 +12,8 @@ fi
 echo "Starting RDF store (running on port 3030)..."
 java -jar .install/fuseki.jar --mem /temp &
 WOT_FUSEKI_PID=$! # PID of the last detached process (fuseki)
-export WOT_SPARQL_ENDPOINT=http://localhost:3030/temp
-export WOT_SPARUL_ENDPOINT=http://localhost:3030/temp
+#export WOT_SPARQL_ENDPOINT=http://localhost:3030/temp
+#export WOT_SPARUL_ENDPOINT=http://localhost:3030/temp
 sleep 5 # waiting for the RDF store to initialize
 
 echo "Rendering HTML documents & DOT diagrams..."

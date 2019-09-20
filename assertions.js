@@ -52,7 +52,7 @@ const results_csvfile = path.join(results_dir,"template.csv");
 // the HTML template to resolve hyperlinks included from index.html,
 // so this needs to link back to the report from the location of that
 // file...
-const report_base = path.join(report_dir, "report.html");
+const report_base = ""; // path.join(report_dir, "report.html");
 
 // Base URL for specification. 
 const src_base = "https://www.w3.org/TR/wot-thing-description";
@@ -124,7 +124,16 @@ get_descs();
 var report_template_raw = fs.readFileSync(rt_htmlfile, 'UTF-8');
 const testspec_template_raw = fs.readFileSync(tt_htmlfile, 'UTF-8');
 const interop_template_raw = fs.readFileSync(it_htmlfile, 'UTF-8');
+
+// Set version date
+
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+let lastModified = new Date();
+let lastModifiedString = lastModified.getDate() + ' ' + monthNames[lastModified.getMonth()] + ' ' + lastModified.getFullYear();
+report_template_raw = report_template_raw.replace("{{LastModified}}", lastModifiedString);
+
 // Make conditional substitutions
+
 if (show_test_specs) {
   report_template_raw = report_template_raw.replace("{{TestSpecTOC}}",
     '<li class="tocline"><a href="testing/report.html#testspecsB">Test specifications</a></li>');
@@ -133,6 +142,7 @@ if (show_test_specs) {
   report_template_raw = report_template_raw.replace("{{TestSpecTOC}}","");
   report_template_raw = report_template_raw.replace("{{TestSpec}}",""); 
 }
+
 if (show_interop_results) {
   report_template_raw = report_template_raw.replace("{{InteropTOC}}",
     '<li class="tocline">8.3 <a href="testing/report.html#test_interop">Interoperability results</a></li>');
@@ -148,7 +158,6 @@ var report_dom = cheerio.load(report_template_raw);
 // (Synchronous)
 const src_raw = fs.readFileSync(src_htmlfile, 'UTF-8');
 var src_dom = cheerio.load(src_raw);
-var src_title = src_dom('title').text();
 
 // Check if an dom object is in an array.  Does deep comparison.
 // Used to check for assertion variants/duplicates.  We can't just 
@@ -196,10 +205,11 @@ src_dom('tr[class="rfc2119-table-assertion"]').each(function(i,elem) {
         let assertion_data = src_dom(this).children('td').map(function(i, el) {
             return src_dom(this).html();
         }).get();
+        console.log("TTTTABLE " + assertion_data[2]);
         let assertion = '<span class="rfc2119-table-assertion">' 
                       + assertion_data[0]         // vocab term
                       + ': ' + assertion_data[1]  // vocab text
-                      + (("yes" === assertion_data[2]) ? '<hr/>\nMUST be included.' : '<hr/>\nMAY be included.')
+                      + (("mandatory" === assertion_data[2]) ? '<hr/>\nMUST be included.' : '<hr/>\nMAY be included.')
                       + (("." === assertion_data[3]) ? '' : '\nType: '+assertion_data[3]+'.')
                       +'</span>';
         if (chatty_v) console.log("table assertion",id,"added");
@@ -673,10 +683,8 @@ function merge_interops(done_callback) {
 
 // Merge assertions into a single array
 // (Asynchronous)
-report_dom('head>title').append(src_title);
 var assertion_array = [];
-// report_dom('body>h2').append(src_title);
-// report_dom('body').append('<dl></dl>');
+
 function merge_assertions(assertions,ac,done_callback) {
   // insert assertions
   for (a_id in assertions) {
@@ -778,14 +786,14 @@ function format_assertions(done_callback) {
       if (show_test_specs) {
         // Test Specifications Appendix
         report_dom('#testspecs').append('\n<dt></dt>');
-	let report_dt = report_dom('#testspecs>dt:last-child');
-	report_dt.append('\n\t<a href="'+report_base+'#'+a+'">'+a+'</a>:');
-	if ("tabassertion" === ac) {
-	  report_dt.append(' <em>(table)</em>');
-	}
-	if ("extraassertion" === ac) {
-	  report_dt.append(' <em>(extra)</em>');
-	}
+        let report_dt = report_dom('#testspecs>dt:last-child');
+        report_dt.append('\n\t<a href="'+report_base+'#'+a+'">'+a+'</a>:');
+        if ("tabassertion" === ac) {
+          report_dt.append(' <em>(table)</em>');
+        }
+        if ("extraassertion" === ac) {
+          report_dt.append(' <em>(extra)</em>');
+        }
       }
 
       let category = undefined;
@@ -926,52 +934,52 @@ function format_assertions(done_callback) {
         let pass = result.pass;
         if (undefined != pass) {
           if (pass >= pass_threshold) {
-            report_tr.append('\n\t<td class="'+ac+'">'+pass+'</td>');
+            report_tr.append('\n\t<td class="result '+ac+'">'+pass+'</td>');
           } else {
             if (pass == 0) {
-              report_tr.append('\n\t<td class="missing">'+pass+'</td>');
+              report_tr.append('\n\t<td class="result missing">'+pass+'</td>');
             } else {
-              report_tr.append('\n\t<td class="failed">'+pass+'</td>');
+              report_tr.append('\n\t<td class="result failed">'+pass+'</td>');
             }
           }
         } else {
-          report_tr.append('\n\t<td class="missing">0</td>');
-	  pass = 0;
+          report_tr.append('\n\t<td class="result missing">0</td>');
+          pass = 0;
         }
         // Number of reported fail statuses
         let fail = result.fail;
         if (undefined != fail) {
           if (fail > 0) {
-            report_tr.append('\n\t<td class="failed">'+fail+'</td>');
+            report_tr.append('\n\t<td class="result failed">'+fail+'</td>');
           } else {
-            report_tr.append('\n\t<td class="'+ac+'">'+fail+'</td>');
+            report_tr.append('\n\t<td class="result '+ac+'">'+fail+'</td>');
           }
         } else {
-          report_tr.append('\n\t<td class="'+ac+'">0</td>');
-	  fail = 0;
+          report_tr.append('\n\t<td class="result '+ac+'">0</td>');
+          fail = 0;
         }
         // Number of reported not implemented statuses
         let notimpl = result.notimpl;
         if (undefined != notimpl) {
-          report_tr.append('\n\t<td class="'+ac+'">'+notimpl+'</td>');
+          report_tr.append('\n\t<td class="result '+ac+'">'+notimpl+'</td>');
         } else {
-          report_tr.append('\n\t<td class="'+ac+'">0</td>');
-	  notimpl = 0;
+          report_tr.append('\n\t<td class="result '+ac+'">0</td>');
+          notimpl = 0;
         }
         // Total number of reported statuses
         let totals = pass + fail + notimpl;
         if (0 == totals) {
-          report_tr.append('\n\t<td class="missing">0</td>');
+          report_tr.append('\n\t<td class="result missing">0</td>');
         } else if (totals < 2) {
-          report_tr.append('\n\t<td class="failed">'+totals+'</td>');
+          report_tr.append('\n\t<td class="result failed">'+totals+'</td>');
         } else {
-          report_tr.append('\n\t<td class="'+ac+'">'+totals+'</td>');
+          report_tr.append('\n\t<td class="result '+ac+'">'+totals+'</td>');
         }
       } else {
-        report_tr.append('\n\t<td class="missing">0</td>');
-        report_tr.append('\n\t<td class="missing">0</td>');
-        report_tr.append('\n\t<td class="missing">0</td>');
-        report_tr.append('\n\t<td class="missing">0</td>');
+        report_tr.append('\n\t<td class="result missing">0</td>');
+        report_tr.append('\n\t<td class="result missing">0</td>');
+        report_tr.append('\n\t<td class="result missing">0</td>');
+        report_tr.append('\n\t<td class="result missing">0</td>');
       }
 
       // Add to test spec appendix

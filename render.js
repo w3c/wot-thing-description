@@ -78,8 +78,8 @@ const jsonSchemaValidation = fs.readFileSync('validation/td-json-schema-validati
 
 const atriskCSS = fs.readFileSync('testing/atrisk.css', 'UTF-8');
 
-const updateEndpoint = process.env.WOT_SPARUL_ENDPOINT;
-const queryEndpoint = process.env.WOT_SPARQL_ENDPOINT;
+const updateEndpoint = 'http://localhost:3030/temp'; // process.env.WOT_SPARUL_ENDPOINT;
+const queryEndpoint = 'http://localhost:3030/temp'; // process.env.WOT_SPARQL_ENDPOINT;
 if (!updateEndpoint) throw new Error('WOT_SPARUL_ENDPOINT not defined (SPARQL update endpoint)');
 if (!queryEndpoint) throw new Error('WOT_SPARQL_ENDPOINT not defined (SPARQL query endpoint)');
 

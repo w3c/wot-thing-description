@@ -34,7 +34,7 @@ The latter should always be execute within `render.sh` since it requires some en
 For Windows users, the script should be run in a [Cygwin shell](http://cygwin.com/). Git package from Cygwin distribution had better not be used. Alternative Git client distribution such as [Git for Windows](https://gitforwindows.org/) works better when you encounter an issue building the document using Cygwin.
 
 Rendering is primarly based on the content of [`validation/td-validation.ttl`](validation/td-validation.ttl).
-Any customization of the rendering should go there. e.g. by defining `sh:order` or `sh:description` triples for the relevant shapes.
+Any customization of the rendering should go there, e.g., by defining `sh:order` or `sh:description` triples for the relevant shapes.
 
 ## Implementation Report
 
@@ -91,7 +91,7 @@ Note that the above rendering process also assigns each
 table entry a unique ID and these are also listed in the 
 table included in the implementation report.
 
-Other data, e.g. data from test results, test specifications,
+Other data, e.g., data from test results, test specifications,
 and implementation descriptions, are also needed to complete the 
 implementation report.  See [testing/README.md](testing/README.md)
 for details.
