@@ -670,7 +670,8 @@ a[href].internalDFN {
     The declaration mechanism inside some
     <code>@context</code> is specified by JSON-LD. A TD instance complies to version 1.1 of
     that specification [[?json-ld11]]. Hence, a TD instance can be also processed as an RDF
-    document (for details about semantic processing, please refer to the documentation under the namespace IRIs, e.g.,
+    document (for details about semantic processing, please refer to Appendix
+    <a href="#json-ld-ctx-usage"></a> and the documentation under the namespace IRIs, e.g.,
     <a href="https://www.w3.org/2019/wot/td">https://www.w3.org/2019/wot/td</a>).
 </p>
 
@@ -5579,6 +5580,112 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     </section>
     
   </section>
+</section>
+
+<section id="json-ld-ctx-usage" class="appendix informative">
+    <h1>JSON-LD Context Usage</h1>
+
+    <p>
+        The present specification introduces the <a>TD Information Model</a>
+        as a set of constraints over different <a>Vocabularies</a>, i.e. sets of
+        <a>Vocabulary Terms</a>. This section briefly explains how a machine-readable
+        definition of these constraints can be integrated into client applications,
+        by making use of the mandatory <code>@context</code> of a TD document.
+    </p>
+
+    <p>
+        Accessing the <a>TD Information Model</a> from a TD document is done in
+        two steps. First, clients must retrieve a mapping from JSON strings to IRIs.
+        This mapping is defined as a JSON-LD context, as explained later. Second, clients
+        can access the constraints defined on these IRIs by dereferencing them.
+        Constraints are defined as logical axioms in the RDF format, readily interpretable
+        by client programs.
+    </p>
+
+    <p>
+        All <a>Vocabulary Terms</a> referenced in <a href="#sec-vocabulary-definition"></a>
+        are serialized as (compact) JSON strings in a TD document. However, each of these
+        terms is unambiguously identified by a full IRI, as per the first Linked Data
+        principle [[LINKED-DATA]]. The mappings from JSON keys to IRIs is what the
+        <code>@context</code> value of a TD points to. For instance, the file at
+    </p>
+
+    <p>
+        <code>https://www.w3.org/2019/wot/td/v1</code>
+    </p>
+
+    <p>
+        includes the following mappings (among others):
+        <table>
+            <tbody>
+                <tr>
+                    <td><code>properties</code></td>
+                    <td>→</td>
+                    <td><code>https://www.w3.org/2019/wot/td#hasPropertyAffordance</code></td>
+                </tr>
+                <tr>
+                    <td><code>object</code></td>
+                    <td>→</td>
+                    <td><code>https://www.w3.org/2019/wot/json-schema#ObjectSchema</code></td>
+                </tr>
+                <tr>
+                    <td><code>basic</code></td>
+                    <td>→</td>
+                    <td><code>https://www.w3.org/2019/wot/security#BasicSecurityScheme</code></td>
+                </tr>
+                <tr>
+                    <td><code>href</code></td>
+                    <td>→</td>
+                    <td><code>https://www.w3.org/2019/wot/hypermedia#hasTarget</code></td>
+                </tr>
+                <tr>
+                    <td>...</td>
+                </tr>
+            </tbody>
+        </table>
+    </p>
+
+    <p>
+        This JSON file follows the JSON-LD 1.1 syntax [[JSON-LD11]].
+        Numerous JSON-LD libraries can automatically process the <code>@context</code> of a TD
+        and expand all the JSON strings it includes.
+    </p>
+
+    <p>
+        Once every <a>Vocabulary Term</a> of a TD is expanded to a IRI, the second step
+        consists in dereferencing this IRI to get fragments of the <a>TD Information Model</a>
+        that refer to that <a>Vocabulary Term</a>. For instance, dereferencing the IRI
+    </p>
+
+    <p>
+        <code>https://www.w3.org/2019/wot/json-schema#ObjectSchema</code>
+    </p>
+
+    <p>
+        results in an RDF document stating that the term <code>ObjectSchema</code> is a
+        <a>Class</a> and more precisely, a sub-class of <code>DataSchema</code>. Such
+        logical axioms are represented in RDF using formalisms of various complexity:
+        here, sub-class relations are expressed as RDF Schema axioms [[RDF-SCHEMA]].
+        Moreover, these axioms may be serialized in various formats. Here, they are
+        serialized in the Turtle format [[TURTLE]]:
+    </p>
+
+    <p>
+        <code>
+<pre>
+&lt;https://www.w3.org/2019/wot/json-schema#ObjectSchema&gt;
+    a rdfs:Class .
+&lt;https://www.w3.org/2019/wot/json-schema#ObjectSchema&gt;
+    rdfs:subClassOf &lt;https://www.w3.org/2019/wot/json-schema#DataSchema&gt; .
+</pre>
+        </code>
+    </p>
+
+    <p>
+        By default, if a user agent does not perform any content negotiation, a human-readable
+        HTML documentation is returned instead of the RDF document. To negotiate content,
+        clients must include the HTTP header <code>Accept: text/turtle</code> in their request.
+    </p>
 </section>
 
 <section id="changes" class="appendix">
