@@ -3386,6 +3386,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   In general the security measures taken to protect a WoT 
   system will depend on the threats and attackers that system
   may face and the value of the assets needs to protect.
+  In addition privacy risks will depend on the association of 
+  Things with identifiable people and both the direct information and 
+  the inferred information available from such an association.
   A detailed discussion of security and privacy considerations for the Web of Things,
   including a threat model that can be adapted to various circumstances, is
   presented in the informative document [[WOT-SECURITY-GUIDELINES]].  
@@ -3429,10 +3432,13 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
    </section>
    <section id="sec-security-consideration-id">
    <h5>Immutable Identifiers Privacy Risk</h5>
-      <p>The fact that a Thing Description may contains an
-          identifier means that should it be associated with
-          a person it can be used to track that person and 
-          therefore pose a risk to privacy.
+      <p>A Thing Description containing an identifier (<code>id</code>) may
+         describe a Thing that is associated with an identifiable
+         person.  Such identifiers pose various risks including tracking.
+         However, if the identifier is also immutable, then the 
+         tracking risk is amplified, since a device
+         may be sold or given to another person and the known ID used to 
+         track that person.
       </p>
       <dl><dt>Mitigation:</dt><dd>
           All identifiers should be mutable,
@@ -3455,7 +3461,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
           may require immutable IDs by law in some jurisdictions.
           In this case extra attention should be paid to secure 
           access to files, such as Thing Descriptions, containing such
-          immutable identifiers.
+          immutable identifiers.  It may also be desirable to not share
+          the "true" immutable identifier in such a case in the TD whenever possible.
           </dd></dl>
       </p>
    </section>
@@ -3464,15 +3471,46 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
       <p>As noted above, the <code>id</code> member in a TD can pose a privacy risk.  
       However, even if the <code>id</code> is updated as described to mitigate its
       tracking risk, it may still be possible to associate
-      a TD with a particular physical device, and from there to a person, through fingerprinting.
+      a TD with a particular physical device, and from there to an identifiable person, 
+      through fingerprinting.
+      </p>
+      <p>Even if a specific device instance cannot be identified through fingerprinting,
+      it may be possible to infer the type of a device from the information in the TD, such
+      as the set of interactions, and use this type to infer private information about an
+      identifiable person, such as a medical condition.
       </p>
       <dl><dt>Mitigation:</dt><dd>
           Only authorized users should be provided access
-          to the Thing Description for a <a>Thing</a>.
+          to the Thing Description for a <a>Thing</a>, and only the amount of
+          information needed for the level of authorization and the use case should be provided.
           If the TD is only distributed to authorized users 
           through secure and confidential channels, for
           example through a directory service that requires authentication,
-          the risk can be minimized.  
+          then external unauthorized parties will not have access to the TD to fingerprint it.
+          To further mitigate this risk, information not necessary for a particular
+          use case of a TD should be omitted whenever possible.  For example,
+          for an ad-hoc connection to a device where the Consumer does 
+          not store state about the Thing, the <code>id</code> can be omitted.
+          If the Consumer does not need certain interactions for its use case, they can be omitted.
+          If the Consumer is not authorized to use certain interactions, they can likewise be omitted.
+          If the Consumer does not have any capability to display human-readable information
+          such as titles or descriptions, they can be omitted or replaced with zero-length strings.
+      </dd></dl>
+   </section>
+   <section id="sec-security-consideration-global-id-risk">
+   <h5>Globally Unique Identifier Privacy Risk</h5>
+      <p>Globally unique identifiers pose a privacy risk if a centralized authority is needed to
+      create and distribute them, since then a third party has knowledge of the identifiers.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+          The <code>id</code> field in TDs are intentionally not required to be globally unique.
+          There are several cryptographic mechanisms available to generate suitable IDs in a 
+          distributed fashion that do
+          not require a central registry.  These mechanisms typically have a a very low probability
+          of generating duplicate identifiers, and this needs to be taken into account in the system
+          design; for example, by detecting duplicates and regenerating IDs when necessary.
+          The scope of IDs also does not need to be global: it is acceptable to use identifiers
+          that only distinguish Things in a certain context, such as within a home or factory.
       </dd></dl>
    </section>
    <section id="sec-security-consideration-TD-tampering">
