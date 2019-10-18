@@ -278,6 +278,7 @@ template :subclasses(?class) {
 
 prefix st: <http://ns.inria.fr/sparql-template/>
 prefix sh: <http://www.w3.org/ns/shacl#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :subclass(?class) {
@@ -298,7 +299,9 @@ template :subclass(?class) {
             isIRI(?class) &&
             # same namespace restriction
             strbefore(str(?class), "#") = strbefore(str(?subclass), "#"))
-}
+    optional { ?subclassShape sh:order ?predefined }
+    bind (if(bound(?predefined), ?predefined, "1000"^^xsd:integer) as ?rank)
+} order by ?rank
 
 ---
 
