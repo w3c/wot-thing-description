@@ -7,11 +7,8 @@ template :classes(?ns) {
 
         format { "<h3><code>%s</code></h3>" st:call-template(:label, ?class) }
         
-        if(?class = <https://www.w3.org/2019/wot/security#APIKeySecurityScheme> ||
-           ?class = <https://www.w3.org/2019/wot/security#CertSecurityScheme> ||
-           ?class = <https://www.w3.org/2019/wot/security#OAuth2SecurityScheme> ||
+        if(?class = <https://www.w3.org/2019/wot/security#CertSecurityScheme> ||
            ?class = <https://www.w3.org/2019/wot/security#PoPSecurityScheme> ||
-           ?class = <https://www.w3.org/2019/wot/security#PSKSecurityScheme> ||
            ?class = <https://www.w3.org/2019/wot/security#PublicSecurityScheme>,
            "<p><span class=\"at-risk\">This section is at risk.</span></p>",
            ""
@@ -281,6 +278,7 @@ template :subclasses(?class) {
 
 prefix st: <http://ns.inria.fr/sparql-template/>
 prefix sh: <http://www.w3.org/ns/shacl#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :subclass(?class) {
@@ -301,7 +299,9 @@ template :subclass(?class) {
             isIRI(?class) &&
             # same namespace restriction
             strbefore(str(?class), "#") = strbefore(str(?subclass), "#"))
-}
+    optional { ?subclassShape sh:order ?predefined }
+    bind (if(bound(?predefined), ?predefined, "1000"^^xsd:integer) as ?rank)
+} order by ?rank
 
 ---
 
