@@ -7,11 +7,8 @@ template :classes(?ns) {
 
         format { "<h3><code>%s</code></h3>" st:call-template(:label, ?class) }
         
-        if(?class = <https://www.w3.org/2019/wot/security#APIKeySecurityScheme> ||
-           ?class = <https://www.w3.org/2019/wot/security#CertSecurityScheme> ||
-           ?class = <https://www.w3.org/2019/wot/security#OAuth2SecurityScheme> ||
+        if(?class = <https://www.w3.org/2019/wot/security#CertSecurityScheme> ||
            ?class = <https://www.w3.org/2019/wot/security#PoPSecurityScheme> ||
-           ?class = <https://www.w3.org/2019/wot/security#PSKSecurityScheme> ||
            ?class = <https://www.w3.org/2019/wot/security#PublicSecurityScheme>,
            "<p><span class=\"at-risk\">This section is at risk.</span></p>",
            ""
@@ -69,8 +66,8 @@ template :fields(?class) {
                        "</tr>",
                        "<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-id--Thing\">",
                        "<td><code>id</code></td>",
-                       "<td>unique identifier of the Thing (URI, e.g. custom URN).</td>",
-                       "<td>mandatory</td>",
+                       "<td>Identifier of the Thing in form of a URI [[RFC3986]] (e.g., stable URI, temporary and mutable URI, URI with local IP address, URN, etc.).</td>",
+                       "<td>optional</td>",
                        "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI\"><code>anyURI</code></a></td>",
                        "</tr>"
                 ), "")
@@ -127,11 +124,11 @@ template :field(?class) {
             format { "%s" st:call-template(:desc, ?prop) }
             if (?prop = <https://www.w3.org/2019/wot/td#hasForm>,
                 if(?class = <https://www.w3.org/2019/wot/td#Thing>,
-                  " In this version of TD, all operations that can be described at the Thing level are concerning how to interact with the Thing's <a href=\"#propertyaffordance\">property affordances</a> collectively at once.", ""
+                  " In this version of TD, all operations that can be described at the Thing level are concerning how to interact with the Thing's <a href=\"#propertyaffordance\">Properties</a> collectively at once.", ""
                 ) , ""
             )
             if (?prop = <https://www.w3.org/2019/wot/td#baseUri>,
-                  "<br/><br/><code>base</code> does not affect the URIs used in <code>@context</code> and the IRIs [[?RFC3987]] used within Linked Data [[?LINKED-DATA]] graphs that are relevant when semantic processing is applied to TD instances.", ""
+                  "<br/><br/><code>base</code> does not affect the URIs used in <code>@context</code> and the IRIs used within Linked Data [[?LINKED-DATA]] graphs that are relevant when semantic processing is applied to TD instances.", ""
             )
             if (?prop = <https://www.w3.org/2019/wot/json-schema#format>,
                   " (Also see below.)", ""
@@ -239,7 +236,7 @@ template :enum(?class ?prop) {
                ?prop = <https://www.w3.org/2019/wot/security#alg> ||
                ?prop = <https://www.w3.org/2019/wot/security#format> ||
                ?prop = <https://www.w3.org/2019/wot/security#scheme>,
-               "e.g. ",
+               "e.g., ",
                "one of "),
            if(?last, "or ", ""))
         ?val
@@ -281,6 +278,7 @@ template :subclasses(?class) {
 
 prefix st: <http://ns.inria.fr/sparql-template/>
 prefix sh: <http://www.w3.org/ns/shacl#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :subclass(?class) {
@@ -301,7 +299,9 @@ template :subclass(?class) {
             isIRI(?class) &&
             # same namespace restriction
             strbefore(str(?class), "#") = strbefore(str(?subclass), "#"))
-}
+    optional { ?subclassShape sh:order ?predefined }
+    bind (if(bound(?predefined), ?predefined, "1000"^^xsd:integer) as ?rank)
+} order by ?rank
 
 ---
 

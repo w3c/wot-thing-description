@@ -19,14 +19,13 @@ const show_interop_results = false;                                  // include 
 
 // Directories
 const src_dir = __dirname;
-const testing_dir = path.join(__dirname, "testing");                 // test data directory
+const testing_dir = path.join("testing");                            // test data directory
 const report_dir = testing_dir;                                      // target directory for report output
 const inputs_dir = path.join(testing_dir, "inputs");                 // location of other inputs
 const templates_dir = path.join(inputs_dir, "templates");            // location of HTML templates
 const descs_dir = path.join(inputs_dir, "implementations");          // implementation descriptions
 const results_dir = path.join(inputs_dir, "results");                // test results for each assertion and impl
 const interop_dir = path.join(inputs_dir, "interop");                // interop test results directory
-
 
 // Inputs
 const src_htmlfile = path.join(src_dir, "index.html");               // source specification (rendered)
@@ -41,6 +40,8 @@ const categories_csvfile = path.join(inputs_dir, "categories.csv");  // assertio
 const atrisk_csvfile = path.join(inputs_dir, "atrisk.csv");          // at-risk assertions
 const atrisk_cssfile = path.join(testing_dir, "atrisk.css");         // at-risk assertion styling
 const impls_csvfile = path.join(inputs_dir, "impl.csv");             // structured implementation data
+const manual_csvfile = path.join(testing_dir, "manual.csv");         // assertions to be tested manually
+const suppressed_csvfile = path.join(testing_dir, "suppressed.csv"); // assertions to be suppressed from IR
 //-----------------------------------------------------------------------
 
 // Outputs
@@ -51,12 +52,10 @@ const results_csvfile = path.join(results_dir,"template.csv");
 // the HTML template to resolve hyperlinks included from index.html,
 // so this needs to link back to the report from the location of that
 // file...
-const report_base = "file://"+path.join(report_dir, "report.html");
+const report_base = ""; // path.join(report_dir, "report.html");
 
-// Base URL for specification.  Empty since it is set in <base> in
-// the HTML template.   Should be updated to published spec when that 
-// URL is available.
-const src_base = "";
+// Base URL for specification. 
+const src_base = "https://www.w3.org/TR/wot-thing-description";
 
 // Whether or not to duplicate category and assertion in test spec appendix.
 // Off by default since it is redundant, but is convenient sometimes.
@@ -125,18 +124,28 @@ get_descs();
 var report_template_raw = fs.readFileSync(rt_htmlfile, 'UTF-8');
 const testspec_template_raw = fs.readFileSync(tt_htmlfile, 'UTF-8');
 const interop_template_raw = fs.readFileSync(it_htmlfile, 'UTF-8');
+
+// Set version date
+
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+let lastModified = new Date();
+let lastModifiedString = lastModified.getDate() + ' ' + monthNames[lastModified.getMonth()] + ' ' + lastModified.getFullYear();
+report_template_raw = report_template_raw.replace("{{LastModified}}", lastModifiedString);
+
 // Make conditional substitutions
+
 if (show_test_specs) {
   report_template_raw = report_template_raw.replace("{{TestSpecTOC}}",
-    '<li class="tocline"><a href="testing/report.html#testspecsB" shape="rect">Test specifications</a></li>');
+    '<li class="tocline"><a href="testing/report.html#testspecsB">Test specifications</a></li>');
   report_template_raw = report_template_raw.replace("{{TestSpec}}",testspec_template_raw); 
 } else {
   report_template_raw = report_template_raw.replace("{{TestSpecTOC}}","");
   report_template_raw = report_template_raw.replace("{{TestSpec}}",""); 
 }
+
 if (show_interop_results) {
   report_template_raw = report_template_raw.replace("{{InteropTOC}}",
-    '<li class="tocline">8.2 <a href="testing/report.html#test_interop" shape="rect">Interoperability results</a></li>');
+    '<li class="tocline">8.3 <a href="testing/report.html#test_interop">Interoperability results</a></li>');
   report_template_raw = report_template_raw.replace("{{Interop}}",interop_template_raw); 
 } else {
   report_template_raw = report_template_raw.replace("{{InteropTOC}}","");
@@ -149,7 +158,6 @@ var report_dom = cheerio.load(report_template_raw);
 // (Synchronous)
 const src_raw = fs.readFileSync(src_htmlfile, 'UTF-8');
 var src_dom = cheerio.load(src_raw);
-var src_title = src_dom('title').text();
 
 // Check if an dom object is in an array.  Does deep comparison.
 // Used to check for assertion variants/duplicates.  We can't just 
@@ -197,10 +205,11 @@ src_dom('tr[class="rfc2119-table-assertion"]').each(function(i,elem) {
         let assertion_data = src_dom(this).children('td').map(function(i, el) {
             return src_dom(this).html();
         }).get();
+        console.log("TTTTABLE " + assertion_data[2]);
         let assertion = '<span class="rfc2119-table-assertion">' 
                       + assertion_data[0]         // vocab term
                       + ': ' + assertion_data[1]  // vocab text
-                      + (("yes" === assertion_data[2]) ? '<hr/>\nMUST be included.' : '<hr/>\nMAY be included.')
+                      + (("mandatory" === assertion_data[2]) ? '<hr/>\nMUST be included.' : '<hr/>\nMAY be included.')
                       + (("." === assertion_data[3]) ? '' : '\nType: '+assertion_data[3]+'.')
                       +'</span>';
         if (chatty_v) console.log("table assertion",id,"added");
@@ -222,14 +231,14 @@ src_dom('tr[class="rfc2119-default-assertion"]').each(function(i,elem) {
         let assertion = '<span class="rfc2119-default-assertion">' 
                       + 'The value associated with member '
                       + '"<code>'
-                      + assertion_data[0]  // vocab term
+                      + assertion_data[1]  // vocab term
                       + '</code>"'
                       + ' if not given MUST be assumed to have the default value ' 
                       + '"<code>' 
-                      + assertion_data[1]  // default value
+                      + assertion_data[2]  // default value
                       + '</code>".' 
                       +'</span>';
-        let contexts = assertion_data[2];
+        let contexts = assertion_data[0];
         if (undefined !== contexts && "null" !== contexts) {
            // get rid of any markup (convert to spaces)
            contexts = contexts.replace(/<\/?[a-zA-Z]+>/gi,' ');
@@ -399,6 +408,54 @@ function get_categories(done_callback) {
         });
 }
 
+// Get suppressed assertions
+// (Asynchronous)
+var suppressed = new Map();
+function get_suppressed(done_callback) {
+    if (info_v) console.log("processing suppressed assertions in",suppressed_csvfile);
+    var filedata = fs.readFileSync(suppressed_csvfile).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let id = item["ID"];
+                let cm = item["Comment"];
+                if (undefined !== id && undefined !== cm) {
+                    suppressed.set(id,cm);
+                    if (chatty_v) console.log("add suppresseed record for id",id+":",suppressed.get(id));
+                } else {
+                    if (warn_v) console.log("WARNING: suppressed record for id",id,"in unexpected format");
+                }
+            }
+            done_callback();
+        });
+}
+
+// Get manual assertions
+// (Asynchronous)
+var manual = new Map();
+function get_manual(done_callback) {
+    if (info_v) console.log("processing manual assertions in",manual_csvfile);
+    var filedata = fs.readFileSync(manual_csvfile).toString();
+    csvtojson()
+        .fromString(filedata)
+        .then((data)=> {
+            for (let i=0; i<data.length; i++) {
+                let item = data[i];
+                let id = item["ID"];
+                let cm = item["Comment"];
+                if (undefined !== id && undefined !== cm) {
+                    manual.set(id,cm);
+                    if (chatty_v) console.log("add manual record for id",id+":",manual.get(id));
+                } else {
+                    if (warn_v) console.log("WARNING: manual record for id",id,"in unexpected format");
+                }
+            }
+            done_callback();
+        });
+}
+
 // Get implementation data
 // (Asynchronous)
 var impls = new Map();
@@ -556,7 +613,7 @@ function merge_implementations(done_callback) {
       let desc_name = desc_names[desc_id];
       report_dom('ul#systems-toc').append('<li class="tocline"></li>\n');
       let report_li = report_dom('ul#systems-toc>li:last-child');
-      report_li.append('\n\t6.'+i+' <a href="'+report_base+'#'+desc_id+'" shape="rect">'+desc_name+'</a>');
+      report_li.append('\n\t6.'+i+' <a href="'+report_base+'#'+desc_id+'">'+desc_name+'</a>');
       i++;
       report_dom('#systems-impl').append(desc);
   }
@@ -626,10 +683,8 @@ function merge_interops(done_callback) {
 
 // Merge assertions into a single array
 // (Asynchronous)
-report_dom('head>title').append(src_title);
 var assertion_array = [];
-// report_dom('body>h2').append(src_title);
-// report_dom('body').append('<dl></dl>');
+
 function merge_assertions(assertions,ac,done_callback) {
   // insert assertions
   for (a_id in assertions) {
@@ -660,9 +715,11 @@ function process_children(done_callback) {
   let ps = new Set();
   for (let i = 0; i < n; i++) { 
     a = assertion_array[i].id;
-    if (a.indexOf('_') > -1) {
-      let p = a.substr(0,a.indexOf('_'));
-      ps.add(p);
+    if (undefined === suppressed.get(a)) { 
+      if (a.indexOf('_') > -1) {
+        let p = a.substr(0,a.indexOf('_'));
+        ps.add(p);
+      }
     }
   }
   console.log(ps);
@@ -673,7 +730,8 @@ function process_children(done_callback) {
   // rescan children, rederive parent's scores
   for (let i = 0; i < n; i++) { 
     a = assertion_array[i].id;
-    if (a.indexOf('_') > -1) {
+    if (undefined === suppressed.get(a)) { 
+     if (a.indexOf('_') > -1) {
       let p = a.substr(0,a.indexOf('_'));
       let rp = merged_results.get(p);
       let rc = merged_results.get(a);
@@ -694,6 +752,7 @@ function process_children(done_callback) {
           });
         }
       }
+     }
     }
   }
   // next
@@ -709,6 +768,16 @@ function format_assertions(done_callback) {
       a = assertion_array[i].id;
       ac = assertion_array[i].ac;
       a_text = assertion_array[i].text;
+
+      // Determine if assertion is suppressed
+      if (undefined !== suppressed.get(a)) { 
+        if (chatty_v) console.log("Suppressing assertion "+a);
+      } else {
+
+      // Determine if is manual assertion
+      let ma = (undefined !== manual.get(a));
+      let tid = (ma ? "manualresults" : "testresults");
+
       if (chatty_v) console.log("Formatting assertion "+a);
 
       // Results template
@@ -717,14 +786,14 @@ function format_assertions(done_callback) {
       if (show_test_specs) {
         // Test Specifications Appendix
         report_dom('#testspecs').append('\n<dt></dt>');
-	let report_dt = report_dom('#testspecs>dt:last-child');
-	report_dt.append('\n\t<a href="'+report_base+'#'+a+'">'+a+'</a>:');
-	if ("tabassertion" === ac) {
-	  report_dt.append(' <em>(table)</em>');
-	}
-	if ("extraassertion" === ac) {
-	  report_dt.append(' <em>(extra)</em>');
-	}
+        let report_dt = report_dom('#testspecs>dt:last-child');
+        report_dt.append('\n\t<a href="'+report_base+'#'+a+'">'+a+'</a>:');
+        if ("tabassertion" === ac) {
+          report_dt.append(' <em>(table)</em>');
+        }
+        if ("extraassertion" === ac) {
+          report_dt.append(' <em>(extra)</em>');
+        }
       }
 
       let category = undefined;
@@ -773,42 +842,80 @@ function format_assertions(done_callback) {
         }
       }
   
-      // Make table
+      // Make table row
+      let d = depends.get(a);
+      report_dom('table#'+tid+'>tbody:last-child')
+        .append('\n<tr id="'+a+'" class="'+ac+'"></tr>');
+      let report_tr = report_dom('tr#'+a);
+
+      // Generated subassertions still must link to the actual assertion in the TD spec
+      let a_frag = a;
+      if (a_frag.indexOf("_") !== -1) {
+        a_frag = a_frag.split("_")[0];
+      }
 
       // ID
-      report_dom('table#testresults>tbody:last-child')
-        .append('\n<tr id="'+a+'" class="'+ac+'"></tr>');
+      report_tr.append('\n\t<td class="'+ac+'"><a target="spec" href="'+src_base+'#'+a_frag+'">'+a+'</a></td>');
 
-      // Assertion
-      let report_tr = report_dom('tr#'+a);
-      report_tr.append('\n\t<td class="'+ac+'"><a target="spec" href="'+src_base+'#'+a+'">'+a+'</a></td>');
+      // Category
       if (undefined != categories.get(a)) {
         report_tr.append('\n\t<td class="'+ac+'">'+categories.get(a)+'</td>\n');
       } else {
         report_tr.append('\n\t<td class="'+ac+'"></td>');
       }
+
+      // Required
+      let pass_threshold;
+      if (req) {
+        report_tr.append('\n\t<td class="'+ac+'">Y</td>');
+        pass_threshold = 2;
+      } else {
+        report_tr.append('\n\t<td class="'+ac+'">N</td>');
+        pass_threshold = 1;
+      }
+
+      // Context(s)
+      if (undefined != d) {
+        let c = d.contexts;
+        if (undefined != c && "null" !== c) {
+          let cs = c.split(' ');
+          let h = '\n\t<td class="'+ac+'">';
+          for (let i=0; i<cs.length; i++) {
+            if (0 != cs[i].trim().length) {
+              if (cs[i].trim().startsWith("(")) {
+                // no link for higher-level contexts such as TD Producers
+                h = h + '\n\t\t' + cs[i] + '<br/>';
+              } else {
+                // link in column 4 to TD spec context -- must point to TD spec, where fragments are lower case
+                h = h + '\n\t\t<a target="spec" href="'+src_base+'#' + cs[i].toLowerCase() + '">' + cs[i] + '</a><br/>';
+              }
+            }
+          }
+          report_tr.append(h+'\n\t</td>');
+        } else {
+          report_tr.append('\n\t<td class="'+ac+'"></td>');
+        }
+      } else {
+        report_tr.append('\n\t<td class="'+ac+'"></td>');
+      }
+
+      // Assertion
       if (undefined != risks.get(a)) {
         report_tr.append('\n\t<td class="atrisk">'+a_text+'</td>');
       } else {
         report_tr.append('\n\t<td class="'+ac+'">'+a_text+'</td>');
       }
 
-      // Req
-      if (req) {
-        report_tr.append('\n\t<td class="'+ac+'">Y</td>');
-      } else {
-        report_tr.append('\n\t<td class="'+ac+'">N</td>');
-      }
-
-      // Parent(s) and Context(s)
-      let d = depends.get(a);
+      // Parent(s)
       if (undefined != d) {
         let p = d.parents;
         if (undefined != p && "null" !== p) {
+          // mk: I cannot see how there should be multiple parents and there is no such case currently
           let ps = p.split(' ');
           let h = '\n\t<td class="'+ac+'">';
           for (let i=0; i<ps.length; i++) {
             if (0 != ps[i].trim().length) {
+              // link in column 6 to base assertion
               h = h + '\n\t\t<a href="'+report_base+'#' + ps[i] + '">' + ps[i] + '</a><br>';
             }
           }
@@ -816,21 +923,7 @@ function format_assertions(done_callback) {
         } else {
           report_tr.append('\n\t<td class="'+ac+'"></td>');
         }
-        let c = d.contexts;
-        if (undefined != c && "null" !== c) {
-          let cs = c.split(' ');
-          let h = '\n\t<td class="'+ac+'">';
-          for (let i=0; i<cs.length; i++) {
-            if (0 != cs[i].trim().length) {
-              h = h + '\n\t\t<a href="'+report_base+'#' + cs[i] + '">' + cs[i] + '</a><br>';
-            }
-          }
-          report_tr.append(h+'\n\t</td>');
-        } else {
-          report_tr.append('\n\t<td class="'+ac+'"></td>');
-        }
       } else {
-        report_tr.append('\n\t<td class="'+ac+'"></td>');
         report_tr.append('\n\t<td class="'+ac+'"></td>');
       }
 
@@ -840,53 +933,53 @@ function format_assertions(done_callback) {
         // Number of reported pass statuses
         let pass = result.pass;
         if (undefined != pass) {
-          if (pass >= 2) {
-            report_tr.append('\n\t<td class="'+ac+'">'+pass+'</td>');
+          if (pass >= pass_threshold) {
+            report_tr.append('\n\t<td class="result '+ac+'">'+pass+'</td>');
           } else {
             if (pass == 0) {
-              report_tr.append('\n\t<td class="missing">'+pass+'</td>');
+              report_tr.append('\n\t<td class="result missing">'+pass+'</td>');
             } else {
-              report_tr.append('\n\t<td class="failed">'+pass+'</td>');
+              report_tr.append('\n\t<td class="result failed">'+pass+'</td>');
             }
           }
         } else {
-          report_tr.append('\n\t<td class="missing">0</td>');
-	  pass = 0;
+          report_tr.append('\n\t<td class="result missing">0</td>');
+          pass = 0;
         }
         // Number of reported fail statuses
         let fail = result.fail;
         if (undefined != fail) {
           if (fail > 0) {
-            report_tr.append('\n\t<td class="failed">'+fail+'</td>');
+            report_tr.append('\n\t<td class="result failed">'+fail+'</td>');
           } else {
-            report_tr.append('\n\t<td class="'+ac+'">'+fail+'</td>');
+            report_tr.append('\n\t<td class="result '+ac+'">'+fail+'</td>');
           }
         } else {
-          report_tr.append('\n\t<td class="'+ac+'">0</td>');
-	  fail = 0;
+          report_tr.append('\n\t<td class="result '+ac+'">0</td>');
+          fail = 0;
         }
         // Number of reported not implemented statuses
         let notimpl = result.notimpl;
         if (undefined != notimpl) {
-          report_tr.append('\n\t<td class="'+ac+'">'+notimpl+'</td>');
+          report_tr.append('\n\t<td class="result '+ac+'">'+notimpl+'</td>');
         } else {
-          report_tr.append('\n\t<td class="'+ac+'">0</td>');
-	  notimpl = 0;
+          report_tr.append('\n\t<td class="result '+ac+'">0</td>');
+          notimpl = 0;
         }
         // Total number of reported statuses
         let totals = pass + fail + notimpl;
         if (0 == totals) {
-          report_tr.append('\n\t<td class="missing">0</td>');
+          report_tr.append('\n\t<td class="result missing">0</td>');
         } else if (totals < 2) {
-          report_tr.append('\n\t<td class="failed">'+totals+'</td>');
+          report_tr.append('\n\t<td class="result failed">'+totals+'</td>');
         } else {
-          report_tr.append('\n\t<td class="'+ac+'">'+totals+'</td>');
+          report_tr.append('\n\t<td class="result '+ac+'">'+totals+'</td>');
         }
       } else {
-        report_tr.append('\n\t<td class="missing">0</td>');
-        report_tr.append('\n\t<td class="missing">0</td>');
-        report_tr.append('\n\t<td class="missing">0</td>');
-        report_tr.append('\n\t<td class="missing">0</td>');
+        report_tr.append('\n\t<td class="result missing">0</td>');
+        report_tr.append('\n\t<td class="result missing">0</td>');
+        report_tr.append('\n\t<td class="result missing">0</td>');
+        report_tr.append('\n\t<td class="result missing">0</td>');
       }
 
       // Add to test spec appendix
@@ -906,6 +999,7 @@ function format_assertions(done_callback) {
 	} else {
 	  report_li.append('\n\t\t'+a_spec);
 	}
+      }
       }
     }
     done_callback();
@@ -930,39 +1024,41 @@ get_results(0,function(results) {
     get_risks(function() {
      get_depends(function() {
       get_categories(function() {
-        if (chatty_v) {
-            console.log("categories: ",categories);
-        }
-       get_impls(function() {
-         if (chatty_v) {
-            console.log("impls: ",impls);
-         }
-        get_interops(function() {
-         if (chatty_v) {
+       if (chatty_v) console.log("categories: ",categories);
+       get_manual(function() {
+        if (chatty_v) console.log("manual: ",manual);
+        get_suppressed(function() {
+         if (chatty_v) console.log("suppressed: ",suppressed);
+         get_impls(function() {
+          if (chatty_v) console.log("impls: ",impls);
+          get_interops(function() {
+           if (chatty_v) {
             console.log("interop: ",interop);
             console.log("interop producers: ",interop_producers);
             console.log("interop consumers: ",interop_consumers);
             console.log("interop table: ",interop_table);
-         }
-         merge_implementations(function() {
-          merge_interops(function() {
-           merge_assertions(src_assertions,"baseassertion",function() {
-            merge_assertions(tab_assertions,"tabassertion",function() {
-             merge_assertions(def_assertions,"defassertion",function() {
-              merge_assertions(extra_assertions,"extraassertion",function() {
-               process_children(function() {
-                format_assertions(function() {
-                 // Output report
-                 fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
-                  if (error) {
-                   return console.log(err);
-                  } else {
-                   if (info_v) console.log("Report output to "+report_htmlfile);
-                  }
+           }
+           merge_implementations(function() {
+            merge_interops(function() {
+             merge_assertions(src_assertions,"baseassertion",function() {
+              merge_assertions(tab_assertions,"tabassertion",function() {
+               merge_assertions(def_assertions,"defassertion",function() {
+                merge_assertions(extra_assertions,"extraassertion",function() {
+                 process_children(function() {
+                  format_assertions(function() {
+                   // Output report
+                   fs.writeFile(report_htmlfile, report_dom.html(), function(error) {
+                    if (error) {
+                     return console.log(err);
+                    } else {
+                     if (info_v) console.log("Report output to "+report_htmlfile);
+                    }
+                   }); 
+                  }); 
                  }); 
-                }); 
+                });
                });
-              });
+              }); 
              }); 
             }); 
            }); 
