@@ -19,11 +19,11 @@ sleep 5 # waiting for the RDF store to initialize
 echo "Rendering HTML documents & DOT diagrams..."
 node render.js
 
-echo "Generating vector graphics from DOT files..."
-dot -ovisualization/td.svg -Tsvg visualization/td.dot
-dot -ovisualization/json-schema.svg -Tsvg visualization/json-schema.dot
-dot -ovisualization/wot-security.svg -Tsvg visualization/wot-security.dot
-dot -ovisualization/hypermedia.svg -Tsvg visualization/hypermedia.dot
+#echo "Generating vector graphics from DOT files..."
+#dot -ovisualization/td.svg -Tsvg visualization/td.dot
+#dot -ovisualization/json-schema.svg -Tsvg visualization/json-schema.dot
+#dot -ovisualization/wot-security.svg -Tsvg visualization/wot-security.dot
+#dot -ovisualization/hypermedia.svg -Tsvg visualization/hypermedia.dot
 
 echo "Shutting down RDF store..."
 kill ${WOT_FUSEKI_PID}

@@ -20,6 +20,10 @@
                 name: "María Poveda Villalón"
                 , company:    "Universidad Politécnica de Madrid"
                 , companyURL: "http://www.upm.es/"
+            }, {
+                name: "Sebastian Käbisch"
+                , company:    "Siemens AG"
+                , companyURL: "http://www.siemens.com/"
             }],
             edDraftURI: "http://www.w3.org/2019/wot/td",
             shortName: "wot-td-ontology"
@@ -132,7 +136,7 @@
 
         <p>
             The TD ontology shares commonalities with other WoT-related vocabularies, in particular
-            with SSN [[vocab-ssn]], SAREF [[smartM2M]] and <a href="http://schema.org">schema.org</a>.
+            with SOSA [[vocab-ssn]] and <a href="http://schema.org">schema.org</a>.
             Alignments between these vocabularies are provided here.
         </p>
 
@@ -143,9 +147,10 @@
         </p>
 
         <section>
-            <h3>SOSA &amp; SSN</h3>
+            <h3>SOSA</h3>
 
             <table class="def">
+                <caption>Alignment of <code>td:Thing</code> with SOSA</caption>
                 <thead>
                     <tr>
                         <th>If</th>
@@ -175,8 +180,105 @@
                     <tr>
                         <td>
 <pre class="nohighlight">
+?thing a td:Thing, sosa:FeatureOfInterest .
+</pre>
+                        </td>
+                        <td>
+<pre class="nohighlight">
+?thing ... .
+</pre>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+<pre class="nohighlight">
+?thing a td:Thing, sosa:Sensor .
+</pre>
+                        </td>
+                        <td>
+<pre class="nohighlight">
+?thing sosa:observes [
+    a sosa:ObservableProperty
+] .
+</pre>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+<pre class="nohighlight">
+?thing a td:Thing, sosa:Actuator .
+</pre>
+                        </td>
+                        <td>
+<pre class="nohighlight">
+?thing sosa:actsOnProperty [
+    a sosa:ActuatableProperty
+] .
+</pre>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+<pre class="nohighlight">
+?thing a td:Thing, sosa:Platform .
+</pre>
+                        </td>
+                        <td>
+<pre class="nohighlight">
+_:sensor rdfs:subClassOf sosa:Sensor, [
+    a owl:Restriction ;
+    owl:onProperty sosa:observes ;
+    owl:someValuesFrom sosa:ObservableProperty
+] .
+
+_:actuator rdfs:subClassOf sosa:Actuator, [
+    a owl:Restriction ;
+    owl:onProperty sosa:actsOnProperty ;
+    owl:someValuesFrom sosa:ActuatableProperty
+] .
+
+?thing sosa:hosts [
+    a [
+        a owl:Class ;
+        owl:unionOf ( _:sensor, _:actuator )
+    ]
+] .
+</pre>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="def">
+                <caption>Alignment of <code>td:InteractionAffordance</code> with SOSA</caption>
+                <thead>
+                    <tr>
+                        <th>If</th>
+                        <th>Then</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+<pre class="nohighlight">
+?a a td:PropertyAffordance .
+</pre>
+                        </td>
+                        <td>
+<pre class="nohighlight">
+?a a [
+    a owl:Restriction ;
+    owl:onProperty ssn:forProperty ;
+    owl:someValuesFrom ssn:Property
+] .
+</pre>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+<pre class="nohighlight">
 ?a a td:PropertyAffordance ;
-   td:hasForm ?form .
+    td:hasForm ?form .
 ?form hyperm:forOperationType
     "readproperty" .
 </pre>
@@ -195,7 +297,7 @@
                         <td>
 <pre class="nohighlight">
 ?a a td:PropertyAffordance ;
-   td:hasForm ?form .
+    td:hasForm ?form .
 ?form hyperm:forOperationType
     "writeproperty" .
 </pre>
@@ -210,31 +312,35 @@
 </pre>
                         </td>
                     </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section>
-            <h3>SAREF &amp; Extensions</h3>
-
-            <table class="def">
-                <thead>
-                    <tr>
-                        <th>If</th>
-                        <th>Then</th>
-                    </tr>
-                </thead>
-                <tbody>
                     <tr>
                         <td>
 <pre class="nohighlight">
-?device a saref:Device ;
-        saref:offers ?service .
+?a a td:ActionAffordance .
 </pre>
                         </td>
                         <td>
 <pre class="nohighlight">
-?device a td:Thing .
+?a a [
+    a owl:Restriction ;
+    owl:onProperty ssn:forProperty ;
+    owl:someValuesFrom sosa:ActuatableProperty
+] .
+</pre>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+<pre class="nohighlight">
+?a a td:EventAffordance .
+</pre>
+                        </td>
+                        <td>
+<pre class="nohighlight">
+?a a [
+    a owl:Restriction ;
+    owl:onProperty ssn:forProperty ;
+    owl:someValuesFrom sosa:ObservableProperty
+] .
 </pre>
                         </td>
                     </tr>
