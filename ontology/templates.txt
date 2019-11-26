@@ -51,7 +51,8 @@ template :classes(?ns ?prefix) {
         st:call-template(:term-header, ?c, ?prefix)
         "<table class=\"def\">"
             "<tbody>"
-                st:call-template(:class-subclass, ?c, ?prefix)
+                st:call-template(:class-superclass, ?c, ?prefix)
+                st:call-template(:class-subclasses, ?c, ?prefix)
                 st:call-template(:class-domain-all, ?c, ?prefix)
                 st:call-template(:class-range-all, ?c, ?prefix)
                 st:call-template(:enumeration-members, ?c, ?prefix)
@@ -71,7 +72,7 @@ prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix st: <http://ns.inria.fr/sparql-template/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
-template :class-subclass(?c ?prefix) {
+template :class-superclass(?c ?prefix) {
     "<tr>"
         "<td>Sub-class of</td>"
         format {
@@ -81,6 +82,40 @@ template :class-subclass(?c ?prefix) {
     "</tr>"
 } where {
     ?c rdfs:subClassOf ?sc .
+    ?sc a owl:Class .
+}
+
+---
+
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix : <http://w3c.github.io/wot-thing-description/ontology#>
+template :class-subclasses(?c ?prefix) {
+    "<tr>"
+        "<td>Super-class of</td>"
+        format {
+            "<td>%s</td>"
+            st:call-template(:class-subclass, ?c, ?prefix)
+        }
+    "</tr>"
+} where {
+    filter exists {
+        ?sc rdfs:subClassOf ?c .
+        ?sc a owl:Class .
+    }
+}
+
+---
+
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix : <http://w3c.github.io/wot-thing-description/ontology#>
+template :class-subclass(?c ?prefix) {
+    st:call-template(:term-link, ?sc, ?prefix) ; separator = "<br>"
+} where {
+    ?sc rdfs:subClassOf ?c .
     ?sc a owl:Class .
 }
 
