@@ -90,7 +90,7 @@ load(updateEndpoint, null)
     let td = JSON.parse(fs.readFileSync('context/td-context.jsonld'));
     let jsonschema = JSON.parse(fs.readFileSync('context/json-schema-context.jsonld'));
     let wotsec = JSON.parse(fs.readFileSync('context/wot-security-context.jsonld'));
-    let hyperm = JSON.parse(fs.readFileSync('context/hypermedia-context.jsonld'));
+    let hctl = JSON.parse(fs.readFileSync('context/hypermedia-context.jsonld'));
 
     let ctx = td['@context'];
     ctx['@version'] = 1.1;
@@ -104,8 +104,8 @@ load(updateEndpoint, null)
 
     ctx.security['@context'] = wotsec['@context'];
 
-    ctx.forms['@context'] = hyperm['@context'];
-    ctx.links['@context'] = hyperm['@context'];
+    ctx.forms['@context'] = hctl['@context'];
+    ctx.links['@context'] = hctl['@context'];
 
     fs.writeFileSync('context/td-context-1.1.jsonld', JSON.stringify(td));
 
@@ -145,7 +145,7 @@ load(updateEndpoint, null)
     let td = { type: 'uri', value: 'https://www.w3.org/2019/wot/td#' };
     let jsonschema = { type: 'uri', value: 'https://www.w3.org/2019/wot/json-schema#' };
     let wotsec = { type: 'uri', value: 'https://www.w3.org/2019/wot/security#' };
-    let hyperm = { type: 'uri', value: 'https://www.w3.org/2019/wot/hypermedia#' };
+    let hctl = { type: 'uri', value: 'https://www.w3.org/2019/wot/hypermedia#' };
 
 /*
     // HTML rendering
@@ -203,7 +203,7 @@ load(updateEndpoint, null)
     let tdPrefix = { type: 'literal', value: 'td' };
     let jsonschemaPrefix = { type: 'literal', value: 'jsonschema' };
     let wotsecPrefix = { type: 'literal', value: 'wotsec' };
-    let hypermPrefix = { type: 'literal', value: 'hyperm' };
+    let hctlPrefix = { type: 'literal', value: 'hctl' };
 
     let process = (ns, html) => {
         let tpl = 'ontology/' + ns + '.template.html';
@@ -224,10 +224,10 @@ load(updateEndpoint, null)
     })
     .then(html => {
         process('wotsec', html);
-        return sttl.callTemplate(tpl3, hyperm, hypermPrefix);
+        return sttl.callTemplate(tpl3, hctl, hctlPrefix);
     })
     .then(html => {
-        process('hyperm', html);
+        process('hctl', html);
     })
     .catch(e => console.error('HTML (ontology) rendering error: ' + e.message));
 

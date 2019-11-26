@@ -16,6 +16,7 @@ template :main(?ns ?prefix) {
             "<h3>Datatype Properties</h3>"
             st:call-template(:properties, ?ns, ?prefix, owl:DatatypeProperty)
         "</section>"
+        st:call-template(:individuals-section, ?ns, ?prefix)
     "</section>"
 } where {}
 
@@ -24,15 +25,36 @@ template :main(?ns ?prefix) {
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix st: <http://ns.inria.fr/sparql-template/>
+prefix schema: <http://schema.org/>
+prefix : <http://w3c.github.io/wot-thing-description/ontology#>
+template :individuals-section(?ns ?prefix) {
+    "<section>"
+        "<h3>Named Individuals</h3>"
+        st:call-template(:individuals, ?ns, ?prefix)
+    "</section>"
+} where {
+    filter exists {
+        ?i a ?c .
+        ?c rdfs:subClassOf schema:Enumeration .
+        filter (strstarts(str(?i), str(?ns)))
+    }
+}
+
+---
+
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix st: <http://ns.inria.fr/sparql-template/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
 template :classes(?ns ?prefix) {
-    "<section class=\"specterm\">"
-        st:call-template(:term-header, ?c, ?prefix, owl:Class)
+    "<section>"
+        st:call-template(:term-header, ?c, ?prefix)
         "<table class=\"def\">"
             "<tbody>"
                 st:call-template(:class-subclass, ?c, ?prefix)
                 st:call-template(:class-domain-all, ?c, ?prefix)
                 st:call-template(:class-range-all, ?c, ?prefix)
+                st:call-template(:enumeration-members, ?c, ?prefix)
             "</tbody>"
         "</table>"
     "</section>"
@@ -129,10 +151,40 @@ template :class-range(?c ?prefix) {
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix st: <http://ns.inria.fr/sparql-template/>
+prefix schema: <http://schema.org/>
+prefix : <http://w3c.github.io/wot-thing-description/ontology#>
+template :enumeration-members(?c ?prefix) {
+    "<tr>"
+        "<td>Enumeration members</td>"
+        "<td>" st:call-template(:enumeration-member, ?c, ?prefix) "</td>"
+    "</tr>"
+} where {
+    ?c rdfs:subClassOf schema:Enumeration .
+}
+
+---
+
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix schema: <http://schema.org/>
+prefix : <http://w3c.github.io/wot-thing-description/ontology#>
+template :enumeration-member(?c ?prefix) {
+    st:call-template(:term-link, ?member, ?prefix) ; separator = "<br>"
+} where {
+    ?c rdfs:subClassOf schema:Enumeration .
+    ?member a ?c .
+}
+
+---
+
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix st: <http://ns.inria.fr/sparql-template/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
 template :properties(?ns ?prefix ?type) {
-    "<section class=\"specterm\">"
-        st:call-template(:term-header, ?p, ?prefix, ?type)
+    "<section>"
+        st:call-template(:term-header, ?p, ?prefix)
         "<table class=\"def\">"
             "<tbody>"
                 st:call-template(:property-domain, ?p, ?prefix)
@@ -208,8 +260,33 @@ template :property-range(?p ?prefix) {
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix st: <http://ns.inria.fr/sparql-template/>
+prefix schema: <http://schema.org/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
-template :term-header(?term ?prefix ?type) {
+template :individuals(?ns ?prefix) {
+    "<section>"
+        st:call-template(:term-header, ?i, ?prefix)
+        "<table class=\"def\">"
+            "<tbody>"
+                "<tr>"
+                    "<td>Instance of</td>"
+                    "<td>" st:call-template(:term-link, ?c, ?prefix) "</td>"
+                "</tr>"
+            "</tbody>"
+        "</table>"
+    "</section>"
+} where {
+    ?i a ?c .
+    ?c rdfs:subClassOf schema:Enumeration .
+    filter (strstarts(str(?i), str(?ns)))
+}
+
+---
+
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix : <http://w3c.github.io/wot-thing-description/ontology#>
+template :term-header(?term ?prefix) {
     format { "<h4>%s</h4>" ?label }
     format { "<p>IRI: <code>%s</code></p>" ?term }
     format { "<span>%s</span>" ?desc }
