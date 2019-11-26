@@ -5,10 +5,6 @@ template :main(?ns ?prefix) {
     "<section>"
         "<h2>Axiomatization</h2>"
         "<section>"
-            "<h3>Overview of Classes and Properties</h3>"
-            st:call-template(:overview, ?ns, ?prefix)
-        "</section>"
-        "<section>"
             "<h3>Classes</h3>"
             st:call-template(:classes, ?ns, ?prefix)
         "</section>"
@@ -25,44 +21,6 @@ template :main(?ns ?prefix) {
 
 ---
 
-prefix owl: <http://www.w3.org/2002/07/owl#>
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix : <http://w3c.github.io/wot-thing-description/ontology#>
-template :overview(?ns ?prefix) {
-    "<div  class=\"azlist\">"
-        "<p>"
-            "Classes: "
-            st:call-template(:overview-for-type, ?ns, ?prefix, owl:Class)
-        "</p>"
-    "</div>"
-    "<div  class=\"azlist\">"
-        "<p>"
-            "Object Properties: "
-            st:call-template(:overview-for-type, ?ns, ?prefix, owl:ObjectProperty)
-        "</p>"
-    "</div>"
-    "<div  class=\"azlist\">"
-        "<p>"
-            "Datatype Properties: "
-            st:call-template(:overview-for-type, ?ns, ?prefix, owl:DatatypeProperty)
-        "</p>"
-    "</div>"
-} where {}
-
----
-
-prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix : <http://w3c.github.io/wot-thing-description/ontology#>
-template :overview-for-type(?ns ?prefix ?type) {
-    st:call-template(:term-link, ?term, ?prefix) ; separator = " , "
-} where {
-    ?term a ?type ; rdfs:label ?l .
-    filter (strstarts(str(?term), str(?ns)))
-}
-
----
-
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix st: <http://ns.inria.fr/sparql-template/>
@@ -70,10 +28,11 @@ prefix : <http://w3c.github.io/wot-thing-description/ontology#>
 template :classes(?ns ?prefix) {
     "<section class=\"specterm\">"
         st:call-template(:term-header, ?c, ?prefix, owl:Class)
-        "<table>"
+        "<table class=\"def\">"
             "<tbody>"
                 st:call-template(:class-subclass, ?c, ?prefix)
-                st:call-template(:class-restrictions, ?c, ?prefix)
+                st:call-template(:class-domain-all, ?c, ?prefix)
+                st:call-template(:class-range-all, ?c, ?prefix)
             "</tbody>"
         "</table>"
     "</section>"
@@ -92,7 +51,7 @@ prefix st: <http://ns.inria.fr/sparql-template/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
 template :class-subclass(?c ?prefix) {
     "<tr>"
-        "<th>Sub-class of</th>"
+        "<td>Sub-class of</td>"
         format {
             "<td>%s</td>"
             st:call-template(:term-link, ?sc, ?prefix)
@@ -108,16 +67,16 @@ template :class-subclass(?c ?prefix) {
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix st: <http://ns.inria.fr/sparql-template/>
+prefix schema: <http://schema.org/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
-template :class-restrictions(?c ?prefix) {
+template :class-domain-all(?c ?prefix) {
     "<tr>"
-        "<th>Restrictions</th>"
-        "<td>" st:call-template(:class-restriction, ?c, ?prefix) "</td>"
+        "<td>In the domain of</td>"
+        "<td>" st:call-template(:class-domain, ?c, ?prefix) "</td>"
     "</tr>"
 } where {
     filter exists {
-        ?c rdfs:subClassOf ?rest .
-        ?rest a owl:Restriction .
+        ?p schema:domainIncludes ?c .
     }
 }
 
@@ -126,48 +85,43 @@ template :class-restrictions(?c ?prefix) {
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix st: <http://ns.inria.fr/sparql-template/>
+prefix schema: <http://schema.org/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
-template :class-restriction(?c ?prefix) {
-    format {
-        "%s <em><b>%s</b></em> %s"
-        st:call-template(:term-link, ?p, ?prefix)
-        ?quantifier
-        if(?qualified, st:call-template(:class-expression, ?d, ?prefix), "")
-    } ; separator = "<br>"
+template :class-domain(?c ?prefix) {
+    st:call-template(:term-link, ?p, ?prefix) ; separator = "<br>"
 } where {
-    ?c rdfs:subClassOf ?rest .
-    ?rest a owl:Restriction .
-    ?rest owl:onProperty ?p .
-    {
-        ?rest owl:someValuesFrom ?d .
-        bind ("SOME" as ?quantifier)
-    }
-    union
-    {
-        ?rest owl:allValuesFrom ?d .
-        bind ("ONLY" as ?quantifier)
-    }
-    union
-    {
-        ?rest owl:cardinality ?card .
-        bind (concat("EXACTLY ", str(?card)) as ?quantifier)
-    }
-    bind (bound(?d) as ?qualified)
-    filter (!?qualified || isIRI(?d))
+    ?p schema:domainIncludes ?c .
 }
 
 ---
 
-prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix st: <http://ns.inria.fr/sparql-template/>
+prefix schema: <http://schema.org/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
-template :class-expression(?c ?prefix) {
-    st:call-template(:term-link, ?c, ?prefix)
+template :class-range-all(?c ?prefix) {
+    "<tr>"
+        "<td>In the range of</td>"
+        "<td>" st:call-template(:class-range, ?c, ?prefix) "</td>"
+    "</tr>"
 } where {
-    ?c a owl:Class
-    filter (isIRI(?c))
-    # TODO owl:unionOf
+    filter exists {
+        ?p schema:rangeIncludes ?c .
+    }
+}
+
+---
+
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix schema: <http://schema.org/>
+prefix : <http://w3c.github.io/wot-thing-description/ontology#>
+template :class-range(?c ?prefix) {
+    st:call-template(:term-link, ?p, ?prefix) ; separator = "<br>"
+} where {
+    ?p schema:rangeIncludes ?c .
 }
 
 ---
@@ -179,7 +133,7 @@ prefix : <http://w3c.github.io/wot-thing-description/ontology#>
 template :properties(?ns ?prefix ?type) {
     "<section class=\"specterm\">"
         st:call-template(:term-header, ?p, ?prefix, ?type)
-        "<table>"
+        "<table class=\"def\">"
             "<tbody>"
                 st:call-template(:property-domain, ?p, ?prefix)
                 st:call-template(:property-range, ?p, ?prefix)
@@ -202,7 +156,7 @@ prefix st: <http://ns.inria.fr/sparql-template/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
 template :property-domain(?p ?prefix) {
     "<tr>"
-        format { "<th>%s</th>" ?type }
+        format { "<td>%s</td>" ?type }
         format {
             "<td>%s</td>"
             st:call-template(:term-link, ?dom, ?prefix)
@@ -216,7 +170,7 @@ template :property-domain(?p ?prefix) {
     union
     {
         ?p schema:domainIncludes ?dom .
-        bind ("Domain Includes" as ?type)
+        bind ("Domain includes" as ?type)
     }
     filter (isIRI(?dom)) # FIXME issue with owl:unionOf
 }
@@ -230,7 +184,7 @@ prefix st: <http://ns.inria.fr/sparql-template/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
 template :property-range(?p ?prefix) {
     "<tr>"
-        format { "<th>%s</th>" ?type }
+        format { "<td>%s</td>" ?type }
         format {
             "<td>%s</td>"
             st:call-template(:term-link, ?range, ?prefix)
@@ -244,9 +198,9 @@ template :property-range(?p ?prefix) {
     union
     {
         ?p schema:rangeIncludes ?range .
-        bind ("Range Includes" as ?type)
+        bind ("Range includes" as ?type)
     }
-    filter (isIRI(?range)) # FIXME issue with owl:unionOf
+    filter (isIRI(?range))
 }
 
 ---
@@ -256,21 +210,13 @@ prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix st: <http://ns.inria.fr/sparql-template/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
 template :term-header(?term ?prefix ?type) {
-    "<h4>" st:call-template(:term-link, ?term, ?prefix) "</h4>"
-    format { "<p>IRI: %s</p>" ?term }
-    format { "<p><strong>a OWL %s</strong></p>" ?typeLabel }
-    format { "<em>%s</em> - <span>%s</span>" ?label ?desc }
+    format { "<h4>%s</h4>" ?label }
+    format { "<p>IRI: <code>%s</code></p>" ?term }
+    format { "<span>%s</span>" ?desc }
 } where {
     ?term rdfs:comment ?desc
     optional { ?term rdfs:label ?l }
     bind (if(bound(?l), ?l, strafter(str(?term), "#")) as ?label)
-    bind(if(?type = owl:Class,
-            "Class",
-            if(?type = owl:ObjectProperty,
-               "Object Property",
-               if(?type = owl:DatatypeProperty,
-                  "Datatype Property",
-                  "?"))) as ?typeLabel)
 }
 
 ---
@@ -278,18 +224,18 @@ template :term-header(?term ?prefix ?type) {
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix schema: <http://schema.org/>
 prefix vann: <http://purl.org/vocab/vann/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
 template :term-link(?term ?defaultPrefix) {
     format {
-        "<a href=\"%s\">%s</a>"
-        if(?prefix = "xsd",
-            concat("http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#", ?label),
-            if(?prefix = ?defaultPrefix,
-                concat("#", ?defaultPrefix, "-", lcase(?label)),
-                str(?term)))
+        "<code><a href=\"%s\">%s</a></code>"
+        if(?prefix = ?defaultPrefix,
+            concat("#", lcase(?label)),
+            str(?term))
         if(?curie,
-            concat(?prefix, ":", ?label),
+            # FIXME schema.org label not correctly extracted if in WHERE clause?
+            concat(?prefix, ":", if(strstarts(str(?term), str(schema:)), strafter(str(?term), str(schema:)), ?label)),
             ?label)
     }
 } where {
@@ -301,8 +247,8 @@ template :term-link(?term ?defaultPrefix) {
         filter (strstarts(str(?term), str(?o)))
     }
     optional {
-        bind ("xsd" as ?prefix)
-        filter (strstarts(str(?term), str(xsd:)))
+        bind ("schema" as ?prefix)
+        filter (strstarts(str(?term), str(schema:)))
     }
     bind (bound(?prefix) as ?curie)
 }
