@@ -1,0 +1,133 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix td: <https://www.w3.org/2019/wot/td#> .
+@prefix hctl: <https://www.w3.org/2019/wot/hypermedia#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix ssn: <http://www.w3.org/ns/ssn/> .
+
+# Alignment for class td:Thing
+
+td:Thing
+    rdfs:subClassOf [
+        a owl:Class ;
+        owl:unionOf ( sosa:FeatureOfInterest sosa:Sensor sosa:Actuator sosa:Platform )
+    ] .
+
+[
+    a owl:Class ;
+    owl:unionOf ( td:Thing sosa:FeatureOfInterest )
+]
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty ssn:hasProperty ;
+        owl:someValuesFrom [
+            a owl:Restriction ;
+            owl:onProperty sosa:isObservedBy ;
+            owl:someValuesFrom [
+                a owl:Class ;
+                owl:unionOf ( sosa:Sensor sosa:Actuator )
+            ]
+        ]
+    ] .
+
+[
+    a owl:Class ;
+    owl:unionOf ( td:Thing sosa:Sensor )
+]
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty sosa:observes ;
+        owl:someValuesFrom sosa:ObservableProperty
+    ] .
+
+[
+    a owl:Class ;
+    owl:unionOf ( td:Thing sosa:Actuator )
+]
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty sosa:actsOnProperty ;
+        owl:someValuesFrom sosa:ActuatableProperty
+    ] .
+
+[
+    a owl:Class ;
+    owl:unionOf ( td:Thing sosa:Platform )
+]
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty sosa:hosts ;
+        owl:someValuesFrom [
+            a owl:Class ;
+            owl:unionOf (
+                [
+                    a owl:Class ;
+                    rdfs:subClassOf sosa:Sensor, [
+                        a owl:Restriction ;
+                        owl:onProperty sosa:observes ;
+                        owl:someValuesFrom sosa:ObservableProperty
+                    ]
+                ],
+                [
+                    a owl:Class ;
+                    rdfs:subClassOf sosa:Actuator, [
+                        a owl:Restriction ;
+                        owl:onProperty sosa:actsOnProperty ;
+                        owl:someValuesFrom sosa:ActuatableProperty
+                    ]
+                ]
+            )
+        ]
+    ] .
+
+# Alignment for class td:InteractionAffordance and sub-classes
+
+[
+    a owl:Class ;
+    rdfs:subClassOf td:PropertyAffordance, [
+        a owl:Restriction ;
+        owl:onProperty td:hasForm ;
+        owl:someValuesFrom [
+            a owl:Restriction ;
+            owl:onProperty hctl:forOperationType ;
+            owl:hasValue td:readproperty
+        ]
+    ]
+]
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty ssn:forProperty ;
+        owl:someValuesFrom ssn:ObservableProperty
+    ] .
+
+[
+    a owl:Class ;
+    rdfs:subClassOf td:PropertyAffordance, [
+        a owl:Restriction ;
+        owl:onProperty td:hasForm ;
+        owl:someValuesFrom [
+            a owl:Restriction ;
+            owl:onProperty hctl:forOperationType ;
+            owl:hasValue td:writeproperty
+        ]
+    ]
+]
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty ssn:forProperty ;
+        owl:someValuesFrom ssn:ActuatableProperty
+    ] .
+
+td:ActionAffordance
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty ssn:forProperty ;
+        owl:someValuesFrom ssn:ActuatableProperty
+    ] .
+
+td:EventAffordance
+    rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty ssn:forProperty ;
+        owl:someValuesFrom ssn:ObservableProperty
+    ] .
