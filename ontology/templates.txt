@@ -187,8 +187,8 @@ template :properties(?ns ?prefix ?type) {
         st:call-template(:term-header, ?p, ?prefix)
         "<table class=\"def\">"
             "<tbody>"
-                st:call-template(:property-domain, ?p, ?prefix)
-                st:call-template(:property-range, ?p, ?prefix)
+                st:call-template(:property-domain-all, ?p, ?prefix)
+                st:call-template(:property-range-all, ?p, ?prefix)
             "</tbody>"
         "</table>"
     "</section>"
@@ -206,25 +206,55 @@ prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix schema: <http://schema.org/>
 prefix st: <http://ns.inria.fr/sparql-template/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
-template :property-domain(?p ?prefix) {
+template :property-domain-all(?p ?prefix) {
     "<tr>"
-        format { "<td>%s</td>" ?type }
+        "<td>Domain includes</td>"
         format {
             "<td>%s</td>"
-            st:call-template(:term-link, ?dom, ?prefix)
+            st:call-template(:property-domain, ?p, ?prefix)
         }
     "</tr>"
 } where {
-    {
-        ?p rdfs:domain ?dom .
-        bind ("Domain" as ?type)
-    }
-    union
-    {
+    filter exists {
         ?p schema:domainIncludes ?dom .
-        bind ("Domain includes" as ?type)
     }
-    filter (isIRI(?dom)) # FIXME issue with owl:unionOf
+}
+
+---
+
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix schema: <http://schema.org/>
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix : <http://w3c.github.io/wot-thing-description/ontology#>
+template :property-domain(?p ?prefix) {
+    st:call-template(:term-link, ?dom, ?prefix) ; separator = "<br>"
+} where {
+    { ?p rdfs:domain ?dom . }
+    union
+    { ?p schema:domainIncludes ?dom . }
+    filter (isIRI(?dom))
+}
+
+---
+
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix schema: <http://schema.org/>
+prefix st: <http://ns.inria.fr/sparql-template/>
+prefix : <http://w3c.github.io/wot-thing-description/ontology#>
+template :property-range-all(?p ?prefix) {
+    "<tr>"
+        "<td>Range includes</td>"
+        format {
+            "<td>%s</td>"
+            st:call-template(:property-range, ?p, ?prefix)
+        }
+    "</tr>"
+} where {
+    filter exists {
+        ?p schema:rangeIncludes ?range .
+    }
 }
 
 ---
@@ -235,23 +265,11 @@ prefix schema: <http://schema.org/>
 prefix st: <http://ns.inria.fr/sparql-template/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
 template :property-range(?p ?prefix) {
-    "<tr>"
-        format { "<td>%s</td>" ?type }
-        format {
-            "<td>%s</td>"
-            st:call-template(:term-link, ?range, ?prefix)
-        }
-    "</tr>"
+    st:call-template(:term-link, ?range, ?prefix) ; separator = "<br>"
 } where {
-    {
-        ?p rdfs:range ?range .
-        bind ("Range" as ?type)
-    }
+    { ?p rdfs:range ?range . }
     union
-    {
-        ?p schema:rangeIncludes ?range .
-        bind ("Range includes" as ?type)
-    }
+    { ?p schema:rangeIncludes ?range . }
     filter (isIRI(?range))
 }
 
