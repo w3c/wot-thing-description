@@ -29,6 +29,11 @@
             shortName: "wot-td-ontology"
         };
     </script>
+    <style>
+        span.indent {
+            margin-left: 2em;
+        }
+    </style>
 </head>
 
 <body>
@@ -99,20 +104,14 @@
         <p>
             The TD ontology shares commonalities with other WoT-related vocabularies, in particular
             with SOSA [[vocab-ssn]] and <a href="http://schema.org">schema.org</a>.
-            Alignments between these vocabularies are provided here.
-        </p>
-
-        <p>
-            Alignments are definde as rules of the form "if <mi>P</mi>, then <mi>T</mi>",
-            where <mi>P</mi> is a SPARQL basic graph pattern and <mi>T</mi> a SPARQL
-            template.
+            Alignments between these vocabularies are provided in a human-readable way in the following.
         </p>
 
         <section>
             <h3>SOSA</h3>
 
             <p>
-                All alignments with SOSA are available here:
+                All alignments with SOSA are also available here in OWL:
                 <a href="td-sosa.ttl">td-sosa.ttl</a>.
             </p>
 
@@ -123,109 +122,71 @@
             <table class="def">
                 <thead>
                     <tr>
-                        <th>If</th>
-                        <th>Then</th>
+                        <th>Sub-Class</th>
+                        <th>Super-Class</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-<pre class="nohighlight">
-?thing a td:Thing .
-</pre>
+                            <code>td:Thing</code>
                         </td>
                         <td>
-<pre class="nohighlight">
-?thing a [
-    a owl:Class ;
-    owl:unionOf (
-        sosa:Sensor
-        sosa:Actuator
-        sosa:Platform
-        sosa:FeatureOfInterest
-    )
-] .
-</pre>
+                            <code>sosa:Sensor</code> or<br>
+                            <code>sosa:Actuator</code> or<br>
+                            <code>sosa:Platform</code> or<br>
+                            <code>sosa:FeatureOfInterest</code>
                         </td>
                     </tr>
                     <tr>
                         <td>
-<pre class="nohighlight">
-?thing a td:Thing,
-         sosa:FeatureOfInterest .
-</pre>
+                            <code>td:Thing</code> and<br>
+                            <code>sosa:FeatureOfInterest</code>
                         </td>
                         <td>
-<pre class="nohighlight">
-?thing ssn:hasProperty [
-    sosa:isObservedBy [
-        a [
-            a owl:Class ;
-            owl:unionOf (
-                sosa:Sensor
-                sosa:Actuator
-            )
-        ]
-    ]
-] .
-</pre>
+                            <code>ssn:hasProperty</code> some (<br>
+                                <span class="indent">(<code>sosa:isObservedBy</code> some <code>sosa:Sensor</code>) or</span><br>
+                                <span class="indent">(<code>sosa:isActedOnBy</code> some <code>sosa:Actuator</code>)</span><br>
+                            )
                         </td>
                     </tr>
                     <tr>
                         <td>
-<pre class="nohighlight">
-?thing a td:Thing, sosa:Sensor .
-</pre>
+                            <code>td:Thing</code> and<br>
+                            <code>sosa:Sensor</code>
                         </td>
                         <td>
-<pre class="nohighlight">
-?thing sosa:observes [
-    a sosa:ObservableProperty
-] .
-</pre>
+                            <code>sosa:observes</code> some<br>
+                                <span class="indent"><code>sosa:ObservableProperty</code></span>
                         </td>
                     </tr>
                     <tr>
                         <td>
-<pre class="nohighlight">
-?thing a td:Thing, sosa:Actuator .
-</pre>
+                            <code>td:Thing</code> and<br>
+                            <code>sosa:Actuator</code>
                         </td>
                         <td>
-<pre class="nohighlight">
-?thing sosa:actsOnProperty [
-    a sosa:ActuatableProperty
-] .
-</pre>
+                            <code>sosa:actsOnProperty</code> some<br>
+                                <span class="indent"><code>sosa:ActuatableProperty</code></span>
                         </td>
                     </tr>
                     <tr>
                         <td>
-<pre class="nohighlight">
-?thing a td:Thing, sosa:Platform .
-</pre>
+                            <code>td:Thing</code> and<br>
+                            <code>sosa:Platform</code>
                         </td>
                         <td>
-<pre class="nohighlight">
-_:sensor rdfs:subClassOf sosa:Sensor, [
-    a owl:Restriction ;
-    owl:onProperty sosa:observes ;
-    owl:someValuesFrom sosa:ObservableProperty
-] .
-
-_:actuator rdfs:subClassOf sosa:Actuator, [
-    a owl:Restriction ;
-    owl:onProperty sosa:actsOnProperty ;
-    owl:someValuesFrom sosa:ActuatableProperty
-] .
-
-?thing sosa:hosts [
-    a [
-        a owl:Class ;
-        owl:unionOf ( _:sensor, _:actuator )
-    ]
-] .
-</pre>
+                            <code>sosa:hosts</code> some (<br>
+                                <span class="indent">(</span><br>
+                                    <span class="indent"><span class="indent"><code>sosa:Sensor</code> and</span></span><br>
+                                    <span class="indent"></span><span class="indent"><code>sosa:observes</code> some</span></span><br>
+                                        <span class="indent"><span class="indent"></span><span class="indent"><code>sosa:ObservableProperty</code></span></span></span><br>
+                                <span class="indent">) or (</span><br>
+                                    <span class="indent"><span class="indent"><code>sosa:Actuator</code> and</span></span><br>
+                                    <span class="indent"></span><span class="indent"><code>sosa:actsOnProperty</code> some</span></span><br>
+                                        <span class="indent"><span class="indent"><span class="indent"><code>sosa:ActuatableProperty</code></span></span></span><br>
+                                <span class="indent">)</span><br>
+                            )
                         </td>
                     </tr>
                 </tbody>
@@ -236,79 +197,49 @@ _:actuator rdfs:subClassOf sosa:Actuator, [
             <table class="def">
                 <thead>
                     <tr>
-                        <th>If</th>
-                        <th>Then</th>
+                        <th>Sub-Class</th>
+                        <th>Super-Class</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-<pre class="nohighlight">
-?a a td:PropertyAffordance ;
-    td:hasForm ?form .
-?form hyperm:forOperationType
-    "readproperty" .
-</pre>
+                            <code>td:PropertyAffordance</code> and<br>
+                            <code>td:hasForm</code> some<br>
+                                <span class="indent"><code>hctl:hasOperationType</code> value</span><br>
+                                    <span class="indent"><span class="indent"><code>hctl:readProperty</code></span></span>
                         </td>
                         <td>
-<pre class="nohighlight">
-?a a [
-    a owl:Restriction ;
-    owl:onProperty ssn:forProperty ;
-    owl:someValuesFrom sosa:ObservableProperty
-] .
-</pre>
+                            <code>ssn:forProperty</code> some <code>sosa:ObservableProperty</code>
                         </td>
                     </tr>
                     <tr>
                         <td>
-<pre class="nohighlight">
-?a a td:PropertyAffordance ;
-    td:hasForm ?form .
-?form hyperm:forOperationType
-    "writeproperty" .
-</pre>
+                            <code>td:PropertyAffordance</code> and<br>
+                            <code>td:hasForm</code> some<br>
+                                <span class="indent"><code>hctl:hasOperationType</code> value</span><br>
+                                    <span class="indent"><span class="indent"><code>hctl:writeProperty</code></span></span>
                         </td>
                         <td>
-<pre class="nohighlight">
-?a a [
-    a owl:Restriction ;
-    owl:onProperty ssn:forProperty ;
-    owl:someValuesFrom sosa:ActuatableProperty
-] .
-</pre>
+                            <code>ssn:forProperty</code> some <code>sosa:ActuatableProperty</code>
                         </td>
                     </tr>
                     <tr>
                         <td>
-<pre class="nohighlight">
-?a a td:ActionAffordance .
-</pre>
+                            <code>td:ActionAffordance</code>
                         </td>
                         <td>
-<pre class="nohighlight">
-?a a [
-    a owl:Restriction ;
-    owl:onProperty ssn:forProperty ;
-    owl:someValuesFrom sosa:ActuatableProperty
-] .
-</pre>
+                            <code>ssn:forProperty</code> some<br>
+                                <span class="indent"><code>sosa:ActuatableProperty</code></span>
                         </td>
                     </tr>
                     <tr>
                         <td>
-<pre class="nohighlight">
-?a a td:EventAffordance .
-</pre>
+                            <code>td:EventAffordance</code>
                         </td>
                         <td>
-<pre class="nohighlight">
-?a a [
-    a owl:Restriction ;
-    owl:onProperty ssn:forProperty ;
-    owl:someValuesFrom sosa:ObservableProperty
-] .
-</pre>
+                            <code>ssn:forProperty</code> some<br>
+                                <span class="indent"><code>sosa:ObservableProperty</code></span>
                         </td>
                     </tr>
                 </tbody>
@@ -318,38 +249,46 @@ _:actuator rdfs:subClassOf sosa:Actuator, [
         <section>
             <h3>Schema.org</h3>
 
+            <p>
+                The alignments with schema.org's actions are also available here in OWL:
+                <a href="td-sdo.ttl">td-sdo.ttl</a>.
+            </p>
+
             <table class="def">
                 <thead>
                     <tr>
-                        <th>If</th>
-                        <th>Then</th>
+                        <th>Sub-Class</th>
+                        <th>Super-Class</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-<pre class="nohighlight">
-?a a td:InteractionAffordance .
-</pre>
+                            <code>td:InteractionAffordance</code>
                         </td>
                         <td>
-<pre class="nohighlight">
-?a a schema:Action ;
-   schema:actionStatus
-       schema:PotentialActionStatus .
-</pre>
+                            <code>schema:Action</code> and<br>
+                            <code>schema:actionStatus</code> value
+                                <span class="indent"><code>schema:PotentialActionStatus</code></span><br>
                         </td>
                     </tr>
+                </tbody>
+            </table>
+
+            <table class="def">
+                <thead>
+                    <tr>
+                        <th>Sub-Property</th>
+                        <th>Super-Property</th>
+                    </tr>
+                </thead>
+                <tbody>
                     <tr>
                         <td>
-<pre class="nohighlight">
-?thing td:hasInteractionAffordance ?a .
-</pre>
+                            <code>td:hasInteractionAffordance</code>
                         </td>
                         <td>
-<pre class="nohighlight">
-?thing schema:potentialAction ?a .
-</pre>
+                            <code>schema:potentialAction</code>
                         </td>
                     </tr>
                 </tbody>
