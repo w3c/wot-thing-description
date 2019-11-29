@@ -24,12 +24,10 @@
     sh:property [
         sh:path dcterms:title ;
         sh:minCount 1 ;
-        sh:datatype xsd:string ;
         sh:order 1 ;
     ] ;
     sh:property [
         sh:path dcterms:description ;
-        sh:datatype xsd:string ;
         sh:order 3 ;
     ] ;
     sh:property [
@@ -94,7 +92,6 @@
         sh:path td:hasSecurityConfiguration ;
         sh:minCount 1 ;
         sh:node :SecuritySchemeShape ;
-        sh:datatype xsd:string ;
         sh:order 15 ;
     ] .
     
@@ -104,12 +101,10 @@
     sh:order 2 ;
     sh:property [
         sh:path dcterms:title ;
-        sh:datatype xsd:string ;
         sh:order 1 ;
     ] ;
     sh:property [
         sh:path dcterms:description ;
-        sh:datatype xsd:string ;
         sh:order 3 ;
     ] ;
     sh:property [
@@ -196,7 +191,6 @@
         sh:path td:instance ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:datatype xsd:string ;
     ] .
 
 :FormShape a sh:NodeShape ;
@@ -245,13 +239,7 @@
     ] ;
     sh:property [
         sh:path hctl:forSubProtocol ;
-        sh:datatype xsd:string ;
         sh:maxCount 1 ;
-        sh:in (
-            "longpoll"
-            "websub"
-            "sse"
-        );
         sh:order 5 ;
     ] ;
     sh:property [
@@ -261,7 +249,6 @@
     ] ;
     sh:property [
         sh:path wotsec:scopes ;
-        sh:datatype xsd:string ;
         sh:order 7 ;
     ] .
     
@@ -309,7 +296,8 @@
     sh:order 1 ;
     sh:property [
         sh:path rdf:type ;
-        sh:minCount 1 ;
+        # FIXME declare securityDefinitions as @included
+        # sh:minCount 1 ;
         sh:in (
             wotsec:NoSecurityScheme
             wotsec:BasicSecurityScheme
@@ -326,7 +314,6 @@
     ] ;
     sh:property [
         sh:path dcterms:description ;
-        sh:datatype xsd:string ;
         sh:order 2 ;
     ] ;
     sh:property [
@@ -611,27 +598,11 @@
     sh:order 1 ;
     sh:property [
         sh:path dcterms:title ;
-        sh:datatype xsd:string ;
         sh:order 1 ;
     ] ;
     sh:property [
         sh:path dcterms:description ;
-        sh:datatype xsd:string ;
         sh:order 3 ;
-    ] ;
-    sh:property [
-        sh:path rdf:type ;
-        sh:minCount 1 ;
-        sh:in (
-            jsonschema:ObjectSchema
-            jsonschema:ArraySchema
-            jsonschema:StringSchema
-            jsonschema:NumberSchema
-            jsonschema:IntegerSchema
-            jsonschema:BooleanSchema
-            jsonschema:NullSchema
-        );
-        sh:order 5 ;
     ] ;
     sh:property [
         sh:path jsonschema:const ;
@@ -705,13 +676,19 @@
     sh:order 4 ;
     sh:property [
         sh:path jsonschema:minimum ;
-        sh:datatype xsd:double ;
+        sh:or(
+            [ sh:datatype xsd:double ]
+            [ sh:datatype xsd:integer ] # due to JSON-LD type coercion
+        ) ;
         sh:maxCount 1 ;
         sh:order 1 ;
     ] ;
     sh:property [
         sh:path jsonschema:maximum ;
-        sh:datatype xsd:double ;
+        sh:or(
+            [ sh:datatype xsd:double ]
+            [ sh:datatype xsd:integer ] # due to JSON-LD type coercion
+        ) ;
         sh:maxCount 1 ;
         sh:order 2 ;
     ] .

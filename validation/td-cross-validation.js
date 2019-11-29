@@ -56,12 +56,16 @@ forEachTD(dirTD, desc => {
     let str = JSON.stringify(desc)
     
     jsonld.toRDF(desc, {
-        format: 'application/n-quads'
+        format: 'application/n-quads',
+        base: desc.base || undefined
     }, (err, ttl) => {
         if (err) {
             console.error(err);
             return;
         }
+
+        // issue in SHACL.js when validating blank nodes?
+        ttl = ttl.replace(/_:(b\d+)/g, "<tag:$1>");
 
         let v = new SHACLValidator();
         v.validate(ttl, 'text/turtle', shapes, 'text/turtle', (err, report) => {
