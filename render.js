@@ -111,7 +111,7 @@ load(updateEndpoint, null)
     ctx.forms['@context'] = hctl['@context'];
     ctx.links['@context'] = hctl['@context'];
 
-    fs.writeFileSync('context/td-context-1.1.jsonld', JSON.stringify(td));
+    fs.writeFileSync('context/td-context-1.1.jsonld', JSON.stringify(td, null, 2));
 
     return Promise.resolve();
 }) 
