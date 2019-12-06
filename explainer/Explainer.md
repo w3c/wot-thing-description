@@ -7,7 +7,7 @@
 [//]: # (The W3C Web of Things [WoT] is intended to enable
 interoperability across IoT Platforms and application domains using Web technology.)
 
-In the [WoT architecture](https://w3c.github.io/wot-architecture/index.html), 
+In the [WoT Architecture](https://w3c.github.io/wot-architecture/index.html), 
 a Thing is defined as an abstraction of an IoT device or service.
 The Thing Description (TD) provides descriptive metadata for a Thing.
 TDs supports interoperability between Things (and applications that use Things)
@@ -476,3 +476,11 @@ In some cases a given implementation may be used for multiple Things
 and a single Thing
 may also act as both client and server on multiple interfaces.
 
+## Related Work
+There are already several service description languages on the market. However, most of them do not focus on IoT application cases and do not support IoT-based protocols like MQTT, CoAP, Modbus, etc. In addition, the alignment of a semantic approach is also missing to enable the reuse of existing domain usages and to increase interoperability in IoT scenarios. In the following, well-known service description languages are listed:
+
+* WSDL: Around 10 years ago, [WSDL](https://www.w3.org/TR/wsdl20/) was quite popular to describe SOAP based web services and to realize SOA-based architectures. One of the strength (however, which is also a weakness), is the rich set of WS-* add-ons such as for semantic, security, and notifications mechanism. The data model that can be exchanged between server and client can be designed via XML Schema definitions. Today, WSDL is no longer a preferred technology. One of the reasons is the complex implementation of WSDL based web services (especially, on the client side), the limitation to SOAP/XML messaging and the usage of HTTP protocol only. In addition, the huge WS-* opportunities, which contain redundant concepts, often led to incompatible implementations. Another downside is that there is a huge effort when the content of the WSDL is slightly changed. All client implementations (typically stubs and skeletons) have to be new generated and compiled.
+
+* OpenAPI/SWAGGER: [OpenAPI](https://swagger.io/) specification is one of the popular interface description on the market. Mainly, this solution is used to describe REST/HTTP based APIs interfaces with JSON messaging. JSON Schema is used to design the data model. OpenAPI has a huge community and provides a rich set of tools and libraries for different kind of platforms. One of drawbacks of OpenAPI is the non-support of standard semantic annotations and the (re-)usage of domain knowledge (e.g., iotschema.org). Interface descriptions via OpenAPI are mainly designed for humans and have to interpreted by humans (if possible). Machine interpretation and a semantic-based discovery/querying are out of scope. Another drawback is the limitation to HTTP protocols. MQTT, CoAP, OPC UA etc. is not covered.
+
+* RAML: The purpose of the RESTful API Modeling Language ([RAML](https://raml.org/)) is very similar to that of OpenAPI, as it is mainly intended to develop REST/HTTP-based APIs. In contrast to OpenAPI, RAML offers more flexibility in terms of including and reusage of external code and schema definitions such as XML Schema. Similar to OpenAPI, there is a lack of standardized semantic support without a query/discovery mechanism as well as the limitation to the HTTP protocol.
