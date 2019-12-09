@@ -10,10 +10,11 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix schema: <http://schema.org/> .
 
 <https://www.w3.org/2019/wot/json-schema#> rdf:type owl:Ontology ;
                                     
-                                    owl:versionInfo "0.5.0" ;
+                                    owl:versionInfo "0.6.0" ;
                                     
                                     rdfs:comment "Module for data schema specifications, part of the W3C Web of Things (WoT) Thing Description model"@en ;
                                     
@@ -27,7 +28,7 @@
                                     
                                     dc:publisher <https://www.w3.org/WoT/WG/> ;
                                     
-                                    dcterms:creator <mailto:victor.charpenay@siemens.com> .
+                                    dcterms:creator <https://vcharpenay.link/#me> .
 
 
 #################################################################
@@ -43,7 +44,10 @@
                                          
                                          rdfs:label "items" ;
                                          
-                                         rdfs:comment "Used to define the characteristics of an array."@en.
+                                         rdfs:comment "Used to define the characteristics of an array."@en ;
+                                         
+                                         schema:domainIncludes :ArraySchema ;
+                                         schema:rangeIncludes :DataSchema .
 
 
 
@@ -53,7 +57,49 @@
                                               
                                               rdfs:label "properties" ;
                                               
-                                              rdfs:comment "Data schema nested definitions"@en .
+                                              rdfs:comment "Data schema nested definitions"@en ;
+                                         
+                                         schema:domainIncludes :ObjectSchema ;
+                                         schema:rangeIncludes :DataSchema .
+
+
+
+###  https://www.w3.org/2019/wot/json-schema#oneOf
+
+<https://www.w3.org/2019/wot/json-schema#oneOf> rdf:type owl:ObjectProperty ;
+                                        
+                                        rdfs:label "oneOf" ;
+                                        
+                                        rdfs:comment "Used to ensure that the data is valid against exactly one of the specified schemas in the array."@en ;
+                                         
+                                         schema:domainIncludes :DataSchema ;
+                                         schema:rangeIncludes :DataSchema .
+
+
+
+###  https://www.w3.org/2019/wot/json-schema#allOf
+
+<https://www.w3.org/2019/wot/json-schema#allOf> rdf:type owl:ObjectProperty ;
+                                        
+                                        rdfs:label "allOf" ;
+                                        
+                                        rdfs:comment "Used to ensure that the data is valid against all of the specified schemas in the array."@en ;
+                                         
+                                         schema:domainIncludes :DataSchema ;
+                                         schema:rangeIncludes :DataSchema .
+
+
+
+###  https://www.w3.org/2019/wot/json-schema#anyOf
+
+<https://www.w3.org/2019/wot/json-schema#anyOf> rdf:type owl:ObjectProperty ;
+                                        
+                                        rdfs:label "anyOf" ;
+                                        
+                                        rdfs:comment "Used to ensure that the data is valid against any of the specified schemas in the array."@en ;
+                                         
+                                         schema:domainIncludes :DataSchema ;
+                                         schema:rangeIncludes :DataSchema .
 
 
 
@@ -72,7 +118,9 @@
                                          
                                          rdfs:label "const" ;
                                          
-                                         rdfs:comment "Provides a constant value."@en .
+                                         rdfs:comment "Provides a constant value."@en ;
+                                         
+                                         schema:domainIncludes :DataSchema .
 
 
 
@@ -82,17 +130,9 @@
                                         
                                         rdfs:label "enum" ;
                                         
-                                        rdfs:comment "Restricted set of values provided as an array."@en .
-
-
-
-###  https://www.w3.org/2019/wot/json-schema#oneOf
-
-<https://www.w3.org/2019/wot/json-schema#oneOf> rdf:type owl:DatatypeProperty ;
-                                        
-                                        rdfs:label "oneOf" ;
-                                        
-                                        rdfs:comment "Used to ensure that the data is valid against one of the specified schemas in the array."@en .
+                                        rdfs:comment "Restricted set of values provided as an array."@en ;
+                                         
+                                         schema:domainIncludes :DataSchema .
 
 
 
@@ -103,7 +143,10 @@
                                             
                                             rdfs:label "maxItems" ;
                                             
-                                            rdfs:comment "Defines the maximum number of items that have to be in the array."@en .
+                                            rdfs:comment "Defines the maximum number of items that have to be in the array."@en ;
+                                         
+                                         schema:domainIncludes :ArraySchema ;
+                                         rdfs:range xsd:nonNegativeInteger .
 
 
 
@@ -115,7 +158,10 @@
                                            
                                            rdfs:comment "Specifies a maximum numeric value. Only applicable for associated number or integer types."@en ;
                                            
-                                           rdfs:seeAlso <http://schema.org/maxValue> .
+                                           rdfs:seeAlso <http://schema.org/maxValue> ;
+                                         
+                                         schema:domainIncludes :NumberSchema, :IntegerSchema ;
+                                         rdfs:range xsd:decimal .
 
 
 
@@ -125,7 +171,10 @@
                                             
                                             rdfs:label "minItems" ;
                                             
-                                            rdfs:comment "Defines the minimum number of items that have to be in the array."@en .
+                                            rdfs:comment "Defines the minimum number of items that have to be in the array."@en ;
+                                         
+                                         schema:domainIncludes :ArraySchema ;
+                                         rdfs:range xsd:nonNegativeInteger .
 
 
 
@@ -137,7 +186,10 @@
                                            
                                            rdfs:comment "Specifies a minimum numeric value. Only applicable for associated number or integer types."@en ;
                                            
-                                           rdfs:seeAlso <http://schema.org/minValue> .
+                                           rdfs:seeAlso <http://schema.org/minValue> ;
+                                         
+                                         schema:domainIncludes :NumberSchema, :IntegerSchema ;
+                                         rdfs:range xsd:decimal .
 
 
 
@@ -147,7 +199,10 @@
                                             
                                             rdfs:label "required" ;
                                             
-                                            rdfs:comment "Defines which members of the object type are mandatory."@en .
+                                            rdfs:comment "Defines which members of the object type are mandatory."@en ;
+                                         
+                                         schema:domainIncludes :ObjectSchema ;
+                                         rdfs:range xsd:string .
 
 
 ###  https://www.w3.org/2019/wot/json-schema#readOnly
@@ -156,13 +211,19 @@
                                             
                                             rdfs:label "readOnly" ;
                                             
-                                            rdfs:comment "Boolean value that is a hint to indicate whether a property interaction / value is read only (=true) or not (=false)"@en .
+                                            rdfs:comment "Boolean value that is a hint to indicate whether a property interaction / value is read only (=true) or not (=false)"@en ;
+                                         
+                                         schema:domainIncludes :DataSchema ;
+                                         rdfs:range xsd:boolean .
 
  <https://www.w3.org/2019/wot/json-schema#format> rdf:type owl:DatatypeProperty ;
                                             
                                             rdfs:label "format" ;
                                             
-                                            rdfs:comment "Allows validation based on a format pattern such as \"date-time\", \"email\", \"uri\", etc."@en .
+                                            rdfs:comment "Allows validation based on a format pattern such as \"date-time\", \"email\", \"uri\", etc."@en ;
+                                         
+                                         schema:domainIncludes :StringSchema ;
+                                         rdfs:range xsd:string .
 
                                             
 ###  https://www.w3.org/2019/wot/json-schema#writeOnly
@@ -171,17 +232,40 @@
                                             
                                             rdfs:label "writeOnly" ;
                                             
-                                            rdfs:comment "Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false)"@en .
+                                            rdfs:comment "Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false)"@en ;
+                                         
+                                         schema:domainIncludes :DataSchema ;
+                                         rdfs:range xsd:boolean .
 
-###  https://www.w3.org/2019/wot/json-schema#type
+                                            
+###  https://www.w3.org/2019/wot/json-schema#description
 
-<https://www.w3.org/2019/wot/json-schema#type> rdf:type owl:DatatypeProperty ;
-                                        
-                                        rdfs:label "type" ;
-                                        
-                                        rdfs:comment "Assignment of JSON-based data types compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null)." .
+<https://www.w3.org/2019/wot/json-schema#propertyName> rdf:type owl:DatatypeProperty ;
+                                            
+                                            rdfs:label "propertyName" ;
+                                            
+                                            rdfs:comment "Used to store the indexing name in the parent object when this schema appears as a property of an object schema."@en ;
+                                         
+                                         schema:domainIncludes :DataSchema ;
+                                         rdfs:range xsd:string .
 
+                                            
+###  https://www.w3.org/2019/wot/json-schema#title
 
+<https://www.w3.org/2019/wot/json-schema#title> rdf:type owl:AnnotationProperty ;
+                                            
+                                            rdfs:label "title" ;
+                                            
+                                            rdfs:comment "Can be used to decorate a user interface with information about the data produced by this user interface. A title will preferably be short."@en .
+
+                                            
+###  https://www.w3.org/2019/wot/json-schema#description
+
+<https://www.w3.org/2019/wot/json-schema#description> rdf:type owl:AnnotationProperty ;
+                                            
+                                            rdfs:label "description" ;
+                                            
+                                            rdfs:comment "Can be used to decorate a user interface with information about the data produced by this user interface. a description will provide explanation about the purpose of the instance described by this schema."@en .
 
 
 
@@ -198,7 +282,7 @@
                                                
                                                rdfs:subClassOf <https://www.w3.org/2019/wot/json-schema#DataSchema> ;
                                                
-                                               rdfs:comment "Metadata describing data of type <a>Array</a>. This <a>Subclass</a> is indicated by the value <code>array</code> assigned to <code>type</code> in <code>DataSchema</code> instances."@en .
+                                               rdfs:comment "Metadata describing data of type array. This subclass is indicated by the value <code>array</code> assigned to <code>type</code> in <code>DataSchema</code> instances."@en .
 
 
 
@@ -208,7 +292,7 @@
                                                  
                                                  rdfs:subClassOf <https://www.w3.org/2019/wot/json-schema#DataSchema> ;
                                                  
-                                                 rdfs:comment "Metadata describing data of type <code>boolean</code>. This <a>Subclass</a> is indicated by the value <code>boolean</code> assigned to <code>type</code> in <code>DataSchema</code> instances."@en .
+                                                 rdfs:comment "Metadata describing data of type <code>boolean</code>. This subclass is indicated by the value <code>boolean</code> assigned to <code>type</code> in <code>DataSchema</code> instances."@en .
 
 
 
@@ -218,7 +302,7 @@
                                                  
                                                  rdfs:subClassOf <https://www.w3.org/2019/wot/json-schema#DataSchema> ;
                                                  
-                                                 rdfs:comment "Metadata describing data of type <code>null</code>. This <a>Subclass</a> is indicated by the value <code>null</code> assigned to <code>type</code> in <code>DataSchema</code> instances. This Subclass describes only one acceptable value, namely <code>null</code>. It can be used as part of a <code>oneOf</code> declaration, where it is used to indicate, that the data can also be <code>null</code>."@en .
+                                                 rdfs:comment "Metadata describing data of type <code>null</code>. This subclass is indicated by the value <code>null</code> assigned to <code>type</code> in <code>DataSchema</code> instances. This Subclass describes only one acceptable value, namely <code>null</code>. It can be used as part of a <code>oneOf</code> declaration, where it is used to indicate, that the data can also be <code>null</code>."@en .
 
 
 
@@ -236,7 +320,7 @@
                                                  
                                                  rdfs:subClassOf <https://www.w3.org/2019/wot/json-schema#DataSchema> ;
                                                  
-                                                 rdfs:comment "Metadata describing data of type <code>integer</code>. This <a>Subclass</a> is indicated by the value <code>integer</code> assigned to <code>type</code> in <code>DataSchema</code> instances."@en .
+                                                 rdfs:comment "Metadata describing data of type <code>integer</code>. This subclass is indicated by the value <code>integer</code> assigned to <code>type</code> in <code>DataSchema</code> instances."@en .
 
 
 
@@ -246,7 +330,7 @@
                                                 
                                                 rdfs:subClassOf <https://www.w3.org/2019/wot/json-schema#DataSchema> ;
                                                 
-                                                rdfs:comment "Metadata describing data of type <code>number</code>. This <a>Subclass</a> is indicated by the value <code>number</code> assigned to <code>type</code> in <code>DataSchema</code> instances."@en .
+                                                rdfs:comment "Metadata describing data of type <code>number</code>. This subclass is indicated by the value <code>number</code> assigned to <code>type</code> in <code>DataSchema</code> instances."@en .
 
 
 
@@ -256,7 +340,7 @@
                                                 
                                                 rdfs:subClassOf <https://www.w3.org/2019/wot/json-schema#DataSchema> ;
                                                 
-                                                rdfs:comment "Metadata describing data of type <code>object</code>. This <a>Subclass</a> is indicated by the value <code>object</code> assigned to <code>type</code> in <code>DataSchema</code> instances."@en .
+                                                rdfs:comment "Metadata describing data of type <code>object</code>. This subclass is indicated by the value <code>object</code> assigned to <code>type</code> in <code>DataSchema</code> instances."@en .
 
 
 
@@ -266,7 +350,7 @@
                                                 
                                                 rdfs:subClassOf <https://www.w3.org/2019/wot/json-schema#DataSchema> ;
                                                 
-                                                rdfs:comment "Metadata describing data of type <code>string</code>. This <a>Subclass</a> is indicated by the value <code>string</code> assigned to <code>type</code> in <code>DataSchema</code> instances."@en .
+                                                rdfs:comment "Metadata describing data of type <code>string</code>. This subclass is indicated by the value <code>string</code> assigned to <code>type</code> in <code>DataSchema</code> instances."@en .
 
 
 

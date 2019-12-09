@@ -13,15 +13,25 @@ const fs = require('fs');
 const SHACLValidator = require('shacl');
 const jsonld = require('jsonld');
 
-const td = require('../td.js');
+// TODO remove if JSON-LD impl is up-to-date
+// const td = require('../td.js');
 
-const tdCtx = JSON.parse(fs.readFileSync('context/td-context.jsonld', 'utf-8'));
-const jsonschemaCtx = JSON.parse(fs.readFileSync('context/json-schema-context.jsonld', 'utf-8'));
-const wotSecCtx = JSON.parse(fs.readFileSync('context/wot-security-context.jsonld', 'utf-8'));
-const lnkCtx = JSON.parse(fs.readFileSync('context/web-linking-context.jsonld', 'utf-8'));
+const ctx = JSON.parse(fs.readFileSync('context/td-context-1.1.jsonld', 'utf-8'));
+const remoteCtx = 'https://www.w3.org/2019/wot/td/v1';
+
+function substitute(obj) {
+    if (obj == remoteCtx) return ctx;
+    else if (obj instanceof Array) return obj.map(substitute);
+
+    let c = obj['@context'];
+    if (c) obj['@context'] = substitute(c);
+    
+    return obj;
+}
+
 const shapes = fs.readFileSync('validation/td-validation.ttl', 'utf-8');
 
-const dirTD = '../wot/testfest';
+const dirTD = '../wot/testing/tests/2019-05/inputs';
 
 function forEachTD(dir, fn) {
     fs.readdir(dir, (err, files) => {
@@ -30,7 +40,7 @@ function forEachTD(dir, fn) {
             if (fs.statSync(path).isDirectory()) {
                 forEachTD(path, fn);
             } else {
-                if (f.endsWith('.jsonld')) {
+                if (/json(ld|td)?$/.test(f)) {
                     fs.readFile(path, (err, str) => {
                         let desc = JSON.parse(str);
                         fn(desc, path);
@@ -41,28 +51,29 @@ function forEachTD(dir, fn) {
     });
 }
 
-// substitutes context URIs with local context objects
-function substitute(obj) {
-    if (obj === 'http://www.w3.org/ns/td') return tdCtx['@context'];
-    else if (obj === 'http://www.w3.org/ns/json-schema') return jsonschemaCtx['@context'];
-    else if (obj === 'http://www.w3.org/ns/wot-security') return wotSecCtx['@context'];
-    else if (obj === 'http://www.w3.org/ns/web-linking') return lnkCtx['@context'];
-    else if (!(obj instanceof Object)) return obj;
-    
-    for (let k in obj) obj[k] = substitute(obj[k]);
-    return obj;
-}
-
 forEachTD(dirTD, desc => {
-    let transformed = td.transform(desc);
-    transformed = substitute(transformed);
-    let str = JSON.stringify(transformed);
+    desc = substitute(desc);
+    let str = JSON.stringify(desc)
     
-    jsonld.toRDF(transformed, {
-        format: 'application/n-quads'
+    jsonld.toRDF(desc, {
+        format: 'application/n-quads',
+        base: desc.base || undefined
     }, (err, ttl) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+
+        // issue in SHACL.js when validating blank nodes?
+        ttl = ttl.replace(/_:(b\d+)/g, "<tag:$1>");
+
         let v = new SHACLValidator();
         v.validate(ttl, 'text/turtle', shapes, 'text/turtle', (err, report) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+
             let nb = ttl.length === 0 ? 0 : ttl.split('\n').length;
             console.log(desc.id + ' (' + nb + ' triples):');
             if (!report.conforms()) {
@@ -75,6 +86,8 @@ forEachTD(dirTD, desc => {
 
                     console.log('\t' + s + ' on <' + n + '> (' + p + '): ' + m);
                 });
+            } else {
+                console.log('\tOK');
             }
         });
     });
