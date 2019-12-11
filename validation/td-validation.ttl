@@ -1,8 +1,8 @@
 @prefix : <http://www.w3.org/ns/td-validation#> .
-@prefix td: <http://www.w3.org/ns/td#> .
-@prefix jsonschema: <http://www.w3.org/ns/json-schema#> .
-@prefix wotsec: <http://www.w3.org/ns/wot-security#> .
-@prefix lnk: <http://www.w3.org/ns/web-linking#> .
+@prefix td: <https://www.w3.org/2019/wot/td#> .
+@prefix jsonschema: <https://www.w3.org/2019/wot/json-schema#> .
+@prefix wotsec: <https://www.w3.org/2019/wot/security#> .
+@prefix hctl: <https://www.w3.org/2019/wot/hypermedia#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix vs: <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -14,845 +14,723 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix schema: <http://schema.org> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 
 :ThingShape a sh:NodeShape ;
     sh:targetClass td:Thing ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "1"^^xsd:integer ;
-    sh:description
-"""
-<p>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-mandatory\">The mandatory
-     context definition of the string <code>"http://www.w3.org/ns/td"</code> MUST be 
-     the first item in the <code>@context</code> array.</span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-optional\">The mandatory
-     context definition MAY be followed by one or more context definitions as strings or 
-     objects.</span>
-</p>
-<p>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-dereferenceable-url\">
-     As suggested in JSON-LD [[!json-ld]] specification, if a context definition is 
-     a string, it SHOULD be a dereferenceable URL.
-     </span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-map-of-namespaces\">
-     Likewise, if a context definition is an object, it SHOULD be a map of namespaces, 
-     in which keys are namespace prefixes. 
-     </span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-thing-prefix\">Each optional
-     namespace specified in the <code>@context</code> array of a Thing MUST be bound 
-     to an unique prefix.</span>
-</p>
-<p id="meta-interactions-of-thing">Similar to <a href="#propertyaffordance" class="sec-ref">PropertyAffordance</a>, 
-    <a href="#actionaffordance" class="sec-ref">ActionAffordance</a> and 
-    <a href="#eventaffordance" class="sec-ref">EventAffordance</a> classes, all of which are 
-    subclasses of <a href="#interactionaffordance" class="sec-ref">
-    InteractionAffordance</a>, the definition of Thing class also contains 
-    the <code>forms</code> term. 
-    <span class="rfc2119-assertion" id="td-op-for-thing">
-    When a <code>forms</code> term member is present in a Thing instance, 
-    the value(s) in the <code>op</code> term member of the <code>forms</code> MUST be one or more of 
-    <code>readallproperties</code>, <code>writeallproperties</code>, 
-    <code>readmultipleproperties</code> or <code>writemultipleproperties</code>.
-    </span>
-    (See <a href="#td-forms-readall-example"> an example</a> for an usage of <code>form</code> in a <a>thing resource</a>.)
-</p>
-<p>
-    For <code>readallproperties</code> operation's output, 
-    <code>readmultipleproperties</code> operation's output,
-    <code>writeallproperties</code> operation's input and <code>writemultipleproperties</code>
-    operation's input, payloads are assigned an object type schema with its 
-    properties equal to the Thing's property resources.
-    For <code>readmultipleproperties</code> operation's input, payloads are
-    assigned a string array type schema with its items each equal to one of the names of
-    The Thing's property resources.
-</p>
-"""^^rdf:HTML ;
+    sh:closed false ;
+    sh:order 1 ;
     sh:property [
-        sh:path td:name ;
+        sh:path dcterms:title ;
         sh:minCount 1 ;
-        sh:datatype xsd:string ;
-        sh:order "1"^^xsd:integer ;
+        sh:order 1 ;
     ] ;
     sh:property [
-        sh:path td:names ;
+        sh:path dcterms:description ;
+        sh:order 3 ;
+    ] ;
+    sh:property [
+        sh:path td:versionInfo ;
+        sh:node :VersionInfoShape ;
+        sh:order 5 ;
+    ] ;
+    sh:property [
+        sh:path dcterms:created ;
+        sh:datatype xsd:dateTime ;
+        sh:maxCount 1 ;
+        sh:order 6 ;
+    ] ;
+    sh:property [
+        sh:path dcterms:modified ;
+        sh:datatype xsd:dateTime ;
+        sh:maxCount 1 ;
+        sh:order 7 ;
+    ] ;
+    sh:property [
+        sh:path td:supportContact ;
+        sh:maxCount 1 ;
+        sh:order 8 ;
+    ] ;
+    sh:property [
+        sh:path [
+            sh:alternativePath (
+                td:hasPropertyAffordance
+                td:hasActionAffordance
+                td:hasEventAffordance
+            )
+        ] ;
+        sh:node :InteractionAffordanceShape ;
+        sh:minCount 1
+    ] ;
+    sh:property [
+        sh:path td:hasPropertyAffordance ;
+        sh:node :PropertyAffordanceShape ;
+        sh:order 10 ;
+    ] ;
+    sh:property [
+        sh:path td:hasActionAffordance ;
+        sh:node :ActionAffordanceShape ;
+        sh:order 11 ;
+    ] ;
+    sh:property [
+        sh:path td:hasEventAffordance ;
+        sh:node :EventAffordanceShape ;
+        sh:order 12 ;
+    ] ;
+    sh:property [
+        sh:path td:hasLink ;
+        sh:node :LinkShape ;
+        sh:order 13 ;
+    ] ;
+    sh:property [
+        sh:path td:hasForm ;
+        sh:node :FormShape ;
+        sh:order 14 ;
+    ] ;
+    sh:property [
+        sh:path td:hasSecurityConfiguration ;
         sh:minCount 1 ;
-        sh:datatype xsd:string ;
-        sh:order "2"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:description ;
-        sh:datatype xsd:string ;
-        sh:order "3"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:descriptions ;
-        sh:class td:MultiLanguage ;
-        sh:order "4"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:version ;
-        sh:class td:VersionInfo ;
-        sh:order "5"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:created ;
-        sh:datatype xsd:string ;
-        sh:order "6"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:lastModified ;
-        sh:datatype xsd:string ;
-        sh:order "7"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:support ;
-        sh:datatype xsd:string ;
-        sh:order "8"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:base ;
-        sh:datatype xsd:anyURI ;
-        sh:order "9"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:properties ;
-        sh:class td:PropertyAffordance ;
-        sh:order "10"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:actions ;
-        sh:class td:ActionAffordance ;
-        sh:order "11"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:events ;
-        sh:class td:EventAffordance ;
-        sh:order "12"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:links ;
-        sh:class lnk:Link ;
-        sh:order "13"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:forms ;
-        sh:class td:Form ;
-        sh:order "14"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:security ;
-        sh:minCount 1 ;
-#       sh:class wotsec:SecurityScheme ;
-        sh:datatype xsd:string ;
-        sh:order "15"^^xsd:integer ;
-    ] ;
-    sh:property [	
-        sh:path td:securityDefinitions ;	
-        sh:minCount 1 ;
-        sh:class wotsec:SecurityScheme ;	
-        sh:order "16"^^xsd:integer ;
-    ].
+        sh:node :SecuritySchemeShape ;
+        sh:order 15 ;
+    ] .
     
 :InteractionAffordanceShape a sh:NodeShape ;
     sh:targetClass td:InteractionAffordance ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "2"^^xsd:integer ;
-    sh:description
-"""
-<p>
-    <span class="rfc2119-assertion" id="td-unique-identifiers">
-        Each instance of a <code>Property</code>, <code>Action</code>,
-        and <code>Event</code> class MUST have an identifier that is
-        unique within the context of a Thing Description document.
-    </span>
-
-</p>
-"""^^rdf:HTML ;
+    sh:closed false ;
+    sh:order 2 ;
     sh:property [
-        sh:path td:title ;
-        sh:datatype xsd:string ;
-        sh:order "1"^^xsd:integer ;
+        sh:path dcterms:title ;
+        sh:order 1 ;
     ] ;
     sh:property [
-        sh:path td:titles ;
-        sh:class td:MultiLanguage ;
-        sh:order "2"^^xsd:integer ;
+        sh:path dcterms:description ;
+        sh:order 3 ;
     ] ;
     sh:property [
-        sh:path td:description ;
-        sh:datatype xsd:string ;
-        sh:order "3"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:descriptions ;
-        sh:class td:MultiLanguage ;
-        sh:order "4"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:forms ;
+        sh:path td:hasForm ;
         sh:minCount 1 ;
-        sh:class td:Form ;
-        sh:order "5"^^xsd:integer ;
+        sh:node :FormShape ;
+        sh:order 5 ;
     ] ;
     sh:property [
-        sh:path td:uriVariables ;
-        sh:class td:DataSchema ;
-        sh:order "6"^^xsd:integer ;
+        sh:path td:hasUriTemplateSchema ;
+        sh:node :DataSchemaShape ;
+        sh:order 6 ;
     ] .
 
-:PropertyShape a sh:NodeShape ;
+:PropertyAffordanceShape a sh:NodeShape ;
     sh:targetClass td:PropertyAffordance ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "3"^^xsd:integer ;
-    sh:description
-"""
-<p>Property class is a subclass of the class <a href="#interactionaffordance" 
-    class="sec-ref">InteractionAffordance</a>. 
-    <span class="rfc2119-assertion" id="td-op-for-property">
-    When a <code>forms</code> term member is present in a Property instance, 
-    the value(s) in the <code>op</code> term member of the <code>forms</code> MUST be one or more of 
-    <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code> or <code>unobserveproperty</code>.
-    </span>
-</p>
-<p class="note">
-    Property instances are also instances of the class
-    <a href="#dataschema" class="sec-ref">DataSchema</a>. Therefore,
-    it can contain the <code>type</code>, <code>unit</code>,
-    <code>readOnly</code> and <code>writeOnly</code> members, among
-    others.
-</p>
-"""^^rdf:HTML ;
+    sh:closed false ;
+    sh:order 3 ;
     sh:property [
-        sh:path td:observable ;
+        sh:path td:isObservable ;
         sh:datatype xsd:boolean ;
-        sh:minCount 1 ;
-        sh:defaultValue "false"^^xsd:boolean ;
+        sh:maxCount 1 ;
     ] .
     
-:ActionShape a sh:NodeShape ;
+:ActionAffordanceShape a sh:NodeShape ;
     sh:targetClass td:ActionAffordance ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "4"^^xsd:integer ;
-    sh:description
-"""
-<p>Action class is a subclass of the class <a href="#interactionaffordance" 
-    class="sec-ref">InteractionAffordance</a>.
-    <span class="rfc2119-assertion" id="td-op-for-action">
-    When a <code>forms</code> term member is present in an Action instance, 
-    the value in the <code>op</code> term member of the <code>forms</code> MUST be 
-    <code>invokeaction</code>.
-    </span>
-</p>
-"""^^rdf:HTML ;
+    sh:closed false ;
+    sh:order 4 ;
     sh:property [
-        sh:path td:input ;
-        sh:class jsonschema:DataSchema ;
-        sh:order "1"^^xsd:integer ;
+        sh:path td:hasInputSchema ;
+        sh:node :DataSchemaShape ;
+        sh:maxCount 1 ;
+        sh:order 1 ;
     ] ;
     sh:property [
-        sh:path td:output ;
-        sh:class jsonschema:DataSchema ;
-        sh:order "2"^^xsd:integer ;
+        sh:path td:hasOutputSchema ;
+        sh:node :DataSchemaShape ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
     ] ;
     sh:property [
-        sh:path td:safe ;
+        sh:path td:isSafe ;
         sh:datatype xsd:boolean ;
-        sh:minCount 1 ;
-        sh:defaultValue "false"^^xsd:boolean ;
-        sh:order "3"^^xsd:integer ;
+        sh:defaultValue false ;
+        sh:maxCount 1 ;
+        sh:order 3 ;
     ] ;
     sh:property [
-        sh:path td:idempotent ;
+        sh:path td:isIdempotent ;
         sh:datatype xsd:boolean ;
-        sh:minCount 1 ;
-        sh:defaultValue "false"^^xsd:boolean ;
-        sh:order "4"^^xsd:integer ;
+        sh:defaultValue false ;
+        sh:maxCount 1 ;
+        sh:order 4 ;
     ] .
     
-:EventShape a sh:NodeShape ;
+:EventAffordanceShape a sh:NodeShape ;
     sh:targetClass td:EventAffordance ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "5"^^xsd:integer ;
-    sh:description
-"""
-<p>Event class is a subclass of the class <a href="#interactionaffordance" 
-    class="sec-ref">InteractionAffordance</a>.
-    <span class="rfc2119-assertion" id="td-op-for-event">
-    When a <code>forms</code> term member is present in an Event instance, 
-    the value(s) in the <code>op</code> term member of the <code>forms</code> MUST be either or both of 
-    <code>subscribeevent</code> or/and <code>unsubscribeevent</code>.
-    </span>
-</p>
-"""^^rdf:HTML ;
+    sh:closed false ;
+    sh:order 5 ;
     sh:property [
-        sh:path td:subscription ;
-        sh:class jsonschema:DataSchema ;
-        sh:order "1"^^xsd:integer ;
+        sh:path td:hasSubscriptionSchema ;
+        sh:node :DataSchemaShape ;
+        sh:maxCount 1 ;
+        sh:order 1 ;
     ] ;
     sh:property [
-        sh:path td:data ;
-        sh:class jsonschema:DataSchema ;
-        sh:order "2"^^xsd:integer ;
+        sh:path td:hasNotificationSchema ;
+        sh:node :DataSchemaShape ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
     ] ;
     sh:property [
-        sh:path td:cancellation ;
-        sh:class jsonschema:DataSchema ;
-        sh:order "3"^^xsd:integer ;
-    ] .
-
-:FormShape a sh:NodeShape ;
-    sh:targetClass td:Form ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "6"^^xsd:integer ;
-    sh:property [
-        sh:path td:href ;
-        sh:minCount 1 ;
-        sh:datatype xsd:anyURI ;
-        sh:order "1"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:contentType ;
-        sh:datatype xsd:string ;
-        sh:minCount 1 ;
-        sh:defaultValue "application/json"^^xsd:string ;
-        sh:order "2"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:response ;
-        sh:class td:ExpectedResponse ;
-        sh:order "3"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:op ;
-        sh:datatype xsd:string ;
-        sh:in (
-            "readproperty"
-            "writeproperty"
-            "observeproperty"
-            "unobserveproperty"
-            "invokeaction"
-            "subscribeevent"
-            "unsubscribeevent"
-            "readallproperties"
-            "writeallproperties"
-            "readmultipleproperties"
-            "writemultipleproperties"
-        );
-        sh:order "4"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:subprotocol ;
-        sh:datatype xsd:string ;
-        sh:in (
-            "longpoll"
-            "websub"
-            "sse"
-
-        );
-        sh:order "5"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:security ;
-#       sh:class wotsec:SecurityScheme ;
-        sh:datatype xsd:string ;
-        sh:order "6"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path wotsec:scopes ;
-        sh:datatype xsd:string ;
-        sh:order "7"^^xsd:integer ;
-    ] .
-    
-:LinkShape a sh:NodeShape ;
-    sh:targetClass lnk:Link ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "7"^^xsd:integer ;
-    sh:property [
-        sh:path lnk:href ;
-        sh:minCount 1 ;
-        sh:datatype xsd:anyURI ;
-        sh:order "1"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path lnk:type ;
-        sh:datatype xsd:string ;
-        sh:order "2"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path lnk:rel ;
-        sh:datatype xsd:string ;
-        sh:order "3"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path lnk:anchor ;
-        sh:datatype xsd:anyURI ;
-        sh:order "4"^^xsd:integer ;
+        sh:path td:hasCancellationSchema ;
+        sh:node :DataSchemaShape ;
+        sh:maxCount 1 ;
+        sh:order 3 ;
     ] .
 
 :VersionInfoShape a sh:NodeShape ;
     sh:targetClass td:VersionInfo ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "8"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 8 ;
     sh:property [
         sh:path td:instance ;
         sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+:FormShape a sh:NodeShape ;
+    sh:targetClass hctl:Form ;
+    sh:closed false ;
+    sh:order 7 ;
+    sh:property [
+        sh:path hctl:hasTarget ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:order 2 ;
+    ] ;
+    sh:property [
+        sh:path hctl:forContentType ;
         sh:datatype xsd:string ;
+        sh:defaultValue "application/json"^^xsd:string ;
+        sh:order 3 ;
+    ] ;
+    sh:property [
+        sh:path hctl:forContentCoding ;
+        sh:datatype xsd:string ;
+        sh:order 4 ;
+    ] ;
+    sh:property [
+        sh:path hctl:returns ;
+        sh:node :ExpectedResponseShape ;
+        sh:order 8 ;
+    ] ;
+    sh:property [
+        sh:path hctl:hasOperationType ;
+        sh:in (
+            td:readProperty
+            td:writeProperty
+            td:observeProperty
+            td:unobserveProperty
+            td:invokeAction
+            td:subscribeEvent
+            td:unsubscribeEvent
+            td:readAllProperties
+            td:writeAllProperties
+            td:readMultipleProperties
+            td:writeMultipleProperties
+        );
+        sh:order 1 ;
+    ] ;
+    sh:property [
+        sh:path hctl:forSubProtocol ;
+        sh:maxCount 1 ;
+        sh:order 5 ;
+    ] ;
+    sh:property [
+        sh:path td:hasSecurityConfiguration ;
+        sh:node :SecuritySchemeShape ;
+        sh:order 6 ;
+    ] ;
+    sh:property [
+        sh:path wotsec:scopes ;
+        sh:order 7 ;
+    ] .
+    
+:LinkShape a sh:NodeShape ;
+    sh:targetClass hctl:Link ;
+    sh:closed false ;
+    sh:order 6 ;
+    sh:property [
+        sh:path hctl:hasTarget ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:order 1 ;
+    ] ;
+    sh:property [
+        sh:path hctl:hintsAtMediaType ;
+        sh:datatype xsd:string ;
+        sh:order 2 ;
+    ] ;
+    sh:property [
+        sh:path hctl:hasRelationType ;
+        sh:nodeKind sh:IRI ; # TODO could be relaxed
+        sh:order 3 ;
+    ] ;
+    sh:property [
+        sh:path hctl:hasAnchor ;
+        sh:node sh:IRI ;
+        sh:maxCount 1 ;
+        sh:order 4 ;
     ] .
 
 :ExpectedResponseShape a sh:NodeShape ;
-    sh:targetClass td:ExpectedResponse ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "9"^^xsd:integer ;
+    sh:targetClass hctl:ExpectedResponse ;
+    sh:closed false ;
+    sh:order 9 ;
      sh:property [
-        sh:path td:contentType ;
+        sh:path hctl:forContentType ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
-
-    ] .
-
-
-:MultiLanguageShape a sh:NodeShape ;
-    sh:targetClass td:MultiLanguage ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "10"^^xsd:integer ;
-    sh:description
-"""
-<p>
-<span class=\"rfc2119-assertion\" id=\"td-context-ns-multilanguage-content-negotiation\">
-Note that in protocols such as HTTP that have an ability to negotiate content based on languages, 
-those terms (e.g. <code>description</code> and <code>title</code>) intended for carrying texts in a default language SHOULD be used instead of <code>MultiLanguage</code> container
-when the texts are served as a result such negotiation.
-</span>
-</p>
-"""^^rdf:HTML ;
-    sh:property [
- 
     ] .
 
 :SecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:SecurityScheme ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "1"^^xsd:integer ;
-    sh:description
-"""
-<p>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-securityscheme-mandatory\">The mandatory
-     context definition of the string <code>"http://www.w3.org/ns/wot-security"</code> MUST be 
-     the first item in the <code>@context</code> array.</span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-securityscheme-optional\">The mandatory
-     context definition MAY be followed by one or more context definitions as strings or 
-     objects.</span>
-</p>
-<p>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-securityscheme-dereferenceable-url\">
-     As suggested in JSON-LD [[!json-ld]] specification, if a context definition is 
-     a string, it SHOULD be a dereferenceable URL.
-     </span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-securityscheme-map-of-namespaces\">
-     Likewise, if a context definition is an object, it SHOULD be a map of namespaces, 
-     in which keys are namespace prefixes. 
-     </span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-securityscheme-prefix\">Each optional
-     namespace specified in the <code>@context</code> array of a SecurityScheme MUST be bound 
-     to an unique prefix.</span>
-</p>
-"""^^rdf:HTML ;
+    sh:closed false ;
+    sh:order 1 ;
     sh:property [
-        sh:path wotsec:scheme ;
-        sh:minCount 1 ;
-        sh:datatype xsd:string ;
+        sh:path rdf:type ;
+        # FIXME declare securityDefinitions as @included
+        # sh:minCount 1 ;
         sh:in (
-            "nosec" 
-            "basic" 
-            "cert" 
-            "digest" 
-            "bearer" 
-            "pop" 
-            "psk" 
-            "public" 
-            "oauth2" 
-            "apikey"
+            wotsec:NoSecurityScheme
+            wotsec:BasicSecurityScheme
+            wotsec:CertSecurityScheme
+            wotsec:DigestSecurityScheme
+            wotsec:BearerSecurityScheme
+            wotsec:PoPSecurityScheme
+            wotsec:PSKSecurityScheme
+            wotsec:PublicSecurityScheme
+            wotsec:OAuth2SecurityScheme
+            wotsec:APIKeySecurityScheme
         );
-        sh:order "1"^^xsd:integer ;
+        sh:order 1 ;
     ] ;
     sh:property [
-        sh:path td:description ;
-        sh:datatype xsd:string ;
-        sh:order "2"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:descriptions ;
-        sh:class td:MultiLanguage ;
-        sh:order "3"^^xsd:integer ;
+        sh:path dcterms:description ;
+        sh:order 2 ;
     ] ;
     sh:property [
         sh:path wotsec:proxy ;
-        sh:datatype xsd:anyURI ;
-        sh:order "4"^^xsd:integer ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:order 4 ;
     ] .
 
 :NoSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:NoSecurityScheme ;
-    sh:order "2"^^xsd:integer .
+    sh:closed false ;
+    sh:order 2 .
 
 :BasicSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:BasicSecurityScheme ;
-    sh:order "3"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 3 ;
     sh:property [
         sh:path wotsec:in ;
         sh:datatype xsd:string ;
-        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in (
+          "header"
+          "query"
+          "body"
+          "cookie"
+        );
         sh:defaultValue "header"^^xsd:string ;
-        sh:order "1"^^xsd:integer ;
+        sh:order 1 ;
     ] ;
     sh:property [
         sh:path wotsec:name ;
         sh:datatype xsd:string ;
-        sh:order "2"^^xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
     ] .
 
 :DigestSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:DigestSecurityScheme ;
-    sh:order "4"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 4 ;
     sh:property [
         sh:path wotsec:qop ;
         sh:datatype xsd:string ;
-        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in (
+          "auth"
+          "auth-int"
+        );
         sh:defaultValue "auth"^^xsd:string ;
-        sh:order "1"^^xsd:integer ;
+        sh:order 1 ;
     ] ;
     sh:property [
         sh:path wotsec:in ;
         sh:datatype xsd:string ;
-        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in (
+          "header"
+          "query"
+          "body"
+          "cookie"
+        );
         sh:defaultValue "header"^^xsd:string ;
-        sh:order "2"^^xsd:integer ;
+        sh:order 2 ;
     ] ;
     sh:property [
         sh:path wotsec:name ;
         sh:datatype xsd:string ;
-        sh:order "3"^^xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 3 ;
     ] .
 
 :APIKeySecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:APIKeySecurityScheme ;
-    sh:order "5"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 5 ;
     sh:property [
         sh:path wotsec:in ;
         sh:datatype xsd:string ;
-        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in (
+          "header"
+          "query"
+          "body"
+          "cookie"
+        );
         sh:defaultValue "query"^^xsd:string ;
-        sh:order "1"^^xsd:integer ;
+        sh:order 1 ;
     ] ;
     sh:property [
         sh:path wotsec:name ;
         sh:datatype xsd:string ;
-        sh:order "2"^^xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
     ] .
 
 :BearerSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:BearerSecurityScheme ;
-    sh:order "6"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 6 ;
     sh:property [
         sh:path wotsec:authorization ;
         sh:datatype xsd:anyURI ;
-        sh:order "1"^^xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 1 ;
     ] ;
     sh:property [
         sh:path wotsec:alg ;
         sh:datatype xsd:string ;
-        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in (
+          "MD5" 
+          "ES256"
+          "ES512-256"
+        );
         sh:defaultValue "ES256"^^xsd:string ;
-        sh:order "2"^^xsd:integer ;
+        sh:order 2 ;
     ] ;
     sh:property [
         sh:path wotsec:format ;
         sh:datatype xsd:string ;
-        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in (
+          "jwt" 
+          "cwt" 
+          "jwe"
+          "jws"
+        );
         sh:defaultValue "jwt"^^xsd:string ;
-        sh:order "3"^^xsd:integer ;
+        sh:order 3 ;
     ] ;
     sh:property [
         sh:path wotsec:in ;
         sh:datatype xsd:string ;
-        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in (
+          "header"
+          "query"
+          "body"
+          "cookie"
+        );
         sh:defaultValue "header"^^xsd:string ;
-        sh:order "4"^^xsd:integer ;
+        sh:order 4 ;
     ] ;
     sh:property [
         sh:path wotsec:name ;
         sh:datatype xsd:string ;
-        sh:order "5"^^xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 5 ;
     ] .
 
 :CertSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:CertSecurityScheme ;
-    sh:order "7"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 7 ;
     sh:property [
         sh:path wotsec:identity ;
+        sh:maxCount 1 ;
         sh:datatype xsd:string ;
     ] .
 
 :PSKSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:PSKSecurityScheme ;
-    sh:order "8"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 8 ;
     sh:property [
         sh:path wotsec:identity ;
+        sh:maxCount 1 ;
         sh:datatype xsd:string ;
     ] .
 
 :PublicSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:PublicSecurityScheme ;
-    sh:order "9"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 9 ;
     sh:property [
         sh:path wotsec:identity ;
+        sh:maxCount 1 ;
         sh:datatype xsd:string ;
     ] .
 
 :PoPSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:PoPSecurityScheme ;
-    sh:order "10"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 10 ;
     sh:property [
         sh:path wotsec:authorization ;
-        sh:datatype xsd:anyURI ;
-        sh:order "1"^^xsd:integer ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:order 1 ;
     ] ;
     sh:property [
         sh:path wotsec:alg ;
         sh:datatype xsd:string ;
-        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in (
+          "MD5" 
+          "ES256"
+          "ES512-256"
+        );
         sh:defaultValue "ES256"^^xsd:string ;
-        sh:order "2"^^xsd:integer ;
+        sh:order 2 ;
     ] ;
     sh:property [
         sh:path wotsec:format ;
         sh:datatype xsd:string ;
-        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in (
+          "jwt" 
+          "cwt" 
+          "jwe"
+          "jws"
+        );
         sh:defaultValue "jwt"^^xsd:string ;
-        sh:order "3"^^xsd:integer ;
+        sh:order 3 ;
     ] ;
     sh:property [
         sh:path wotsec:in ;
         sh:datatype xsd:string ;
-        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in (
+          "header"
+          "query"
+          "body"
+          "cookie"
+        );
         sh:defaultValue "header"^^xsd:string ;
-        sh:order "4"^^xsd:integer ;
+        sh:order 4 ;
     ] ;
     sh:property [
         sh:path wotsec:name ;
         sh:datatype xsd:string ;
-        sh:order "5"^^xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 5 ;
     ] .
 
 :OAuth2SecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:OAuth2SecurityScheme ;
-    sh:order "11"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 11 ;
     sh:property [
         sh:path wotsec:authorization ;
-        sh:datatype xsd:anyURI ;
-        sh:order "1"^^xsd:integer ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:order 1 ;
     ] ;
     sh:property [
         sh:path wotsec:token ;
-        sh:datatype xsd:anyURI ;
-        sh:order "2"^^xsd:integer ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
     ] ;
     sh:property [
         sh:path wotsec:refresh ;
-        sh:datatype xsd:anyURI ;
-        sh:order "3"^^xsd:integer ;
+        sh:nodeKind sh:IRI ;
+        sh:maxCount 1 ;
+        sh:order 3 ;
     ] ;
     sh:property [
         sh:path wotsec:scopes ;
         sh:datatype xsd:string ;
-        sh:order "4"^^xsd:integer ;
+        sh:order 4 ;
     ] ;
     sh:property [
         sh:path wotsec:flow ;
         sh:datatype xsd:string ;
+        sh:maxCount 1 ;
+        sh:in (
+#            "implicit" 
+#            "password" 
+#            "client" 
+            "code"
+        );
         sh:minCount 1 ;
-        sh:defaultValue "implicit"^^xsd:string ;
-        sh:order "5"^^xsd:integer ;
+        sh:order 5 ;
     ] .
     
 :DataSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:DataSchema ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "1"^^xsd:integer ;
-    sh:description
-"""
-<p>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-dataschema-mandatory\">The mandatory
-     context definition of the string <code>"http://www.w3.org/ns/json-schema"</code> MUST be 
-     the first item in the <code>@context</code> array.</span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-dataschema-optional\">The mandatory
-     context definition MAY be followed by one or more context definitions as strings or 
-     objects.</span>
-</p>
-<p>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-dataschema-dereferenceable-url\">
-     As suggested in JSON-LD [[!json-ld]] specification, if a context definition is 
-     a string, it SHOULD be a dereferenceable URL.
-     </span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-dataschema-map-of-namespaces\">
-     Likewise, if a context definition is an object, it SHOULD be a map of namespaces, 
-     in which keys are namespace prefixes. 
-     </span>
-     <span class=\"rfc2119-assertion\" id=\"td-context-ns-dataschema-prefix\">Each optional
-     namespace specified in the <code>@context</code> array of a DataSchema MUST be bound 
-     to an unique prefix.</span>
-</p>
-"""^^rdf:HTML ;
+    sh:closed false ;
+    sh:order 1 ;
     sh:property [
-        sh:path td:title ;
-        sh:datatype xsd:string ;
-        sh:order "1"^^xsd:integer ;
+        sh:path dcterms:title ;
+        sh:order 1 ;
     ] ;
     sh:property [
-        sh:path td:titles ;
-        sh:class td:MultiLanguage ;
-        sh:order "2"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:description ;
-        sh:datatype xsd:string ;
-        sh:order "3"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path td:descriptions ;
-        sh:class td:MultiLanguage ;
-        sh:order "4"^^xsd:integer ;
-    ] ;
-    sh:property [
-        sh:path jsonschema:type ;
-        sh:datatype xsd:string ;
-        sh:in (
-            "object"
-            "array"
-            "string"
-            "number"
-            "integer"
-            "boolean"
-            "null"
-        );
-        sh:order "5"^^xsd:integer ;
+        sh:path dcterms:description ;
+        sh:order 3 ;
     ] ;
     sh:property [
         sh:path jsonschema:const ;
-        sh:order "6"^^xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 6 ;
     ] ;
     sh:property [
-        sh:path td:unit ;
-        sh:class xsd:string;
-        sh:order "7"^^xsd:integer ;
+        sh:path schema:unitCode ;
+        sh:order 6 ;
     ] ;
     sh:property [
         sh:path jsonschema:oneOf ;
-        sh:class jsonschema:DataSchema;
-        sh:order "8"^^xsd:integer ;
+        sh:node :DataSchemaShape ;
+        sh:order 8 ;
     ] ;
     sh:property [
         sh:path jsonschema:enum ;
-        sh:order "9"^^xsd:integer ;
+        sh:order 9 ;
     ] ;
     sh:property [
         sh:path jsonschema:readOnly ;
         sh:datatype xsd:boolean ;
-        sh:minCount 1 ;
-        sh:defaultValue "false"^^xsd:boolean ;
-        sh:order "10"^^xsd:integer ;
+        sh:defaultValue false ;
+        sh:maxCount 1 ;
+        sh:order 10 ;
     ] ;
     sh:property [
         sh:path jsonschema:writeOnly ;
         sh:datatype xsd:boolean ;
-        sh:minCount 1 ;
-        sh:defaultValue "false"^^xsd:boolean ;
-        sh:order "11"^^xsd:integer ;
+        sh:defaultValue false ;
+        sh:maxCount 1 ;
+        sh:order 11 ;
     ] ;
-        sh:property [
+    sh:property [
         sh:path jsonschema:format ;
         sh:datatype xsd:string ;
-        sh:defaultValue "false"^^xsd:boolean ;
-        sh:order "12"^^xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 12 ;
     ] .
 
 :ArraySchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:ArraySchema ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "2"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 2 ;
     sh:property [
         sh:path jsonschema:items ;
-        sh:class jsonschema:DataSchema ;
-        sh:order "1"^^xsd:integer ;
+        sh:node :DataSchemaShape ;
+        sh:order 1 ;
     ] ;
     sh:property [
         sh:path jsonschema:minItems ;
         sh:datatype xsd:unsignedInt ;
-        sh:order "2"^^xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
     ] ;
     sh:property [
         sh:path jsonschema:maxItems ;
         sh:datatype xsd:unsignedInt ;
-        sh:order "3"^^xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 3 ;
     ] .
     
 :BooleanSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:BooleanSchema ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "3"^^xsd:integer .
+    sh:closed false ;
+    sh:order 3 .
     
 :NumberSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:NumberSchema ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "4"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 4 ;
     sh:property [
         sh:path jsonschema:minimum ;
-        sh:datatype xsd:double ;
-        sh:order "1"^^xsd:integer ;
+        sh:or(
+            [ sh:datatype xsd:double ]
+            [ sh:datatype xsd:integer ] # due to JSON-LD type coercion
+        ) ;
+        sh:maxCount 1 ;
+        sh:order 1 ;
     ] ;
     sh:property [
         sh:path jsonschema:maximum ;
-        sh:datatype xsd:double ;
-        sh:order "2"^^xsd:integer ;
+        sh:or(
+            [ sh:datatype xsd:double ]
+            [ sh:datatype xsd:integer ] # due to JSON-LD type coercion
+        ) ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
     ] .
     
 :IntegerSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:IntegerSchema ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "5"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 5 ;
     sh:property [
         sh:path jsonschema:minimum ;
         sh:datatype xsd:integer ;
-        sh:order "1"^^xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 1 ;
     ] ;
     sh:property [
         sh:path jsonschema:maximum ;
         sh:datatype xsd:integer ;
-        sh:order "2"^^xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
     ] .
     
 :ObjectSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:ObjectSchema ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "6"^^xsd:integer ;
+    sh:closed false ;
+    sh:order 6 ;
     sh:property [
         sh:path jsonschema:properties ;
-        sh:class jsonschema:DataSchema ;
-        sh:order "1"^^xsd:integer ;
+        sh:node :DataSchemaShape ;
+        sh:order 1 ;
     ] ;
     sh:property [
         sh:path jsonschema:required ;
         sh:datatype xsd:string ;
-        sh:order "2"^^xsd:integer ;
+        sh:order 2 ;
     ] .
 
 :StringSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:StringSchema ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "7"^^xsd:integer .
+    sh:closed false ;
+    sh:order 7 .
 
 :NullSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:NullSchema ;
-    sh:closed "false"^^xsd:boolean ;
-    sh:order "8"^^xsd:integer .
+    sh:closed false ;
+    sh:order 8 .

@@ -51,17 +51,19 @@ function load(ep, ttl) {
 }
 
 const ctxFiles = [
-    'context/td-context.jsonld',
-    'context/json-schema-context.jsonld',
-    'context/wot-security-context.jsonld',
-    'context/web-linking-context.jsonld'
+    'context/td-context-1.1.jsonld'
+    // 'context/td-context.jsonld',
+    // 'context/json-schema-context.jsonld',
+    // 'context/wot-security-context.jsonld',
+    // 'context/hypermedia-context.jsonld'
 ];
 
 const ttlFiles = [
     'ontology/td.ttl',
 	'ontology/json-schema.ttl',
 	'ontology/wot-security.ttl',
-    'ontology/web-linking.ttl',
+    'ontology/hypermedia.ttl',
+    // 'ontology/alignments.ttl',
 	'validation/td-validation.ttl'
 ];
 
@@ -71,17 +73,48 @@ const txtFiles = [
     'ontology/templates.txt'
 ];
 
-const src = fs.readFileSync('index.template.html', 'UTF-8');
-const jsonSchemaValidation = fs.readFileSync('validation/td-json-schema-validation.json', 'UTF-8');
-const atriskCSS = fs.readFileSync('testing/atrisk.css', 'UTF-8');
-
-const updateEndpoint = process.env.WOT_SPARUL_ENDPOINT;
-const queryEndpoint = process.env.WOT_SPARQL_ENDPOINT;
+const updateEndpoint = 'http://localhost:3030/temp'; // process.env.WOT_SPARUL_ENDPOINT;
+const queryEndpoint = 'http://localhost:3030/temp'; // process.env.WOT_SPARQL_ENDPOINT;
 if (!updateEndpoint) throw new Error('WOT_SPARUL_ENDPOINT not defined (SPARQL update endpoint)');
 if (!queryEndpoint) throw new Error('WOT_SPARQL_ENDPOINT not defined (SPARQL query endpoint)');
 
+//////////////////////////////////////////////////////// 0. render main document
+const src = fs.readFileSync('index.template.html', 'UTF-8');
+const atriskCSS = fs.readFileSync('testing/atrisk.css', 'UTF-8');
+const jsonSchemaValidation = fs.readFileSync('validation/td-json-schema-validation.json', 'UTF-8');
+
+let rendered = src.replace('{atriskCSS}', atriskCSS);
+rendered = rendered.replace('{td.json-schema.validation}', jsonSchemaValidation);
+
+fs.writeFileSync('index.html', rendered, 'UTF-8');
 ///////////////////////////////////////////////////////////// 1. clear endpoint
 load(updateEndpoint, null)
+///////////////////////////////////// 2. generate 1.1 context file with nesting
+.then(() => {
+    let td = JSON.parse(fs.readFileSync('context/td-context.jsonld'));
+    let jsonschema = JSON.parse(fs.readFileSync('context/json-schema-context.jsonld'));
+    let wotsec = JSON.parse(fs.readFileSync('context/wot-security-context.jsonld'));
+    let hctl = JSON.parse(fs.readFileSync('context/hypermedia-context.jsonld'));
+
+    let ctx = td['@context'];
+    ctx['@version'] = 1.1;
+
+    ctx.properties['@context'] = jsonschema['@context'];
+    ctx.input['@context'] = jsonschema['@context'];
+    ctx.output['@context'] = jsonschema['@context'];
+    ctx.data['@context'] = jsonschema['@context'];
+    ctx.subscription['@context'] = jsonschema['@context'];
+    ctx.cancellation['@context'] = jsonschema['@context'];
+
+    ctx.security['@context'] = wotsec['@context'];
+
+    ctx.forms['@context'] = hctl['@context'];
+    ctx.links['@context'] = hctl['@context'];
+
+    fs.writeFileSync('context/td-context-1.1.jsonld', JSON.stringify(td, null, 2));
+
+    return Promise.resolve();
+}) 
 //////////////////////////// 2. generate RDF for context and load all RDF files
 .then(() => {
     let promises = ttlFiles.map((f) => {
@@ -107,77 +140,21 @@ load(updateEndpoint, null)
 
     return Promise.resolve();
 })
-//////////////////////////// 4. for each namespace, call HTML and DOT templates
+///////////////////////////////////// 4. for each namespace, call HTML templates
 .then(() => {
     sttl.connect(queryEndpoint);
 
-    let rendered = src;
-
-    let td = { type: 'uri', value: 'http://www.w3.org/ns/td#' };
-    let jsonschema = { type: 'uri', value: 'http://www.w3.org/ns/json-schema#' };
-    let wotsec = { type: 'uri', value: 'http://www.w3.org/ns/wot-security#' };
-    let lnk = { type: 'uri', value: 'http://www.w3.org/ns/web-linking#' };
-
-    // HTML rendering
-
-    let tpl1 = 'http://w3c.github.io/wot-thing-description/#classes';
-    sttl.callTemplate(tpl1, td)
-    .then(html => {
-        rendered = rendered.replace('{td}', html);
-        return sttl.callTemplate(tpl1, jsonschema);
-    })
-    .then((html) => {
-        rendered = rendered.replace('{json-schema}', html);
-        return sttl.callTemplate(tpl1, wotsec);
-    })
-    .then(html => {
-        rendered = rendered.replace('{wot-security}', html);
-        return sttl.callTemplate(tpl1, lnk);
-    })
-    .then(html => {
-        rendered = rendered.replace('{web-linking}', html);
-        return Promise.resolve();
-    })
-    .then(() => {
-        rendered = rendered.replace('{td.json-schema.validation}', jsonSchemaValidation);
-        rendered = rendered.replace('{atriskCSS}', atriskCSS);
-
-        // beautify html
-        /*var html = rendered.querySelector("body").outerHTML;
-        var result = tidy_html5(html, options);
-        tidyHTML.tidy_html5(html, options);
-        */
-        fs.writeFileSync('index.html', rendered, 'UTF-8');
-    })
-    .catch(e => console.error('HTML rendering error: ' + e.message));
-
-    // DOT rendering
-
-    tpl2 = 'http://w3c.github.io/wot-thing-description/visualization#main';
-    sttl.callTemplate(tpl2, td)
-    .then(dot => {
-        fs.writeFileSync('visualization/td.dot', dot);
-        return sttl.callTemplate(tpl2, jsonschema);
-    })
-    .then(dot => {
-        fs.writeFileSync('visualization/json-schema.dot', dot);
-        return sttl.callTemplate(tpl2, wotsec);
-    })
-    .then(dot => {
-        fs.writeFileSync('visualization/wot-security.dot', dot);
-        return sttl.callTemplate(tpl2, lnk);
-    })
-    .then(dot => {
-        fs.writeFileSync('visualization/web-linking.dot', dot);
-    })
-    .catch(e => console.error('DOT rendering error: ' + e.message));
+    let td = { type: 'uri', value: 'https://www.w3.org/2019/wot/td#' };
+    let jsonschema = { type: 'uri', value: 'https://www.w3.org/2019/wot/json-schema#' };
+    let wotsec = { type: 'uri', value: 'https://www.w3.org/2019/wot/security#' };
+    let hctl = { type: 'uri', value: 'https://www.w3.org/2019/wot/hypermedia#' };
 
     // HTML rendering (ontology documents)
  
     let tdPrefix = { type: 'literal', value: 'td' };
     let jsonschemaPrefix = { type: 'literal', value: 'jsonschema' };
     let wotsecPrefix = { type: 'literal', value: 'wotsec' };
-    let lnkPrefix = { type: 'literal', value: 'lnk' };
+    let hctlPrefix = { type: 'literal', value: 'hctl' };
 
     let process = (ns, html) => {
         let tpl = 'ontology/' + ns + '.template.html';
@@ -198,10 +175,10 @@ load(updateEndpoint, null)
     })
     .then(html => {
         process('wotsec', html);
-        return sttl.callTemplate(tpl3, lnk, lnkPrefix);
+        return sttl.callTemplate(tpl3, hctl, hctlPrefix);
     })
     .then(html => {
-        process('lnk', html);
+        process('hctl', html);
     })
     .catch(e => console.error('HTML (ontology) rendering error: ' + e.message));
 

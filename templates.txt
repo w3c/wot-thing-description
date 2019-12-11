@@ -4,19 +4,16 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :classes(?ns) {
     "<section>"
-        if(?class = <http://www.w3.org/ns/td#PropertyAffordance> ||
-           ?class = <http://www.w3.org/ns/td#ActionAffordance> ||
-           ?class = <http://www.w3.org/ns/td#EventAffordance>,
-            "<h4>",
-            "<h3>"
+
+        format { "<h3><code>%s</code></h3>" st:call-template(:label, ?class) }
+        
+        if(?class = <https://www.w3.org/2019/wot/security#CertSecurityScheme> ||
+           ?class = <https://www.w3.org/2019/wot/security#PoPSecurityScheme> ||
+           ?class = <https://www.w3.org/2019/wot/security#PublicSecurityScheme>,
+           "<p><span class=\"at-risk\">This section is at risk.</span></p>",
+           ""
         )
-        format { "<code>%s</code>" st:call-template(:label, ?class) }
-        if(?class = <http://www.w3.org/ns/td#PropertyAffordance> ||
-           ?class = <http://www.w3.org/ns/td#ActionAffordance> ||
-           ?class = <http://www.w3.org/ns/td#EventAffordance>,
-            "</h4>",
-            "</h3>"
-        )
+
         format { "<p>%s</p>" st:call-template(:desc, ?class) }
 
         format { "%s" st:call-template(:fields, ?class) }
@@ -25,13 +22,7 @@ template :classes(?ns) {
 
         format { "%s" st:call-template(:notes, ?class) }
 
-    if(?class = <http://www.w3.org/ns/td#InteractionAffordance>,
-        "",
-        if(?class = <http://www.w3.org/ns/td#EventAffordance>,
-            "</section></section>",
-            "</section>"
-        )
-    )
+    "</section>"
 } where {
     ?shape a sh:NodeShape ;
            sh:targetClass ?class .
@@ -48,78 +39,60 @@ prefix jsonld: <http://www.w3.org/ns/json-ld#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :fields(?class) {
-    if(?class = <http://www.w3.org/ns/td#Thing>, 
-        "<p>When a concrete Thing is defined in a Thing Description, it is called a <dfn>thing resource</dfn>.</p>",
-        "")
-    if(?class = <http://www.w3.org/ns/td#InteractionAffordance>, 
-        "<p>When a concrete Property-, Action- or Event-based affordance is defined in a Thing Description, it is called an <dfn>interaction resource</dfn>.</p>",
-        "")
     "<table class=\"def\">"
         "<thead>"
             "<tr>"
                 "<th><a>Vocabulary term</a></th>"
                 "<th>Description</th>"
-                "<th>Mandatory</th>"
+                "<th>Assignment</th>"
                 "<th>Type</th>"
             "</tr>"
         "</thead>"
         format {
             "<tbody>%s%s%s%s%s</tbody>"
             # custom property for Thing (id = @id = IRI)
-            if(?class = <http://www.w3.org/ns/td#Thing>,
+            if(?class = <https://www.w3.org/2019/wot/td#Thing>,
                 concat("<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-at-context--Thing\">",
                        "<td><code>@context</code></td>",
-                       "<td>Known from JSON-LD [[!json-ld]], <code>@context</code> is used to define short-hand names called terms that are used throughout a TD document.</td>",
-                       "<td>yes</td>",
-                       "<td>array</td>",
+                       "<td>JSON-LD keyword to define short-hand names called terms that are used throughout a TD document.</td>",
+                       "<td>mandatory</td>",
+                       "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI\"><code>anyURI</code></a> or <a>Array</a></td>",
                        "</tr>",
                        "<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-at-type--Thing\">",
                        "<td><code>@type</code></td>",
-                       "<td>Known from JSON-LD [[!json-ld]], <code>@type</code> is used to state that a thing resource is an instance of a class.<br/><br/> Each string in the value array represents a class.</td>",
-                       "<td>no</td>",
-                       "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
+                       "<td>JSON-LD keyword to label the object with semantic tags (or types).</td>",
+                       "<td>optional</td>",
+                       "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a> or <a>Array</a> of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>",
                        "<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-id--Thing\">",
                        "<td><code>id</code></td>",
-                       "<td>unique identifier of the Thing (URI, e.g. custom URN).</td>",
-                       "<td>yes</td>",
+                       "<td>Identifier of the Thing in form of a URI [[RFC3986]] (e.g., stable URI, temporary and mutable URI, URI with local IP address, URN, etc.).</td>",
+                       "<td>optional</td>",
                        "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI\"><code>anyURI</code></a></td>",
                        "</tr>"
                 ), "")
-            if(?class = <http://www.w3.org/ns/td#InteractionAffordance>,
+            if(?class = <https://www.w3.org/2019/wot/td#InteractionAffordance>,
                 concat("<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-at-type--InteractionAffordance\">",
                        "<td><code>@type</code></td>",
-                       "<td>Known from JSON-LD [[!json-ld]], <code>@type</code> is used to state that an <a>interaction resource</a> is an instance of a class.<br/><br/> Each string in the value array represents a class.</td>",
-                       "<td>no</td>",
-                       "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
+                       "<td>JSON-LD keyword to label the object with semantic tags (or types).</td>",
+                       "<td>optional</td>",
+                       "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a> or <a>Array</a> of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>"
                 ), "")
-            if(?class = <http://www.w3.org/ns/json-schema#DataSchema>,
-                concat("<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-at-context--DataSchema\">",
-                       "<td><code>@context</code></td>",
-                       "<td>Known from JSON-LD [[!json-ld]], <code>@context</code> is used to define short-hand names called terms that are used in a DataSchema.</td>",
-                       "<td>yes</td>",
-                       "<td>array</td>",
-                       "</tr>",
-                       "<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-at-type--DataSchema\">",
+            if(?class = <https://www.w3.org/2019/wot/json-schema#DataSchema>,
+                concat("<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-at-type--DataSchema\">",
                        "<td><code>@type</code></td>",
-                       "<td>Known from JSON-LD [[!json-ld]], <code>@type</code> is used to state that values described by the DataSchema are instances of a class. <br/><br/> Each string in the value array represents a class.</td>",
-                       "<td>no</td>",
-                       "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
+                       "<td>JSON-LD keyword to label the object with semantic tags (or types)</td>",
+                       "<td>optional</td>",
+                       "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a> or <a>Array</a> of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>"
                 ), "")
-            if(?class = <http://www.w3.org/ns/wot-security#SecurityScheme>,
-                concat("<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-at-context--SecurityScheme\">",
-                       "<td><code>@context</code></td>",
-                       "<td>Known from JSON-LD [[!json-ld]], <code>@context</code> is used to define short-hand names called terms that are used in a SecurityScheme.</td>",
-                       "<td>yes</td>",
-                       "<td>array</td>",
-                       "</tr>",
-                       "<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-at-type--SecurityScheme\">",
+            if(?class = <https://www.w3.org/2019/wot/security#SecurityScheme>,
+                concat("<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-at-type--SecurityScheme\">",
                        "<td><code>@type</code></td>",
-                       "<td>Known from JSON-LD [[!json-ld]], <code>@type</code> is used to state that a security mechanism configured by the SecurityScheme is an instance of a class.<br/><br/> Each string in the value array represents a class.</td>",
-                       "<td>no</td>",
-                       "<td>array of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
+                       "<td>JSON-LD keyword to label the object with semantic tags (or types).</td>",
+                       "<td>optional</td>",
+                       "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a> or <a>Array</a> of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>"
                 ), "")
             st:call-template(:field, ?class)
@@ -149,26 +122,46 @@ template :field(?class) {
         "</td>"
         "<td>"
             format { "%s" st:call-template(:desc, ?prop) }
-            if (?prop = <http://www.w3.org/ns/td#forms>,
-                if(?class = <http://www.w3.org/ns/td#Thing>,
-                  " In this version of TD, all operations that can be described at the Thing level are concerning how to interact with the Thing's <a href=\"#property\">Property</a> <a>interaction resources</a> collectively at once.", ""
+            if (?prop = <https://www.w3.org/2019/wot/td#hasForm>,
+                if(?class = <https://www.w3.org/2019/wot/td#Thing>,
+                  " In this version of TD, all operations that can be described at the Thing level are concerning how to interact with the Thing's <a href=\"#propertyaffordance\">Properties</a> collectively at once.", ""
                 ) , ""
+            )
+            if (?prop = <https://www.w3.org/2019/wot/td#baseUri>,
+                  "<br/><br/><code>base</code> does not affect the URIs used in <code>@context</code> and the IRIs used within Linked Data [[?LINKED-DATA]] graphs that are relevant when semantic processing is applied to TD instances.", ""
+            )
+            if (?prop = <https://www.w3.org/2019/wot/json-schema#format>,
+                  " (Also see below.)", ""
             )
         "</td>"
         "<td>"
-            format { "%s" if(?mandatory, "yes", "no") }
+            format {
+                "%s"
+                if(?hasDef || ?prop = <https://www.w3.org/2019/wot/hypermedia#forOperationType>,
+                   "<a href=\"#sec-default-values\">with default</a>",
+                   if(?mandatory, "mandatory", "optional"))
+            }
         "</td>"
         "<td>"
             format {
-                "%s%s%s"
-                if(?prop = <http://www.w3.org/ns/td#op>,
-                    "array of ", # string or array of strings
-                    if(?array,
-                        "array of ",
-                        if(?map, "map of ", "")))
-                if(?hasType, st:call-template(:type, ?class, ?prop), "any type")
-                if(?prop = <http://www.w3.org/ns/td#op>,
-                    "  Each entry representing an interaction verb", "")
+                # TODO use path expressions like sh:oneOrMorePath instead?
+                "%s%s"
+                if(?prop = <https://www.w3.org/2019/wot/hypermedia#forOperationType> ||
+                   ?prop = <https://www.w3.org/2019/wot/json-schema#items> ||
+                   ?prop = <https://www.w3.org/2019/wot/td#hasSecurityConfiguration> ||
+                   ?prop = <https://www.w3.org/2019/wot/security#scopes>,
+                   concat(st:call-template(:type, ?class, ?prop),
+                          " or <a>Array</a> of ",
+                          st:call-template(:type, ?class, ?prop)),
+                   if(?array,
+                      "<a>Array</a> of ",
+                      if(?map, "<a>Map</a> of ", "")))
+                if(?prop = <https://www.w3.org/2019/wot/hypermedia#forOperationType> ||
+                   ?prop = <https://www.w3.org/2019/wot/json-schema#items> ||
+                   ?prop = <https://www.w3.org/2019/wot/td#hasSecurityConfiguration> ||
+                   ?prop = <https://www.w3.org/2019/wot/security#scopes>,
+                   "",
+                   if(?hasType, st:call-template(:type, ?class, ?prop), "any type"))
             }
             format {
                 "%s%s%s"
@@ -238,7 +231,15 @@ prefix : <http://w3c.github.io/wot-thing-description/#>
 template :enum(?class ?prop) {
     format {
         "%s<code>%s</code>%s"
-        if(?first, "one of ", if(?last, "or ", ""))
+        if(?first,
+           if (?prop = <https://www.w3.org/2019/wot/hypermedia#forSubProtocol> ||
+               ?prop = <https://www.w3.org/2019/wot/security#alg> ||
+               ?prop = <https://www.w3.org/2019/wot/security#format> ||
+               ?prop = <https://www.w3.org/2019/wot/security#flow> ||
+               ?prop = <https://www.w3.org/2019/wot/security#scheme>,
+               "e.g., ",
+               "one of "),
+           if(?last, "or ", ""))
         ?val
         if(?last, "", ", ")
     }; separator = ""
@@ -278,6 +279,7 @@ template :subclasses(?class) {
 
 prefix st: <http://ns.inria.fr/sparql-template/>
 prefix sh: <http://www.w3.org/ns/shacl#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :subclass(?class) {
@@ -294,8 +296,13 @@ template :subclass(?class) {
         sh:targetClass ?subclass .
     ?classShape a sh:NodeShape ;
         sh:targetClass ?class .
-    filter (isIRI(?subclass) && isIRI(?class))
-}
+    filter (isIRI(?subclass) &&
+            isIRI(?class) &&
+            # same namespace restriction
+            strbefore(str(?class), "#") = strbefore(str(?subclass), "#"))
+    optional { ?subclassShape sh:order ?predefined }
+    bind (if(bound(?predefined), ?predefined, "1000"^^xsd:integer) as ?rank)
+} order by ?rank
 
 ---
 
@@ -348,6 +355,7 @@ template :href-fragment(?term) {
 ---
 
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix jsonld: <http://www.w3.org/ns/json-ld#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
 template :label(?term) {
@@ -357,6 +365,7 @@ template :label(?term) {
         ?m a jsonld:Mapping ;
             jsonld:iri ?term ;
             jsonld:term ?name .
+        filter not exists { ?term a owl:Class }
     }
     bind (if(bound(?name), ?name, strafter(str(?term), "#")) as ?label)
 }
@@ -369,7 +378,7 @@ template :desc(?term) {
     format {
         "%s%s"
         if(strends(?desc, "."), ?desc, concat(?desc, "."))
-        if(?term = <http://www.w3.org/ns/td#MultiLanguage>, 
+        if(?term = <https://www.w3.org/2019/wot/td#MultiLanguage>, 
             " See <a href=\"#titles-descriptions-serialization-json\"></a> for example usages of this container in a Thing Description instance.",
             "")
 

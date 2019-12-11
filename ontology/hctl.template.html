@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>Hypermedia Controls Ontology</title>
+    <script src='https://www.w3.org/Tools/respec/respec-w3c-common' class='remove'></script>
+    <script class='remove'>
+        var respecConfig = {
+            specStatus: "ED",
+            editors: [{
+                name: "Victor Charpenay"
+            }, {
+                name: "Matthias Kovatsch"
+            }],
+            edDraftURI: "http://www.w3.org/2019/wot/hypermedia",
+            shortName: "wot-td-ontology",
+            localBiblio: {
+                "hydra": {
+                    href: "https://www.hydra-cg.com/spec/latest/core/",
+                    title: "Hydra Core Vocabulary",
+                    publisher: "Hydra W3C Community Group",
+                    authors: [
+                        "Markus Lanthaler"
+                    ]
+                },
+                "rest" : {
+                    title : "REST: Architectural Styles and the Design of Network-based Software Architectures",
+                    author : "Roy Thomas Fielding",
+                    status : "PhD thesis",
+                    publisher : "University of California, Irvine",
+                    date : "2000"
+                },
+                "coral" : {
+                    href : "https://tools.ietf.org/html/draft-hartke-t2trg-coral",
+                    title : "The Constrained RESTful Application Language (CoRAL)",
+                    authors : [ "Klaus Hartke" ],
+                    publisher : "IETF",
+                    status : "Internet-Draft",
+                    date : " March 2019"
+                }
+            }
+        };
+    </script>
+</head>
+
+<body>
+    <section id='abstract'>
+        <p>
+            This document introduces an ontology for links and forms, the main hypermedia
+            controls in use on the Web. This ontology offers, among others, a means to reify
+            RDF statements interpreted as links between Web resources. It also provides
+            a versatile exchange format for links and forms in RESTful Web applications.
+        </p>
+
+        <p>
+            Hypermedia controls are of importance in the fields of the Web of Things and
+            the Embedded Web, in particular in the W3C Thing Description model and the IETF
+            Constrained RESTful Application Language.
+        </p>
+    </section>
+    <section id='sotd'>
+        <p>
+            Validation of the document by the Working Group is expected by the end of June 2019.
+        </p>
+    </section>
+    <section>
+        <h2>Introduction</h2>
+
+        <p>
+            The concept of Representational State Transfer (REST) [[rest]] is at the core of most modern
+            Web applications. The state of a Web resources, exposed via a collection of Web
+            resources, can be browsed by clients by following <em>links</em> and acted upon by submitting
+            <em>forms</em> to servers.
+        </p>
+
+        <p>
+            Links and forms have always be present in Web technologies, including HTML [[html]]. Web
+            linking [[rfc8288]] is a fundamental principle of the Web architecture that can be leveraged to
+            drive applications, e.g. when a server returns a link to a newly created resource as the
+            result of a client's request. Conversely, forms, are request templates that servers can expose
+            to clients for them to fill in with client-specific information and send back to servers.
+            Forms are similar in spirit to operation desriptions as defined by the Open API Specification
+            [[openapis]] or by the Hydra RDF vocabulary [[hydra]].
+        </p>
+
+        <p>
+            Links and forms are generically referred to as <em>hypermedia controls</em>. They are
+            of increasing importance in the fields of the Web of Things and the Embedded Web,
+            which respectively led to the standardization of the Thing Description (TD) model
+            [[wot-thing-description]] and the Constrained RESTful Application Language (CoRAL)
+            [[coral]]. The present hypermedia controls ontology is an attempt to formalize the
+            concepts these two standards specify.
+        </p>
+    </section>
+
+    {axioms}
+
+    <section>
+        <h2>Alignments</h2>
+
+        <section>
+            <h3>Hydra</h3>
+
+            <p>
+                The following table gives alignment between the hypermedia controls
+                ontology and <a href="http://www.w3.org/ns/hydra/core#">Hydra</a>,
+                an alternative vocabulary for hypermedia-driven Web APIs. Each row
+                represents a close match between two classes. These alignments are
+                not to be understood as formal semantic equivalences but rather as
+                hints to Hydra users.
+            </p>
+
+            <table class="def">
+                <tbody>
+                        <tr>
+                            <td><code>hctl:Link</code></td>
+                            <td><code>hydra:Link</code></td>
+                        </tr>
+                    <tr>
+                        <td><code>hctl:Form</code></td>
+                        <td><code>hydra:Operation</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </section>
+
+    <section>
+        <h2>Usage Examples</h2>
+
+        <section>
+            <h3>JSON Representation of Links &amp; Forms</h3>
+
+            <p>
+                Same terms as specified by JSON hyper-schema and the TD model.
+            </p>
+
+<aside class="example" title="JSON-LD context for hypermedia controls">
+<pre>
+{
+    "@context": {
+        "@vocab": "https://www.w3.org/2019/wot/hypermedia#",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "href": { "@id": "hasTarget", "@type": "@id" },
+        "rel": { "@id": "hasRelationType", "@type": "@vocab" },
+        "anchor": { "@id": "hasAnchor", "@type": "@id" },
+        "type": { "@id": "hintsAtMediaType" },
+        "op": { "@id": "rdf:type"; "@type": "@vocab" },
+        "contentType": { "@id": "forContentType" },
+        "contentCoding": { "@id": "forContentCoding" },
+        "subprotocol": { "@id": "forSubProtocol" },
+        "response": { "@id": "returns" },
+        "readproperty": { "@id": "ReadPropertyOperation" },
+        "writeproperty": { "@id": "WritePropertyOperation" },
+        "observeproperty": { "@id": "ObservePropertyOperation" },
+        "unobserveproperty": { "@id": "UnobservePropertyOperation" },
+        "readmultipleproperties": { "@id": "ReadMultiplePropertiesOperation" },
+        "writemultipleproperties": { "@id": "WriteMultiplePropertiesOperation" },
+        "readallproperties": { "@id": "ReadAllPropertiesOperation" },
+        "writeallproperties": { "@id": "WriteAllPropertiesOperation" },
+        "invokeaction": { "@id": "InvokeActionOperation" },
+        "subscribeevent": { "@id": "SubscribeEventOperation" },
+        "unsubscribeevent": { "@id": "UnsubscribeEventOperation" }
+    }
+}
+</pre>
+</aside>
+
+            <p>
+                OCF example (equivalent to an OpenAPI definition). HTTP in RDF vocabulary.
+            </p>
+
+<aside class="example" title="Links and forms for an OCF temperature sensor">
+<pre>
+{
+    "@context": [
+        ...,
+        {
+            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+            "htv": "http://www.w3.org/2011/http#"
+        }
+    ],
+    "@graph": [
+        {
+            "href": "https://openconnectivityfoundation.github.io/IoTDataModels/TemperatureResURI.swagger.json",
+            "rel": "rdfs:seeAlso"
+        },
+        {
+            "href": "/TemperatureResURI",
+            "op": "readproperty",
+            "htv:methodName": "GET",
+            "response": [
+                { "htv:statusCodeNumber": 200 },
+                { "htv:statusCodeNumber": 403 }
+            ]
+        },
+        {
+            "href": "/TemperatureResURI",
+            "op": "writeproperty",
+            "htv:methodName": "POST",
+            "response": [
+                { "htv:statusCodeNumber": 200 },
+                { "htv:statusCodeNumber": 403 }
+            ]
+        }
+    ]
+}
+</pre>
+</aside>
+        </section>
+
+        <section>
+            <h3>Reified Links</h3>
+
+<aside class="example" title="Reified link">
+<pre class="split-example">
+{
+    "@context": { "about": "http://schema.org/about" },
+    "@id": "https://en.wikipedia.org/wiki/Web_of_Things",
+    "about": "http://www.wikidata.org/entity/Q2814098"
+}
+</pre>
+<pre class="split-example">
+{
+    "@context": [
+        ...,
+        { "about": "http://schema.org/about" }
+    ],
+    "links": [
+        {
+            "anchor": "https://en.wikipedia.org/wiki/Web_of_Things",
+            "rel": "about",
+            "href": "http://www.wikidata.org/entity/Q2814098"
+        }
+    ]
+}
+</pre>
+</aside>
+
+            <p>
+                Either as RDF statements or as reified statements. Primarily for WoT compatibility but also e.g. to include validity  metadata. 
+            </p>
+        </section>
+    </section>
+    
+</body>
+
+</html>
