@@ -4,7 +4,7 @@
 <meta name="generator" content=
 "HTML Tidy for HTML5 for Linux version 5.7.27" />
 <meta charset="utf-8" />
-<meta name="generator" content="ReSpec 24.23.2" />
+<meta name="generator" content="ReSpec 24.37.0" />
 <meta name="viewport" content=
 "width=device-width, initial-scale=1, shrink-to-fit=no" />
 <style>
@@ -68,12 +68,10 @@
 
   .warning-title:before{
     content: "⚠"; /*U+26A0 WARNING SIGN*/
-    font-size: 3em;
+    font-size: 1.3em;
     float: left;
-    height: 100%;
     padding-right: .3em;
-    vertical-align: top;
-    margin-top: -0.5em;
+    margin-top: -0.3em;
   }
 
   li.task-list-item {
@@ -96,6 +94,7 @@
   position: relative;
   bottom: 2px;
   border: none;
+  display: inline-block;
   }
 
   .issue a.respec-label-dark {
@@ -171,24 +170,18 @@
   animation: pop 0.25s ease-in-out 0s 1;
   }
 
-  /* TODO: Remove once https://github.com/w3c/tr-design/pull/176 is merged. */
-  .respec-offending-element a[href] {
-  margin: 0;
+  .respec-offending-element,
+  a[href].respec-offending-element {
+  text-decoration: red wavy underline;
   }
-
-  .respec-offending-element {
-  display: inline-block;
-  position: relative;
-  /* Red squiggly line */
-  background: url(data:image/gif;base64,R0lGODdhBAADAPEAANv///8AAP///wAAACwAAAAABAADAEACBZQjmIAFADs=)
-    bottom repeat-x;
+  @supports not (text-decoration: red wavy underline) {
+  .respec-offending-element:not(pre) {
+    display: inline-block;
   }
-  @supports (text-decoration-style: wavy) {
   .respec-offending-element {
-    background: none;
-    text-decoration-line: underline;
-    text-decoration-style: wavy;
-    text-decoration-color: red;
+    /* Red squiggly line */
+    background: url(data:image/gif;base64,R0lGODdhBAADAPEAANv///8AAP///wAAACwAAAAABAADAEACBZQjmIAFADs=)
+      bottom repeat-x;
   }
   }
 
@@ -250,6 +243,12 @@
 
   .simple th {
   background: #005a9c;
+  color: #fff;
+  padding: 3px 5px;
+  text-align: left;
+  }
+
+  .simple th a {
   color: #fff;
   padding: 3px 5px;
   text-align: left;
@@ -541,37 +540,13 @@
   #td-default-in-pop {
   background-color: yellow;
   }
-  #td-default-in-apikey {
-  background-color: yellow;
-  }
   #td-default-alg-pop {
   background-color: yellow;
   }
   #td-default-format-pop {
   background-color: yellow;
   }
-  #td-default-qop {
-  background-color: yellow;
-  }
-  #td-default-flow {
-  background-color: yellow;
-  }
-  #td-vocab-proxy--SecurityScheme {
-  background-color: yellow;
-  }
-  #td-vocab-qop--DigestSecurityScheme {
-  background-color: yellow;
-  }
-  #td-vocab-scopes--Form {
-  background-color: yellow;
-  }
   #separator {
-  background-color: yellow;
-  }
-  #td-arrays_scopes {
-  background-color: yellow;
-  }
-  #td-security-oauth2-code-flow {
   background-color: yellow;
   }
   #td-security-oauth2-implicit-flow {
@@ -586,64 +561,31 @@
   #td-vocab-alg--PoPSecurityScheme {
   background-color: yellow;
   }
-  #td-vocab-authorization--OAuth2SecurityScheme {
-  background-color: yellow;
-  }
-  #td-vocab-authorization--PoPSecurityScheme {
-  background-color: yellow;
-  }
-  #td-vocab-flow--OAuth2SecurityScheme {
-  background-color: yellow;
-  }
   #td-vocab-format--PoPSecurityScheme {
   background-color: yellow;
   }
   #td-vocab-identity--CertSecurityScheme {
   background-color: yellow;
   }
-  #td-vocab-identity--PSKSecurityScheme {
-  background-color: yellow;
-  }
   #td-vocab-identity--PublicSecurityScheme {
-  background-color: yellow;
-  }
-  #td-vocab-in--APIKeySecurityScheme {
   background-color: yellow;
   }
   #td-vocab-in--PoPSecurityScheme {
   background-color: yellow;
   }
-  #td-vocab-name--APIKeySecurityScheme {
-  background-color: yellow;
-  }
   #td-vocab-name--PoPSecurityScheme {
-  background-color: yellow;
-  }
-  #td-vocab-refresh--OAuth2SecurityScheme {
-  background-color: yellow;
-  }
-  #td-vocab-scheme--SecurityScheme_apikey {
   background-color: yellow;
   }
   #td-vocab-scheme--SecurityScheme_cert {
   background-color: yellow;
   }
-  #td-vocab-scheme--SecurityScheme_oauth2 {
-  background-color: yellow;
-  }
   #td-vocab-scheme--SecurityScheme_pop {
-  background-color: yellow;
-  }
-  #td-vocab-scheme--SecurityScheme_psk {
   background-color: yellow;
   }
   #td-vocab-scheme--SecurityScheme_public {
   background-color: yellow;
   }
-  #td-vocab-scopes--OAuth2SecurityScheme {
-  background-color: yellow;
-  }
-  #td-vocab-token--OAuth2SecurityScheme {
+  #td-writeall-consumer {
   background-color: yellow;
   }
 
@@ -653,6 +595,8 @@
 
 ]]>
 </style>
+<meta name="description" content=
+"This document describes a formal model and a common representation for a Web of Things (WoT) Thing Description. A Thing Description describes the metadata and interfaces of Things, where a Thing is an abstraction of a physical or virtual entity that provides interactions to and participates in the Web of Things. Thing Descriptions provide a set of interactions based on a small vocabulary that makes it possible both to integrate diverse devices and to allow diverse applications to interoperate. Thing Descriptions, by default, are encoded in a JSON format that also allows JSON-LD processing. The latter provides a powerful foundation to represent knowledge about Things in a machine-understandable way. A Thing Description instance can be hosted by the Thing itself or hosted externally when a Thing has resource restrictions (e.g., limited memory space) or when a Web of Things-compatible legacy device is retrofitted with a Thing Description." />
 <link rel="canonical" href=
 "https://www.w3.org/TR/wot-thing-description/" />
 <style>
@@ -830,7 +774,6 @@
   "wgPublicList": "public-wot-wg",
   "edDraftURI": "https://w3c.github.io/wot-thing-description/",
   "github": "https://github.com/w3c/wot-thing-description",
-  "githubAPI": "https://api.github.com/repos/w3c/wot-thing-description",
   "issueBase": "https://www.github.com/w3c/wot-thing-description/issues",
   "editors": [
     {
@@ -865,27 +808,18 @@
     }
   ],
   "localBiblio": {
-    "JSON-SCHEMA-VALIDATION": {
+    "JSON-SCHEMA": {
       "title": "JSON Schema Validation: A Vocabulary for Structural Validation of JSON",
-      "href": "https://tools.ietf.org/html/draft-handrews-json-schema-validation-00",
+      "href": "https://tools.ietf.org/html/draft-handrews-json-schema-validation-01",
       "authors": [
         "Austin Wright",
         "Henry Andrews",
         "Geraint Luff"
       ],
       "status": "Internet-Draft",
+      "date": "19 March 2018",
       "publisher": "IETF",
-      "id": "json-schema-validation"
-    },
-    "JSON-SCHEMA-CORE": {
-      "title": "JSON Schema: A Media Type for Describing JSON Documents",
-      "href": "https://tools.ietf.org/html/draft-handrews-json-schema-00",
-      "authors": [
-        "Austin Wright",
-        "Henry Andrews"
-      ],
-      "status": "Internet-Draft",
-      "publisher": "IETF"
+      "id": "json-schema"
     },
     "OPENAPI": {
       "title": "OpenAPI Specification: Version 3.0.1",
@@ -905,7 +839,7 @@
       "date": "7 December 2017",
       "id": "openapi"
     },
-    "SemVer": {
+    "SEMVER": {
       "title": "Semantic Versioning 2.0.0",
       "href": "https://semver.org/",
       "authors": [
@@ -916,7 +850,7 @@
     },
     "WOT-ARCHITECTURE": {
       "title": "Web of Things (WoT) Architecture",
-      "href": "https://w3c.github.io/wot-architecture/",
+      "href": "https://www.w3.org/TR/wot-architecture/",
       "authors": [
         "Matthias Kovatsch",
         "Ryuichi Matsukura",
@@ -942,20 +876,18 @@
       "id": "wot-security-guidelines"
     },
     "MQTT": {
-      "title": "MQTT Version 5.0",
-      "href": "http://docs.oasis-open.org/mqtt/mqtt/v5.0/cos01/mqtt-v5.0-cos01.html",
+      "title": "MQTT Version 3.1.1",
+      "href": "http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html",
       "authors": [
         "Andrew Banks",
-        "Ed Briggs",
-        "Ken Borgendale",
         "Rahul Gupta"
       ],
       "publisher": "OASIS",
-      "date": "31 October 2018",
-      "status": "Candidate OASIS Standard 01",
+      "date": "10 December 2015",
+      "status": "OASIS Standard Incorporating Approved Errata 01",
       "id": "mqtt"
     },
-    "draft-ietf-ace-oauth-authz": {
+    "ACE": {
       "title": "Authentication and Authorization for Constrained Environments (ACE) using the OAuth 2.0 Framework (ACE-OAuth)",
       "href": "https://tools.ietf.org/html/draft-ietf-ace-oauth-authz-24",
       "authors": [
@@ -968,9 +900,9 @@
       "publisher": "IETF",
       "date": "27 March 2019",
       "status": "Internet-Draft",
-      "id": "draft-ietf-ace-oauth-authz"
+      "id": "ace"
     },
-    "Rijgersberg-et-al-2013": {
+    "RIJGERSBERG": {
       "href": "http://www.semantic-web-journal.net/content/ontology-units-measure-and-related-concepts",
       "authors": [
         "Hajo Rijgersberg",
@@ -980,7 +912,7 @@
       "title": "Ontology of Units of Measure and Related Concepts",
       "publisher": "Semantic Web journal, IOS Press",
       "date": "2013",
-      "id": "rijgersberg-et-al-2013"
+      "id": "rijgersberg"
     },
     "LDML": {
       "title": "Unicode Technical Standard #35: Unicode Locale Data Markup Language (LDML)",
@@ -1037,13 +969,11 @@
       ]
     }
   ],
-  "publishISODate": "2019-06-20T00:00:00.000Z",
-  "generatedSubtitle": "Editor's Draft 20 June 2019"
+  "publishISODate": "2019-12-09T00:00:00.000Z",
+  "generatedSubtitle": "Editor's Draft 09 December 2019"
   }
 ]]>
 </script>
-<meta name="description" content=
-"This document describes a formal model and a common representation for a Web of Things (WoT) Thing Description. A Thing Description describes the metadata and interfaces of Things, where a Thing is an abstraction of a physical or virtual entity that provides interactions to and participates in the Web of Things. Thing Descriptions provide a set of interactions based on a small vocabulary that makes it possible both to integrate diverse devices and to allow diverse applications to interoperate. Thing Descriptions, by default, are encoded in a JSON format that also allows JSON-LD processing. The latter provides a powerful foundation to represent knowledge about Things in a machine-understandable way. A Thing Description instance can be hosted by the Thing itself or hosted externally when a Thing has resource restrictions (e.g., limited memory space) or when a Web of Things-compatible legacy device is retrofitted with a Thing Description." />
 <link rel="stylesheet" href=
 "https://www.w3.org/StyleSheets/TR/2016/W3C-ED" />
 <style type='text/css'>
@@ -1069,7 +999,7 @@
 <body class="h-entry toc-inline">
 <div class="head">
 <a class="logo" href= "https://www.w3.org/">
-<img alt="W3C" src= "https://www.w3.org/StyleSheets/TR/2016/logos/W3C" width="72" height="48" />
+<img alt="W3C" width="72" height="48" src= "https://www.w3.org/StyleSheets/TR/2016/logos/W3C" />
 </a>
 <h1 id="title" class="title p-name">
 Web
@@ -1083,14 +1013,14 @@ Description
 W3C
 <del class="diff-old">Candidate
 Recommendation
-16
-May
+6
+November
 </del>
 <ins class="diff-chg">Editor's
 Draft
-</ins><time class="dt-published" datetime= "2019-06-20"><ins class="diff-chg">
-20
-June
+</ins><time class="dt-published" datetime= "2019-12-09"><ins class="diff-chg">
+09
+December
 </ins>
 2019
 </time>
@@ -1101,7 +1031,7 @@ This
 version:
 </dt>
 <dd>
-<del class="diff-old">https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/
+<del class="diff-old">https://www.w3.org/TR/2019/CR-wot-thing-description-20191106/
 </del>
 <a class="u-url" href= "https://w3c.github.io/wot-thing-description/">
 <ins class="diff-chg">https://w3c.github.io/wot-thing-description/
@@ -1140,7 +1070,7 @@ https://w3c.github.io/wot-thing-description/testing/report.html
 <dt>
 <del class="diff-old">Previous
 version:
-https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/
+https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/
 </del>
 Editors:
 </dt>
@@ -1166,11 +1096,7 @@ Kamiya
 Fujitsu
 Laboratories
 of
-<del class="diff-old">America,
-Inc.
-</del>
-<ins class="diff-chg">America
-</ins>
+America
 </a>
 )
 </dd>
@@ -1199,15 +1125,15 @@ AG
 </dd>
 <dd class="p-author h-card vcard" data-editor-id="75998">
 <span class="p-name fn">
-<ins class="diff-new">Matthias
+Matthias
 Kovatsch
-</ins></span><ins class="diff-new">
+</span>
 (
-</ins><a class= "p-org org h-org h-card" href= "https://www.huawei.com/"><ins class="diff-new">
+<a class= "p-org org h-org h-card" href= "https://www.huawei.com/">
 Huawei
-</ins></a><ins class="diff-new">
+</a>
 )
-</ins></dd>
+</dd>
 <dt>
 Participate:
 </dt>
@@ -1543,25 +1469,32 @@ https://www.w3.org/TR/.
 </em>
 </p>
 <p>
-The
+<del class="diff-old">The
 following
+at-risk
 features
-are
-considered
-at
-risk
-of
-removal
+(marked
+in
+yellow
+throughout
+this
+specification)
+may
+be
+removed
 due
 to
-potentially
 insufficient
 implementation
 experience
-(reports).
-</p>
-<ul>
-<li>
+reported
+and/or
+comments
+received
+during
+the
+CR
+period:
 Whole
 sections
 related
@@ -1571,108 +1504,38 @@ security
 schemes
 described
 in
-<a href="#apikeysecurityscheme" class="sec-ref">
 §&nbsp;
-<bdi class= "secno">
-5.3.3.5
-</bdi>
-<code>
-APIKeySecurityScheme
-</code>
-</a>,
-<a href="#certsecurityscheme" class="sec-ref">
-§&nbsp;
-<bdi class= "secno">
 5.3.3.7
-</bdi>
-<code>
 CertSecurityScheme
-</code>
-</a>,
-<a href= "#psksecurityscheme" class="sec-ref">
+,
 §&nbsp;
-<bdi class= "secno">
-5.3.3.8
-</bdi>
-<code>
-PSKSecurityScheme
-</code>
-</a>,
-<a href= "#publicsecurityscheme" class="sec-ref">
-§&nbsp;
-<bdi class= "secno">
 5.3.3.9
-</bdi>
-<code>
 PublicSecurityScheme
-</code>
-</a>,
-<a href="#popsecurityscheme" class="sec-ref">
-§&nbsp;
-<bdi class= "secno">
-5.3.3.10
-</bdi>
-<code>
-PoPSecurityScheme
-</code>
-</a>
+,
 and
-<a href="#oauth2securityscheme" class="sec-ref">
 §&nbsp;
-<bdi class= "secno">
-5.3.3.11
-</bdi>
-<code>
-OAuth2SecurityScheme
-</code>
-</a>.
-</li>
-<li>
+5.3.3.10
+PoPSecurityScheme
+.
 Vocabulary
 terms
-<code>
-proxy
-</code>
-in
-<a href= "#securityscheme" class="sec-ref">
-§&nbsp;
-<bdi class= "secno">
-5.3.3.1
-</bdi>
-<code>
-SecurityScheme
-</code>
-</a>,
-<code>
-qop
-</code>
-in
-<a href="#digestsecurityscheme" class= "sec-ref">
-§&nbsp;
-<bdi class="secno">
-5.3.3.4
-</bdi>
-<code>
-DigestSecurityScheme
-</code>
-</a>
 and
-<code>
-scopes
-</code>
-term
+assertions
+related
+to
+the
+implicit
+,
+password
+,
+and
+client
+flows
 in
-<a href="#form" class="sec-ref">
 §&nbsp;
-<bdi class= "secno">
-5.3.4.2
-</bdi>
-<code>
-Form
-</code>
-</a>.
-</li>
-<li>
+5.3.3.11
+OAuth2SecurityScheme
+.
 All
 default
 values
@@ -1681,170 +1544,24 @@ to
 the
 above
 in
-<a href= "#sec-default-values" class="sec-ref">
 §&nbsp;
-<bdi class= "secno">
 5.4
-</bdi>
 Default
 Value
 Definitions
-</a>.
-</li>
-</ul>
-<p>
-<span class="at-risk">
-Text
-or
-table
-entries
-highlighted
-with
-a
-yellow
-background
-indicate
-an
-at-risk
-feature
+.
+A
+behavioral
+assertion
 for
-which
-insufficient
-implementation
-experience
-currently
-exists.
-</span>
-In
-each
-such
-case
-the
-annotation
-"This
-feature
-is
-at
-risk"
-is
-attached.
-When
-an
-entire
-section
-is
-at
-risk
-the
-annotation
-"
-<span class="at-risk">
-This
-section
-is
-at
-risk
-</span>
-"
-is
-placed
-at
-the
-start
-of
-the
-section
-and
-highlighted
-with
-a
-yellow
-background.
-When
-an
-entire
-section
-is
-at
-risk
-individual
-items
-within
+writeallproperties
 that
-section
-are
-not
-highlighted
-or
-annotated.
-</p>
-<p>
-The
-Working
-Group
-seeks
-implementation
-feedback,
-having
-set
-the
-requirement
+allows
+rejection
 of
-at
-least
-two
-implementations
-of
-each
-feature
-as
-the
-exit
-criteria
-for
-the
-Candidate
-Recommendation
-phase.
-The
-group
-aims
-to
-obtain
-reports
-from
-one
-TD
-producer
-and
-one
-TD
-consumer
-for
-each
-feature
-if
-applicable.
-For
-details,
-including
-definitions
-of
-implementation,
-TD
-producer,
-and
-TD
-consumer,
-see
-the
-draft
-<a href="https://w3c.github.io/wot-thing-description/testing/report.html">
-implementation
-report
-</a>.
-</p>
-<p>
+incomplete
+writes.
+</del>
 This
 document
 was
@@ -1951,8 +1668,8 @@ Recommendation
 no
 earlier
 than
-13
-June
+4
+December
 2019.
 </del>
 Please
@@ -2041,7 +1758,7 @@ W3C
 </abbr>
 maintains
 a
-<a rel="disclosure" href="">
+<a rel="disclosure" href= "https://www.w3.org/2004/01/pp-impl/95969/status">
 public
 list
 of
@@ -2443,19 +2160,15 @@ BearerSecurityScheme
 </a>
 </li>
 <li class="tocline">
-<a class="tocxref" href= "#certsecurityscheme">
-<bdi class="secno">
-5.3.3.7
-</bdi>
-<code>
+<del class="diff-old">5.3.3.7
 CertSecurityScheme
-</code>
-</a>
-</li>
-<li class="tocline">
+</del>
 <a class="tocxref" href= "#psksecurityscheme">
 <bdi class="secno">
-5.3.3.8
+<del class="diff-old">5.3.3.8
+</del>
+<ins class="diff-chg">5.3.3.7
+</ins>
 </bdi>
 <code>
 PSKSecurityScheme
@@ -2463,29 +2176,17 @@ PSKSecurityScheme
 </a>
 </li>
 <li class="tocline">
-<a class="tocxref" href= "#publicsecurityscheme">
-<bdi class="secno">
-5.3.3.9
-</bdi>
-<code>
+<del class="diff-old">5.3.3.9
 PublicSecurityScheme
-</code>
-</a>
-</li>
-<li class="tocline">
-<a class="tocxref" href= "#popsecurityscheme">
-<bdi class="secno">
 5.3.3.10
-</bdi>
-<code>
 PoPSecurityScheme
-</code>
-</a>
-</li>
-<li class="tocline">
+</del>
 <a class="tocxref" href= "#oauth2securityscheme">
 <bdi class="secno">
-5.3.3.11
+<del class="diff-old">5.3.3.11
+</del>
+<ins class="diff-chg">5.3.3.8
+</ins>
 </bdi>
 <code>
 OAuth2SecurityScheme
@@ -2788,9 +2489,11 @@ Bindings
 <bdi class="secno">
 8.3.1
 </bdi>
-HTTP
 Protocol
 Binding
+based
+on
+HTTP
 </a>
 </li>
 <li class="tocline">
@@ -2824,7 +2527,10 @@ Considerations
 9.1
 </bdi>
 Context
-Dereferencing
+<del class="diff-old">Dereferencing
+</del>
+<ins class="diff-chg">Fetching
+</ins>
 Privacy
 Risk
 </a>
@@ -2851,9 +2557,21 @@ Risk
 </a>
 </li>
 <li class="tocline">
-<a class="tocxref" href= "#sec-security-consideration-TD-tampering">
+<a class="tocxref" href= "#sec-security-consideration-global-id-risk">
 <bdi class= "secno">
 9.4
+</bdi>
+Globally
+Unique
+Identifier
+Privacy
+Risk
+</a>
+</li>
+<li class="tocline">
+<a class="tocxref" href= "#sec-security-consideration-TD-tampering">
+<bdi class= "secno">
+9.5
 </bdi>
 TD
 Interception
@@ -2866,7 +2584,7 @@ Risk
 <li class="tocline">
 <a class="tocxref" href= "#sec-security-consideration-context-tampering">
 <bdi class= "secno">
-9.5
+9.6
 </bdi>
 Context
 Interception
@@ -2879,7 +2597,7 @@ Risk
 <li class="tocline">
 <a class="tocxref" href= "#sec-security-consideration-inferencing">
 <bdi class= "secno">
-9.6
+9.7
 </bdi>
 Inferencing
 of
@@ -2955,7 +2673,10 @@ Binding
 <bdi class="secno">
 A.2
 </bdi>
-MyLightSensor
+<del class="diff-old">MyLightSensor
+</del>
+<ins class="diff-chg">MyIlluminanceSensor
+</ins>
 Example
 with
 MQTT
@@ -2994,6 +2715,7 @@ Validation
 C.
 </bdi>
 Thing
+Description
 Templates
 </a>
 <ol class="toc">
@@ -3003,6 +2725,7 @@ Templates
 C.1
 </bdi>
 Thing
+Description
 Template
 Examples
 </a>
@@ -3013,6 +2736,7 @@ Examples
 C.1.1
 </bdi>
 Thing
+Description
 Template:
 Lamp
 </a>
@@ -3023,6 +2747,7 @@ Lamp
 C.1.2
 </bdi>
 Thing
+Description
 Template:
 Buzzer
 </a>
@@ -3032,26 +2757,19 @@ Buzzer
 </ol>
 </li>
 <li class="tocline">
-<del class="diff-old">D.
-Transformation
-to
-RDF
-D.1
-Thing
-Description
+<a class="tocxref" href= "#json-ld-ctx-usage">
+<bdi class="secno">
+D.
+</bdi>
 JSON-LD
 Context
-D.2
-Thing
-Description
-Ontology
-</del>
+Usage
+</a>
+</li>
+<li class="tocline">
 <a class="tocxref" href="#changes">
 <bdi class= "secno">
-<del class="diff-old">E.
-</del>
-<ins class="diff-chg">D.
-</ins>
+E.
 </bdi>
 Recent
 Specification
@@ -3059,23 +2777,24 @@ Changes
 </a>
 <ol class="toc">
 <li class="tocline">
-<a class="tocxref" href= "#changes-from-candidate-recommendation-0">
+<a class="tocxref" href= "#changes-from-second-candidate-recommendation">
 <bdi class= "secno">
-<del class="diff-old">E.1
-</del>
-<ins class="diff-chg">D.1
-</ins>
+E.1
 </bdi>
 Changes
 from
-<del class="diff-old">Third
-Public
-Working
-Draft
-</del>
-<ins class="diff-chg">Candidate
+<ins class="diff-new">Second
+Candidate
 Recommendation
+</ins></a></li><li class="tocline"><a class="tocxref" href= "#changes-from-first-candidate-recommendation"><bdi class= "secno"><ins class="diff-new">
+E.2
+</ins></bdi><ins class="diff-new">
+Changes
+from
 </ins>
+First
+Candidate
+Recommendation
 </a>
 </li>
 <li class="tocline">
@@ -3083,15 +2802,12 @@ Recommendation
 <bdi class= "secno">
 <del class="diff-old">E.2
 </del>
-<ins class="diff-chg">D.2
+<ins class="diff-chg">E.3
 </ins>
 </bdi>
 Changes
 from
-<del class="diff-old">Second
-</del>
-<ins class="diff-chg">Third
-</ins>
+Third
 Public
 Working
 Draft
@@ -3102,10 +2818,7 @@ Draft
 <li class="tocline">
 <a class="tocxref" href= "#acknowledgements">
 <bdi class="secno">
-<del class="diff-old">F.
-</del>
-<ins class="diff-chg">E.
-</ins>
+F.
 </bdi>
 Acknowledgements
 </a>
@@ -3113,10 +2826,7 @@ Acknowledgements
 <li class="tocline">
 <a class="tocxref" href= "#references">
 <bdi class="secno">
-<del class="diff-old">G.
-</del>
-<ins class="diff-chg">F.
-</ins>
+G.
 </bdi>
 References
 </a>
@@ -3124,10 +2834,7 @@ References
 <li class="tocline">
 <a class="tocxref" href= "#normative-references">
 <bdi class="secno">
-<del class="diff-old">G.1
-</del>
-<ins class="diff-chg">F.1
-</ins>
+G.1
 </bdi>
 Normative
 references
@@ -3136,10 +2843,7 @@ references
 <li class="tocline">
 <a class="tocxref" href= "#informative-references">
 <bdi class="secno">
-<del class="diff-old">G.2
-</del>
-<ins class="diff-chg">F.2
-</ins>
+G.2
 </bdi>
 Informative
 references
@@ -3387,7 +3091,7 @@ See
 [
 <cite>
 <a class="bibref" href="#bib-wot-architecture" title="Web of Things (WoT) Architecture" data-link-type= "biblio">
-wot-architecture
+WOT-ARCHITECTURE
 </a>
 </cite>
 ]
@@ -3413,8 +3117,8 @@ URI
 schemes
 [
 <cite>
-<a class="bibref" href="#bib-iana-uri-schemes" title= "Uniform Resource Identifier (URI) Schemes" data-link-type= "biblio">
-iana-uri-schemes
+<a class="bibref" href="#bib-rfc3986" title= "Uniform Resource Identifier (URI): Generic Syntax" data-link-type= "biblio">
+RFC3986
 </a>
 </cite>
 ]
@@ -3425,13 +3129,27 @@ http
 <code>
 coap
 </code>,
-etc.),
+etc.
+[
+<cite>
+<a class="bibref" href= "#bib-iana-uri-schemes" title= "Uniform Resource Identifier (URI) Schemes" data-link-type= "biblio">
+IANA-URI-SCHEMES
+</a>
+</cite>
+]),
 content
 types
 based
 on
 media
 types
+[
+<cite>
+<a class="bibref" href="#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types" data-link-type="biblio">
+RFC2046
+</a>
+</cite>
+]
 (e.g.,
 <code>
 application/json
@@ -3444,15 +3162,15 @@ application/cbor
 </code>,
 <code>
 application/exi
-</code>
-etc.)
+</code>,
+etc.
 [
 <cite>
-<a class="bibref" href="#bib-iana-media-types" title= "Media Types" data-link-type="biblio">
-iana-media-types
+<a class="bibref" href="#bib-iana-media-types" title= "Media Types" data-link-type= "biblio">
+IANA-MEDIA-TYPES
 </a>
 </cite>
-],
+]),
 and
 security
 mechanisms
@@ -3471,8 +3189,8 @@ on
 JSON
 [
 <cite>
-<a class="bibref" href="#bib-rfc8259" title= "The JavaScript Object Notation (JSON) Data Interchange Format" data-link-type="biblio">
-rfc8259
+<a class= "bibref" href="#bib-rfc8259" title= "The JavaScript Object Notation (JSON) Data Interchange Format" data-link-type="biblio">
+RFC8259
 </a>
 </cite>
 ],
@@ -3508,7 +3226,7 @@ JSON-LD
 [
 <cite>
 <a class="bibref" href= "#bib-json-ld11" title="JSON-LD 1.1" data-link-type= "biblio">
-json-ld11
+JSON-LD11
 </a>
 </cite>
 ]
@@ -3827,9 +3545,13 @@ given
 a
 name
 in
-a
+<del class="diff-old">a
+</del>
 <code>
-securityDefinition
+<del class="diff-old">securityDefinition
+</del>
+<ins class="diff-chg">securityDefinitions
+</ins>
 </code>
 and
 then
@@ -3980,10 +3702,7 @@ provided
 that
 formal
 knowledge,
-<del class="diff-old">e.g.
-</del>
-<ins class="diff-chg">e.g.,
-</ins>
+e.g.,
 logic
 rules
 for
@@ -4036,10 +3755,7 @@ by
 introducing
 a
 second
-<del class="diff-old">definition
-</del>
-<ins class="diff-chg">defintion
-</ins>
+defintion
 in
 the
 <code>
@@ -4055,96 +3771,58 @@ saref
 as
 referring
 to
-<del class="diff-old">the
-</del>
 <a href="https://w3id.org/saref">
 SAREF
-<del class="diff-old">vocabulary
-namespace
-</del>
 </a>,
-<ins class="diff-chg">the
+the
 Smart&nbsp;Appliance
 Reference
 Ontology
-</ins>
 [
 <cite>
 <a class="bibref" href="#bib-smartm2m" title= "ETSI TS 103 264 V2.1.1 (2017-03): SmartM2M; Smart Appliances; Reference Ontology and oneM2M Mapping" data-link-type="biblio">
-smartM2M
+SMARTM2M
 </a>
 </cite>
 ].
-<del class="diff-old">The
-SAREF
-vocabulary
-</del>
-<ins class="diff-chg">This
+This
 IoT
 ontology
-</ins>
 includes
 terms
-<del class="diff-old">to
-describe
-lighting
-devices
-and
-other
-home
-automation
-devices
-that
-one
-can
-embed
-in
-a
-TD
-</del>
-<ins class="diff-chg">interpreted
-</ins>
+interpreted
 as
 semantic
 labels
-<del class="diff-old">in
-</del>
-<ins class="diff-chg">that
+that
 can
 be
 set
 as
 values
 of
-</ins>
 the
 <code>
 @type
 </code>
-<del class="diff-old">property.
-</del>
-<ins class="diff-chg">field,
+field,
 giving
 the
 semantics
 of
-</ins><a href="#dfn-thing" class="internalDFN" data-link-type= "dfn"><ins class="diff-chg">
+<a href="#dfn-thing" class="internalDFN" data-link-type= "dfn">
 Things
-</ins></a><ins class="diff-chg">
+</a>
 and
 their
-</ins><a href="#dfn-interaction-affordance" class="internalDFN" data-link-type="dfn"><ins class="diff-chg">
+<a href="#dfn-interaction-affordance" class="internalDFN" data-link-type="dfn">
 Interaction
 Affordances
-</ins></a>.
+</a>.
 In
 the
-<del class="diff-old">present
-example,
-</del>
-<ins class="diff-chg">example
+example
 below,
-</ins>
 the
 <a href="#dfn-thing" class="internalDFN" data-link-type="dfn">
 Thing
@@ -4156,61 +3834,29 @@ with
 saref:LightSwitch
 </code>,
 the
-<del class="diff-old">form
-of
-the
-</del>
 <code>
 status
 </code>
-<del class="diff-old">property
-affordance
-</del>
 <a href= "#dfn-property" class="internalDFN" data-link-type= "dfn">
-<ins class="diff-chg">Property
-</ins></a>
+Property
+</a>
 is
 labelled
 with
 <code>
-<del class="diff-old">saref:GetCommand
-,
-the
-form
-of
-the
-toggle
-action
-affordance
-with
-saref:ToggleCommand
-</del>
-<ins class="diff-chg">saref:OnOffState
-</ins>
+saref:OnOffState
 </code>
 and
 the
-<del class="diff-old">form
-the
-</del>
 <code>
-<del class="diff-old">overheating
-</del>
-<ins class="diff-chg">toggle
-</ins>
+toggle
 </code>
-<del class="diff-old">event
-affordance
-</del>
 <a href="#dfn-action" class= "internalDFN" data-link-type="dfn">
-<ins class="diff-chg">Action
-</ins></a>
+Action
+</a>
 with
 <code>
-<del class="diff-old">saref:NotifyCommand
-</del>
-<ins class="diff-chg">saref:ToggleCommand
-</ins>
+saref:ToggleCommand
 </code>.
 </p>
 <aside class="example" id="thing-description-full-serialization">
@@ -4242,8 +3888,6 @@ annotations
     ],
     <span class="hljs-attr">"id"</span>: <span class=
 "hljs-string">"urn:dev:ops:32473-WoTLamp-1234"</span>,
-<del class="diff-old">    : &lt;span class=
-</del>
     <span class="hljs-attr">"title"</span>: <span class=
 "hljs-string">"MyLampThing"</span>,
     <span class="hljs-attr">"@type"</span>: <span class=
@@ -4261,14 +3905,10 @@ annotations
     <span class="hljs-attr">"properties"</span>: {
         <span class="hljs-attr">"status"</span>: {
             <span class="hljs-attr">"@type"</span>: <span class=
-<ins class="diff-new">"hljs-string">"saref:OnOffState"</span>,
-</ins>
+"hljs-string">"saref:OnOffState"</span>,
             <span class="hljs-attr">"type"</span>: <span class=
 "hljs-string">"string"</span>,
             <span class="hljs-attr">"forms"</span>: [{
-<del class="diff-old">                &lt;span class=
-"hljs-attr"&gt;"@type",
-</del>
                 <span class="hljs-attr">"href"</span>: <span class=
 "hljs-string">"https://mylamp.example.com/status"</span>
             }]
@@ -4277,12 +3917,8 @@ annotations
     <span class="hljs-attr">"actions"</span>: {
         <span class="hljs-attr">"toggle"</span>: {
             <span class="hljs-attr">"@type"</span>: <span class=
-<ins class="diff-new">"hljs-string">"saref:ToggleCommand"</span>,
-</ins>
+"hljs-string">"saref:ToggleCommand"</span>,
             <span class="hljs-attr">"forms"</span>: [{
-<del class="diff-old">                &lt;span class=
-"hljs-attr"&gt;"@type",
-</del>
                 <span class="hljs-attr">"href"</span>: <span class=
 "hljs-string">"https://mylamp.example.com/toggle"</span>
             }]
@@ -4294,9 +3930,6 @@ annotations
 "hljs-attr">"type"</span>: <span class=
 "hljs-string">"string"</span>},
             <span class="hljs-attr">"forms"</span>: [{
-<del class="diff-old">                &lt;span class=
-"hljs-attr"&gt;"@type",
-</del>
                 <span class="hljs-attr">"href"</span>: <span class=
 "hljs-string">"https://mylamp.example.com/oh"</span>
             }]
@@ -4327,10 +3960,7 @@ to
 version
 1.1
 of
-<del class="diff-old">this
-</del>
-<ins class="diff-chg">that
-</ins>
+that
 specification
 [
 <cite>
@@ -4339,11 +3969,8 @@ json-ld11
 </a>
 </cite>
 ].
-<del class="diff-old">The
-</del>
-<ins class="diff-chg">Hence,
+Hence,
 a
-</ins>
 TD
 instance
 can
@@ -4354,35 +3981,34 @@ as
 an
 RDF
 document
-<del class="diff-old">(details
-are
-given
-in
-§&nbsp;
-D.
-Transformation
-</del>
-<ins class="diff-chg">(for
+(for
 details
 about
 semantic
 processing,
 please
 refer
-</ins>
 to
-<del class="diff-old">RDF
-</del>
-<ins class="diff-chg">the
+Appendix
+<a href= "#json-ld-ctx-usage" class="sec-ref">
+§&nbsp;
+<bdi class= "secno">
+D.
+</bdi>
+JSON-LD
+Context
+Usage
+</a>
+and
+the
 documentation
 under
 the
 namespace
 IRIs,
 e.g.,
-</ins><a href= "https://www.w3.org/2019/wot/td"><ins class="diff-chg">
+<a href= "https://www.w3.org/2019/wot/td">
 https://www.w3.org/2019/wot/td
-</ins>
 </a>
 ).
 </p>
@@ -4536,8 +4162,8 @@ JSON
 Schema
 [
 <cite>
-<a class="bibref" href= "#bib-json-schema-validation" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
-JSON-SCHEMA-VALIDATION
+<a class="bibref" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+JSON-SCHEMA
 </a>
 </cite>
 ]
@@ -4550,9 +4176,9 @@ is
 provided
 in
 Appendix
-<a href="#json-schema-for-validation" class= "sec-ref">
+<a href= "#json-schema-for-validation" class="sec-ref">
 §&nbsp;
-<bdi class="secno">
+<bdi class= "secno">
 B.
 </bdi>
 JSON
@@ -4563,44 +4189,8 @@ Instance
 Validation
 </a>.
 </p>
-<del class="diff-old">A
-set
-of
-SHACL
-shapes
-[
-SHACL
-]
-is
-provided
-under
-the
-TD
-namespace
-IRI
-as
-an
-alternative
-to
-validate
-Thing
-Description
-instances
-after
-transformation
-to
-RDF.
-See
-Appendix
-§&nbsp;
-D.
-Transformation
-to
-RDF
-.
-</del>
 </section>
-<section id="terminology" class="normative">
+<section id="terminology" class="informative">
 <h2 id="x3-terminology">
 <bdi class="secno">
 3.
@@ -4609,6 +4199,14 @@ Terminology
 <a class="self-link" aria-label="§" href= "#terminology">
 </a>
 </h2>
+<p>
+<em>
+This
+section
+is
+non-normative.
+</em>
+</p>
 <p>
 The
 fundamental
@@ -4667,7 +4265,7 @@ etc.
 is
 defined
 in
-<a href= "https://w3c.github.io/wot-architecture/#terminology">
+<a href= "https://www.w3.org/TR/wot-architecture/#terminology">
 Section
 3
 </a>
@@ -4844,10 +4442,7 @@ in
 a
 given
 format
-<del class="diff-old">and
-</del>
-<ins class="diff-chg">and/or
-</ins>
+and/or
 deserialize
 it
 from
@@ -4929,7 +4524,7 @@ a
 WoT
 Runtime
 </a>.
-<ins class="diff-new">Implementations
+Implementations
 of
 a
 TD
@@ -4957,7 +4552,6 @@ deserialize
 from
 TD
 Documents).
-</ins>
 </dd>
 <dt>
 <dfn id="dfn-td-serialization" data-dfn-type= "dfn">
@@ -5070,10 +4664,7 @@ a
 <a href= "#dfn-vocab" class="internalDFN" data-link-type= "dfn">
 Vocabulary
 </a>,
-<del class="diff-old">i.e.
-</del>
-<ins class="diff-chg">i.e.,
-</ins>
+i.e.,
 prefixed
 by
 a
@@ -5112,21 +4703,6 @@ not
 as
 full
 IRIs.
-<del class="diff-old">See
-Appendix
-§&nbsp;
-D.1
-Thing
-Description
-JSON-LD
-Context
-for
-a
-mapping
-to
-full
-IRIs.
-</del>
 </dd>
 </dl>
 <p>
@@ -5192,12 +4768,26 @@ https://www.w3.org/2019/wot/td/v1
 </p>
 <p>
 This
-IRI,
+IRI
+[
+<cite>
+<a class="bibref" href="#bib-rfc3987" title= "Internationalized Resource Identifiers (IRIs)" data-link-type= "biblio">
+RFC3987
+</a>
+</cite>
+],
 which
 is
 also
 a
-URI,
+URI
+[
+<cite>
+<a class= "bibref" href="#bib-rfc3986" title= "Uniform Resource Identifier (URI): Generic Syntax" data-link-type= "biblio">
+RFC3986
+</a>
+</cite>
+],
 can
 be
 dereferenced
@@ -5258,20 +4848,6 @@ of
 TD&nbsp;Processor
 </a>
 implementations.
-<del class="diff-old">See
-§&nbsp;
-D.1
-Thing
-Description
-JSON-LD
-Context
-for
-more
-details
-on
-this
-aspect.
-</del>
 </p>
 <p>
 In
@@ -5566,7 +5142,10 @@ also
 9.1
 </bdi>
 Context
-Dereferencing
+<del class="diff-old">Dereferencing
+</del>
+<ins class="diff-chg">Fetching
+</ins>
 Privacy
 Risk
 </a>
@@ -5717,8 +5296,8 @@ JSON
 Schema
 [
 <cite>
-<a class= "bibref" href="#bib-json-schema-validation" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
-JSON-SCHEMA-VALIDATION
+<a class= "bibref" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+JSON-SCHEMA
 </a>
 </cite>
 ]
@@ -5956,7 +5535,7 @@ Vocabularies
 </a>.
 </p>
 <figure id="td-core-model">
-<img src="visualization/td.png" alt= "UML diagram of the TD&nbsp;information model for the TD core vocabulary" width="2046" height="1326" />
+<img src="visualization/td.png" alt= "UML diagram of the TD&nbsp;information model for the TD core vocabulary" height="1008" width="1344" />
 <figcaption>
 Figure
 <bdi class="figno">
@@ -5971,17 +5550,14 @@ vocabulary
 </figure>
 <hr />
 <figure id="td-data-schema-model">
-<img src= "visualization/json-schema.png" alt= "UML diagram of the TD&nbsp;information model for the Data schema vocabulary" width="2057" height="1179" />
+<img src= "visualization/json-schema.png" alt= "UML diagram of the TD&nbsp;information model for the Data schema vocabulary" height="1179" width="2057" />
 <figcaption>
 Figure
 <bdi class="figno">
 2
 </bdi>
 <span class= "fig-title">
-<del class="diff-old">JSON
-</del>
-<ins class="diff-chg">Data
-</ins>
+Data
 schema
 vocabulary
 </span>
@@ -5989,7 +5565,7 @@ vocabulary
 </figure>
 <hr />
 <figure id="td-security-model">
-<img src= "visualization/wot-security.png" alt= "UML diagram of the TD&nbsp;information model for the WoT security vocabulary" width="1978" height="1330" />
+<img src= "visualization/wot-security.png" alt= "UML diagram of the TD&nbsp;information model for the WoT security vocabulary" height="1008" width="1344" />
 <figcaption>
 Figure
 <bdi class="figno">
@@ -6004,7 +5580,7 @@ vocabulary
 </figure>
 <hr />
 <figure id="hypermedia-model">
-<img src= "visualization/hypermedia.png" alt= "UML diagram of the TD&nbsp;information model for the hypermedia controls vocabulary" width="1705" height="375" />
+<img src= "visualization/hypermedia.png" alt= "UML diagram of the TD&nbsp;information model for the hypermedia controls vocabulary" height="375" width="1705" />
 <figcaption>
 Figure
 <bdi class="figno">
@@ -6036,7 +5612,7 @@ that
 can
 be
 easily
-processes
+processed
 by
 both,
 simple
@@ -6729,10 +6305,7 @@ a
 given
 lexical
 form
-<del class="diff-old">(e.g.
-</del>
-<ins class="diff-chg">(e.g.,
-</ins>
+(e.g.,
 <code>
 true
 </code>,
@@ -6761,10 +6334,7 @@ the
 unsignedInt
 </code>
 type,
-<del class="diff-old">etc).
-</del>
-<ins class="diff-chg">etc.).
-</ins>
+etc.).
 </p>
 <p>
 Moreover,
@@ -7033,7 +6603,7 @@ Schema
 [
 <cite>
 <a class="bibref" href="#bib-xmlschema11-2-20120405" title= "W3C XML Schema Definition Language (XSD) 1.1 Part 2: Datatypes" data-link-type="biblio">
-xmlschema11-2-20120405
+XMLSCHEMA11-2-20120405
 </a>
 </cite>
 ]:
@@ -7061,10 +6631,7 @@ boolean
 </code>.
 Their
 definition
-<del class="diff-old">(i.e.
-</del>
-<ins class="diff-chg">(i.e.,
-</ins>
+(i.e.,
 the
 specification
 of
@@ -7347,20 +6914,7 @@ physical
 world
 (an
 ontology).
-<del class="diff-old">This
-aspect
-is
-dealt
-with
-in
-Appendix
-§&nbsp;
-D.2
-Thing
-Description
-Ontology
-</del>
-<ins class="diff-chg">For
+For
 details
 about
 semantic
@@ -7368,6 +6922,17 @@ processing,
 please
 refer
 to
+<a href="#json-ld-ctx-usage" class= "sec-ref">
+<ins class="diff-new">§&nbsp;
+</ins><bdi class="secno"><ins class="diff-new">
+D.
+</ins></bdi><ins class="diff-new">
+JSON-LD
+Context
+Usage
+</ins></a><ins class="diff-new">
+and
+</ins>
 the
 documentation
 under
@@ -7375,9 +6940,8 @@ the
 namespace
 IRIs,
 e.g.,
-</ins><a href= "https://www.w3.org/2019/wot/td"><ins class="diff-chg">
+<a href= "https://www.w3.org/2019/wot/td">
 https://www.w3.org/2019/wot/td
-</ins>
 </a>.
 </p>
 </section>
@@ -7401,20 +6965,9 @@ Processor
 <em class="rfc2119" title="MUST">
 MUST
 </em>
-<del class="diff-old">be
-able
-to
-detect
-that
-a
-TD
-does
-not
-meet
-</del>
-<ins class="diff-chg">satisfy
+satisfy
 the
-</ins><a href="#dfn-class" class="internalDFN" data-link-type= "dfn">
+<a href="#dfn-class" class="internalDFN" data-link-type= "dfn">
 Class
 </a>
 instantiation
@@ -7629,18 +7182,39 @@ id
 </code>
 </td>
 <td>
-unique
-identifier
+Identifier
 of
 the
 Thing
-(URI,
-e.g.
-custom
-URN).
+in
+form
+of
+a
+URI
+[
+<cite>
+<a class= "bibref" href="#bib-rfc3986" title= "Uniform Resource Identifier (URI): Generic Syntax" data-link-type= "biblio">
+RFC3986
+</a>
+</cite>
+]
+(e.g.,
+stable
+URI,
+temporary
+and
+mutable
+URI,
+URI
+with
+local
+IP
+address,
+URN,
+etc.).
 </td>
 <td>
-mandatory
+optional
 </td>
 <td>
 <a href= "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI">
@@ -7869,23 +7443,30 @@ as
 URI
 scheme
 (e.g.,
+<code>
 mailto
+</code>
 [
 <cite>
-<a class="bibref" href="#bib-rfc6068" title= "The 'mailto' URI Scheme" data-link-type= "biblio">
+<a class="bibref" href= "#bib-rfc6068" title="The 'mailto' URI Scheme" data-link-type= "biblio">
 RFC6068
 </a>
 </cite>
 ],
+<code>
 tel
+</code>
 [
 <cite>
-<a class="bibref" href= "#bib-rfc3966" title="The tel URI for Telephone Numbers" data-link-type="biblio">
+<a class= "bibref" href="#bib-rfc3966" title= "The tel URI for Telephone Numbers" data-link-type= "biblio">
 RFC3966
 </a>
 </cite>
 ],
-https).
+<code>
+https
+</code>
+).
 </td>
 <td>
 optional
@@ -7964,13 +7545,6 @@ in
 and
 the
 IRIs
-[
-<cite>
-<a class="bibref" href= "#bib-rfc3987" title= "Internationalized Resource Identifiers (IRIs)" data-link-type= "biblio">
-RFC3987
-</a>
-</cite>
-]
 used
 within
 Linked
@@ -8015,8 +7589,10 @@ properties
 <td>
 All
 Property-based
-interaction
-affordance
+<a href="#dfn-interaction-affordance" class= "internalDFN" data-link-type="dfn">
+Interaction
+Affordances
+</a>
 of
 the
 Thing.
@@ -8045,8 +7621,10 @@ actions
 <td>
 All
 Action-based
-interaction
-affordance
+<a href="#dfn-interaction-affordance" class= "internalDFN" data-link-type="dfn">
+Interaction
+Affordances
+</a>
 of
 the
 Thing.
@@ -8075,8 +7653,10 @@ events
 <td>
 All
 Event-based
-interaction
-affordance
+<a href="#dfn-interaction-affordance" class= "internalDFN" data-link-type="dfn">
+Interaction
+Affordances
+</a>
 of
 the
 Thing.
@@ -8182,8 +7762,7 @@ with
 the
 Thing's
 <a href="#propertyaffordance">
-property
-affordances
+Properties
 </a>
 collectively
 at
@@ -8221,7 +7800,9 @@ from
 those
 defined
 in
-securityDefinitions.
+<code>
+securityDefinitions
+</code>.
 These
 must
 all
@@ -8276,8 +7857,11 @@ are
 used
 in
 a
+<code>
 security
-section.
+</code>
+name-value
+pair.
 </td>
 <td>
 mandatory
@@ -8985,10 +8569,7 @@ of
 the
 following
 <em>
-<del class="diff-old">operation
-</del>
-<ins class="diff-chg">opteration
-</ins>
+opteration
 types
 </em>:
 <code>
@@ -9040,11 +8621,9 @@ data
 schemas
 of
 each
-<a href= "#propertyaffordance">
 <code>
 PropertyAffordance
 </code>
-</a>
 instance
 in
 a
@@ -9476,16 +9055,16 @@ subclasses:
 </p>
 <ul>
 <li>
-<a href= "#actionaffordance">
+<a href= "#propertyaffordance">
 <code>
-ActionAffordance
+PropertyAffordance
 </code>
 </a>
 </li>
 <li>
-<a href= "#propertyaffordance">
+<a href= "#actionaffordance">
 <code>
-PropertyAffordance
+ActionAffordance
 </code>
 </a>
 </li>
@@ -9692,11 +9271,7 @@ a
 <code>
 PropertyAffordance
 </code>
-<del class="diff-old">Class
-,
-</del>
-<ins class="diff-chg">instance,
-</ins>
+instance,
 the
 value
 assigned
@@ -9778,10 +9353,7 @@ on
 the
 Thing
 (e.g.,
-<del class="diff-old">dimm
-</del>
-<ins class="diff-chg">dim
-</ins>
+dim
 a
 lamp
 over
@@ -9824,7 +9396,7 @@ data
 schema
 of
 the
-action.
+Action.
 </td>
 <td>
 optional
@@ -9853,7 +9425,7 @@ data
 schema
 of
 the
-action.
+Action.
 </td>
 <td>
 optional
@@ -9876,7 +9448,7 @@ safe
 Signals
 if
 the
-action
+Action
 is
 safe
 (=true)
@@ -9934,7 +9506,7 @@ idempotent
 Indicates
 whether
 the
-action
+Action
 is
 idempotent
 (=true)
@@ -9943,7 +9515,7 @@ not.
 Informs
 whether
 the
-action
+Action
 can
 be
 called
@@ -10001,18 +9573,10 @@ instance
 is
 within
 an
-<del class="diff-old">instance
-of
-the
-</del>
 <code>
 ActionAffordance
 </code>
-<del class="diff-old">Class
-,
-</del>
-<ins class="diff-chg">instance,
-</ins>
+instance,
 the
 value
 assigned
@@ -10217,18 +9781,10 @@ instance
 is
 within
 an
-<del class="diff-old">instance
-of
-the
-</del>
 <code>
 EventAffordance
 </code>
-<del class="diff-old">Class
-,
-</del>
-<ins class="diff-chg">instance,
-</ins>
+instance,
 the
 value
 assigned
@@ -10343,10 +9899,7 @@ instance
 Provides
 a
 version
-<del class="diff-old">identicator
-</del>
-<ins class="diff-chg">indicator
-</ins>
+indicator
 of
 this
 TD
@@ -10411,7 +9964,7 @@ See
 [
 <cite>
 <a class="bibref" href="#bib-semver" title="Semantic Versioning 2.0.0" data-link-type= "biblio">
-SemVer
+SEMVER
 </a>
 </cite>
 ]
@@ -10548,6 +10101,8 @@ Definitions
 The
 data
 schema
+<ins class="diff-new">vocabulary
+</ins>
 definition
 is
 reflecting
@@ -10564,8 +10119,8 @@ JSON
 Schema
 [
 <cite>
-<a class="bibref" href= "#bib-json-schema-validation" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
-JSON-SCHEMA-VALIDATION
+<a class= "bibref" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+JSON-SCHEMA
 </a>
 </cite>
 ].
@@ -10588,31 +10143,17 @@ this
 defined
 subset
 and
-<del class="diff-old">MAY
-</del>
-<ins class="diff-chg">may
-</ins>
+may
 use
 additional
 terms
 found
 in
 JSON
-<del class="diff-old">Schema.
-In
-that
-case,
-it
-is
-recommended
-to
-use
-</del>
-<ins class="diff-chg">Schema
+Schema
 using
-</ins>
 a
-<a href= "#dfn-context-ext" class="internalDFN" data-link-type="dfn">
+<a href="#dfn-context-ext" class= "internalDFN" data-link-type="dfn">
 TD
 Context
 Extension
@@ -10624,7 +10165,7 @@ terms
 as
 described
 in
-<a href="#sec-context-extensions" class= "sec-ref">
+<a href="#sec-context-extensions" class="sec-ref">
 §&nbsp;
 <bdi class="secno">
 7.
@@ -10644,36 +10185,168 @@ by
 TD
 Processors
 </a>
-<del class="diff-old">(also
-see
-§&nbsp;
-D.
-Transformation
-</del>
-<ins class="diff-chg">(for
+(for
 details
 about
 semantic
 processing,
 please
 refer
-</ins>
 to
-<del class="diff-old">RDF
-</del>
-<ins class="diff-chg">the
+<a href="#json-ld-ctx-usage" class= "sec-ref">
+<ins class="diff-new">§&nbsp;
+</ins><bdi class="secno"><ins class="diff-new">
+D.
+</ins></bdi><ins class="diff-new">
+JSON-LD
+Context
+Usage
+</ins></a><ins class="diff-new">
+and
+</ins>
+the
 documentation
 under
 the
 namespace
 IRIs,
 e.g.,
-</ins><a href= "https://www.w3.org/2019/wot/td"><ins class="diff-chg">
+<a href= "https://www.w3.org/2019/wot/td">
 https://www.w3.org/2019/wot/td
-</ins>
 </a>
 ).
 </p>
+<p>
+<ins class="diff-new">A
+data
+schema
+is
+an
+abstract
+notation
+for
+data
+contained
+in
+data
+formats.
+In
+a
+TD,
+concrete
+data
+formats
+are
+specified
+in
+Forms
+(see
+</ins><a href="#form" class="sec-ref"><ins class="diff-new">
+§&nbsp;
+</ins><bdi class= "secno"><ins class="diff-new">
+5.3.4.2
+</ins></bdi><code><ins class="diff-new">
+Form
+</ins></code></a><ins class="diff-new">
+)
+using
+content
+types.
+When
+the
+value
+of
+a
+content
+type
+in
+an
+instance
+of
+the
+Form
+is
+</ins><code><ins class="diff-new">
+application/json
+</ins></code>,<ins class="diff-new">
+the
+data
+schema
+can
+be
+processed
+directly
+by
+JSON
+Schema
+processors.
+Otherwise,
+Web
+of
+Things
+(WoT)
+Binding
+Templates
+[
+</ins><cite><a class="bibref" href= "#bib-wot-binding-templates" title= "Web of Things (WoT) Protocol Binding Templates" data-link-type= "biblio"><ins class="diff-new">
+WOT-BINDING-TEMPLATES
+</ins></a></cite><ins class="diff-new">
+]
+defines
+data
+schema's
+available
+mappings
+to
+other
+content
+types
+such
+as
+XML
+[
+</ins><cite><a class="bibref" href="#bib-xml" title= "Extensible Markup Language (XML) 1.0 (Fifth Edition)" data-link-type="biblio"><ins class="diff-new">
+xml
+</ins></a></cite><ins class="diff-new">
+].
+If
+the
+content
+type
+in
+an
+instance
+of
+the
+Form
+is
+not
+</ins><code><ins class="diff-new">
+application/json
+</ins></code><ins class="diff-new">
+and
+if
+no
+mapping
+is
+defined
+for
+the
+content
+type,
+specifying
+a
+data
+schema
+does
+not
+make
+sense
+for
+the
+content
+type.
+</ins></p>
 <section id="dataschema">
 <h5 id="x5-3-2-1-dataschema">
 <bdi class="secno">
@@ -11205,6 +10878,34 @@ subclasses:
 </p>
 <ul>
 <li>
+<a href="#arrayschema">
+<code>
+ArraySchema
+</code>
+</a>
+</li>
+<li>
+<a href="#booleanschema">
+<code>
+BooleanSchema
+</code>
+</a>
+</li>
+<li>
+<a href="#numberschema">
+<code>
+NumberSchema
+</code>
+</a>
+</li>
+<li>
+<a href="#integerschema">
+<code>
+IntegerSchema
+</code>
+</a>
+</li>
+<li>
 <a href="#objectschema">
 <code>
 ObjectSchema
@@ -11219,37 +10920,9 @@ StringSchema
 </a>
 </li>
 <li>
-<a href="#numberschema">
-<code>
-NumberSchema
-</code>
-</a>
-</li>
-<li>
 <a href="#nullschema">
 <code>
 NullSchema
-</code>
-</a>
-</li>
-<li>
-<a href="#booleanschema">
-<code>
-BooleanSchema
-</code>
-</a>
-</li>
-<li>
-<a href="#integerschema">
-<code>
-IntegerSchema
-</code>
-</a>
-</li>
-<li>
-<a href="#arrayschema">
-<code>
-ArraySchema
 </code>
 </a>
 </li>
@@ -11278,8 +10951,8 @@ defined
 in
 [
 <cite>
-<a class="bibref" href="#bib-json-schema-validation" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
-JSON-SCHEMA-VALIDATION
+<a class="bibref" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+JSON-SCHEMA
 </a>
 </cite>
 ]
@@ -11289,9 +10962,9 @@ Defined
 Formats
 in
 particular).
-<span class="rfc2119-assertion" id="td-format-validation-known-values">
+<span class="rfc2119-assertion" id= "td-format-validation-known-values">
 Servients
-<em class= "rfc2119" title="MAY">
+<em class="rfc2119" title="MAY">
 MAY
 </em>
 use
@@ -12318,7 +11991,7 @@ mandatory
 string
 </code>
 </a>
-(e.g.
+(e.g.,
 <code>
 nosec
 </code>,
@@ -12326,24 +11999,24 @@ nosec
 basic
 </code>,
 <code>
-cert
-</code>,
-<code>
+<del class="diff-old">cert
+,
+</del>
 digest
 </code>,
 <code>
 bearer
 </code>,
 <code>
-pop
-</code>,
-<code>
+<del class="diff-old">pop
+,
+</del>
 psk
 </code>,
 <code>
-public
-</code>,
-<code>
+<del class="diff-old">public
+,
+</del>
 oauth2
 </code>,
 or
@@ -12439,12 +12112,6 @@ is
 for
 the
 endpoint.
-<br />
-This
-feature
-is
-at
-risk.
 </td>
 <td>
 optional
@@ -12472,30 +12139,9 @@ subclasses:
 </p>
 <ul>
 <li>
-<a href= "#publicsecurityscheme">
+<a href= "#nosecurityscheme">
 <code>
-PublicSecurityScheme
-</code>
-</a>
-</li>
-<li>
-<a href= "#popsecurityscheme">
-<code>
-PoPSecurityScheme
-</code>
-</a>
-</li>
-<li>
-<a href= "#apikeysecurityscheme">
-<code>
-APIKeySecurityScheme
-</code>
-</a>
-</li>
-<li>
-<a href= "#digestsecurityscheme">
-<code>
-DigestSecurityScheme
+NoSecurityScheme
 </code>
 </a>
 </li>
@@ -12507,16 +12153,16 @@ BasicSecurityScheme
 </a>
 </li>
 <li>
-<a href= "#psksecurityscheme">
+<a href= "#digestsecurityscheme">
 <code>
-PSKSecurityScheme
+DigestSecurityScheme
 </code>
 </a>
 </li>
 <li>
-<a href= "#oauth2securityscheme">
+<a href= "#apikeysecurityscheme">
 <code>
-OAuth2SecurityScheme
+APIKeySecurityScheme
 </code>
 </a>
 </li>
@@ -12528,16 +12174,21 @@ BearerSecurityScheme
 </a>
 </li>
 <li>
-<a href= "#certsecurityscheme">
+<del class="diff-old">CertSecurityScheme
+</del>
+<a href= "#psksecurityscheme">
 <code>
-CertSecurityScheme
+PSKSecurityScheme
 </code>
 </a>
 </li>
 <li>
-<a href= "#nosecurityscheme">
+<del class="diff-old">PublicSecurityScheme
+PoPSecurityScheme
+</del>
+<a href= "#oauth2securityscheme">
 <code>
-NoSecurityScheme
+OAuth2SecurityScheme
 </code>
 </a>
 </li>
@@ -12604,15 +12255,14 @@ BasicSecurityScheme
 </h5>
 <p>
 Basic
-<del class="diff-old">authentication
-</del>
-<ins class="diff-chg">Authentication
+Authentication
 [
-</ins><cite><a class="bibref" href= "#bib-rfc7617" title="The 'Basic' HTTP Authentication Scheme" data-link-type="biblio"><ins class="diff-chg">
+<cite>
+<a class="bibref" href= "#bib-rfc7617" title="The 'Basic' HTTP Authentication Scheme" data-link-type="biblio">
 RFC7617
-</ins></a></cite><ins class="diff-chg">
+</a>
+</cite>
 ]
-</ins>
 security
 configuration
 identified
@@ -12761,16 +12411,15 @@ DigestSecurityScheme
 </h5>
 <p>
 Digest
-<del class="diff-old">authentication
-</del>
-<ins class="diff-chg">Access
+Access
 Authentication
 [
-</ins><cite><a class="bibref" href= "#bib-rfc7616" title="HTTP Digest Access Authentication" data-link-type="biblio"><ins class="diff-chg">
+<cite>
+<a class="bibref" href= "#bib-rfc7616" title="HTTP Digest Access Authentication" data-link-type="biblio">
 RFC7616
-</ins></a></cite><ins class="diff-chg">
+</a>
+</cite>
 ]
-</ins>
 security
 configuration
 identified
@@ -12836,12 +12485,6 @@ qop
 Quality
 of
 protection.
-<br />
-This
-feature
-is
-at
-risk.
 </td>
 <td>
 <a href="#sec-default-values">
@@ -12952,15 +12595,6 @@ APIKeySecurityScheme
 <a class= "self-link" aria-label="§" href="#apikeysecurityscheme">
 </a>
 </h5>
-<p>
-<span class="at-risk">
-This
-section
-is
-at
-risk.
-</span>
-</p>
 <p>
 API
 key
@@ -13111,16 +12745,14 @@ BearerSecurityScheme
 </h5>
 <p>
 Bearer
-<del class="diff-old">token
-authentication
-</del>
-<ins class="diff-chg">Token
+Token
 [
-</ins><cite><a class="bibref" href="#bib-rfc6750" title= "The OAuth 2.0 Authorization Framework: Bearer Token Usage" data-link-type="biblio"><ins class="diff-chg">
+<cite>
+<a class="bibref" href="#bib-rfc6750" title= "The OAuth 2.0 Authorization Framework: Bearer Token Usage" data-link-type="biblio">
 RFC6750
-</ins></a></cite><ins class="diff-chg">
+</a>
+</cite>
 ]
-</ins>
 security
 configuration
 identified
@@ -13138,14 +12770,7 @@ bearer
 "scheme":
 "bearer"
 </code>
-<del class="diff-old">).
-This
-scheme
-is
-intended
-</del>
-<ins class="diff-chg">)
-</ins>
+)
 for
 situations
 where
@@ -13264,7 +12889,10 @@ be
 specified
 in
 vocabulary
-extensions.
+<del class="diff-old">extensions.
+</del>
+<ins class="diff-chg">extensions
+</ins>
 </span>.
 </p>
 <table class="def">
@@ -13337,7 +12965,7 @@ default
 string
 </code>
 </a>
-(e.g.
+(e.g.,
 <code>
 MD5
 </code>,
@@ -13377,7 +13005,7 @@ default
 string
 </code>
 </a>
-(e.g.
+(e.g.,
 <code>
 jwt
 </code>,
@@ -13468,27 +13096,13 @@ string
 </tbody>
 </table>
 </section>
-<section id="certsecurityscheme">
-<h5 id="x5-3-3-7-certsecurityscheme">
-<bdi class= "secno">
-5.3.3.7
-</bdi>
-<code>
+<del class="diff-old">5.3.3.7
 CertSecurityScheme
-</code>
-<a class= "self-link" aria-label="§" href="#certsecurityscheme">
-</a>
-</h5>
-<p>
-<span class="at-risk">
 This
 section
 is
 at
 risk.
-</span>
-</p>
-<p>
 Certificate-based
 asymmetric
 key
@@ -13497,57 +13111,24 @@ configuration
 conformant
 with
 [
-<cite>
-<a class="bibref" href="#bib-x509v3" title= "ITU-T Recommendation X.509 version 3 (1997). &quot;Information Technology - Open Systems Interconnection - The Directory Authentication Framework&quot;&amp;nbsp; ISO/IEC 9594-8:1997." data-link-type="biblio">
 X509V3
-</a>
-</cite>
 ]
 identified
 by
 the
-<a href="#dfn-vocab-term" class="internalDFN" data-link-type= "dfn">
 Vocabulary
 Term
-</a>
-<code>
 cert
-</code>
 (i.e.,
-<code>
 "scheme":
 "cert"
-</code>
 ).
-</p>
-<table class="def">
-<thead>
-<tr>
-<th>
-<a href="#dfn-vocab-term" class="internalDFN" data-link-type= "dfn">
 Vocabulary
 term
-</a>
-</th>
-<th>
 Description
-</th>
-<th>
 Assignment
-</th>
-<th>
 Type
-</th>
-</tr>
-</thead>
-<tbody>
-<tr class="rfc2119-table-assertion" id= "td-vocab-identity--CertSecurityScheme">
-<td>
-<code>
 identity
-</code>
-</td>
-<td>
 Identifier
 providing
 information
@@ -13559,25 +13140,16 @@ for
 selection
 or
 confirmation.
-</td>
-<td>
 optional
-</td>
-<td>
-<a href= "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string">
-<code>
 string
-</code>
-</a>
-</td>
-</tr>
-</tbody>
-</table>
-</section>
+</del>
 <section id="psksecurityscheme">
-<h5 id="x5-3-3-8-psksecurityscheme">
+<h5 id="x5-3-3-7-psksecurityscheme">
 <bdi class= "secno">
-5.3.3.8
+<del class="diff-old">5.3.3.8
+</del>
+<ins class="diff-chg">5.3.3.7
+</ins>
 </bdi>
 <code>
 PSKSecurityScheme
@@ -13585,15 +13157,6 @@ PSKSecurityScheme
 <a class= "self-link" aria-label="§" href="#psksecurityscheme">
 </a>
 </h5>
-<p>
-<span class="at-risk">
-This
-section
-is
-at
-risk.
-</span>
-</p>
 <p>
 Pre-shared
 key
@@ -13671,27 +13234,13 @@ string
 </tbody>
 </table>
 </section>
-<section id="publicsecurityscheme">
-<h5 id="x5-3-3-9-publicsecurityscheme">
-<bdi class= "secno">
-5.3.3.9
-</bdi>
-<code>
+<del class="diff-old">5.3.3.9
 PublicSecurityScheme
-</code>
-<a class= "self-link" aria-label="§" href="#publicsecurityscheme">
-</a>
-</h5>
-<p>
-<span class="at-risk">
 This
 section
 is
 at
 risk.
-</span>
-</p>
-<p>
 Raw
 public
 key
@@ -13702,48 +13251,19 @@ configuration
 identified
 by
 the
-<a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">
 Vocabulary
 Term
-</a>
-<code>
 public
-</code>
 (i.e.,
-<code>
 "scheme":
 "public"
-</code>
 ).
-</p>
-<table class="def">
-<thead>
-<tr>
-<th>
-<a href="#dfn-vocab-term" class="internalDFN" data-link-type= "dfn">
 Vocabulary
 term
-</a>
-</th>
-<th>
 Description
-</th>
-<th>
 Assignment
-</th>
-<th>
 Type
-</th>
-</tr>
-</thead>
-<tbody>
-<tr class="rfc2119-table-assertion" id= "td-vocab-identity--PublicSecurityScheme">
-<td>
-<code>
 identity
-</code>
-</td>
-<td>
 Identifier
 providing
 information
@@ -13755,42 +13275,15 @@ for
 selection
 or
 confirmation.
-</td>
-<td>
 optional
-</td>
-<td>
-<a href= "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string">
-<code>
 string
-</code>
-</a>
-</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="popsecurityscheme">
-<h5 id="x5-3-3-10-popsecurityscheme">
-<bdi class= "secno">
 5.3.3.10
-</bdi>
-<code>
 PoPSecurityScheme
-</code>
-<a class= "self-link" aria-label="§" href="#popsecurityscheme">
-</a>
-</h5>
-<p>
-<span class="at-risk">
 This
 section
 is
 at
 risk.
-</span>
-</p>
-<p>
 Proof-of-possession
 (PoP)
 token
@@ -13800,85 +13293,52 @@ configuration
 identified
 by
 the
-<a href="#dfn-vocab-term" class= "internalDFN" data-link-type="dfn">
 Vocabulary
 Term
-</a>
-<code>
 pop
-</code>
 (i.e.,
-<code>
 "scheme":
 "pop"
-</code>
 ).
 Here
-<code>
 jwt
-</code>
 indicates
 conformance
 with
 [
-<cite>
-<a class= "bibref" href="#bib-rfc7519" title="JSON Web Token (JWT)" data-link-type="biblio">
 RFC7519
-</a>
-</cite>
 ],
-<code>
 jws
-</code>
 indicates
 conformance
 with
 [
-<cite>
-<a class="bibref" href= "#bib-rfc7797" title= "JSON Web Signature (JWS) Unencoded Payload Option" data-link-type= "biblio">
 RFC7797
-</a>
-</cite>
 ],
-<code>
 cwt
-</code>
 indicates
 conformance
 with
 [
-<cite>
-<a class="bibref" href="#bib-rfc8392" title="CBOR Web Token (CWT)" data-link-type= "biblio">
 RFC8392
-</a>
-</cite>
 ],
 and
-<code>
 jwe
-</code>
 indicates
 conformance
 with
 [
-<cite>
-<a class="bibref" href="#bib-rfc7516" title="JSON Web Encryption (JWE)" data-link-type= "biblio">
 RFC7516
-</a>
-</cite>
 ],
 with
 values
 for
-<code>
 alg
-</code>
 interpreted
 consistently
 with
 those
 standards.
-<span class= "rfc2119-assertion" id="td-security-pop-format-extensions">
 Other
 formats
 and
@@ -13886,150 +13346,64 @@ algorithms
 for
 PoP
 tokens
-<em class="rfc2119" title= "MAY">
 MAY
-</em>
 be
 specified
 in
 vocabulary
 extensions.
-</span>.
-</p>
-<table class="def">
-<thead>
-<tr>
-<th>
-<a href="#dfn-vocab-term" class="internalDFN" data-link-type= "dfn">
+.
 Vocabulary
 term
-</a>
-</th>
-<th>
 Description
-</th>
-<th>
 Assignment
-</th>
-<th>
 Type
-</th>
-</tr>
-</thead>
-<tbody>
-<tr class="rfc2119-table-assertion" id= "td-vocab-authorization--PoPSecurityScheme">
-<td>
-<code>
 authorization
-</code>
-</td>
-<td>
 URI
 of
 the
 authorization
 server.
-</td>
-<td>
 optional
-</td>
-<td>
-<a href= "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI">
-<code>
 anyURI
-</code>
-</a>
-</td>
-</tr>
-<tr class="rfc2119-table-assertion" id= "td-vocab-alg--PoPSecurityScheme">
-<td>
-<code>
 alg
-</code>
-</td>
-<td>
 Encoding,
 encryption,
 or
 digest
 algorithm.
-</td>
-<td>
-<a href="#sec-default-values">
 with
 default
-</a>
-</td>
-<td>
-<a href= "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string">
-<code>
 string
-</code>
-</a>
-(e.g.
-<code>
+(e.g.,
 MD5
-</code>,
-<code>
+,
 ES256
-</code>,
+,
 or
-<code>
 ES512-256
-</code>
 )
-</td>
-</tr>
-<tr class="rfc2119-table-assertion" id= "td-vocab-format--PoPSecurityScheme">
-<td>
-<code>
 format
-</code>
-</td>
-<td>
 Specifies
 format
 of
 security
 authentication
 information.
-</td>
-<td>
-<a href="#sec-default-values">
 with
 default
-</a>
-</td>
-<td>
-<a href= "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string">
-<code>
 string
-</code>
-</a>
-(e.g.
-<code>
+(e.g.,
 jwt
-</code>,
-<code>
+,
 cwt
-</code>,
-<code>
+,
 jwe
-</code>,
+,
 or
-<code>
 jws
-</code>
 )
-</td>
-</tr>
-<tr class="rfc2119-table-assertion" id= "td-vocab-in--PoPSecurityScheme">
-<td>
-<code>
 in
-</code>
-</td>
-<td>
 Specifies
 the
 location
@@ -14037,44 +13411,21 @@ of
 security
 authentication
 information.
-</td>
-<td>
-<a href="#sec-default-values">
 with
 default
-</a>
-</td>
-<td>
-<a href= "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string">
-<code>
 string
-</code>
-</a>
 (one
 of
-<code>
 header
-</code>,
-<code>
+,
 query
-</code>,
-<code>
+,
 body
-</code>,
+,
 or
-<code>
 cookie
-</code>
 )
-</td>
-</tr>
-<tr class="rfc2119-table-assertion" id= "td-vocab-name--PoPSecurityScheme">
-<td>
-<code>
 name
-</code>
-</td>
-<td>
 Name
 for
 query,
@@ -14082,25 +13433,16 @@ header,
 or
 cookie
 parameters.
-</td>
-<td>
 optional
-</td>
-<td>
-<a href= "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string">
-<code>
 string
-</code>
-</a>
-</td>
-</tr>
-</tbody>
-</table>
-</section>
+</del>
 <section id="oauth2securityscheme">
-<h5 id="x5-3-3-11-oauth2securityscheme">
+<h5 id="x5-3-3-8-oauth2securityscheme">
 <bdi class= "secno">
-5.3.3.11
+<del class="diff-old">5.3.3.11
+</del>
+<ins class="diff-chg">5.3.3.8
+</ins>
 </bdi>
 <code>
 OAuth2SecurityScheme
@@ -14108,15 +13450,6 @@ OAuth2SecurityScheme
 <a class= "self-link" aria-label="§" href="#oauth2securityscheme">
 </a>
 </h5>
-<p>
-<span class="at-risk">
-This
-section
-is
-at
-risk.
-</span>
-</p>
 <p>
 OAuth2
 authentication
@@ -14157,43 +13490,26 @@ oauth2
 "oauth2"
 </code>
 ).
-<span class="rfc2119-assertion" id="td-security-oauth2-implicit-flow">
-For
+<del class="diff-old">For
 the
-<code>
 implicit
-</code>
 flow
-<code>
 authorization
-</code>
-<em class="rfc2119" title= "MUST">
 MUST
-</em>
 be
 included.
-</span>
-<span class= "rfc2119-assertion" id= "td-security-oauth2-password-client-flow">
 For
 the
-<code>
 password
-</code>
 and
-<code>
 client
-</code>
 flows
-<code>
 token
-</code>
-<em class="rfc2119" title="MUST">
 MUST
-</em>
 be
 included.
-</span>
-<span class="rfc2119-assertion" id= "td-security-oauth2-code-flow">
+</del>
+<span class="rfc2119-assertion" id="td-security-oauth2-code-flow">
 For
 the
 <code>
@@ -14390,12 +13706,6 @@ active
 on
 that
 form.
-<br />
-This
-feature
-is
-at
-risk.
 </td>
 <td>
 optional
@@ -14429,10 +13739,7 @@ Authorization
 flow.
 </td>
 <td>
-<a href="#sec-default-values">
-with
-default
-</a>
+mandatory
 </td>
 <td>
 <a href= "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string">
@@ -14440,18 +13747,18 @@ default
 string
 </code>
 </a>
-(one
+<del class="diff-old">(one
 of
-<code>
 implicit
-</code>,
-<code>
+,
 password
-</code>,
-<code>
+,
 client
-</code>,
+,
 or
+</del>
+<ins class="diff-chg">(e.g.,
+</ins>
 <code>
 code
 </code>
@@ -14668,7 +13975,7 @@ href
 </code>
 </td>
 <td>
-target
+Target
 IRI
 of
 a
@@ -14708,7 +14015,13 @@ what
 the
 media
 type
-[IANA-MEDIA-TYPES]
+[
+<cite>
+<a class="bibref" href="#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types" data-link-type="biblio">
+RFC2046
+</a>
+</cite>
+]
 of
 the
 result
@@ -14766,43 +14079,28 @@ anchor
 </code>
 </td>
 <td>
-By
-default,
+Overrides
 the
-context,
-or
-anchor,
-of
-a
 link
-conveyed
-in
+context
+(by
+default
 the
-Link
-header
-field
-is
+Thing
+itself
+identified
+by
+its
+<code>
+id
+</code>
+)
+with
 the
-URL
-of
-the
-representation
-it
-is
-associated
-with,
-as
-defined
-in
-RFC7231,
-Section
-3.1.4.1,
-and
-is
-serialized
-as
-a
-URI.
+given
+URI
+or
+IRI.
 </td>
 <td>
 optional
@@ -15098,7 +14396,7 @@ href
 </code>
 </td>
 <td>
-target
+Target
 IRI
 of
 a
@@ -15137,24 +14435,30 @@ on
 a
 media
 type
-[
-<cite>
-<a class= "bibref" href="#bib-iana-media-types" title="Media Types" data-link-type="biblio">
-IANA-MEDIA-TYPES
-</a>
-</cite>
-]
 (e.g.,
-'text/plain')
+<code>
+text/plain
+</code>
+)
 and
 potential
 parameters
 (e.g.,
-'charset=utf-8')
+<code>
+charset=utf-8
+</code>
+)
 for
 the
 media
-type.
+type
+[
+<cite>
+<a class= "bibref" href="#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types" data-link-type="biblio">
+RFC2046
+</a>
+</cite>
+].
 </td>
 <td>
 <a href="#sec-default-values">
@@ -15295,23 +14599,38 @@ notifications
 such
 as
 long
-polling,
-websub
-(also
-see
-<a href= "https://www.w3.org/TR/websub/">
-https://www.w3.org/TR/websub/
-</a>
+polling
+(
+<code>
+longpoll
+</code>
 ),
-or
-server
-sent
-events
-(also
-see
-<a href= "https://www.w3.org/TR/eventsource/">
-https://www.w3.org/TR/eventsource/
+WebSub
+[
+<cite>
+<a class="bibref" href="#bib-websub" title="WebSub" data-link-type="biblio">
+websub
 </a>
+</cite>
+]
+(
+<code>
+websub
+</code>
+),
+Server-Sent
+Events
+[
+<cite>
+<a class="bibref" href="#bib-eventsource" title="Server-Sent Events" data-link-type= "biblio">
+eventsource
+</a>
+</cite>
+]
+(
+<code>
+sse
+</code>
 ).
 Please
 note
@@ -15322,7 +14641,7 @@ no
 restriction
 on
 the
-sub-protocol
+subprotocol
 selection
 and
 other
@@ -15346,7 +14665,7 @@ optional
 string
 </code>
 </a>
-(e.g.
+(e.g.,
 <code>
 longpoll
 </code>,
@@ -15377,7 +14696,9 @@ from
 those
 defined
 in
-securityDefinitions.
+<code>
+securityDefinitions
+</code>.
 These
 must
 all
@@ -15472,12 +14793,6 @@ active
 on
 that
 form.
-<br />
-This
-feature
-is
-at
-risk.
 </td>
 <td>
 optional
@@ -15559,6 +14874,29 @@ ExpectedResponse
 </tbody>
 </table>
 <p>
+Possible
+values
+for
+the
+<code>
+contentCoding
+</code>
+property
+can
+be
+found,
+e.g.,
+in
+the
+<a href= "https://www.iana.org/assignments/http-parameters/http-parameters.xhtml#content-coding">
+IANA
+HTTP
+content
+coding
+registry
+</a>.
+</p>
+<p>
 The
 list
 of
@@ -15620,13 +14958,8 @@ be
 arbitrarily
 set
 by
-<del class="diff-old">servients
-</del>
-<ins class="diff-chg">servients.
-</ins>
+servients.
 </span>
-<del class="diff-old">.
-</del>
 </p>
 <p>
 The
@@ -15902,29 +15235,6 @@ the
 Consumer
 </a>.
 </p>
-<p>
-Possible
-values
-for
-the
-<code>
-contentCoding
-</code>
-property
-can
-be
-found
-e.g.
-in
-the
-<a href= "https://www.iana.org/assignments/http-parameters/http-parameters.xhtml#content-coding">
-IANA
-HTTP
-content
-coding
-registry
-</a>.
-</p>
 </section>
 <section id="expectedresponse">
 <h5 id="x5-3-4-3-expectedresponse">
@@ -15983,24 +15293,30 @@ on
 a
 media
 type
-[
-<cite>
-<a class= "bibref" href="#bib-iana-media-types" title="Media Types" data-link-type="biblio">
-IANA-MEDIA-TYPES
-</a>
-</cite>
-]
 (e.g.,
-'text/plain')
+<code>
+text/plain
+</code>
+)
 and
 potential
 parameters
 (e.g.,
-'charset=utf-8')
+<code>
+charset=utf-8
+</code>
+)
 for
 the
 media
-type.
+type
+[
+<cite>
+<a class= "bibref" href="#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types" data-link-type="biblio">
+RFC2046
+</a>
+</cite>
+].
 </td>
 <td>
 mandatory
@@ -16365,42 +15681,20 @@ header
 <td>
 </td>
 </tr>
-<tr class="rfc2119-default-assertion" id="td-default-in-pop">
-<td>
-<code>
-PoPSecurityScheme
-</code>
-<br />
+<del class="diff-old">PoPSecurityScheme
 This
 feature
 is
 at
 risk.
-</td>
-<td>
-<code>
 in
-</code>
-</td>
-<td>
-<code>
 header
-</code>
-</td>
-<td>
-</td>
-</tr>
+</del>
 <tr class="rfc2119-default-assertion" id="td-default-in-apikey">
 <td>
 <code>
 APIKeySecurityScheme
 </code>
-<br />
-This
-feature
-is
-at
-risk.
 </td>
 <td>
 <code>
@@ -16420,12 +15714,6 @@ query
 <code>
 DigestSecurityScheme
 </code>
-<br />
-This
-feature
-is
-at
-risk.
 </td>
 <td>
 <code>
@@ -16459,31 +15747,15 @@ ES256
 <td>
 </td>
 </tr>
-<tr class="rfc2119-default-assertion" id="td-default-alg-pop">
-<td>
-<code>
-PoPSecurityScheme
-</code>
-<br />
+<del class="diff-old">PoPSecurityScheme
 This
 feature
 is
 at
 risk.
-</td>
-<td>
-<code>
 alg
-</code>
-</td>
-<td>
-<code>
 ES256
-</code>
-</td>
-<td>
-</td>
-</tr>
+</del>
 <tr class="rfc2119-default-assertion" id="td-default-format">
 <td>
 <code>
@@ -16503,56 +15775,15 @@ jwt
 <td>
 </td>
 </tr>
-<tr class="rfc2119-default-assertion" id="td-default-format-pop">
-<td>
-<code>
-PoPSecurityScheme
-</code>
-<br />
+<del class="diff-old">PoPSecurityScheme
 This
 feature
 is
 at
 risk.
-</td>
-<td>
-<code>
 format
-</code>
-</td>
-<td>
-<code>
 jwt
-</code>
-</td>
-<td>
-</td>
-</tr>
-<tr class="rfc2119-default-assertion" id="td-default-flow">
-<td>
-<code>
-OAuth2SecurityScheme
-</code>
-<br />
-This
-feature
-is
-at
-risk.
-</td>
-<td>
-<code>
-flow
-</code>
-</td>
-<td>
-<code>
-implicit
-</code>
-</td>
-<td>
-</td>
-</tr>
+</del>
 </tbody>
 </table>
 </section>
@@ -16651,10 +15882,7 @@ RFC8259
 </a>
 </cite>
 ]
-<del class="diff-old">and
-</del>
-<ins class="diff-chg">and/or
-</ins>
+and/or
 deserialize
 <a href="#dfn-thing-description" class="internalDFN" data-link-type="dfn">
 Thing
@@ -16740,16 +15968,7 @@ with
 a
 JSON-LD
 1.1
-<del class="diff-old">processor,
-as
-further
-detailed
-in
-§&nbsp;
-D.
-Transformation
-</del>
-<ins class="diff-chg">processor
+processor
 (for
 details
 about
@@ -16757,23 +15976,29 @@ semantic
 processing,
 please
 refer
-</ins>
 to
-<del class="diff-old">RDF
-.
-</del>
-<ins class="diff-chg">the
+<a href= "#json-ld-ctx-usage" class="sec-ref">
+<ins class="diff-new">§&nbsp;
+</ins><bdi class= "secno"><ins class="diff-new">
+D.
+</ins></bdi><ins class="diff-new">
+JSON-LD
+Context
+Usage
+</ins></a><ins class="diff-new">
+and
+</ins>
+the
 documentation
 under
 the
 namespace
 IRIs,
 e.g.,
-</ins><a href= "https://www.w3.org/2019/wot/td"><ins class="diff-chg">
+<a href= "https://www.w3.org/2019/wot/td">
 https://www.w3.org/2019/wot/td
-</ins></a><ins class="diff-chg">
+</a>
 ).
-</ins>
 </p>
 <p>
 In
@@ -17824,14 +17049,13 @@ Extensions
 </a>
 (see
 <a href="#sec-context-extensions" class="sec-ref">
-<ins class="diff-chg">§&nbsp;
-</ins><bdi class="secno"><ins class="diff-chg">
+§&nbsp;
+<bdi class="secno">
 7.
-</ins></bdi><ins class="diff-chg">
+</bdi>
 TD
 Context
 Extensions
-</ins>
 </a>
 for
 details).
@@ -18296,7 +17520,7 @@ Web
 [
 <cite>
 <a class="bibref" href= "#bib-string-meta" title= "Strings on the Web: Language and Direction Metadata" data-link-type="biblio">
-string-meta
+STRING-META
 </a>
 </cite>
 ]
@@ -18367,7 +17591,7 @@ by
 [
 <cite>
 <a class="bibref" href="#bib-string-meta" title= "Strings on the Web: Language and Direction Metadata" data-link-type="biblio">
-string-meta
+STRING-META
 </a>
 </cite>
 ],
@@ -18813,8 +18037,6 @@ member,
 respectively.
 </span>
 The
-<del class="diff-old">the
-</del>
 language
 of
 the
@@ -20007,19 +19229,13 @@ HTTPS
 with
 basic
 authentication,
-via
-HTTPS
-via
+with
 digest
 authentication,
-or
-via
-CoAPS
 with
-a
-pre-shared
-key
-(PSK).
+bearer
+token
+authentication.
 In
 other
 words,
@@ -20078,7 +19294,7 @@ allow
 activation
 of
 the
-<a href="#dfn-interaction-affordance" class= "internalDFN" data-link-type="dfn">
+<a href= "#dfn-interaction-affordance" class="internalDFN" data-link-type= "dfn">
 Interaction
 Affordance
 </a>.
@@ -20112,10 +19328,9 @@ Example
 "hljs-string">"scheme"</span>: <span class=
 "hljs-string">"basic"</span> },
         <span class=
-"hljs-string">"digest_sc"</span>: { <span class="hljs-string">"scheme"</span>: <span class="hljs-string">"digest"</span>, <span class="hljs-string">"qop"</span>: <span class="hljs-string">"auth"</span>, <span class="hljs-string">"in"</span>: <span class="hljs-string">"header"</span> },
-        <span class="hljs-string">"psk_sc"</span>: { <span class=
-"hljs-string">"scheme"</span>: <span class=
-"hljs-string">"psk"</span> }
+"hljs-string">"digest_sc"</span>: { <span class="hljs-string">"scheme"</span>: <span class="hljs-string">"digest"</span> },
+        <span class=
+"hljs-string">"bearer_sc"</span>: { <span class="hljs-string">"scheme"</span>: <span class="hljs-string">"bearer"</span> }
     },
     <span class="hljs-string">"security"</span>: [<span class=
 "hljs-string">"basic_sc"</span>],
@@ -20137,10 +19352,10 @@ Example
             }, {
                 <span class=
 "hljs-string">"href"</span>: <span class=
-"hljs-string">"coaps://mylamp.example.com:5684/status"</span>,
+"hljs-string">"https://mylamp.example.com/status"</span>,
                 <span class=
 "hljs-string">"security"</span>: [<span class=
-"hljs-string">"psk_sc"</span>]
+"hljs-string">"bearer_sc"</span>]
             }]
         }
     },
@@ -20328,10 +19543,16 @@ Example
 "hljs-string">"oauth2"</span>,
             ...
             <span class="hljs-string">"flow"</span>: <span class=
-"hljs-string">"implicit"</span>,
+<del class="diff-old">"hljs-string"&gt;"implicit",
+</del>
+<ins class="diff-chg">"hljs-string">"code"</span>,
+</ins>
             <span class=
 "hljs-string">"authorization"</span>: <span class=
 "hljs-string">"https://example.com/authorization"</span>,
+            <span class="hljs-string">"token"</span>: <span class=
+<ins class="diff-new">"hljs-string">"https://example.com/token"</span>,
+</ins>
             <span class=
 "hljs-string">"scopes"</span>: [<span class="hljs-string">"limited"</span>, <span class="hljs-string">"special"</span>]
         }
@@ -20352,7 +19573,7 @@ Example
             }]
         }
     },
-    <span class="hljs-string">"action"</span>: {
+    <span class="hljs-string">"actions"</span>: {
         <span class="hljs-string">"configure"</span>: {
             ...
             <span class="hljs-string">"forms"</span>: [{
@@ -20662,8 +19883,11 @@ serializations
                 <span class=
 "hljs-string">"maximum"</span>: <span class=
 "hljs-number">100.0</span>
-                },
-                <span class="hljs-string">"rgb"</span>: {
+<del class="diff-old">                },
+                : {
+</del>
+<ins class="diff-chg">            },
+</ins>            <span class="hljs-string">"rgb"</span>: {
                 <span class=
 "hljs-string">"type"</span>: <span class=
 "hljs-string">"array"</span>,
@@ -20902,8 +20126,6 @@ They
 rely
 on
 the
-<del class="diff-old">the
-</del>
 <a href="#dfn-class" class="internalDFN" data-link-type="dfn">
 Class
 </a>
@@ -21260,8 +20482,6 @@ They
 rely
 on
 the
-<del class="diff-old">the
-</del>
 <a href="#dfn-class" class="internalDFN" data-link-type= "dfn">
 Class
 </a>
@@ -21350,8 +20570,6 @@ Example
 18
 </bdi>
 </a>
-<del class="diff-old">:
-</del>
 <span class= "example-title">:
 Sample
 of
@@ -21390,7 +20608,14 @@ to
 adopt
 existing
 (e.g.,
-WebSub)
+WebSub
+[
+<cite>
+<a class="bibref" href="#bib-websub" title="WebSub" data-link-type= "biblio">
+websub
+</a>
+</cite>
+])
 or
 customer-oriented
 event
@@ -21422,8 +20647,8 @@ details
 in
 [
 <cite>
-<a class="bibref" href= "#bib-wot-binding-templates" title= "Web of Things (WoT) Protocol Binding Templates" data-link-type= "biblio">
-WoT-Binding-Templates
+<a class="bibref" href="#bib-wot-binding-templates" title= "Web of Things (WoT) Protocol Binding Templates" data-link-type= "biblio">
+WOT-BINDING-TEMPLATES
 </a>
 </cite>
 ].
@@ -21887,10 +21112,7 @@ Example
         <span class=
 "hljs-string">"https://www.w3.org/2019/wot/td/v1"</span>,
         { <span class="hljs-string">"eg"</span>: <span class=
-<del class="diff-old">"hljs-string"&gt;"http://www.example.org/iot" }
-</del>
-<ins class="diff-chg">"hljs-string">"http://www.example.org/iot#"</span> }
-</ins>
+"hljs-string">"http://www.example.org/iot#"</span> }
     ],
     ...
     <span class="hljs-string">"actions"</span>: {
@@ -21945,11 +21167,11 @@ to
 assign
 a
 media
-types
+type
 [
 <cite>
-<a class="bibref" href="#bib-iana-media-types" title= "Media Types" data-link-type="biblio">
-IANA-MEDIA-TYPES
+<a class="bibref" href="#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types" data-link-type="biblio">
+RFC2046
 </a>
 </cite>
 ]
@@ -22394,6 +21616,115 @@ Example
 </code>
 </pre>
 </div>
+<p>
+In
+the
+case
+of
+operation
+type
+<code>
+writeallproperties
+</code>,
+it
+is
+expected
+that
+the
+<a href="#dfn-consumer" class="internalDFN" data-link-type="dfn">
+Consumer
+</a>
+provides
+<del class="diff-old">ALL
+</del>
+<ins class="diff-chg">all
+</ins>
+writable
+(non
+<code>
+readOnly
+</code>
+)
+properties
+and
+the
+(new)
+assigned
+values
+(e.g.,
+within
+payload).
+<del class="diff-old">Otherwise
+</del>
+<ins class="diff-chg">Similarly,
+for
+</ins>
+the
+<code>
+<ins class="diff-chg">writemultipleproperties
+</ins></code><ins class="diff-chg">
+operation
+type,
+it
+is
+expected
+that
+the
+</ins><a href="#dfn-consumer" class="internalDFN" data-link-type="dfn"><ins class="diff-chg">
+Consumer
+</ins></a><ins class="diff-chg">
+provides
+writable
+(non
+</ins><code><ins class="diff-chg">
+readOnly
+</ins></code><ins class="diff-chg">
+)
+properties.
+On
+the
+</ins><a href="#dfn-thing" class="internalDFN" data-link-type="dfn">
+Thing
+</a>
+<del class="diff-old">MAY
+refuse
+this
+call
+</del>
+<ins class="diff-chg">side,
+</ins><a href= "#dfn-thing" class="internalDFN" data-link-type="dfn"><ins class="diff-chg">
+Thing
+</ins></a><ins class="diff-chg">
+is
+expected
+</ins>
+to
+<del class="diff-old">avoid
+inconsistency.
+</del>
+<ins class="diff-chg">return
+readable
+(non
+</ins><code><ins class="diff-chg">
+writeOnly
+</ins></code><ins class="diff-chg">
+)
+properties
+in
+the
+case
+of
+</ins><code><ins class="diff-chg">
+readmultipleproperties
+</ins></code><ins class="diff-chg">
+and
+</ins><code><ins class="diff-chg">
+readallproperties
+</ins></code><ins class="diff-chg">
+operation
+types.
+</ins>
+</p>
 </section>
 <section id="data-schema-serialization-json">
 <h4 id="x6-3-10-data-schemas">
@@ -22437,8 +21768,8 @@ Schema
 terms
 [
 <cite>
-<a class="bibref" href= "#bib-json-schema-validation" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
-JSON-SCHEMA-VALIDATION
+<a class="bibref" href= "#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+JSON-SCHEMA
 </a>
 </cite>
 ].
@@ -23052,48 +22383,20 @@ value
 can
 be
 selected
-<del class="diff-old">freely,
-however,
-</del>
-<ins class="diff-chg">freely.
+freely.
 However,
-</ins>
 it
 is
 recommended
 to
 select
 units
-<del class="diff-old">based
-on
-existing
-definitions
-by
-integrating
-the
-corresponding
-namespace
-(e.g.,
-from
-Smart
-Appliances
-REFerence
-(SAREF)
-ontology
-or
-Ontology
-of
-units
-of
-Measure
-(OM)).
-</del>
-<ins class="diff-chg">defined
+defined
 in
 well-known
-</ins><a href="#dfn-vocab" class= "internalDFN" data-link-type="dfn"><ins class="diff-chg">
+<a href="#dfn-vocab" class= "internalDFN" data-link-type="dfn">
 Vocabularies
-</ins></a>.
+</a>.
 See
 <a href= "#sec-context-extensions" class="sec-ref">
 §&nbsp;
@@ -23105,11 +22408,8 @@ Context
 Extensions
 </a>
 for
-<del class="diff-old">details.
-</del>
-<ins class="diff-chg">an
+an
 example.
-</ins>
 </p>
 </section>
 </section>
@@ -23418,12 +22718,8 @@ Example
         <span class=
 "hljs-string">"https://www.w3.org/2019/wot/td/v1"</span>,
         {
-<del class="diff-old">            : &lt;span class=
-"hljs-string"&gt;"http://example.org/iot",
-</del>
             <span class="hljs-string">"eg"</span>: <span class=
-<ins class="diff-chg">"hljs-string">"http://example.org/iot#"</span>,
-</ins>
+"hljs-string">"http://example.org/iot#"</span>,
             <span class="hljs-string">"cov"</span>: <span class=
 "hljs-string">"http://www.example.org/coap-binding#"</span>
         },
@@ -23443,11 +22739,6 @@ Semantic
 Annotations
 <a class="self-link" aria-label="§" href= "#semantic-annotations">
 </a>
-<del class="diff-old">This
-section
-is
-non-normative.
-</del>
 </h3>
 <p>
 <a href="#dfn-context-ext" class="internalDFN" data-link-type= "dfn">
@@ -23700,56 +22991,44 @@ and
 firmware
 of
 the
-<del class="diff-old">Thing,
-semantically
-annotates
-a
-Property,
-</del>
 <a href="#dfn-thing" class="internalDFN" data-link-type="dfn">
-<ins class="diff-chg">Thing
-</ins></a>,
+Thing
+</a>,
 and
 uses
-<del class="diff-old">a
-well-defined
-value
-</del>
-<ins class="diff-chg">values
+values
 from
 external
-</ins><a href="#dfn-vocab" class="internalDFN" data-link-type= "dfn"><ins class="diff-chg">
+<a href="#dfn-vocab" class="internalDFN" data-link-type= "dfn">
 Vocabularies
-</ins></a><ins class="diff-chg">
+</a>
 for
 the
-</ins><a href="#dfn-thing" class= "internalDFN" data-link-type="dfn"><ins class="diff-chg">
+<a href="#dfn-thing" class= "internalDFN" data-link-type="dfn">
 Thing
-</ins></a><ins class="diff-chg">
+</a>
 and
-</ins>
 for
 the
 data
 schema
-<del class="diff-old">unit.
-</del>
-<ins class="diff-chg">unit:
-</ins><a href="https://w3id.org/saref"><ins class="diff-chg">
+unit:
+<a href="https://w3id.org/saref">
 SAREF
-</ins></a>,<ins class="diff-chg">
+</a>,
 also
 used
 in
-</ins><a href="#thing-description-full-serialization" class= "box-ref"><ins class="diff-chg">
+<a href="#thing-description-full-serialization" class= "box-ref">
 Example
-</ins><bdi><ins class="diff-chg">
+<bdi>
 2
-</ins></bdi></a>,<ins class="diff-chg">
+</bdi>
+</a>,
 and
-</ins><a href= "http://www.ontology-of-units-of-measure.org/resource/om-2/"><ins class="diff-chg">
+<a href= "http://www.ontology-of-units-of-measure.org/resource/om-2/">
 OM
-</ins></a>,<ins class="diff-chg">
+</a>,
 the
 Ontology
 of
@@ -23757,13 +23036,15 @@ Units
 of
 Measure
 [
-</ins><cite><a class="bibref" href= "#bib-rijgersberg-et-al-2013" title= "Ontology of Units of Measure and Related Concepts" data-link-type= "biblio"><ins class="diff-chg">
-Rijgersberg-et-al-2013
-</ins></a></cite><ins class="diff-chg">
+<cite>
+<a class="bibref" href= "#bib-rijgersberg" title= "Ontology of Units of Measure and Related Concepts" data-link-type= "biblio">
+RIJGERSBERG
+</a>
+</cite>
 ].&nbsp;These
-</ins><a href= "#dfn-vocab" class="internalDFN" data-link-type= "dfn"><ins class="diff-chg">
+<a href="#dfn-vocab" class="internalDFN" data-link-type="dfn">
 Vocabularies
-</ins></a><ins class="diff-chg">
+</a>
 are
 used
 as
@@ -23777,7 +23058,6 @@ the
 home
 automation
 domain.
-</ins>
 </p>
 <div class="example" id="example-28">
 <div class="marker">
@@ -23798,15 +23078,9 @@ Example
             <span class="hljs-string">"saref"</span>: <span class=
 "hljs-string">"https://w3id.org/saref#"</span>,
             <span class="hljs-string">"om"</span>: <span class=
-<del class="diff-old">"hljs-string"&gt;"http://www.wurvoc.org/vocabularies/om-1.8/"
-</del>
-<ins class="diff-chg">"hljs-string">"http://www.ontology-of-units-of-measure.org/resource/om-2/"</span>
-</ins>
+"hljs-string">"http://www.ontology-of-units-of-measure.org/resource/om-2/"</span>
         }
     ],
-<del class="diff-old">    : &lt;span class=
-"hljs-string"&gt;"Thing",
-</del>
     <span class="hljs-string">"version"</span>: {
         <span class="hljs-string">"instance"</span>: <span class=
 "hljs-string">"1.2.1"</span>,
@@ -23817,13 +23091,9 @@ Example
     },
     ...
     <span class="hljs-string">"@type"</span>: <span class=
-<ins class="diff-new">"hljs-string">"saref:TemperatureSensor"</span>,
-</ins>
+"hljs-string">"saref:TemperatureSensor"</span>,
     <span class="hljs-string">"properties"</span>: {
         <span class="hljs-string">"temperature"</span>: {
-<del class="diff-old">            : &lt;span class=
-"hljs-string"&gt;"saref:Temperature",
-</del>
             <span class=
 "hljs-string">"description"</span>: <span class=
 "hljs-string">"Temperature value of the weather station"</span>,
@@ -23848,8 +23118,11 @@ Example
 In
 many
 cases,
-context
-extension
+<a href="#dfn-context-ext" class="internalDFN" data-link-type="dfn">
+TD
+Context
+Extensions
+</a>
 may
 be
 used
@@ -23860,69 +23133,61 @@ of
 a
 data
 schema,
-<del class="diff-old">as
-</del>
-<ins class="diff-chg">to
+to
 be
 able
 to
 semantically
 process
-actual
-data
-during
-an
-interaction.
-For
-example,
 the
-internal
 state
+information
 of
 the
-</ins><a href="#dfn-thing" class="internalDFN" data-link-type= "dfn"><ins class="diff-chg">
-Thing
-</ins></a>,<ins class="diff-chg">
-semantically
-described
+physical
+world
+object,
+which
+is
+represented
+by
+the
+data
+exchanged
+during
+an
+interaction
+(e.g.,
 in
-RDF,
+the
+payload
+of
+a
+response).
+For
+example,
+a
+semantic
+description
+of
+this
+state
+information
+in
+RDF
 can
 be
 embedded
-</ins>
 in
 the
-<del class="diff-old">TD&nbsp;snippet
-below.
-The
-example
-references
-SSN/SOSA
-[
-vocab-ssn
-</del>
-<a href="#dfn-td-document" class="internalDFN" data-link-type= "dfn">
-<ins class="diff-chg">TD
+<a href= "#dfn-td-document" class="internalDFN" data-link-type="dfn">
+TD
 Document
-</ins>
 </a>
-<del class="diff-old">]
-</del>
 and
-<del class="diff-old">OM
-1.8,
-an
-ontology
-for
-units
-</del>
-<ins class="diff-chg">pieces
-</ins>
+pieces
 of
-<del class="diff-old">measure
-</del>
-<ins class="diff-chg">a
+a
 data
 schema
 can
@@ -23936,9 +23201,15 @@ specific
 parts
 of
 that
-internal
-state.
-</ins></p><p><ins class="diff-chg">
+RDF-modeled
+state
+of
+the
+physical
+world
+object.
+</p>
+<p>
 The
 TD
 snippet
@@ -23954,97 +23225,56 @@ a
 lamp.
 The
 external
-</ins><a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn"><ins class="diff-chg">
+<a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">
 Vocabulary
 Term
-</ins></a><code><ins class="diff-chg">
+</a>
+<code>
 ssn:forProperty
-</ins></code>,<ins class="diff-chg">
+</code>,
 taken
 from
-</ins><a href= "https://www.w3.org/TR/vocab-ssn/"><ins class="diff-chg">
+<a href= "https://www.w3.org/TR/vocab-ssn/">
 SSN
-</ins></a>,<ins class="diff-chg">
+</a>,
 the
 Semantic
 Sensor
 Network
 Ontology
-</ins>
 [
 <cite>
-<del class="diff-old">Rijgersberg-et-al-2013
-</del>
 <a class="bibref" href="#bib-vocab-ssn" title="Semantic Sensor Network Ontology" data-link-type= "biblio">
-<ins class="diff-chg">vocab-ssn
-</ins>
+VOCAB-SSN
 </a>
 </cite>
-<del class="diff-old">].
-Note
-that
-object
-assigned
-to
-temperature
-</del>
-<ins class="diff-chg">],
-</ins>
+],
 is
-<del class="diff-old">a
-</del>
-<ins class="diff-chg">being
+being
 used
 to
 link
 the
-</ins>
 data
 schema
-<del class="diff-old">and
-not
-</del>
-<ins class="diff-chg">of
+of
 the
-</ins><code><ins class="diff-chg">
+<code>
 status
-</ins></code><a href="#dfn-property" class= "internalDFN" data-link-type="dfn"><ins class="diff-chg">
+</code>
+<a href="#dfn-property" class= "internalDFN" data-link-type="dfn">
 Property
-</ins></a><ins class="diff-chg">
+</a>
 with
-</ins>
 the
 actual
-<del class="diff-old">temperature
-property
-</del>
-<ins class="diff-chg">on/off
+on/off
 state
-</ins>
 of
 the
 physical
 world
 object.
-<del class="diff-old">More
-details
-on
-modeling
-the
-physical
-world
-can
-be
-found
-in
-Appendix
-§&nbsp;
-D.2
-Thing
-Description
-Ontology
-.
-</del>
 </p>
 <div class="example" id="saref-state-annotation-example">
 <div class="marker">
@@ -24060,71 +23290,55 @@ Example
         <span class=
 "hljs-string">"https://www.w3.org/2019/wot/td/v1"</span>,
         {
-<del class="diff-old">            : &lt;span class=
-"hljs-string"&gt;"http://www.w3.org/ns/sosa/",
-</del>
             <span class="hljs-string">"saref"</span>: <span class=
-<ins class="diff-chg">"hljs-string">"https://w3id.org/saref#"</span>,
-</ins>
+"hljs-string">"https://w3id.org/saref#"</span>,
             <span class="hljs-string">"ssn"</span>: <span class=
-<del class="diff-old">"hljs-string"&gt;"http://www.w3.org/ns/ssn/",
-            : &lt;span class=
-"hljs-string"&gt;"http://www.wurvoc.org/vocabularies/om-1.8/"
-</del>
-<ins class="diff-chg">"hljs-string">"http://www.w3.org/ns/ssn/"</span>
-</ins>
+"hljs-string">"http://www.w3.org/ns/ssn/"</span>
         }
     ],
-<del class="diff-old">    : &lt;span class=
-"hljs-string"&gt;"Thing",
-</del>
     <span class="hljs-string">"id"</span>: <span class=
 "hljs-string">"urn:dev:ops:32473-WoTLamp-1234"</span>,
-<del class="diff-old">    : {
-</del>
     <span class="hljs-string">"@type"</span>: <span class=
-<ins class="diff-chg">"hljs-string">"saref:LightSwitch"</span>,
-</ins>    <span class="hljs-string">"saref:hasState"</span>: {
+"hljs-string">"saref:LightSwitch"</span>,
+    <span class="hljs-string">"saref:hasState"</span>: {
         <span class="hljs-string">"@id"</span>: <span class=
-<del class="diff-old">"hljs-string"&gt;"urn:dev:ops:32473-WoTStation-1234/temperature",
-</del>
-<ins class="diff-chg">"hljs-string">"urn:dev:ops:32473-WoTLamp-1234/state"</span>,
-</ins>
+"hljs-string">"urn:dev:ops:32473-WoTLamp-1234/state"</span>,
         <span class="hljs-string">"@type"</span>: <span class=
-<del class="diff-old">"hljs-string"&gt;"om:Temperature"
-</del>
-<ins class="diff-chg">"hljs-string">"saref:OnOffState"</span>
-</ins>
+"hljs-string">"saref:OnOffState"</span>
     },
     ...
     <span class="hljs-string">"properties"</span>: {
-<del class="diff-old">        : {
-</del>
         <span class="hljs-string">"status"</span>: {
             <span class=
 "hljs-string">"ssn:forProperty"</span>: <span class=
-<del class="diff-old">"hljs-string"&gt;"urn:dev:ops:32473-WoTStation-1234/temperature",
-            &lt;span class=
-"hljs-string"&gt;"description": &lt;span class=
-"hljs-string"&gt;"Temperature measurement of the weather station",
-</del>
-<ins class="diff-chg">"hljs-string">"urn:dev:ops:32473-WoTLamp-1234/state"</span>,
-</ins>
+"hljs-string">"urn:dev:ops:32473-WoTLamp-1234/state"</span>,
             <span class="hljs-string">"type"</span>: <span class=
-<del class="diff-old">"hljs-string"&gt;"number",
-            &lt;span class=
-"hljs-string"&gt;"minimum",
-</del>
-<ins class="diff-chg">"hljs-string">"string"</span>,
-</ins>
+"hljs-string">"string"</span>,
             <span class=
-<del class="diff-old">"hljs-string"&gt;"maximum",
-            : &lt;span class=
-"hljs-string"&gt;"om:degree_Celsius",
-            : [...]
-</del>
-<ins class="diff-chg">"hljs-string">"forms"</span>: [{<span class="hljs-string">"href"</span>: <span class="hljs-string">"https://mylamp.example.com/status"</span>}]
-</ins>
+"hljs-string">"forms"</span>: [{<span class="hljs-string">"href"</span>: <span class="hljs-string">"https://mylamp.example.com/status"</span>}]
+        },
+        <span class="hljs-string">"fullStatus"</span>: {
+            <span class=
+"hljs-string">"ssn:forProperty"</span>: <span class=
+"hljs-string">"urn:dev:ops:32473-WoTLamp-1234/state"</span>,
+            <span class="hljs-string">"type"</span>: <span class=
+"hljs-string">"object"</span>,
+            <span class="hljs-string">"properties"</span>: {
+                <span class=
+"hljs-string">"statusString"</span>: { <span class=
+"hljs-string">"type"</span>: <span class=
+"hljs-string">"string"</span> },
+                <span class=
+"hljs-string">"statusCode"</span>: { <span class=
+"hljs-string">"type"</span>: <span class=
+"hljs-string">"number"</span> },
+                <span class=
+"hljs-string">"statusDescription"</span>: { <span class=
+"hljs-string">"type"</span>: <span class=
+"hljs-string">"string"</span> }
+            },
+            <span class=
+"hljs-string">"forms"</span>: [{<span class="hljs-string">"href"</span>: <span class="hljs-string">"https://mylamp.example.com/status?full=true"</span>}]
         },
         ...
     },
@@ -24134,79 +23348,109 @@ Example
 </pre>
 </div>
 <p>
-<ins class="diff-new">In
-</ins><a href="#thing-description-full-serialization" class= "box-ref"><ins class="diff-new">
+In
+<a href="#thing-description-full-serialization" class= "box-ref">
 Example
-</ins><bdi><ins class="diff-new">
+<bdi>
 2
-</ins></bdi></a>,<ins class="diff-new">
+</bdi>
+</a>,
 the
 state
 of
 the
-</ins><a href= "#dfn-thing" class="internalDFN" data-link-type="dfn"><ins class="diff-new">
+<a href= "#dfn-thing" class="internalDFN" data-link-type="dfn">
 Thing
-</ins></a><ins class="diff-new">
+</a>
 is
 given
 by
 the
-</ins><code><ins class="diff-new">
+<code>
 status
-</ins></code><ins class="diff-new">
+</code>
+affordance
+itself
 and
-</ins><code><ins class="diff-new">
+possible
+state
+changes
+are
+given
+by
+the
+<code>
 toggle
-</ins></code><ins class="diff-new">
-affordances
-themselves.
+</code>
+affordance.
 In
 other
 words,
 the
-object's
-internal
 state
-is
-its
-own
-affordance.
+of
+the
+physical
+world
+object
+directly
+provides
+the
+<a href="#dfn-interaction-affordance" class= "internalDFN" data-link-type="dfn">
+Interaction
+Affordances
+</a>
+of
+the
+<a href="#dfn-thing" class="internalDFN" data-link-type= "dfn">
+Thing
+</a>.
 This
 design
 is
 satisfactory
 for
 simple
-cases
-like
-a
-light
-switch
-but
-in
+cases.
+In
+more
+elaborate
+cases,
+however,
+several
+affordances
+may
+be
+available
+for
 the
-general
-case,
-it
-is
-considered
-a
-good
-practice
-to
-separate
+same
+physical
+state.
+In
+the
+example
+above,
+the
+<code>
+fullStatus
+</code>
+<a href="#dfn-property" class="internalDFN" data-link-type="dfn">
+Property
+</a>
+provides
+an
+alternative,
+more
+verbose
+representation
+for
 the
 state
-from
-interaction
-affordances,
-as
-illustrated
-above
-with
-</ins><code><ins class="diff-new">
-ssn:forProperty
-</ins></code>.</p>
+of
+the
+lamp.
+</p>
 </section>
 <section id="adding-protocol-bindings">
 <h3 id="x7-2-adding-protocol-bindings">
@@ -24218,11 +23462,6 @@ Protocol
 Bindings
 <a class="self-link" aria-label="§" href= "#adding-protocol-bindings">
 </a>
-<del class="diff-old">This
-section
-is
-non-normative.
-</del>
 </h3>
 <p>
 With
@@ -24317,14 +23556,24 @@ that
 there
 is
 a
+<em>
 CoAP
+in
 RDF
 vocabulary
+</em>
 similar
 to
+<em>
+HTTP
+Vocabulary
+in
+RDF
+1.0
+</em>
 [
 <cite>
-<a class="bibref" href= "#bib-http-in-rdf10" title="HTTP Vocabulary in RDF 1.0" data-link-type="biblio">
+<a class="bibref" href="#bib-http-in-rdf10" title="HTTP Vocabulary in RDF 1.0" data-link-type= "biblio">
 HTTP-in-RDF10
 </a>
 </cite>
@@ -24333,7 +23582,8 @@ that
 is
 accessible
 via
-the
+an
+example
 namespace
 <code>
 http://www.example.org/coap-binding#
@@ -24398,8 +23648,9 @@ Specialization
 of
 forms
 through
-context
-extension
+TD
+Context
+Extension
 </span>
 </div>
 <pre aria-busy="false"><code class="hljs javascript">{
@@ -24459,11 +23710,6 @@ Security
 Schemes
 <a class="self-link" aria-label="§" href= "#adding-security-schemes">
 </a>
-<del class="diff-old">This
-section
-is
-non-normative.
-</del>
 </h3>
 <p>
 Finally,
@@ -24507,8 +23753,8 @@ based
 on
 [
 <cite>
-<a class="bibref" href= "#bib-draft-ietf-ace-oauth-authz" title= "Authentication and Authorization for Constrained Environments (ACE) using the OAuth 2.0 Framework (ACE-OAuth)" data-link-type="biblio">
-draft-ietf-ace-oauth-authz
+<a class="bibref" href="#bib-ace" title= "Authentication and Authorization for Constrained Environments (ACE) using the OAuth 2.0 Framework (ACE-OAuth)" data-link-type="biblio">
+ACE
 </a>
 </cite>
 ]
@@ -24610,7 +23856,7 @@ Example
             }]
         }
     },
-    <span class="hljs-string">"action"</span>: {
+    <span class="hljs-string">"actions"</span>: {
         <span class="hljs-string">"configure"</span>: {
             ...
             <span class="hljs-string">"forms"</span>: [{
@@ -24668,8 +23914,11 @@ be
 included
 through
 a
-context
-extension.
+<a href="#dfn-context-ext" class= "internalDFN" data-link-type="dfn">
+TD
+Context
+Extension
+</a>.
 </p>
 </section>
 </section>
@@ -25066,6 +24315,61 @@ WoT
 Thing
 Description.
 </span>
+This
+applies
+to
+<code>
+ObjectSchema
+</code>
+and
+<code>
+ArraySchema
+</code>
+(when
+<code>
+items
+</code>
+is
+an
+Array
+of
+<code>
+DataSchema
+</code>
+)
+where
+there
+can
+be
+additional
+properties
+or
+items
+in
+the
+data
+returned.
+This
+behaves
+as
+if
+<code>
+"additionalProperties":true
+</code>
+or
+<code>
+"additionalItems":true
+</code>
+as
+defined
+in
+[
+<cite>
+<a class= "bibref" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+JSON-SCHEMA
+</a>
+</cite>
+].
 </li>
 <li>
 <span class="rfc2119-assertion" id= "client-data-schema-accept-extras">
@@ -25113,6 +24417,61 @@ target
 Thing
 </a>.
 </span>
+This
+applies
+to
+<code>
+ObjectSchema
+</code>
+and
+<code>
+ArraySchema
+</code>
+(when
+<code>
+items
+</code>
+is
+an
+Array
+of
+<code>
+DataSchema
+</code>
+)
+where
+there
+can
+be
+additional
+properties
+or
+items
+in
+the
+data
+returned.
+This
+behaves
+as
+if
+<code>
+"additionalProperties":true
+</code>
+or
+<code>
+"additionalItems":true
+</code>
+as
+defined
+in
+[
+<cite>
+<a class= "bibref" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+JSON-SCHEMA
+</a>
+</cite>
+].
 </li>
 <li>
 <span class="rfc2119-assertion" id= "client-data-schema-no-extras">
@@ -25292,7 +24651,7 @@ or
 MQTT
 [
 <cite>
-<a class="bibref" href="#bib-mqtt" title="MQTT Version 5.0" data-link-type= "biblio">
+<a class="bibref" href="#bib-mqtt" title="MQTT Version 3.1.1" data-link-type= "biblio">
 MQTT
 </a>
 </cite>
@@ -25366,7 +24725,7 @@ implements
 [
 <cite>
 <a class="bibref" href="#bib-wot-architecture" title= "Web of Things (WoT) Architecture" data-link-type= "biblio">
-WoT-Architecture
+WOT-ARCHITECTURE
 </a>
 </cite>
 ].
@@ -25397,11 +24756,13 @@ Thing
 </a>
 implements
 the
-HTTP
 <a href="#dfn-protocol-binding" class="internalDFN" data-link-type= "dfn">
 Protocol
 Binding
 </a>
+based
+on
+HTTP
 and
 it
 should
@@ -25415,14 +24776,16 @@ instance
 (see
 next
 section,
-<a href= "#http-binding-assertions" class="sec-ref">
+<a href="#http-binding-assertions" class= "sec-ref">
 §&nbsp;
-<bdi class= "secno">
+<bdi class="secno">
 8.3.1
 </bdi>
-HTTP
 Protocol
 Binding
+based
+on
+HTTP
 </a>
 ).
 </p>
@@ -25494,14 +24857,16 @@ interaction.
 </li>
 </ul>
 <section id="http-binding-assertions">
-<h4 id="x8-3-1-http-protocol-binding">
+<h4 id="x8-3-1-protocol-binding-based-on-http">
 <bdi class= "secno">
 8.3.1
 </bdi>
-HTTP
 Protocol
 Binding
-<a class="self-link" aria-label="§" href="#http-binding-assertions">
+based
+on
+HTTP
+<a class= "self-link" aria-label="§" href= "#http-binding-assertions">
 </a>
 </h4>
 <p>
@@ -25512,28 +24877,37 @@ Thing
 Description
 supports
 the
-HTTP
 <a href= "#dfn-protocol-binding" class="internalDFN" data-link-type= "dfn">
 Protocol
 Binding
 </a>
-and
-includes
+based
+on
+HTTP
+by
+including
 the
 HTTP
 RDF
 vocabulary
-set
 definitions
 from
+<em>
+HTTP
+Vocabulary
+in
+RDF
+1.0
+</em>
 [
 <cite>
-<a class="bibref" href="#bib-http-in-rdf10" title="HTTP Vocabulary in RDF 1.0" data-link-type= "biblio">
+<a class="bibref" href="#bib-http-in-rdf10" title= "HTTP Vocabulary in RDF 1.0" data-link-type= "biblio">
 HTTP-in-RDF10
 </a>
 </cite>
-]
-and
+].
+This
+vocabulary
 can
 be
 directly
@@ -25556,6 +24930,27 @@ to
 <code>
 http://www.w3.org/2011/http#
 </code>.
+Further
+details
+of
+<a href="#dfn-protocol-binding" class="internalDFN" data-link-type= "dfn">
+Protocol
+Binding
+</a>
+based
+on
+HTTP
+can
+be
+found
+in
+[
+<cite>
+<a class="bibref" href="#bib-wot-binding-templates" title= "Web of Things (WoT) Protocol Binding Templates" data-link-type= "biblio">
+WOT-BINDING-TEMPLATES
+</a>
+</cite>
+].
 </p>
 <p>
 To
@@ -25568,13 +24963,15 @@ Thing
 that
 implements
 the
-HTTP
 <a href= "#dfn-protocol-binding" class="internalDFN" data-link-type= "dfn">
 Protocol
 Binding
-</a>,
+</a>
+based
+on
+HTTP,
 a
-<a href="#dfn-consumer" class= "internalDFN" data-link-type="dfn">
+<a href="#dfn-consumer" class="internalDFN" data-link-type="dfn">
 Consumer
 </a>
 needs
@@ -25614,20 +25011,30 @@ sake
 of
 conciseness,
 the
-HTTP
 <a href="#dfn-protocol-binding" class= "internalDFN" data-link-type="dfn">
 Protocol
 Binding
 </a>
+based
+on
+HTTP
 defines
-<a href="#dfn-default-value" class="internalDFN" data-link-type= "dfn">
+<a href="#dfn-default-value" class="internalDFN" data-link-type="dfn">
 Default
 Values
 </a>
 for
-each
+<del class="diff-old">each
+</del>
+<ins class="diff-chg">the
+</ins>
 operation
-type,
+<del class="diff-old">type,
+</del>
+<ins class="diff-chg">types
+listed
+below,
+</ins>
 which
 also
 aims
@@ -25648,7 +25055,7 @@ read,
 PUT
 to
 write).
-<span class="rfc2119-assertion" id= "td-default-http-method">
+<span class="rfc2119-assertion" id="td-default-http-method">
 When
 no
 method
@@ -25659,11 +25066,13 @@ a
 form
 representing
 an
-HTTP
-<a href="#dfn-protocol-binding" class= "internalDFN" data-link-type="dfn">
+<a href= "#dfn-protocol-binding" class="internalDFN" data-link-type= "dfn">
 Protocol
 Binding
-</a>,
+</a>
+based
+on
+HTTP,
 a
 <a href= "#dfn-default-value" class="internalDFN" data-link-type= "dfn">
 Default
@@ -25721,6 +25130,12 @@ operation
 type
 <code>
 readproperty
+</code>,
+<code>
+<ins class="diff-new">readallproperties
+</ins></code>,<code><ins class="diff-new">
+readmultipleproperties
+</ins>
 </code>
 </td>
 </tr>
@@ -25744,6 +25159,12 @@ operation
 type
 <code>
 writeproperty
+</code>,
+<code>
+<ins class="diff-new">writeallproperties
+</ins></code>,<code><ins class="diff-new">
+writemultipleproperties
+</ins>
 </code>
 </td>
 </tr>
@@ -25776,6 +25197,30 @@ invokeaction
 For
 example,
 the
+<a href= "#simple-thing-description-sample">
+Example
+1
+</a>
+in
+<a href= "#introduction" class="sec-ref">
+§&nbsp;
+<bdi class="secno">
+1.
+</bdi>
+Introduction
+</a>
+does
+not
+contain
+operation
+types
+and
+HTTP
+methods
+in
+the
+forms.
+The
 following
 <a href="#dfn-default-value" class= "internalDFN" data-link-type="dfn">
 Default
@@ -25785,12 +25230,14 @@ should
 be
 assumed
 for
+the
 forms
 in
 the
-introductory
-TD
-example:
+<a href= "#simple-thing-description-sample">
+Example
+1
+</a>:
 </p>
 <aside class="example with-default" id="example-32">
 <div class="marker">
@@ -25807,10 +25254,13 @@ Example
 <i>
 with
 default
-HTTP
+values
+for
 Protocol
 Binding
-values
+based
+on
+HTTP
 </i>
 </span>
 </div>
@@ -25951,9 +25401,9 @@ values
             <span class="hljs-attr">"forms"</span>: [
                 {
                     <span class=
-<ins class="diff-new">"hljs-attr">"op"</span>: <span class=
+"hljs-attr">"op"</span>: <span class=
 "hljs-string">"subscribeevent"</span>,
-</ins>                    <span class=
+                    <span class=
 "hljs-attr">"href"</span>: <span class=
 "hljs-string">"https://mylamp.example.com/oh"</span>,
                     <span class=
@@ -26061,13 +25511,16 @@ the
 usage
 of
 the
-context
-extension
+<a href= "#dfn-context-ext" class="internalDFN" data-link-type="dfn">
+TD
+Context
+Extension
+</a>
 mechanism
-(
-<a href="#sec-context-extensions" class= "sec-ref">
+(see
+<a href= "#sec-context-extensions" class="sec-ref">
 §&nbsp;
-<bdi class="secno">
+<bdi class= "secno">
 7.
 </bdi>
 TD
@@ -26075,6 +25528,28 @@ Context
 Extensions
 </a>
 ).
+</p>
+<p>
+Please
+refer
+to
+[
+<cite>
+<a class="bibref" href= "#bib-wot-binding-templates" title= "Web of Things (WoT) Protocol Binding Templates" data-link-type= "biblio">
+WOT-BINDING-TEMPLATES
+</a>
+</cite>
+]
+for
+information
+on
+how
+to
+describe
+IoT
+platforms
+and
+ecosystems.
 </p>
 </section>
 </section>
@@ -26131,6 +25606,34 @@ assets
 needs
 to
 protect.
+In
+addition
+privacy
+risks
+will
+depend
+on
+the
+association
+of
+Things
+with
+identifiable
+people
+and
+both
+the
+direct
+information
+and
+the
+inferred
+information
+available
+from
+such
+an
+association.
 A
 detailed
 discussion
@@ -26163,11 +25666,8 @@ informative
 document
 [
 <cite>
-<del class="diff-old">WOT-SECURITY-CONSIDERATIONS
-</del>
 <a class="bibref" href="#bib-wot-security-guidelines" title= "Web of Things (WoT) Security and Privacy Guidelines" data-link-type="biblio">
-<ins class="diff-chg">WOT-SECURITY-GUIDELINES
-</ins>
+WOT-SECURITY-GUIDELINES
 </a>
 </cite>
 ].
@@ -26258,19 +25758,25 @@ possible
 mitigations.
 </p>
 <section id="sec-security-consideration-context">
-<h3 id="x9-1-context-dereferencing-privacy-risk">
+<h3 id="x9-1-context-fetching-privacy-risk">
 <bdi class= "secno">
 9.1
 </bdi>
 Context
-Dereferencing
+<del class="diff-old">Dereferencing
+</del>
+<ins class="diff-chg">Fetching
+</ins>
 Privacy
 Risk
-<a class= "self-link" aria-label="§" href= "#sec-security-consideration-context">
+<a class="self-link" aria-label="§" href="#sec-security-consideration-context">
 </a>
 </h3>
 <p>
-Deferencing
+<del class="diff-old">Deferencing
+</del>
+<ins class="diff-chg">Fetching
+</ins>
 the
 vocabulary
 files
@@ -26286,7 +25792,7 @@ any
 JSON-LD
 [
 <cite>
-<a class= "bibref" href="#bib-json-ld11" title="JSON-LD 1.1" data-link-type= "biblio">
+<a class="bibref" href= "#bib-json-ld11" title="JSON-LD 1.1" data-link-type= "biblio">
 json-ld11
 </a>
 </cite>
@@ -26313,7 +25819,10 @@ traffic
 produced
 by
 such
-deferences
+<del class="diff-old">deferences
+</del>
+<ins class="diff-chg">fetches
+</ins>
 and
 can
 use
@@ -26321,7 +25830,10 @@ the
 metadata
 of
 the
-dereference,
+<del class="diff-old">dereference,
+</del>
+<ins class="diff-chg">fetch,
+</ins>
 such
 as
 the
@@ -26365,7 +25877,10 @@ Mitigation:
 <dd>
 Avoid
 actual
-dereferencing
+<del class="diff-old">dereferencing
+</del>
+<ins class="diff-chg">fetching
+</ins>
 of
 vocabulary
 files.
@@ -26389,7 +25904,10 @@ interpreting
 device,
 and
 not
-dereferenced
+<del class="diff-old">dereferenced
+</del>
+<ins class="diff-chg">fetched
+</ins>
 at
 all,
 with
@@ -26479,40 +25997,68 @@ Risk
 </a>
 </h3>
 <p>
-The
-fact
-that
-a
+A
 Thing
 Description
-contains
-a
-unique
+containing
+an
 identifier
-means
+(
+<code>
+id
+</code>
+)
+may
+describe
+a
+Thing
 that
-should
-it
-be
+is
 associated
 with
+an
+identifiable
+person.
+Such
+identifiers
+pose
+various
+risks
+including
+tracking.
+However,
+if
+the
+identifier
+is
+also
+immutable,
+then
+the
+tracking
+risk
+is
+amplified,
+since
 a
-person
-it
-can
+device
+may
 be
+sold
+or
+given
+to
+another
+person
+and
+the
+known
+ID
 used
 to
 track
 that
-person
-and
-therefore
-pose
-a
-risk
-to
-privacy.
+person.
 </p>
 <dl>
 <dt>
@@ -26677,10 +26223,7 @@ some
 classes
 of
 devices,
-<del class="diff-old">e.g.
-</del>
-<ins class="diff-chg">e.g.,
-</ins>
+e.g.,
 medical
 devices,
 may
@@ -26713,6 +26256,27 @@ containing
 such
 immutable
 identifiers.
+It
+may
+also
+be
+desirable
+to
+not
+share
+the
+"true"
+immutable
+identifier
+in
+such
+a
+case
+in
+the
+TD
+whenever
+possible.
 </dd>
 </dl>
 </section>
@@ -26778,10 +26342,64 @@ and
 from
 there
 to
-a
+an
+identifiable
 person,
 through
 fingerprinting.
+</p>
+<p>
+Even
+if
+a
+specific
+device
+instance
+cannot
+be
+identified
+through
+fingerprinting,
+it
+may
+be
+possible
+to
+infer
+the
+type
+of
+a
+device
+from
+the
+information
+in
+the
+TD,
+such
+as
+the
+set
+of
+interactions,
+and
+use
+this
+type
+to
+infer
+private
+information
+about
+an
+identifiable
+person,
+such
+as
+a
+medical
+condition.
 </p>
 <dl>
 <dt>
@@ -26803,7 +26421,26 @@ for
 a
 <a href="#dfn-thing" class="internalDFN" data-link-type="dfn">
 Thing
-</a>.
+</a>,
+and
+only
+the
+amount
+of
+information
+needed
+for
+the
+level
+of
+authorization
+and
+the
+use
+case
+should
+be
+provided.
 If
 the
 TD
@@ -26827,18 +26464,286 @@ service
 that
 requires
 authentication,
+then
+external
+unauthorized
+parties
+will
+not
+have
+access
+to
 the
-risk
+TD
+to
+fingerprint
+it.
+To
+further
+mitigate
+this
+risk,
+information
+not
+necessary
+for
+a
+particular
+use
+case
+of
+a
+TD
+should
+be
+omitted
+whenever
+possible.
+For
+example,
+for
+an
+ad-hoc
+connection
+to
+a
+device
+where
+the
+Consumer
+does
+not
+store
+state
+about
+the
+Thing,
+the
+<code>
+id
+</code>
 can
 be
-minimized.
+omitted.
+If
+the
+Consumer
+does
+not
+need
+certain
+interactions
+for
+its
+use
+case,
+they
+can
+be
+omitted.
+If
+the
+Consumer
+is
+not
+authorized
+to
+use
+certain
+interactions,
+they
+can
+likewise
+be
+omitted.
+If
+the
+Consumer
+does
+not
+have
+any
+capability
+to
+display
+human-readable
+information
+such
+as
+titles
+or
+descriptions,
+they
+can
+be
+omitted
+or
+replaced
+with
+zero-length
+strings.
+</dd>
+</dl>
+</section>
+<section id="sec-security-consideration-global-id-risk">
+<h3 id="x9-4-globally-unique-identifier-privacy-risk">
+<bdi class= "secno">
+9.4
+</bdi>
+Globally
+Unique
+Identifier
+Privacy
+Risk
+<a class= "self-link" aria-label="§" href= "#sec-security-consideration-global-id-risk">
+</a>
+</h3>
+<p>
+Globally
+unique
+identifiers
+pose
+a
+privacy
+risk
+if
+a
+centralized
+authority
+is
+needed
+to
+create
+and
+distribute
+them,
+since
+then
+a
+third
+party
+has
+knowledge
+of
+the
+identifiers.
+</p>
+<dl>
+<dt>
+Mitigation:
+</dt>
+<dd>
+The
+<code>
+id
+</code>
+field
+in
+TDs
+are
+intentionally
+not
+required
+to
+be
+globally
+unique.
+There
+are
+several
+cryptographic
+mechanisms
+available
+to
+generate
+suitable
+IDs
+in
+a
+distributed
+fashion
+that
+do
+not
+require
+a
+central
+registry.
+These
+mechanisms
+typically
+have
+a
+<del class="diff-old">a
+</del>
+very
+low
+probability
+of
+generating
+duplicate
+identifiers,
+and
+this
+needs
+to
+be
+taken
+into
+account
+in
+the
+system
+design;
+for
+example,
+by
+detecting
+duplicates
+and
+regenerating
+IDs
+when
+necessary.
+The
+scope
+of
+IDs
+also
+does
+not
+need
+to
+be
+global:
+it
+is
+acceptable
+to
+use
+identifiers
+that
+only
+distinguish
+Things
+in
+a
+certain
+context,
+such
+as
+within
+a
+home
+or
+factory.
 </dd>
 </dl>
 </section>
 <section id="sec-security-consideration-TD-tampering">
-<h3 id="x9-4-td-interception-and-tampering-security-risk">
+<h3 id="x9-5-td-interception-and-tampering-security-risk">
 <bdi class="secno">
-9.4
+9.5
 </bdi>
 TD
 Interception
@@ -26936,9 +26841,9 @@ users.
 </dl>
 </section>
 <section id="sec-security-consideration-context-tampering">
-<h3 id="x9-5-context-interception-and-tampering-security-risk">
+<h3 id="x9-6-context-interception-and-tampering-security-risk">
 <bdi class="secno">
-9.5
+9.6
 </bdi>
 Context
 Interception
@@ -27031,9 +26936,9 @@ reduced.
 </dl>
 </section>
 <section id="sec-security-consideration-inferencing">
-<h3 id= "x9-6-inferencing-of-personally-identifiable-information-privacy-risk">
+<h3 id= "x9-7-inferencing-of-personally-identifiable-information-privacy-risk">
 <bdi class="secno">
-9.6
+9.7
 </bdi>
 Inferencing
 of
@@ -27662,6 +27567,13 @@ substitution
 of
 long
 IRIs
+[
+<cite>
+<a class="bibref" href="#bib-rfc3987" title= "Internationalized Resource Identifiers (IRIs)" data-link-type= "biblio">
+RFC3987
+</a>
+</cite>
+]
 with
 short
 terms,
@@ -27693,11 +27605,11 @@ of
 the
 recipient's
 resources.
-<span class="rfc2119-assertion" id= "iana-security-expansion">
-<a href="#dfn-consumer" class= "internalDFN" data-link-type="dfn">
+<span class= "rfc2119-assertion" id="iana-security-expansion">
+<a href= "#dfn-consumer" class="internalDFN" data-link-type= "dfn">
 Consumers
 </a>
-<em class= "rfc2119" title="SHOULD">
+<em class="rfc2119" title="SHOULD">
 SHOULD
 </em>
 treat
@@ -27778,7 +27690,7 @@ as
 defined
 in
 the
-<a href="https://w3c.github.io/wot-architecture">
+<a href="https://www.w3.org/TR/wot-architecture">
 Web
 of
 Things
@@ -28046,7 +27958,7 @@ MyLampThing
 </li>
 <li>
 Context
-extension:
+Extensions:
 none
 </li>
 <li>
@@ -28139,8 +28051,7 @@ Binding
 "hljs-string">"string"</span>,
             <span class="hljs-attr">"forms"</span>: [{
                 <span class="hljs-attr">"op"</span>: <span class=
-<ins class="diff-new">"hljs-string">"readproperty"</span>,
-</ins>
+"hljs-string">"readproperty"</span>,
                 <span class="hljs-attr">"href"</span>: <span class=
 "hljs-string">"coaps://mylamp.example.com/status"</span>,
                 <span class=
@@ -28189,11 +28100,14 @@ Binding
 </div>
 </section>
 <section id="myLightSensor-example-serialization">
-<h3 id="a-2-mylightsensor-example-with-mqtt-protocol-binding">
+<h3 id= "a-2-myilluminancesensor-example-with-mqtt-protocol-binding">
 <bdi class="secno">
 A.2
 </bdi>
-MyLightSensor
+<del class="diff-old">MyLightSensor
+</del>
+<ins class="diff-chg">MyIlluminanceSensor
+</ins>
 Example
 with
 MQTT
@@ -28214,11 +28128,14 @@ Thing
 <ul>
 <li>
 Title:
-MyLightSensor
+<del class="diff-old">MyLightSensor
+</del>
+<ins class="diff-chg">MyIlluminanceSensor
+</ins>
 </li>
 <li>
 Context
-extension:
+Extensions:
 none
 </li>
 <li>
@@ -28237,7 +28154,7 @@ Binding:
 MQTT
 [
 <cite>
-<a class="bibref" href= "#bib-mqtt" title="MQTT Version 5.0" data-link-type= "biblio">
+<a class="bibref" href= "#bib-mqtt" title="MQTT Version 3.1.1" data-link-type= "biblio">
 MQTT
 </a>
 </cite>
@@ -28251,8 +28168,11 @@ client
 frequently
 publishes
 the
-light
+<del class="diff-old">light
 sensor
+</del>
+<ins class="diff-chg">illuminance
+</ins>
 data
 (number
 is
@@ -28263,7 +28183,12 @@ format)
 to
 the
 topic
-/lightSensor
+<code>
+<del class="diff-old">/lightSensor
+</del>
+<ins class="diff-chg">/illuminance
+</ins>
+</code>
 by
 the
 MQTT
@@ -28275,16 +28200,19 @@ address
 192.168.1.187:1883.
 </li>
 </ul>
-<div class="example" id= "example-34-mylightsensor-with-mqtt-protocol-binding">
+<div class="example" id= "example-34-myilluminancesensor-with-mqtt-protocol-binding">
 <div class="marker">
-<a class="self-link" href= "#example-34-mylightsensor-with-mqtt-protocol-binding">
+<a class="self-link" href= "#example-34-myilluminancesensor-with-mqtt-protocol-binding">
 Example
 <bdi>
 34
 </bdi>
 </a>
 <span class="example-title">:
-MyLightSensor
+<del class="diff-old">MyLightSensor
+</del>
+<ins class="diff-chg">MyIlluminanceSensor
+</ins>
 with
 MQTT
 Protocol
@@ -28295,9 +28223,15 @@ Binding
     <span class="hljs-attr">"@context"</span>: <span class=
 "hljs-string">"https://www.w3.org/2019/wot/td/v1"</span>,
     <span class="hljs-attr">"title"</span>: <span class=
-"hljs-string">"MyLightSensor"</span>,
+<del class="diff-old">"hljs-string"&gt;"MyLightSensor",
+</del>
+<ins class="diff-chg">"hljs-string">"MyIlluminanceSensor"</span>,
+</ins>
     <span class="hljs-attr">"id"</span>: <span class=
-"hljs-string">"urn:dev:ops:32473-WoTLightSensor-1234"</span>,
+<del class="diff-old">"hljs-string"&gt;"urn:dev:ops:32473-WoTLightSensor-1234",
+</del>
+<ins class="diff-chg">"hljs-string">"urn:dev:ops:32473-WoTIlluminanceSensor-1234"</span>,
+</ins>
     <span class=
 "hljs-attr">"securityDefinitions"</span>: {<span class=
 "hljs-attr">"nosec_sc"</span>: {<span class=
@@ -28306,7 +28240,9 @@ Binding
     <span class="hljs-attr">"security"</span>: [<span class=
 "hljs-string">"nosec_sc"</span>],
     <span class="hljs-attr">"events"</span>: {
-        <span class="hljs-attr">"lightSensor"</span>: {
+<del class="diff-old">        : {
+</del>
+        <span class="hljs-attr">"illuminance"</span>: {
             <span class="hljs-attr">"data"</span>:{<span class=
 "hljs-attr">"type"</span>: <span class=
 "hljs-string">"integer"</span>},
@@ -28314,10 +28250,19 @@ Binding
                 {
                     <span class=
 "hljs-attr">"href"</span>: <span class=
-"hljs-string">"mqtt://192.168.1.187:1883/lightSensor"</span>,
+<del class="diff-old">"hljs-string"&gt;"mqtt://192.168.1.187:1883/lightSensor",
+</del>
+<ins class="diff-chg">"hljs-string">"mqtt://192.168.1.187:1883/illuminance"</span>,
+</ins>
                     <span class=
 "hljs-attr">"contentType"</span> : <span class=
-"hljs-string">"text/plain"</span>
+<del class="diff-old">"hljs-string"&gt;"text/plain"
+</del>
+<ins class="diff-chg">"hljs-string">"text/plain"</span>,
+</ins>                    <span class=<ins class="diff-chg">
+"hljs-attr">"op"</span> : <span class=
+"hljs-string">"subscribeevent"</span>
+</ins>
                 }
             ]
         }
@@ -28354,7 +28299,7 @@ WebhookThing
 </li>
 <li>
 Context
-extension:
+Extensions:
 use
 HTTP
 <a href="#dfn-protocol-binding" class="internalDFN" data-link-type="dfn">
@@ -28533,8 +28478,11 @@ automated
 by
 using
 a
-context
-extension
+<a href= "#dfn-context-ext" class="internalDFN" data-link-type="dfn">
+TD
+Context
+Extension
+</a>
 to
 include
 proper
@@ -28742,8 +28690,8 @@ JSON
 Schema
 [
 <cite>
-<a class="bibref" href= "#bib-json-schema-validation" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
-JSON-SCHEMA-VALIDATION
+<a class="bibref" href= "#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+JSON-SCHEMA
 </a>
 </cite>
 ]
@@ -28943,7 +28891,7 @@ Definitions
 )
 </p>
 <pre class="advisement" aria-busy="false"><code class="hljs">    {
-    "title": "WoT TD Schema - 08 May 2019",
+    "title": "WoT TD Schema - 16 October 2019",
     "description": "JSON Schema for validating TD instances against the TD model. TD instances can be with or without terms that have default values",
     "$schema ": "http://json-schema.org/draft-07/schema#",
     "definitions": {
@@ -29670,7 +29618,7 @@ Definitions
                         "scheme": {
                             "type": "string",
                             "enum": [
-                                "cert"
+<del class="diff-old">                                "cert"
                             ]
                         },
                         "identity": {
@@ -29699,6 +29647,7 @@ Definitions
                         "scheme": {
                             "type": "string",
                             "enum": [
+</del>
                                 "digest"
                             ]
                         },
@@ -29830,7 +29779,7 @@ Definitions
                         "scheme": {
                             "type": "string",
                             "enum": [
-                                "public"
+<del class="diff-old">                                "public"
                             ]
                         },
                         "identity": {
@@ -29859,6 +29808,7 @@ Definitions
                         "scheme": {
                             "type": "string",
                             "enum": [
+</del>
                                 "oauth2"
                             ]
                         },
@@ -29880,15 +29830,17 @@ Definitions
                         "flow": {
                             "type": "string",
                             "enum": [
-                                "implicit",
+<del class="diff-old">                                "implicit",
                                 "password",
                                 "client",
+</del>
                                 "code"
                             ]
                         }
                     },
                     "required": [
-                        "scheme"
+                        "scheme",
+                        "flow"
                     ]
                 },
                 {
@@ -29928,7 +29880,7 @@ Definitions
                     "required": [
                         "scheme"
                     ]
-                },
+<del class="diff-old">                },
                 {
                     "type": "object",
                     "properties": {
@@ -29985,6 +29937,7 @@ Definitions
                     "required": [
                         "scheme"
                     ]
+</del>
                 }
             ]
         },
@@ -30088,7 +30041,6 @@ Definitions
     },
     "required": [
         "title",
-        "id",
         "security",
         "securityDefinitions",
         "@context"
@@ -30099,13 +30051,14 @@ Definitions
 </pre>
 </section>
 <section id="thing-templates" class="appendix informative">
-<h2 id="c-thing-templates">
+<h2 id="c-thing-description-templates">
 <bdi class="secno">
 C.
 </bdi>
 Thing
+Description
 Templates
-<a class="self-link" aria-label="§" href= "#thing-templates">
+<a class="self-link" aria-label="§" href="#thing-templates">
 </a>
 </h2>
 <p>
@@ -30120,6 +30073,7 @@ non-normative.
 A
 <em>
 Thing
+Description
 Template
 </em>
 is
@@ -30131,7 +30085,7 @@ a
 class
 </em>
 of
-<a href="#dfn-thing" class="internalDFN" data-link-type= "dfn">
+<a href="#dfn-thing" class="internalDFN" data-link-type="dfn">
 Things
 </a>.
 It
@@ -30151,7 +30105,7 @@ an
 entire
 group
 of
-<a href= "#dfn-thing" class="internalDFN" data-link-type="dfn">
+<a href="#dfn-thing" class="internalDFN" data-link-type= "dfn">
 Things
 </a>,
 to
@@ -30174,12 +30128,13 @@ practical
 on
 a
 per-
-<a href="#dfn-thing" class= "internalDFN" data-link-type="dfn">
+<a href= "#dfn-thing" class="internalDFN" data-link-type="dfn">
 Thing
 </a>
 basis.
 The
 Thing
+Description
 Template
 uses
 the
@@ -30190,12 +30145,20 @@ and
 information
 model
 from
-section
+<a href="#sec-vocabulary-definition" class="sec-ref">
+§&nbsp;
+<bdi class="secno">
 5.
+</bdi>
+TD
+Information
+Model
+</a>.
 </p>
 <p>
 The
 Thing
+Description
 Template
 enables:
 </p>
@@ -30257,6 +30220,7 @@ Thing
 <p>
 The
 Thing
+Description
 Template
 is
 a
@@ -30299,6 +30263,7 @@ endpoints.
 Since
 a
 Thing
+Description
 Template
 does
 not
@@ -30341,12 +30306,13 @@ present.
 The
 same
 Thing
+Description
 Template
 can
 be
 implemented
 by
-<a href= "#dfn-thing" class="internalDFN" data-link-type="dfn">
+<a href="#dfn-thing" class="internalDFN" data-link-type= "dfn">
 Things
 </a>
 from
@@ -30360,6 +30326,7 @@ can
 implement
 multiple
 Thing
+Description
 Templates,
 define
 additional
@@ -30384,6 +30351,7 @@ events
 from
 different
 Thing
+Description
 Templates
 that
 are
@@ -30402,7 +30370,7 @@ be
 unique
 within
 a
-<a href="#dfn-thing" class= "internalDFN" data-link-type="dfn">
+<a href="#dfn-thing" class="internalDFN" data-link-type="dfn">
 Thing
 </a>.
 </p>
@@ -30410,6 +30378,7 @@ Thing
 A
 common
 Thing
+Description
 Template
 for
 a
@@ -30438,6 +30407,7 @@ can
 implement
 multiple
 Thing
+Description
 Templates
 and
 thus
@@ -30472,6 +30442,7 @@ with
 the
 same
 Thing
+Description
 Template
 can
 be
@@ -30505,6 +30476,7 @@ separately.
 Since
 a
 Thing
+Description
 Template
 is
 a
@@ -30519,7 +30491,7 @@ some
 optional
 and
 mandatory
-<a href="#dfn-vocab-term" class= "internalDFN" data-link-type="dfn">
+<a href= "#dfn-vocab-term" class="internalDFN" data-link-type= "dfn">
 Vocabulary
 Terms
 </a>
@@ -30570,14 +30542,15 @@ mandatory
 terms.
 </p>
 <section id="thing-template-examples">
-<h3 id="c-1-thing-template-examples">
-<bdi class="secno">
+<h3 id="c-1-thing-description-template-examples">
+<bdi class= "secno">
 C.1
 </bdi>
 Thing
+Description
 Template
 Examples
-<a class="self-link" aria-label="§" href= "#thing-template-examples">
+<a class= "self-link" aria-label="§" href= "#thing-template-examples">
 </a>
 </h3>
 <p>
@@ -30586,6 +30559,7 @@ section
 shows
 a
 Thing
+Description
 Template
 for
 a
@@ -30593,20 +30567,22 @@ lamp
 and
 a
 Thing
+Description
 Template
 for
 a
 buzzer.
 </p>
 <section id="lamp-thing-template">
-<h4 id="c-1-1-thing-template-lamp">
-<bdi class="secno">
+<h4 id="c-1-1-thing-description-template-lamp">
+<bdi class= "secno">
 C.1.1
 </bdi>
 Thing
+Description
 Template:
 Lamp
-<a class="self-link" aria-label="§" href= "#lamp-thing-template">
+<a class= "self-link" aria-label="§" href="#lamp-thing-template">
 </a>
 </h4>
 <div class="example" id= "example-36-mylampthingtemplate-serialized-in-json">
@@ -30630,9 +30606,9 @@ JSON
     <span class="hljs-attr">"@type"</span> : <span class=
 "hljs-string">"ThingTemplate"</span>,
     <span class="hljs-attr">"title"</span>: <span class=
-"hljs-string">"Lamp Thing Template"</span>,
+"hljs-string">"Lamp Thing Description Template"</span>,
     <span class="hljs-attr">"description"</span> : <span class=
-"hljs-string">"Lamp Thing Template"</span>,
+"hljs-string">"Lamp Thing Description Template"</span>,
     <span class="hljs-attr">"properties"</span>: {
         <span class="hljs-attr">"status"</span>: {
             <span class=
@@ -30667,14 +30643,15 @@ JSON
 </div>
 </section>
 <section id="buzzer-thing-template">
-<h4 id="c-1-2-thing-template-buzzer">
-<bdi class="secno">
+<h4 id="c-1-2-thing-description-template-buzzer">
+<bdi class= "secno">
 C.1.2
 </bdi>
 Thing
+Description
 Template:
 Buzzer
-<a class="self-link" aria-label="§" href= "#buzzer-thing-template">
+<a class= "self-link" aria-label="§" href="#buzzer-thing-template">
 </a>
 </h4>
 <div class="example" id= "example-37-mybuzzerthingtemplate-serialized-in-json">
@@ -30698,9 +30675,9 @@ JSON
     <span class="hljs-attr">"@type"</span> : <span class=
 "hljs-string">"ThingTemplate"</span>,
     <span class="hljs-attr">"title"</span>: <span class=
-"hljs-string">"Buzzer Thing Template"</span>,
+"hljs-string">"Buzzer Thing Description Template"</span>,
     <span class="hljs-attr">"description"</span> : <span class=
-"hljs-string">"Thing template of a buzzer that makes noise for 10 seconds"</span>,
+"hljs-string">"Thing Description Template of a buzzer that makes noise for 10 seconds"</span>,
      <span class="hljs-attr">"actions"</span>: {
         <span class="hljs-attr">"buzz"</span>: {
             <span class=
@@ -30715,2385 +30692,882 @@ JSON
 </section>
 </section>
 </section>
-<section id="changes" class="appendix">
-<h2 id="d-recent-specification-changes">
+<section id="json-ld-ctx-usage" class="appendix informative">
+<h2 id="d-json-ld-context-usage">
 <bdi class="secno">
 D.
 </bdi>
-<del class="diff-old">Transformation
-to
-RDF
+JSON-LD
+Context
+Usage
+<a class="self-link" aria-label="§" href= "#json-ld-ctx-usage">
+</a>
+</h2>
+<p>
+<em>
 This
 section
 is
 non-normative.
-To
-integrate
-a
-Thing
-Description
-instance
-with
-external
-knowledge
-and
-contextual
-information
-(like
-SAREF
-annotations),
-the
-use
-of
-JSON-LD
-1.1
-and
-its
-processing
-API
-[
-json-ld11-api
-],
-as
-well
-as
-RDF-based
-tools
-[
-</del>
-<ins class="diff-chg">Recent
-Specification
-Changes
-</ins><a class="self-link" aria-label="§" href="#changes">
-<del class="diff-old">rdf11-concepts
-</del>
-</a>
-<del class="diff-old">]
-and
-libraries
-is
-highly
-recommended.
-This
-appendix
+</em>
+</p>
+<p>
+The
+present
+specification
 introduces
-two
-non-normative
-elements
-of
 the
-Thing
-Description
-model
-based
-on
-RDF:
-the
-default
-JSON-LD
-context
-for
+<a href= "#dfn-inf-model" class="internalDFN" data-link-type="dfn">
 TD
-and
-the
-TD
-ontology.
-</del>
-</h2>
-<section id="changes-from-candidate-recommendation-0">
-<h3 id="changes-from-candidate-recommendation">
-<bdi class= "secno">
-D.1
-</bdi>
-<del class="diff-old">Thing
-Description
-JSON-LD
-Context
-A
-TD
-document
-can
-be
-transformed
-into
-RDF
-by
-a
-standard
-JSON-LD
-processor
-(to
-then
-be
-uploaded
-to
-an
-RDF
-store
-for
-further
-processing).
-The
-following
-procedure
-loads
-the
-context
-of
-the
-TD,
-given
-by
-the
-term
-@context
-,
-and
-generates
-RDF
-triples:
-JsonLdProcessor.toRdf
-When
-applying
-this
-procedure
-to
-the
-introductory
-TD&nbsp;example
-(
-Example
-2
-)
-with
-all
-Default
-Values
-,
-the
-following
-triples
-are
-obtained:
-Example
-38
-</del>
-<ins class="diff-chg">Changes
-from
-Candidate
-Recommendation
-</ins><a class= "self-link" aria-label="§" href= "#changes-from-candidate-recommendation-0">
+Information
+Model
 </a>
-<del class="diff-old">after&nbsp;transformation
-to
-RDF
-{
-    : [
-        &lt;span class=
-"hljs-string"&gt;"https://www.w3.org/2019/wot/td/v1",
-        { 
-            : &lt;span class=
-"hljs-string"&gt;"https://w3id.org/saref#",
-            : &lt;span class=
-"hljs-string"&gt;"http://www.w3.org/2011/http#"
-        }
-    ],
-    : &lt;span class=
-"hljs-string"&gt;"urn:dev:ops:32473-WoTLamp-1234",
-    : &lt;span class=
-"hljs-string"&gt;"MyLampThing",
-    : &lt;span class=
-"hljs-string"&gt;"saref:LightSwitch",
-    &lt;span class=
-"hljs-attr"&gt;"securityDefinitions": {&lt;span class=
-"hljs-attr"&gt;"basic_sc": {
-        : &lt;span class=
-"hljs-string"&gt;"basic",
-        : &lt;span class=
-"hljs-string"&gt;"header"
-    }},
-    : [&lt;span class=
-"hljs-string"&gt;"basic_sc"],
-    : {
-        : {
-            : &lt;span class=
-"hljs-string"&gt;"string",
-            : [{
-                &lt;span class=
-"hljs-attr"&gt;"@type",
-                : &lt;span class=
-"hljs-string"&gt;"https://mylamp.example.com/status",
-                : &lt;span class=
-"hljs-string"&gt;"readproperty",
-                &lt;span class=
-"hljs-attr"&gt;"htv:methodName": &lt;span class=
-"hljs-string"&gt;"GET"
-            }, {
-                : &lt;span class=
-"hljs-string"&gt;"https://mylamp.example.com/status",
-                : &lt;span class=
-"hljs-string"&gt;"writeproperty",
-                &lt;span class=
-"hljs-attr"&gt;"contentType": &lt;span class=
-"hljs-string"&gt;"application/json",
-                &lt;span class=
-"hljs-attr"&gt;"htv:methodName": &lt;span class=
-"hljs-string"&gt;"PUT"
-            }]
-        }
-    },
-    : {
-        : {
-            : &lt;span class=
-"hljs-literal"&gt;false,
-            &lt;span class=
-"hljs-attr"&gt;"idempotent": &lt;span class=
-"hljs-literal"&gt;false,
-            : [{
-                &lt;span class=
-"hljs-attr"&gt;"@type",
-                : &lt;span class=
-"hljs-string"&gt;"https://mylamp.example.com/toggle",
-                : &lt;span class=
-"hljs-string"&gt;"invokeaction",
-                &lt;span class=
-"hljs-attr"&gt;"contentType": &lt;span class=
-"hljs-string"&gt;"application/json",
-                &lt;span class=
-"hljs-attr"&gt;"htv:methodName": &lt;span class=
-"hljs-string"&gt;"POST"
-            }]
-        }
-    },
-    : {
-        : {
-            : {&lt;span class=
-"hljs-attr"&gt;"type": &lt;span class=
-"hljs-string"&gt;"string"},
-            : [{
-                &lt;span class=
-"hljs-attr"&gt;"@type",
-                : &lt;span class=
-"hljs-string"&gt;"https://mylamp.example.com/oh",
-                : &lt;span class=
-"hljs-string"&gt;"subscribeevent",
-                &lt;span class=
-"hljs-attr"&gt;"contentType": &lt;span class=
-"hljs-string"&gt;"application/json"
-            }]
-        }
-    }
-}
-&lt;code class=
-"hljs xml"&gt;&lt;&lt;span class=
-"hljs-name"&gt;urn:dev:ops:32473-WoTLamp-1234 .
-&lt;&lt;span class=
-"hljs-name"&gt;urn:dev:ops:32473-WoTLamp-1234 _:b0 .
-&lt;&lt;span class=
-"hljs-name"&gt;urn:dev:ops:32473-WoTLamp-1234 _:b2 .
-&lt;&lt;span class=
-"hljs-name"&gt;urn:dev:ops:32473-WoTLamp-1234 _:b5 .
-&lt;&lt;span class=
-"hljs-name"&gt;urn:dev:ops:32473-WoTLamp-1234 .
-&lt;&lt;span class=
-"hljs-name"&gt;urn:dev:ops:32473-WoTLamp-1234 "MyLampThing" .
-_:b0 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;td#&lt;span class=
-"hljs-attr"&gt;name "toggle" .
-_:b0 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;td#&lt;span class=
-"hljs-attr"&gt;hasForm _:b1 .
-_:b0 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;td#&lt;span class=
-"hljs-attr"&gt;isIdempotent "false"^^&lt;span class=
-"hljs-tag"&gt;&lt;//&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2001/&lt;span class=
-"hljs-attr"&gt;XMLSchema#&lt;span class=
-"hljs-attr"&gt;boolean .
-_:b0 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;td#&lt;span class=
-"hljs-attr"&gt;isSafe "false"^^&lt;span class=
-"hljs-tag"&gt;&lt;//&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2001/&lt;span class=
-"hljs-attr"&gt;XMLSchema#&lt;span class=
-"hljs-attr"&gt;boolean .
-_:b1 &lt;&lt;span class=
-"hljs-name"&gt;http://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;1999/&lt;span class=
-"hljs-attr"&gt;02/&lt;span class=
-"hljs-attr"&gt;22-rdf-syntax-ns#&lt;span class=
-"hljs-attr"&gt;type &lt;span class=
-"hljs-tag"&gt;&lt;//&lt;span class=
-"hljs-attr"&gt;w3id.org/&lt;span class=
-"hljs-attr"&gt;saref#&lt;span class=
-"hljs-attr"&gt;ToggleCommand .
-_:b1 &lt;&lt;span class=
-"hljs-name"&gt;http://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2011/&lt;span class=
-"hljs-attr"&gt;http#&lt;span class=
-"hljs-attr"&gt;methodName "POST" .
-_:b1 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;hypermedia#&lt;span class=
-"hljs-attr"&gt;forContentType "application/json" .
-_:b1 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;hypermedia#&lt;span class=
-"hljs-attr"&gt;forOperationType "invokeaction" .
-_:b1 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;hypermedia#&lt;span class=
-"hljs-attr"&gt;hasTarget "https://mylamp.example.com/toggle" .
-_:b2 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;td#&lt;span class=
-"hljs-attr"&gt;name "overheating" .
-_:b2 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;td#&lt;span class=
-"hljs-attr"&gt;hasForm _:b3 .
-_:b2 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;td#&lt;span class=
-"hljs-attr"&gt;hasNotificationSchema _:b4 .
-_:b3 &lt;&lt;span class=
-"hljs-name"&gt;http://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;1999/&lt;span class=
-"hljs-attr"&gt;02/&lt;span class=
-"hljs-attr"&gt;22-rdf-syntax-ns#&lt;span class=
-"hljs-attr"&gt;type &lt;span class=
-"hljs-tag"&gt;&lt;//&lt;span class=
-"hljs-attr"&gt;w3id.org/&lt;span class=
-"hljs-attr"&gt;saref#&lt;span class=
-"hljs-attr"&gt;NotifyCommand .
-_:b3 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;hypermedia#&lt;span class=
-"hljs-attr"&gt;forContentType "application/json" .
-_:b3 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;hypermedia#&lt;span class=
-"hljs-attr"&gt;forOperationType "subscribeevent" .
-_:b3 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;hypermedia#&lt;span class=
-"hljs-attr"&gt;hasTarget "https://mylamp.example.com/oh" .
-_:b4 &lt;&lt;span class=
-"hljs-name"&gt;http://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;1999/&lt;span class=
-"hljs-attr"&gt;02/&lt;span class=
-"hljs-attr"&gt;22-rdf-syntax-ns#&lt;span class=
-"hljs-attr"&gt;type &lt;span class=
-"hljs-tag"&gt;&lt;//&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;json-schema#&lt;span class=
-"hljs-attr"&gt;StringSchema .
-_:b5 &lt;&lt;span class=
-"hljs-name"&gt;http://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;1999/&lt;span class=
-"hljs-attr"&gt;02/&lt;span class=
-"hljs-attr"&gt;22-rdf-syntax-ns#&lt;span class=
-"hljs-attr"&gt;type &lt;span class=
-"hljs-tag"&gt;&lt;//&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;json-schema#&lt;span class=
-"hljs-attr"&gt;StringSchema .
-_:b5 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;td#&lt;span class=
-"hljs-attr"&gt;name "status" .
-_:b5 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;td#&lt;span class=
-"hljs-attr"&gt;hasForm _:b6 .
-_:b5 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;td#&lt;span class=
-"hljs-attr"&gt;hasForm _:b7 .
-_:b6 &lt;&lt;span class=
-"hljs-name"&gt;http://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;1999/&lt;span class=
-"hljs-attr"&gt;02/&lt;span class=
-"hljs-attr"&gt;22-rdf-syntax-ns#&lt;span class=
-"hljs-attr"&gt;type &lt;span class=
-"hljs-tag"&gt;&lt;//&lt;span class=
-"hljs-attr"&gt;w3id.org/&lt;span class=
-"hljs-attr"&gt;saref#&lt;span class=
-"hljs-attr"&gt;GetCommand .
-_:b6 &lt;&lt;span class=
-"hljs-name"&gt;http://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2011/&lt;span class=
-"hljs-attr"&gt;http#&lt;span class=
-"hljs-attr"&gt;methodName "GET" .
-_:b6 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;hypermedia#&lt;span class=
-"hljs-attr"&gt;forOperationType "readproperty" .
-_:b6 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;hypermedia#&lt;span class=
-"hljs-attr"&gt;hasTarget "https://mylamp.example.com/status" .
-_:b7 &lt;&lt;span class=
-"hljs-name"&gt;http://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2011/&lt;span class=
-"hljs-attr"&gt;http#&lt;span class=
-"hljs-attr"&gt;methodName "PUT" .
-_:b7 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;hypermedia#&lt;span class=
-"hljs-attr"&gt;forContentType "application/json" .
-_:b7 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;hypermedia#&lt;span class=
-"hljs-attr"&gt;forOperationType "writeproperty" .
-_:b7 &lt;&lt;span class=
-"hljs-name"&gt;https://&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;hypermedia#&lt;span class=
-"hljs-attr"&gt;hasTarget "https://mylamp.example.com/status" .
-&lt;&lt;span class=
-"hljs-name"&gt;urn:dev:ops:32473-WoTLamp-1234/&lt;span class=
-"hljs-attr"&gt;basic_sc &lt;span class=
-"hljs-tag"&gt;&lt;//&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;1999/&lt;span class=
-"hljs-attr"&gt;02/&lt;span class=
-"hljs-attr"&gt;22-rdf-syntax-ns#&lt;span class=
-"hljs-attr"&gt;type &lt;span class=
-"hljs-tag"&gt;&lt;//&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;security#&lt;span class=
-"hljs-attr"&gt;BasicSecurityScheme .
-&lt;&lt;span class=
-"hljs-name"&gt;urn:dev:ops:32473-WoTLamp-1234/&lt;span class=
-"hljs-attr"&gt;basic_sc &lt;span class=
-"hljs-tag"&gt;&lt;//&lt;span class=
-"hljs-attr"&gt;www.w3.org/&lt;span class=
-"hljs-attr"&gt;2019/&lt;span class=
-"hljs-attr"&gt;wot/&lt;span class=
-"hljs-attr"&gt;security#&lt;span class=
-"hljs-attr"&gt;
-in
-&gt;
-"header"
-.
-Most
-importantly,
-the
-JSON-LD
-context
-maps
-JSON
-strings
-to
-RDF
-IRIs
-(hence,
-the
-notion
+as
+a
+set
 of
-context
-:
-in
-two
+constraints
+over
 different
-contexts,
-the
-same
-string
-can
-have
-different
-meanings).
-The
-mapping
-here
-is
-rather
-straightforward:&nbsp;every
-vocabulary
+<a href="#dfn-vocab" class="internalDFN" data-link-type= "dfn">
+Vocabularies
+</a>,
+i.e.
+sets
 of
-the
-TD
-information
-model
-is
-defined
-its
-own
-namespace
-and
-every
-vocabulary
-term
-maps
-to
-some
-name,
-appended
-to
-the
-corresponding
-namespace.
-Strings
-that
-are
-not
-part
-of
-any
-vocabulary
-map
-to
-RDF&nbsp;literals
-(strings
-with
-an
-optional
-datatype).
-For
-instance,
-title
-maps
-to
-https://www.w3.org/2019/wot/td#title
-and
-MyLampThing
-remains
-unchanged.
-Applying
-this
-mapping
-is
-called
-context
-expansion
-.
-Then,
-after
-expanding
-JSON
-strings
-to
-full
-IRIs,
-all
-map
-structures
-of
-the
-TD&nbsp;document
-must
-be
-turned
-into
-RDF
-triples.
-In
-a
-simple
-case,
-a
-triple
-is
-produced
-for
-every
-key/value
-pair
-in
-the
-map.
-For
-instance,
-the
-very
-first
-triple
-of
-the
-example
-above
-was
-produced
-from
-"title":&nbsp;"myLampThing"
-.
-Other
-cases
-rely
-on
-specific
-JSON-LD
-features.
-Most
-of
-these
-features
-were
-introduced
-in
-the
-1.1
-version
-of
-the
-standard
-and
-thus
-require
-an
-appropriate
-JSON-LD
-1.1
-implementation.
-They
-are
-listed
-below:
-</del>
-</h3>
-<ul>
-<li>
-<del class="diff-old">Aliasing
-keywords
-:
-JSON-LD
-reserved
-keywords
-always
-start
-with
-@
-but
-in
-certain
-cases,
-it
-is
-more
-convenient
-to
-define
-aliases
-for
-these
-keywords,
-e.g.
-to
-more
-easily
-process
-JSON-LD
-document
-in
-a
-specific
-programming
-environment.
-In
-the
-TD&nbsp;core
-vocabulary,
-id
-is
-an
-alias
-for
-@id
-,
-which
-must
-be
-an
-IRI
-used
-as
-the
-subject
-of
-triples
-when
-producing
-RDF.
-For
-this
-reason,
-the
-first
-triples
-in
-the
-example
-have
-urn:dev:ops:32473-WoTLamp-1234
-as
-a
-subject
-instead
-of
-an
-arbitrary
-blank
-node.
-Scoped
-contexts
-:
-The
-term
-properties
-is
-used
-both
-in
-the
-core
-vocabulary
-and
-in
-the
-data
-schema
-vocabulary.
-Yet,
-a
-JSON
-string
-cannot
-map
-to
-two
-IRIs
-simultaneously
-in
-the
-same
-context
-definition.&nbsp;The
-mapping
-from
-properties
-to
-https://www.w3.org/2019/wot/json-schema#properties
-must
-therefore
-be
-scoped
-to
-instances
-of
-DataSchema
-only.
-Property-based
-data
-indexing
-:
-in
-the
-example
-above,
-status
-,
-toggle
-and
-overheating
-appear
-as
-keys
-in
-a
-map
-but
-they
-do
-not
-produce
-triples
-in
-which
-they
-become
-predicates.
-This
-special
-structure
-is
-called
-an
-index
-map
-.
-Without
-any
-indication
-in
-the
-context,
-the
-index
-key
-is
-lost
-when
-an
-index
-map
-is
-turned
-into
-RDF.
-To
-make
-the
-transformation
-to
-RDF
-reversible,
-it
-is
-possible
-to
-indicate
-that
-index
-keys
-should
-produce
-triples
-with
-a
-given
-predicate.
-Each
-vocabulary
-can
-include
-an
-RDF
-term
-for
-this
-purpose.
-In
-the
-core
-vocabulary,
-the
-property
-https://www.w3.org/2019/wot/td#name
-is
-used.
-</del>
-<ins class="diff-chg">General
-</ins>
-</li>
-<ul>
-<li>
-<del class="diff-old">Indexing
-without
-a
-predicate
-:
-in
-a
-TD,
-the
-security
-definitions
-container
-is
-mostly
-syntactic
-sugar
-to
-avoid
-redundancy
-in
-the
-security
-definitions.
-JSON-LD
-1.1
-includes
-another
-indexing
-mechanism
-for
-that
-purpose.
-In
-the
-above
-example,
-securityDefinitions
-does
-not
-produce
-any
-triple.
-Editor's
-note
-The
-last
-two
-JSON-LD
-features
-(property-based
-data
-indexing
-and
-indexing
-without
-a
-predicate)
-are
-still
-experimental;
-they
-have
-not
-been
-published
-in
-any
-Editors'
-Draft
-yet.
-D.2
-Thing
-Description
-Ontology
-As
-presented
-in
-the
-previous
-section,
-all
+<a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">
 Vocabulary
 Terms
-(including
-those
-denoting
-Classes
-)
-follow
+</a>.
+This
+section
+briefly
+explains
+how
+a
+machine-readable
+definition
+of
+these
+constraints
+can
+be
+integrated
+into
+client
+applications,
+by
+making
+use
+of
+the
+mandatory
+<code>
+@context
+</code>
+of
+a
+TD
+document.
+</p>
+<p>
+Accessing
+the
+<a href="#dfn-inf-model" class="internalDFN" data-link-type="dfn">
+TD
+Information
+Model
+</a>
+from
+a
+TD
+document
+is
+done
+in
+two
+steps.
+First,
+clients
+must
+retrieve
+a
+mapping
+from
+JSON
+strings
+to
+IRIs.
+This
+mapping
+is
+defined
+as
+a
+JSON-LD
+context,
+as
+explained
+later.
+Second,
+clients
+can
+access
+the
+constraints
+defined
+on
+these
+IRIs
+by
+dereferencing
+them.
+Constraints
+are
+defined
+as
+logical
+axioms
+in
 the
 RDF
-convention
-</del>
-<ins class="diff-chg">Clarified
-definition
-</ins>
-of
-<del class="diff-old">belonging
-to
-a
+format,
+readily
+interpretable
+by
+client
+programs.
+</p>
+<p>
+All
+<a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">
 Vocabulary
+Terms
+</a>
+referenced
+in
+<a href= "#sec-vocabulary-definition" class="sec-ref">
+§&nbsp;
+<bdi class= "secno">
+5.
+</bdi>
+TD
+Information
+Model
+</a>
+are
+serialized
+as
+(compact)
+JSON
+strings
+in
+a
+TD
+document.
+However,
+each
+of
+these
+terms
+is
+unambiguously
 identified
 by
 a
-namespace
-IRI.
-As
-a
-result,
-the
-TD&nbsp;information
-model
-can
-be
-reformulated
-in
-the
-Web
-Ontology
-Language
-(OWL)
-[
-owl2-overview
-].
-Class
-definitions
-become
-OWL
-axioms
-defined
-on
-the
-Vocabulary
-Terms
-</del>
-<a href="#dfn-td-processor" class= "internalDFN" data-link-type="dfn">
-<ins class="diff-chg">TD
-Processor
-</ins>
-</a>
-<del class="diff-old">of
-the
-TD&nbsp;model.
-The
-axioms
-that
-are
-particularly
-of
-interest
-in
-the
-present
-document
-are
-those
-of
-the
-TD&nbsp;ontology
-available
-under
-the
-TD&nbsp;namespace
+full
 IRI,
-both
 as
-an
-RDF
-file
-</del>
-and
-<del class="diff-old">as
-a
-human-readable
-HTML
-documentation.
-Default
-Values
-cannot
-be
-directly
-translated
-to
-OWL,
-they
-are
-therefore
-ignored
-in
+per
 the
-TD
-ontology.
-The
-axioms
-included
-in
-the
-TD
-ontology
-may
-be
-used
-to
-validate
-a
-TD
-but
-its
-primary
-purpose
-is
-to
-serve
-as
-an
-entry
-point
-for
-a
-deeper
-semantic
-description
-of
-WoT
-Things
-</del>
-<ins class="diff-chg">related
-text
-</ins>
-that
-<del class="diff-old">would
-make
-clients
-behave
-in
-a
-more
-autonomous
-way,
-as
-desired
-in
-WoT
+first
+Linked
+Data
+principle
 [
-wot-architecture
+<cite>
+<a class="bibref" href= "#bib-linked-data" title="Linked Data Design Issues" data-link-type="biblio">
+LINKED-DATA
+</a>
+</cite>
 ].
-A
-semantic
-description
-is
-nothing
-more
-than
-a
-description
-of
-the
-physical
-world,
-in
-which
-WoT
-systems
-</del>
-<ins class="diff-chg">implementations
-</ins>
-may
-<del class="diff-old">have
-tangible
-effects.
-OWL
-should
-be
-the
-preferred
-language
-for
-this
-purpose.
-OWL
-is
-indeed
-a
-language
+The
+mappings
+from
+JSON
+keys
 to
-specify
-ontologies
-,
-that
-is,
-conceptualizations
-of
-the
-physical
-world.
-To
-this
-end,
-an
-ontology
-does
-not
-cover
-one
-possible
-model
-of
-the
-physical
-world
-by
-constructing
-abstract
-data
-structures.
-Instead,
-it
-provides
-necessary
-constraints
-on
-all
-possible
-models
-of
-the
-world
-for
-these
-models
-to
-</del>
-be
-<del class="diff-old">sound.
-This
-principle,
-at
-the
-basis
-of
-model
-theory
-,
+IRIs
 is
 what
 the
-semantics
+<code>
+@context
+</code>
+value
 of
-RDF
-(and
-OWL)
-is
-based
-on
-[
-rdf11-mt
-].
-In
-the
-following
-diagram,
-because
-the
-only
-fact
-we
-know
-about
-urn:dev:ops:32473-WoTLamp-1234
-is
-that
-it
-is
 a
-light
-switch
-with
-generic
-affordances,
-it
-could
-be
-any
-light
-switch,
-be
-it
-mechanical,
-digital
-or
-even
-virtual.
-Figure
-5
-</del>
 TD
-<del class="diff-old">Serialization
-,
-TD
-and
-Thing
-on
-a
-light
-switch
-example
-As
-a
-consequence,
-the
-TD&nbsp;ontology
-is
-meant
-to
-be
-integrated
-into
-a
-larger
-ontology,
-as
-it
-would
-not
-suffice
-to
-describe
-physical
-world
-objects
-alone.
-An
-ontology
-is
-generally
-designed
-for
-a
-specific
-domain
-of
-application,
-like
-transportation
-</del>
-<ins class="diff-chg">producer
-</ins>
-or
-<del class="diff-old">home
-automation.
-For
-the
-latter
-domain,
-the
-</del>
-TD
-<del class="diff-old">ontology
-can
-e.g.
-be
-integrated
-with
-SAREF,
-as
-illustrated
-in
-several
-examples
-in
-this
-document.
-An
-intelligent
-WoT
-client
-can
-be
-assigned
-the
-task
-of
-turning
-a
-light
-off
-in
-ontological
-terms,
-using
-SAREF.
+points
+to.
 For
 instance,
 the
-task
-could
-be
+file
+at
+</p>
+<p>
+<code>
+https://www.w3.org/2019/wot/td/v1
+</code>
+</p>
+<p>
+includes
+the
+following
+mappings
+(among
+others):
+</p>
+<table>
+<tbody>
+<tr>
+<td>
+<code>
+properties
+</code>
+</td>
+<td>
+→
+</td>
+<td>
+<code>
+https://www.w3.org/2019/wot/td#hasPropertyAffordance
+</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>
+object
+</code>
+</td>
+<td>
+→
+</td>
+<td>
+<code>
+https://www.w3.org/2019/wot/json-schema#ObjectSchema
+</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>
+basic
+</code>
+</td>
+<td>
+→
+</td>
+<td>
+<code>
+https://www.w3.org/2019/wot/security#BasicSecurityScheme
+</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>
+href
+</code>
+</td>
+<td>
+→
+</td>
+<td>
+<code>
+https://www.w3.org/2019/wot/hypermedia#hasTarget
+</code>
+</td>
+</tr>
+<tr>
+<td>...
+</td>
+</tr>
+</tbody>
+</table>
+<p>
+This
+JSON
+file
+follows
+the
+JSON-LD
+1.1
+syntax
+[
+<cite>
+<a class= "bibref" href="#bib-json-ld11" title="JSON-LD 1.1" data-link-type= "biblio">
+JSON-LD11
+</a>
+</cite>
+].
+Numerous
+JSON-LD
+libraries
+can
+automatically
+process
+the
+<code>
+@context
+</code>
+of
+a
+TD
+and
+expand
+all
+the
+JSON
+strings
+it
+includes.
+</p>
+<p>
+Once
+every
+<a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">
+Vocabulary
+Term
+</a>
+of
+a
+TD
+is
+expanded
+to
+a
+IRI,
+the
+second
+step
+consists
+in
+dereferencing
+this
+IRI
+to
+get
+fragments
+of
+the
+<a href="#dfn-inf-model" class="internalDFN" data-link-type="dfn">
+TD
+Information
+Model
+</a>
+that
+refer
+to
+that
+<a href="#dfn-vocab-term" class="internalDFN" data-link-type= "dfn">
+Vocabulary
+Term
+</a>.
+For
+instance,
+dereferencing
+the
+IRI
+</p>
+<p>
+<code>
+https://www.w3.org/2019/wot/json-schema#ObjectSchema
+</code>
+</p>
+<p>
+results
+in
+an
+RDF
+document
+stating
+that
+the
+term
+<code>
+ObjectSchema
+</code>
+is
+a
+<a href="#dfn-class" class= "internalDFN" data-link-type="dfn">
+Class
+</a>
+and
+more
+precisely,
+a
+sub-class
+of
+<code>
+DataSchema
+</code>.
+Such
+logical
+axioms
+are
+represented
+in
+RDF
+using
+formalisms
+of
+various
+complexity:
+here,
+sub-class
+relations
+are
 expressed
-</del>
-<ins class="diff-chg">consumer
-only
-</ins>
 as
-<del class="diff-old">a
-post-condition
+RDF
+Schema
+axioms
+[
+<cite>
+<a class="bibref" href="#bib-rdf-schema" title= "RDF Schema 1.1" data-link-type="biblio">
+RDF-SCHEMA
+</a>
+</cite>
+].
+Moreover,
+these
+axioms
+may
+be
+serialized
+in
+various
+formats.
+Here,
+they
+are
+serialized
+in
+the
+Turtle
+format
+[
+<cite>
+<a class="bibref" href="#bib-turtle" title="RDF 1.1 Turtle" data-link-type= "biblio">
+TURTLE
+</a>
+</cite>
+]:
+</p>
+<pre class=
+"nohighlight"><code>&lt;https://www.w3.org/2019/wot/json-schema#ObjectSchema&gt;
+    a rdfs:Class .
+&lt;https://www.w3.org/2019/wot/json-schema#ObjectSchema&gt;
+rdfs:subClassOf
+&lt;https://www.w3.org/2019/wot/json-schema#DataSchema&gt;
+.
+</code>
+</pre>
+<p>
+By
+default,
+if
+a
+user
+agent
+does
+not
+perform
+any
+content
+negotiation,
+a
+human-readable
+HTML
+documentation
+is
+returned
+instead
+of
+the
+RDF
+document.
+To
+negotiate
+content,
+clients
+must
+include
+the
+HTTP
+header
+<code>
+Accept:
+text/turtle
+</code>
+in
+their
+request.
+</p>
+</section>
+<section id="changes" class="appendix">
+<h2 id="e-recent-specification-changes">
+<bdi class="secno">
+E.
+</bdi>
+Recent
+Specification
+Changes
+<a class="self-link" aria-label="§" href="#changes">
+</a>
+</h2>
+<section id="changes-from-second-candidate-recommendation">
+<h3 id="changes-from-candidate-recommendation2">
+<bdi class= "secno">
+<ins class="diff-new">E.1
+</ins></bdi><ins class="diff-new">
+Changes
+from
+Second
+Candidate
+Recommendation
+</ins><a class="self-link" aria-label="§" href= "#changes-from-second-candidate-recommendation"></a></h3><ul><li><ins class="diff-new">
+In
+section
+</ins><a href="#sec-data-schema-vocabulary-definition" class="sec-ref"><ins class="diff-new">
+§&nbsp;
+</ins><bdi class="secno"><ins class="diff-new">
+5.3.2
+</ins></bdi><ins class="diff-new">
+Data
+Schema
+Vocabulary
+Definitions
+</ins></a>,<ins class="diff-new">
+clarified
+the
+relationship
+between
+data
+schemas
+and
+content
+types.
+</ins></li></ul></section>
+<section id="changes-from-first-candidate-recommendation">
+<h3 id="changes-from-candidate-recommendation">
+<bdi class= "secno">
+<del class="diff-old">E.1
 </del>
-<ins class="diff-chg">correctly
+<ins class="diff-chg">E.2
+</ins>
+</bdi>
+Changes
+from
+First
+Candidate
+Recommendation
+<a class="self-link" aria-label="§" href= "#changes-from-first-candidate-recommendation">
+</a>
+</h3>
+<ul>
+<li>
+General
+</li>
+<ul>
+<li>
+Clarified
+definition
+of
+<a href="#dfn-td-processor" class= "internalDFN" data-link-type="dfn">
+TD
+Processor
+</a>
+and
+related
+text
+that
+implementations
+may
+be
+TD
+producer
+or
+TD
+consumer
+only
+as
+correctly
 assumed
 by
 all
 implementations
 (no
 impact
-</ins>
 on
-<del class="diff-old">the
-saref:OnOffState
-of
-some
-saref:LightSwitch
-.
-Assuming
-a
-server
-exposes
-the
-TD
-of
-Example
-2
-,
-the
-client
-has
-two
-possibilities
-</del>
-<ins class="diff-chg">implementations).
-</ins></li><li><ins class="diff-chg">
-Consistently
-refer
-</ins>
-to
-<del class="diff-old">perform
-this
-task:
-it
-can
-either
-write
-</del>
-the
-<del class="diff-old">status
-property
-</del>
-<ins class="diff-chg">WoT
-Security
+implementations).
+</li>
+<li>
+Clarified
+uniqueness
 and
-Privacy
-building
-block
-and
-specification
-document
-</ins>
-as
-<del class="diff-old">off
-or
-it
-can
-invoke
-the
-action
-toggle
-</del>
-<ins class="diff-chg">"WoT
-Security
-</ins>
-and
-<del class="diff-old">see
-if
-the
-resulting
-status
-is
-indeed
-equal
-</del>
-<ins class="diff-chg">Privacy
-Guidelines"
-</ins>
-to
-<del class="diff-old">off
-.
-Yet,
-in
-the
-TD
-example,
-the
-switch
-state
-is
-not
-directly
-exposed.
-Assuming
-the
-client
-has
-no
-prior
-knowledge
-of
-the
-meaning
-of
-status
-,
-it
-must
-infer
 possible
-operations
-</del>
-<ins class="diff-chg">clearly
-distinguish
-</ins>
-from
-the
-<del class="diff-old">semantic
-annotations
-available
-in
-the
-TD
-</del>
-<ins class="diff-chg">"WoT
-Security
-</ins>
-and
-<del class="diff-old">its
-domain-specific
-ontology,
-that
-includes
-SAREF.
-The
-following
-ontological
-axioms
-can
-be
-formulated
+values
 for
-SAREF,
+Thing
+<code>
+id
+</code>,
 in
-the
-OWL
-Manchester
-syntax
-[
-owl2-manchester-syntax
-]:
-</del>
-<ins class="diff-chg">Privacy
-Considerations"
-sections
-of
-WoT
-specifications.
-</ins></li><li><ins class="diff-chg">
+particular
+privacy-preserving
+values
+such
+as
+URIs
+with
+local
+IP
+addresses
+or
+temporary
+and
+mutable
+URIs.
+</li>
+<li>
 Updated
-</ins><a href="#thing-description-full-serialization" class= "box-ref">
+references.
+</li>
+<li>
+Improved
+text
+on
+semantic
+annotations.
+</li>
+<li>
+Updated
+<a href="#thing-description-full-serialization" class= "box-ref">
 Example
 <bdi>
-<del class="diff-old">39
-</del>
-<ins class="diff-chg">2
-</ins>
+2
 </bdi>
 </a>
-<del class="diff-old">Class: LightSwitch
-SubClassOf: hasState some OnOffState
-Class: ToggleCommand
-SubClassOf:
-actsUpon
-some
-OnOffState
-They
-respectively
-state
-that
-a
-light
-switch
-must
-have
-an
-on/off
-state
-and
-that
-a
-toggle
-command
-must
-act
-on
-some
-on/off
-state.
-They
-may
-seem
-intuitive
-</del>
 to
-<del class="diff-old">humans
-but
-it
-is
-only
-possible
-for
-the
-client
-to
-know
-what
-to
-do
-from
-such
-axioms.
-If
-we
-assume
-that
-a
-saref:GetCommand
-always
-exposes
-the
-state
-of
-the
-Thing
-,
-the
-client
-can
-then
-automatically
-infer
-what
-form(s)
-to
-submit
-to
-change
-the
-switch
-state:
-a
-writeproperty
-on
-the
-saref:GetCommand
-or
-an
-invokeaction
-on
-the
-saref:ToggleCommand
-.
-Note
-that
-the
-result
-of
-the
-operation
-cannot
-be
-known
-for
-certain,
-as
-the
-TD
-does
-not
-expose
-its
-internal
-state.
-However,
-by
-selecting
-certain
-models
-of
-the
-physical
-world,
-either
-by
-statistical
-means
-or
-by
-further
-axiomatization,
-clients
-can
-still
-reach
-a
-certain
-level
-of
-autonomy
-with
-an
-ontological
-approach.
-E.
-Recent
-Specification
-Changes
-E.1
-Changes
-from
-Third
-Public
-Working
-Draft
-General
-</del>
-<ins class="diff-chg">fix
+fix
 bugs.
-</ins>
 </li>
 <ul>
 <li>
-<del class="diff-old">Added
-multi-language
-support
-for
-human-readable
-metadata
-(
-descriptions
-and
-titles
-Vocabulary
-Terms
-).
-Added
-</del>
 <code>
-<del class="diff-old">@language
-</del>
-<ins class="diff-chg">name
-</ins>
+name
 </code>
-<ins class="diff-new">was
-renamed
-</ins>
-to
-<del class="diff-old">declare
-a
-default
-language
-and
-specified
-how
-to
-infer
-text
-direction
-in
-human-readable
-metadata.
-Renamed
-the
-</del>
-<code>
-<del class="diff-old">InteractionPattern
-</del>
-<ins class="diff-chg">title
-</ins>
-</code>
-<del class="diff-old">Class
-</del>
-to
-<del class="diff-old">InteractionAffordance
-.
-Added
-a
-section
-to
-describe
-behavioral
-constraints
-of
-a
-WoT
-system.
-Added
-a
-section
-with
-security
-and
-privacy
-considerations.
-Added
-</del>
-<ins class="diff-chg">reflect
-</ins>
-a
-<del class="diff-old">section
-with
-IANA
-considerations
-to
-register
-media
-type
-and
-CoAP
-Content
-Format.
-Added
-an
-appendix
-section
-describing
-the
-concept
-of
-Thing
-Templates
-for
-describing
-classes
-of
-Things
-.
-Added
-an
-appendix
-section
-explaining
-the
-RDF
-representation
-of
-Thing
-Descriptions;
-it
-replaces
-the
-former
-subsection
-"Implementation
-Notes".
-Moved
-the
-full
-examples
-</del>
-<ins class="diff-chg">previous
-change
-</ins>
-of
-<del class="diff-old">Thing
-Description
-instances
-to
-</del>
-the
-<del class="diff-old">appendix
-.
-Thing
-Added
-mandatory
-@context
-and
-optional
-</del>
-<a href="#thing" class= "sec-ref">
-<ins class="diff-chg">§&nbsp;
-</ins><bdi class="secno"><ins class="diff-chg">
-5.3.1.1
-</ins></bdi>
-<code>
-<del class="diff-old">@type
-Vocabulary
-Terms
-to
-the
-</del>
-Thing
-<del class="diff-old">Class
-.
-Added
-optional
-created
-and
-modified
-</del>
-</code>
-<del class="diff-old">Vocabulary
-Terms
-to
-the
-Thing
-Class
-to
-provide
-information
-as
-to
-when
-the
-TD
-instance
 was
-created
-or
-last
-modified,
-resp.
-Added
-optional
-version
-vocabulary
-term
+renamed
 to
+<code>
+title
+</code>
+to
+reflect
+a
+previous
+change
+of
 the
+<a href="#thing" class= "sec-ref">
+§&nbsp;
+<bdi class="secno">
+5.3.1.1
+</bdi>
+<code>
 Thing
-</del>
+</code>
 </a>
 Class
-<del class="diff-old">to
-provide
-version
-information.
-Added
-support
-for
-meta
-interactions
-through
-the
-operation
-types
-readallproperties
-,
-writeallproperties
-,
-readmultipleproperties
-,
-and
-writemultipleproperties
-.
-InteractionAffordance
-</del>
-<ins class="diff-chg">definition.
-</ins>
+definition.
 </li>
 <li>
-<del class="diff-old">Added
-optional
-</del>
 <code>
 @type
 </code>
-<del class="diff-old">Vocabulary
-Term
-to
-the
-InteractionAffordance
-Class
-to
-make
-semantic
-annotations
-part
-of
-</del>
-<ins class="diff-chg">was
+was
 removed
 from
-</ins>
 the
-<del class="diff-old">Information
-Model.
-</del>
-<ins class="diff-chg">forms.
-</ins>
+forms.
 </li>
 </ul>
 <li>
-<del class="diff-old">Added
-optional
-uriVariables
-Vocabulary
-Terms
-to
-InteractionAffordance
-Class
-</del>
-<ins class="diff-chg">Updated
-</ins><a href= "#example-33-mylampthing-with-coap-protocol-binding" class= "box-ref"><ins class="diff-chg">
+Updated
+<a href= "#example-33-mylampthing-with-coap-protocol-binding" class= "box-ref">
 Example
-</ins><bdi><ins class="diff-chg">
+<bdi>
 33
-</ins></bdi>
+</bdi>
 </a>
 to
-<del class="diff-old">describe
-URI
-Template
-variables.
-</del>
-<ins class="diff-chg">fix
+fix
 bug.
-</ins>
 </li>
 <ul>
 <li>
-<del class="diff-old">Added
-optional
-safe
-and
-</del>
 <code>
-<del class="diff-old">idempotent
-</del>
-<ins class="diff-chg">op
-</ins>
+op
 </code>
-<del class="diff-old">Vocabulary
-Terms
-to
-the
-ActionAffordance
-Class
-</del>
-<ins class="diff-chg">was
+was
 added
-</ins>
 to
-<del class="diff-old">provide
-information
-about
-</del>
 the
-<del class="diff-old">safeness
-and
-idempotency
-</del>
-<ins class="diff-chg">form
-</ins>
+form
 of
 the
-<del class="diff-old">Action.
-Added
-optional
-subscription
-and
-</del>
 <code>
-<del class="diff-old">cancellation
-</del>
-<ins class="diff-chg">status
-</ins>
+status
 </code>
-<del class="diff-old">Vocabulary
-Terms
-</del>
-<ins class="diff-chg">Property
-</ins>
+Property
 to
-<ins class="diff-new">override
-</ins>
+override
 the
-<del class="diff-old">EventAffordance
-Class
-to
-describe
-data
-that
-needs
-to
-be
-passed
-upon
-subscription
-and
-cancellation,
-resp.
-</del>
-<ins class="diff-chg">default
+default
 value.
-</ins>
 </li>
 <li>
-<del class="diff-old">Renamed
-</del>
-<ins class="diff-chg">The
+The
 default
 value
 of
-</ins>
 <code>
-<del class="diff-old">label
-</del>
-<ins class="diff-chg">["readproperty",
+["readproperty",
 "writeproperty"]
-</ins>
 </code>
-<ins class="diff-new">would
+would
 have
 caused
 both
-froms
+<del class="diff-old">froms
+</del>
+<ins class="diff-chg">forms
 </ins>
 to
-<del class="diff-old">title
-in
-</del>
-<ins class="diff-chg">have
-</ins>
+have
 the
-<del class="diff-old">InteractionAffordance
-Class
-to
-be
-consistent
-with
-JSON
-Schema.
-Removed
-security
-and
-scopes
-Vocabulary
-Terms
-from
-</del>
-<ins class="diff-chg">method
+method
 GET,
 which
 was
 not
-</ins>
 the
-<del class="diff-old">InteractionAffordance
-Class
-to
-simplify
-mechanism.
-</del>
-<ins class="diff-chg">intention.
-</ins>
+intention.
 </li>
 </ul>
 <li>
-<del class="diff-old">Removed
-the
-writable
-vocabulary
-term
-from
-the
-PropertyAffordance
-Class
-and
-made
-Property
-affordances
-both
-readable
-and
-writable
-by
-default;
-this
-can
-be
-overridden
-using
-the
-op
-vocabulary
-term
-of
-the
-Form
-Class
-.
-</del>
-<ins class="diff-chg">Minor
+Minor
 editorial
 text
-improvements.
-</ins>
+improvements
+and
+fixes.
 </li>
 </ul>
 <li>
-<del class="diff-old">Link
-and
-Form
-</del>
-<ins class="diff-chg">TD
-Information
-Model
-</ins>
+Terminology
 </li>
 <ul>
 <li>
-<del class="diff-old">Renamed
-mediaType
-to
-type
-</del>
-<ins class="diff-chg">Adjusted
+Section
+<a href="#terminology" class= "sec-ref">
+§&nbsp;
+<bdi class="secno">
+3.
+</bdi>
+Terminology
+</a>
+is
+non-normative.
+</li>
+</ul>
+<li>
+TD
+Information
+Model
+</li>
+<ul>
+<li>
+In
+section
+<a href="#thing" class="sec-ref">
+§&nbsp;
+<bdi class= "secno">
+5.3.1.1
+</bdi>
+<code>
+Thing
+</code>
+</a>,
+the
+<a href= "#dfn-vocab-term" class="internalDFN" data-link-type= "dfn">
+vocabulary
+term
+</a>
+id
+of
+a
+<a href="#dfn-thing" class= "internalDFN" data-link-type="dfn">
+Thing
+</a>
+was
+made
+optional.
+Also,
+mentions
+of
+uniqueness
+of
+id
+were
+removed
+because
+there
+is
+not
+such
+a
+requirement.
+</li>
+<li>
+Adjusted
 location
 of
 a
 label
-</ins>
 in
-<del class="diff-old">the
-Link
-Class
-to
-align
-with
-RFC
-8288.
-Added
-optional
-response
-vocabulary
-term
-to
-the
-Form
-Class
-to
-describe
-possible
-response
-messages.
-</del>
 <a href="#td-core-model" class= "fig-ref" title="TD core vocabulary">
-<ins class="diff-chg">Figure
-</ins><bdi class= "figno"><ins class="diff-chg">
+Figure
+<bdi class= "figno">
 1
-</ins></bdi></a>.
+</bdi>
+</a>.
 </li>
 <li>
-<del class="diff-old">Renamed
-mediaType
-to
-contentType
-in
-the
-Form
-Class
-</del>
-<ins class="diff-chg">Fix
+Fix
 uppercase
-'
-</ins><em class="rfc2119" title="MAY"><ins class="diff-chg">
+<em class="rfc2119" title="MAY">
 MAY
-</ins></em><ins class="diff-chg">
-'
-</ins>
+</em>
 to
-<del class="diff-old">reflect
-</del>
-<ins class="diff-chg">lowercase
-</ins>
+lowercase
 that
-<del class="diff-old">request
-might
-need
-to
-set
-also
-media
-type
-parameters.
-Renamed
-rel
-to
-op
-in
-the
-Form
-Class
-to
-resolve
-perceived
-conflicts
-with
-link
-relations.
-Added
-unobserveproperty
-to
-the
-enumerated
-values
-</del>
-<ins class="diff-chg">was
+was
 not
 part
 of
@@ -33103,283 +31577,442 @@ sentence/markup
 (TD
 Context
 Extension
-</ins>
 for
-<del class="diff-old">the
-op
-vocabulary
-term
-.
-</del>
-<ins class="diff-chg">data
+data
 schema;
 no
 impact
 on
 implementations).
-</ins>
+</li>
+<li>
+The
+title
+of
+<a href="#td-data-schema-model">
+Figure
+2
+</a>
+"JSON
+schema
+vocabulary"
+was
+changed
+to
+"Data
+schema
+Vocabulary".
+</li>
+<li>
+The
+<a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">
+vocabulary
+term
+</a>
+<code>
+flow
+</code>
+of
+<a href="#oauth2securityscheme">
+OAuth2
+authentication
+security
+configuration
+</a>
+now
+does
+not
+have
+a
+default
+value.
+Therefore,
+it
+was
+removed
+from
+section
+<a href="#sec-default-values" class= "sec-ref">
+§&nbsp;
+<bdi class="secno">
+5.4
+</bdi>
+Default
+Value
+Definitions
+</a>.
 </li>
 </ul>
 <li>
-<del class="diff-old">DataSchema
-</del>
-<ins class="diff-chg">TD
+TD
+Representation
+Format
+</li>
+<ul>
+<li>
+In
+section
+<a href="#form-serialization-json" class= "sec-ref">
+§&nbsp;
+<bdi class="secno">
+6.3.9
+</bdi>
+<code>
+forms
+</code>
+</a>,
+the
+expectation
+for
+<a href="#dfn-consumer" class="internalDFN" data-link-type="dfn">
+Consumers
+</a>
+and
+<a href= "#dfn-thing" class="internalDFN" data-link-type="dfn">
+Things
+</a>
+in
+handling
+the
+operation
+type
+<code>
+writeallproperties
+</code>
+is
+clarified.
+</li>
+</ul>
+<li>
+TD
 Context
 Extensions
-</ins>
 </li>
 <ul>
 <li>
-<del class="diff-old">Added
-missing
-NullSchema
-Class
-.
-Added
-optional
-@type
-vocabulary
-term
-to
-the
-DataSchema
-</del>
-<ins class="diff-chg">Improved
-</ins><a href="#example-28" class="box-ref"><ins class="diff-chg">
+Improved
+<a href="#example-28" class="box-ref">
 Example
-</ins><bdi><ins class="diff-chg">
+<bdi>
 28
-</ins></bdi>
+</bdi>
 </a>
-<del class="diff-old">Class
-</del>
-<ins class="diff-chg">and
-</ins><a href="#saref-state-annotation-example" class="box-ref"><ins class="diff-chg">
+and
+<a href="#saref-state-annotation-example" class="box-ref">
 Example
-</ins><bdi><ins class="diff-chg">
+<bdi>
 29
-</ins></bdi>
+</bdi>
 </a>
-<del class="diff-old">to
-make
-semantic
-annotations
-part
-of
-the
-Information
-Model.
-</del>
 </li>
 <ul>
 <li>
-<del class="diff-old">Added
-optional
-</del>
-<ins class="diff-chg">Use
-</ins>
+Use
 <code>
-<del class="diff-old">unit
-</del>
-<ins class="diff-chg">saref:TemperatureSensor
-</ins>
+saref:TemperatureSensor
 </code>
-<del class="diff-old">vocabulary
-term
-</del>
 to
-<ins class="diff-new">semantically
+semantically
 annotate
-</ins>
 the
-<del class="diff-old">DataSchema
-Class
-to
-provide
-unit
-metadata.
-</del>
-<ins class="diff-chg">Thing
+Thing
 with
 an
 extension
 class.
-</ins>
 </li>
 <li>
-<del class="diff-old">Added
-optional
-oneOf
-vocabulary
-term
-to
-the
-DataSchema
-Class
-</del>
-<ins class="diff-chg">Use
+Use
 SAREF
-</ins>
 to
-<del class="diff-old">allow
-for
-alternative
-schemas.
-Added
-optional
-format
-vocabulary
-term
-</del>
-<ins class="diff-chg">also
+also
 annotate
 Property
-</ins>
 to
-<ins class="diff-new">be
+be
 consistent
 across
-</ins>
 the
-<del class="diff-old">DataSchema
-Class
-to
-allow
-for
-pattern
-validation.
-Security
-Scheme
-</del>
-<ins class="diff-chg">examples.
-</ins>
+examples.
 </li>
 <li>
-<del class="diff-old">Added
-optional
-@type
-vocabulary
-term
-to
-the
-SecurityScheme
-Class
-to
-make
-semantic
-annotations
-part
-</del>
-<ins class="diff-chg">Use
+Use
 newer
 version
-</ins>
 of
-<del class="diff-old">the
-Information
-Model.
-</del>
-<ins class="diff-chg">ontology-of-units-of-measure
+ontology-of-units-of-measure
 (om).
-</ins>
 </li>
 </ul>
+<li>
+Updated
+<a href="#saref-state-annotation-example" class= "box-ref">
+Example
+<bdi>
+29
+</bdi>
+</a>
+to
+clarify
+the
+design
+difference
+from
+that
+of
+<a href= "#thing-description-full-serialization" class="box-ref">
+Example
+<bdi>
+2
+</bdi>
+</a>.
+</li>
 </ul>
 <li>
-<del class="diff-old">Added
-securityDefinitions
-vocabulary
-term
-to
-the
-Thing
-Class
-to
-declare
-security
-definitions.
-</del>
-<ins class="diff-chg">Appendix
-</ins>
+Behavioral
+Assertions
 </li>
 <ul>
 <li>
-<del class="diff-old">Redefined
-security
-vocabulary
-term
+Section
+<a href="#behavior-data" class= "sec-ref">
+§&nbsp;
+<bdi class="secno">
+8.2
+</bdi>
+Data
+Schemas
+</a>
+describes
+the
+precise
+conditions
+as
+to
+when
+Things
+may
+return
+additional
+data
+and
+Consumers
+have
+to
+accept
+additional
+data
+even
+when
+such
+data
+is
+not
+described
 in
 the
-Thing
-and
-Form
-Classes
-to
-be
-used
-</del>
-<ins class="diff-chg">Removed
-Appendix
-D
+data
+schemas.
+</li>
+<li>
+Section
+<a href="#http-binding-assertions" class= "sec-ref">
+§&nbsp;
+<bdi class="secno">
+8.3.1
+</bdi>
+Protocol
+Binding
+based
 on
-Transformation
-</ins>
-to
-<del class="diff-old">activate
-declared
-security
-definitions.
-Clarified
-that
-the
-top-level
-securityDefinitions
-and
-security
-configuration
-</del>
-<ins class="diff-chg">RDF,
-as
-it
-</ins>
-is
-<del class="diff-old">mandatory.
-Removed
-all
-Url
-postfixes
+HTTP
+</a>
+was
+so
+renamed
 from
-security
-scheme
-Vocabulary
-Terms
-.
-</del>
-<ins class="diff-chg">out
+"HTTP
+Protocol
+Binding".
+</li>
+</ul>
+<li>
+Security
+and
+Privacy
+Considerations
+</li>
+<ul>
+<li>
+Updated
+section
+<a href="#sec-security-consideration" class= "sec-ref">
+§&nbsp;
+<bdi class="secno">
+9.
+</bdi>
+Security
+and
+Privacy
+Considerations
+</a>
+to
+match
+the
+<a href="#dfn-vocab-term" class= "internalDFN" data-link-type="dfn">
+vocabulary
+term
+</a>
+id
 of
-scope
+a
+<a href="#dfn-thing" class="internalDFN" data-link-type= "dfn">
+Thing
+</a>
+being
+non-unique
+and
+optional.
+</li>
+<ul>
+<li>
+Added
+mitigations
+such
+as
+"filtering
+out
+IDs
+when
+not
+needed
+for
+a
+use
+case".
+</li>
+<li>
+Added
+risks
+such
+as
+fingerprinting
+the
+type
 of
+a
+device.
+</li>
+<li>
+Added
+risks
+for
+globally
+unique
+IDs,
+and
+points
+out
+that
 this
-specification.
-</ins>
+is
+not
+required
+and
+that
+distributed
+cryptographic
+mechanisms
+or
+locally-scoped
+ids
+can
+be
+used.
+</li>
+</ul>
+</ul>
+<li>
+Appendix
+</li>
+<ul>
+<li>
+Appendix
+section
+<a href="#thing-templates" class= "sec-ref">
+§&nbsp;
+<bdi class="secno">
+C.
+</bdi>
+Thing
+Description
+Templates
+</a>
+was
+so
+renamed
+from
+"Thing
+Templates".
+</li>
+<li>
+Appendix
+section
+<a href="#json-ld-ctx-usage" class= "sec-ref">
+§&nbsp;
+<bdi class="secno">
+D.
+</bdi>
+JSON-LD
+Context
+Usage
+</a>
+now
+explains
+the
+two
+steps
+to
+retrieve
+the
+TD
+information
+model
+in
+RDF.
+</li>
+<li>
+A
+reference
+to
+the
+WoT
+Architecture
+specification
+[
+<cite>
+<a class="bibref" href="#bib-wot-architecture" title= "Web of Things (WoT) Architecture" data-link-type= "biblio">
+WOT-ARCHITECTURE
+</a>
+</cite>
+]
+is
+informative.
 </li>
 </ul>
 </ul>
 </section>
 <section id="changes-from-third-public-working-draft-0">
 <h3 id="changes-from-third-public-working-draft">
+<bdi class= "secno">
 <del class="diff-old">E.2
 </del>
-<bdi class= "secno">
-<ins class="diff-chg">D.2
+<ins class="diff-chg">E.3
 </ins>
 </bdi>
 Changes
 from
-<del class="diff-old">Second
-</del>
-<ins class="diff-chg">Third
-</ins>
+Third
 Public
 Working
 Draft
@@ -33389,10 +32022,7 @@ Draft
 <p>
 Changes
 from
-<del class="diff-old">Second
-</del>
-<ins class="diff-chg">Third
-</ins>
+Third
 Public
 Working
 Draft
@@ -33400,26 +32030,17 @@ are
 described
 in
 the
-<del class="diff-old">Third
-Public
-Working
-Draft
-</del>
 <a href= "https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#changes">
-<ins class="diff-chg">Candidate
+Candidate
 Recommendation
-</ins>
 </a>
 </p>
 </section>
 </section>
 <section id="acknowledgements" class="appendix normative">
-<h2 id="e-acknowledgements">
+<h2 id="f-acknowledgements">
 <bdi class="secno">
-<del class="diff-old">F.
-</del>
-<ins class="diff-chg">E.
-</ins>
+F.
 </bdi>
 Acknowledgements
 <a class="self-link" aria-label="§" href= "#acknowledgements">
@@ -33432,9 +32053,6 @@ would
 like
 to
 thank
-<del class="diff-old">Matthias
-Kovatsch,
-</del>
 Michael
 Koster,
 Michael
@@ -33445,12 +32063,8 @@ Ege
 Korkan,
 Daniel
 Peintner,
-<del class="diff-old">Kawaguchi
-Toru,
-</del>
-<ins class="diff-chg">Toru
+Toru
 Kawaguchi,
-</ins>
 María
 Poveda,
 Dave
@@ -33466,16 +32080,10 @@ Sporny,
 Klaus
 Hartke,
 Addison
-<del class="diff-old">Phillips
-and
-</del>
-<ins class="diff-chg">Phillips,
-</ins>
+Phillips,
 Jose
 M.
-<del class="diff-old">Cantera
-</del>
-<ins class="diff-chg">Cantera,
+Cantera,
 Tomoaki
 Mizushima,
 Soumya
@@ -33484,7 +32092,6 @@ Datta
 and
 Benjamin
 Klotz
-</ins>
 for
 providing
 contributions,
@@ -33505,10 +32112,9 @@ staff
 and
 all
 other
-<ins class="diff-new">current
+current
 and
 former
-</ins>
 active
 Participants
 of
@@ -33544,7 +32150,7 @@ this
 document.
 </p>
 <p>
-<ins class="diff-new">Finally,
+Finally,
 special
 thanks
 to
@@ -33579,27 +32185,21 @@ including
 the
 Thing
 Description.
-</ins></p>
+</p>
 </section>
 <section id="references" class="appendix">
-<h2 id="f-references">
+<h2 id="g-references">
 <bdi class="secno">
-<del class="diff-old">G.
-</del>
-<ins class="diff-chg">F.
-</ins>
+G.
 </bdi>
 References
 <a class="self-link" aria-label="§" href= "#references">
 </a>
 </h2>
 <section id="normative-references">
-<h3 id="f-1-normative-references">
+<h3 id="g-1-normative-references">
 <bdi class="secno">
-<del class="diff-old">G.1
-</del>
-<ins class="diff-chg">F.1
-</ins>
+G.1
 </bdi>
 Normative
 references
@@ -33635,83 +32235,58 @@ URL:
 https://tools.ietf.org/html/bcp47
 </a>
 </dd>
-<dt id="bib-http-in-rdf10">
-[HTTP-in-RDF10]
+<dt id="bib-eventsource">
+[eventsource]
 </dt>
 <dd>
-<a href="https://www.w3.org/TR/HTTP-in-RDF10/">
+<a href="https://www.w3.org/TR/eventsource/">
 <cite>
-HTTP
-Vocabulary
-in
-RDF
-1.0
+Server-Sent
+Events
 </cite>
 </a>.
-Johannes
-Koch;
-Carlos
-A.
-Velasco;
-Philip
-Ackermann.
+Ian
+Hickson.
 W3C.
-2
+3
 February
-2017.
+2015.
 W3C
-Note.
+Recommendation.
 URL:
-<a href= "https://www.w3.org/TR/HTTP-in-RDF10/">
-https://www.w3.org/TR/HTTP-in-RDF10/
+<a href= "https://www.w3.org/TR/eventsource/">
+https://www.w3.org/TR/eventsource/
 </a>
 </dd>
-<dt id="bib-iana-media-types">
-[IANA-MEDIA-TYPES]
+<dt id="bib-rfc2046">
+[RFC2046]
 </dt>
 <dd>
-<a href= "https://www.iana.org/assignments/media-types/">
+<a href= "https://tools.ietf.org/html/rfc2046">
 <cite>
+Multipurpose
+Internet
+Mail
+Extensions
+(MIME)
+Part
+Two:
 Media
 Types
 </cite>
 </a>.
-IANA.
+N.
+Freed;
+N.
+Borenstein.
+IETF.
+November
+1996.
+Draft
+Standard.
 URL:
-<a href= "https://www.iana.org/assignments/media-types/">
-https://www.iana.org/assignments/media-types/
-</a>
-</dd>
-<dt id="bib-mqtt">
-[MQTT]
-</dt>
-<dd>
-<a href= "http://docs.oasis-open.org/mqtt/mqtt/v5.0/cos01/mqtt-v5.0-cos01.html">
-<cite>
-MQTT
-Version
-5.0
-</cite>
-</a>.
-Andrew
-Banks;
-Ed
-Briggs;
-Ken
-Borgendale;
-Rahul
-Gupta.
-OASIS.
-31
-October
-2018.
-Candidate
-OASIS
-Standard
-01.
-URL:
-<a href= "http://docs.oasis-open.org/mqtt/mqtt/v5.0/cos01/mqtt-v5.0-cos01.html">
-http://docs.oasis-open.org/mqtt/mqtt/v5.0/cos01/mqtt-v5.0-cos01.html
+<a href= "https://tools.ietf.org/html/rfc2046">
+https://tools.ietf.org/html/rfc2046
 </a>
 </dd>
 <dt id="bib-rfc2119">
@@ -33801,32 +32376,6 @@ URL:
 https://tools.ietf.org/html/rfc3629
 </a>
 </dd>
-<dt id="bib-rfc3966">
-[RFC3966]
-</dt>
-<dd>
-<a href="https://tools.ietf.org/html/rfc3966">
-<cite>
-The
-tel
-URI
-for
-Telephone
-Numbers
-</cite>
-</a>.
-H.
-Schulzrinne.
-IETF.
-December
-2004.
-Proposed
-Standard.
-URL:
-<a href= "https://tools.ietf.org/html/rfc3966">
-https://tools.ietf.org/html/rfc3966
-</a>
-</dd>
 <dt id="bib-rfc3986">
 [RFC3986]
 </dt>
@@ -33857,32 +32406,30 @@ URL:
 https://tools.ietf.org/html/rfc3986
 </a>
 </dd>
-<dt id="bib-rfc6068">
-[RFC6068]
+<dt id="bib-rfc3987">
+[RFC3987]
 </dt>
 <dd>
-<a href="https://tools.ietf.org/html/rfc6068">
+<a href= "https://tools.ietf.org/html/rfc3987">
 <cite>
-The
-'mailto'
-URI
-Scheme
+Internationalized
+Resource
+Identifiers
+(IRIs)
 </cite>
 </a>.
 M.
 Duerst;
-L.
-Masinter;
-J.
-Zawinski.
+M.
+Suignard.
 IETF.
-October
-2010.
+January
+2005.
 Proposed
 Standard.
 URL:
-<a href= "https://tools.ietf.org/html/rfc6068">
-https://tools.ietf.org/html/rfc6068
+<a href= "https://tools.ietf.org/html/rfc3987">
+https://tools.ietf.org/html/rfc3987
 </a>
 </dd>
 <dt id="bib-rfc6570">
@@ -33942,8 +32489,11 @@ https://tools.ietf.org/html/rfc6749
 </a>
 </dd>
 <dt id="bib-rfc6750">
-<ins class="diff-new">[RFC6750]
-</ins></dt><dd><a href="https://tools.ietf.org/html/rfc6750"><cite><ins class="diff-new">
+[RFC6750]
+</dt>
+<dd>
+<a href="https://tools.ietf.org/html/rfc6750">
+<cite>
 The
 OAuth
 2.0
@@ -33952,7 +32502,8 @@ Framework:
 Bearer
 Token
 Usage
-</ins></cite></a>.<ins class="diff-new">
+</cite>
+</a>.
 M.
 Jones;
 D.
@@ -33963,41 +32514,8 @@ October
 Proposed
 Standard.
 URL:
-</ins><a href= "https://tools.ietf.org/html/rfc6750"><ins class="diff-new">
+<a href= "https://tools.ietf.org/html/rfc6750">
 https://tools.ietf.org/html/rfc6750
-</ins></a></dd>
-<dt id="bib-rfc7231">
-[RFC7231]
-</dt>
-<dd>
-<a href="https://httpwg.org/specs/rfc7231.html">
-<cite>
-Hypertext
-Transfer
-Protocol
-(HTTP/1.1):
-Semantics
-and
-Content
-</cite>
-</a>.
-R.
-Fielding,
-Ed.;
-J.
-Reschke,
-Ed..
-IETF.
-June
-2014.
-Proposed
-Standard.
-URL:
-<del class="diff-old">https://tools.ietf.org/html/rfc7231
-</del>
-<a href= "https://httpwg.org/specs/rfc7231.html">
-<ins class="diff-chg">https://httpwg.org/specs/rfc7231.html
-</ins>
 </a>
 </dd>
 <dt id="bib-rfc7252">
@@ -34084,13 +32602,17 @@ https://tools.ietf.org/html/rfc7519
 </a>
 </dd>
 <dt id="bib-rfc7616">
-<ins class="diff-new">[RFC7616]
-</ins></dt><dd><a href="https://httpwg.org/specs/rfc7616.html"><cite><ins class="diff-new">
+[RFC7616]
+</dt>
+<dd>
+<a href="https://httpwg.org/specs/rfc7616.html">
+<cite>
 HTTP
 Digest
 Access
 Authentication
-</ins></cite></a>.<ins class="diff-new">
+</cite>
+</a>.
 R.
 Shekh-Yusef,
 Ed.;
@@ -34104,17 +32626,23 @@ September
 Proposed
 Standard.
 URL:
-</ins><a href= "https://httpwg.org/specs/rfc7616.html"><ins class="diff-new">
+<a href= "https://httpwg.org/specs/rfc7616.html">
 https://httpwg.org/specs/rfc7616.html
-</ins></a></dd><dt id="bib-rfc7617"><ins class="diff-new">
+</a>
+</dd>
+<dt id="bib-rfc7617">
 [RFC7617]
-</ins></dt><dd><a href="https://httpwg.org/specs/rfc7617.html"><cite><ins class="diff-new">
+</dt>
+<dd>
+<a href="https://httpwg.org/specs/rfc7617.html">
+<cite>
 The
 'Basic'
 HTTP
 Authentication
 Scheme
-</ins></cite></a>.<ins class="diff-new">
+</cite>
+</a>.
 J.
 Reschke.
 IETF.
@@ -34123,9 +32651,10 @@ September
 Proposed
 Standard.
 URL:
-</ins><a href= "https://httpwg.org/specs/rfc7617.html"><ins class="diff-new">
+<a href= "https://httpwg.org/specs/rfc7617.html">
 https://httpwg.org/specs/rfc7617.html
-</ins></a></dd>
+</a>
+</dd>
 <dt id="bib-rfc7797">
 [RFC7797]
 </dt>
@@ -34259,11 +32788,8 @@ October
 Proposed
 Standard.
 URL:
-<del class="diff-old">https://tools.ietf.org/html/rfc8288
-</del>
 <a href= "https://httpwg.org/specs/rfc8288.html">
-<ins class="diff-chg">https://httpwg.org/specs/rfc8288.html
-</ins>
+https://httpwg.org/specs/rfc8288.html
 </a>
 </dd>
 <dt id="bib-rfc8392">
@@ -34296,91 +32822,31 @@ URL:
 https://tools.ietf.org/html/rfc8392
 </a>
 </dd>
-<del class="diff-old">[SHACL]
-Shapes
-Constraint
-Language
-(SHACL)
-.
-Holger
-Knublauch;
-Dimitris
-Kontokostas.
+<dt id="bib-websub">
+[websub]
+</dt>
+<dd>
+<a href= "https://www.w3.org/TR/websub/">
+<cite>
+WebSub
+</cite>
+</a>.
+Julien
+Genestoux;
+Aaron
+Parecki.
 W3C.
-20
-July
-2017.
+23
+January
+2018.
 W3C
 Recommendation.
 URL:
-https://www.w3.org/TR/shacl/
-</del>
-<dt id="bib-wot-architecture">
-[WOT-ARCHITECTURE]
-</dt>
-<dd>
-<a href="https://w3c.github.io/wot-architecture/">
-<cite>
-Web
-of
-Things
-(WoT)
-Architecture
-</cite>
-</a>.
-Matthias
-Kovatsch;
-Ryuichi
-Matsukura;
-Michael
-Lagally;
-Toru
-Kawaguchi;
-Kunihiko
-Toumura;
-Kazuo
-Kajimoto.
-W3C.
-May
-2019.
-URL:
-<a href= "https://w3c.github.io/wot-architecture/">
-https://w3c.github.io/wot-architecture/
+<a href= "https://www.w3.org/TR/websub/">
+https://www.w3.org/TR/websub/
 </a>
 </dd>
-<dt id="bib-wot-binding-templates">
-[WoT-Binding-Templates]
-</dt>
-<dd>
-<a href= "https://www.w3.org/TR/wot-binding-templates/">
-<cite>
-Web
-of
-Things
-(WoT)
-Protocol
-Binding
-Templates
-</cite>
-</a>.
-Michael
-Koster.
-W3C.
-5
-April
-2018.
-W3C
-Note.
-URL:
-<a href= "https://www.w3.org/TR/wot-binding-templates/">
-https://www.w3.org/TR/wot-binding-templates/
-</a>
-</dd>
-<dt id="bib-x509v3">
-[X509V3]
-</dt>
-<dd>
-<cite>
+<del class="diff-old">[X509V3]
 ITU-T
 Recommendation
 X.509
@@ -34400,11 +32866,11 @@ Authentication
 Framework"&nbsp;
 ISO/IEC
 9594-8:1997.
-</cite>.
+.
 ITU.
-</dd>
+</del>
 <dt id="bib-xmlschema11-2-20120405">
-[xmlschema11-2-20120405]
+[XMLSCHEMA11-2-20120405]
 </dt>
 <dd>
 <a href= "https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/">
@@ -34450,12 +32916,9 @@ https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/
 </dl>
 </section>
 <section id="informative-references">
-<h3 id="f-2-informative-references">
+<h3 id="g-2-informative-references">
 <bdi class="secno">
-<del class="diff-old">G.2
-</del>
-<ins class="diff-chg">F.2
-</ins>
+G.2
 </bdi>
 Informative
 references
@@ -34463,8 +32926,8 @@ references
 </a>
 </h3>
 <dl class="bibliography">
-<dt id="bib-draft-ietf-ace-oauth-authz">
-[draft-ietf-ace-oauth-authz]
+<dt id="bib-ace">
+[ACE]
 </dt>
 <dd>
 <a href= "https://tools.ietf.org/html/draft-ietf-ace-oauth-authz-24">
@@ -34504,8 +32967,55 @@ URL:
 https://tools.ietf.org/html/draft-ietf-ace-oauth-authz-24
 </a>
 </dd>
+<dt id="bib-http-in-rdf10">
+[HTTP-in-RDF10]
+</dt>
+<dd>
+<a href="https://www.w3.org/TR/HTTP-in-RDF10/">
+<cite>
+HTTP
+Vocabulary
+in
+RDF
+1.0
+</cite>
+</a>.
+Johannes
+Koch;
+Carlos
+A.
+Velasco;
+Philip
+Ackermann.
+W3C.
+2
+February
+2017.
+W3C
+Note.
+URL:
+<a href= "https://www.w3.org/TR/HTTP-in-RDF10/">
+https://www.w3.org/TR/HTTP-in-RDF10/
+</a>
+</dd>
+<dt id="bib-iana-media-types">
+[IANA-MEDIA-TYPES]
+</dt>
+<dd>
+<a href= "https://www.iana.org/assignments/media-types/">
+<cite>
+Media
+Types
+</cite>
+</a>.
+IANA.
+URL:
+<a href= "https://www.iana.org/assignments/media-types/">
+https://www.iana.org/assignments/media-types/
+</a>
+</dd>
 <dt id="bib-iana-uri-schemes">
-[iana-uri-schemes]
+[IANA-URI-SCHEMES]
 </dt>
 <dd>
 <a href= "https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml">
@@ -34524,7 +33034,7 @@ https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml
 </a>
 </dd>
 <dt id="bib-json-ld11">
-[json-ld11]
+[JSON-LD11]
 </dt>
 <dd>
 <a href="https://www.w3.org/TR/json-ld11/">
@@ -34536,10 +33046,19 @@ JSON-LD
 Gregg
 Kellogg;
 Pierre-Antoine
-Champin.
+<del class="diff-old">Champin.
+</del>
+<ins class="diff-chg">Champin;
+Dave
+Longley.
+</ins>
 W3C.
-10
-May
+<del class="diff-old">9
+September
+</del>
+<ins class="diff-chg">18
+October
+</ins>
 2019.
 W3C
 Working
@@ -34549,31 +33068,11 @@ URL:
 https://www.w3.org/TR/json-ld11/
 </a>
 </dd>
-<del class="diff-old">[json-ld11-api]
-JSON-LD
-1.1
-Processing
-Algorithms
-and
-API
-.
-Gregg
-Kellogg.
-W3C.
-10
-May
-2019.
-W3C
-Working
-Draft.
-URL:
-https://www.w3.org/TR/json-ld11-api/
-</del>
-<dt id="bib-json-schema-validation">
-[JSON-SCHEMA-VALIDATION]
+<dt id="bib-json-schema">
+[JSON-SCHEMA]
 </dt>
 <dd>
-<a href= "https://tools.ietf.org/html/draft-handrews-json-schema-validation-00">
+<a href= "https://tools.ietf.org/html/draft-handrews-json-schema-validation-01">
 <cite>
 JSON
 Schema
@@ -34594,10 +33093,13 @@ Andrews;
 Geraint
 Luff.
 IETF.
+19
+March
+2018.
 Internet-Draft.
 URL:
-<a href= "https://tools.ietf.org/html/draft-handrews-json-schema-validation-00">
-https://tools.ietf.org/html/draft-handrews-json-schema-validation-00
+<a href= "https://tools.ietf.org/html/draft-handrews-json-schema-validation-01">
+https://tools.ietf.org/html/draft-handrews-json-schema-validation-01
 </a>
 </dd>
 <dt id="bib-ldml">
@@ -34652,6 +33154,36 @@ URL:
 https://www.w3.org/DesignIssues/LinkedData.html
 </a>
 </dd>
+<dt id="bib-mqtt">
+[MQTT]
+</dt>
+<dd>
+<a href= "http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html">
+<cite>
+MQTT
+Version
+3.1.1
+</cite>
+</a>.
+Andrew
+Banks;
+Rahul
+Gupta.
+OASIS.
+10
+December
+2015.
+OASIS
+Standard
+Incorporating
+Approved
+Errata
+01.
+URL:
+<a href= "http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html">
+http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html
+</a>
+</dd>
 <dt id="bib-openapi">
 [OPENAPI]
 </dt>
@@ -34694,120 +33226,119 @@ URL:
 https://swagger.io/specification/
 </a>
 </dd>
-<del class="diff-old">[owl2-manchester-syntax]
-OWL
-2
-Web
-Ontology
-Language
-Manchester
-Syntax
-(Second
-Edition)
-.
-Matthew
-Horridge;
-Peter
-Patel-Schneider.
-W3C.
-11
-December
-2012.
-W3C
-Note.
-URL:
-https://www.w3.org/TR/owl2-manchester-syntax/
-[owl2-overview]
-OWL
-2
-Web
-Ontology
-Language
-Document
-Overview
-(Second
-Edition)
-.
-W3C
-OWL
-Working
-Group.
-W3C.
-11
-December
-2012.
-W3C
-Recommendation.
-URL:
-https://www.w3.org/TR/owl2-overview/
-[rdf11-concepts]
-RDF
-1.1
-Concepts
-and
-Abstract
-Syntax
-.
-Richard
-Cyganiak;
-David
-Wood;
-Markus
-Lanthaler.
-W3C.
-25
-February
-2014.
-W3C
-Recommendation.
-URL:
-https://www.w3.org/TR/rdf11-concepts/
-[rdf11-mt]
-RDF
-1.1
-Semantics
-.
-Patrick
-Hayes;
-Peter
-Patel-Schneider.
-W3C.
-25
-February
-2014.
-W3C
-Recommendation.
-URL:
-https://www.w3.org/TR/rdf11-mt/
-</del>
-<dt id="bib-rfc3987">
-[RFC3987]
+<dt id="bib-rdf-schema">
+[RDF-SCHEMA]
 </dt>
 <dd>
-<a href= "https://tools.ietf.org/html/rfc3987">
+<a href="https://www.w3.org/TR/rdf-schema/">
 <cite>
-Internationalized
-Resource
-Identifiers
-(IRIs)
+RDF
+Schema
+1.1
+</cite>
+</a>.
+Dan
+Brickley;
+Ramanathan
+Guha.
+W3C.
+25
+February
+2014.
+W3C
+Recommendation.
+URL:
+<a href= "https://www.w3.org/TR/rdf-schema/">
+https://www.w3.org/TR/rdf-schema/
+</a>
+</dd>
+<dt id="bib-rfc3966">
+[RFC3966]
+</dt>
+<dd>
+<a href="https://tools.ietf.org/html/rfc3966">
+<cite>
+The
+tel
+URI
+for
+Telephone
+Numbers
+</cite>
+</a>.
+H.
+Schulzrinne.
+IETF.
+December
+2004.
+Proposed
+Standard.
+URL:
+<a href= "https://tools.ietf.org/html/rfc3966">
+https://tools.ietf.org/html/rfc3966
+</a>
+</dd>
+<dt id="bib-rfc6068">
+[RFC6068]
+</dt>
+<dd>
+<a href="https://tools.ietf.org/html/rfc6068">
+<cite>
+The
+'mailto'
+URI
+Scheme
 </cite>
 </a>.
 M.
 Duerst;
-M.
-Suignard.
+L.
+Masinter;
+J.
+Zawinski.
 IETF.
-January
-2005.
+October
+2010.
 Proposed
 Standard.
 URL:
-<a href= "https://tools.ietf.org/html/rfc3987">
-https://tools.ietf.org/html/rfc3987
+<a href= "https://tools.ietf.org/html/rfc6068">
+https://tools.ietf.org/html/rfc6068
 </a>
 </dd>
-<dt id="bib-rijgersberg-et-al-2013">
-[Rijgersberg-et-al-2013]
+<dt id="bib-rfc7231">
+[RFC7231]
+</dt>
+<dd>
+<a href="https://httpwg.org/specs/rfc7231.html">
+<cite>
+Hypertext
+Transfer
+Protocol
+(HTTP/1.1):
+Semantics
+and
+Content
+</cite>
+</a>.
+R.
+Fielding,
+Ed.;
+J.
+Reschke,
+Ed..
+IETF.
+June
+2014.
+Proposed
+Standard.
+URL:
+<a href= "https://httpwg.org/specs/rfc7231.html">
+https://httpwg.org/specs/rfc7231.html
+</a>
+</dd>
+<dt id="bib-rijgersberg">
+[RIJGERSBERG]
 </dt>
 <dd>
 <a href= "http://www.semantic-web-journal.net/content/ontology-units-measure-and-related-concepts">
@@ -34841,7 +33372,7 @@ http://www.semantic-web-journal.net/content/ontology-units-measure-and-related-c
 </a>
 </dd>
 <dt id="bib-semver">
-[SemVer]
+[SEMVER]
 </dt>
 <dd>
 <a href="https://semver.org/">
@@ -34862,7 +33393,7 @@ https://semver.org/
 </a>
 </dd>
 <dt id="bib-smartm2m">
-[smartM2M]
+[SMARTM2M]
 </dt>
 <dd>
 <a href= "http://www.etsi.org/deliver/etsi_ts/103200_103299/103264/02.01.01_60/ts_103264v020101p.pdf">
@@ -34913,8 +33444,8 @@ Phillips;
 Richard
 Ishida.
 W3C.
-16
-April
+11
+June
 2019.
 W3C
 Working
@@ -34924,8 +33455,34 @@ URL:
 https://www.w3.org/TR/string-meta/
 </a>
 </dd>
+<dt id="bib-turtle">
+[TURTLE]
+</dt>
+<dd>
+<a href="https://www.w3.org/TR/turtle/">
+<cite>
+RDF
+1.1
+Turtle
+</cite>
+</a>.
+Eric
+Prud'hommeaux;
+Gavin
+Carothers.
+W3C.
+25
+February
+2014.
+W3C
+Recommendation.
+URL:
+<a href= "https://www.w3.org/TR/turtle/">
+https://www.w3.org/TR/turtle/
+</a>
+</dd>
 <dt id="bib-vocab-ssn">
-[vocab-ssn]
+[VOCAB-SSN]
 </dt>
 <dd>
 <a href="https://www.w3.org/TR/vocab-ssn/">
@@ -34960,11 +33517,76 @@ URL:
 https://www.w3.org/TR/vocab-ssn/
 </a>
 </dd>
-<del class="diff-old">[WOT-SECURITY-CONSIDERATIONS]
+<dt id="bib-wot-architecture">
+[WOT-ARCHITECTURE]
+</dt>
+<dd>
+<a href="https://www.w3.org/TR/wot-architecture/">
+<cite>
+Web
+of
+Things
+(WoT)
+Architecture
+</cite>
+</a>.
+Matthias
+Kovatsch;
+Ryuichi
+Matsukura;
+Michael
+Lagally;
+Toru
+Kawaguchi;
+Kunihiko
+Toumura;
+Kazuo
+Kajimoto.
+<del class="diff-old">W3C
+Candidate
+Recommendation.
+6
+November
 </del>
-<dt id="bib-wot-security-guidelines">
-<ins class="diff-chg">[WOT-SECURITY-GUIDELINES]
+<ins class="diff-chg">W3C.
+May
 </ins>
+2019.
+URL:
+<a href= "https://www.w3.org/TR/wot-architecture/">
+https://www.w3.org/TR/wot-architecture/
+</a>
+</dd>
+<dt id="bib-wot-binding-templates">
+[WOT-BINDING-TEMPLATES]
+</dt>
+<dd>
+<a href= "https://www.w3.org/TR/wot-binding-templates/">
+<cite>
+Web
+of
+Things
+(WoT)
+Protocol
+Binding
+Templates
+</cite>
+</a>.
+Michael
+Koster.
+W3C.
+5
+April
+2018.
+W3C
+Note.
+URL:
+<a href= "https://www.w3.org/TR/wot-binding-templates/">
+https://www.w3.org/TR/wot-binding-templates/
+</a>
+</dd>
+<dt id="bib-wot-security-guidelines">
+[WOT-SECURITY-GUIDELINES]
 </dt>
 <dd>
 <a href="https://w3c.github.io/wot-security/">
@@ -34976,23 +33598,62 @@ Things
 Security
 and
 Privacy
-<del class="diff-old">Considerations
-</del>
-<ins class="diff-chg">Guidelines
-</ins>
+Guidelines
 </cite>
 </a>.
-;
+<ins class="diff-new">;
+</ins>
 Michael
 McCool;
 Elena
 Reshetova.
-W3C.
+<del class="diff-old">W3C
+Note.
+6
+November
+</del>
+<ins class="diff-chg">W3C.
 March
+</ins>
 2019.
 URL:
+<del class="diff-old">https://www.w3.org/TR/wot-security/
+</del>
 <a href= "https://w3c.github.io/wot-security/">
-https://w3c.github.io/wot-security/
+<ins class="diff-chg">https://w3c.github.io/wot-security/
+</ins></a></dd><dt id="bib-xml"><ins class="diff-chg">
+[xml]
+</ins></dt><dd><a href="https://www.w3.org/TR/xml/"><cite><ins class="diff-chg">
+Extensible
+Markup
+Language
+(XML)
+1.0
+(Fifth
+Edition)
+</ins></cite></a>.<ins class="diff-chg">
+Tim
+Bray;
+Jean
+Paoli;
+Michael
+Sperberg-McQueen;
+Eve
+Maler;
+François
+Yergeau
+et
+al.
+W3C.
+26
+November
+2008.
+W3C
+Recommendation.
+URL:
+</ins><a href= "https://www.w3.org/TR/xml/"><ins class="diff-chg">
+https://www.w3.org/TR/xml/
+</ins>
 </a>
 </dd>
 </dl>
