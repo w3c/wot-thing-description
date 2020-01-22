@@ -4,7 +4,7 @@
 <meta name="generator" content=
 "HTML Tidy for HTML5 for Linux version 5.7.27" />
 <meta charset="utf-8" />
-<meta name="generator" content="ReSpec 24.37.0" />
+<meta name="generator" content="ReSpec 25.1.0" />
 <meta name="viewport" content=
 "width=device-width, initial-scale=1, shrink-to-fit=no" />
 <style>
@@ -108,15 +108,84 @@
   }
 ]]>
 </style>
+
+<style>
+<![CDATA[
+  /* dfn popup panel that list all local references to a dfn */
+  dfn {
+  cursor: pointer;
+  }
+
+  .dfn-panel {
+  position: absolute;
+  left: var(--left); /* set via JS */
+  top: var(--top); /* set via JS */
+  z-index: 35;
+  height: auto;
+  width: max-content;
+  max-width: 300px;
+  max-height: 500px;
+  overflow: auto;
+  padding: 0.5em 0.75em;
+  font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
+  background: #dddddd;
+  color: black;
+  border: outset 0.2em;
+  }
+
+  .dfn-panel * {
+  margin: 0;
+  }
+
+  .dfn-panel > b {
+  display: block;
+  }
+
+  .dfn-panel ul a[href] {
+  color: black;
+  }
+
+  .dfn-panel a:not(:hover) {
+  text-decoration: none !important;
+  border-bottom: none !important;
+  }
+
+  .dfn-panel a[href]:hover {
+  border-bottom-width: 1px;
+  }
+
+  .dfn-panel > b + b {
+  margin-top: 0.25em;
+  }
+
+  .dfn-panel ul {
+  padding: 0;
+  }
+
+  .dfn-panel li {
+  list-style: inside;
+  }
+
+  .dfn-panel.docked {
+  display: inline-block;
+  position: fixed;
+  left: 0.5em;
+  top: unset;
+  bottom: 2em;
+  margin: 0 auto;
+  /* 0.75em from padding (x2), 0.5em from left position, 0.2em border (x2) */
+  max-width: calc(100vw - 0.75em * 2 - 0.5em - 0.2em * 2);
+  max-height: 30vh;
+  }
+]]>
+</style>
 <title>Web of Things (WoT) Thing Description</title>
 
 <style id="respec-mainstyle">
 <![CDATA[
   /*****************************************************************
-  * ReSpec 3 CSS
-  * Robin Berjon - http://berjon.com/
+  * ReSpec specific CSS
   *****************************************************************/
-
   @keyframes pop {
   0% {
     transform: scale(1, 1);
@@ -440,9 +509,9 @@
 
 <script>
 <![CDATA[
-//    document.addEventListener('DOMContentLoaded', () => {
-    document.addEventListener('readystatechange', () => {
-        if (document.readyState === 'complete') {
+    document.addEventListener('DOMContentLoaded', () => {
+        // let ReSpec do syntax highlighting first
+        document.respecIsReady.then(() => {
             document.querySelectorAll('.with-default').forEach(n => {
                 let wo = n.querySelector('pre:nth-of-type(1)');
                 let w = n.querySelector('pre:nth-of-type(2)');
@@ -463,7 +532,7 @@
                     }
                 });
             });
-        }
+        });
     });
 ]]>
 </script>
@@ -602,95 +671,85 @@
 <style>
 <![CDATA[
   /*
-
-  github.com style (c) Vasily Polovnyov <vast@whiteants.net>
-
+  Atom One Light by Daniel Gamage
+  Original One Light Syntax theme from https://github.com/atom/one-light-syntax
+  base:    #fafafa
+  mono-1:  #383a42
+  mono-2:  #686b77
+  mono-3:  #a0a1a7
+  hue-1:   #0184bb
+  hue-2:   #4078f2
+  hue-3:   #a626a4
+  hue-4:   #50a14f
+  hue-5:   #e45649
+  hue-5-2: #c91243
+  hue-6:   #986801
+  hue-6-2: #c18401
   */
 
   .hljs {
   display: block;
   overflow-x: auto;
   padding: 0.5em;
-  color: #333;
-  background: #f8f8f8;
+  color: #383a42;
+  background: #fafafa;
   }
 
   .hljs-comment,
   .hljs-quote {
-  color: #998;
+  color: #a0a1a7;
   font-style: italic;
   }
 
+  .hljs-doctag,
   .hljs-keyword,
-  .hljs-selector-tag,
-  .hljs-subst {
-  color: #333;
-  font-weight: bold;
+  .hljs-formula {
+  color: #a626a4;
   }
 
-  .hljs-number,
-  .hljs-literal,
-  .hljs-variable,
-  .hljs-template-variable,
-  .hljs-tag .hljs-attr {
-  color: #008080;
+  .hljs-section,
+  .hljs-name,
+  .hljs-selector-tag,
+  .hljs-deletion,
+  .hljs-subst {
+  color: #e45649;
+  }
+
+  .hljs-literal {
+  color: #0184bb;
   }
 
   .hljs-string,
-  .hljs-doctag {
-  color: #d14;
-  }
-
-  .hljs-title,
-  .hljs-section,
-  .hljs-selector-id {
-  color: #900;
-  font-weight: bold;
-  }
-
-  .hljs-subst {
-  font-weight: normal;
-  }
-
-  .hljs-type,
-  .hljs-class .hljs-title {
-  color: #458;
-  font-weight: bold;
-  }
-
-  .hljs-tag,
-  .hljs-name,
-  .hljs-attribute {
-  color: #000080;
-  font-weight: normal;
-  }
-
   .hljs-regexp,
-  .hljs-link {
-  color: #009926;
-  }
-
-  .hljs-symbol,
-  .hljs-bullet {
-  color: #990073;
+  .hljs-addition,
+  .hljs-attribute,
+  .hljs-meta-string {
+  color: #50a14f;
   }
 
   .hljs-built_in,
-  .hljs-builtin-name {
-  color: #0086b3;
+  .hljs-class .hljs-title {
+  color: #c18401;
   }
 
-  .hljs-meta {
-  color: #999;
-  font-weight: bold;
+  .hljs-attr,
+  .hljs-variable,
+  .hljs-template-variable,
+  .hljs-type,
+  .hljs-selector-class,
+  .hljs-selector-attr,
+  .hljs-selector-pseudo,
+  .hljs-number {
+  color: #986801;
   }
 
-  .hljs-deletion {
-  background: #fdd;
-  }
-
-  .hljs-addition {
-  background: #dfd;
+  .hljs-symbol,
+  .hljs-bullet,
+  .hljs-link,
+  .hljs-meta,
+  .hljs-selector-id,
+  .hljs-title {
+  color: #4078f2;
   }
 
   .hljs-emphasis {
@@ -699,6 +758,10 @@
 
   .hljs-strong {
   font-weight: bold;
+  }
+
+  .hljs-link {
+  text-decoration: underline;
   }
 ]]>
 </style>
@@ -969,8 +1032,8 @@
       ]
     }
   ],
-  "publishISODate": "2019-12-09T00:00:00.000Z",
-  "generatedSubtitle": "Editor's Draft 09 December 2019"
+  "publishISODate": "2020-01-13T00:00:00.000Z",
+  "generatedSubtitle": "Editor's Draft 13 January 2020"
   }
 ]]>
 </script>
@@ -1015,14 +1078,15 @@ W3C
 Recommendation
 6
 November
+2019
 </del>
 <ins class="diff-chg">Editor's
 Draft
-</ins><time class="dt-published" datetime= "2019-12-09"><ins class="diff-chg">
-09
-December
+</ins><time class="dt-published" datetime= "2020-01-13"><ins class="diff-chg">
+13
+January
+2020
 </ins>
-2019
 </time>
 </h2>
 <dl>
@@ -1197,7 +1261,10 @@ bug
 Copyright
 </a>
 ©
-2017-2019
+<del class="diff-old">2017-2019
+</del>
+<ins class="diff-chg">2017-2020
+</ins>
 <a href="https://www.w3.org/">
 <abbr title= "World Wide Web Consortium">
 W3C
@@ -1758,7 +1825,7 @@ W3C
 </abbr>
 maintains
 a
-<a rel="disclosure" href= "https://www.w3.org/2004/01/pp-impl/95969/status">
+<a rel="disclosure" href="">
 public
 list
 of
@@ -2777,36 +2844,36 @@ Changes
 </a>
 <ol class="toc">
 <li class="tocline">
-<a class="tocxref" href= "#changes-from-second-candidate-recommendation">
+<a class="tocxref" href= "#changes-from-candidate-recommendation2">
 <bdi class= "secno">
 E.1
 </bdi>
 Changes
 from
-<ins class="diff-new">Second
-Candidate
-Recommendation
-</ins></a></li><li class="tocline"><a class="tocxref" href= "#changes-from-first-candidate-recommendation"><bdi class= "secno"><ins class="diff-new">
-E.2
-</ins></bdi><ins class="diff-new">
-Changes
-from
+<del class="diff-old">First
+</del>
+<ins class="diff-chg">Second
 </ins>
-First
 Candidate
 Recommendation
 </a>
 </li>
 <li class="tocline">
-<a class="tocxref" href= "#changes-from-third-public-working-draft-0">
+<a class="tocxref" href= "#changes-from-candidate-recommendation">
 <bdi class= "secno">
-<del class="diff-old">E.2
-</del>
-<ins class="diff-chg">E.3
-</ins>
+E.2
 </bdi>
 Changes
 from
+<ins class="diff-new">First
+Candidate
+Recommendation
+</ins></a></li><li class="tocline"><a class="tocxref" href= "#changes-from-third-public-working-draft"><bdi class= "secno"><ins class="diff-new">
+E.3
+</ins></bdi><ins class="diff-new">
+Changes
+from
+</ins>
 Third
 Public
 Working
@@ -3090,7 +3157,7 @@ receiver.
 See
 [
 <cite>
-<a class="bibref" href="#bib-wot-architecture" title="Web of Things (WoT) Architecture" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-wot-architecture" title= "Web of Things (WoT) Architecture">
 WOT-ARCHITECTURE
 </a>
 </cite>
@@ -3117,7 +3184,7 @@ URI
 schemes
 [
 <cite>
-<a class="bibref" href="#bib-rfc3986" title= "Uniform Resource Identifier (URI): Generic Syntax" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc3986" title= "Uniform Resource Identifier (URI): Generic Syntax">
 RFC3986
 </a>
 </cite>
@@ -3132,7 +3199,7 @@ coap
 etc.
 [
 <cite>
-<a class="bibref" href= "#bib-iana-uri-schemes" title= "Uniform Resource Identifier (URI) Schemes" data-link-type= "biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-iana-uri-schemes" title="Uniform Resource Identifier (URI) Schemes">
 IANA-URI-SCHEMES
 </a>
 </cite>
@@ -3145,7 +3212,7 @@ media
 types
 [
 <cite>
-<a class="bibref" href="#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types">
 RFC2046
 </a>
 </cite>
@@ -3166,7 +3233,7 @@ application/exi
 etc.
 [
 <cite>
-<a class="bibref" href="#bib-iana-media-types" title= "Media Types" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-iana-media-types" title= "Media Types">
 IANA-MEDIA-TYPES
 </a>
 </cite>
@@ -3189,7 +3256,7 @@ on
 JSON
 [
 <cite>
-<a class= "bibref" href="#bib-rfc8259" title= "The JavaScript Object Notation (JSON) Data Interchange Format" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc8259" title= "The JavaScript Object Notation (JSON) Data Interchange Format">
 RFC8259
 </a>
 </cite>
@@ -3225,7 +3292,7 @@ JSON-LD
 1.1
 [
 <cite>
-<a class="bibref" href= "#bib-json-ld11" title="JSON-LD 1.1" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-json-ld11" title= "JSON-LD 1.1">
 JSON-LD11
 </a>
 </cite>
@@ -3780,7 +3847,7 @@ Reference
 Ontology
 [
 <cite>
-<a class="bibref" href="#bib-smartm2m" title= "ETSI TS 103 264 V2.1.1 (2017-03): SmartM2M; Smart Appliances; Reference Ontology and oneM2M Mapping" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-smartm2m" title= "ETSI TS 103 264 V2.1.1 (2017-03): SmartM2M; Smart Appliances; Reference Ontology and oneM2M Mapping">
 SMARTM2M
 </a>
 </cite>
@@ -3810,12 +3877,12 @@ giving
 the
 semantics
 of
-<a href="#dfn-thing" class="internalDFN" data-link-type= "dfn">
+<a href="#dfn-thing" class="internalDFN" data-link-type="dfn">
 Things
 </a>
 and
 their
-<a href="#dfn-interaction-affordance" class="internalDFN" data-link-type="dfn">
+<a href= "#dfn-interaction-affordance" class="internalDFN" data-link-type= "dfn">
 Interaction
 Affordances
 </a>.
@@ -3824,7 +3891,7 @@ the
 example
 below,
 the
-<a href="#dfn-thing" class="internalDFN" data-link-type="dfn">
+<a href="#dfn-thing" class="internalDFN" data-link-type= "dfn">
 Thing
 </a>
 is
@@ -3837,7 +3904,7 @@ the
 <code>
 status
 </code>
-<a href= "#dfn-property" class="internalDFN" data-link-type= "dfn">
+<a href="#dfn-property" class="internalDFN" data-link-type="dfn">
 Property
 </a>
 is
@@ -3851,7 +3918,7 @@ the
 <code>
 toggle
 </code>
-<a href="#dfn-action" class= "internalDFN" data-link-type="dfn">
+<a href= "#dfn-action" class="internalDFN" data-link-type="dfn">
 Action
 </a>
 with
@@ -3964,7 +4031,7 @@ that
 specification
 [
 <cite>
-<a class="bibref" href="#bib-json-ld11" title= "JSON-LD 1.1" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-json-ld11" title="JSON-LD 1.1">
 json-ld11
 </a>
 </cite>
@@ -3990,7 +4057,7 @@ please
 refer
 to
 Appendix
-<a href= "#json-ld-ctx-usage" class="sec-ref">
+<a href="#json-ld-ctx-usage" class="sec-ref">
 §&nbsp;
 <bdi class= "secno">
 D.
@@ -4091,14 +4158,14 @@ BCP
 </a>
 [
 <cite>
-<a class= "bibref" href="#bib-rfc2119" title= "Key words for use in RFCs to Indicate Requirement Levels" data-link-type="biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-rfc2119" title= "Key words for use in RFCs to Indicate Requirement Levels">
 RFC2119
 </a>
 </cite>
 ]
 [
 <cite>
-<a class= "bibref" href="#bib-rfc8174" title= "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc8174" title= "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words">
 RFC8174
 </a>
 </cite>
@@ -4162,7 +4229,7 @@ JSON
 Schema
 [
 <cite>
-<a class="bibref" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON">
 JSON-SCHEMA
 </a>
 </cite>
@@ -4176,9 +4243,9 @@ is
 provided
 in
 Appendix
-<a href= "#json-schema-for-validation" class="sec-ref">
+<a href="#json-schema-for-validation" class= "sec-ref">
 §&nbsp;
-<bdi class= "secno">
+<bdi class="secno">
 B.
 </bdi>
 JSON
@@ -4276,7 +4343,7 @@ Architecture
 specification
 [
 <cite>
-<a class="bibref" href="#bib-wot-architecture" title= "Web of Things (WoT) Architecture" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-wot-architecture" title= "Web of Things (WoT) Architecture">
 WOT-ARCHITECTURE
 </a>
 </cite>
@@ -4771,7 +4838,7 @@ This
 IRI
 [
 <cite>
-<a class="bibref" href="#bib-rfc3987" title= "Internationalized Resource Identifiers (IRIs)" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc3987" title= "Internationalized Resource Identifiers (IRIs)">
 RFC3987
 </a>
 </cite>
@@ -4783,7 +4850,7 @@ a
 URI
 [
 <cite>
-<a class= "bibref" href="#bib-rfc3986" title= "Uniform Resource Identifier (URI): Generic Syntax" data-link-type= "biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-rfc3986" title= "Uniform Resource Identifier (URI): Generic Syntax">
 RFC3986
 </a>
 </cite>
@@ -4794,14 +4861,14 @@ dereferenced
 to
 obtain
 a
-<a href="https://www.w3.org/2019/wot/td/v1">
+<a href= "https://www.w3.org/2019/wot/td/v1">
 JSON-LD
 context
 file
 </a>
 [
 <cite>
-<a class="bibref" href="#bib-json-ld11" title= "JSON-LD 1.1" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-json-ld11" title="JSON-LD 1.1">
 json-ld11
 </a>
 </cite>
@@ -5269,7 +5336,7 @@ Affordances
 </a>
 [
 <cite>
-<a class="bibref" href="#bib-wot-architecture" title= "Web of Things (WoT) Architecture" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-wot-architecture" title= "Web of Things (WoT) Architecture">
 WOT-ARCHITECTURE
 </a>
 </cite>
@@ -5296,7 +5363,7 @@ JSON
 Schema
 [
 <cite>
-<a class= "bibref" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON">
 JSON-SCHEMA
 </a>
 </cite>
@@ -5535,7 +5602,7 @@ Vocabularies
 </a>.
 </p>
 <figure id="td-core-model">
-<img src="visualization/td.png" alt= "UML diagram of the TD&nbsp;information model for the TD core vocabulary" height="1008" width="1344" />
+<img src="visualization/td.png" alt= "UML diagram of the TD&nbsp;information model for the TD core vocabulary" />
 <figcaption>
 Figure
 <bdi class="figno">
@@ -5565,7 +5632,7 @@ vocabulary
 </figure>
 <hr />
 <figure id="td-security-model">
-<img src= "visualization/wot-security.png" alt= "UML diagram of the TD&nbsp;information model for the WoT security vocabulary" height="1008" width="1344" />
+<img src= "visualization/wot-security.png" alt= "UML diagram of the TD&nbsp;information model for the WoT security vocabulary" />
 <figcaption>
 Figure
 <bdi class="figno">
@@ -5580,7 +5647,7 @@ vocabulary
 </figure>
 <hr />
 <figure id="hypermedia-model">
-<img src= "visualization/hypermedia.png" alt= "UML diagram of the TD&nbsp;information model for the hypermedia controls vocabulary" height="375" width="1705" />
+<img src= "visualization/hypermedia.png" alt= "UML diagram of the TD&nbsp;information model for the hypermedia controls vocabulary" />
 <figcaption>
 Figure
 <bdi class="figno">
@@ -6602,7 +6669,7 @@ XML
 Schema
 [
 <cite>
-<a class="bibref" href="#bib-xmlschema11-2-20120405" title= "W3C XML Schema Definition Language (XSD) 1.1 Part 2: Datatypes" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-xmlschema11-2-20120405" title= "W3C XML Schema Definition Language (XSD) 1.1 Part 2: Datatypes">
 XMLSCHEMA11-2-20120405
 </a>
 </cite>
@@ -7193,7 +7260,7 @@ a
 URI
 [
 <cite>
-<a class= "bibref" href="#bib-rfc3986" title= "Uniform Resource Identifier (URI): Generic Syntax" data-link-type= "biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-rfc3986" title= "Uniform Resource Identifier (URI): Generic Syntax">
 RFC3986
 </a>
 </cite>
@@ -7448,7 +7515,7 @@ mailto
 </code>
 [
 <cite>
-<a class="bibref" href= "#bib-rfc6068" title="The 'mailto' URI Scheme" data-link-type= "biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-rfc6068" title= "The 'mailto' URI Scheme">
 RFC6068
 </a>
 </cite>
@@ -7458,7 +7525,7 @@ tel
 </code>
 [
 <cite>
-<a class= "bibref" href="#bib-rfc3966" title= "The tel URI for Telephone Numbers" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc3966" title= "The tel URI for Telephone Numbers">
 RFC3966
 </a>
 </cite>
@@ -7522,7 +7589,7 @@ defined
 in
 [
 <cite>
-<a class="bibref" href="#bib-rfc3986" title= "Uniform Resource Identifier (URI): Generic Syntax" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc3986" title= "Uniform Resource Identifier (URI): Generic Syntax">
 RFC3986
 </a>
 </cite>
@@ -7551,7 +7618,7 @@ Linked
 Data
 [
 <cite>
-<a class="bibref" href="#bib-linked-data" title= "Linked Data Design Issues" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-linked-data" title= "Linked Data Design Issues">
 LINKED-DATA
 </a>
 </cite>
@@ -8076,7 +8143,7 @@ defined
 by
 [
 <cite>
-<a class="bibref" href="#bib-bcp47" title="Tags for Identifying Languages" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-bcp47" title= "Tags for Identifying Languages">
 BCP47
 </a>
 </cite>
@@ -8155,7 +8222,7 @@ Likely
 Subtags
 [
 <cite>
-<a class="bibref" href="#bib-ldml" title= "Unicode Technical Standard #35: Unicode Locale Data Markup Language (LDML)" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-ldml" title= "Unicode Technical Standard #35: Unicode Locale Data Markup Language (LDML)">
 LDML
 </a>
 </cite>
@@ -8452,7 +8519,7 @@ Metadata
 </em>
 [
 <cite>
-<a class="bibref" href="#bib-string-meta" title= "Strings on the Web: Language and Direction Metadata" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-string-meta" title= "Strings on the Web: Language and Direction Metadata">
 string-meta
 </a>
 </cite>
@@ -8569,7 +8636,10 @@ of
 the
 following
 <em>
-opteration
+<del class="diff-old">opteration
+</del>
+<ins class="diff-chg">operation
+</ins>
 types
 </em>:
 <code>
@@ -9963,7 +10033,7 @@ respectively.
 See
 [
 <cite>
-<a class="bibref" href="#bib-semver" title="Semantic Versioning 2.0.0" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-semver" title= "Semantic Versioning 2.0.0">
 SEMVER
 </a>
 </cite>
@@ -10005,7 +10075,7 @@ described
 in
 [
 <cite>
-<a class= "bibref" href="#bib-bcp47" title="Tags for Identifying Languages" data-link-type="biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-bcp47" title= "Tags for Identifying Languages">
 BCP47
 </a>
 </cite>
@@ -10055,13 +10125,13 @@ defined
 in
 [
 <cite>
-<a class= "bibref" href="#bib-bcp47" title="Tags for Identifying Languages" data-link-type="biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-bcp47" title= "Tags for Identifying Languages">
 BCP47
 </a>
 </cite>
 ].
 </span>
-<span class= "rfc2119-assertion" id="td-multilanguage-value">
+<span class="rfc2119-assertion" id="td-multilanguage-value">
 Each
 value
 of
@@ -10069,10 +10139,10 @@ the
 <code>
 MultiLanguage
 </code>
-<a href="#dfn-map" class="internalDFN" data-link-type="dfn">
+<a href="#dfn-map" class= "internalDFN" data-link-type="dfn">
 Map
 </a>
-<em class="rfc2119" title= "MUST">
+<em class="rfc2119" title="MUST">
 MUST
 </em>
 be
@@ -10119,7 +10189,7 @@ JSON
 Schema
 [
 <cite>
-<a class= "bibref" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON">
 JSON-SCHEMA
 </a>
 </cite>
@@ -10153,7 +10223,7 @@ JSON
 Schema
 using
 a
-<a href="#dfn-context-ext" class= "internalDFN" data-link-type="dfn">
+<a href= "#dfn-context-ext" class="internalDFN" data-link-type="dfn">
 TD
 Context
 Extension
@@ -10165,7 +10235,7 @@ terms
 as
 described
 in
-<a href="#sec-context-extensions" class="sec-ref">
+<a href="#sec-context-extensions" class= "sec-ref">
 §&nbsp;
 <bdi class="secno">
 7.
@@ -10288,7 +10358,7 @@ Things
 Binding
 Templates
 [
-</ins><cite><a class="bibref" href= "#bib-wot-binding-templates" title= "Web of Things (WoT) Protocol Binding Templates" data-link-type= "biblio"><ins class="diff-new">
+</ins><cite><a class="bibref" data-link-type="biblio" href="#bib-wot-binding-templates" title= "Web of Things (WoT) Protocol Binding Templates"><ins class="diff-new">
 WOT-BINDING-TEMPLATES
 </ins></a></cite><ins class="diff-new">
 ]
@@ -10305,7 +10375,7 @@ such
 as
 XML
 [
-</ins><cite><a class="bibref" href="#bib-xml" title= "Extensible Markup Language (XML) 1.0 (Fifth Edition)" data-link-type="biblio"><ins class="diff-new">
+</ins><cite><a class="bibref" data-link-type="biblio" href= "#bib-xml" title= "Extensible Markup Language (XML) 1.0 (Fifth Edition)"><ins class="diff-new">
 xml
 </ins></a></cite><ins class="diff-new">
 ].
@@ -10951,7 +11021,7 @@ defined
 in
 [
 <cite>
-<a class="bibref" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON">
 JSON-SCHEMA
 </a>
 </cite>
@@ -10962,7 +11032,7 @@ Defined
 Formats
 in
 particular).
-<span class="rfc2119-assertion" id= "td-format-validation-known-values">
+<span class= "rfc2119-assertion" id= "td-format-validation-known-values">
 Servients
 <em class="rfc2119" title="MAY">
 MAY
@@ -11801,7 +11871,7 @@ OpenAPI
 also
 [
 <cite>
-<a class="bibref" href= "#bib-openapi" title="OpenAPI Specification: Version 3.0.1" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-openapi" title= "OpenAPI Specification: Version 3.0.1">
 OPENAPI
 </a>
 </cite>
@@ -12258,7 +12328,7 @@ Basic
 Authentication
 [
 <cite>
-<a class="bibref" href= "#bib-rfc7617" title="The 'Basic' HTTP Authentication Scheme" data-link-type="biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-rfc7617" title= "The 'Basic' HTTP Authentication Scheme">
 RFC7617
 </a>
 </cite>
@@ -12415,7 +12485,7 @@ Access
 Authentication
 [
 <cite>
-<a class="bibref" href= "#bib-rfc7616" title="HTTP Digest Access Authentication" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-rfc7616" title= "HTTP Digest Access Authentication">
 RFC7616
 </a>
 </cite>
@@ -12425,7 +12495,7 @@ configuration
 identified
 by
 the
-<a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">
+<a href="#dfn-vocab-term" class= "internalDFN" data-link-type="dfn">
 Vocabulary
 Term
 </a>
@@ -12748,7 +12818,7 @@ Bearer
 Token
 [
 <cite>
-<a class="bibref" href="#bib-rfc6750" title= "The OAuth 2.0 Authorization Framework: Bearer Token Usage" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-rfc6750" title= "The OAuth 2.0 Authorization Framework: Bearer Token Usage">
 RFC6750
 </a>
 </cite>
@@ -12818,7 +12888,7 @@ conformance
 with
 [
 <cite>
-<a class= "bibref" href="#bib-rfc7519" title="JSON Web Token (JWT)" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-rfc7519" title= "JSON Web Token (JWT)">
 RFC7519
 </a>
 </cite>
@@ -12831,7 +12901,7 @@ conformance
 with
 [
 <cite>
-<a class="bibref" href= "#bib-rfc7797" title= "JSON Web Signature (JWS) Unencoded Payload Option" data-link-type= "biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-rfc7797" title= "JSON Web Signature (JWS) Unencoded Payload Option">
 RFC7797
 </a>
 </cite>
@@ -12844,7 +12914,7 @@ conformance
 with
 [
 <cite>
-<a class="bibref" href="#bib-rfc8392" title="CBOR Web Token (CWT)" data-link-type= "biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-rfc8392" title= "CBOR Web Token (CWT)">
 RFC8392
 </a>
 </cite>
@@ -12858,7 +12928,7 @@ conformance
 with
 [
 <cite>
-<a class="bibref" href="#bib-rfc7516" title="JSON Web Encryption (JWE)" data-link-type= "biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-rfc7516" title= "JSON Web Encryption (JWE)">
 RFC7516
 </a>
 </cite>
@@ -12874,7 +12944,7 @@ consistently
 with
 those
 standards.
-<span class= "rfc2119-assertion" id="td-security-bearer-format-extensions">
+<span class="rfc2119-assertion" id= "td-security-bearer-format-extensions">
 Other
 formats
 and
@@ -12882,7 +12952,7 @@ algorithms
 for
 bearer
 tokens
-<em class="rfc2119" title= "MAY">
+<em class="rfc2119" title="MAY">
 MAY
 </em>
 be
@@ -13461,7 +13531,7 @@ conformant
 with
 [
 <cite>
-<a class="bibref" href="#bib-rfc6749" title= "The OAuth 2.0 Authorization Framework" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-rfc6749" title= "The OAuth 2.0 Authorization Framework">
 RFC6749
 </a>
 </cite>
@@ -13469,7 +13539,7 @@ RFC6749
 and
 [
 <cite>
-<a class="bibref" href= "#bib-rfc8252" title="OAuth 2.0 for Native Apps" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc8252" title= "OAuth 2.0 for Native Apps">
 RFC8252
 </a>
 </cite>
@@ -13477,7 +13547,7 @@ RFC8252
 identified
 by
 the
-<a href= "#dfn-vocab-term" class="internalDFN" data-link-type= "dfn">
+<a href="#dfn-vocab-term" class="internalDFN" data-link-type= "dfn">
 Vocabulary
 Term
 </a>
@@ -13822,7 +13892,7 @@ Web
 Linking
 [
 <cite>
-<a class="bibref" href="#bib-rfc8288" title="Web Linking" data-link-type="biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-rfc8288" title= "Web Linking">
 RFC8288
 </a>
 </cite>
@@ -13840,7 +13910,7 @@ the
 relation
 to
 another
-<a href="#dfn-thing" class="internalDFN" data-link-type= "dfn">
+<a href="#dfn-thing" class="internalDFN" data-link-type="dfn">
 Thing
 </a>
 such
@@ -13877,7 +13947,7 @@ manipulate
 the
 state
 of
-<a href="#dfn-thing" class="internalDFN" data-link-type= "dfn">
+<a href="#dfn-thing" class="internalDFN" data-link-type="dfn">
 Things
 </a>
 (and
@@ -14017,7 +14087,7 @@ media
 type
 [
 <cite>
-<a class="bibref" href="#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types">
 RFC2046
 </a>
 </cite>
@@ -14454,7 +14524,7 @@ media
 type
 [
 <cite>
-<a class= "bibref" href="#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types" data-link-type="biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types">
 RFC2046
 </a>
 </cite>
@@ -14608,7 +14678,7 @@ longpoll
 WebSub
 [
 <cite>
-<a class="bibref" href="#bib-websub" title="WebSub" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-websub" title="WebSub">
 websub
 </a>
 </cite>
@@ -14620,18 +14690,31 @@ websub
 ),
 Server-Sent
 Events
+<ins class="diff-new">(
+</ins><code><ins class="diff-new">
+sse
+</ins></code><ins class="diff-new">
+)
+</ins>
 [
 <cite>
-<a class="bibref" href="#bib-eventsource" title="Server-Sent Events" data-link-type= "biblio">
-eventsource
+<del class="diff-old">eventsource
+</del>
+<a class="bibref" data-link-type="biblio" href="#bib-html" title= "HTML Standard">
+<ins class="diff-chg">html
+</ins>
 </a>
 </cite>
 ]
-(
-<code>
+<del class="diff-old">(
 sse
-</code>
 ).
+</del>
+<ins class="diff-chg">(also
+known
+as
+EventSource).
+</ins>
 Please
 note
 that
@@ -14932,7 +15015,7 @@ described
 in
 [
 <cite>
-<a class="bibref" href="#bib-wot-architecture" title= "Web of Things (WoT) Architecture" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-wot-architecture" title= "Web of Things (WoT) Architecture">
 WOT-ARCHITECTURE
 </a>
 </cite>
@@ -14947,7 +15030,7 @@ extend
 this
 list
 but
-<span class="rfc2119-assertion" id="well-known-operation-types-only">
+<span class="rfc2119-assertion" id= "well-known-operation-types-only">
 operations
 types
 <em class= "rfc2119" title="SHOULD NOT">
@@ -15312,7 +15395,7 @@ media
 type
 [
 <cite>
-<a class= "bibref" href="#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types" data-link-type="biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types">
 RFC2046
 </a>
 </cite>
@@ -15877,14 +15960,14 @@ JSON
 format
 [
 <cite>
-<a class= "bibref" href="#bib-rfc8259" title= "The JavaScript Object Notation (JSON) Data Interchange Format" data-link-type="biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-rfc8259" title= "The JavaScript Object Notation (JSON) Data Interchange Format">
 RFC8259
 </a>
 </cite>
 ]
 and/or
 deserialize
-<a href="#dfn-thing-description" class="internalDFN" data-link-type="dfn">
+<a href="#dfn-thing-description" class= "internalDFN" data-link-type="dfn">
 Thing
 Descriptions
 </a>
@@ -15897,9 +15980,9 @@ the
 rules
 noted
 in
-<a href="#td-basic-types-mapping" class="sec-ref">
+<a href= "#td-basic-types-mapping" class="sec-ref">
 §&nbsp;
-<bdi class="secno">
+<bdi class= "secno">
 6.1
 </bdi>
 Mapping
@@ -15908,9 +15991,9 @@ JSON
 Types
 </a>
 and
-<a href="#td-class-serialization" class= "sec-ref">
+<a href= "#td-class-serialization" class="sec-ref">
 §&nbsp;
-<bdi class="secno">
+<bdi class= "secno">
 6.3
 </bdi>
 Information
@@ -15940,7 +16023,7 @@ JSON-LD
 1.1
 [
 <cite>
-<a class="bibref" href="#bib-json-ld11" title="JSON-LD 1.1" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-json-ld11" title= "JSON-LD 1.1">
 json-ld11
 </a>
 </cite>
@@ -16026,7 +16109,7 @@ of
 RFC8259
 [
 <cite>
-<a class= "bibref" href="#bib-rfc8259" title= "The JavaScript Object Notation (JSON) Data Interchange Format" data-link-type="biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-rfc8259" title= "The JavaScript Object Notation (JSON) Data Interchange Format">
 RFC8259
 </a>
 </cite>
@@ -16055,7 +16138,7 @@ using
 UTF-8
 [
 <cite>
-<a class="bibref" href="#bib-rfc3629" title= "UTF-8, a transformation format of ISO 10646" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc3629" title= "UTF-8, a transformation format of ISO 10646">
 RFC3629
 </a>
 </cite>
@@ -16290,7 +16373,7 @@ specified
 by
 [
 <cite>
-<a class="bibref" href= "#bib-rfc3339" title="Date and Time on the Internet: Timestamps" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-rfc3339" title= "Date and Time on the Internet: Timestamps">
 RFC3339
 </a>
 </cite>
@@ -17021,7 +17104,7 @@ JSON-LD
 processing
 [
 <cite>
-<a class="bibref" href="#bib-json-ld11" title= "JSON-LD 1.1" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-json-ld11" title="JSON-LD 1.1">
 json-ld11
 </a>
 </cite>
@@ -17519,7 +17602,7 @@ the
 Web
 [
 <cite>
-<a class="bibref" href= "#bib-string-meta" title= "Strings on the Web: Language and Direction Metadata" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-string-meta" title= "Strings on the Web: Language and Direction Metadata">
 STRING-META
 </a>
 </cite>
@@ -17551,7 +17634,7 @@ JSON-LD
 1.1
 [
 <cite>
-<a class="bibref" href="#bib-json-ld11" title="JSON-LD 1.1" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-json-ld11" title= "JSON-LD 1.1">
 json-ld11
 </a>
 </cite>
@@ -17590,7 +17673,7 @@ recommended
 by
 [
 <cite>
-<a class="bibref" href="#bib-string-meta" title= "Strings on the Web: Language and Direction Metadata" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-string-meta" title= "Strings on the Web: Language and Direction Metadata">
 STRING-META
 </a>
 </cite>
@@ -17764,7 +17847,7 @@ defined
 by
 [
 <cite>
-<a class="bibref" href="#bib-bcp47" title= "Tags for Identifying Languages" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-bcp47" title="Tags for Identifying Languages">
 BCP47
 </a>
 </cite>
@@ -17785,9 +17868,9 @@ the
 tag.
 </span>
 See
-<a href= "#multilanguage" class="sec-ref">
+<a href="#multilanguage" class= "sec-ref">
 §&nbsp;
-<bdi class= "secno">
+<bdi class="secno">
 5.3.1.7
 </bdi>
 <code>
@@ -17796,7 +17879,7 @@ MultiLanguage
 </a>
 for
 details.
-<span class="rfc2119-assertion" id= "td-multi-languages-consistent">
+<span class= "rfc2119-assertion" id="td-multi-languages-consistent">
 All
 <code>
 MultiLanguage
@@ -17806,7 +17889,7 @@ within
 a
 TD
 document
-<em class="rfc2119" title= "SHOULD">
+<em class= "rfc2119" title="SHOULD">
 SHOULD
 </em>
 contain
@@ -19190,7 +19273,7 @@ and
 CoAP
 [
 <cite>
-<a class="bibref" href="#bib-rfc7252" title="The Constrained Application Protocol (CoAP)" data-link-type= "biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-rfc7252" title= "The Constrained Application Protocol (CoAP)">
 RFC7252
 </a>
 </cite>
@@ -19294,7 +19377,7 @@ allow
 activation
 of
 the
-<a href= "#dfn-interaction-affordance" class="internalDFN" data-link-type= "dfn">
+<a href="#dfn-interaction-affordance" class= "internalDFN" data-link-type="dfn">
 Interaction
 Affordance
 </a>.
@@ -20611,7 +20694,7 @@ existing
 WebSub
 [
 <cite>
-<a class="bibref" href="#bib-websub" title="WebSub" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-websub" title= "WebSub">
 websub
 </a>
 </cite>
@@ -20647,15 +20730,15 @@ details
 in
 [
 <cite>
-<a class="bibref" href="#bib-wot-binding-templates" title= "Web of Things (WoT) Protocol Binding Templates" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-wot-binding-templates" title= "Web of Things (WoT) Protocol Binding Templates">
 WOT-BINDING-TEMPLATES
 </a>
 </cite>
 ].
 Example
-<a href= "#webhook-example-serialization" class="sec-ref">
+<a href="#webhook-example-serialization" class= "sec-ref">
 §&nbsp;
-<bdi class= "secno">
+<bdi class="secno">
 A.3
 </bdi>
 Webhook
@@ -20988,7 +21071,7 @@ defined
 in
 [
 <cite>
-<a class="bibref" href="#bib-rfc6570" title="URI Template" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc6570" title="URI Template">
 RFC6570
 </a>
 </cite>
@@ -21170,7 +21253,7 @@ media
 type
 [
 <cite>
-<a class="bibref" href="#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc2046" title= "Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types">
 RFC2046
 </a>
 </cite>
@@ -21768,7 +21851,7 @@ Schema
 terms
 [
 <cite>
-<a class="bibref" href= "#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON">
 JSON-SCHEMA
 </a>
 </cite>
@@ -21795,7 +21878,7 @@ the
 data
 exchanged
 with
-<a href="#dfn-thing" class="internalDFN" data-link-type= "dfn">
+<a href="#dfn-thing" class="internalDFN" data-link-type="dfn">
 Things
 </a>.
 </p>
@@ -22602,7 +22685,7 @@ from
 JSON-LD
 [
 <cite>
-<a class="bibref" href="#bib-json-ld11" title= "JSON-LD 1.1" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-json-ld11" title="JSON-LD 1.1">
 json-ld11
 </a>
 </cite>
@@ -22877,7 +22960,7 @@ JSON-LD
 keyword
 [
 <cite>
-<a class="bibref" href="#bib-json-ld11" title="JSON-LD 1.1" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-json-ld11" title="JSON-LD 1.1">
 json-ld11
 </a>
 </cite>
@@ -23037,12 +23120,12 @@ of
 Measure
 [
 <cite>
-<a class="bibref" href= "#bib-rijgersberg" title= "Ontology of Units of Measure and Related Concepts" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-rijgersberg" title= "Ontology of Units of Measure and Related Concepts">
 RIJGERSBERG
 </a>
 </cite>
 ].&nbsp;These
-<a href="#dfn-vocab" class="internalDFN" data-link-type="dfn">
+<a href="#dfn-vocab" class="internalDFN" data-link-type= "dfn">
 Vocabularies
 </a>
 are
@@ -23244,7 +23327,7 @@ Network
 Ontology
 [
 <cite>
-<a class="bibref" href="#bib-vocab-ssn" title="Semantic Sensor Network Ontology" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-vocab-ssn" title= "Semantic Sensor Network Ontology">
 VOCAB-SSN
 </a>
 </cite>
@@ -23262,7 +23345,7 @@ the
 <code>
 status
 </code>
-<a href="#dfn-property" class= "internalDFN" data-link-type="dfn">
+<a href= "#dfn-property" class="internalDFN" data-link-type= "dfn">
 Property
 </a>
 with
@@ -23573,7 +23656,7 @@ RDF
 </em>
 [
 <cite>
-<a class="bibref" href="#bib-http-in-rdf10" title="HTTP Vocabulary in RDF 1.0" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-http-in-rdf10" title= "HTTP Vocabulary in RDF 1.0">
 HTTP-in-RDF10
 </a>
 </cite>
@@ -23753,7 +23836,7 @@ based
 on
 [
 <cite>
-<a class="bibref" href="#bib-ace" title= "Authentication and Authorization for Constrained Environments (ACE) using the OAuth 2.0 Framework (ACE-OAuth)" data-link-type="biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-ace" title= "Authentication and Authorization for Constrained Environments (ACE) using the OAuth 2.0 Framework (ACE-OAuth)">
 ACE
 </a>
 </cite>
@@ -24365,7 +24448,7 @@ defined
 in
 [
 <cite>
-<a class= "bibref" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON">
 JSON-SCHEMA
 </a>
 </cite>
@@ -24467,7 +24550,7 @@ defined
 in
 [
 <cite>
-<a class= "bibref" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON">
 JSON-SCHEMA
 </a>
 </cite>
@@ -24634,7 +24717,7 @@ as
 HTTP
 [
 <cite>
-<a class= "bibref" href="#bib-rfc7231" title= "Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content" data-link-type="biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-rfc7231" title= "Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">
 RFC7231
 </a>
 </cite>
@@ -24642,7 +24725,7 @@ RFC7231
 CoAP
 [
 <cite>
-<a class= "bibref" href="#bib-rfc7252" title= "The Constrained Application Protocol (CoAP)" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc7252" title= "The Constrained Application Protocol (CoAP)">
 RFC7252
 </a>
 </cite>
@@ -24651,17 +24734,17 @@ or
 MQTT
 [
 <cite>
-<a class="bibref" href="#bib-mqtt" title="MQTT Version 3.1.1" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-mqtt" title="MQTT Version 3.1.1">
 MQTT
 </a>
 </cite>
 ].
-<a href="#dfn-protocol-binding" class= "internalDFN" data-link-type="dfn">
+<a href= "#dfn-protocol-binding" class="internalDFN" data-link-type= "dfn">
 Protocol
 Bindings
 </a>
 of
-<a href="#dfn-interaction-affordance" class="internalDFN" data-link-type="dfn">
+<a href= "#dfn-interaction-affordance" class="internalDFN" data-link-type= "dfn">
 Interaction
 Affordances
 </a>
@@ -24724,7 +24807,7 @@ Thing
 implements
 [
 <cite>
-<a class="bibref" href="#bib-wot-architecture" title= "Web of Things (WoT) Architecture" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-wot-architecture" title= "Web of Things (WoT) Architecture">
 WOT-ARCHITECTURE
 </a>
 </cite>
@@ -24744,19 +24827,19 @@ or
 https
 </code>,
 a
-<a href= "#dfn-consumer" class="internalDFN" data-link-type= "dfn">
+<a href="#dfn-consumer" class="internalDFN" data-link-type="dfn">
 Consumer
 </a>
 can
 then
 infer
 the
-<a href="#dfn-thing" class= "internalDFN" data-link-type="dfn">
+<a href= "#dfn-thing" class="internalDFN" data-link-type="dfn">
 Thing
 </a>
 implements
 the
-<a href="#dfn-protocol-binding" class="internalDFN" data-link-type= "dfn">
+<a href="#dfn-protocol-binding" class="internalDFN" data-link-type="dfn">
 Protocol
 Binding
 </a>
@@ -24901,7 +24984,7 @@ RDF
 </em>
 [
 <cite>
-<a class="bibref" href="#bib-http-in-rdf10" title= "HTTP Vocabulary in RDF 1.0" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-http-in-rdf10" title= "HTTP Vocabulary in RDF 1.0">
 HTTP-in-RDF10
 </a>
 </cite>
@@ -24946,7 +25029,7 @@ found
 in
 [
 <cite>
-<a class="bibref" href="#bib-wot-binding-templates" title= "Web of Things (WoT) Protocol Binding Templates" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-wot-binding-templates" title= "Web of Things (WoT) Protocol Binding Templates">
 WOT-BINDING-TEMPLATES
 </a>
 </cite>
@@ -25484,7 +25567,7 @@ RDF
 </em>
 [
 <cite>
-<a class="bibref" href= "#bib-http-in-rdf10" title="HTTP Vocabulary in RDF 1.0" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-http-in-rdf10" title= "HTTP Vocabulary in RDF 1.0">
 HTTP-in-RDF10
 </a>
 </cite>
@@ -25492,7 +25575,7 @@ HTTP-in-RDF10
 or
 specifications
 including
-<a href="#dfn-default-value" class="internalDFN" data-link-type="dfn">
+<a href="#dfn-default-value" class= "internalDFN" data-link-type="dfn">
 Default
 Value
 </a>
@@ -25511,7 +25594,7 @@ the
 usage
 of
 the
-<a href= "#dfn-context-ext" class="internalDFN" data-link-type="dfn">
+<a href="#dfn-context-ext" class="internalDFN" data-link-type= "dfn">
 TD
 Context
 Extension
@@ -25535,7 +25618,7 @@ refer
 to
 [
 <cite>
-<a class="bibref" href= "#bib-wot-binding-templates" title= "Web of Things (WoT) Protocol Binding Templates" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-wot-binding-templates" title= "Web of Things (WoT) Protocol Binding Templates">
 WOT-BINDING-TEMPLATES
 </a>
 </cite>
@@ -25666,7 +25749,7 @@ informative
 document
 [
 <cite>
-<a class="bibref" href="#bib-wot-security-guidelines" title= "Web of Things (WoT) Security and Privacy Guidelines" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-wot-security-guidelines" title= "Web of Things (WoT) Security and Privacy Guidelines">
 WOT-SECURITY-GUIDELINES
 </a>
 </cite>
@@ -25792,7 +25875,7 @@ any
 JSON-LD
 [
 <cite>
-<a class="bibref" href= "#bib-json-ld11" title="JSON-LD 1.1" data-link-type= "biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-json-ld11" title= "JSON-LD 1.1">
 json-ld11
 </a>
 </cite>
@@ -27276,8 +27359,13 @@ considerations:
 </dt>
 <dd>
 See
-<a href= "https://tools.ietf.org/html/rfc8259">
-RFC&nbsp;8259
+<del class="diff-old">RFC&nbsp;8259
+</del>
+<a href= "https://tools.ietf.org/html/rfc8259#section-12">
+<ins class="diff-chg">RFC&nbsp;8259,
+section
+12
+</ins>
 </a>.
 <p>
 <span class="rfc2119-assertion" id= "iana-security-execution">
@@ -27369,14 +27457,22 @@ TD
 context
 extensions,
 see
-<a href="#sec-context-extensions" class= "sec-ref">
-§&nbsp;
-<bdi class="secno">
+<del class="diff-old">§&nbsp;
 7.
-</bdi>
 TD
 Context
 Extensions
+</del>
+<a href= "https://www.w3.org/TR/wot-thing-description/#sec-context-extensions">
+<abbr title="World Wide Web Consortium">
+<ins class="diff-chg">W3C
+</ins></abbr><ins class="diff-chg">
+WoT
+Thing
+Description,
+section
+7
+</ins>
 </a>
 )
 automatically,
@@ -27392,7 +27488,7 @@ explicit
 request
 of
 the
-<a href="#dfn-consumer" class= "internalDFN" data-link-type="dfn">
+<a href= "#dfn-consumer" class="internalDFN" data-link-type= "dfn">
 Consumer
 </a>
 for
@@ -27421,7 +27517,7 @@ leading
 to
 privacy
 concerns.
-<span class="rfc2119-assertion" id= "iana-security-remote">
+<span class= "rfc2119-assertion" id="iana-security-remote">
 While
 implementations
 on
@@ -27481,14 +27577,22 @@ instead.
 Context
 Extensions
 (see
-<a href="#sec-context-extensions" class= "sec-ref">
-§&nbsp;
-<bdi class="secno">
+<del class="diff-old">§&nbsp;
 7.
-</bdi>
 TD
 Context
 Extensions
+</del>
+<a href= "https://www.w3.org/TR/wot-thing-description/#sec-context-extensions">
+<abbr title="World Wide Web Consortium">
+<ins class="diff-chg">W3C
+</ins></abbr><ins class="diff-chg">
+WoT
+Thing
+Description,
+section
+7
+</ins>
 </a>
 )
 that
@@ -27518,7 +27622,7 @@ they
 may
 modify
 the
-<a href="#dfn-inf-model" class="internalDFN" data-link-type="dfn">
+<a href= "#dfn-inf-model" class="internalDFN" data-link-type="dfn">
 TD
 Information
 Model
@@ -27530,7 +27634,7 @@ that
 could
 compromise
 security.
-<span class= "rfc2119-assertion" id="iana-security-alter">
+<span class="rfc2119-assertion" id="iana-security-alter">
 For
 this
 reason,
@@ -27569,7 +27673,7 @@ long
 IRIs
 [
 <cite>
-<a class="bibref" href="#bib-rfc3987" title= "Internationalized Resource Identifiers (IRIs)" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc3987" title= "Internationalized Resource Identifiers (IRIs)">
 RFC3987
 </a>
 </cite>
@@ -27605,11 +27709,11 @@ of
 the
 recipient's
 resources.
-<span class= "rfc2119-assertion" id="iana-security-expansion">
-<a href= "#dfn-consumer" class="internalDFN" data-link-type= "dfn">
+<span class="rfc2119-assertion" id= "iana-security-expansion">
+<a href="#dfn-consumer" class= "internalDFN" data-link-type="dfn">
 Consumers
 </a>
-<em class="rfc2119" title="SHOULD">
+<em class= "rfc2119" title="SHOULD">
 SHOULD
 </em>
 treat
@@ -27844,7 +27948,7 @@ Parameters
 registry
 [
 <cite>
-<a class="bibref" href="#bib-rfc7252" title= "The Constrained Application Protocol (CoAP)" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rfc7252" title= "The Constrained Application Protocol (CoAP)">
 RFC7252
 </a>
 </cite>
@@ -27981,7 +28085,7 @@ Binding:
 CoAP
 [
 <cite>
-<a class="bibref" href= "#bib-rfc7252" title="The Constrained Application Protocol (CoAP)" data-link-type="biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-rfc7252" title= "The Constrained Application Protocol (CoAP)">
 RFC7252
 </a>
 </cite>
@@ -28154,7 +28258,7 @@ Binding:
 MQTT
 [
 <cite>
-<a class="bibref" href= "#bib-mqtt" title="MQTT Version 3.1.1" data-link-type= "biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-mqtt" title= "MQTT Version 3.1.1">
 MQTT
 </a>
 </cite>
@@ -28690,7 +28794,7 @@ JSON
 Schema
 [
 <cite>
-<a class="bibref" href= "#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON" data-link-type="biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-json-schema" title= "JSON Schema Validation: A Vocabulary for Structural Validation of JSON">
 JSON-SCHEMA
 </a>
 </cite>
@@ -28738,7 +28842,7 @@ from
 JSON-LD
 [
 <cite>
-<a class="bibref" href= "#bib-json-ld11" title="JSON-LD 1.1" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-json-ld11" title= "JSON-LD 1.1">
 json-ld11
 </a>
 </cite>
@@ -28895,6 +28999,61 @@ Definitions
     "description": "JSON Schema for validating TD instances against the TD model. TD instances can be with or without terms that have default values",
     "$schema ": "http://json-schema.org/draft-07/schema#",
     "definitions": {
+<ins class="diff-new">        "anyUri": {
+            "type": "string",
+            "format": "iri-reference"
+        },
+        "description": {
+            "type": "string"
+        },
+        "descriptions": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "title": {
+            "type": "string"
+        },
+        "titles": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "security": {
+            "oneOf": [{
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "scopes": {
+            "oneOf": [{
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "subProtocol": {
+            "type": "string",
+            "enum": [
+                "longpoll",
+                "websub",
+                "sse"
+            ]
+        },
+</ins>
         "thing-context-w3c-uri": {
             "type": "string",
             "enum": [
@@ -28904,7 +29063,13 @@ Definitions
         "thing-context": {
             "oneOf": [{
                     "type": "array",
-                    "items": {
+<del class="diff-old">                    "items": {
+</del>
+<ins class="diff-chg">                    "items": [{
+                        "$ref": "#/definitions/thing-context-w3c-uri"
+                    }],
+                    "additionalItems": {
+</ins>
                         "anyOf": [{
                                 "$ref": "#/definitions/anyUri"
                             },
@@ -28912,9 +29077,10 @@ Definitions
                                 "type": "object"
                             }
                         ]
-                    },
+<del class="diff-old">                    },
                     "contains": {
                         "$ref": "#/definitions/thing-context-w3c-uri"
+</del>
                     }
                 },
                 {
@@ -28934,7 +29100,10 @@ Definitions
                 }
             ]
         },
-        "property_element": {
+<del class="diff-old">        "property_element": {
+</del>
+<ins class="diff-chg">        "dataSchema": {
+</ins>
             "type": "object",
             "properties": {
                 "@type": {
@@ -28943,16 +29112,21 @@ Definitions
                 "description": {
                     "$ref": "#/definitions/description"
                 },
-                "descriptions": {
+<del class="diff-old">                "descriptions": {
                     "$ref": "#/definitions/descriptions"
                 },
+</del>
                 "title": {
                     "$ref": "#/definitions/title"
                 },
+<ins class="diff-new">                "descriptions": {
+                    "$ref": "#/definitions/descriptions"
+                },
+</ins>
                 "titles": {
                     "$ref": "#/definitions/titles"
                 },
-                "uriVariables": {
+<del class="diff-old">                "uriVariables": {
                     "type": "object",
                     "additionalProperties": {
                         "$ref": "#/definitions/dataSchema"
@@ -28968,6 +29142,7 @@ Definitions
                 "observable": {
                     "type": "boolean"
                 },
+</del>
                 "writeOnly": {
                     "type": "boolean"
                 },
@@ -29041,7 +29216,7 @@ Definitions
                         "type": "string"
                     }
                 }
-            },
+<del class="diff-old">            },
             "required": [
                 "forms"
             ],
@@ -29150,13 +29325,17 @@ Definitions
                 "forms"
             ],
             "additionalProperties": true
+</del>
+<ins class="diff-chg">            }
+</ins>
         },
         "form_element_property": {
             "type": "object",
             "properties": {
-                "href": {
+<del class="diff-old">                "href": {
                     "$ref": "#/definitions/anyUri"
                 },
+</del>
                 "op": {
                     "oneOf": [{
                             "type": "string",
@@ -29181,17 +29360,31 @@ Definitions
                         }
                     ]
                 },
+<ins class="diff-new">                "href": {
+                    "$ref": "#/definitions/anyUri"
+                },
+</ins>
                 "contentType": {
                     "type": "string"
                 },
+<ins class="diff-new">                "contentCoding": {
+                    "type": "string"
+                },
+                "subProtocol": {
+                    "$ref": "#/definitions/subProtocol"
+                },
+</ins>
                 "security": {
-                    "type": "array",
+<del class="diff-old">                    "type": "array",
                     "items": {
                         "type": "string"
                     }
+</del>
+<ins class="diff-chg">                    "$ref": "#/definitions/security"
+</ins>
                 },
                 "scopes": {
-                    "type": "array",
+<del class="diff-old">                    "type": "array",
                     "items": {
                         "type": "string"
                     }
@@ -29203,6 +29396,9 @@ Definitions
                         "websub",
                         "sse"
                     ]
+</del>
+<ins class="diff-chg">                    "$ref": "#/definitions/scopes"
+</ins>
                 },
                 "response": {
                     "type": "object",
@@ -29221,9 +29417,10 @@ Definitions
         "form_element_action": {
             "type": "object",
             "properties": {
-                "href": {
+<del class="diff-old">                "href": {
                     "$ref": "#/definitions/anyUri"
                 },
+</del>
                 "op": {
                     "oneOf": [{
                             "type": "string",
@@ -29242,17 +29439,31 @@ Definitions
                         }
                     ]
                 },
+<ins class="diff-new">                "href": {
+                    "$ref": "#/definitions/anyUri"
+                },
+</ins>
                 "contentType": {
                     "type": "string"
                 },
+<ins class="diff-new">                "contentCoding": {
+                    "type": "string"
+                },
+                "subProtocol": {
+                    "$ref": "#/definitions/subProtocol"
+                },
+</ins>
                 "security": {
-                    "type": "array",
+<del class="diff-old">                    "type": "array",
                     "items": {
                         "type": "string"
                     }
+</del>
+<ins class="diff-chg">                    "$ref": "#/definitions/security"
+</ins>
                 },
                 "scopes": {
-                    "type": "array",
+<del class="diff-old">                    "type": "array",
                     "items": {
                         "type": "string"
                     }
@@ -29264,6 +29475,9 @@ Definitions
                         "websub",
                         "sse"
                     ]
+</del>
+<ins class="diff-chg">                    "$ref": "#/definitions/scopes"
+</ins>
                 },
                 "response": {
                     "type": "object",
@@ -29282,9 +29496,10 @@ Definitions
         "form_element_event": {
             "type": "object",
             "properties": {
-                "href": {
+<del class="diff-old">                "href": {
                     "$ref": "#/definitions/anyUri"
                 },
+</del>
                 "op": {
                     "oneOf": [{
                             "type": "string",
@@ -29305,17 +29520,31 @@ Definitions
                         }
                     ]
                 },
+<ins class="diff-new">                "href": {
+                    "$ref": "#/definitions/anyUri"
+                },
+</ins>
                 "contentType": {
                     "type": "string"
                 },
+<ins class="diff-new">                "contentCoding": {
+                    "type": "string"
+                },
+                "subProtocol": {
+                    "$ref": "#/definitions/subProtocol"
+                },
+</ins>
                 "security": {
-                    "type": "array",
+<del class="diff-old">                    "type": "array",
                     "items": {
                         "type": "string"
                     }
+</del>
+<ins class="diff-chg">                    "$ref": "#/definitions/security"
+</ins>
                 },
                 "scopes": {
-                    "type": "array",
+<del class="diff-old">                    "type": "array",
                     "items": {
                         "type": "string"
                     }
@@ -29327,6 +29556,9 @@ Definitions
                         "websub",
                         "sse"
                     ]
+</del>
+<ins class="diff-chg">                    "$ref": "#/definitions/scopes"
+</ins>
                 },
                 "response": {
                     "type": "object",
@@ -29345,9 +29577,10 @@ Definitions
         "form_element_root": {
             "type": "object",
             "properties": {
-                "href": {
+<del class="diff-old">                "href": {
                     "$ref": "#/definitions/anyUri"
                 },
+</del>
                 "op": {
                     "oneOf": [{
                             "type": "string",
@@ -29372,17 +29605,31 @@ Definitions
                         }
                     ]
                 },
+<ins class="diff-new">                "href": {
+                    "$ref": "#/definitions/anyUri"
+                },
+</ins>
                 "contentType": {
                     "type": "string"
                 },
+<ins class="diff-new">                "contentCoding": {
+                    "type": "string"
+                },
+                "subProtocol": {
+                    "$ref": "#/definitions/subProtocol"
+                },
+</ins>
                 "security": {
-                    "type": "array",
+<del class="diff-old">                    "type": "array",
                     "items": {
                         "type": "string"
                     }
+</del>
+<ins class="diff-chg">                    "$ref": "#/definitions/security"
+</ins>
                 },
                 "scopes": {
-                    "type": "array",
+<del class="diff-old">                    "type": "array",
                     "items": {
                         "type": "string"
                     }
@@ -29394,6 +29641,9 @@ Definitions
                         "websub",
                         "sse"
                     ]
+</del>
+<ins class="diff-chg">                    "$ref": "#/definitions/scopes"
+</ins>
                 },
                 "response": {
                     "type": "object",
@@ -29409,7 +29659,7 @@ Definitions
             ],
             "additionalProperties": true
         },
-        "description": {
+<del class="diff-old">        "description": {
             "type": "string"
         },
         "title": {
@@ -29422,6 +29672,9 @@ Definitions
             "type": "object"
         },
         "dataSchema": {
+</del>
+<ins class="diff-chg">        "property_element": {
+</ins>
             "type": "object",
             "properties": {
                 "@type": {
@@ -29430,15 +29683,37 @@ Definitions
                 "description": {
                     "$ref": "#/definitions/description"
                 },
-                "title": {
+<del class="diff-old">                "title": {
                     "$ref": "#/definitions/title"
                 },
+</del>
                 "descriptions": {
                     "$ref": "#/definitions/descriptions"
                 },
+<ins class="diff-new">                "title": {
+                    "$ref": "#/definitions/title"
+                },
+</ins>
                 "titles": {
                     "$ref": "#/definitions/titles"
                 },
+<ins class="diff-new">                "forms": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/form_element_property"
+                    }
+                },
+                "uriVariables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/dataSchema"
+                    }
+                },
+                "observable": {
+                    "type": "boolean"
+                },
+</ins>
                 "writeOnly": {
                     "type": "boolean"
                 },
@@ -29512,22 +29787,139 @@ Definitions
                         "type": "string"
                     }
                 }
-            }
+<del class="diff-old">            }
+</del>
+<ins class="diff-chg">            },
+            "required": [
+                "forms"
+            ],
+            "additionalProperties": true
+</ins>
+        },
+<del class="diff-old">        "link_element": {
+</del>
+<ins class="diff-chg">        "action_element": {
+</ins>
+            "type": "object",
+            "properties": {
+<del class="diff-old">                "anchor": {
+                    "$ref": "#/definitions/anyUri"
+</del>
+<ins class="diff-chg">                "@type": {
+                    "$ref": "#/definitions/type_declaration"
+                },
+                "description": {
+                    "$ref": "#/definitions/description"
+                },
+                "descriptions": {
+                    "$ref": "#/definitions/descriptions"
+                },
+                "title": {
+                    "$ref": "#/definitions/title"
+                },
+                "titles": {
+                    "$ref": "#/definitions/titles"
+                },
+                "forms": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/form_element_action"
+                    }
+                },
+                "uriVariables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/dataSchema"
+                    }
+                },
+                "input": {
+                    "$ref": "#/definitions/dataSchema"
+                },
+                "output": {
+                    "$ref": "#/definitions/dataSchema"
+                },
+                "safe": {
+                    "type": "boolean"
+                },
+                "idempotent": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "forms"
+            ],
+            "additionalProperties": true
+        },
+        "event_element": {
+            "type": "object",
+            "properties": {
+                "@type": {
+                    "$ref": "#/definitions/type_declaration"
+                },
+                "description": {
+                    "$ref": "#/definitions/description"
+                },
+                "descriptions": {
+                    "$ref": "#/definitions/descriptions"
+                },
+                "title": {
+                    "$ref": "#/definitions/title"
+                },
+                "titles": {
+                    "$ref": "#/definitions/titles"
+                },
+                "forms": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/form_element_event"
+                    }
+                },
+                "uriVariables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/dataSchema"
+                    }
+                },
+                "subscription": {
+                    "$ref": "#/definitions/dataSchema"
+</ins>
+                },
+<ins class="diff-new">                "data": {
+                    "$ref": "#/definitions/dataSchema"
+                },
+                "cancellation": {
+                    "$ref": "#/definitions/dataSchema"
+                }
+            },
+            "required": [
+                "forms"
+            ],
+            "additionalProperties": true
         },
         "link_element": {
             "type": "object",
             "properties": {
-                "anchor": {
-                    "$ref": "#/definitions/anyUri"
-                },
+</ins>
                 "href": {
                     "$ref": "#/definitions/anyUri"
                 },
-                "rel": {
+<del class="diff-old">                "rel": {
+</del>
+<ins class="diff-chg">                "type": {
+</ins>
                     "type": "string"
                 },
-                "type": {
+<del class="diff-old">                "type": {
+</del>
+<ins class="diff-chg">                "rel": {
+</ins>
                     "type": "string"
+<ins class="diff-new">                },
+                "anchor": {
+                    "$ref": "#/definitions/anyUri"
+</ins>
                 }
             },
             "required": [
@@ -29619,9 +30011,31 @@ Definitions
                             "type": "string",
                             "enum": [
 <del class="diff-old">                                "cert"
+</del>
+<ins class="diff-chg">                                "digest"
+</ins>
                             ]
                         },
-                        "identity": {
+<del class="diff-old">                        "identity": {
+</del>
+<ins class="diff-chg">                        "qop": {
+                            "type": "string",
+                            "enum": [
+                                "auth",
+                                "auth-int"
+                            ]
+                        },
+                        "in": {
+                            "type": "string",
+                            "enum": [
+                                "header",
+                                "query",
+                                "body",
+                                "cookie"
+                            ]
+                        },
+                        "name": {
+</ins>
                             "type": "string"
                         }
                     },
@@ -29647,8 +30061,7 @@ Definitions
                         "scheme": {
                             "type": "string",
                             "enum": [
-</del>
-                                "digest"
+<del class="diff-old">                                "digest"
                             ]
                         },
                         "qop": {
@@ -29656,6 +30069,9 @@ Definitions
                             "enum": [
                                 "auth",
                                 "auth-int"
+</del>
+<ins class="diff-chg">                                "apikey"
+</ins>
                             ]
                         },
                         "in": {
@@ -29700,20 +30116,26 @@ Definitions
                             "$ref": "#/definitions/anyUri"
                         },
                         "alg": {
-                            "type": "string",
+<del class="diff-old">                            "type": "string",
                             "enum": [
                                 "MD5",
                                 "ES256",
                                 "ES512-256"
                             ]
+</del>
+<ins class="diff-chg">                            "type": "string"
+</ins>
                         },
                         "format": {
-                            "type": "string",
+<del class="diff-old">                            "type": "string",
                             "enum": [
                                 "jwt",
                                 "jwe",
                                 "jws"
                             ]
+</del>
+<ins class="diff-chg">                            "type": "string"
+</ins>
                         },
                         "in": {
                             "type": "string",
@@ -29822,10 +30244,22 @@ Definitions
                             "$ref": "#/definitions/anyUri"
                         },
                         "scopes": {
-                            "type": "array",
+<del class="diff-old">                            "type": "array",
                             "items": {
                                 "type": "string"
                             }
+</del>
+<ins class="diff-chg">                            "oneOf": [{
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                {
+                                    "type": "string"
+                                }
+                            ]
+</ins>
                         },
                         "flow": {
                             "type": "string",
@@ -29839,7 +30273,7 @@ Definitions
                         }
                     },
                     "required": [
-                        "scheme",
+<del class="diff-old">                        "scheme",
                         "flow"
                     ]
                 },
@@ -29880,7 +30314,7 @@ Definitions
                     "required": [
                         "scheme"
                     ]
-<del class="diff-old">                },
+                },
                 {
                     "type": "object",
                     "properties": {
@@ -29935,15 +30369,16 @@ Definitions
                         }
                     },
                     "required": [
+</del>
                         "scheme"
                     ]
-</del>
                 }
             ]
-        },
+<del class="diff-old">        },
         "anyUri": {
             "type": "string",
             "format": "iri-reference"
+</del>
         }
     },
     "type": "object",
@@ -30020,17 +30455,38 @@ Definitions
             "$ref": "#/definitions/anyUri"
         },
         "created": {
-            "type": "string"
+<del class="diff-old">            "type": "string"
+</del>
+<ins class="diff-chg">            "type": "string",
+            "format": "date-time"
+</ins>
         },
         "modified": {
-            "type": "string"
+<del class="diff-old">            "type": "string"
+</del>
+<ins class="diff-chg">            "type": "string",
+            "format": "date-time"
+</ins>
         },
         "security": {
-            "type": "array",
+<del class="diff-old">            "type": "array",
             "minItems": 1,
             "items": {
                 "type": "string"
             }
+</del>
+<ins class="diff-chg">            "oneOf": [{
+                    "type": "string"
+                },
+                {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ]
+</ins>
         },
         "@type": {
             "$ref": "#/definitions/type_declaration"
@@ -30886,7 +31342,7 @@ Data
 principle
 [
 <cite>
-<a class="bibref" href= "#bib-linked-data" title="Linked Data Design Issues" data-link-type="biblio">
+<a class="bibref" data-link-type= "biblio" href="#bib-linked-data" title= "Linked Data Design Issues">
 LINKED-DATA
 </a>
 </cite>
@@ -31008,7 +31464,7 @@ JSON-LD
 syntax
 [
 <cite>
-<a class= "bibref" href="#bib-json-ld11" title="JSON-LD 1.1" data-link-type= "biblio">
+<a class= "bibref" data-link-type="biblio" href="#bib-json-ld11" title= "JSON-LD 1.1">
 JSON-LD11
 </a>
 </cite>
@@ -31137,7 +31593,7 @@ Schema
 axioms
 [
 <cite>
-<a class="bibref" href="#bib-rdf-schema" title= "RDF Schema 1.1" data-link-type="biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-rdf-schema" title="RDF Schema 1.1">
 RDF-SCHEMA
 </a>
 </cite>
@@ -31161,7 +31617,7 @@ Turtle
 format
 [
 <cite>
-<a class="bibref" href="#bib-turtle" title="RDF 1.1 Turtle" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href="#bib-turtle" title= "RDF 1.1 Turtle">
 TURTLE
 </a>
 </cite>
@@ -31239,7 +31695,36 @@ from
 Second
 Candidate
 Recommendation
-</ins><a class="self-link" aria-label="§" href= "#changes-from-second-candidate-recommendation"></a></h3><ul><li><ins class="diff-new">
+</ins><a class="self-link" aria-label="§" href= "#changes-from-candidate-recommendation2"></a></h3><ul><li><ins class="diff-new">
+At-risk
+features
+</ins><code><ins class="diff-new">
+CertSecurityScheme
+</ins></code>,<code><ins class="diff-new">
+PublicSecurityScheme
+</ins></code>,<code><ins class="diff-new">
+PoPSecurityScheme
+</ins></code><ins class="diff-new">
+as
+well
+as
+</ins><code><ins class="diff-new">
+implicit
+</ins></code>,<code><ins class="diff-new">
+password
+</ins></code><ins class="diff-new">
+and
+</ins><code><ins class="diff-new">
+client
+</ins></code><ins class="diff-new">
+flows
+in
+</ins><a href= "#oauth2securityscheme"><code><ins class="diff-new">
+OAuth2SecurityScheme
+</ins></code></a><ins class="diff-new">
+were
+removed.
+</ins></li><li><ins class="diff-new">
 In
 section
 </ins><a href="#sec-data-schema-vocabulary-definition" class="sec-ref"><ins class="diff-new">
@@ -31261,6 +31746,104 @@ schemas
 and
 content
 types.
+</ins></li><li><ins class="diff-new">
+In
+section
+</ins><a href="#form-serialization-json" class= "sec-ref"><ins class="diff-new">
+§&nbsp;
+</ins><bdi class="secno"><ins class="diff-new">
+6.3.9
+</ins></bdi><code><ins class="diff-new">
+forms
+</ins></code></a>,<ins class="diff-new">
+clarified
+the
+expectations
+of
+</ins><a href= "#dfn-consumer" class="internalDFN" data-link-type= "dfn"><ins class="diff-new">
+Consumers
+</ins></a><ins class="diff-new">
+and
+</ins><a href="#dfn-thing" class="internalDFN" data-link-type="dfn"><ins class="diff-new">
+Things
+</ins></a><ins class="diff-new">
+for
+operation
+types
+</ins><code><ins class="diff-new">
+writemultipleproperties
+</ins></code>,<code><ins class="diff-new">
+readmultipleproperties
+</ins></code><ins class="diff-new">
+and
+</ins><code><ins class="diff-new">
+readallproperties
+</ins></code>.</li><li><ins class="diff-new">
+In
+section
+</ins><a href="#http-binding-assertions" class= "sec-ref"><ins class="diff-new">
+§&nbsp;
+</ins><bdi class="secno"><ins class="diff-new">
+8.3.1
+</ins></bdi><ins class="diff-new">
+Protocol
+Binding
+based
+on
+HTTP
+</ins></a>,<ins class="diff-new">
+the
+contexts
+in
+which
+default
+values
+</ins><code><ins class="diff-new">
+GET
+</ins></code><ins class="diff-new">
+or
+</ins><code><ins class="diff-new">
+PUT
+</ins></code><ins class="diff-new">
+are
+used
+for
+vocabulary
+term
+</ins><code><ins class="diff-new">
+htv:methodName
+</ins></code><ins class="diff-new">
+were
+clarified.
+</ins></li><li><ins class="diff-new">
+The
+example
+Thing
+Description
+in
+appendix
+section
+</ins><a href= "#myLightSensor-example-serialization" class= "sec-ref"><ins class="diff-new">
+§&nbsp;
+</ins><bdi class="secno"><ins class="diff-new">
+A.2
+</ins></bdi><ins class="diff-new">
+MyIlluminanceSensor
+Example
+with
+MQTT
+Protocol
+Binding
+</ins></a><ins class="diff-new">
+was
+improved
+to
+make
+a
+better
+example
+using
+MQTT.
 </ins></li></ul></section>
 <section id="changes-from-first-candidate-recommendation">
 <h3 id="changes-from-candidate-recommendation">
@@ -31275,7 +31858,7 @@ from
 First
 Candidate
 Recommendation
-<a class="self-link" aria-label="§" href= "#changes-from-first-candidate-recommendation">
+<a class="self-link" aria-label="§" href= "#changes-from-candidate-recommendation">
 </a>
 </h3>
 <ul>
@@ -31991,7 +32574,7 @@ Architecture
 specification
 [
 <cite>
-<a class="bibref" href="#bib-wot-architecture" title= "Web of Things (WoT) Architecture" data-link-type= "biblio">
+<a class="bibref" data-link-type="biblio" href= "#bib-wot-architecture" title= "Web of Things (WoT) Architecture">
 WOT-ARCHITECTURE
 </a>
 </cite>
@@ -32016,7 +32599,7 @@ Third
 Public
 Working
 Draft
-<a class= "self-link" aria-label="§" href= "#changes-from-third-public-working-draft-0">
+<a class= "self-link" aria-label="§" href= "#changes-from-third-public-working-draft">
 </a>
 </h3>
 <p>
@@ -32235,27 +32818,53 @@ URL:
 https://tools.ietf.org/html/bcp47
 </a>
 </dd>
-<dt id="bib-eventsource">
-[eventsource]
+<del class="diff-old">[eventsource]
+</del>
+<dt id="bib-html">
+<ins class="diff-chg">[html]
+</ins>
 </dt>
 <dd>
-<a href="https://www.w3.org/TR/eventsource/">
+<a href="https://html.spec.whatwg.org/multipage/">
 <cite>
-Server-Sent
+<del class="diff-old">Server-Sent
 Events
+</del>
+<ins class="diff-chg">HTML
+Standard
+</ins>
 </cite>
 </a>.
+<ins class="diff-new">Anne
+van
+Kesteren;
+Domenic
+Denicola;
+</ins>
 Ian
-Hickson.
+<del class="diff-old">Hickson.
 W3C.
 3
 February
 2015.
 W3C
 Recommendation.
+</del>
+<ins class="diff-chg">Hickson;
+Philip
+Jägenstedt;
+Simon
+Pieters.
+WHATWG.
+Living
+Standard.
+</ins>
 URL:
-<a href= "https://www.w3.org/TR/eventsource/">
-https://www.w3.org/TR/eventsource/
+<del class="diff-old">https://www.w3.org/TR/eventsource/
+</del>
+<a href= "https://html.spec.whatwg.org/multipage/">
+<ins class="diff-chg">https://html.spec.whatwg.org/multipage/
+</ins>
 </a>
 </dd>
 <dt id="bib-rfc2046">
