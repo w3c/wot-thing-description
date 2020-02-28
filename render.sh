@@ -3,7 +3,7 @@
 if ! [[ -e .install/fuseki.jar ]] ; then
 	mkdir .install
 	echo "Downloading RDF store (Apache Fuseki server)..."
-	curl http://repo1.maven.org/maven2/org/apache/jena/jena-fuseki-server/3.9.0/jena-fuseki-server-3.9.0.jar -o .install/fuseki.jar
+	curl https://repo1.maven.org/maven2/org/apache/jena/jena-fuseki-server/3.9.0/jena-fuseki-server-3.9.0.jar -o .install/fuseki.jar
 
 	echo "Installing Node.js dependencies..."
 	npm install
