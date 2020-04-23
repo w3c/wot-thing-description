@@ -12,7 +12,7 @@ See [github help](https://help.github.com/articles/using-pull-requests/) for
 information on how to create a pull request.
 
 ## Thing Description Family
-This repository covers the Thing Description family of specifications.
+This repository covers the W3C Web of Things Thing Description family of specifications.
 
 ### Thing Description (Maintenance)
 * [Working Draft](http://w3c.github.io/wot-thing-description/)
@@ -23,6 +23,8 @@ This repository covers the Thing Description family of specifications.
 ### Thing Description 1.0
 * [REC](https://www.w3.org/TR/wot-thing-description/)
 * [branch](https://github.com/w3c/wot-thing-description/tree/wot-td-1.0)
+
+
 
 ## Specification Rendering
 
