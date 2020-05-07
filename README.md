@@ -15,14 +15,15 @@ information on how to create a pull request.
 This repository covers the W3C Web of Things Thing Description family of specifications.
 
 ### Thing Description (Maintenance)
-* [Working Draft](http://w3c.github.io/wot-thing-description/)
-* [branch](https://github.com/w3c/wot-thing-description/)
-* [issues](https://github.com/w3c/wot-thing-description/issues)
+* [Working Draft](http://w3c.github.io/wot-thing-description/) - Latest draft of the Thing Description Maintenance version 
+* [branch](https://github.com/w3c/wot-thing-description/) - Points to the master branch of this repo
+* [issues](https://github.com/w3c/wot-thing-description/issues) - Points to the issues related to the Thing Description Maintenance version
+* [feature log](.NEW_FEATURES.md) - Log of the new features of the Thing Description Maintenance version 
 
 
 ### Thing Description 1.0
-* [REC](https://www.w3.org/TR/wot-thing-description/)
-* [branch](https://github.com/w3c/wot-thing-description/tree/wot-td-1.0)
+* [REC](https://www.w3.org/TR/wot-thing-description/) - Official recommendation version of the Thing Description 1.0
+* [branch](https://github.com/w3c/wot-thing-description/tree/wot-td-1.0) - Branch that correspond to the Thing Description 1.0 files 
 
 
 
