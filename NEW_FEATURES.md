@@ -3,4 +3,4 @@
 | Feature Name                      | Author / Issue | Sample TDs    | Implementations |
 | ----------------------------------|----------------|---------------|-----------------|
 | minLength / maxLength in Data Schema   | [issue](https://github.com/w3c/wot-thing-description/issues/889) | tbd | tbd |
-| multipleOf in Data Schema   | [issue](https://github.com/w3c/wot-thing-description/issues/889) | tbd | tbd |
+| multipleOf in Data Schema   | [issue](https://github.com/w3c/wot-thing-description/issues/841) | tbd | tbd |
