@@ -18,7 +18,7 @@ This repository covers the W3C Web of Things Thing Description family of specifi
 * [Working Draft](http://w3c.github.io/wot-thing-description/) - Latest draft of the Thing Description Maintenance version 
 * [branch](https://github.com/w3c/wot-thing-description/) - Points to the master branch of this repo
 * [issues](https://github.com/w3c/wot-thing-description/issues) - Points to the issues related to the Thing Description Maintenance version
-* [feature log](https://github.com/w3c/wot-thing-description/NEW_FEATURES.md) - Log of the new features of the Thing Description Maintenance version 
+* [feature log](https://github.com/w3c/wot-thing-description/blob/master/NEW_FEATURES.md) - Log of the new features of the Thing Description Maintenance version 
 
 
 ### Thing Description 1.0
