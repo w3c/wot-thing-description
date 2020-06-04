@@ -47,8 +47,8 @@ Here is a sequence diagram for the interaction:
 }
 ```
 
-Note that this TD is respecting the current standard. 
-Currently, the output would be expected as the response to the `POST /fade` request.
+Note that this TD is respecting the current standard.
+**Currently, the output would be expected as the response to the `POST /fade` request, i.e. the response of `invokeaction`.**
 
 ## Hypermedia Use Case Example
 
@@ -59,7 +59,7 @@ The meaning of these are:
 - Updating: For an ongoing or pending action, the Consumer change the desired outcome. In our case, it could be adding time or changing the total time. We can also imagine changing the fade speed etc.
 - Cancelling: For an ongoing or pending action, the Consumer cancel the action. This can be before the action has started or when it is just about to start and can thus require a response to explain the current state.
 
-We can thus imagine the following interface for the Consumer
+We can thus imagine the following interface for the Consumer like proposed by @vcharpenay
 
 ```
 POST /fade
@@ -68,19 +68,26 @@ PUT /fade/{id}
 DELETE /fade/{id}
 ```
 
+OR the `href` for hypermedia-related requests being static.
+
+```
+POST /fade
+GET /fade/ongoing
+PUT /fade/ongoing
+DELETE /fade/ongoing
+```
+
 Here is a sequence diagram summarizing possible interactions **that does not show the responses of the Thing**:
 
 ![Fade sequence diagram](fade-noResp.png)
 
-With the current TD specification, a standard-compliant Consumer would be able to perform the first request but no subsequent request on the created resource (i.e. `/fade/1`). 
-Also, a subsequent `GET /fade/1` would return a 404 error.
+With the current TD specification, a standard-compliant Consumer would be able to perform the first request but no subsequent request on the created resource (i.e. `/fade/1` OR  `/fade/ongoing`).
 
-First, we want to **start** by describing that such requests can be sent to the Thing by adding new operations.
+First, we want to **start** by describing that such requests can be sent to the Thing by adding new WoT operation keywords.
 
+Thus, we can have the following TD that is consumed by the Consumer:
 
-Initially, we have the following TD that is consumed by the Consumer:
-
-```json
+```jsonc
 {
   "@context": "https://www.w3.org/2019/wot/td/v1",
   "id": "urn:ex:thing",
@@ -101,41 +108,217 @@ Initially, we have the following TD that is consumed by the Consumer:
           "htv:methodName": "POST"
         },
         {
-          "href": "/fade/{id}",
+          "href": "/fade/{id}", //OR /fade/ongoing
           "op": "queryaction",
           "htv:methodName": "GET"
         },
         {
-          "href": "/fade/{id}",
+          "href": "/fade/{id}", // OR /fade/ongoing
           "op": "updateaction",
           "htv:methodName": "PUT"
         },
         {
-          "href": "/fade/{id}",
+          "href": "/fade/{id}", // OR /fade/ongoing
           "op": "cancelaction",
           "htv:methodName": "DELETE"
-        },
+        }
       ]
     }
   }
 }
 ```
-**Observations:**
 
-This way, the Consumer does not know how to get the `id` that is a URI parameter. However, if we have a Thing that allows only a single Consumer to interact, the id can be static. An example for this is at the end of this document.
+### Observations
 
-Also, it is not clear how the request payload for `updateaction` should be. It can be different than the `invokeaction` payload, i.e. `input`.
+This way, the Consumer does not know how to get the `id` that is a URI parameter. However, if we have a Thing that allows only a single Consumer to interact, the `id` can be static as shown above, like `/fade/ongoing`. Another example for this is at the end of this document.
 
-Additionally, does `output` correspond to the response of the first `POST` request?
+Also, it is not clear how the request payload for `updateaction` or other operations should be. It can be different from the `invokeaction` payload, i.e. `input` or not have an input.
+Similarly, it is not clear that `output` corresponds to the response of the `invokeaction` request.
 
-TODO: Actual proposal
+**Takeaways:**
 
-## Example Thing with Static Hypermedia
+1. In case the `href` of different forms are dynamic, we need a way to describe how this `id` will be retrieved.
+2. We need to be able to express different request and response payloads for a given action.
 
-Below is an example that is for an existing device where we just change its TD.
+## Proposal
+
+I start with the second takeaway mentioned above where the `hrefs` are also static.
+Then, I add a mechanism to obtain dynamic `href` information on top of it.
+
+### Describing Different Payloads
+
+Given that hypermedia is an advanced use case and that we should not break existing Consumer implementations, the `input` and `output` in Action Affordance level correspond to the `invokeaction`.
+I propose to add three new vocabulary terms in the Action Affordance level, named `query`, `update` and `cancel` that are of Object type.
+They all have the `input` and `output` optional terms that describe the payloads for request and response of each operation. So we can imagine a JSON tree like:
+
+```
+td:
+  - title
+  - actions
+    - fade
+      - input
+      - output
+      - query
+        - output
+      - update
+        - input
+        - output
+      - cancel
+        - input
+      - forms
+```
+
+**Note:** Similar to `invokeaction`, if the `cancel` member is not present, it means that `cancelaction` does not expect a payload in request or if the `output` of `update` member is not present, it means that `updateaction` does not deliver a payload in the response.
+
+Thus, an example TD would now look like the following. Note that the output in the action level is removed (i.e. "brightness value after fade operation"), to now know the brightness value after fade operation, the Consumer would need to constantly do a `queryaction` operation:
+
+```jsonc
+{
+  "@context": "https://www.w3.org/2019/wot/td/v1",
+  "id": "urn:ex:thing",
+  "actions": {
+    "fade": {
+      "input": {
+        "type": "number",
+        "description": "duration in ms"
+      },
+      "query":{
+        "output":{
+          "type":"object",
+          "properties":{
+            "brightness":{
+              "type":"number",
+              "description": "current brightness"
+            },
+            "status":{
+              "type":"string",
+              "enum":["ongoing","finished","pending"],
+              "description": "status of the invoked action"
+            }
+          }
+        }
+      },
+      "update":{
+        "input": {
+          "type": "number",
+          "description": "ADDED duration in ms"
+        }
+      },
+      "forms": [
+        {
+          "href": "/fade",
+          "op": "invokeaction",
+          "htv:methodName": "POST"
+        },
+        {
+          "href": "/fade/{id}", //OR /fade/ongoing
+          "op": "queryaction",
+          "htv:methodName": "GET"
+        },
+        {
+          "href": "/fade/{id}", // OR /fade/ongoing
+          "op": "updateaction",
+          "htv:methodName": "PUT"
+        },
+        {
+          "href": "/fade/{id}", // OR /fade/ongoing
+          "op": "cancelaction",
+          "htv:methodName": "DELETE"
+        }
+      ]
+    }
+  }
+}
+```
+
+### Describing how to construct dynamic hrefs
+
+As mentioned in [RFC7231](https://tools.ietf.org/html/rfc7231#section-6.3.2) and in [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/201), a response with the status code 201 of an HTTP POST request can contain a URI of the resource that is created.
+RFC is not very clear (MDN is clearer) whether this information can be also in the body/payload of the response but clearly, it can be in the header of the response.
+If it is in the header, we cannot describe it in the `output` of the Action Affordance since this corresponds to the body. It has to be in the forms, something like:
+
+```jsonc
+{
+  "forms": [
+    {
+      "href": "/fade",
+      "op": "invokeaction",
+      "htv:methodName": "POST",
+      "htv:headers":[
+        "htv:fieldName":"Location",
+        "htv:fieldValue":"{id}" //another way to show this?
+      ]
+    }
+  ]
+}
+```
+
+If it is in the body of the response, we can have a TD like the following:
+
+```jsonc
+{
+  "actions": {
+    "fade": {
+      "input": {
+        "type": "number",
+        "description": "duration in ms"
+      },
+      "output":{
+        "type":"object",
+        "properties":{
+          "href":{
+            "const":"{id}",
+            "description": "URI to query, update or cancel the invoked action"
+            }
+          "status":{
+              "type":"string",
+              "enum":["ongoing","finished","pending"],
+              "description": "status of the invoked action"
+            }
+        }
+      },
+      "forms": [
+        {
+          "href": "/fade",
+          "op": "invokeaction",
+          "htv:methodName": "POST"
+        },
+        {
+          "href": "/fade/{id}", //OR /fade/ongoing
+          "op": "queryaction",
+          "htv:methodName": "GET"
+        },
+        {
+          "href": "/fade/{id}", // OR /fade/ongoing
+          "op": "updateaction",
+          "htv:methodName": "PUT"
+        },
+        {
+          "href": "/fade/{id}", // OR /fade/ongoing
+          "op": "cancelaction",
+          "htv:methodName": "DELETE"
+        }
+      ]
+    }
+  }
+}
+```
+
+Thus, in both cases, if the Consumer sees a variable in an `href`, i.e. `"href": "/fade/{id}"`, it should pay attention to save the information gotten from the response of the initial POST request.
+
+#### Observations
+
+Once I think of Scripting API on the Consumer side, everything gets quite complicated regarding whether it is the script or the implementation that is going to manage the dynamic href related information. If the information is in the header, the implementation needs to manage that, the script does not have access to protocol relevant information. If it is in the body/payload, the script needs to manage that but it cannot fully manage it since it cannot supply a custom `href` to a function like `myThing.queryAction("myaction","fade/1")`. So the implementation would need to interfere with the payloads.
+
+A Consumer script would need to have 
+
+## Example Existing Thing with Static href
+
+Below is an example that is for an existing device where we just change its TD and where all the `href`s are static.
 
 We have a Pan and Tilt module where one can mount a camera. It is already implemented with node-wot and its source and TD are available at [wotify.org](https://wotify.org/library/Pan-Tilt%20HAT/general). We can bring it to Plugfests very easily since it is very portable.
 A distilled version of its TD is below:
+
 ```json
 {
   "title":"PanTilt",
