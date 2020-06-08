@@ -270,13 +270,13 @@ If it is in the body of the response, we can have a TD like the following:
           "href":{
             "const":"{id}",
             "description": "URI to query, update or cancel the invoked action"
-            }
+          },
           "status":{
               "type":"string",
               "enum":["ongoing","finished","pending"],
               "description": "status of the invoked action"
             }
-        }
+         }
       },
       "forms": [
         {
