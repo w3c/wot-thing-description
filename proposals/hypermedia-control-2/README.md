@@ -6,7 +6,8 @@ The ideas were introduced also [at this comment](https://github.com/w3c/wot-thin
 TL;DR:
 
 - introduce new operation types `queryaction`, `updateaction`, `cancelaction`
-<!-- - introduce new fields `cancellation`, `update` to action affordances -->
+- introduce new fields `query`, `update` and `cancel` to action affordances that map to payload information of `queryaction`, `updateaction` and `cancelaction`, respectively.
+- `input` and `output` to each previously introduced terms
 
 ## Simple Action Example According to the Current Standard
 
@@ -391,12 +392,14 @@ We can reduce this TD to a single action when we think of hypermedia control.
         "minimum":-15,
         "maximum":15
       },
-      "queryOutput":{
-        "description":"The current position of the pan platform in degrees",
-        "unit":"degrees",
-        "type":"number",
-        "minimum":-90,
-        "maximum":90
+      "query":{
+        "output":{
+          "description":"The current position of the pan platform in degrees",
+          "unit":"degrees",
+          "type":"number",
+          "minimum":-90,
+          "maximum":90
+        }
       },
       "forms":[
         {
