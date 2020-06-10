@@ -40,7 +40,8 @@ Here is a sequence diagram for the interaction:
         {
           "href": "/fade",
           "op": "invokeaction",
-          "htv:methodName": "POST"
+          "htv:methodName": "POST",
+          "contentType":"application/json"
         }
       ]
     }
@@ -106,22 +107,26 @@ Thus, we can have the following TD that is consumed by the Consumer:
         {
           "href": "/fade",
           "op": "invokeaction",
-          "htv:methodName": "POST"
+          "htv:methodName": "POST",
+          "contentType":"application/json"
         },
         {
           "href": "/fade/{id}", //OR /fade/ongoing
           "op": "queryaction",
-          "htv:methodName": "GET"
+          "htv:methodName": "GET",
+          "contentType":"application/json"
         },
         {
           "href": "/fade/{id}", // OR /fade/ongoing
           "op": "updateaction",
-          "htv:methodName": "PUT"
+          "htv:methodName": "PUT",
+          "contentType":"application/json"
         },
         {
           "href": "/fade/{id}", // OR /fade/ongoing
           "op": "cancelaction",
-          "htv:methodName": "DELETE"
+          "htv:methodName": "DELETE",
+          "contentType":"application/json"
         }
       ]
     }
@@ -209,22 +214,26 @@ Thus, an example TD would now look like the following. Note that the output in t
         {
           "href": "/fade",
           "op": "invokeaction",
-          "htv:methodName": "POST"
+          "htv:methodName": "POST",
+          "contentType":"application/json"
         },
         {
           "href": "/fade/{id}", //OR /fade/ongoing
           "op": "queryaction",
-          "htv:methodName": "GET"
+          "htv:methodName": "GET",
+          "contentType":"application/json"
         },
         {
           "href": "/fade/{id}", // OR /fade/ongoing
           "op": "updateaction",
-          "htv:methodName": "PUT"
+          "htv:methodName": "PUT",
+          "contentType":"application/json"
         },
         {
           "href": "/fade/{id}", // OR /fade/ongoing
           "op": "cancelaction",
-          "htv:methodName": "DELETE"
+          "htv:methodName": "DELETE",
+          "contentType":"application/json"
         }
       ]
     }
@@ -244,6 +253,7 @@ If it is in the header, we cannot describe it in the `output` of the Action Affo
     {
       "href": "/fade",
       "op": "invokeaction",
+      "contentType":"application/json",
       "htv:methodName": "POST",
       "htv:headers":[
         "htv:fieldName":"Location",
@@ -282,22 +292,26 @@ If it is in the body of the response, we can have a TD like the following:
         {
           "href": "/fade",
           "op": "invokeaction",
-          "htv:methodName": "POST"
+          "htv:methodName": "POST",
+          "contentType":"application/json"
         },
         {
-          "href": "/fade/{id}", //OR /fade/ongoing
+          "href": "/fade/{id}",
           "op": "queryaction",
-          "htv:methodName": "GET"
+          "htv:methodName": "GET",
+          "contentType":"application/json"
         },
         {
-          "href": "/fade/{id}", // OR /fade/ongoing
+          "href": "/fade/{id}",
           "op": "updateaction",
-          "htv:methodName": "PUT"
+          "htv:methodName": "PUT",
+          "contentType":"application/json"
         },
         {
-          "href": "/fade/{id}", // OR /fade/ongoing
+          "href": "/fade/{id}",
           "op": "cancelaction",
-          "htv:methodName": "DELETE"
+          "htv:methodName": "DELETE",
+          "contentType":"application/json"
         }
       ]
     }
