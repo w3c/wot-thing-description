@@ -24,7 +24,7 @@ This repository covers the W3C Web of Things Thing Description family of specifi
 ### Thing Description 1.0
 * [REC](https://www.w3.org/TR/wot-thing-description/) - Official recommendation version of the Thing Description 1.0
 * [branch](https://github.com/w3c/wot-thing-description/tree/wot-td-1.0) - Branch that correspond to the Thing Description 1.0 files
-* [errata](https://cdn.statically.io/gh/w3c/wot-thing-description/9750e3da/errata.html) -  Errata for version 1.0 
+* [errata](https://w3c.github.io/wot-thing-description/errata.html) -  Errata for version 1.0 
 
 
 
