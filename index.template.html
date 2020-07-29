@@ -3916,6 +3916,110 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 
   </section>
 
+  <section id="thing-templates" class="normative">
+  <h1>Thing Description Templates</h1>
+      
+    <p>
+    A <em>Thing Description Template</em> is a description for a <em>class</em> of <a>Things</a>.
+    It describes the properties, actions, events and common metadata that are shared for an entire group of <a>Things</a>,
+    to enable the common handling of thousands of devices by a cloud server, which is not practical on a per-<a>Thing</a> basis.
+    The Thing Description Template uses the same core vocabulary and information model from <a href="#sec-vocabulary-definition"></a>.
+    </p>
+    <p>
+    The Thing Description Template enables:
+    <ul>
+    <li> management of multiple <a>Things</a> by a cloud service. </li>
+    <li> simulation of devices/<a>Things</a> that have not yet been developed.</li>
+    <li> common applications across devices from different manufacturers that share a common <a>Thing</a> model.</li>
+    <li> combining multiple models into a <a>Thing</a>.
+    </ul>
+    </p>
+    <p>
+    The Thing Description Template is a logical description of the interface and possible interaction with devices
+    (properties, actions and events), however it does not contain device-specific
+    information, such as a serial number, GPS location, security information or concrete protocol endpoints.
+    </p><p>
+    Since a Thing Description Template does not contain a <a>Protocol Binding</a> to specific endpoints and
+    does not define a specific security mechanism, the <em>forms</em> and <em>securityDefinitions</em> and 
+    <em>security</em> keys must not be present.
+    </p><p>
+     The same Thing Description Template can be implemented by <a>Things</a> from multiple vendors,
+    a <a>Thing</a> can implement multiple Thing Description Templates, define additional metadata
+    (vendor, location, security) and define bindings to concrete protocols.
+    To avoid conflicts between properties, actions and events from different Thing Description Templates
+    that are combined into a common <a>Thing</a>, all these identifiers must be unique within a <a>Thing</a>.
+    </p><p>
+    A common Thing Description Template for a class of devices enables writing applications across vendors and
+    creates a more attractive market for application developers.
+    A concrete Thing Description can implement multiple Thing Description Templates and
+    thus can aggregate function blocks into a combined device.
+    </p><p>
+    The business models of cloud vendors are typically built on managing thousands of identical devices.
+    All devices with the same Thing Description Template can be managed in the same way by cloud applications.
+    It is easy to create multiple simulated devices, if the interface and the instance are treated separately.
+    </p><p>
+        Since a Thing Description Template is a subset of the Thing Description in which some optional and mandatory <a>Vocabulary Terms</a> 
+        do not exist, however, it can be serialized in the same way and in the same formats as a Thing Description. Note that Thing 
+        Template instances cannot be validated in the same way as Thing Description instances due to some missing mandatory terms.
+    </p>
+    
+      <section id="thing-template-examples">
+     <h2>Thing Description Template Examples</h2>
+    
+    This section shows a Thing Description Template for a lamp and a Thing Description Template for a buzzer.
+    
+      <section id="lamp-thing-template">
+      <h3>Thing Description Template: Lamp</h3>
+    
+    <pre class="example" title="MyLampThingTemplate serialized in JSON">
+    {
+        "@context": ["https://www.w3.org/2019/wot/td/v1"], 
+        "@type" : "ThingTemplate",
+        "title": "Lamp Thing Description Template",
+        "description" : "Lamp Thing Description Template",
+        "properties": {
+            "status": {
+                "description" : "current status of the lamp (on|off)",
+                "type": "string",
+                "readOnly": true
+            }
+        },
+        "actions": {
+            "toggle": {
+                "description" : "Turn the lamp on or off"
+            }
+        },
+        "events": {
+            "overheating": {
+                "description" : "Lamp reaches a critical temperature (overheating)",
+                "data": {"type": "string"}
+            }
+        }
+    }
+    </pre>
+    </section>
+    
+    <section id="buzzer-thing-template">
+    <h3>Thing Description Template: Buzzer</h3>
+    
+    <pre class="example" title="MyBuzzerThingTemplate serialized in JSON">
+    {
+        "@context": ["https://www.w3.org/2019/wot/td/v1"], 
+        "@type" : "ThingTemplate",
+        "title": "Buzzer Thing Description Template",
+        "description" : "Thing Description Template of a buzzer that makes noise for 10 seconds",
+         "actions": {
+            "buzz": {
+                "description" : "buzz for 10 seconds"
+            }
+         }
+    }
+    </pre>
+    </section>
+    
+  </section>
+</section>
+
   <section id="iana-section" class="normative">
   <h1>IANA Considerations</h1>
     <section id="media-type-section">
@@ -4270,109 +4374,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 
   </section>
 
-  <section id="thing-templates" class="appendix informative">
-  <h1>Thing Description Templates</h1>
-      
-    <p>
-    A <em>Thing Description Template</em> is a description for a <em>class</em> of <a>Things</a>.
-    It describes the properties, actions, events and common metadata that are shared for an entire group of <a>Things</a>,
-    to enable the common handling of thousands of devices by a cloud server, which is not practical on a per-<a>Thing</a> basis.
-    The Thing Description Template uses the same core vocabulary and information model from <a href="#sec-vocabulary-definition"></a>.
-    </p>
-    <p>
-    The Thing Description Template enables:
-    <ul>
-    <li> management of multiple <a>Things</a> by a cloud service. </li>
-    <li> simulation of devices/<a>Things</a> that have not yet been developed.</li>
-    <li> common applications across devices from different manufacturers that share a common <a>Thing</a> model.</li>
-    <li> combining multiple models into a <a>Thing</a>.
-    </ul>
-    </p>
-    <p>
-    The Thing Description Template is a logical description of the interface and possible interaction with devices
-    (properties, actions and events), however it does not contain device-specific
-    information, such as a serial number, GPS location, security information or concrete protocol endpoints.
-    </p><p>
-    Since a Thing Description Template does not contain a <a>Protocol Binding</a> to specific endpoints and
-    does not define a specific security mechanism, the <em>forms</em> and <em>securityDefinitions</em> and 
-    <em>security</em> keys must not be present.
-    </p><p>
-     The same Thing Description Template can be implemented by <a>Things</a> from multiple vendors,
-    a <a>Thing</a> can implement multiple Thing Description Templates, define additional metadata
-    (vendor, location, security) and define bindings to concrete protocols.
-    To avoid conflicts between properties, actions and events from different Thing Description Templates
-    that are combined into a common <a>Thing</a>, all these identifiers must be unique within a <a>Thing</a>.
-    </p><p>
-    A common Thing Description Template for a class of devices enables writing applications across vendors and
-    creates a more attractive market for application developers.
-    A concrete Thing Description can implement multiple Thing Description Templates and
-    thus can aggregate function blocks into a combined device.
-    </p><p>
-    The business models of cloud vendors are typically built on managing thousands of identical devices.
-    All devices with the same Thing Description Template can be managed in the same way by cloud applications.
-    It is easy to create multiple simulated devices, if the interface and the instance are treated separately.
-    </p><p>
-        Since a Thing Description Template is a subset of the Thing Description in which some optional and mandatory <a>Vocabulary Terms</a> 
-        do not exist, however, it can be serialized in the same way and in the same formats as a Thing Description. Note that Thing 
-        Template instances cannot be validated in the same way as Thing Description instances due to some missing mandatory terms.
-    </p>
-    
-      <section id="thing-template-examples">
-     <h2>Thing Description Template Examples</h2>
-    
-    This section shows a Thing Description Template for a lamp and a Thing Description Template for a buzzer.
-    
-      <section id="lamp-thing-template">
-      <h3>Thing Description Template: Lamp</h3>
-    
-    <pre class="example" title="MyLampThingTemplate serialized in JSON">
-    {
-        "@context": ["https://www.w3.org/2019/wot/td/v1"], 
-        "@type" : "ThingTemplate",
-        "title": "Lamp Thing Description Template",
-        "description" : "Lamp Thing Description Template",
-        "properties": {
-            "status": {
-                "description" : "current status of the lamp (on|off)",
-                "type": "string",
-                "readOnly": true
-            }
-        },
-        "actions": {
-            "toggle": {
-                "description" : "Turn the lamp on or off"
-            }
-        },
-        "events": {
-            "overheating": {
-                "description" : "Lamp reaches a critical temperature (overheating)",
-                "data": {"type": "string"}
-            }
-        }
-    }
-    </pre>
-    </section>
-    
-    <section id="buzzer-thing-template">
-    <h3>Thing Description Template: Buzzer</h3>
-    
-    <pre class="example" title="MyBuzzerThingTemplate serialized in JSON">
-    {
-        "@context": ["https://www.w3.org/2019/wot/td/v1"], 
-        "@type" : "ThingTemplate",
-        "title": "Buzzer Thing Description Template",
-        "description" : "Thing Description Template of a buzzer that makes noise for 10 seconds",
-         "actions": {
-            "buzz": {
-                "description" : "buzz for 10 seconds"
-            }
-         }
-    }
-    </pre>
-    </section>
-    
-  </section>
-</section>
+
 
 <section id="json-ld-ctx-usage" class="appendix informative">
     <h1>JSON-LD Context Usage</h1>
