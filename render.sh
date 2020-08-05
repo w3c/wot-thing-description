@@ -1,24 +1,33 @@
 #!/bin/bash
 
-if ! [[ -e .install/fuseki.jar ]] ; then
-	mkdir .install
-	echo "Downloading RDF store (Apache Fuseki server)..."
-	curl https://repo1.maven.org/maven2/org/apache/jena/jena-fuseki-server/3.9.0/jena-fuseki-server-3.9.0.jar -o .install/fuseki.jar
-
-	echo "Installing Node.js dependencies..."
-	npm install
+if ! command -v node > /dev/null; then
+	echo "Please install Node.js first: https://nodejs.org/."
+	exit
 fi
 
-echo "Starting RDF store (running on port 3030)..."
-java -jar .install/fuseki.jar --mem /temp &
-WOT_FUSEKI_PID=$! # PID of the last detached process (fuseki)
-#export WOT_SPARQL_ENDPOINT=http://localhost:3030/temp
-#export WOT_SPARUL_ENDPOINT=http://localhost:3030/temp
-sleep 5 # waiting for the RDF store to initialize
+STTL_CLI="node_modules/sttl/src/cli.js"
 
-echo "Rendering HTML documents"
-node render.js
+if ! [[ -e $STTL_CLI ]]; then
+	echo "Downloading rendering engine (STTL)..."
+	npm i vcharpenay/STTL.js
+fi
 
-echo "Shutting down RDF store..."
-kill ${WOT_FUSEKI_PID}
-cd ..
+STTL_CMD="node "$STTL_CLI
+
+echo "Rendering main specification..."
+# TODO
+
+PREFIXES=("td" "hctl" "jsonschema" "wotsec")
+FILES=""
+for prefix in ${PREFIXES[@]}; do
+	FILES=$FILES" ontology/"$prefix".ttl"
+done
+
+echo "Rendering OWL documentation..."
+for prefix in ${PREFIXES[@]}; do
+	# generate .part.html file with rendered snippet
+	$STTL_CMD -i $FILES -t ontology/templates.sparql -c "http://w3c.github.io/wot-thing-description/ontology#main" $prefix -o ontology/$prefix.part.html
+	# include .part.html into .template.html to create final .html file
+	sed -e "/<\!--axioms-->/ r ontology/"$prefix".part.html" ontology/$prefix.template.html > ontology/$prefix.html
+	echo "> ontology/"$prefix".html"
+done
