@@ -14,14 +14,29 @@ fi
 
 STTL_CMD="node "$STTL_CLI
 
-echo "Rendering main specification..."
-# TODO
-
 PREFIXES=("td" "hctl" "jsonschema" "wotsec")
 FILES=""
 for prefix in ${PREFIXES[@]}; do
 	FILES=$FILES" ontology/"$prefix".ttl"
 done
+
+echo "Pre-processing JSON-LD context..."
+node context/merge.js
+node context/toRDF.js -i context/td-context-1.1.jsonld -o context/td-context.ttl
+echo "> context/td-context-1.1.jsonld"
+
+echo "Rendering main specification..."
+for prefix in ${PREFIXES[@]}; do
+	# generate .part.html file with rendered snippet
+	$STTL_CMD -i $FILES validation/td-validation.ttl context/td-context.ttl -t templates.sparql -c "http://w3c.github.io/wot-thing-description/#main" $prefix -o $prefix.part.html
+	# include .part.html into .template.html to create final .html file
+	# TODO
+done
+
+exit # TODO to remove when main spec rendering works
+
+echo "Rendering SVG diagrams..."
+# TODO
 
 echo "Rendering OWL documentation..."
 for prefix in ${PREFIXES[@]}; do

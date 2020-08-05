@@ -63,4 +63,40 @@ function context(obj, id) {
     return txt;
 }
 
-exports.toRDF = context;
+// CLI parser
+
+const msg = '\
+Usage: toRDF [options]\n\
+Options:\n\
+\t-i <file>\n\
+\t\tReads JSON input from <file>.\n\
+\t-o <file>\n\
+\t\tWrites RDF (N-Triples) to <file>.\n\
+\t-h\n\
+\t\tPrints this help message and exits.\n';
+
+let args = process.argv;
+
+if (args.indexOf('-h') > -1) {
+    console.log(msg);
+    return;
+}
+
+let i = args.indexOf('-i');
+let o = args.indexOf('-o');
+
+if (i > -1 && args[i + 1]) {
+    let input = args[i + 1];
+
+    let ctx = JSON.parse(fs.readFileSync(input));
+    let nt = context(ctx);
+
+    if (o > -1 && args[o + 1]) {
+        let output = args[o + 1];
+        fs.writeFileSync(output, nt);
+    } else {
+        console.log(nt);
+    }
+} else {
+    console.log(msg);
+}
