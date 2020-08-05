@@ -165,8 +165,7 @@ template :field(?class) {
             format {
                 "%s%s%s"
                 if(?hasEnum, " (", "")
-                # FIXME replace property paths with uRDF built-ins
-                # st:call-template(:enum, ?class, ?prop)
+                st:call-template(:enum, ?class, ?prop, 0)
                 if(?hasEnum, ")", "")
             }
         "</td>"
@@ -178,8 +177,9 @@ template :field(?class) {
     ?propShape sh:path ?prop .
     filter (isIRI(?prop))
     optional {
-        # FIXME or nodeKind sh:IRI (then, look at context definition)
         { ?propShape sh:datatype ?type }
+        union
+        { ?propShape sh:nodeKind sh:IRI . bind (xsd:anyURI as ?type) }
         union
         { ?propShape sh:node ?valueShape . ?valueShape sh:targetClass ?type }
     }
@@ -221,10 +221,12 @@ template :type(?class ?prop) {
     ?propShape sh:path ?prop .
     { ?propShape sh:datatype ?type }
     union
+    { ?propShape sh:nodeKind sh:IRI . bind (xsd:anyURI as ?type) }
+    union
     { ?propShape sh:node ?valueShape . ?valueShape sh:targetClass ?type }
 }
 
-template :enum(?class ?prop) {
+template :enum(?class ?prop ?index) {
     format {
         "%s<code>%s</code>%s"
         if(?first,
@@ -237,19 +239,17 @@ template :enum(?class ?prop) {
                "one of "),
            if(?last, "or ", ""))
         ?val
-        if(?last, "", ", ")
-    }; separator = ""
+        if(?last, "", concat(", ", st:call-template(:enum, ?class, ?prop, ?index + 1)))
+    }
 } where {
     ?shape a sh:NodeShape ;
            sh:targetClass ?class ;
            sh:property ?propShape .
     ?propShape sh:path ?prop ;
                sh:in ?list .
-    ?list rdf:rest* ?r .
-    ?r rdf:first ?val .
-    ?r rdf:rest ?next
-    bind ((?list = ?r) as ?first)
-    bind ((?next = rdf:nil) as ?last)
+    bind (<javascript:urdf.valueAt>(?list, ?index) as ?val)
+    bind ((?index = 0) as ?first)
+    bind ((?index + 1 = <javascript:urdf.length>(?list)) as ?last)
 }
 
 template :subclasses(?class) {
