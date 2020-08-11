@@ -153,6 +153,17 @@
                     "publisher": "Semantic Web journal, IOS Press",
                     "date": "2013"
                 },
+                "LD-PROOFS": {
+                    "title": "Linked Data Proofs 1.0",
+                    "href": "https://w3c-ccg.github.io/ld-proofs/",
+                    "authors": [
+                        "Dave Longley",
+                        "Manu Sporney"
+                    ], 
+                    publisher: "W3C",
+                    status: "Draft Community Group Report",
+                    date: "3 March 2020"
+                },
                 "LDML": {
                     "title": "Unicode Technical Standard #35: Unicode Locale Data Markup Language (LDML)",
                     "href": "https://unicode.org/reports/tr35/",
@@ -937,7 +948,16 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
             elements only have <a>Term</a>s (that do not belong to any <a>Vocabulary</a>)
             as names is called a <dfn>Map</dfn>. All names appearing in some name-value pair
             in a <a>Map</a> are assumed to be <em>unique</em> within the scope of the
-            <a>Map</a>.
+            <a>Map</a>.  
+<a class="ednote">
+            Consider adding the following definition.  Currently this only applies to
+            <code>proof</code> sets, but it could also be applied to <code>forms</code>, 
+            <code>properties</code>, etc.:
+            When the order of elements in an <a>Array</a> is not relevant,
+            it will be called a <a>Set</a> in the following.  
+            Note however that in a JSON a <a>Set</a> will be serialized the same way as
+            an <a>Array</a>, and when computing signatures and in other operations
+            that need a stable serialization a normalized order must be used.
         </p>
 
         <p>
@@ -1094,7 +1114,10 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 <tr class="rfc2119-table-assertion" id="td-vocab-links--Thing"><td><code>links</code></td><td>Provides Web links to arbitrary resources that relate to the specified Thing Description.</td><td>optional</td><td><a>Array</a> of <a href="#link"><code>Link</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-forms--Thing"><td><code>forms</code></td><td>Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings. In this version of TD, all operations that can be described at the Thing level are concerning how to interact with the Thing's <a href="#propertyaffordance">Properties</a> collectively at once.</td><td>optional</td><td><a>Array</a> of <a href="#form"><code>Form</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-security--Thing"><td><code>security</code></td><td>Set of security definition names, chosen from those defined in <code>securityDefinitions</code>.  These must all be satisfied for access to resources.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-securityDefinitions--Thing"><td><code>securityDefinitions</code></td><td>Set of named security configurations (definitions only).  Not actually applied unless names are used in a <code>security</code> name-value pair.</td><td>mandatory</td><td><a>Map</a> of <a href="#securityscheme"><code>SecurityScheme</code></a></td></tr></tbody></table>
+<tr class="rfc2119-table-assertion" id="td-vocab-securityDefinitions--Thing"><td><code>securityDefinitions</code></td><td>Set of named security configurations (definitions only).  Not actually applied unless names are used in a <code>security</code> name-value pair.</td><td>mandatory</td><td><a>Map</a> of <a href="#securityscheme"><code>SecurityScheme</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-proof--Thing"><td><code>proof</code></td><td>A proof set as defined in [[!LD-PROOFS]].  Used for multiple independent integrity and validity certifications from different authorities.  All proofs in the set apply to the current TD and order does not matter.</td><td>optional</td><td><a href="#Proof"><code>Proof</code></a> or <a>Set</a> of <a href="#Proof"><code>Proof</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-proofChain--Thing"><td><code>proofChain</code></td><td>A proof chain as defined in [[!LD-PROOFS]].  Used for order dependent lists of integrity and validity certifications from different authorities.  The proof at the beginning of the list applies to the current TD and each depends on the next in the chain.</td><td>optional</td><td><a href="#Proof"><code>Proof</code></a> or <a>Array</a> of <a href="#Proof"><code>Proof</code></a></td></tr>
+</tbody></table>
 <p>
     <span class="rfc2119-assertion" id="td-context-ns-thing-mandatory">
         The <code>@context</code> name-value pair MUST contain the anyURI <code>https://www.w3.org/2019/wot/td/v1</code>
@@ -1443,10 +1466,29 @@ to the <a>Consumer</a>.
 
 </p>
 
+<section><h3><code>ExpectedResponse</code></h3><p>Communication metadata describing the expected response message.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-contentType--ExpectedResponse"><td><code>contentType</code></td><td>Assign a content type based on a media type (e.g., <code>text/plain</code>) and potential parameters (e.g., <code>charset=utf-8</code>) for the media type [[RFC2046]].</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table></section>
+      </section>
 
 
 </section>
-<section><h3><code>ExpectedResponse</code></h3><p>Communication metadata describing the expected response message.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-contentType--ExpectedResponse"><td><code>contentType</code></td><td>Assign a content type based on a media type (e.g., <code>text/plain</code>) and potential parameters (e.g., <code>charset=utf-8</code>) for the media type [[RFC2046]].</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table></section>
+    </section>
+
+    <section id="sec-proof">
+      <h3>Signatures</h3>
+
+<section><h3><code>Proof</code></h3><p>
+<span class="rfc2119-assertion" id="proof-definition">A <a><code>Proof</code></a> object MUST contain a 
+<a href="https://w3c-ccg.github.io/ld-proofs/#linked-data-signatures">Linked Data Signature</a>
+ [[!LD-PROOFS]].</span> 
+<span class="rfc2119-assertion" id="proof-nested-context">
+The vocabulary used in <a><code>Proof</code></a> objects MUST be considered to be in a nested context.</span> 
+<span class="rfc2119-assertion" id="proof-explicit-context">For backward compatibility,
+if <a><code>Proof</code></a> objects need to be used in a TD that might need to be interpreted by
+systems following the 1.0 specification,
+then the context defined in the Linked Data Proofs 
+specification [[!LD-Proofs]] MAY be included explicitly.
+</span>
+</p>
 
       </section>
 
