@@ -23,7 +23,7 @@ template :classes(?ns) {
         
         if(?atRisk, "<p><span class=\"at-risk\">This section is at risk.</span></p>", "")
 
-        format { "%s" ?def }
+        format { "<p>%s</p>" ?def }
 
         format { "%s" st:call-template(:fields, ?class) }
 
@@ -122,7 +122,7 @@ template :field(?class) {
             format { "<code>%s</code>" st:call-template(:label, ?prop) }
         "</td>"
         "<td>"
-            format { "%s" st:call-template(:desc, ?prop) }
+            format { "%s" ?def }
             if (?prop = <https://www.w3.org/2019/wot/td#hasForm>,
                 if(?class = <https://www.w3.org/2019/wot/td#Thing>,
                   " In this version of TD, all operations that can be described at the Thing level are concerning how to interact with the Thing's <a href=\"#propertyaffordance\">Properties</a> collectively at once.", ""
@@ -176,7 +176,8 @@ template :field(?class) {
     ?shape a sh:NodeShape ;
         sh:targetClass ?class ;
         sh:property ?propShape .
-    ?propShape sh:path ?prop .
+    ?propShape sh:path ?prop ;
+               skos:definition ?def .
     filter (isIRI(?prop))
     optional {
         { ?propShape sh:datatype ?type }
