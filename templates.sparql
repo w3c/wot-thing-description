@@ -2,6 +2,7 @@ prefix st: <http://ns.inria.fr/sparql-template/>
 prefix sh: <http://www.w3.org/ns/shacl#>
 prefix jsonld: <http://www.w3.org/ns/json-ld#>
 prefix vann: <http://purl.org/vocab/vann/>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix owl: <http://www.w3.org/2002/07/owl#>
@@ -20,14 +21,9 @@ template :classes(?ns) {
 
         format { "<h3><code>%s</code></h3>" st:call-template(:label, ?class) }
         
-        if(?class = <https://www.w3.org/2019/wot/security#CertSecurityScheme> ||
-           ?class = <https://www.w3.org/2019/wot/security#PoPSecurityScheme> ||
-           ?class = <https://www.w3.org/2019/wot/security#PublicSecurityScheme>,
-           "<p><span class=\"at-risk\">This section is at risk.</span></p>",
-           ""
-        )
+        if(?atRisk, "<p><span class=\"at-risk\">This section is at risk.</span></p>", "")
 
-        format { "<p>%s</p>" st:call-template(:desc, ?class) }
+        format { "%s" ?def }
 
         format { "%s" st:call-template(:fields, ?class) }
 
@@ -38,10 +34,16 @@ template :classes(?ns) {
     "</section>"
 } where {
     ?shape a sh:NodeShape ;
-           sh:targetClass ?class .
+           sh:targetClass ?class ;
+           skos:definition ?def .
     filter(strstarts(str(?class), str(?ns)))
     optional { ?shape sh:order ?predefined }
     bind (if(bound(?predefined), ?predefined, "1000"^^xsd:integer) as ?rank)
+    optional {
+        ?shape skos:editorialNote ?note .
+        # FIXME only if note is "at risk"
+    }
+    bind (bound(?note) as ?atRisk)
 } order by ?rank
 
 template :fields(?class) {
@@ -195,7 +197,9 @@ template :field(?class) {
         jsonld:container jsonld:index
     }
     optional {
-        ?propShape sh:in ?list
+        { ?propShape sh:in ?list }
+        union
+        { ?propShape skos:example ?list }
     }
     optional { ?propShape sh:defaultValue ?def  }
     bind (bound(?count) as ?mandatory)
@@ -229,24 +233,21 @@ template :type(?class ?prop) {
 template :enum(?class ?prop ?index) {
     format {
         "%s<code>%s</code>%s"
-        if(?first,
-           if (?prop = <https://www.w3.org/2019/wot/hypermedia#forSubProtocol> ||
-               ?prop = <https://www.w3.org/2019/wot/security#alg> ||
-               ?prop = <https://www.w3.org/2019/wot/security#format> ||
-               ?prop = <https://www.w3.org/2019/wot/security#flow> ||
-               ?prop = <https://www.w3.org/2019/wot/security#scheme>,
-               "e.g., ",
-               "one of "),
-           if(?last, "or ", ""))
+        if(?first, if(?eg, "e.g., ", "one of "),
+        if(?last, "or ", ""))
         ?val
+        # FIXME ?val is undefined if literal
+        #if(isIRI(?val), st:call-template(:label, ?val), ?val)
         if(?last, "", concat(", ", st:call-template(:enum, ?class, ?prop, ?index + 1)))
     }
 } where {
     ?shape a sh:NodeShape ;
            sh:targetClass ?class ;
            sh:property ?propShape .
-    ?propShape sh:path ?prop ;
-               sh:in ?list .
+    ?propShape sh:path ?prop .
+    { ?propShape sh:in ?list bind (false as ?eg) }
+    union
+    { ?propShape skos:example ?list bind (true as ?eg) }
     bind (<javascript:urdf.valueAt>(?list, ?index) as ?val)
     bind ((?index = 0) as ?first)
     bind ((?index + 1 = <javascript:urdf.length>(?list)) as ?last)
