@@ -116,53 +116,34 @@ template :fields(?class) {
 }
 
 template :field(?class) {
-    format { "<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-%s" st:call-template(:label, ?prop) }
+    format { "<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-%s" st:call-template(:numbered-label, ?prop, ?singleton) }
     format { "--%s\">" st:call-template(:label, ?class) }
         "<td>"
-            format { "<code>%s</code>" st:call-template(:label, ?prop) }
+            format { "<code>%s</code>" st:call-template(:numbered-label, ?prop, ?singleton) }
         "</td>"
         "<td>"
             format { "%s" ?def }
-            if (?prop = <https://www.w3.org/2019/wot/td#hasForm>,
-                if(?class = <https://www.w3.org/2019/wot/td#Thing>,
-                  " In this version of TD, all operations that can be described at the Thing level are concerning how to interact with the Thing's <a href=\"#propertyaffordance\">Properties</a> collectively at once.", ""
-                ) , ""
-            )
             if (?prop = <https://www.w3.org/2019/wot/td#baseUri>,
                   "<br/><br/><code>base</code> does not affect the URIs used in <code>@context</code> and the IRIs used within Linked Data [[?LINKED-DATA]] graphs that are relevant when semantic processing is applied to TD instances.", ""
-            )
-            if (?prop = <https://www.w3.org/2019/wot/json-schema#format>,
-                  " (Also see below.)", ""
             )
         "</td>"
         "<td>"
             format {
                 "%s"
-                if(?hasDef || ?prop = <https://www.w3.org/2019/wot/hypermedia#forOperationType>,
+                if(?hasDefault || ?prop = <https://www.w3.org/2019/wot/hypermedia#forOperationType>,
                    "<a href=\"#sec-default-values\">with default</a>",
                    if(?mandatory, "mandatory", "optional"))
             }
         "</td>"
         "<td>"
             format {
-                # TODO use path expressions like sh:oneOrMorePath instead?
                 "%s%s"
-                if(?prop = <https://www.w3.org/2019/wot/hypermedia#forOperationType> ||
-                   ?prop = <https://www.w3.org/2019/wot/json-schema#items> ||
-                   ?prop = <https://www.w3.org/2019/wot/td#hasSecurityConfiguration> ||
-                   ?prop = <https://www.w3.org/2019/wot/security#scopes>,
-                   concat(st:call-template(:type, ?class, ?prop),
-                          " or <a>Array</a> of ",
-                          st:call-template(:type, ?class, ?prop)),
-                   if(?array,
-                      "<a>Array</a> of ",
-                      if(?map, "<a>Map</a> of ", "")))
-                if(?prop = <https://www.w3.org/2019/wot/hypermedia#forOperationType> ||
-                   ?prop = <https://www.w3.org/2019/wot/json-schema#items> ||
-                   ?prop = <https://www.w3.org/2019/wot/td#hasSecurityConfiguration> ||
-                   ?prop = <https://www.w3.org/2019/wot/security#scopes>,
-                   "",
-                   if(?hasType, st:call-template(:type, ?class, ?prop), "any type"))
+                if(?array, "<a>Array</a> of ",
+                if(?map, "<a>Map</a> of ",
+                if(!?singleton && ?hasType,
+                   concat(st:call-template(:type, ?class, ?prop), " or <a>Array</a> of "),
+                   "")))
+                if(?hasType, st:call-template(:type, ?class, ?prop), "any type")
             }
             format {
                 "%s%s%s"
@@ -186,29 +167,33 @@ template :field(?class) {
         union
         { ?propShape sh:node ?valueShape . ?valueShape sh:targetClass ?type }
     }
-    optional { ?propShape sh:minCount ?count }
+    bind (bound(?type) as ?hasType)
+    optional { ?propShape sh:minCount ?minCount }
+    bind (bound(?minCount) as ?mandatory)
+    optional { ?propShape sh:maxCount ?maxCount }
+    bind (bound(?maxCount) as ?singleton)
     optional {
         ?mSet a jsonld:Mapping ;
         jsonld:iri ?prop ;
         jsonld:container jsonld:set
     }
+    bind (bound(?mSet) && !?singleton as ?array)
     optional {
         ?mIndex a jsonld:Mapping ;
-        jsonld:iri ?prop ;
-        jsonld:container jsonld:index
+        jsonld:iri ?prop .
+        { ?mIndex jsonld:container jsonld:index }
+        union
+        { ?mIndex jsonld:container jsonld:language }
     }
+    bind (bound(?mIndex) && !?singleton as ?map)
     optional {
         { ?propShape sh:in ?list }
         union
         { ?propShape skos:example ?list }
     }
-    optional { ?propShape sh:defaultValue ?def  }
-    bind (bound(?count) as ?mandatory)
-    bind (bound(?def) as ?hasDef)
-    bind (bound(?mSet) as ?array)
-    bind (bound(?mIndex) as ?map)
-    bind (bound(?type) as ?hasType)
     bind (bound(?list) as ?hasEnum)
+    optional { ?propShape sh:defaultValue ?default  }
+    bind (bound(?default) as ?hasDefault)
     optional { ?propShape sh:order ?predefined }
     bind (if(bound(?predefined), ?predefined, "1000"^^xsd:integer) as ?rank)
 } order by ?rank
@@ -317,6 +302,31 @@ template :href-fragment(?term) {
         lcase(st:call-template(:label, ?term))
     }
 } where {}
+
+template :numbered-label(?term ?singular) {
+    format { "%s" ?name }
+} where {
+    optional {
+        ?m1 a jsonld:Mapping ;
+            jsonld:iri ?term ;
+            jsonld:term ?singularName .
+        filter not exists {
+            ?m1 jsonld:container ?container
+        }
+    }
+    optional {
+        ?m2 a jsonld:Mapping ;
+            jsonld:iri ?term ;
+            jsonld:term ?pluralName ;
+            jsonld:container ?container .
+    }
+    bind (
+        if(!bound(?singularName), ?pluralName,
+        if(!bound(?pluralName), ?singularName,
+        if(?singular, ?singularName, ?pluralName)))
+        as ?name
+    )
+}
 
 template :label(?term) {
     format { "%s" ?label }
