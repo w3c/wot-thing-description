@@ -16,6 +16,13 @@ if ! command -v node > /dev/null; then
 	exit
 fi
 
+DOT_CMD="dot"
+
+if ! command -v dot > /dev/null; then
+	DOT_CMD=""
+	echo "Warning: Graphviz is not installed, SVG diagrams won't be rendered."
+fi
+
 STTL_CLI="node_modules/sttl/src/cli.js"
 
 if ! [[ -e $STTL_CLI ]]; then
@@ -96,8 +103,17 @@ echo "> index.html"
 # 
 # https://graphviz.gitlab.io/
 
-echo "Rendering SVG diagrams..."
-# TODO
+if [[ -n $DOT_CMD ]]; then
+	echo "Rendering SVG diagrams..."
+	for prefix in ${PREFIXES[@]}; do
+		$STTL_CMD -i validation/td-validation.ttl context/td-context.ttl $FILES \
+				-t visualization/templates.sparql \
+				-c "http://w3c.github.io/wot-thing-description/visualization#main" $prefix \
+				-o visualization/$prefix.dot
+		dot -T svg -o visualization/$prefix.svg visualization/$prefix.dot
+		echo "> visualization/"$prefix".svg"
+	done
+fi
 
 # In addition to the main specification, the td, json-schema, wot-security and
 # hypermedia vocabularies are documented in separate documents as OWL
