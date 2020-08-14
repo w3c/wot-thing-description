@@ -52,7 +52,7 @@ echo "> context/td-context-1.1.jsonld"
 # https://www.w3.org/TR/shacl/
 # 
 # SHACL defines 'node shapes' and 'property shapes', which constrain nodes and
-# edges in an RDF graph. The mapping from the TD object model to SHACL is as
+# edges in an RDF graph. The mapping between the TD object model and SHACL is as
 # follows:
 #
 # Class					sh:NodeShape
@@ -62,11 +62,15 @@ echo "> context/td-context-1.1.jsonld"
 # Map, Array			no sh:maxCount
 # 
 # Along with these SHACL shapes, we add the JSON-LD term mappings, generated in
-# the previous step, to the rendering process:
-# 
-# context/td-context.ttl
+# the previous step, to the rendering process. The following JSON-LD definitions
+# are used to generate TD class signatures:
 #
-# Finally, we add vocabulary files that include sub-class axioms::
+# Term 		jsonld:term
+# Map 		jsonld:container => jsonld:index, jsonld:language
+# Array 	jsonld:container => jsonld:set
+#
+# Finally, we add vocabulary files that include sub-class axioms (using
+# the rdfs:subClassOf RDF property):
 # 
 # ontology/td.ttl
 # ontology/jsonschema.ttl
@@ -86,8 +90,6 @@ $STTL_CMD -i validation/td-validation.ttl context/td-context.ttl $FILES \
 		  -o index.html
 echo "> index.html"
 
-exit # TODO to remove when main spec rendering works
-
 # The TD specification includes diagrams that can be automatically generated
 # from the same SHACL source. The diagrams are first generated in textual form
 # with STTL and then turned into graphics using Graphviz:
@@ -106,13 +108,12 @@ echo "Rendering SVG diagrams..."
 
 echo "Rendering OWL documentation..."
 for prefix in ${PREFIXES[@]}; do
-	# generate .part.html file with rendered snippet
 	$STTL_CMD -i $FILES \
 	          -t ontology/templates.sparql \
 			  -c "http://w3c.github.io/wot-thing-description/ontology#main" $prefix \
 			  -o ontology/$prefix.part.html
 	# include .part.html into .template.html to create final .html file
-	# TODO replace with file URI in .sparql template
+	# TODO replace with file URI in .sparql template (requires extending STTL.js)
 	sed -e "/<\!--axioms-->/ r ontology/"$prefix".part.html" ontology/$prefix.template.html > ontology/$prefix.html
 	echo "> ontology/"$prefix".html"
 done
