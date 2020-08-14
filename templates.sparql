@@ -12,24 +12,17 @@ prefix : <http://w3c.github.io/wot-thing-description/#>
 template :main {
     format {
         <file://./index.template.html>
-        st:call-template(:vocab, "td")
-        st:call-template(:vocab, "jsonschema")
-        st:call-template(:vocab, "wotsec")
-        st:call-template(:vocab, "hctl")
+        st:call-template(:classes, <https://www.w3.org/2019/wot/td#>)
+        st:call-template(:classes, <https://www.w3.org/2019/wot/json-schema#>)
+        st:call-template(:classes, <https://www.w3.org/2019/wot/security#>)
+        st:call-template(:classes, <https://www.w3.org/2019/wot/hypermedia#>)
     }
 } where {}
-
-template :vocab(?prefix) {
-    st:call-template(:classes, ?ns)
-} where {
-    ?ns a owl:Ontology ;
-        vann:preferredNamespacePrefix ?prefix .
-}
 
 template :classes(?ns) {
     "<section>"
 
-        format { "<h3><code>%s</code></h3>" st:call-template(:label, ?class) }
+        format { "<h3><code>%s</code></h3>" st:call-template(:default-label, ?class) }
         
         if(?atRisk, "<p><span class=\"at-risk\">This section is at risk.</span></p>", "")
 
@@ -338,15 +331,19 @@ template :numbered-label(?term ?singular) {
 }
 
 template :label(?term) {
-    format { "%s" ?label }
+    format { "%s" if(?mapping, ?name, st:call-template(:default-label, ?term)) }
 } where {
     optional {
         ?m a jsonld:Mapping ;
             jsonld:iri ?term ;
             jsonld:term ?name .
     }
-    bind (if(bound(?name), ?name, strafter(str(?term), "#")) as ?label)
+    bind (bound(?name) as ?mapping)
 }
+
+template :default-label(?term) {
+    format { "%s" strafter(str(?term), "#") }
+} where {}
 
 template :desc(?term) {
     format {

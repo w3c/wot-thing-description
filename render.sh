@@ -25,13 +25,6 @@ fi
 
 STTL_CMD="node "$STTL_CLI
 
-# TODO move to onto generation
-PREFIXES=("td" "hctl" "jsonschema" "wotsec")
-FILES=""
-for prefix in ${PREFIXES[@]}; do
-	FILES=$FILES" ontology/"$prefix".ttl"
-done
-
 # All vocabulary terms in the TD specification are defined in the JSON-LD
 # context that all TD documents must reference:
 # 
@@ -74,7 +67,10 @@ echo "> context/td-context-1.1.jsonld"
 # context/td-context.ttl
 
 echo "Rendering main specification..."
-$STTL_CMD -i $FILES validation/td-validation.ttl context/td-context.ttl -t templates.sparql -c "http://w3c.github.io/wot-thing-description/#main" -o index.html
+$STTL_CMD -i validation/td-validation.ttl context/td-context.ttl \
+          -t templates.sparql \
+		  -c "http://w3c.github.io/wot-thing-description/#main" \
+		  -o index.html
 
 exit # TODO to remove when main spec rendering works
 
@@ -99,11 +95,21 @@ echo "Rendering SVG diagrams..."
 # ontology/wotsec.ttl
 # ontology/hctl.ttl
 
+PREFIXES=("td" "hctl" "jsonschema" "wotsec")
+FILES=""
+for prefix in ${PREFIXES[@]}; do
+	FILES=$FILES" ontology/"$prefix".ttl"
+done
+
 echo "Rendering OWL documentation..."
 for prefix in ${PREFIXES[@]}; do
 	# generate .part.html file with rendered snippet
-	$STTL_CMD -i $FILES -t ontology/templates.sparql -c "http://w3c.github.io/wot-thing-description/ontology#main" $prefix -o ontology/$prefix.part.html
+	$STTL_CMD -i $FILES \
+	          -t ontology/templates.sparql \
+			  -c "http://w3c.github.io/wot-thing-description/ontology#main" $prefix \
+			  -o ontology/$prefix.part.html
 	# include .part.html into .template.html to create final .html file
+	# TODO replace with file URI in .sparql template
 	sed -e "/<\!--axioms-->/ r ontology/"$prefix".part.html" ontology/$prefix.template.html > ontology/$prefix.html
 	echo "> ontology/"$prefix".html"
 done
