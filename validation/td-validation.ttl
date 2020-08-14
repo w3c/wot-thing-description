@@ -131,7 +131,165 @@
         sh:minCount 1 ;
         sh:node :SecuritySchemeShape ;
         sh:order 15 ;
-    ] .
+    ] ;
+    skos:scopeNote """<p><span class="rfc2119-assertion" id=
+          "td-context-ns-thing-mandatory">The <code>@context</code>
+          name-value pair <em class="rfc2119" title=
+          "MUST">MUST</em> contain the anyURI
+          <code>https://www.w3.org/2019/wot/td/v1</code> either
+          directly when of type <code>anyURI</code> or as first
+          element when of type <a href="#dfn-array" class=
+          "internalDFN" data-link-type="dfn">Array</a>.</span>
+          <span class="rfc2119-assertion" id=
+          "td-context-ns-thing-optional">When <code>@context</code>
+          is an <a href="#dfn-array" class="internalDFN"
+          data-link-type="dfn">Array</a>, the anyURI
+          <code>https://www.w3.org/2019/wot/td/v1</code> <em class=
+          "rfc2119" title="MAY">MAY</em> be followed by elements of
+          type <code>anyURI</code> or type <a href="#dfn-map"
+          class="internalDFN" data-link-type="dfn">Map</a> in any
+          order, while it is <em class="rfc2119" title=
+          "RECOMMENDED">RECOMMENDED</em> to include only one
+          <a href="#dfn-map" class="internalDFN" data-link-type=
+          "dfn">Map</a> with all the name-value pairs in the
+          <code>@context</code> <a href="#dfn-array" class=
+          "internalDFN" data-link-type="dfn">Array</a>.</span>
+          <span class="rfc2119-assertion" id=
+          "td-context-ns-thing-map-of-namespaces"><a href=
+          "#dfn-map" class="internalDFN" data-link-type=
+          "dfn">Maps</a> contained in an <code>@context</code>
+          <a href="#dfn-array" class="internalDFN" data-link-type=
+          "dfn">Array</a> <em class="rfc2119" title="MAY">MAY</em>
+          contain name-value pairs, where the value is a namespace
+          identifier of type <code>anyURI</code> and the name a
+          <a href="#dfn-term" class="internalDFN" data-link-type=
+          "dfn">Term</a> or prefix denoting that namespace.</span>
+          <span class="rfc2119-assertion" id=
+          "td-context-default-language">One <a href="#dfn-map"
+          class="internalDFN" data-link-type="dfn">Map</a>
+          contained in an <code>@context</code> <a href=
+          "#dfn-array" class="internalDFN" data-link-type=
+          "dfn">Array</a> <em class="rfc2119" title=
+          "SHOULD">SHOULD</em> contain a name-value pair that
+          defines the default language for the Thing Description,
+          where the name is the <a href="#dfn-term" class=
+          "internalDFN" data-link-type="dfn">Term</a>
+          <code>@language</code> and the value is a well-formed
+          language tag as defined by [<cite><a class="bibref"
+          data-link-type="biblio" href="#bib-bcp47" title=
+          "Tags for Identifying Languages">BCP47</a></cite>] (e.g.,
+          <code>en</code>, <code>de-AT</code>, <code>gsw-CH</code>,
+          <code>zh-Hans</code>, <code>zh-Hant-HK</code>,
+          <code>sl-nedis</code>).</span></p>
+          <p>The computation of the base direction of all
+          human-readable text strings is defined by the following
+          set of rules:</p>
+          <ul>
+            <li><span class="rfc2119-assertion" id=
+            "td-context-default-language-direction-heuristic">If no
+            language tag is given, the base direction <em class=
+            "rfc2119" title="SHOULD">SHOULD</em> be inferred
+            through first-strong heuristics or detection algorithms
+            such as the CLDR Likely Subtags [<cite><a class=
+            "bibref" data-link-type="biblio" href="#bib-ldml"
+            title="Unicode Technical Standard #35: Unicode Locale Data Markup Language (LDML)">LDML</a></cite>].</span></li>
+            <li><span class="rfc2119-assertion" id=
+            "td-context-default-language-direction-inference">Outside
+            of <code>MultiLanguage</code> <a href="#dfn-map" class=
+            "internalDFN" data-link-type="dfn">Maps</a>, the base
+            direction <em class="rfc2119" title="MAY">MAY</em> be
+            inferred from the language tag of the default
+            language.</span></li>
+            <li><span class="rfc2119-assertion" id=
+            "td-context-ns-multilanguage-text-direction-infer">Inside
+            of <code>MultiLanguage</code> <a href="#dfn-map" class=
+            "internalDFN" data-link-type="dfn">Maps</a>, the base
+            direction of each value of the name-value pairs
+            <em class="rfc2119" title="MAY">MAY</em> be inferred
+            from the language tag given in the corresponding
+            name.</span></li>
+            <li><span class="rfc2119-assertion" id=
+            "td-context-default-language-direction-script">In cases
+            where a language can be written in more than one script
+            with different base directions, the corresponding
+            language tag given in <code>@language</code> or
+            <code>MultiLanguage</code> <a href="#dfn-map" class=
+            "internalDFN" data-link-type="dfn">Maps</a> <em class=
+            "rfc2119" title="MUST">MUST</em> include a script
+            subtag, so that an appropriate base direction can be
+            inferred.</span> An example is Azeri, which is written
+            LTR when Latin script is used (specified using
+            <code>az-Latn</code>) and RTL when Arabic script is
+            used (specified using <code>az-Arab</code>).</li>
+          </ul>
+          <p><a href="#dfn-td-processor" class="internalDFN"
+          data-link-type="dfn">TD Processors</a> should be aware of
+          certain special cases when processing bidirectional text.
+          They should take care to use bidi isolation when
+          presenting strings to users, particularly when embedding
+          in surrounding text (e.g., for Web user interface). Mixed
+          direction text can occur in any language, even when the
+          language is properly identified.</p>
+          <p>TD producers should attempt to provide mixed direction
+          strings in a way that can be displayed successfully by a
+          naive user agent. For example, if an RTL string begins
+          with an LTR run (such as a number or a brand or trade
+          name in Latin script), including an RLM character at the
+          start of the string or wrapping opposite direction runs
+          in bidi controls can assist in proper display.</p>
+          <p><em>Strings on the Web: Language and Direction
+          Metadata</em> [<cite><a class="bibref" data-link-type=
+          "biblio" href="#bib-string-meta" title=
+          "Strings on the Web: Language and Direction Metadata">string-meta</a></cite>]
+          provides some guidance and illustrates a number of
+          pitfalls when using bidirectional text.</p>
+          <p id="meta-interactions-of-thing">In addition to the
+          explicitly provided <a href="#dfn-interaction-affordance"
+          class="internalDFN" data-link-type="dfn">Interaction
+          Affordances</a> in the <code>properties</code>,
+          <code>actions</code>, and <code>events</code> <a href=
+          "#dfn-array" class="internalDFN" data-link-type=
+          "dfn">Arrays</a>, a <a href="#dfn-thing" class=
+          "internalDFN" data-link-type="dfn">Thing</a> can also
+          provide meta-interactions, which are indicated by
+          <code>Form</code> instances in its optional
+          <code>forms</code> <a href="#dfn-array" class=
+          "internalDFN" data-link-type="dfn">Array</a>.
+          <span class="rfc2119-assertion" id="td-op-for-thing">When
+          the <code>forms</code> <a href="#dfn-array" class=
+          "internalDFN" data-link-type="dfn">Array</a> of a
+          <a href="#dfn-thing" class="internalDFN" data-link-type=
+          "dfn">Thing</a> instance contains <code>Form</code>
+          instances, the string values assigned to the name
+          <code>op</code>, either directly or within an <a href=
+          "#dfn-array" class="internalDFN" data-link-type=
+          "dfn">Array</a>, <em class="rfc2119" title=
+          "MUST">MUST</em> be one of the following <em>operation
+          types</em>: <code>readallproperties</code>,
+          <code>writeallproperties</code>,
+          <code>readmultipleproperties</code>, or
+          <code>writemultipleproperties</code>.</span> (See
+          <a href="#td-forms-readall-example">an example</a> for an
+          usage of <code>form</code> in a Thing instance.)</p>
+          <p>The data schema for each of these meta-interactions is
+          constructed by combining the data schemas of each
+          <code>PropertyAffordance</code> instance in a single
+          <code>ObjectSchema</code> instance, where the
+          <code>properties</code> <a href="#dfn-map" class=
+          "internalDFN" data-link-type="dfn">Map</a> of the
+          <code>ObjectSchema</code> instance contains each data
+          schema of the <code>PropertyAffordances</code> identified
+          by the name of the corresponding
+          <code>PropertyAffordances</code> instance.</p>
+          <p>If not specified otherwise (e.g., through a <a href=
+          "#dfn-context-ext" class="internalDFN" data-link-type=
+          "dfn">TD Context Extension</a>), the request data of the
+          <code>readmultipleproperties</code> operation is an
+          <a href="#dfn-array" class="internalDFN" data-link-type=
+          "dfn">Array</a> that contains the intended
+          <code>PropertyAffordances</code> instance names, which is
+          serialized to the content type specified by the
+          <code>Form</code> instance.</p>"""^^rdf:HTML .
     
 :InteractionAffordanceShape a sh:NodeShape ;
     sh:targetClass td:InteractionAffordance ;
@@ -183,7 +341,21 @@
                 Property."""^^rdf:HTML ;
         sh:datatype xsd:boolean ;
         sh:maxCount 1 ;
-    ] .
+    ] ;
+    skos:scopeNote """<p class="note">Property instances are also instances of
+            the class <a href="#dataschema" class="sec-ref">DataSchema</a>. Therefore, it can contain the
+            <code>type</code>, <code>unit</code>,
+            <code>readOnly</code> and <code>writeOnly</code>
+            members, among others.</p>"""^^rdf:HTML,
+                   """<p><code>PropertyAffordance</code> is a <a href="#dfn-subclass" class="internalDFN" data-link-type="dfn">Subclass</a> of the
+          <code>InteractionAffordance</code> <a href="#dfn-class" class="internalDFN" data-link-type="dfn">Class</a> and
+          the <code>DataSchema</code> <a href="#dfn-class" class="internalDFN" data-link-type="dfn">Class</a>.
+          <span class="rfc2119-assertion" id="td-op-for-property">When a Form instance is within a
+          <code>PropertyAffordance</code> instance, the value
+          assigned to <code>op</code> <em class="rfc2119" title="MUST">MUST</em> be one of <code>readproperty</code>,
+          <code>writeproperty</code>, <code>observeproperty</code>,
+          <code>unobserveproperty</code> or an <a href="#dfn-array" class="internalDFN" data-link-type="dfn">Array</a>
+          containing a combination of these terms.</span></p>"""^^rdf:HTML .
     
 :ActionAffordanceShape a sh:NodeShape ;
     sh:targetClass td:ActionAffordance ;
@@ -231,7 +403,13 @@
         sh:defaultValue false ;
         sh:maxCount 1 ;
         sh:order 4 ;
-    ] .
+    ] ;
+    skos:scopeNote """<p><code>ActionAffordance</code> is a <a href="#dfn-subclass" class="internalDFN" data-link-type="dfn">Subclass</a> of the
+          <code>InteractionAffordance</code> <a href="#dfn-class" class="internalDFN" data-link-type="dfn">Class</a>.
+          <span class="rfc2119-assertion" id="td-op-for-action">When a Form instance is within an
+          <code>ActionAffordance</code> instance, the value
+          assigned to op <em class="rfc2119" title="MUST">MUST</em>
+          be <code>invokeaction</code>.</span></p>"""^^rdf:HTML .
     
 :EventAffordanceShape a sh:NodeShape ;
     sh:targetClass td:EventAffordance ;
@@ -266,7 +444,16 @@
         sh:node :DataSchemaShape ;
         sh:maxCount 1 ;
         sh:order 3 ;
-    ] .
+    ] ;
+    skos:scopeNote """<p><code>EventAffordance</code> is a <a href="#dfn-subclass" class="internalDFN" data-link-type="dfn">Subclass</a> of the
+          <code>InteractionAffordance</code> <a href="#dfn-class" class="internalDFN" data-link-type="dfn">Class</a>.
+          <span class="rfc2119-assertion" id="td-op-for-event">When
+          a Form instance is within an <code>EventAffordance</code>
+          instance, the value assigned to <code>op</code>
+          <em class="rfc2119" title="MUST">MUST</em> be either
+          <code>subscribeevent</code>,
+          <code>unsubscribeevent</code>, or both terms within an
+          <a href="#dfn-array" class="internalDFN" data-link-type="dfn">Array</a>.</span></p>"""^^rdf:HTML .
 
 :VersionInfoShape a sh:NodeShape ;
     sh:targetClass td:VersionInfo ;
@@ -284,7 +471,14 @@
                 instance."""^^rdf:HTML ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-    ] .
+    ] ;
+    skos:scopeNote """<p>It is recommended that the values within instances of
+          the <code>VersionInfo</code> <a href="#dfn-class" class="internalDFN" data-link-type="dfn">Class</a> follow the
+          semantic versioning pattern, where a sequence of three
+          numbers separated by a dot indicates the major version,
+          minor version, and patch version, respectively. See
+          [<cite><a class="bibref" data-link-type="biblio" href="#bib-semver" title="Semantic Versioning 2.0.0">SEMVER</a></cite>] for
+          details.</p>"""^^rdf:HTML .
 
 :FormShape a sh:NodeShape ;
     sh:targetClass hctl:Form ;
@@ -416,7 +610,62 @@
                 form."""^^rdf:HTML ;
         sh:datatype xsd:string ;
         sh:order 7 ;
-    ] .
+    ] ;
+    skos:scopeNote """<p>Possible values for the <code>contentCoding</code>
+          property can be found, e.g., in the <a href=
+          "https://www.iana.org/assignments/http-parameters/http-parameters.xhtml#content-coding">
+          IANA HTTP content coding registry</a>.</p>
+          <p>The list of possible operation types of a form is
+          fixed. As of this version of the specification, it only
+          includes the well-known types necessary to implement the
+          WoT interaction model described in [<cite><a class=
+          "bibref" data-link-type="biblio" href=
+          "#bib-wot-architecture" title=
+          "Web of Things (WoT) Architecture">WOT-ARCHITECTURE</a></cite>].
+          Future versions of the standard may extend this list but
+          <span class="rfc2119-assertion" id=
+          "well-known-operation-types-only">operations types
+          <em class="rfc2119" title="SHOULD NOT">SHOULD NOT</em> be
+          arbitrarily set by servients.</span></p>
+          <p>The optional <code>response</code> name-value pair can
+          be used to provide metadata for the expected response
+          message. With the core vocabulary, it only includes
+          content type information, but TD Context Extensions could
+          be applied. <span class="rfc2119-assertion" id=
+          "td-expectedResponse-default-contentType">If no
+          <code>response</code> name-value pair is provided, it
+          <em class="rfc2119" title="MUST">MUST</em> be assumed
+          that the content type of the response is equal to the
+          content type assigned to the Form instance.</span> Note
+          that <code>contentType</code> within an
+          <code>ExpectedResponse</code> <a href="#dfn-class" class=
+          "internalDFN" data-link-type="dfn">Class</a> does not
+          have a <a href="#dfn-default-value" class="internalDFN"
+          data-link-type="dfn">Default Value</a>. For instance, if
+          the value of the content type of the form is
+          <code>application/xml</code> the assumed value of the
+          content type of the response will be also
+          <code>application/xml</code>.</p>
+          <p>In some use cases, input and output data might be
+          represented in a different form, for instance an Action
+          that accepts JSON, but returns an image. In such a case,
+          the optional <code>response</code> name-value pair can
+          describe the content type of the expected response.
+          <span class="rfc2119-assertion" id=
+          "td-expectedResponse-contentType">If the content type of
+          the expected response differs from the content type of
+          the form, the <code>Form</code> instance <em class=
+          "rfc2119" title="MUST">MUST</em> include a name-value
+          pair with the name <code>response</code>.</span> For
+          instance, an <code>ActionAffordance</code> could only
+          accept <code>application/json</code> for its input data,
+          while it will respond with an <code>image/jpeg</code>
+          content type for its output data. In that case the
+          content types differ and the <code>response</code>
+          name-value pair has to be used to provide response
+          content type (<code>image/jpeg</code>) information to the
+          <a href="#dfn-consumer" class="internalDFN"
+          data-link-type="dfn">Consumer</a>.</p>"""^^rdf:HTML .
     
 :LinkShape a sh:NodeShape ;
     sh:targetClass hctl:Link ;
@@ -792,7 +1041,15 @@
         sh:datatype xsd:string ;
         sh:maxCount 1 ;
         sh:order 12 ;
-    ] .
+    ] ;
+    skos:scopeNote """<p>The <code>format</code> string values are known from a
+          fixed set of values and their corresponding format rules
+          defined in [<cite><a class="bibref" data-link-type="biblio" href="#bib-json-schema" title="JSON Schema Validation: A Vocabulary for Structural Validation of JSON">JSON-SCHEMA</a></cite>]
+          (Section 7.3 Defined Formats in particular). <span class="rfc2119-assertion" id="td-format-validation-known-values">Servients <em class="rfc2119" title="MAY">MAY</em> use the
+          <code>format</code> value to perform additional
+          validation accordingly.</span> <span class="rfc2119-assertion" id="td-format-validation-other-values">When a value that is
+          not found in the known set of values is assigned to
+          <code>format</code>, such a validation <em class="rfc2119" title="SHOULD">SHOULD</em> succeed.</span></p>"""^^rdf:HTML .
 
 :ArraySchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:ArraySchema ;
