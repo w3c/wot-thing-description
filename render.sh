@@ -65,12 +65,26 @@ echo "> context/td-context-1.1.jsonld"
 # the previous step, to the rendering process:
 # 
 # context/td-context.ttl
+#
+# Finally, we add vocabulary files that include sub-class axioms::
+# 
+# ontology/td.ttl
+# ontology/jsonschema.ttl
+# ontology/wotsec.ttl
+# ontology/hctl.ttl
+
+PREFIXES=("td" "hctl" "jsonschema" "wotsec")
+FILES=""
+for prefix in ${PREFIXES[@]}; do
+	FILES=$FILES" ontology/"$prefix".ttl"
+done
 
 echo "Rendering main specification..."
-$STTL_CMD -i validation/td-validation.ttl context/td-context.ttl \
+$STTL_CMD -i validation/td-validation.ttl context/td-context.ttl $FILES \
           -t templates.sparql \
 		  -c "http://w3c.github.io/wot-thing-description/#main" \
 		  -o index.html
+echo "> index.html"
 
 exit # TODO to remove when main spec rendering works
 
@@ -87,19 +101,8 @@ echo "Rendering SVG diagrams..."
 # hypermedia vocabularies are documented in separate documents as OWL
 # ontologies, so that they can independently be reused and semantically aligned
 # with external vocabularies (e.g. SSN, SAREF, QUDT).  The generated ontology
-# documents use another source, to closer match best practices on the Semantic
-# Web:
-# 
-# ontology/td.ttl
-# ontology/jsonschema.ttl
-# ontology/wotsec.ttl
-# ontology/hctl.ttl
-
-PREFIXES=("td" "hctl" "jsonschema" "wotsec")
-FILES=""
-for prefix in ${PREFIXES[@]}; do
-	FILES=$FILES" ontology/"$prefix".ttl"
-done
+# documents closer match best practices on the Semantic Web in comparison to
+# the TD model specification.
 
 echo "Rendering OWL documentation..."
 for prefix in ${PREFIXES[@]}; do

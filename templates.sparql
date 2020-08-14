@@ -28,9 +28,9 @@ template :classes(?ns) {
 
         format { "<p>%s</p>" ?def }
 
-        format { "%s" st:call-template(:fields, ?class) }
+        format { "%s" st:call-template(:fields, ?class, ?ns) }
 
-        format { "%s" st:call-template(:subclasses, ?class) }
+        format { "%s" st:call-template(:subclasses, ?class, ?ns) }
 
         format { "%s" st:call-template(:notes, ?class) }
 
@@ -49,7 +49,7 @@ template :classes(?ns) {
     bind (bound(?note) as ?atRisk)
 } order by ?rank
 
-template :fields(?class) {
+template :fields(?class ?ns) {
     "<table class=\"def\">"
         "<thead>"
             "<tr>"
@@ -106,7 +106,7 @@ template :fields(?class) {
                        "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a> or <a>Array</a> of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>"
                 ), "")
-            st:call-template(:field, ?class)
+            st:call-template(:field, ?class, ?ns)
         }
     "</table>"
 } where {
@@ -118,11 +118,11 @@ template :fields(?class) {
     }
 }
 
-template :field(?class) {
-    format { "<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-%s" st:call-template(:numbered-label, ?prop, ?singleton) }
-    format { "--%s\">" st:call-template(:label, ?class) }
+template :field(?class ?ns) {
+    format { "<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-%s" st:call-template(:numbered-label, ?prop, ?ns, ?singleton) }
+    format { "--%s\">" st:call-template(:default-label, ?class, ?ns) }
         "<td>"
-            format { "<code>%s</code>" st:call-template(:numbered-label, ?prop, ?singleton) }
+            format { "<code>%s</code>" st:call-template(:numbered-label, ?prop, ?ns, ?singleton) }
         "</td>"
         "<td>"
             format { "%s" ?def }
@@ -144,14 +144,14 @@ template :field(?class) {
                 if(?array, "<a>Array</a> of ",
                 if(?map, "<a>Map</a> of ",
                 if(!?singleton && ?hasType,
-                   concat(st:call-template(:type, ?class, ?prop), " or <a>Array</a> of "),
+                   concat(st:call-template(:type, ?class, ?prop, ?ns), " or <a>Array</a> of "),
                    "")))
-                if(?hasType, st:call-template(:type, ?class, ?prop), "any type")
+                if(?hasType, st:call-template(:type, ?class, ?prop, ?ns), "any type")
             }
             format {
                 "%s%s%s"
                 if(?hasEnum, " (", "")
-                st:call-template(:enum, ?class, ?prop, 0)
+                st:call-template(:enum, ?class, ?prop, ?ns, 0)
                 if(?hasEnum, ")", "")
             }
         "</td>"
@@ -201,11 +201,11 @@ template :field(?class) {
     bind (if(bound(?predefined), ?predefined, "1000"^^xsd:integer) as ?rank)
 } order by ?rank
 
-template :type(?class ?prop) {
+template :type(?class ?prop ?ns) {
     format {
         "<a href=\"%s\"><code>%s</code></a>"
-        st:call-template(:href, ?type)
-        st:call-template(:label, ?type)
+        st:call-template(:href, ?type, ?ns)
+        st:call-template(:label, ?type, ?ns)
     }
 } where {
     ?shape a sh:NodeShape ;
@@ -219,13 +219,13 @@ template :type(?class ?prop) {
     { ?propShape sh:node ?valueShape . ?valueShape sh:targetClass ?type }
 }
 
-template :enum(?class ?prop ?index) {
+template :enum(?class ?prop ?ns ?index) {
     format {
         "%s<code>%s</code>%s"
         if(?first, if(?eg, "e.g., ", "one of "),
         if(?last, "or ", ""))
-        if(isIRI(?val), st:call-template(:label, ?val), ?val)
-        if(?last, "", concat(", ", st:call-template(:enum, ?class, ?prop, ?index + 1)))
+        if(isIRI(?val), st:call-template(:label, ?val, ?ns), ?val)
+        if(?last, "", concat(", ", st:call-template(:enum, ?class, ?prop, ?ns, ?index + 1)))
     }
 } where {
     ?shape a sh:NodeShape ;
@@ -240,25 +240,25 @@ template :enum(?class ?prop ?index) {
     bind ((?index + 1 = <javascript:urdf.length>(?list)) as ?last)
 }
 
-template :subclasses(?class) {
+template :subclasses(?class ?ns) {
     "<p>"
         "The class "
-        format { "<code>%s</code>" st:call-template(:label, ?class) }
+        format { "<code>%s</code>" st:call-template(:default-label, ?class, ?ns) }
         " has the following subclasses:"
     "</p>"
     "<ul>"
-        st:call-template(:subclass, ?class)
+        st:call-template(:subclass, ?class, ?ns)
     "</ul>"
 } where {
     ?subclass rdfs:subClassOf ?class .
 }
 
-template :subclass(?class) {
+template :subclass(?class ?ns) {
     "<li>"
         format {
             "<a href=\"%s\"><code>%s</code></a>"
-            st:call-template(:href, ?subclass)
-            st:call-template(:label, ?subclass)
+            st:call-template(:href, ?subclass, ?ns)
+            st:call-template(:default-label, ?subclass, ?ns)
         }
     "</li>"
 } where {
@@ -284,30 +284,32 @@ template :notes(?class) {
     filter (datatype(?note) = rdf:HTML)
 }
 
-template :href(?term) {
+template :href(?term ?ns) {
     if(strstarts(str(?term), "http://www.w3.org/2001/XMLSchema#"),
-        st:call-template(:href-xsd, ?term),
-        st:call-template(:href-fragment, ?term))
+        st:call-template(:href-xsd, ?term, ?ns),
+        st:call-template(:href-fragment, ?term, ?ns))
 } where {}
 
-template :href-xsd(?term) {
+template :href-xsd(?term ?ns) {
     format {
         "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#%s"
-        st:call-template(:label, ?term)
+        st:call-template(:label, ?term, ?ns)
     }
 } where {}
 
-template :href-fragment(?term) {
+template :href-fragment(?term ?ns) {
     format {
         "#%s"
-        lcase(st:call-template(:label, ?term))
+        lcase(st:call-template(:default-label, ?term, ?ns))
     }
 } where {}
 
-template :numbered-label(?term ?singular) {
+template :numbered-label(?term ?ns ?singular) {
     format { "%s" ?name }
 } where {
     optional {
+        ?ctx jsonld:definition ?m1 ;
+                jsonld:vocab ?ns .
         ?m1 a jsonld:Mapping ;
             jsonld:iri ?term ;
             jsonld:term ?singularName .
@@ -316,6 +318,8 @@ template :numbered-label(?term ?singular) {
         }
     }
     optional {
+        ?ctx jsonld:definition ?m2 ;
+                jsonld:vocab ?ns .
         ?m2 a jsonld:Mapping ;
             jsonld:iri ?term ;
             jsonld:term ?pluralName ;
@@ -330,7 +334,7 @@ template :numbered-label(?term ?singular) {
     )
 }
 
-template :label(?term) {
+template :label(?term ?ns) {
     format { "%s" if(?mapping, ?name, st:call-template(:default-label, ?term)) }
 } where {
     optional {

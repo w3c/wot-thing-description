@@ -15,9 +15,13 @@ function fullIRI(curie, ctx) {
     return curie;
 }
 
+function scopeName(id) {
+    return id ? id.substring(id.indexOf('#') + 1) + "-" : ""; // TODO hash
+}
+
 function context(obj, id) {
     let ctx = obj['@context'];
-    let scope = id ? id.substring(id.indexOf('#') + 1) + "-" : ""; // TODO hash
+    let scope = scopeName(id);
     
     if (!ctx) {
         return '';
@@ -33,6 +37,8 @@ function context(obj, id) {
     Object.entries(ctx)
     .filter(([k, v]) => !k.startsWith('@'))
     .map(([k, v]) => {
+        txt += `_:${scope}context <${ld}definition> _:${scope}${k} .\r\n`;
+
         txt += `_:${scope}${k} <${a}> <${ld}Mapping> .\r\n`;
         txt += `_:${scope}${k} <${ld}term> "${k}" .\r\n`;
         
@@ -55,6 +61,7 @@ function context(obj, id) {
             }
     
             if (v['@context']) {
+                txt += `_:${scope}${k} <${ld}context> _:${scopeName(iri)}context .\r\n`;
                 txt += context(v, iri);
             }
         }
