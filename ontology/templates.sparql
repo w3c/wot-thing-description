@@ -7,6 +7,42 @@ prefix st: <http://ns.inria.fr/sparql-template/>
 prefix : <http://w3c.github.io/wot-thing-description/ontology#>
 
 template :main(?prefix) {
+    # TODO allow arbitrary format expression instead (requires extending STTL.js)
+    if(?prefix = "td", st:call-template(:main-td, ?prefix),
+    if(?prefix = "jsonschema", st:call-template(:main-td, ?prefix),
+    if(?prefix = "wotsec", st:call-template(:main-td, ?prefix),
+    if(?prefix = "hctl", st:call-template(:main-td, ?prefix), ""))))
+} where {}
+
+template :main-td(?prefix) {
+    format {
+        <file://./ontology/td.template.html>
+        st:call-template(:axioms, ?prefix)
+    }
+} where {}
+
+template :main-jsonschema(?prefix) {
+    format {
+        <file://./ontology/jsonschema.template.html>
+        st:call-template(:axioms, ?prefix)
+    }
+} where {}
+
+template :main-wotsec(?prefix) {
+    format {
+        <file://./ontology/wotsec.template.html>
+        st:call-template(:axioms, ?prefix)
+    }
+} where {}
+
+template :main-hctl(?prefix) {
+    format {
+        <file://./ontology/hctl.template.html>
+        st:call-template(:axioms, ?prefix)
+    }
+} where {}
+
+template :axioms(?prefix) {
     "<section>"
         "<h2>Axiomatization</h2>"
         "<section>"

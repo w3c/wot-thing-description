@@ -111,9 +111,6 @@ for prefix in ${PREFIXES[@]}; do
 	$STTL_CMD -i $FILES \
 	          -t ontology/templates.sparql \
 			  -c "http://w3c.github.io/wot-thing-description/ontology#main" $prefix \
-			  -o ontology/$prefix.part.html
-	# include .part.html into .template.html to create final .html file
-	# TODO replace with file URI in .sparql template (requires extending STTL.js)
-	sed -e "/<\!--axioms-->/ r ontology/"$prefix".part.html" ontology/$prefix.template.html > ontology/$prefix.html
+			  -o ontology/$prefix.html
 	echo "> ontology/"$prefix".html"
 done
