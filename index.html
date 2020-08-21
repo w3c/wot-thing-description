@@ -473,9 +473,9 @@ a[href].internalDFN {
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "title": "MyLampThing",
     "securityDefinitions": {
-        "basic_sc": {"scheme": "basic", "in":"header"}
+        "basic_sc": {"scheme": "basic", "in": "header"}
     },
-    "security": ["basic_sc"],
+    "security": "basic_sc",
     "properties": {
         "status" : {
             "type": "string",
@@ -576,11 +576,10 @@ a[href].internalDFN {
         "id": "urn:dev:ops:32473-WoTLamp-1234",
         "title": "MyLampThing",
         "@type": "saref:LightSwitch",
-        "securityDefinitions": {"basic_sc": {
-            "scheme": "basic",
-            "in": "header"
-        }},
-        "security": ["basic_sc"],
+        "securityDefinitions": {
+            "basic_sc": {"scheme": "basic", "in": "header"}
+        },
+        "security": "basic_sc",
         "properties": {
             "status": {
                 "@type": "saref:OnOffState",
@@ -1093,8 +1092,31 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 <tr class="rfc2119-table-assertion" id="td-vocab-events--Thing"><td><code>events</code></td><td>All Event-based <a>Interaction Affordances</a> of the Thing.</td><td>optional</td><td><a>Map</a> of <a href="#eventaffordance"><code>EventAffordance</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-links--Thing"><td><code>links</code></td><td>Provides Web links to arbitrary resources that relate to the specified Thing Description.</td><td>optional</td><td><a>Array</a> of <a href="#link"><code>Link</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-forms--Thing"><td><code>forms</code></td><td>Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings. In this version of TD, all operations that can be described at the Thing level are concerning how to interact with the Thing's <a href="#propertyaffordance">Properties</a> collectively at once.</td><td>optional</td><td><a>Array</a> of <a href="#form"><code>Form</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-security--Thing"><td><code>security</code></td><td>Set of security definition names, chosen from those defined in <code>securityDefinitions</code>.  These must all be satisfied for access to resources.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-security--Thing"><td><code>security</code></td><td>Set of security definition names, chosen from those defined in <code>securityDefinitions</code>.  These must all be satisfied for access to resources. Note: multiple values are deprecated.  Use a <a href="#combinationsecurityscheme"><code>CombinationSecurityScheme</code></a> if necessary.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-securityDefinitions--Thing"><td><code>securityDefinitions</code></td><td>Set of named security configurations (definitions only).  Not actually applied unless names are used in a <code>security</code> name-value pair.</td><td>mandatory</td><td><a>Map</a> of <a href="#securityscheme"><code>SecurityScheme</code></a></td></tr></tbody></table>
+<p>
+    When multiple security schemes are given in an array value associated with a <code>security</code> element, they
+    are combined with semantics exactly equivalent to the use of <code>allOf</code> in a 
+    <a href="#combinationsecurityscheme"><code>CombinationSecurityScheme</code></a>.
+    The use of <code>allOf</code> is clearer and more explicit.
+    <span class="rfc2119-assertion" id="td-security-array-deprecated">
+      The use of multiple values in the <code>security</code> element is NOT RECOMMENDED.
+    </span> 
+    The <a href="#combinationsecurityscheme"><code>CombinationSecurityScheme</code></a> with <code>allOf</code>
+    should be used instead.  
+    Also, for forward compatibility, <code>security</code> elements
+    having only a single value should not use the array notation.
+    </p>
+    <p class="ednote">Multiple values in <code>security</code> is to be deprecated.
+    This means that in a future version of this specification, only a single value
+    for the <code>security</code> element may be allowed.
+    However, this would break backward compatibility so should be deferred until a major version change.
+    It would also be more convenient if certain other proposed changes are included: making
+    <code>combination</code> the default value for <code>scheme</code> and allowing inline
+    (anonymous) definitions of <code>SecurityScheme</code> objects as well as string values to
+    be associated with the <code>security</code> element.
+    </p>
+</p>
 <p>
     <span class="rfc2119-assertion" id="td-context-ns-thing-mandatory">
         The <code>@context</code> name-value pair MUST contain the anyURI <code>https://www.w3.org/2019/wot/td/v1</code>
@@ -1869,9 +1891,7 @@ In summary, this requires the following:
             "scheme": "basic"
         }
     },
-    "security": [
-        "basic_sc"
-    ],
+    "security": "basic_sc",
     "properties": {
         "status": {
             "type": "string",
@@ -1910,9 +1930,7 @@ In summary, this requires the following:
             "in": "header"
         }
     },
-    "security": [
-        "basic_sc"
-    ],
+    "security": "basic_sc",
     "properties": {
         "status": {
             "type": "string",
@@ -2352,7 +2370,7 @@ In summary, this requires the following:
   A named security configuration must be given
   in the <code>securityDefinitions</code> map.
   That definition must be activated by including its JSON name in the
-  <code>security</code> member, which can be of type string when only one definition is activated.
+  <code>security</code> member, which can and should be of type string when only one definition is activated.
   </p>
 
 <pre class="example" id="security-basic-example">
@@ -2375,7 +2393,8 @@ In summary, this requires the following:
   Note that the corresponding private security configuration
   such as username/password and tokens must be configured in the <a>Consumer</a>
   to interact successfully.
-  When activating multiple security definitions, the <code>security</code> member becomes an array.
+  When activating multiple security definitions, 
+  the <code>security</code> member becomes an array.
   </p>
 
 <pre class="example" id="security-digest-example">
@@ -2386,8 +2405,8 @@ In summary, this requires the following:
             "proxy": "https://portal.example.com/"
         },
         "bearer_sc": {
-            "in":"header",
             "scheme": "bearer",
+            "in":"header",
             "format": "jwt",
             "alg": "ES256",
             "authorization": "https://servient.example.com:8443/"
@@ -2396,12 +2415,41 @@ In summary, this requires the following:
     "security": ["proxy_sc", "bearer_sc"],
     ...
 </pre>
+ 
+  <p>However, the use of an array with multiple elements to combine security schemes
+  in a <code>security</code> element is now deprecated.
+  A <a href="#combinationsecurityscheme"><code>CombinationSecurityScheme</code></a> 
+  should be used instead as in the following example, which is exactly equivalent to the one above:
+  </p>
+
+<pre class="example" id="security-digest-example2">
+    ...
+    "securityDefinitions": {
+        "proxy_sc": {
+            "scheme": "digest",
+            "proxy": "https://portal.example.com/"
+        },
+        "bearer_sc": {
+            "scheme": "bearer",
+            "in":"header",
+            "format": "jwt",
+            "alg": "ES256",
+            "authorization": "https://servient.example.com:8443/"
+        },
+        "combo_sc": {
+            "scheme": "combination",
+            "allOf": ["proxy_sc", "bearer_sc"],
+        }
+    },
+    "security": "combo_sc",
+    ...
+</pre>
 
   <p>
   Security configuration in the TD is mandatory.
   <span class="rfc2119-assertion" id="td-security-mandatory">
   At least one security definition MUST be activated through the
-  <code>security</code> array at the Thing level (i.e., in the TD root object).
+  <code>security</code> member at the Thing level (i.e., in the TD root object).
   </span>
   This configuration can be seen as the default security mechanism required to interact with the <a>Thing</a>.
   <span class="rfc2119-assertion" id="td-security-overrides">
@@ -2454,7 +2502,7 @@ In summary, this requires the following:
         "basic_sc": {"scheme": "basic"},
         "nosec_sc": {"scheme": "nosec"}
     },
-    "security": ["basic_sc"],
+    "security": "basic_sc",
     ...
     "properties": {
         "status": {
@@ -2477,7 +2525,7 @@ In summary, this requires the following:
             ...
             "forms": [{
                 "href": "https://mylamp.example.com/oh",
-                "security": ["nosec_sc"]
+                "security": "nosec_sc"
             }]
         }
     }
@@ -2509,7 +2557,7 @@ In summary, this requires the following:
         "digest_sc": { "scheme": "digest" },
         "bearer_sc": { "scheme": "bearer" }
     },
-    "security": ["basic_sc"],
+    "security": "basic_sc",
     ...
     "properties": {
         "status": {
@@ -2518,10 +2566,39 @@ In summary, this requires the following:
                 "href": "https://mylamp.example.com/status"
             }, {
                 "href": "https://mylamp.example.com/status",
-                "security": ["digest_sc"]
+                "security": "digest_sc"
             }, {
                 "href": "https://mylamp.example.com/status",
-                "security": ["bearer_sc"]
+                "security": "bearer_sc"
+            }]
+        }
+    },
+    ...
+}
+</pre>
+  <p>To avoid redundancy in this case, e.g. repeating the details of the <code>form</code>
+  elements, a <a href="#combinationsecurityscheme"><code>CombinationSecurityScheme</code></a>
+  with <code>oneOf</code> can be used instead.  
+  </p>
+<pre class="example">
+{
+    ...
+    "securityDefinitions": {
+        "basic_sc": { "scheme": "basic" },
+        "digest_sc": { "scheme": "digest" },
+        "bearer_sc": { "scheme": "bearer" },
+        "combo_sc": { 
+            "scheme": "combination", 
+            "oneOf": [ "basic_sc", "digest_sc", "bearer_sc" ] 
+        }
+    },
+    "security": "combo_sc",
+    ...
+    "properties": {
+        "status": {
+            ...
+            "forms": [{
+                "href": "https://mylamp.example.com/status"
             }]
         }
     },
@@ -2559,7 +2636,7 @@ In summary, this requires the following:
             "scopes": ["limited", "special"]
         }
     },
-    "security": ["oauth2_sc"],
+    "security": "oauth2_sc",
     ...
     "properties": {
         "status": {
