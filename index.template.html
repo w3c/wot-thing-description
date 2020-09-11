@@ -3941,28 +3941,44 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <li> simulate of devices/<a>Things</a> that have not yet been developed.</li>
     <li> develop common applications across devices from different manufacturers that share a common <a>Thing</a> model.</li>
     <li> combining multiple models into a <a>Thing</a>.
+    <li> implementation support of a concrete <a>Thing</a>.
     </ul>
     </p>
     <p>
     The Thing Model is a logical description of the interface and possible interaction with <a>Thing's</a>
     <a>Properties</a>, <a>Actions</a>, and <a>Events</a>, however it does not contain <a>Thing</a> instance-specific
-    information, such as security information and concrete protocol usage, or even a serial number and GPS location, .
-    </p><p>
-    Since a Thing Model MAY not contain complete <a>Protocol Binding</a> information such as endpoint address and/or
-    specific security mechanism, the <em>forms</em>, <em>securityDefinitions</em>, and 
-    <em>security</em> terms and its sub-terms MAY not be present.
+    information, such as security information and concrete protocol usage, or even a serial number and GPS location.
+    </p>
+    
+    <p>
+    A <a>Thing Model</a> is recognized by the top level <em>@type</em>.
+    <span class="rfc2119-assertion" id="td-model-identification">
+        <a>Thing Model</a> definitions MUST use the keyword <em>@type</em> at top level 
+        and a value of type string or array that equals or respectively contains <code>ThingModel</code>.
+    </span>
+    </p>
+
+    <p>
+        <span class="rfc2119-assertion" id="td-model-protocol-security-restriction">
+    Since a <a>Thing Model</a> SHOULD NOT contain complete <a>Protocol Binding</a> information such as endpoint address and/or
+    specific security mechanism.
+    </span>
+
+    As consequent, <a>Thing Model</a> definitions will be also valid if there are no JSON members like <em>forms</em>, 
+    <em>securityDefinitions</em>, and <em>security</em>.
+    
     </p>
 
     <p>    
     In the following there is a sample Thing Model for a lamp without any protocol and security information.
     </p>
     
-    <pre class="example" title="MyLampThingTemplate serialized in JSON">
+    <pre class="example" title="MyLampThingModel serialized in JSON">
     {
         "@context": ["https://www.w3.org/2019/wot/td/v1"], 
-        "@type" : "ThingTemplate",
-        "title": "Lamp Thing Description",
-        "description" : "Lamp Thing Description Template",
+        "@type" : "ThingModel",
+        "title": "Lamp Thing Model",
+        "description" : "Lamp Thing Description Model",
         "properties": {
             "status": {
                 "description" : "current status of the lamp (on|off)",
@@ -3984,22 +4000,73 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     }
     </pre>
     
+
+    <p>    
+        In some cases it is desirable to force the information which interaction model is mandatory 
+        and has to be definitely implemented in a <a>Thing Description</a> instance.
+
+        <span class="rfc2119-assertion" id="td-model-required">
+            <a>Thing Model</a> definitions MUST use the JSON member named <code>required</code> at interaction level 
+            (<code>properties</code>, <code>actions</code>, and <code>events</code>)
+            to provide the name of the interaction in a string-based array list.
+        </span>    
+    </p>
     
+    <p>    
+    The following sample shows the usage of <code>required</code> for the <a>Property</a> interaction <code>status</code>
+    and <a>Action</a> interaction <code>toggle</code>. 
+    </p>
+    
+    <pre class="example" title="MyLampThingModel serialized in JSON">
+    {
+        "@context": ["https://www.w3.org/2019/wot/td/v1"], 
+        "@type" : "ThingModel",
+        "title": "Lamp Thing Model",
+        "description" : "Lamp Thing Description Model",
+        "properties": {
+            "status": {
+                "description" : "current status of the lamp (on|off)",
+                "type": "string",
+                "readOnly": true
+            },
+            "required": ["status"]
+        },
+        "actions": {
+            "toggle": {
+                "description" : "Turn the lamp on or off"
+            },
+            "required": ["toggle"]
+        },
+        "events": {
+            "overheating": {
+                "description" : "Lamp reaches a critical temperature (overheating)",
+                "data": {"type": "string"}
+            }
+        }
+    }
+    </pre>
     
     <p>
-     The same Thing Model can be implemented by <a>Things</a> from multiple vendors,
-    a <a>Thing</a> can implement multiple Thing Model, define additional metadata
+    Since the <a>Event</a> <code>overheating</code> is not manditory it may be not available  in a <a>Thing Description</a> 
+    instance.
+    </p>
+    
+    <p>
+     The same Thing Model can be implemented by <a>Things</a> from multiple vendors.
+    A <a>Thing</a> can implement multiple Thing Model, define additional metadata
     (vendor, location, security) and define bindings to concrete protocols.
     To avoid conflicts between properties, actions and events from different Thing Model
     that are combined into a common <a>Thing</a>, all these identifiers must be unique within a <a>Thing</a>.
-    </p><p>
-    A common Thing Description Template for a class of devices enables writing applications across vendors and
+    </p>
+    
+    <p>
+    A common Thing Model for a class of devices enables writing applications across vendors and
     creates a more attractive market for application developers.
     A concrete Thing Description can implement multiple Thing Model and
     thus can aggregate function blocks into a combined device.
     </p><p>
     The business models of cloud vendors are typically built on managing thousands of identical devices.
-    All devices with the same Thing Description Template can be managed in the same way by cloud applications.
+    All devices with the same Thing Description Template can be managed in the same way by cloud services and applications.
     It is easy to create multiple simulated devices, if the interface and the instance are treated separately.
     </p>
     <p>
@@ -4017,13 +4084,13 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <p>
         The following Thing Model uses two unique placeholders: <code>{{BUZZER_NUMBER}}</code> and <code>{{MQTT_BROKER_ADDRESS}}</code>.
     </p>
-    <pre class="example" title="MyBuzzerThingTemplate serialized in JSON">
+    <pre class="example" title="MyBuzzerThingModelserialized in JSON">
     {
         "@context": ["https://www.w3.org/2019/wot/td/v1"], 
-        "@type" : "ThingTemplate",
+        "@type" : "ThingModel",
         "title": "Buzzer No. {{BUZZER_NUMBER}}",
         "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
-        "description" : "Thing Description Template of a buzzer that makes noise for 10 seconds",
+        "description" : "Thing Model of a buzzer that makes noise for 10 seconds",
          "actions": {
             "buzz": {
                 "description" : "buzz for 10 seconds"
