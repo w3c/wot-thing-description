@@ -3298,15 +3298,15 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
     <h3>Example III: Geolocation Annotations</h3>
 
     <p>
-    For some use cases like in building, agraculture, or smart city location based data is required. This
+    For many use cases like in building, agraculture, or smart city location based data is required. This
     information can be provided in the Thing Description in different ways and can be relyed on
-    different kind of location ontologies depending or purpose (e.g., indoor, outdoor).  Sample vocabulary 
-    can be used such as [[WGS84]] or [[schema.org]]. Also see [[sdw-bp]].
+    different kind of location ontologies (e.g.,[[WGS84]], [[schema.org]) depending on purpose (e.g., indoor, outdoor).  
+    Also see [[sdw-bp]].
     </p>
     
     <p>
         The TD snippet below uses <code>lat</code> and <code>long</code> from the [[WGS84]] ontology to 
-        provide latitude and longitude metadata at Thing's top level. 
+        provide static latitude and longitude metadata at Thing's top level. 
     </p>
 
     <pre class="example" id="saref-state-annotation-example">
@@ -3314,12 +3314,12 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
     "@context": [
         "https://www.w3.org/2019/wot/td/v1",
         {
-            "wgs84": "http://www.w3.org/2003/01/geo/wgs84_pos#"        
+            "geo": "http://www.w3.org/2003/01/geo/wgs84_pos#"        
         }
     ],
     "@type": "Thing",
-    "wgs84:lat" : "26.58",
-    "wgs84:long" : "297.83",
+    "geo:lat" : "26.58",
+    "geo:long" : "297.83",
     ...
     "properties": {
         ...
@@ -3329,9 +3329,9 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
 
 
 <p>
-        In some use cases geo based metadata have to be provided at the interaction level, e.g., 
-        if the Thing Descriptions reflect a virtuel Thing since it combines multiple Things.
-        Geo laction based data can be provided at he interaction level as shown in the next sample:  
+        In some use cases location based metadata have to be provided at the interaction level, e.g., 
+        as provided as a <a>Property</a> that returns the latest <code>longitude</code>, <code>latitude</code>, abd <code>elevation</code> values
+        based on [[schema.org]]:
 </p>
 
 <pre class="example" id="saref-state-annotation-example">
@@ -3339,17 +3339,20 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
     "@context": [
         "https://www.w3.org/2019/wot/td/v1",
         {
-            "iot": "http://schema.org#"
+            "schema": "http://schema.org#"
         }
     ],
     ...
     "properties": {
-        "status": {
-            "iot:longitude": "40.75",
-            "iot:latitude": "73.98",
-            "iot:elevation": "15",
-            "type": "string",
-            "forms": [{"href": "https://mylamp.example.com/status"}]
+        "position": {
+            "type": "object",
+                "properties": {
+                    "@type" : "schema:GeoCoordinates",
+                    "longitude": { "type": "number" },
+                    "latitude": { "type": "number" },
+                    "elevation": { "type": "number" }
+            },
+            "forms": [{"href": "https://robot.example.com/position"}]
         },
 
         ...
@@ -3358,6 +3361,40 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
 }
 </pre>
 
+<p>
+        In the case it is desired to have a different name for, e.g., <code>longitude</code>, <code>latitude</code>, 
+        and <code>elevation</code>in the data model, <code>jsonld:context</code> can be used to link 
+        terms to specific vocabulary from a ontology (also see [[json-schema]], Section 3.3 Defining a JSON-LD context for data instances):
+</p>
+
+<pre class="example" id="saref-state-annotation-example">
+{
+    "@context": [
+        "https://www.w3.org/2019/wot/td/v1",
+        {
+            "schema": "http://schema.org#"
+        }
+    ],
+    ...
+    "properties": {
+        "position": {
+        "jsonld:context": {
+            "schema": "http://schema.org/"
+            "long": "schema:longitude",
+            "lat": "schema:latitude",
+            "height": "schema:elevation"
+        },
+        "type": "object",
+        "properties": {
+            "long": { "type": "number" },
+            "lat": { "type": "number" },
+            "height": { "type": "number" }
+        }
+        }
+  },
+    ...
+}
+</pre>
 
 
 </section>
