@@ -1,44 +1,55 @@
 prefix st: <http://ns.inria.fr/sparql-template/>
 prefix sh: <http://www.w3.org/ns/shacl#>
+prefix jsonld: <http://www.w3.org/ns/json-ld#>
+prefix vann: <http://purl.org/vocab/vann/>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 prefix : <http://w3c.github.io/wot-thing-description/#>
+
+template :main {
+    format {
+        <file://./index.template.html>
+        st:call-template(:classes, <https://www.w3.org/2019/wot/td#>)
+        st:call-template(:classes, <https://www.w3.org/2019/wot/json-schema#>)
+        st:call-template(:classes, <https://www.w3.org/2019/wot/security#>)
+        st:call-template(:classes, <https://www.w3.org/2019/wot/hypermedia#>)
+    }
+} where {}
+
 template :classes(?ns) {
     "<section>"
 
-        format { "<h3><code>%s</code></h3>" st:call-template(:label, ?class) }
+        format { "<h3><code>%s</code></h3>" st:call-template(:default-label, ?class) }
         
-        if(?class = <https://www.w3.org/2019/wot/security#CertSecurityScheme> ||
-           ?class = <https://www.w3.org/2019/wot/security#PoPSecurityScheme> ||
-           ?class = <https://www.w3.org/2019/wot/security#PublicSecurityScheme>,
-           "<p><span class=\"at-risk\">This section is at risk.</span></p>",
-           ""
-        )
+        if(?atRisk, "<p><span class=\"at-risk\">This section is at risk.</span></p>", "")
 
-        format { "<p>%s</p>" st:call-template(:desc, ?class) }
+        format { "<p>%s</p>" ?def }
 
-        format { "%s" st:call-template(:fields, ?class) }
+        format { "%s" st:call-template(:fields, ?class, ?ns) }
 
-        format { "%s" st:call-template(:subclasses, ?class) }
+        format { "%s" st:call-template(:subclasses, ?class, ?ns) }
 
         format { "%s" st:call-template(:notes, ?class) }
 
     "</section>"
 } where {
     ?shape a sh:NodeShape ;
-           sh:targetClass ?class .
+           sh:targetClass ?class ;
+           skos:definition ?def .
     filter(strstarts(str(?class), str(?ns)))
     optional { ?shape sh:order ?predefined }
     bind (if(bound(?predefined), ?predefined, "1000"^^xsd:integer) as ?rank)
+    optional {
+        ?shape skos:editorialNote ?note .
+        # FIXME only if note is "at risk"
+    }
+    bind (bound(?note) as ?atRisk)
 } order by ?rank
 
----
-
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix sh: <http://www.w3.org/ns/shacl#>
-prefix jsonld: <http://www.w3.org/ns/json-ld#>
-prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-prefix : <http://w3c.github.io/wot-thing-description/#>
-template :fields(?class) {
+template :fields(?class ?ns) {
     "<table class=\"def\">"
         "<thead>"
             "<tr>"
@@ -95,7 +106,7 @@ template :fields(?class) {
                        "<td><a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a> or <a>Array</a> of <a href=\"http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a></td>",
                        "</tr>"
                 ), "")
-            st:call-template(:field, ?class)
+            st:call-template(:field, ?class, ?ns)
         }
     "</table>"
 } where {
@@ -107,66 +118,40 @@ template :fields(?class) {
     }
 }
 
----
-
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix sh: <http://www.w3.org/ns/shacl#>
-prefix jsonld: <http://www.w3.org/ns/json-ld#>
-prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-prefix : <http://w3c.github.io/wot-thing-description/#>
-template :field(?class) {
-    format { "<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-%s" st:call-template(:label, ?prop) }
-    format { "--%s\">" st:call-template(:label, ?class) }
+template :field(?class ?ns) {
+    format { "<tr class=\"rfc2119-table-assertion\" id=\"td-vocab-%s" st:call-template(:numbered-label, ?prop, ?ns, ?singleton) }
+    format { "--%s\">" st:call-template(:default-label, ?class, ?ns) }
         "<td>"
-            format { "<code>%s</code>" st:call-template(:label, ?prop) }
+            format { "<code>%s</code>" st:call-template(:numbered-label, ?prop, ?ns, ?singleton) }
         "</td>"
         "<td>"
-            format { "%s" st:call-template(:desc, ?prop) }
-            if (?prop = <https://www.w3.org/2019/wot/td#hasForm>,
-                if(?class = <https://www.w3.org/2019/wot/td#Thing>,
-                  " In this version of TD, all operations that can be described at the Thing level are concerning how to interact with the Thing's <a href=\"#propertyaffordance\">Properties</a> collectively at once.", ""
-                ) , ""
-            )
+            format { "%s" ?def }
             if (?prop = <https://www.w3.org/2019/wot/td#baseUri>,
                   "<br/><br/><code>base</code> does not affect the URIs used in <code>@context</code> and the IRIs used within Linked Data [[?LINKED-DATA]] graphs that are relevant when semantic processing is applied to TD instances.", ""
-            )
-            if (?prop = <https://www.w3.org/2019/wot/json-schema#format>,
-                  " (Also see below.)", ""
             )
         "</td>"
         "<td>"
             format {
                 "%s"
-                if(?hasDef || ?prop = <https://www.w3.org/2019/wot/hypermedia#forOperationType>,
+                if(?hasDefault || ?prop = <https://www.w3.org/2019/wot/hypermedia#forOperationType>,
                    "<a href=\"#sec-default-values\">with default</a>",
                    if(?mandatory, "mandatory", "optional"))
             }
         "</td>"
         "<td>"
             format {
-                # TODO use path expressions like sh:oneOrMorePath instead?
                 "%s%s"
-                if(?prop = <https://www.w3.org/2019/wot/hypermedia#forOperationType> ||
-                   ?prop = <https://www.w3.org/2019/wot/json-schema#items> ||
-                   ?prop = <https://www.w3.org/2019/wot/td#hasSecurityConfiguration> ||
-                   ?prop = <https://www.w3.org/2019/wot/security#scopes>,
-                   concat(st:call-template(:type, ?class, ?prop),
-                          " or <a>Array</a> of ",
-                          st:call-template(:type, ?class, ?prop)),
-                   if(?array,
-                      "<a>Array</a> of ",
-                      if(?map, "<a>Map</a> of ", "")))
-                if(?prop = <https://www.w3.org/2019/wot/hypermedia#forOperationType> ||
-                   ?prop = <https://www.w3.org/2019/wot/json-schema#items> ||
-                   ?prop = <https://www.w3.org/2019/wot/td#hasSecurityConfiguration> ||
-                   ?prop = <https://www.w3.org/2019/wot/security#scopes>,
-                   "",
-                   if(?hasType, st:call-template(:type, ?class, ?prop), "any type"))
+                if(?array, "<a>Array</a> of ",
+                if(?map, "<a>Map</a> of ",
+                if(!?singleton && ?hasType,
+                   concat(st:call-template(:type, ?class, ?prop, ?ns), " or <a>Array</a> of "),
+                   "")))
+                if(?hasType, st:call-template(:type, ?class, ?prop, ?ns), "any type")
             }
             format {
                 "%s%s%s"
                 if(?hasEnum, " (", "")
-                st:call-template(:enum, ?class, ?prop)
+                st:call-template(:enum, ?class, ?prop, ?ns, 0)
                 if(?hasEnum, ")", "")
             }
         "</td>"
@@ -175,43 +160,52 @@ template :field(?class) {
     ?shape a sh:NodeShape ;
         sh:targetClass ?class ;
         sh:property ?propShape .
-    ?propShape sh:path ?prop .
-    optional { ?propShape sh:datatype|sh:class ?type }
-    optional { ?propShape sh:minCount ?count }
+    ?propShape sh:path ?prop ;
+               skos:definition ?def .
+    filter (isIRI(?prop))
+    optional {
+        { ?propShape sh:datatype ?type }
+        union
+        { ?propShape sh:nodeKind sh:IRI . bind (xsd:anyURI as ?type) }
+        union
+        { ?propShape sh:node ?valueShape . ?valueShape sh:targetClass ?type }
+    }
+    bind (bound(?type) as ?hasType)
+    optional { ?propShape sh:minCount ?minCount }
+    bind (bound(?minCount) as ?mandatory)
+    optional { ?propShape sh:maxCount ?maxCount }
+    bind (bound(?maxCount) as ?singleton)
     optional {
         ?mSet a jsonld:Mapping ;
         jsonld:iri ?prop ;
         jsonld:container jsonld:set
     }
+    bind (bound(?mSet) && !?singleton as ?array)
     optional {
         ?mIndex a jsonld:Mapping ;
-        jsonld:iri ?prop ;
-        jsonld:container jsonld:index
+        jsonld:iri ?prop .
+        { ?mIndex jsonld:container jsonld:index }
+        union
+        { ?mIndex jsonld:container jsonld:language }
     }
+    bind (bound(?mIndex) && !?singleton as ?map)
     optional {
-        ?propShape sh:in ?list
+        { ?propShape sh:in ?list }
+        union
+        { ?propShape skos:example ?list }
     }
-    optional { ?propShape sh:defaultValue ?def  }
-    bind (bound(?count) as ?mandatory)
-    bind (bound(?def) as ?hasDef)
-    bind (bound(?mSet) as ?array)
-    bind (bound(?mIndex) as ?map)
-    bind (bound(?type) as ?hasType)
     bind (bound(?list) as ?hasEnum)
+    optional { ?propShape sh:defaultValue ?default  }
+    bind (bound(?default) as ?hasDefault)
     optional { ?propShape sh:order ?predefined }
     bind (if(bound(?predefined), ?predefined, "1000"^^xsd:integer) as ?rank)
 } order by ?rank
 
----
-
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix sh: <http://www.w3.org/ns/shacl#>
-prefix : <http://w3c.github.io/wot-thing-description/#>
-template :type(?class ?prop) {
+template :type(?class ?prop ?ns) {
     format {
         "<a href=\"%s\"><code>%s</code></a>"
-        st:call-template(:href, ?type)
-        st:call-template(:label, ?type)
+        st:call-template(:href, ?type, ?ns)
+        st:call-template(:label, ?type, ?ns)
     }
 } where {
     ?shape a sh:NodeShape ;
@@ -220,78 +214,55 @@ template :type(?class ?prop) {
     ?propShape sh:path ?prop .
     { ?propShape sh:datatype ?type }
     union
-    { ?propShape sh:class ?type }
+    { ?propShape sh:nodeKind sh:IRI . bind (xsd:anyURI as ?type) }
+    union
+    { ?propShape sh:node ?valueShape . ?valueShape sh:targetClass ?type }
 }
 
----
-
-prefix sh: <http://www.w3.org/ns/shacl#>
-prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-prefix : <http://w3c.github.io/wot-thing-description/#>
-template :enum(?class ?prop) {
+template :enum(?class ?prop ?ns ?index) {
     format {
         "%s<code>%s</code>%s"
-        if(?first,
-           if (?prop = <https://www.w3.org/2019/wot/hypermedia#forSubProtocol> ||
-               ?prop = <https://www.w3.org/2019/wot/security#alg> ||
-               ?prop = <https://www.w3.org/2019/wot/security#format> ||
-               ?prop = <https://www.w3.org/2019/wot/security#flow> ||
-               ?prop = <https://www.w3.org/2019/wot/security#scheme>,
-               "e.g., ",
-               "one of "),
-           if(?last, "or ", ""))
-        ?val
-        if(?last, "", ", ")
-    }; separator = ""
+        if(?first, if(?eg, "e.g., ", "one of "),
+        if(?last, "or ", ""))
+        if(isIRI(?val), st:call-template(:label, ?val, ?ns), ?val)
+        if(?last, "", concat(", ", st:call-template(:enum, ?class, ?prop, ?ns, ?index + 1)))
+    }
 } where {
     ?shape a sh:NodeShape ;
            sh:targetClass ?class ;
            sh:property ?propShape .
-    ?propShape sh:path ?prop ;
-               sh:in ?list .
-    ?list rdf:rest* ?r .
-    ?r rdf:first ?val .
-    ?r rdf:rest ?next
-    bind ((?list = ?r) as ?first)
-    bind ((?next = rdf:nil) as ?last)
+    ?propShape sh:path ?prop .
+    { ?propShape sh:in ?list bind (false as ?eg) }
+    union
+    { ?propShape skos:example ?list bind (true as ?eg) }
+    bind (<javascript:urdf.valueAt>(?list, ?index) as ?val)
+    bind ((?index = 0) as ?first)
+    bind ((?index + 1 = <javascript:urdf.length>(?list)) as ?last)
 }
 
----
-
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix sh: <http://www.w3.org/ns/shacl#>
-prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix : <http://w3c.github.io/wot-thing-description/#>
-template :subclasses(?class) {
+template :subclasses(?class ?ns) {
     "<p>"
         "The class "
-        format { "<code>%s</code>" st:call-template(:label, ?class) }
+        format { "<code>%s</code>" st:call-template(:default-label, ?class, ?ns) }
         " has the following subclasses:"
     "</p>"
     "<ul>"
-        st:call-template(:subclass, ?class)
+        st:call-template(:subclass, ?class, ?ns)
     "</ul>"
 } where {
-    ?subclass rdfs:subClassOf+ ?class .
+    ?subclass rdfs:subClassOf ?class .
 }
 
----
-
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix sh: <http://www.w3.org/ns/shacl#>
-prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix : <http://w3c.github.io/wot-thing-description/#>
-template :subclass(?class) {
+template :subclass(?class ?ns) {
     "<li>"
         format {
             "<a href=\"%s\"><code>%s</code></a>"
-            st:call-template(:href, ?subclass)
-            st:call-template(:label, ?subclass)
+            st:call-template(:href, ?subclass, ?ns)
+            st:call-template(:default-label, ?subclass, ?ns)
         }
     "</li>"
 } where {
-    ?subclass rdfs:subClassOf+ ?class .
+    ?subclass rdfs:subClassOf ?class .
     ?subclassShape a sh:NodeShape ;
         sh:targetClass ?subclass .
     ?classShape a sh:NodeShape ;
@@ -304,76 +275,80 @@ template :subclass(?class) {
     bind (if(bound(?predefined), ?predefined, "1000"^^xsd:integer) as ?rank)
 } order by ?rank
 
----
-
-prefix sh: <http://www.w3.org/ns/shacl#>
-prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-prefix : <http://w3c.github.io/wot-thing-description/#>
 template :notes(?class) {
     format { "%s" ?note } ; separator = ""
 } where {
     ?shape a sh:NodeShape ;
            sh:targetClass ?class ;
-           sh:description ?note .
+           skos:scopeNote ?note .
     filter (datatype(?note) = rdf:HTML)
 }
 
-
----
-
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-prefix : <http://w3c.github.io/wot-thing-description/#>
-template :href(?term) {
+template :href(?term ?ns) {
     if(strstarts(str(?term), "http://www.w3.org/2001/XMLSchema#"),
-        st:call-template(:href-xsd, ?term),
-        st:call-template(:href-fragment, ?term))
+        st:call-template(:href-xsd, ?term, ?ns),
+        st:call-template(:href-fragment, ?term, ?ns))
 } where {}
 
----
-
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix : <http://w3c.github.io/wot-thing-description/#>
-template :href-xsd(?term) {
+template :href-xsd(?term ?ns) {
     format {
         "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#%s"
-        st:call-template(:label, ?term)
+        st:call-template(:label, ?term, ?ns)
     }
 } where {}
 
----
-
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix : <http://w3c.github.io/wot-thing-description/#>
-template :href-fragment(?term) {
+template :href-fragment(?term ?ns) {
     format {
         "#%s"
-        lcase(st:call-template(:label, ?term))
+        lcase(st:call-template(:default-label, ?term, ?ns))
     }
 } where {}
 
----
+template :numbered-label(?term ?ns ?singular) {
+    format { "%s" ?name }
+} where {
+    optional {
+        ?ctx jsonld:definition ?m1 ;
+                jsonld:vocab ?ns .
+        ?m1 a jsonld:Mapping ;
+            jsonld:iri ?term ;
+            jsonld:term ?singularName .
+        filter not exists {
+            ?m1 jsonld:container ?container
+        }
+    }
+    optional {
+        ?ctx jsonld:definition ?m2 ;
+                jsonld:vocab ?ns .
+        ?m2 a jsonld:Mapping ;
+            jsonld:iri ?term ;
+            jsonld:term ?pluralName ;
+            jsonld:container ?container .
+    }
+    bind (
+        if(!bound(?singularName) && !bound(?pluralName), "",
+        if(!bound(?singularName), ?pluralName,
+        if(!bound(?pluralName), ?singularName,
+        if(?singular, ?singularName, ?pluralName))))
+        as ?name
+    )
+}
 
-prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix owl: <http://www.w3.org/2002/07/owl#>
-prefix jsonld: <http://www.w3.org/ns/json-ld#>
-prefix : <http://w3c.github.io/wot-thing-description/#>
-template :label(?term) {
-    format { "%s" ?label }
+template :label(?term ?ns) {
+    format { "%s" if(?mapping, ?name, st:call-template(:default-label, ?term)) }
 } where {
     optional {
         ?m a jsonld:Mapping ;
             jsonld:iri ?term ;
             jsonld:term ?name .
-        filter not exists { ?term a owl:Class }
     }
-    bind (if(bound(?name), ?name, strafter(str(?term), "#")) as ?label)
+    bind (bound(?name) as ?mapping)
 }
 
----
+template :default-label(?term) {
+    format { "%s" strafter(str(?term), "#") }
+} where {}
 
-prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix : <http://w3c.github.io/wot-thing-description/#>
 template :desc(?term) {
     format {
         "%s%s"
