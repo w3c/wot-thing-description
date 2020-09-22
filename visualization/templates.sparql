@@ -1,26 +1,30 @@
 prefix st: <http://ns.inria.fr/sparql-template/>
 prefix sh: <http://www.w3.org/ns/shacl#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix jsonld: <http://www.w3.org/ns/json-ld#>
+prefix vann: <http://purl.org/vocab/vann/>
 prefix : <http://w3c.github.io/wot-thing-description/visualization#>
-template :main(?ns) {
+
+template :main(?prefix) {
     "digraph {"
         st:call-template(:classes, ?ns)
         st:call-template(:associations, ?ns)
         st:call-template(:subClassRelations, ?ns)
     "}"
-} where {}
+} where {
+    ?o a owl:Ontology ;
+       vann:preferredNamespaceUri ?ns ;
+       vann:preferredNamespacePrefix ?prefix .
+}
 
----
-
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix sh: <http://www.w3.org/ns/shacl#>
-prefix : <http://w3c.github.io/wot-thing-description/visualization#>
 template :classes(?ns) {
     ?name " [shape=none,label=<"
         "<table border=\"0\" cellborder=\"1\" cellspacing=\"0\" color=\"#8ccbf2\">"
             "<tr><td bgcolor=\"#8ccbf2\">"
                 format { "<b><font color=\"#c83500\" face=\"mono\">%s</font></b>" ?name }
             "</td></tr>"
-            # see also ../templates.txt (custom id property)
+            # see also ../templates.sparql (custom id property)
             if(?class = <https://www.w3.org/2019/wot/td#Thing>,
             concat("<tr><td align=\"left\" bgcolor=\"#ddeeff\">",
                 "<font color=\"#c83500\" face=\"mono\">@context</font>",
@@ -63,7 +67,7 @@ template :classes(?ns) {
                 "<i>(Array of) </i><font color=\"#c83500\" face=\"mono\">string</font>",
                 "</td></tr>"
             ), "")
-            st:call-template(:attributes, ?class)
+            st:call-template(:attributes, ?class, ?ns)
         "</table>"
     ">];"
 } where {
@@ -73,14 +77,9 @@ template :classes(?ns) {
     bind (strafter(str(?class), "#") as ?name)
 }
 
----
-
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix sh: <http://www.w3.org/ns/shacl#>
-prefix : <http://w3c.github.io/wot-thing-description/visualization#>
-template :attributes(?class) {
+template :attributes(?class ?ns) {
     "<tr><td align=\"left\" bgcolor=\"#ddeeff\">"
-        st:call-template(:attribute, ?class, ?prop)
+        st:call-template(:attribute, ?class, ?prop, ?ns)
     "</td></tr>" ; separator = ""
 } where {
     ?shape a sh:NodeShape ;
@@ -90,27 +89,17 @@ template :attributes(?class) {
                sh:datatype ?datatype
 }
 
----
-
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix sh: <http://www.w3.org/ns/shacl#>
-prefix jsonld: <http://www.w3.org/ns/json-ld#>
-prefix : <http://w3c.github.io/wot-thing-description/visualization#>
-template :attribute(?class ?prop) {
+template :attribute(?class ?prop ?ns) {
     format {
         "<font color=\"#c83500\" face=\"mono\">%s</font>"
-        st:call-template(:label, ?prop)
+        st:call-template(:numbered-label, ?prop, ?ns, ?singleton)
     }
     " : "
     format {
         "%s<font color=\"#c83500\" face=\"mono\">%s</font>"
-        if(?prop = <https://www.w3.org/2019/web-linking#forOperationType> ||
-           ?prop = <https://www.w3.org/2019/wot/td#security> ||
-           ?prop = <https://www.w3.org/2019/wot/security#scopes>,
-           concat("(Array of) "),
-           if(?array,
-              "Array of ",
-              if(?map, "Map of ", "")))
+        if(?array, "Array of ",
+        if(?map, "Map of ",
+        if(!?singleton, "(Array of) ", "")))
         st:call-template(:label, ?datatype)
     }
     format { "%s" if(?mandatory, " <i>(mandatory)</i>", "") }
@@ -120,7 +109,8 @@ template :attribute(?class ?prop) {
            sh:property ?propShape .
     ?propShape sh:path ?prop ;
                sh:datatype ?datatype ;
-    optional { ?propShape sh:minCount ?count }
+    optional { ?propShape sh:minCount ?minCount }
+    optional { ?propShape sh:maxCount ?maxCount }
     optional {
         ?mSet a jsonld:Mapping ;
            jsonld:iri ?prop ;
@@ -128,21 +118,18 @@ template :attribute(?class ?prop) {
     }
     optional {
         ?mIndex a jsonld:Mapping ;
-        jsonld:iri ?prop ;
-        jsonld:container jsonld:index
+        jsonld:iri ?prop .
+        { ?mIndex jsonld:container jsonld:index }
+        union
+        { ?mIndex jsonld:container jsonld:language }
     }
-    bind (bound(?count) as ?mandatory)
+    bind (bound(?minCount) as ?mandatory)
+    bind (bound(?maxCount) as ?singleton)
     bind (bound(?mSet) as ?array)
     bind (bound(?mIndex) as ?map)
     bind (bound(?def) as ?hasDef)
 }
 
----
-
-prefix st: <http://ns.inria.fr/sparql-template/>
-prefix sh: <http://www.w3.org/ns/shacl#>
-prefix jsonld: <http://www.w3.org/ns/json-ld#>
-prefix : <http://w3c.github.io/wot-thing-description/visualization#>
 template :associations(?ns) {
     ?source " -> " ?dest " [label=<"
         "<font color=\"#c83500\" face=\"mono\">"
@@ -161,25 +148,25 @@ template :associations(?ns) {
            sh:targetClass ?sourceClass ;
            sh:property ?propShape .
     ?propShape sh:path ?prop ;
-               sh:class ?destClass .
-    optional { ?propShape sh:minCount ?count }
+               sh:node ?destShape .
+    ?destShape a sh:NodeShape ;
+               sh:targetClass ?destClass .
+    optional { ?propShape sh:minCount ?minCount }
+    optional { ?propShape sh:maxCount ?maxCount }
     optional {
         ?m a jsonld:Mapping ;
            jsonld:iri ?prop ;
            jsonld:container jsonld:set
     }
-    filter (isIRI(?sourceClass) && isIRI(?destClass))
+    filter (isIRI(?sourceClass) && isIRI(?destClass) && isIRI(?prop))
     filter (strstarts(str(?sourceClass), str(?ns)))
     bind (strafter(str(?sourceClass), "#") as ?source)
     bind (strafter(str(?destClass), "#") as ?dest)
     bind (!strstarts(str(?destClass), str(?ns)) as ?ext)
-    bind (if(bound(?count), ?count, "0") as ?min)
-    bind (if(bound(?m), "*", "1") as ?max)
+    bind (if(bound(?minCount), ?minCount, "0") as ?min)
+    bind (if(bound(?maxCount), ?maxCount, "*") as ?max)
 }
 
----
-
-prefix : <http://w3c.github.io/wot-thing-description/visualization#>
 # TODO one single template for local and external classes
 template :externalClass(?label) {
     ?label " [shape=none,label=<"
@@ -191,15 +178,10 @@ template :externalClass(?label) {
     ">]"
 } where {}
 
----
-
-prefix sh: <http://www.w3.org/ns/shacl#>
-prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix : <http://w3c.github.io/wot-thing-description/visualization#>
 template :subClassRelations(?ns) {
     ?source " -> " ?dest " [fillcolor=white];"
 } where {
-    ?sourceClass rdfs:subClassOf+ ?destClass .
+    ?sourceClass rdfs:subClassOf ?destClass .
     ?sourceShape a sh:NodeShape ;
            sh:targetClass ?sourceClass .
     ?destShape a sh:NodeShape ;
@@ -210,12 +192,36 @@ template :subClassRelations(?ns) {
     bind (strafter(str(?destClass), "#") as ?dest)
 }
 
----
+template :numbered-label(?term ?ns ?singular) {
+    format { "%s" ?name }
+} where {
+    optional {
+        ?ctx jsonld:definition ?m1 ;
+             jsonld:vocab ?ns .
+        ?m1 a jsonld:Mapping ;
+            jsonld:iri ?term ;
+            jsonld:term ?singularName .
+        filter not exists {
+            ?m1 jsonld:container ?container
+        }
+    }
+    optional {
+        ?ctx jsonld:definition ?m2 ;
+                jsonld:vocab ?ns .
+        ?m2 a jsonld:Mapping ;
+            jsonld:iri ?term ;
+            jsonld:term ?pluralName ;
+            jsonld:container ?container .
+    }
+    bind (
+        if(!bound(?singularName) && !bound(?pluralName), "",
+        if(!bound(?singularName), ?pluralName,
+        if(!bound(?pluralName), ?singularName,
+        if(?singular, ?singularName, ?pluralName))))
+        as ?name
+    )
+}
 
-prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix owl: <http://www.w3.org/2002/07/owl#>
-prefix jsonld: <http://www.w3.org/ns/json-ld#>
-prefix : <http://w3c.github.io/wot-thing-description/visualization#>
 template :label(?term) {
     format { "%s" ?label }
 } where {

@@ -3,56 +3,47 @@
 
 <head>
     <meta charset='utf-8'>
-    <title>JSON Schema in RDF</title>
+    <title>Thing Description (TD) Ontology</title>
     <script src='https://www.w3.org/Tools/respec/respec-w3c-common' class='remove'></script>
     <script class='remove'>
         var respecConfig = {
             specStatus: "ED",
             editors: [{
                 name: "Victor Charpenay"
+                , company:    "Siemens AG"
+                , companyURL: "https://www.siemens.com/"
             }, {
                 name: "Maxime Lefrançois"
+                , company:    "École des Mines de Saint-Étienne"
+                , companyURL: "https://www.mines-stetienne.fr/"
             }, {
                 name: "María Poveda Villalón"
+                , company:    "Universidad Politécnica de Madrid"
+                , companyURL: "http://www.upm.es/"
+            }, {
+                name: "Sebastian Käbisch"
+                , company:    "Siemens AG"
+                , companyURL: "http://www.siemens.com/"
             }],
-            edDraftURI: "http://www.w3.org/2019/wot/json-schema",
-            shortName: "wot-td-ontology",
-            localBiblio: {
-                "json-schema-validation": {
-                    title: "JSON Schema Validation: A Vocabulary for Structural Validation of JSON"
-                    , href: "https://tools.ietf.org/html/draft-handrews-json-schema-validation-00"
-                    , authors: [
-                        "Austin Wright",
-                        "Henry Andrews",
-                        "Geraint Luff"
-                    ]
-                    , status: "Internet-Draft"
-                    , publisher: "IETF"
-                },
-                "json-hyper-schema":  {
-                    title: "JSON Hyper-Schema: A Vocabulary for Hypermedia Annotation of JSON"
-                    , href: "https://tools.ietf.org/html/draft-handrews-json-schema-hyperschema-00"
-                    , authors: [
-                        "Henry Andrews",
-                        "Austin Wright"
-                    ]
-                    , status: "Internet-Draft"
-                    , publisher: "IETF"
-                }
-            }
+            edDraftURI: "https://www.w3.org/2019/wot/td",
+            shortName: "wot-td-ontology"
         };
     </script>
+    <style>
+        span.indent {
+            margin-left: 2em;
+        }
+    </style>
 </head>
 
 <body>
     <section id='abstract'>
         <p>
-            This document introduces an RDF vocabulary for JSON schema definitions.
-            This vocabulary provides a stable namespace IRI for JSON schema keywords,
-            as well as simple axioms, defined against schema.org's meta-model. Various
-            examples on how to use the vocabulary are also introduced, e.g. to annotate
-            schemas with JSON-LD metadata or to embed schema annotations inside RDF
-            graphs.
+            The Thing Description (TD) ontology is an RDF axiomatization of the TD information model,
+            one of the building blocks of the Web of Things (WoT). Besides providing an alternative
+            to the standard JSON representation format for TD documents, the TD ontology can also
+            be used to process contextual information on Things and for alignments with other
+            WoT-related ontologies. 
         </p>
     </section>
     <section id='sotd'>
@@ -64,36 +55,48 @@
         <h2>Introduction</h2>
 
         <p>
-            JSON schema is a popular schema language for JSON documents
-            [[json-schema-validation]]. This vocabulary includes the main terms
-            defined by JSON schema in order to represent schema definitions in RDF.
-            Besides providing a stable namespace IRI for JSON schema terms, this
-            vocabulary also includes axioms based on schema.org's meta-model. Its
-            design favors simplicity of use over completeness.
-        </p>
-
-        <p>
-            Representing JSON schema in RDF was originally intended to be used
-            as part of the W3C Web of Things (WoT) framework and in particular in
-            the Thing Description model [[wot-thing-description]]. However,
-            processing JSON schema in RDF is not limited to WoT. Other use cases
-            include:
-        </p>
-
-        <ul>
-            <li>Alignment of schema definitions with RDF vocabularies and RDF shapes</li>
-            <li>Rule-based validation or transformation of JSON data</li>
-            <li>Integration of various forms of data specfications, including JSON schema</li>
-        </ul>
-
-        <p>
-            incidentally, the RDF representation of JSON schema definitions
-            provides an alternative to the JSON hyper-schema [[json-hyper-schema]]
-            for cross-references and linking. Examples are provided at the end
-            of the document.
+            The TD ontology is an idiomatic RDF axiomatization of the TD information model [[WOT-THING-DESCRIPTION]],
+            which can be used to describe WoT things and their interaction affordances. The TD ontology imports
+            the <a href="https://www.w3.org/2019/wot/hypermedia">hypermedia controls</a> ontology.
+            However, although the TD information model also includes terms for data schemas and security
+            configurations, the TD ontology does not force the use of the corresponding
+            <a href="https://www.w3.org/2019/wot/json-schema">JSON schema</a> and
+            <a href="https://www.w3.org/2019/wot/security">WoT security</a> vocabularies. Other schema languages
+            like SHACL [[shacl]] can thus be leveraged to describe WoT Things.
         </p>
     </section>
 
+    <section id="terminology"> 
+        <h2>Terminology</h2>
+        
+          <p>The fundamental WoT terminology such as
+          <dfn>Thing</dfn>,
+          <dfn>Consumer</dfn>,
+          <dfn>Thing Description</dfn> (<dfn>TD</dfn>),
+          <dfn>Interaction Model</dfn>,
+          <dfn>Interaction Affordance</dfn>,
+          <dfn>Property</dfn>,
+          <dfn>Action</dfn>,
+          <dfn>Event</dfn>,
+          <dfn>Protocol Binding</dfn>,
+          <dfn>Servient</dfn>,
+          etc. is defined in <a href="https://www.w3.org/TR/wot-architecture/#terminology">Section 3</a>
+          of the WoT Architecture specification [[WOT-ARCHITECTURE]].
+          </p>
+
+          <p>
+            The Thing Description terminology such as
+            <dfn>TD Information Model</dfn>,
+            <dfn>TD Document</dfn>,
+            <dfn>Term</dfn> (<dfn>Vocabulary Term</dfn>),
+            etc. is defined in <a href="https://www.w3.org/TR/wot-thing-description/#terminology">Section 3</a>
+            of the WoT Thing Description specification [[WOT-THING-DESCRIPTION]].
+            
+          </p>
+
+    </section>
+
+    <!-- axioms rendered from RDF definitions -->
     <section><h2>Axiomatization</h2><section><h3>Classes</h3><section><h4>ArraySchema</h4><p>IRI: <code>https://www.w3.org/2019/wot/json-schema#ArraySchema</code></p><span>Metadata describing data of type array. This subclass is indicated by the value <code>array</code> assigned to <code>type</code> in <code>DataSchema</code> instances.</span><table class="def"><tbody><tr><td>Sub-class of</td><td><code><a href="#dataschema">jsonschema:DataSchema</a></code></td></tr><tr><td>In the domain of</td><td><code><a href="#items">jsonschema:items</a></code><br><code><a href="#maxitems">jsonschema:maxItems</a></code><br><code><a href="#minitems">jsonschema:minItems</a></code></td></tr></tbody></table></section>
 <section><h4>BooleanSchema</h4><p>IRI: <code>https://www.w3.org/2019/wot/json-schema#BooleanSchema</code></p><span>Metadata describing data of type <code>boolean</code>. This subclass is indicated by the value <code>boolean</code> assigned to <code>type</code> in <code>DataSchema</code> instances.</span><table class="def"><tbody><tr><td>Sub-class of</td><td><code><a href="#dataschema">jsonschema:DataSchema</a></code></td></tr></tbody></table></section>
 <section><h4>DataSchema</h4><p>IRI: <code>https://www.w3.org/2019/wot/json-schema#DataSchema</code></p><span>Metadata that describes the data format used. It can be used for validation.</span><table class="def"><tbody><tr><td>Super-class of</td><td><code><a href="#arrayschema">jsonschema:ArraySchema</a></code><br><code><a href="#booleanschema">jsonschema:BooleanSchema</a></code><br><code><a href="#integerschema">jsonschema:IntegerSchema</a></code><br><code><a href="#nullschema">jsonschema:NullSchema</a></code><br><code><a href="#numberschema">jsonschema:NumberSchema</a></code><br><code><a href="#objectschema">jsonschema:ObjectSchema</a></code><br><code><a href="#stringschema">jsonschema:StringSchema</a></code></td></tr><tr><td>In the domain of</td><td><code><a href="#allof">jsonschema:allOf</a></code><br><code><a href="#anyof">jsonschema:anyOf</a></code><br><code><a href="#const">jsonschema:const</a></code><br><code><a href="#enum">jsonschema:enum</a></code><br><code><a href="#oneof">jsonschema:oneOf</a></code><br><code><a href="#propertyname">jsonschema:propertyName</a></code><br><code><a href="#readonly">jsonschema:readOnly</a></code><br><code><a href="#writeonly">jsonschema:writeOnly</a></code></td></tr><tr><td>In the range of</td><td><code><a href="#allof">jsonschema:allOf</a></code><br><code><a href="#anyof">jsonschema:anyOf</a></code><br><code><a href="#items">jsonschema:items</a></code><br><code><a href="#oneof">jsonschema:oneOf</a></code><br><code><a href="#properties">jsonschema:properties</a></code></td></tr></tbody></table></section>
@@ -123,376 +126,471 @@
 <section><h4>writeOnly</h4><p>IRI: <code>https://www.w3.org/2019/wot/json-schema#writeOnly</code></p><span>Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false)</span><table class="def"><tbody><tr><td>Domain includes</td><td><code><a href="#dataschema">jsonschema:DataSchema</a></code></td></tr></tbody></table></section></section></section>
 
     <section>
-        <h2>Usage Examples</h2>
+        <h2>Alignments</h2>
+
+        <p>
+            The TD ontology shares commonalities with other WoT-related vocabularies, in particular
+            with SOSA [[vocab-ssn]] and <a href="http://schema.org">schema.org</a>.
+            Alignments between these vocabularies are provided in a human-readable way in the following.
+        </p>
 
         <section>
-            <h3>Interpreting JSON Schema as JSON-LD 1.1</h3>
+            <h3>SOSA</h3>
 
             <p>
-                The following JSON-LD context [[json-ld11]] can be added to JSON schema
-                definitions to obtain an RDF representation of these definitions.
+                All alignments with SOSA are also available here in OWL:
+                <a href="td-sosa.ttl">td-sosa.ttl</a>.
             </p>
-
-<aside id="json-ld11-ctx" class="example" title="JSON-LD 1.1 context for the JSON schema vocabulary">
-<pre>
-{
-    "@context": {
-        "@version": 1.1,
-        "xsd": "http://www.w3.org/2001/XMLSchema#",
-        "@vocab": "https://www.w3.org/2019/wot/json-schema#",
-        "id": { "@id": "@id" },
-        "type": { "@id": "@type" },
-        "object": "ObjectSchema",
-        "array": "ArraySchema",
-        "boolean": "BooleanSchema",
-        "string": "StringSchema",
-        "number": "NumberSchema",
-        "integer": "IntegerSchema",
-        "null": "NullSchema",
-        "properties": {
-            "@type": "@vocab",
-            "@container": "@index",
-            "@index": "propertyName"
-        },
-        "items": { "@type": "@vocab" },
-        "oneOf": { "@type": "@vocab", "@container": "@set" },
-        "allOf": { "@type": "@vocab", "@container": "@set" },
-        "anyOf": { "@type": "@vocab", "@container": "@set" },
-        "minItems": { "@type": "xsd:decimal" },
-        "maxItems": { "@type": "xsd:decimal" },
-        "minimum": { "@type": "xsd:decimal" },
-        "maximum": { "@type": "xsd:decimal" },
-        "enum": { "@container": "@set", "@type": "@json" },
-        "enum": { "@container": "@set", "@type": "@json" },
-        "writeOnly": { "@type": "xsd:boolean" },
-        "readOnly": { "@type": "xsd:boolean" },
-        "format": { "@type": "xsd:string" },
-        "required": { "@type": "xsd:string", "@container": "@set" },
-        "title": { "@type": "xsd:string" },
-        "description": { "@type": "xsd:string" }
-    }
-}
-</pre>
-</aside>
 
             <p>
-                The two following examples show the equivalence between the
-                JSON and the Turtle representations of schema definitions.
-                These examples were taken from <a href="https://oneiota.org/">the
-                collection of schemas</a> managed by the Open Connectivity
-                Foundation (OCF).
+                Alignment of <code>td:Thing</code> with SOSA:
             </p>
 
-<aside class="example" title="Number schema representing a byte">
-<pre class="split-example">
-{
-    "type": "integer",
-    "minimum": 0,
-    "maximum": 255
-}
-</pre>
-<pre class="split-example">
-@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
-@prefix : &lt;https://www.w3.org/2019/wot/json-schema#&gt; .
+            <table class="def">
+                <thead>
+                    <tr>
+                        <th>Sub-Class</th>
+                        <th>Super-Class</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <code>td:Thing</code>
+                        </td>
+                        <td>
+                            <code>sosa:Sensor</code> or<br>
+                            <code>sosa:Actuator</code> or<br>
+                            <code>sosa:Platform</code> or<br>
+                            <code>sosa:FeatureOfInterest</code>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:Thing</code> and<br>
+                            <code>sosa:FeatureOfInterest</code>
+                        </td>
+                        <td>
+                            <code>ssn:hasProperty</code> some (<br>
+                                <span class="indent">(<code>sosa:isObservedBy</code> some <code>sosa:Sensor</code>) or</span><br>
+                                <span class="indent">(<code>sosa:isActedOnBy</code> some <code>sosa:Actuator</code>)</span><br>
+                            )
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:Thing</code> and<br>
+                            <code>sosa:Sensor</code>
+                        </td>
+                        <td>
+                            <code>sosa:observes</code> some<br>
+                                <span class="indent"><code>sosa:ObservableProperty</code></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:Thing</code> and<br>
+                            <code>sosa:Actuator</code>
+                        </td>
+                        <td>
+                            <code>sosa:actsOnProperty</code> some<br>
+                                <span class="indent"><code>sosa:ActuatableProperty</code></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:Thing</code> and<br>
+                            <code>sosa:Platform</code>
+                        </td>
+                        <td>
+                            <code>sosa:hosts</code> some (<br>
+                                <span class="indent">(</span><br>
+                                    <span class="indent"><span class="indent"><code>sosa:Sensor</code> and</span></span><br>
+                                    <span class="indent"></span><span class="indent"><code>sosa:observes</code> some</span></span><br>
+                                        <span class="indent"><span class="indent"></span><span class="indent"><code>sosa:ObservableProperty</code></span></span></span><br>
+                                <span class="indent">) or (</span><br>
+                                    <span class="indent"><span class="indent"><code>sosa:Actuator</code> and</span></span><br>
+                                    <span class="indent"></span><span class="indent"><code>sosa:actsOnProperty</code> some</span></span><br>
+                                        <span class="indent"><span class="indent"><span class="indent"><code>sosa:ActuatableProperty</code></span></span></span><br>
+                                <span class="indent">)</span><br>
+                            )
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-[] a :IntegerSchema ;
-   :minimum &quot;0&quot;^^xsd:decimal ;
-   :maximum &quot;255&quot;^^xsd:decimal .
-</pre>
-</aside>
+            <p>Alignment of <code>td:InteractionAffordance</code> with SOSA:</p>
 
-<aside id="ocf-temp" class="example" title="Object schema for a temperature measurement">
-<pre class="split-example">
-{
-    "type": "object",
-    "properties": {
-        "temperature": {
-            "type": "number",
-            "description": "Current temperature setting or measurement"
-        },
-        "units": {
-            "type": "string",
-            "enum": ["C", "F", "K"],
-            "description": "units for the temperature value",
-            "readOnly": true
-        }
-    },
-    "required": ["temperature"]
-}
-</pre>
-<pre class="split-example">
-@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
-@prefix : &lt;https://www.w3.org/2019/wot/json-schema#&gt; .
-
-[] a :ObjectSchema ;
-   :properties [
-       a :NumberSchema ;
-       :propertyName &quot;temperature&quot; ;
-       :description &quot;Current temperature setting or measurement&quot;
-   ], [
-       a :StringSchema ;
-       :propertyName &quot;units&quot; ;
-       :enum &quot;C&quot;, &quot;F&quot;, &quot;K&quot; ;
-       :description &quot;units for the temperature value&quot;
-       :readOnly &quot;true&quot;^^xsd:boolean
-   ] ;
-   :required &quot;temperature&quot; . 
-</pre>
-</aside>
-
-            <p class="note">
-                The value defined for the <code>const</code> and <code>enum</code> terms
-                is always interpreted as a raw JSON value, even if it is an array or an
-                object. In RDF, it becomes a typed literal with datatype <code>rdf:JSON</code>. 
-            </p>
-
-            <p class="note">
-                In its latest version, the JSON schema <code>items</code> term can be interpreted
-                in two different ways: if the value is a single schema definition, all items in
-                the array must then be proper instance of that schema ; if the value is an array
-                of schema definitions, an item in the instance array must be an instance of the
-                schema at the same index in the schema array. In the latter case, the schema
-                array should be interpreted as an RDF list rather as a set of statement (to
-                preserve order). It is however not possible to express both cases with a single
-                JSON-LD context. The context given in <a href="#json-ld11-ctx"></a> only
-                reflects the former case.
-            </p>
-
-            <p class="note">
-                JSON schema allows schemas to be defined in a "collection" object under
-                <code>definitions</code>. This feature is purely syntactical, hence not reflected
-                in the present RDF vocabulary for JSON schema. Interpreting schemas under
-                <code>definitions</code> as JSON-LD requires prior normalization, by substituting
-                references in the main schema with their definition. This normalization procedure
-                may be directly supported by JSON-LD processors in the future.
-            </p>
+            <table class="def">
+                <thead>
+                    <tr>
+                        <th>Sub-Class</th>
+                        <th>Super-Class</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <code>td:PropertyAffordance</code> and<br>
+                            <code>td:hasForm</code> some<br>
+                                <span class="indent"><code>hctl:hasOperationType</code> value</span><br>
+                                    <span class="indent"><span class="indent"><code>td:readProperty</code></span></span>
+                        </td>
+                        <td>
+                            <code>ssn:forProperty</code> some <code>sosa:ObservableProperty</code>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:PropertyAffordance</code> and<br>
+                            <code>td:hasForm</code> some<br>
+                                <span class="indent"><code>hctl:hasOperationType</code> value</span><br>
+                                    <span class="indent"><span class="indent"><code>td:writeProperty</code></span></span>
+                        </td>
+                        <td>
+                            <code>ssn:forProperty</code> some <code>sosa:ActuatableProperty</code>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:ActionAffordance</code>
+                        </td>
+                        <td>
+                            <code>ssn:forProperty</code> some<br>
+                                <span class="indent"><code>sosa:ActuatableProperty</code></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:EventAffordance</code>
+                        </td>
+                        <td>
+                            <code>ssn:forProperty</code> some<br>
+                                <span class="indent"><code>sosa:ObservableProperty</code></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </section>
 
         <section>
-            <h3>Referencing and linking</h3>
+            <h3>Schema.org</h3>
 
             <p>
-                JSON schema defines the <code>$id</code> and <code>$ref</code> keywords
-                to increase reusability but also to define schemas in a recursive fashion.
-                This feature is natively supported by RDF: if schema definitions are named
-                resources (identified by an IRI) instead of blank nodes, they can be
-                referenced from anywhere on the Web.
+                The alignments with schema.org's actions are also available here in OWL:
+                <a href="td-sdo.ttl">td-sdo.ttl</a>.
+            </p>
+
+            <table class="def">
+                <thead>
+                    <tr>
+                        <th>Sub-Class</th>
+                        <th>Super-Class</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <code>td:InteractionAffordance</code>
+                        </td>
+                        <td>
+                            <code>schema:Action</code> and<br>
+                            <code>schema:actionStatus</code> value
+                                <span class="indent"><code>schema:PotentialActionStatus</code></span><br>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="def">
+                <thead>
+                    <tr>
+                        <th>Sub-Property</th>
+                        <th>Super-Property</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <code>td:hasInteractionAffordance</code>
+                        </td>
+                        <td>
+                            <code>schema:potentialAction</code>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </section>
+    
+    <section>
+        <h2>Usage Examples</h2>
+
+        <section>
+            <h3>Thing Description JSON-LD 1.1 Instance to RDF Dataset</h3>
+
+        <p>
+            The following example shows a TD instance from <a href="https://www.w3.org/TR/wot-thing-description/#simple-thing-description-sample">Example 1</a> Thing Description 
+            specification [[WOT-THING-DESCRIPTION]] in JSON-LD 1.1 (JSON-LD 1.1 tab) and in a RDF dataset (RDF tab).
+        </p>
+
+
+        <aside class="example ds-selector-tabs changed" id="simple-thing-description-sample" title="Thing Description Sample">
+            <div class="selectors">
+              <button class="selected" data-selects="ex-original">JSON-LD 1.1</button>
+              <button data-selects="ex-rdf">RDF</button>
+            </div>
+            <pre class="ex-original selected">{
+                "@context": "https://www.w3.org/2019/wot/td/v1",
+                "id": "urn:dev:ops:32473-WoTLamp-1234",
+                "title": "MyLampThing",
+                "securityDefinitions": {
+                    "basic_sc": {"scheme": "basic", "in":"header"}
+                },
+                "security": ["basic_sc"],
+                "properties": {
+                    "status" : {
+                        "type": "string",
+                        "forms": [{"href": "https://mylamp.example.com/status"}]
+                    }
+                },
+                "actions": {
+                    "toggle" : {
+                        "forms": [{"href": "https://mylamp.example.com/toggle"}]
+                    }
+                },
+                "events":{
+                    "overheating":{
+                        "data": {"type": "string"},
+                        "forms": [{
+                            "href": "https://mylamp.example.com/oh",
+                            "subprotocol": "longpoll"
+                        }]
+                    }
+                }
+            }</pre>
+        <pre class="ex-rdf">&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasActionAffordance&gt; _:b0 .
+            &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasEventAffordance&gt; _:b2 .
+            &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasPropertyAffordance&gt; _:b5 .
+            &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasSecurityConfiguration&gt; &lt;urn:dev:ops:32473-WoTLamp-1234/basic_sc&gt; .
+            &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#securityDefinitions&gt; _:b7 .
+            &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#title&gt; &quot;MyLampThing&quot; .
+            _:b0 &lt;https://www.w3.org/2019/wot/td#name&gt; "toggle" .
+            _:b0 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b1 .
+            _:b1 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/toggle&quot; .
+            _:b2 &lt;https://www.w3.org/2019/wot/td#name&gt; "overheating" .
+            _:b2 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b3 .
+            _:b2 &lt;https://www.w3.org/2019/wot/td#hasNotificationSchema&gt; _:b4 .
+            _:b3 &lt;https://www.w3.org/2019/wot/hypermedia#forSubProtocol&gt; &quot;longpoll&quot; .
+            _:b3 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/oh&quot; .
+            _:b4 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/json-schema#StringSchema&gt; .
+            _:b5 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/json-schema#StringSchema&gt; .
+            _:b5 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; "status" .
+            _:b5 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b6 .
+            _:b6 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/status&quot; .
+        </pre>
+        </aside>
+        
+        
+        <p>
+            The RDF dataset contains the corresponding Thing Description IRIs as defined in this document. This IRI mapping is provided by the Thing Description 
+            context file <code>https://www.w3.org/2019/wot/td/v1</code>. For instance, the field <code>actions</code> is transformed to <code>&lt;https://www.w3.org/2019/wot/td#hasActionAffordance&gt;</code>.
+
+        </p>
+
+
+        </section>
+
+        <section>
+            <h3>Merging Thing Descriptions</h3>
+
+            <p>
+                The following example includes two TD documents in the standard TD JSON
+                representation format [[WOT-THING-DESCRIPTION]], identified by a unique
+                electronic product code [[RFC5134]].
             </p>
 
             <p>
-                The <code>id</code> keyword (an alias for <code>@id</code>) can be used for
-                that purpose, as shown in the following example, taken from an OCF standard.
+                If these two documents are being merged together with contextual information
+                in the form of an RDF graph that uses the same identifiers, it is possible
+                to retrieve form metadata of these TDs depending on the relations that
+                exist between Things. Here, the two Things share information on room 101
+                of some example building.
             </p>
 
-<aside class="example" title="Object schema for light control with reference to a base schema">
-<pre>
+<aside class="example" title="Merging of two TD documents and a logical map of a building">
+<pre class="split-example">
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:epc:id:sgtin:900100.0003456.1234567",
+    "title" : "HVAC System",
+    "@type": "https://w3id.org/saref#HVAC",
+    ...
+    "properties": {
+        "status": {
+            "type": "boolean",
+            "forms": [...]
+        }
+    }
+}
+</pre>
+<pre class="split-example">
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:epc:id:sgtin:900200.1234000.9876543",
+    "title" : "TemperatureSensor",
+    "@type": "https://w3id.org/saref#TemperatureSensor",
+    ...
+    "properties": {
+        "temperature": {
+            "type": "number",
+            "forms": [...]
+        }
+    }
+}
+</pre>
+<pre class="split-example">
 {
     "@context": {
-        ...,
-        "@base": "http://openinterconnect.org/iotdatamodels/schemas/"
+        "bot": "https://w3id.org/bot#",
+        "brick": "https://brickschema.org/schema/1.0.3/BrickFrame#"
     },
-    "id": "oic.r.light.dimming.json#",
-    "allOf": [
+    "@graph": [
         {
-            "type": "object",
-            "properties": {
-                "dimmingSetting":  {
-                    "type": "integer",
-                    "description": "Current dimming value"
-                }
+            "@id": "tag:room_101",
+            "@type": "bot:Space",
+            "bot:containsElement": {
+                "@id": "urn:epc:id:sgtin:900200.1234000.9876543"
             }
         },
         {
-            "id": "oic.baseResource.json#"
+            "@id": "urn:epc:id:sgtin:900100.0003456.1234567",
+            "brick:feeds": {
+                "@id": "tag:room_101"
+            }
         }
     ]
 }
 </pre>
 </aside>
-
-            <p class="note">
-                If the same schema definition (with the same IRI) is used twice as the
-                value of one of the <code>properties</code> of an object schema, it may result
-                in name collisions. Indeed, after transformation to RDF, this schema will have
-                two statements with <code>:propertyValue</code> that do not link back to the
-                object from which they respectively originate.
-            </p>
-
-            <p>
-                Besides IRI references between schemas, JSON hyper-schema [[json-hyper-schema]]
-                allows arbitrary links to be embedded in a schema definition. An alternative to
-                JSON hyper-schema is to use plain RDF statements or the
-                <a href="http://www.w3.org/2019/wot/hypermedia">RDF vocabulary for hypermedia
-                controls</a>. Examples can be found in the documentation of that vocabulary.
-            </p>
         </section>
 
         <section>
-            <h3>Defining a JSON-LD context for data instances</h3>
+            <h3>Internal State of a Thing</h3>
 
             <p>
-                JSON schema definitions may specify JSON structures that
-                are themselves interpretable as RDF (or JSON-LD). To be able
-                to do so, instances of a certain schema must be given a
-                JSON-LD context to map JSON terms to RDF IRIs. This can be
-                done within a schema definition using the
-                <a href="http://www.w3.org/ns/json-ld">JSON-LD vocabulary in RDF</a>,
-                and more precisely with the property <code>jsonld:context</code>.
+                It is possible for affordances of different kinds to have the same effect.
+                For instance, an affordance to a writable property may be equivalent to
+                an affordance to invoke an action that changes the property value.
+                Similarly, for every observable property, there may be an equivalent
+                affordance to subscribe to an event that occurs at every property value change.
             </p>
 
-<aside class="example" title="Schema with context annotation">
-<pre>
+            <p>
+                WoT clients can avoid having to deal with these discrepancies by
+                using the generic <code>td:hasInteractionAffordance</code> predicate.
+                They can then decide to perform an action based solely on the operation type
+                of the form embedded in the affordance object.
+            </p>
+
+<aside class="example" title="Alternative affordances to read/write a property value">
+<pre class="split-example">
 {
-    "@context": {
-        ...,
-        "jsonld": "http://www.w3.org/ns/json-ld#"
-    }
-    "jsonld:context": "http://schema.org",
-    "type": "object",
-    "description": "Schema of a commercial product with GTIN and manufacturer",
-    "properties" : {
-        "gtin14": { "type": "string" },
-        "manufacturer": { "type": "string" }
-    }
-}
-</pre>
-</aside>
-
-            <p>
-                The example above allows schema-aware agents on the Web to interpret
-                any instance of the schema as JSON-LD by appending the context given
-                as annotation to the instance JSON, as shown below.
-            </p>
-
-<aside id="ctx-ref" class="example" title="Instance interpreted as JSON-LD">
-<pre>
-{
-    "@context": "http://schema.org",
-    "name": "some manufactured product",
-    "gtin14": "0 00 12345 60001 2",
-    "manufacturer": "http://comapny.example.com"
-}
-</pre>
-</aside>
-
-            <p>
-                Note the difference with using <code>@context</code> in the
-                schema definition: it is used to interpret <em>instances</em>
-                as JSON-LD, while <code>@context</code> would alter the way
-                the <em>schema</em> itself is interpreted.
-            </p>
-
-            <p>
-                The JSON-LD vocabulary in RDF includes terms to represent any JSON-LD
-                context in RDF. As a result, contexts can be directly embedded in JSON
-                schema definitions as well. The example below is a variant of
-                <a href="#ctx-ref"></a> in which only a subset of schema.org's default
-                context is embedded in the schema.
-            </p>
-
-<aside class="example" title="Schema with embedded context">
-<pre>
-{
-    "@context": {
-        ...,
-        "jsonld": "http://www.w3.org/ns/json-ld#",
-        "jsonld:iri" : { "@type": "@id" }
-    },
-    "jsonld:context": {
-        "jsonld:definition": [
-            {
-                "@type": "jsonld:TermDefinition",
-                "jsonld:term": "gtin14",
-                "jsonld:iri": "http://schema.org/gtin14"
-            },
-            {
-                "@type": "jsonld:TermDefinition",
-                "jsonld:term": "manufacturer",
-                "jsonld:iri": "http://schema.org/manufacturer"
-            }
-        ]
-    },
-    "type": "object",
-    "description": "Schema of a commercial product with GTIN and manufacturer",
-    "properties" : {
-        "gtin14": { "type": "string" },
-        "manufacturer": { "type": "string" }
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:epc:id:sgtin:900300.1234000.9876543",
+    "title" : "LED Lamp",
+    ...
+    "properties": {
+        "status": {
+            "ssn:forProperty": { "@type": "saref:OnOffState" },
+            "type": "boolean",
+            "forms": [
+                {
+                    "href": "http://example.org/status",
+                    "op": "writeproperty"
+                },
+                {
+                    "href": "http://example.org/status",
+                    "op": "observeproperty"
+                }
+            ]
+        }
     }
 }
 </pre>
-</aside>
-        </section>
-
-        <section>
-            <h3>Embedding schema definitions in data instances</h3>
-
-            <p>
-                Although schema definitions are often put in separate documents, it may
-                be convenient to embed them in instance data itself, as in the following
-                example, which uses the Smart Appliance Reference vocabulary (SAREF)
-                [[smartm2m]]. This usage of the JSON schema vocabulary is similar to that
-                of <a href="http://schema.org/PropertyValue"><code>schema:PropertyValue</code></a>
-                and <a href="http://schema.org/PropertyValueSpecification"><code>schema:PropertyValueSpecification</code></a>.
-            </p>
-
-<aside class="example" title="SAREF on/off state with embedded schema definition">
-<pre>
+<pre class="split-example">
 {
-    "@context": {
-        ...,
-        "saref": "http://w3id.org/saref#",
-        "schema": "http://schema.org/"
-    },
-    "@type": "saref:LightSwitch",
-    "saref:hasState": {
-        "@type": "saref:OnOffState",
-        "type": "boolean"
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "actions": {
+        "change": {
+            "ssn:forProperty": { "@type": "saref:OnOffState" },
+            "input": { "type": "boolean" },
+            "forms": [
+                {
+                    "href": "http://example.org/status/change",
+                    "op": "invokeaction"
+                }
+            ]
+        }
     }
 }
 </pre>
-</aside>
-
-            <p>
-                This way, it is possible to convey a JSON tree representation
-                that does not strictly follow the RDF structure of some entity.
-                In the following example, the temperature property expressed
-                in SAREF terms embeds a variant of the schema of
-                <a href="#ocf-temp"></a>.
-            </p>
-
-<aside class="example" title="SAREF temperature property with embedded schema definition">
-<pre>
+<pre class="split-example">
 {
-    "@context": {
-        ...,
-        "saref": "http://w3id.org/saref#",
-        "om": "http://www.wurvoc.org/vocabularies/om-1.8/"
-    },
-    "@type": "saref:TemperatureSensor",
-    "saref:measuresProperty": {
-        "@type": "saref:Temperature",
-        "saref:isMeasuredByDevice": "http://device.example.com",
-        "type": "object",
-        "properties": [ "_:measure", "om:degree_Celsius" ]
-    },
-    "saref:makesMeasurement": {
-        "@id": "_:measure",
-        "@type": "saref:Measurement",
-        "propertyName": "temperature",
-        "type": "number",
-        "saref:isMeasuredIn": {
-            "@id": "om:degree_Celsius",
-            "propertyName": "units",
-            "type": "string",
-            "const": "C"
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "events": {
+        "changed": {
+            "ssn:forProperty": { "@type": "saref:OnOffState" },
+            "data": { "type": "boolean" },
+            "forms": [
+                {
+                    "href": "http://example.org/status/changed",
+                    "op": "subscribeevent"
+                }
+            ]
         }
     }
 }
 </pre>
 </aside>
         </section>
+
+        <section>
+            <h3>Specifying Affordances by Device Classes</h3>
+
+            <p>
+                It is possible to use the TD ontology to extend the definition of
+                well-known subclasses of <code>Thing</code> by defining expected
+                affordances that Things of such types should present. The
+                following example specifies that every temperature sensor presents
+                an affordance to a temperature property (expressed in the SAREF
+                vocabulary [[smartM2M]]).
+            </p>
+
+<aside class="example" title="OWL axiom for affordances provided by a temperature sensor">
+<pre>
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
+@prefix owl: &lt;http://www.w3.org/2002/07/owl#&gt; .
+@prefix saref: &lt;https://w3id.org/saref#&gt; .
+@prefix td: &lt;https://www.w3.org/2019/wot/td#&gt; .
+@prefix ex: &lt;http://example.org/&gt; .
+@prefix ssn: &lt;http://www.w3.org/ns/ssn/&gt; .
+
+saref:TemperatureSensor rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty td:hasPropertyAffordance ;
+        owl:someValuesFrom ex:TemperatureAffordance
+    ] .
+
+ex:TemperatureAffordance rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty ssn:forProperty ;
+        owl:someValuesFrom saref:Temperature
+    ] .
+</pre>
+</aside>
+        </section>
     </section>
-    
 </body>
 
 </html>
