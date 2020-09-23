@@ -2505,6 +2505,35 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 }
 </pre>
 
+<p>
+In some cases binary data is embedded in text-based values, e.g., a JSON string-based value embedds a base64 encoded image.
+The terms <code>contentMediaType</code> and <code>contentEncoding</code> can be used to clearify the context and encoding 
+format of such name-value pairs. A sample usage of <code>contentMediaType</code> and <code>contentEncoding</code>
+is shown below:
+</p>
+
+<pre class="example">
+{
+    ...
+    "properties": {
+        "image": { 
+	        "description" : "Provides latest image", 
+	        "type": "string",
+	        "contentMediaType": "image/png",
+	        "contentEncoding": "base64",
+	        "forms": [{ 
+			    "op": "readproperty", 
+			    "href": "coaps://mylamp.example.com/lastPicture", 
+			    "cov:methodName" : "GET",
+                "contentType": "application/json" 
+		    }] 
+        }
+    },
+    ...
+}
+</pre>
+
+
   <p>
   When <code>forms</code> is present at the top level, it can be used to describe meta interactions offered by a <a>Thing</a>.
   For example, the operation types "readallproperties" and "writeallproperties" are for meta
@@ -2548,9 +2577,11 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 }
 </pre>
 
+<p>
 In the case of operation type <code>writeallproperties</code>, it is expected that the <a>Consumer</a> provides all writable (non <code>readOnly</code>) properties and the (new) assigned values (e.g., within payload).
 Similarly, for the <code>writemultipleproperties</code> operation type, it is expected that the <a>Consumer</a> provides writable (non <code>readOnly</code>) properties.
 On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code>writeOnly</code>) properties in the case of <code>readmultipleproperties</code> and <code>readallproperties</code> operation types.
+</p>
 
 </section> <!-- end of id="form-serialization-json"-->
 
