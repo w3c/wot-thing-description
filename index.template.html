@@ -422,9 +422,9 @@ a[href].internalDFN {
     "id": "urn:dev:ops:32473-WoTLamp-1234",
     "title": "MyLampThing",
     "securityDefinitions": {
-        "basic_sc": {"scheme": "basic", "in":"header"}
+        "basic_sc": {"scheme": "basic", "in": "header"}
     },
-    "security": ["basic_sc"],
+    "security": "basic_sc",
     "properties": {
         "status" : {
             "type": "string",
@@ -525,11 +525,10 @@ a[href].internalDFN {
         "id": "urn:dev:ops:32473-WoTLamp-1234",
         "title": "MyLampThing",
         "@type": "saref:LightSwitch",
-        "securityDefinitions": {"basic_sc": {
-            "scheme": "basic",
-            "in": "header"
-        }},
-        "security": ["basic_sc"],
+        "securityDefinitions": {
+            "basic_sc": {"scheme": "basic", "in": "header"}
+        },
+        "security": "basic_sc",
         "properties": {
             "status": {
                 "@type": "saref:OnOffState",
@@ -1411,9 +1410,7 @@ In summary, this requires the following:
             "scheme": "basic"
         }
     },
-    "security": [
-        "basic_sc"
-    ],
+    "security": "basic_sc",
     "properties": {
         "status": {
             "type": "string",
@@ -1452,9 +1449,7 @@ In summary, this requires the following:
             "in": "header"
         }
     },
-    "security": [
-        "basic_sc"
-    ],
+    "security": "basic_sc",
     "properties": {
         "status": {
             "type": "string",
@@ -1894,7 +1889,7 @@ In summary, this requires the following:
   A named security configuration must be given
   in the <code>securityDefinitions</code> map.
   That definition must be activated by including its JSON name in the
-  <code>security</code> member, which can be of type string when only one definition is activated.
+  <code>security</code> member, which can and should be of type string when only one definition is activated.
   </p>
 
 <pre class="example" id="security-basic-example">
@@ -1917,7 +1912,8 @@ In summary, this requires the following:
   Note that the corresponding private security configuration
   such as username/password and tokens must be configured in the <a>Consumer</a>
   to interact successfully.
-  When activating multiple security definitions, the <code>security</code> member becomes an array.
+  When activating multiple security definitions, 
+  the <code>security</code> member becomes an array.
   </p>
 
 <pre class="example" id="security-digest-example">
@@ -1928,8 +1924,8 @@ In summary, this requires the following:
             "proxy": "https://portal.example.com/"
         },
         "bearer_sc": {
-            "in":"header",
             "scheme": "bearer",
+            "in":"header",
             "format": "jwt",
             "alg": "ES256",
             "authorization": "https://servient.example.com:8443/"
@@ -1938,12 +1934,41 @@ In summary, this requires the following:
     "security": ["proxy_sc", "bearer_sc"],
     ...
 </pre>
+ 
+  <p>However, the use of an array with multiple elements to combine security schemes
+  in a <code>security</code> element is now deprecated.
+  A <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> 
+  should be used instead as in the following example, which is exactly equivalent to the one above:
+  </p>
+
+<pre class="example" id="security-digest-example2">
+    ...
+    "securityDefinitions": {
+        "proxy_sc": {
+            "scheme": "digest",
+            "proxy": "https://portal.example.com/"
+        },
+        "bearer_sc": {
+            "scheme": "bearer",
+            "in":"header",
+            "format": "jwt",
+            "alg": "ES256",
+            "authorization": "https://servient.example.com:8443/"
+        },
+        "combo_sc": {
+            "scheme": "combo",
+            "allOf": ["proxy_sc", "bearer_sc"],
+        }
+    },
+    "security": "combo_sc",
+    ...
+</pre>
 
   <p>
   Security configuration in the TD is mandatory.
   <span class="rfc2119-assertion" id="td-security-mandatory">
   At least one security definition MUST be activated through the
-  <code>security</code> array at the Thing level (i.e., in the TD root object).
+  <code>security</code> member at the Thing level (i.e., in the TD root object).
   </span>
   This configuration can be seen as the default security mechanism required to interact with the <a>Thing</a>.
   <span class="rfc2119-assertion" id="td-security-overrides">
@@ -1996,7 +2021,7 @@ In summary, this requires the following:
         "basic_sc": {"scheme": "basic"},
         "nosec_sc": {"scheme": "nosec"}
     },
-    "security": ["basic_sc"],
+    "security": "basic_sc",
     ...
     "properties": {
         "status": {
@@ -2019,7 +2044,7 @@ In summary, this requires the following:
             ...
             "forms": [{
                 "href": "https://mylamp.example.com/oh",
-                "security": ["nosec_sc"]
+                "security": "nosec_sc"
             }]
         }
     }
@@ -2051,7 +2076,7 @@ In summary, this requires the following:
         "digest_sc": { "scheme": "digest" },
         "bearer_sc": { "scheme": "bearer" }
     },
-    "security": ["basic_sc"],
+    "security": "basic_sc",
     ...
     "properties": {
         "status": {
@@ -2060,10 +2085,39 @@ In summary, this requires the following:
                 "href": "https://mylamp.example.com/status"
             }, {
                 "href": "https://mylamp.example.com/status",
-                "security": ["digest_sc"]
+                "security": "digest_sc"
             }, {
                 "href": "https://mylamp.example.com/status",
-                "security": ["bearer_sc"]
+                "security": "bearer_sc"
+            }]
+        }
+    },
+    ...
+}
+</pre>
+  <p>To avoid redundancy in this case, e.g. repeating the details of the <code>form</code>
+  elements, a <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a>
+  with <code>oneOf</code> can be used instead.  
+  </p>
+<pre class="example">
+{
+    ...
+    "securityDefinitions": {
+        "basic_sc": { "scheme": "basic" },
+        "digest_sc": { "scheme": "digest" },
+        "bearer_sc": { "scheme": "bearer" },
+        "combo_sc": { 
+            "scheme": "combo", 
+            "oneOf": [ "basic_sc", "digest_sc", "bearer_sc" ] 
+        }
+    },
+    "security": "combo_sc",
+    ...
+    "properties": {
+        "status": {
+            ...
+            "forms": [{
+                "href": "https://mylamp.example.com/status"
             }]
         }
     },
@@ -2101,7 +2155,7 @@ In summary, this requires the following:
             "scopes": ["limited", "special"]
         }
     },
-    "security": ["oauth2_sc"],
+    "security": "oauth2_sc",
     ...
     "properties": {
         "status": {

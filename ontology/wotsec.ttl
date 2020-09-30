@@ -84,6 +84,16 @@
     rdfs:comment "URI of the token server."@en ;
     schema:domainIncludes :OAuth2SecurityScheme .
 
+:oneOf rdf:type owl:ObjectProperty ;
+    rdfs:label "oneOf" ;
+    rdfs:comment "Array of two or more strings identifying other named security scheme definitions, any one of which, when satisfied, will allow access.  Only one may be chosen for use."@en ;
+    schema:domainIncludes :ComboSecurityScheme .
+
+:allOf rdf:type owl:ObjectProperty ;
+    rdfs:label "allOf" ;
+    rdfs:comment "Array of two or more strings identifying other named security scheme definitions, all of which must be satisfied for access."@en ;
+    schema:domainIncludes :ComboSecurityScheme .
+
 :APIKeySecurityScheme rdf:type rdfs:Class, owl:Class ;
     rdfs:label "APIKeySecurityScheme" ;
     rdfs:subClassOf :SecurityScheme ;
@@ -97,7 +107,12 @@
 :BearerSecurityScheme rdf:type rdfs:Class, owl:Class ;
     rdfs:label "BearerSecurityScheme" ;
     rdfs:subClassOf :SecurityScheme ;
-    rdfs:comment "Bearer token authentication security configuration identified by the term <code>bearer</code> (i.e., <code>\"scheme\": \"bearer\"</code>).  This scheme is intended for situations where bearer tokens are used independently of OAuth2.  If the <code>oauth2</code> scheme is specified it is not generally necessary to specify this scheme as well as it is implied.  For <code>format</code>, the value <code>jwt</code> indicates conformance with RFC7519, <code>jws</code> indicates conformance with RFC7797, <code>cwt</code> indicates conformance with RFC8392, and <code>jwe</code> indicates conformance with !RFC7516, with values for <code>alg</code> interpreted consistently with those standards. <span class=\"rfc2119-assertion\" id=\"td-security-bearer-format-extensions\">Other formats and algorithms for bearer tokens MAY be specified in vocabulary extensions.</span>" .
+    rdfs:comment "Bearer token authentication security configuration identified by the term <code>bearer</code> (i.e., <code>\"scheme\": \"bearer\"</code>).  This scheme is intended for situations where bearer tokens are used independently of OAuth2.  If the <code>oauth2</code> scheme is specified it is not generally necessary to specify this scheme as well as it is implied.  For <code>format</code>, the value <code>jwt</code> indicates conformance with RFC7519, <code>jws</code> indicates conformance with RFC7797, <code>cwt</code> indicates conformance with RFC8392, and <code>jwe</code> indicates conformance with !RFC7516, with values for <code>alg</code> interpreted consistently with those standards. <span class=\"rfc2119-assertion\" id=\"td-security-bearer-format-extensions\">Other formats and algorithms for bearer tokens MAY be specified in vocabulary extensions.</span>"@en .
+
+:ComboSecurityScheme rdf:type rdfs:Class, owl:Class ;
+    rdfs:label "ComboSecurityScheme" ;
+    rdfs:subClassOf :SecurityScheme ;
+    rdfs:comment "<p>A combination of other security schemes identified by the <a>Vocabulary Term</a> <code>combo</code> (i.e., <code>\"scheme\": \"combo\"</code>).  Elements of this scheme define various ways in which other named schemes defined in <code>securityDefinitions</code>, including other <a href=\"#combosecurityscheme\"><code>ComboSecurityScheme</code></a> definitions, are to be combined to create a new scheme definition.  <scan class=\"rfc2119-assertion\">Exactly one of either <code>oneOf</code> or <code>allOf</code> MUST be included.</scan> <!-- Redundant, table states \"two or more\" already <scan class=\"rfc2119-assertion\">The array given as a value associated with either <code>oneOf</code> or <code>allOf</code> MUST have at least two elements.</scan> --> Only security scheme definitions which can be used together can be combined with <code>allOf</code>.  For example, it is not possible in general to combine different OAuth 2.0 flows together using <code>allOf</code> unless one applies to a proxy and one to the endpoint.  Note that when multiple named security scheme definitions are listed in a <code>security</code> field the same semantics apply as in an <code>allOf</code> combination (and the same limitations on allowable combinations).  The <code>oneOf</code> combination is equivalent to using different security schemes on forms that are otherwise identical.  In this sense a <code>oneOf</code> scheme is not an essential feature but it does avoid redundancy in such cases.</p>"@en .
 
 # :CertSecurityScheme rdf:type rdfs:Class, owl:Class ;
 #     rdfs:label "CertSecurityScheme" ;
@@ -107,7 +122,7 @@
 :DigestSecurityScheme rdf:type rdfs:Class, owl:Class ;
     rdfs:label "DigestSecurityScheme" ;
     rdfs:subClassOf :SecurityScheme ;
-    rdfs:comment "Digest authentication security configuration identified by the term <code>digest</code> (i.e., <code>\"scheme\": \"digest\"</code>). This scheme is similar to basic authentication but with added features to avoid man-in-the-middle attacks." .
+    rdfs:comment "Digest authentication security configuration identified by the term <code>digest</code> (i.e., <code>\"scheme\": \"digest\"</code>). This scheme is similar to basic authentication but with added features to avoid man-in-the-middle attacks."@en .
 
 :NoSecurityScheme rdf:type rdfs:Class, owl:Class ;
     rdfs:label "NoSecurityScheme" ;
@@ -117,12 +132,12 @@
 :OAuth2SecurityScheme rdf:type rdfs:Class, owl:Class ;
     rdfs:label "OAuth2SecurityScheme" ;
     rdfs:subClassOf :SecurityScheme ;
-    rdfs:comment "OAuth2 authentication security configuration for systems conformant with !RFC6749 and !RFC8252, identified by the term <code>oauth2</code> (i.e., <code>\"scheme\": \"oauth2\"</code>).  <span class=\"rfc2119-assertion\" id=\"td-security-oauth2-implicit-flow\">For the <code>implicit</code> flow <code>authorization</code> MUST be included.</span>  <span class=\"rfc2119-assertion\" id=\"td-security-oauth2-password-client-flow\">For the <code>password</code> and <code>client</code> flows <code>token</code> MUST be included.</span>  <span class=\"rfc2119-assertion\" id=\"td-security-oauth2-code-flow\">For the <code>code</code> flow both <code>authorization</code> and <code>token</code> MUST be included.</span>  If no <code>scopes</code> are defined in the <code>SecurityScheme</code> then they are considered to be empty."@en .
+    rdfs:comment "<p>OAuth 2.0 authentication security configuration for systems conformant with [[!RFC6749]], [[!RFC8252]] and (for the <code>device</code> flow) [[!RFC8628]], identified by the <a>Vocabulary Term</a> <code>oauth2</code> (i.e., <code>\"scheme\": \"oauth2\"</code>). <span class=\"rfc2119-assertion\" id=\"td-security-oauth2-code-flow\">For the <code>code</code> flow both <code>authorization</code> and <code>token</code> MUST be included.</span> <span class=\"rfc2119-assertion\" id=\"td-security-oauth2-client-flow\">For the <code>client</code> flow <code>token</code> MUST be included.</span> <span class=\"rfc2119-assertion\" id=\"td-security-oauth2-client-flow-no-auth\">For the <code>client</code> flow <code>authorization</code> MUST NOT be included.</span> <span class=\"rfc2119-assertion\" id=\"td-security-oauth2-device-flow\">For the <code>device</code> flow both <code>authorization</code> and <code>token</code> MUST be included.</span> In the case of the <code>device</code> flow the value provided for <code>authorization</code> refers to the device authorization endpoint defined in [[!RFC8628]]. The mandatory elements for each flow are summarized in the following table: <table class=\"def\"> <tr><th>Element</th><th><code>code</code></th><th><code>client</code></th><th><code>device</code></th></tr> <tr><td><code>authorization</code></td><td>mandatory</td><td>omit</td><td>mandatory; refers to device authorization endpoint</td></tr> <tr><td><code>token</code></td><td>mandatory</td><td>mandatory</td><td>mandatory</td></tr> <tr><td><code>refresh</code></td><td>optional</td><td>optional</td><td>optional</td></tr> </table> </p> <p class=\"ednote\"> Note that the table below lists these elements as \"optional\".  In fact whether they are mandatory or not depends on the flow.  The <code>token</code> element is listed as optional even though it is mandatory for all predefined flows since it might not be mandatory for some flows defined in an extension.  We should investigate whether there is a better way to express these \"variant record\" constraints.</p><p>If multiple flows are available (for example, multiple OAuth 2.0 security schemes with different flows are given for a <code>Form</code>) then only one may be selected for use by a <a>Consumer</a>. <span class=\"rfc2119-assertion\" id=\"td-security-oauth2-other-flows\">If an OAuth 2.0 flow other than <code>code</code>, <code>client</code> or <code>device</code> needs to be specified an extension vocabulary MUST be used.</span> This includes the <code>password</code> and <code>implicit</code> flows, which are no longer considered best practice [[WOT-SECURITY-GUIDELINES]]. This also applies to flows that are similar at the protocol level but do not exactly follow the OAuth 2.0 specification, for example by automating grants rather than invoking a user agent to interact with a human resource owner.  If no <code>scopes</code> are defined in the <code>SecurityScheme</code> then they are considered to be empty.</p> <p class=\"ednote\">The device authorization endpoint technically uses a different protocol than the authorization endpoint used by other flows, and it might be possible for a developer to confuse the two.  However, since the <code>device</code> flow does not use the regular authorization endpoint there should be no ambiguity.  We are considering however an alternative design where there is a separate element, <code>device_authorization</code>, which MUST be included for the <code>device</code> flow (and then the regular authorization endpoint then MUST NOT be used).</p>"@en .
 
 :PSKSecurityScheme rdf:type rdfs:Class, owl:Class ;
     rdfs:label "PSKSecurityScheme" ;
     rdfs:subClassOf :SecurityScheme ;
-    rdfs:comment "Pre-shared key authentication security configuration identified by the term <code>psk</code> (i.e., <code>\"scheme\": \"psk\"</code>)." .
+    rdfs:comment "Pre-shared key authentication security configuration identified by the term <code>psk</code> (i.e., <code>\"scheme\": \"psk\"</code>)."@en .
 
 # :PoPSecurityScheme rdf:type rdfs:Class, owl:Class ;
 #     rdfs:label "PoPSecurityScheme" ;
@@ -136,4 +151,4 @@
 
 :SecurityScheme rdf:type rdfs:Class, owl:Class ;
     rdfs:label "SecurityScheme" ;
-    rdfs:comment "Metadata describing the configuration of a security mechanism.  <span class=\"rfc2119-assertion\" id=\"td-security-scheme-name\">The value assigned to the name <code>scheme</code> MUST be defined within a vocabulary included in the Thing Description, either in the present vocabulary or in a TD context extension." .
+    rdfs:comment "Metadata describing the configuration of a security mechanism.  <span class=\"rfc2119-assertion\" id=\"td-security-scheme-name\">The value assigned to the name <code>scheme</code> MUST be defined within a vocabulary included in the Thing Description, either in the present vocabulary or in a TD context extension."@en .

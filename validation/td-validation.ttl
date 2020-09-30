@@ -745,6 +745,7 @@
         # sh:minCount 1 ;
         sh:in (
             wotsec:NoSecurityScheme
+            wotsec:ComboSecurityScheme
             wotsec:BasicSecurityScheme
             # wotsec:CertSecurityScheme
             wotsec:DigestSecurityScheme
@@ -780,6 +781,18 @@
     sh:closed false ;
     sh:order 2 .
 
+:ComboSecuritySchemeShape a sh:NodeShape ;
+    sh:targetClass wotsec:ComboSecurityScheme ;
+    skos:definition """A combination of other security schemes identified by the <a>Vocabulary Term</a> <code>combo</code> (i.e., <code>"scheme": "combo"</code>).  Elements of this scheme define various ways in which other named schemes defined in <code>securityDefinitions</code>, including other <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> definitions, are to be combined to create a new scheme definition.  <scan class="rfc2119-assertion">Exactly one of either <code>oneOf</code> or <code>allOf</code> MUST be included.</scan> <!-- Redundant, table states "two or more" already <scan class="rfc2119-assertion">The array given as a value associated with either <code>oneOf</code> or <code>allOf</code> MUST have at least two elements.</scan> --> Only security scheme definitions which can be used together can be combined with <code>allOf</code>.  For example, it is not possible in general to combine different OAuth 2.0 flows together using <code>allOf</code> unless one applies to a proxy and one to the endpoint.  Note that when multiple named security scheme definitions are listed in a <code>security</code> field the same semantics apply as in an <code>allOf</code> combination (and the same limitations on allowable combinations).  The <code>oneOf</code> combination is equivalent to using different security schemes on forms that are otherwise identical.  In this sense a <code>oneOf</code> scheme is not an essential feature but it does avoid redundancy in such cases."""^^rdf:HTML ;
+    skos:editorialNote "at risk" ;
+    sh:closed false ;
+    sh:order 3 ;
+    # FIXME should be exactly one of oneOf or allOf
+    sh:property _:oneOf ;
+    sh:property _:allOf ;
+    skos:scopeNote """<p class="ednote" title="Recursive Use">The 
+<a href="#combosecurityscheme">ComboSecurityScheme</a> may be applied recursively to generate Boolean expressions for combinations of security schemes. One use case for this is when multiple security schemes are needed for a proxy in combination with multiple security schemes for an endpoint.  Suppose for example a proxy accepts either schemes A or B, and then the endpoint accepts either C or D.  Then the possible combinations are AC, AD, BC, and BD.  These could be expressed directly at the <code>Form</code> level but would require four-fold redundancy.  Instead, three <code>combo</code> nodes can be used to combine the four leaf schemes in the correct way into a single scheme.  It is not clear however if other use cases exist for deeper expression trees and if not, we may consider limiting the recursion depth to two.</p>"""^^rdf:HTML .
+
 :BasicSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:BasicSecurityScheme ;
     skos:definition """Basic Authentication [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc7617" title="The 'Basic' HTTP Authentication Scheme">RFC7617</a></cite>]
@@ -789,7 +802,7 @@
           some other security mechanism providing confidentiality,
           for example, TLS."""^^rdf:HTML ;
     sh:closed false ;
-    sh:order 3 ;
+    sh:order 4 ;
     sh:property _:in ;
     sh:property _:name .
 
@@ -801,7 +814,7 @@
           to basic authentication but with added features to avoid
           man-in-the-middle attacks."""^^rdf:HTML ;
     sh:closed false ;
-    sh:order 4 ;
+    sh:order 5 ;
     sh:property [
         sh:path wotsec:qop ;
         skos:definition """Quality of protection."""^^rdf:HTML ;
@@ -826,7 +839,7 @@
           token is opaque and is not using a standard token
           format."""^^rdf:HTML ;
     sh:closed false ;
-    sh:order 5 ;
+    sh:order 6 ;
     sh:property _:in ;
     sh:property _:name .
 
@@ -852,7 +865,7 @@
           algorithms for bearer tokens <em class="rfc2119" title="MAY">MAY</em> be specified in vocabulary
           extensions</span>."""^^rdf:HTML ;
     sh:closed false ;
-    sh:order 6 ;
+    sh:order 7 ;
     sh:property _:authorization ;
     sh:property _:alg ;
     sh:property _:format ;
@@ -864,7 +877,7 @@
 #     skos:definition """TODO"""^^rdf:HTML ;
 #     skos:editorialNote "at risk" ;
 #     sh:closed false ;
-#     sh:order 7 ;
+#     sh:order 8 ;
 #     sh:property _:identity .
 
 :PSKSecuritySchemeShape a sh:NodeShape ;
@@ -874,7 +887,7 @@
           <code>psk</code> (i.e., <code>"scheme":
           "psk"</code>)."""^^rdf:HTML ;
     sh:closed false ;
-    sh:order 8 ;
+    sh:order 9 ;
     sh:property _:identity .
 
 # :PublicSecuritySchemeShape a sh:NodeShape ;
@@ -882,7 +895,7 @@
 #     skos:definition """TODO"""^^rdf:HTML ;
 #     skos:editorialNote "at risk" ;
 #     sh:closed false ;
-#     sh:order 9 ;
+#     sh:order 10 ;
 #     sh:property _:identity .
 
 # :PoPSecuritySchemeShape a sh:NodeShape ;
@@ -890,7 +903,7 @@
 #     skos:definition """TODO"""^^rdf:HTML ;
 #     skos:editorialNote "at risk" ;
 #     sh:closed false ;
-#     sh:order 10 ;
+#     sh:order 11 ;
 #     sh:property _:authorization ;
 #     sh:property _:alg ;
 #     sh:property _:format ;
@@ -905,7 +918,7 @@
             by the <a>Vocabulary Term</a> <code>oauth2</code> (i.e.,
             <code>"scheme": "oauth2"</code>)."""^^rdf:HTML ;
     sh:closed false ;
-    sh:order 11 ;
+    sh:order 12 ;
     sh:property [
         sh:path wotsec:authorization ;
         skos:definition """URI of the authorization server. In the case of the <code>device</code> flow, the URI provided for the <code>authorization</code> value refers to the device authorization endpoint [[!RFC8628]]."""^^rdf:HTML ;
@@ -1313,4 +1326,16 @@ _:alg sh:path wotsec:alg ;
         "ES512-256"
       );
       sh:defaultValue "ES256"^^xsd:string ;
+      sh:order 2 .
+
+_:oneOf sh:path wotsec:oneOf ;
+      skos:definition """Array of two or more strings identifying other named security scheme definitions, any one of which, when satisfied, will allow access.  Only one may be chosen for use."""^^rdf:HTML ;
+      sh:datatype xsd:string ;
+      sh:minCount 2 ;
+      sh:order 1 .
+
+_:allOf sh:path wotsec:allOf ;
+      skos:definition """Array of two or more strings identifying other named security scheme definitions, all of which must be satisfied for access."""^^rdf:HTML ;
+      sh:datatype xsd:string ;
+      sh:minCount 2 ;
       sh:order 2 .
