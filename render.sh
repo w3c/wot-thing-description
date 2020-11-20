@@ -91,11 +91,16 @@ for prefix in ${PREFIXES[@]}; do
 done
 
 echo "Rendering main specification..."
+FILE_INDEX=index.html
 $STTL_CMD -i validation/td-validation.ttl context/td-context.ttl $FILES \
           -t templates.sparql \
 		  -c "http://w3c.github.io/wot-thing-description/#main" \
-		  -o index.html
-echo "> index.html"
+		  -o $FILE_INDEX
+echo "Including JSON Schema..."
+FILE_INDEX2=index2.html
+sed -e '/{td.json-schema.validation}/r validation/td-json-schema-validation.json' -e '/{td.json-schema.validation}/d' $FILE_INDEX > $FILE_INDEX2
+mv $FILE_INDEX2 $FILE_INDEX
+echo "> $FILE_INDEX"
 
 # The TD specification includes diagrams that can be automatically generated
 # from the same SHACL source. The diagrams are first generated in textual form
