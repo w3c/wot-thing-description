@@ -3852,6 +3852,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     introduced. For Thing Model, an own content type is under discussion. Pleace note this section is in work in progress.
   </p>
 
+  <section id="thing-model-concept" class="normative">
+    <h2>Basic Concept</h2>
+
     <p>
     A <em>Thing Model</em> is a template for <a>Thing Descriptions</a> that have less restriction as 
     driven in <a href="#sec-vocabulary-definition"></a> and <a href="#sec-td-serialization"></a>. Typically <a>Thing Model</a> examples 
@@ -4043,6 +4046,11 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         Note that a <a>Thing Model</a> cannot be validated in the same way as <a>Thing Description</a> instances due to some missing 
         mandatory terms.
     </p>
+  </section>
+
+  <section id="thing-model-td-generation" class="normative">
+    <h2>Thing Model Derivation to Thing Description Instances</h2>
+  
     <p>
         Thing Model can specify which terms should be taken in a TD instance, but their values are unspecific and are first known during TD instantiation. 
         In such a case the placeholder labeling MAY be used in Thing Model that MUST be substituted with a concrete value when TD instance is created 
@@ -4053,23 +4061,80 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <p>
         The following Thing Model uses two unique placeholders: <code>{&ZeroWidthSpace;{BUZZER_NUMBER}}</code> and <code>{&ZeroWidthSpace;{MQTT_BROKER_ADDRESS}}</code>.
     </p>
-    <pre class="example" title="MyBuzzerThingModelserialized in JSON">
-    {
-        "@context": ["http://www.w3.org/ns/td"], 
-        "@type" : "ThingModel",
-        "title": "Buzzer No. {{BUZZER_NUMBER}}",
-        "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
-        "description": "Thing Model of a buzzer that makes noise for 10 seconds",
-         "actions": {
-            "buzz": {
-                "description": "buzz for 10 seconds"
-            }
-         }
-    }
-    </pre>
+
+    <aside class="example ds-selector-tabs" ><div class="marker">
+     <span class="example-title">Thing Description generation from Thing Model</span>
+      </div>
+        <div class="selectors">
+          <button class="selected" data-selects="expanded">Thing Model</button>
+          <button data-selects="statements">Thing Description</button>
+        </div>
+        <pre class="expanded input selected nohighlight"> {
+            "@context": ["http://www.w3.org/ns/td"], 
+            "@type" : "ThingModel",
+            "title": "Buzzer No. {{BUZZER_NUMBER}}",
+            "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
+            "description": "Definition of a buzzer that makes noise for 10 seconds",
+            ...
+        }</pre>
+        <table class="statements" data-result-for="Sample generated Thing Description instance based on TM placeholders" data-to-rdf="">
+            <pre class="expanded input selected nohighlight"> {
+            "@context": ["http://www.w3.org/ns/td"], 
+            "@type" : "Thing",
+            "title": "Buzzer No. 1",
+            "base": "mqtt://192.168.178.72:1883",
+            "description": "Definition of a buzzer that makes noise for 10 seconds",
+            ...
+            }</pre>
+        </table>
+      </aside>
+
+      <p>Thing description instances that follow a Thing model can carry the information which type 
+          of Thing model is derived. In this context, the linking concept can be used, as shown in the 
+          following example. 
+      </p>
+
+      <aside class="example ds-selector-tabs" ><div class="marker">
+        <span class="example-title">Linking Thing Description to a Thing Model Definition</span>
+         </div>
+           <div class="selectors">
+             <button class="selected" data-selects="expanded">Thing Model</button>
+             <button data-selects="statements">Thing Description</button>
+           </div>
+           <pre class="expanded input selected nohighlight">{
+            ...
+            "@type": "ThingModel",
+            "name": "Smart Pump",
+            "description": "Smart Pump live plant and simulator",
+            "id": "urn:smart:device:wot:pump",
+            "version" : {"model" : "1.0.0" },
+            ...
+        }</pre>
+           <table class="statements" data-result-for="Sample generated Thing Description instance based on TM placeholders" data-to-rdf="">
+               <pre class="expanded input selected nohighlight">
+                ...
+                "@type": "Thing",
+                "name": "Smart Pump",
+                "description": "Smart Pump live plant and simulator",
+                "id": "urn:smart:device:wot:pump:instance:1",
+                "version" : {"instance": "1.0.0",
+                             "model" : "1.0.0" },
+                "links" : [{
+                    "rel" : "instanceOf",
+                    "href" : "http://example.com/ThingModelPool/Pump",
+                    "type": "application/td+json"
+                }],
+                ...
+            }</pre>
+           </table>
+         </aside>
+</section>
+<section id="thing-model-td-generation-examples" class="normative">
+    <h2>Examples</h2>
 
 </section>
 
+</section>
   <section id="iana-section" class="normative">
   <h1>IANA Considerations</h1>
     <section id="media-type-section">
