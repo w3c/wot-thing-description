@@ -3352,7 +3352,6 @@ is shown below:
 }
 </pre>
 
-
   <p>
   When <code>forms</code> is present at the top level, it can be used to describe meta interactions offered by a <a>Thing</a>.
   For example, the operation types "readallproperties" and "writeallproperties" are for meta
@@ -4308,6 +4307,77 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     }
 }</pre>
     </aside>
+
+    <p>In the case of a <code>forms</code> entry that has multiple <code>op</code> values the usage 
+        of the <code>htv:methodName</code> is not permitted. A <a>TD Processor</a> will extend
+        the multiple <code>op</code> values to seperate <code>forms</code> entries and associates 
+        a single operation with the default assumption. The address information (e.g. <code>href</code>) and 
+        other metadata are taken over in the extended version.
+    </p>
+    
+        <aside class="example with-default">
+            <div class="with-default-control">
+                <input type="checkbox">
+                <span><i>extended <code>forms</code> in case of multiple values in <code>op</code></i></span>
+            </div>
+            <pre>{
+    "@context": "http://www.w3.org/ns/td",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "title": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [
+                {
+                    "op" : ["readproperty", "writeproperty"],
+                    "href": "https://mylamp.example.com/status"
+                }
+            ]
+        }
+    }
+}</pre>
+        <pre>{
+    "@context": "http://www.w3.org/ns/td",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "title": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [
+                {
+                    "op": "readproperty",
+                    "href": "https://mylamp.example.com/status",
+                    "htv:methodName": "GET"
+                },
+                {
+                    "op": "writeproperty",
+                    "href": "https://mylamp.example.com/status",
+                    "htv:methodName": "PUT"
+                }
+            ]
+        }
+    }
+}</pre>
+    </aside>
+
   </section>
 
   <section>
