@@ -12,7 +12,7 @@
             , previousPublishDate: "2020-11-24"
             , implementationReportURI:      "https://w3c.github.io/wot-thing-description/testing/report.html"
             //, processVersion: 2020
-            , wgPatentPolicy: "PP2017"
+            //, wgPatentPolicy: "PP2017" // deprecated, "group" option sets this automatically
             , shortName:      "wot-thing-description11"
             , copyrightStart: 2017
             , noLegacyStyle:  true
@@ -227,7 +227,7 @@ a[href].internalDFN {
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         // let ReSpec do syntax highlighting first
-        document.respecIsReady.then(() => {
+        document.respec.ready.then(() => {
             document.querySelectorAll('.with-default').forEach(n => {
                 let wo = n.querySelector('pre:nth-of-type(1)');
                 let w = n.querySelector('pre:nth-of-type(2)');
@@ -1230,8 +1230,9 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           "MUST">MUST</em> be one of the following <em>operation
           types</em>: <code>readallproperties</code>,
           <code>writeallproperties</code>,
-          <code>readmultipleproperties</code>, or
-          <code>writemultipleproperties</code>.</span> (See
+          <code>readmultipleproperties</code>,
+          <code>writemultipleproperties</code>, <code>observeallproperties</code>, or
+          <code>unobserveallproperties</code>.</span> (See
           <a href="#td-forms-readall-example">an example</a> for an
           usage of <code>form</code> in a Thing instance.)</p>
           <p>The data schema for each of these meta-interactions is
@@ -1784,7 +1785,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 the correct form for the operation required. op can
                 be assigned one or more interaction verb(s) each
                 representing a semantic intention of an
-                operation.</td><td>optional</td><td>any type (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, or <code>writemultipleproperties</code>)</td></tr></tbody></table><p>Possible values for the <code>contentCoding</code>
+                operation.</td><td>optional</td><td>any type (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, <code>writemultipleproperties</code>, <code>observeallproperties</code>, or <code>unobserveallproperties</code>)</td></tr></tbody></table><p>Possible values for the <code>contentCoding</code>
           property can be found, e.g., in the <a href=
           "https://www.iana.org/assignments/http-parameters/http-parameters.xhtml#content-coding">
           IANA HTTP content coding registry</a>.</p>
@@ -3351,7 +3352,6 @@ is shown below:
 }
 </pre>
 
-
   <p>
   When <code>forms</code> is present at the top level, it can be used to describe meta interactions offered by a <a>Thing</a>.
   For example, the operation types "readallproperties" and "writeallproperties" are for meta
@@ -4307,6 +4307,77 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     }
 }</pre>
     </aside>
+
+    <p>In the case of a <code>forms</code> entry that has multiple <code>op</code> values the usage 
+        of the <code>htv:methodName</code> is not permitted. A <a>TD Processor</a> will extend
+        the multiple <code>op</code> values to seperate <code>forms</code> entries and associates 
+        a single operation with the default assumption. The address information (e.g. <code>href</code>) and 
+        other metadata are taken over in the extended version.
+    </p>
+    
+        <aside class="example with-default">
+            <div class="with-default-control">
+                <input type="checkbox">
+                <span><i>extended <code>forms</code> in case of multiple values in <code>op</code></i></span>
+            </div>
+            <pre>{
+    "@context": "http://www.w3.org/ns/td",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "title": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [
+                {
+                    "op" : ["readproperty", "writeproperty"],
+                    "href": "https://mylamp.example.com/status"
+                }
+            ]
+        }
+    }
+}</pre>
+        <pre>{
+    "@context": "http://www.w3.org/ns/td",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "title": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [
+                {
+                    "op": "readproperty",
+                    "href": "https://mylamp.example.com/status",
+                    "htv:methodName": "GET"
+                },
+                {
+                    "op": "writeproperty",
+                    "href": "https://mylamp.example.com/status",
+                    "htv:methodName": "PUT"
+                }
+            ]
+        }
+    }
+}</pre>
+    </aside>
+
   </section>
 
   <section>
@@ -5463,7 +5534,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                                 "readallproperties",
                                 "writeallproperties",
                                 "readmultipleproperties",
-                                "writemultipleproperties"
+                                "writemultipleproperties",
+                                "observeallproperties",
+                                "unobserveallproperties"
                             ]
                         },
                         {
@@ -5474,7 +5547,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                                     "readallproperties",
                                     "writeallproperties",
                                     "readmultipleproperties",
-                                    "writemultipleproperties"
+                                    "writemultipleproperties",
+                                    "observeallproperties",
+                                    "unobserveallproperties"
                                 ]
                             }
                         }
