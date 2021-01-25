@@ -15,9 +15,13 @@ function fullIRI(curie, ctx) {
     return curie;
 }
 
+function scopeName(id) {
+    return id ? id.substring(id.indexOf('#') + 1) + "-" : ""; // TODO hash
+}
+
 function context(obj, id) {
     let ctx = obj['@context'];
-    let scope = id ? id.substring(id.indexOf('#') + 1) + "-" : ""; // TODO hash
+    let scope = scopeName(id);
     
     if (!ctx) {
         return '';
@@ -33,6 +37,8 @@ function context(obj, id) {
     Object.entries(ctx)
     .filter(([k, v]) => !k.startsWith('@'))
     .map(([k, v]) => {
+        txt += `_:${scope}context <${ld}definition> _:${scope}${k} .\r\n`;
+
         txt += `_:${scope}${k} <${a}> <${ld}Mapping> .\r\n`;
         txt += `_:${scope}${k} <${ld}term> "${k}" .\r\n`;
         
@@ -55,6 +61,7 @@ function context(obj, id) {
             }
     
             if (v['@context']) {
+                txt += `_:${scope}${k} <${ld}context> _:${scopeName(iri)}context .\r\n`;
                 txt += context(v, iri);
             }
         }
@@ -63,4 +70,40 @@ function context(obj, id) {
     return txt;
 }
 
-exports.toRDF = context;
+// CLI parser
+
+const msg = '\
+Usage: toRDF [options]\n\
+Options:\n\
+\t-i <file>\n\
+\t\tReads JSON input from <file>.\n\
+\t-o <file>\n\
+\t\tWrites RDF (N-Triples) to <file>.\n\
+\t-h\n\
+\t\tPrints this help message and exits.\n';
+
+let args = process.argv;
+
+if (args.indexOf('-h') > -1) {
+    console.log(msg);
+    return;
+}
+
+let i = args.indexOf('-i');
+let o = args.indexOf('-o');
+
+if (i > -1 && args[i + 1]) {
+    let input = args[i + 1];
+
+    let ctx = JSON.parse(fs.readFileSync(input));
+    let nt = context(ctx);
+
+    if (o > -1 && args[o + 1]) {
+        let output = args[o + 1];
+        fs.writeFileSync(output, nt);
+    } else {
+        console.log(nt);
+    }
+} else {
+    console.log(msg);
+}
