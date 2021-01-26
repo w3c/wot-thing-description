@@ -12,7 +12,7 @@
             , previousPublishDate: "2020-11-24"
             , implementationReportURI:      "https://w3c.github.io/wot-thing-description/testing/report.html"
             //, processVersion: 2020
-            , wgPatentPolicy: "PP2017"
+            //, wgPatentPolicy: "PP2017" // deprecated, "group" option sets this automatically
             , shortName:      "wot-thing-description11"
             , copyrightStart: 2017
             , noLegacyStyle:  true
@@ -227,7 +227,7 @@ a[href].internalDFN {
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         // let ReSpec do syntax highlighting first
-        document.respecIsReady.then(() => {
+        document.respec.ready.then(() => {
             document.querySelectorAll('.with-default').forEach(n => {
                 let wo = n.querySelector('pre:nth-of-type(1)');
                 let w = n.querySelector('pre:nth-of-type(2)');
@@ -1230,8 +1230,9 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           "MUST">MUST</em> be one of the following <em>operation
           types</em>: <code>readallproperties</code>,
           <code>writeallproperties</code>,
-          <code>readmultipleproperties</code>, or
-          <code>writemultipleproperties</code>.</span> (See
+          <code>readmultipleproperties</code>,
+          <code>writemultipleproperties</code>, <code>observeallproperties</code>, or
+          <code>unobserveallproperties</code>.</span> (See
           <a href="#td-forms-readall-example">an example</a> for an
           usage of <code>form</code> in a Thing instance.)</p>
           <p>The data schema for each of these meta-interactions is
@@ -1435,10 +1436,10 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                       information based on a default language.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-descriptions--DataSchema"><td><code>descriptions</code></td><td>Can be used to support (human-readable)
                        information in different languages. Also see <cite><a href='#multilanguage'>MultiLanguage</a></cite>.</td><td>optional</td><td><a>Map</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-const--DataSchema"><td><code>const</code></td><td>Provides a constant value.</td><td>optional</td><td>any type</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-unit--DataSchema"><td><code>unit</code></td><td>Provides unit information that is used, e.g.,
                 in international science, engineering, and
                 business.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-const--DataSchema"><td><code>const</code></td><td>Provides a constant value.</td><td>optional</td><td>any type</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-oneOf--DataSchema"><td><code>oneOf</code></td><td>Used to ensure that the data is valid against
                 one of the specified schemas in the array.</td><td>optional</td><td><a>Array</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-enum--DataSchema"><td><code>enum</code></td><td>Restricted set of values provided as an
@@ -1592,7 +1593,25 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           for example, TLS.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-name--BasicSecurityScheme"><td><code>name</code></td><td>Name for query, header, or cookie
                parameters.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-in--BasicSecurityScheme"><td><code>in</code></td><td>Specifies the location of security
-            authentication information.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, or <code>cookie</code>)</td></tr></tbody></table></section>
+            authentication information. 
+            The value "<code>header</code>" means in a header provided by the protocol, with the name of the header
+            provided in the value of "<code>name</code>".
+            The value "<code>query</code>" means in the URI as a query parameter, with the name of the 
+            query parameter provided by "<code>name</code>".
+            The value "<code>body</code>" means in the body of the request payload, with the data schema element  
+            provided by "<code>name</code>" (if "<code>name</code>" is not given, it is assumed the entire body
+            is to be used as the security authentication information).
+            The value "<code>cookie</code>" means in the cookie identified by the value of   
+            "<code>name</code>".
+            The value "<code>uri</code>" means embedded in the URI itself.  In this case a URI template
+            must be associated with the interactions that the security scheme is used with, and particular
+            named parameters, identified in the object
+            "<code>parameters</code>", are to be used as security authentication information.  
+            The map
+            "<code>parameters</code>" consists of name-value pairs with the names being one or more of
+            "<code>id</code>" or "<code>key</code>" and then names being names of URI template variables. 
+            Here <code>id</code> indicates a non-secret identifier and <code>key</code> indicates a "secret"
+            API key.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, <code>cookie</code>, or <code>uri</code>)</td></tr></tbody></table></section>
 <section><h3><code>DigestSecurityScheme</code></h3><p>Digest Access Authentication [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc7616" title="HTTP Digest Access Authentication">RFC7616</a></cite>]
           security configuration identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a> <code>digest</code> (i.e.,
           <code>"scheme": "digest"</code>). This scheme is similar
@@ -1601,7 +1620,25 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                parameters.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-qop--DigestSecurityScheme"><td><code>qop</code></td><td>Quality of protection.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>auth</code>, or <code>auth-int</code>)</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-in--DigestSecurityScheme"><td><code>in</code></td><td>Specifies the location of security
-            authentication information.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, or <code>cookie</code>)</td></tr></tbody></table></section>
+            authentication information. 
+            The value "<code>header</code>" means in a header provided by the protocol, with the name of the header
+            provided in the value of "<code>name</code>".
+            The value "<code>query</code>" means in the URI as a query parameter, with the name of the 
+            query parameter provided by "<code>name</code>".
+            The value "<code>body</code>" means in the body of the request payload, with the data schema element  
+            provided by "<code>name</code>" (if "<code>name</code>" is not given, it is assumed the entire body
+            is to be used as the security authentication information).
+            The value "<code>cookie</code>" means in the cookie identified by the value of   
+            "<code>name</code>".
+            The value "<code>uri</code>" means embedded in the URI itself.  In this case a URI template
+            must be associated with the interactions that the security scheme is used with, and particular
+            named parameters, identified in the object
+            "<code>parameters</code>", are to be used as security authentication information.  
+            The map
+            "<code>parameters</code>" consists of name-value pairs with the names being one or more of
+            "<code>id</code>" or "<code>key</code>" and then names being names of URI template variables. 
+            Here <code>id</code> indicates a non-secret identifier and <code>key</code> indicates a "secret"
+            API key.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, <code>cookie</code>, or <code>uri</code>)</td></tr></tbody></table></section>
 <section><h3><code>APIKeySecurityScheme</code></h3><p>API key authentication security configuration
           identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a>
           <code>apikey</code> (i.e., <code>"scheme":
@@ -1610,7 +1647,25 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           format.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-name--APIKeySecurityScheme"><td><code>name</code></td><td>Name for query, header, or cookie
                parameters.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-in--APIKeySecurityScheme"><td><code>in</code></td><td>Specifies the location of security
-            authentication information.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, or <code>cookie</code>)</td></tr></tbody></table></section>
+            authentication information. 
+            The value "<code>header</code>" means in a header provided by the protocol, with the name of the header
+            provided in the value of "<code>name</code>".
+            The value "<code>query</code>" means in the URI as a query parameter, with the name of the 
+            query parameter provided by "<code>name</code>".
+            The value "<code>body</code>" means in the body of the request payload, with the data schema element  
+            provided by "<code>name</code>" (if "<code>name</code>" is not given, it is assumed the entire body
+            is to be used as the security authentication information).
+            The value "<code>cookie</code>" means in the cookie identified by the value of   
+            "<code>name</code>".
+            The value "<code>uri</code>" means embedded in the URI itself.  In this case a URI template
+            must be associated with the interactions that the security scheme is used with, and particular
+            named parameters, identified in the object
+            "<code>parameters</code>", are to be used as security authentication information.  
+            The map
+            "<code>parameters</code>" consists of name-value pairs with the names being one or more of
+            "<code>id</code>" or "<code>key</code>" and then names being names of URI template variables. 
+            Here <code>id</code> indicates a non-secret identifier and <code>key</code> indicates a "secret"
+            API key.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, <code>cookie</code>, or <code>uri</code>)</td></tr></tbody></table></section>
 <section><h3><code>BearerSecurityScheme</code></h3><p>Bearer Token [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc6750" title="The OAuth 2.0 Authorization Framework: Bearer Token Usage">RFC6750</a></cite>]
           security configuration identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a> <code>bearer</code> (i.e.,
           <code>"scheme": "bearer"</code>) for situations where
@@ -1636,7 +1691,25 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 <tr class="rfc2119-table-assertion" id="td-vocab-format--BearerSecurityScheme"><td><code>format</code></td><td>Specifies format of security authentication
                  information.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (e.g., <code>jwt</code>, <code>cwt</code>, <code>jwe</code>, or <code>jws</code>)</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-in--BearerSecurityScheme"><td><code>in</code></td><td>Specifies the location of security
-            authentication information.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, or <code>cookie</code>)</td></tr></tbody></table></section>
+            authentication information. 
+            The value "<code>header</code>" means in a header provided by the protocol, with the name of the header
+            provided in the value of "<code>name</code>".
+            The value "<code>query</code>" means in the URI as a query parameter, with the name of the 
+            query parameter provided by "<code>name</code>".
+            The value "<code>body</code>" means in the body of the request payload, with the data schema element  
+            provided by "<code>name</code>" (if "<code>name</code>" is not given, it is assumed the entire body
+            is to be used as the security authentication information).
+            The value "<code>cookie</code>" means in the cookie identified by the value of   
+            "<code>name</code>".
+            The value "<code>uri</code>" means embedded in the URI itself.  In this case a URI template
+            must be associated with the interactions that the security scheme is used with, and particular
+            named parameters, identified in the object
+            "<code>parameters</code>", are to be used as security authentication information.  
+            The map
+            "<code>parameters</code>" consists of name-value pairs with the names being one or more of
+            "<code>id</code>" or "<code>key</code>" and then names being names of URI template variables. 
+            Here <code>id</code> indicates a non-secret identifier and <code>key</code> indicates a "secret"
+            API key.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, <code>cookie</code>, or <code>uri</code>)</td></tr></tbody></table></section>
 <section><h3><code>PSKSecurityScheme</code></h3><p>Pre-shared key authentication security configuration
           identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a>
           <code>psk</code> (i.e., <code>"scheme":
@@ -1784,7 +1857,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 the correct form for the operation required. op can
                 be assigned one or more interaction verb(s) each
                 representing a semantic intention of an
-                operation.</td><td>optional</td><td>any type (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, or <code>writemultipleproperties</code>)</td></tr></tbody></table><p>Possible values for the <code>contentCoding</code>
+                operation.</td><td>optional</td><td>any type (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, <code>writemultipleproperties</code>, <code>observeallproperties</code>, or <code>unobserveallproperties</code>)</td></tr></tbody></table><p>Possible values for the <code>contentCoding</code>
           property can be found, e.g., in the <a href=
           "https://www.iana.org/assignments/http-parameters/http-parameters.xhtml#content-coding">
           IANA HTTP content coding registry</a>.</p>
@@ -3351,7 +3424,6 @@ is shown below:
 }
 </pre>
 
-
   <p>
   When <code>forms</code> is present at the top level, it can be used to describe meta interactions offered by a <a>Thing</a>.
   For example, the operation types "readallproperties" and "writeallproperties" are for meta
@@ -4307,6 +4379,77 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     }
 }</pre>
     </aside>
+
+    <p>In the case of a <code>forms</code> entry that has multiple <code>op</code> values the usage 
+        of the <code>htv:methodName</code> is not permitted. A <a>TD Processor</a> will extend
+        the multiple <code>op</code> values to seperate <code>forms</code> entries and associates 
+        a single operation with the default assumption. The address information (e.g. <code>href</code>) and 
+        other metadata are taken over in the extended version.
+    </p>
+    
+        <aside class="example with-default">
+            <div class="with-default-control">
+                <input type="checkbox">
+                <span><i>extended <code>forms</code> in case of multiple values in <code>op</code></i></span>
+            </div>
+            <pre>{
+    "@context": "http://www.w3.org/ns/td",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "title": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [
+                {
+                    "op" : ["readproperty", "writeproperty"],
+                    "href": "https://mylamp.example.com/status"
+                }
+            ]
+        }
+    }
+}</pre>
+        <pre>{
+    "@context": "http://www.w3.org/ns/td",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "title": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [
+                {
+                    "op": "readproperty",
+                    "href": "https://mylamp.example.com/status",
+                    "htv:methodName": "GET"
+                },
+                {
+                    "op": "writeproperty",
+                    "href": "https://mylamp.example.com/status",
+                    "htv:methodName": "PUT"
+                }
+            ]
+        }
+    }
+}</pre>
+    </aside>
+
   </section>
 
   <section>
@@ -5463,7 +5606,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                                 "readallproperties",
                                 "writeallproperties",
                                 "readmultipleproperties",
-                                "writemultipleproperties"
+                                "writemultipleproperties",
+                                "observeallproperties",
+                                "unobserveallproperties"
                             ]
                         },
                         {
@@ -5474,7 +5619,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                                     "readallproperties",
                                     "writeallproperties",
                                     "readmultipleproperties",
-                                    "writemultipleproperties"
+                                    "writemultipleproperties",
+                                    "observeallproperties",
+                                    "unobserveallproperties"
                                 ]
                             }
                         }
