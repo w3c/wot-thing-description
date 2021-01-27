@@ -736,12 +736,46 @@
     sh:targetClass wotsec:SecurityScheme ;
     skos:definition """Metadata describing the configuration of a security
           mechanism. <span class="rfc2119-assertion" id="td-security-scheme-name">The value assigned to the name
-          <code>scheme</code> <em class="rfc2119" title="MUST">MUST</em> be defined within a <a href="#dfn-vocab" class="internalDFN" data-link-type="dfn">Vocabulary</a>
+          <code>scheme</code> <em class="rfc2119" title="MUST">MUST</em> be defined within a 
+          <a href="#dfn-vocab" class="internalDFN" data-link-type="dfn">Vocabulary</a>
           included in the <a href="#dfn-thing-description" class="internalDFN" data-link-type="dfn">Thing Description</a>,
           either in the standard <a href="#dfn-vocab" class="internalDFN" data-link-type="dfn">Vocabulary</a> defined
           in <a href="#sec-vocabulary-definition" class="sec-ref">§&nbsp;<bdi class="secno">5.</bdi> TD
           Information Model</a> or in a <a href="#dfn-context-ext" class="internalDFN" data-link-type="dfn">TD Context
-          Extension</a>.</span>"""^^rdf:HTML ;
+          Extension</a>.</span>
+          Security schemes generally may require additional authentication
+          information (such as a password or key) as part of the
+          protocol and the location of this information is indicated by the
+          \"<code>in</code>\" field, which can take various values.
+          The value \"<code>header</code>\" means additional information 
+            in a header provided by the protocol, with the name of the header
+            provided by the additional field \"<code>name</code>\".
+          The value \"<code>query</code>\" means in the URI as a query parameter, with the name of the 
+            query parameter provided by \"<code>name</code>\".
+          The value \"<code>body</code>\" means in the body of the request payload, with the data schema element  
+            provided by \"<code>name</code>\" (if \"<code>name</code>\" is not given, it is assumed the entire body
+            is to be used as the security authentication information).
+          The value \"<code>cookie</code>\" means in the cookie identified by the value of   
+            \"<code>name</code>\".
+          The value \"<code>uri</code>\" means embedded in the URI itself.  This is more general than
+          the \"<code>query</code>\" mechanism but more complex. 
+          <span class=\"rfc2119-assertion\" id="td-security-in-query-over-uri">The value \"<code>uri</code>\" 
+          <em class=\"rfc2119\" title=\"SHOULD\">SHOULD</em> be specified 
+          for the \"<code>in</code>\" field in a security scheme only if
+          \"<code>query</code>\" is not applicable.</span>  
+          <span class=\"rfc2119-assertion\" id=\"td-security-uri-variables\">If \"<code>uri</code>\" 
+          is specified in the <code>in</code>\" field
+          of a security scheme then a set of one or more URI template
+            variables <em class=\"rfc2119\" title=\"MUST\">MUST</em> be defined in the additional field
+            \"<code>uriVariables</code>\".</span>  
+            <span class=\"rfc2119-assertion\" id="td-security-uri-variable-at-types\">In 
+             order to identify their functions, 
+             URI template variables declared in a security scheme
+             <em class=\"rfc2119\" title=\"MUST\">MUST</em> be marked with
+            special \"<code>@type</code>\" values.</span>
+          Currently two such values are defined:
+            \"<code>SecurityIdentifier</code>\" indicates a non-secret client identifier and 
+            \"<code>SecurityKey</code> indicates a \"secret\" key or password."""^^rdf:HTML ;
     sh:closed false ;
     sh:order 1 ;
     sh:property [
@@ -848,6 +882,14 @@
     sh:closed false ;
     sh:order 6 ;
     sh:property _:in ;
+    sh:property [
+        sh:path td:hasUriTemplateSchema ;
+#       sh:path wotsec:uriVariables ;
+        skos:definition """Define URI query template variables as collection
+                based on DataSchema declarations."""^^rdf:HTML ;
+        sh:node :DataSchemaShape ;
+        sh:order 6 ;
+    ] ;
     sh:property _:name .
 
 :BearerSecuritySchemeShape a sh:NodeShape ;
@@ -1358,25 +1400,7 @@ _:descriptions sh:path dcterms:description ;
 
 _:in sh:path wotsec:in ;
      skos:definition """Specifies the location of security
-            authentication information. 
-            The value \"<code>header</code>\" means in a header provided by the protocol, with the name of the header
-            provided in the value of \"<code>name</code>\".
-            The value \"<code>query</code>\" means in the URI as a query parameter, with the name of the 
-            query parameter provided by \"<code>name</code>\".
-            The value \"<code>body</code>\" means in the body of the request payload, with the data schema element  
-            provided by \"<code>name</code>\" (if \"<code>name</code>\" is not given, it is assumed the entire body
-            is to be used as the security authentication information).
-            The value \"<code>cookie</code>\" means in the cookie identified by the value of   
-            \"<code>name</code>\".
-            The value \"<code>uri</code>\" means embedded in the URI itself.  In this case a URI template
-            must be associated with the interactions that the security scheme is used with, and particular
-            named parameters, identified in the object
-            \"<code>parameters</code>\", are to be used as security authentication information.  
-            The map
-            \"<code>parameters</code>\" consists of name-value pairs with the names being one or more of
-            \"<code>id</code>\" or \"<code>key</code>\" and then names being names of URI template variables. 
-            Here <code>id</code> indicates a non-secret identifier and <code>key</code> indicates a \"secret\"
-            API key."""^^rdf:HTML ;
+            authentication information.  """^^rdf:HTML ;
      sh:datatype xsd:string ;
      sh:maxCount 1 ;
      sh:in (
@@ -1396,11 +1420,11 @@ _:name sh:path wotsec:name ;
        sh:maxCount 1 ;
        sh:order 101 .
 
-_:parameters sh:path wotsec:parameters ;
-       skos:definition """Parameter map for URI template variables to be used in security schemes."""^^rdf:HTML ;
-       sh:datatype xsd:string ;
+_:uriVariables sh:path wotsec:uriVariables ;
+       skos:definition """Declaration of URI template variables to be used in security schemes."""^^rdf:HTML ;
+       sh:node :DataSchemaShape ;
        sh:maxCount 1 ;
-       sh:order 101 .
+       sh:order 102 .
 
 _:authorization sh:path wotsec:authorization ;
                 skos:definition """URI of the authorization server."""^^rdf:HTML ;
