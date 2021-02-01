@@ -743,39 +743,57 @@
           in <a href="#sec-vocabulary-definition" class="sec-ref">§&nbsp;<bdi class="secno">5.</bdi> TD
           Information Model</a> or in a <a href="#dfn-context-ext" class="internalDFN" data-link-type="dfn">TD Context
           Extension</a>.</span>
+          </p><p>
+          <span class="rfc2119-assertion" id="td-security-no-secrets">For all security schemes,
+          any private keys, passwords, or other sensitive information directly providing access 
+          should be shared and stored out-of-band and <em class="rfc2119" title="MUST NOT">MUST NOT</em> be stored in the TD.</span> 
+          The purpose of a TD is to describe how to access a Thing if and only if a Consumer 
+          already has authorization, and is not meant be used to grant that authorization.
+          </p><p>
           Security schemes generally may require additional authentication
-          information (such as a password or key) as part of the
-          protocol and the location of this information is indicated by the
-          \"<code>in</code>\" field, which can take various values.
-          The value \"<code>header</code>\" means additional information 
+          parameters, such as a password or key.
+          The location of this information is indicated by the
+          value associated with the name <code>in</code>, often in combination with the value associated with <code>name</code>.
+          The value associated with <code>in</code> can take one of the following values:
+          <dl>
+          <dt><code>header</code>:</dt>
+          <dd>The parameter will be given
             in a header provided by the protocol, with the name of the header
-            provided by the additional field \"<code>name</code>\".
-          The value \"<code>query</code>\" means in the URI as a query parameter, with the name of the 
-            query parameter provided by \"<code>name</code>\".
-          The value \"<code>body</code>\" means in the body of the request payload, with the data schema element  
-            provided by \"<code>name</code>\" (if \"<code>name</code>\" is not given, it is assumed the entire body
-            is to be used as the security authentication information).
-          The value \"<code>cookie</code>\" means in the cookie identified by the value of   
-            \"<code>name</code>\".
-          The value \"<code>uri</code>\" means embedded in the URI itself.  This is more general than
-          the \"<code>query</code>\" mechanism but more complex. 
-          <span class=\"rfc2119-assertion\" id="td-security-in-query-over-uri">The value \"<code>uri</code>\" 
-          <em class=\"rfc2119\" title=\"SHOULD\">SHOULD</em> be specified 
-          for the \"<code>in</code>\" field in a security scheme only if
-          \"<code>query</code>\" is not applicable.</span>  
-          <span class=\"rfc2119-assertion\" id=\"td-security-uri-variables\">If \"<code>uri</code>\" 
-          is specified in the <code>in</code>\" field
-          of a security scheme then a set of one or more URI template
-            variables <em class=\"rfc2119\" title=\"MUST\">MUST</em> be defined in the additional field
-            \"<code>uriVariables</code>\".</span>  
-            <span class=\"rfc2119-assertion\" id="td-security-uri-variable-at-types\">In 
-             order to identify their functions, 
-             URI template variables declared in a security scheme
-             <em class=\"rfc2119\" title=\"MUST\">MUST</em> be marked with
-            special \"<code>@type</code>\" values.</span>
-          Currently two such values are defined:
-            \"<code>SecurityIdentifier</code>\" indicates a non-secret client identifier and 
-            \"<code>SecurityKey</code> indicates a \"secret\" key or password."""^^rdf:HTML ;
+            provided by the value of <code>name</code>.</dd>
+          <dt><code>query</code>:</dt>
+          <dd>The parameter will be appended to the URI as a query parameter, with the name of the 
+            query parameter provided by <code>name</code>.</dd>
+          <dt><code>body</code>:</dt>
+          <dd>The parameter will be provided in the body of the request payload, with the data schema element  
+            used provided by <code>name</code>.
+            If <code>name</code> is not given, it is assumed the entire body
+            is to be used as the security parameter.
+          </dd>
+          <dt><code>cookie</code>:</dt>
+          <dd>The parameter is stored in a cookie identified by the value of   
+            <code>name</code>.
+          </dd>
+          <dt><code>uri</code>:</dt>
+          <dd>The parameter is embedded in the URI itself, which is encoded in the
+          relevant interaction using a URI template variable defined by the value of <code>name</code>.
+          This is more general than the <code>query</code> mechanism but more complex. 
+          <span class="rfc2119-assertion" id="td-security-in-query-over-uri">The value <code>uri</code> 
+          <em class="rfc2119" title="SHOULD">SHOULD</em> be specified 
+          for the name <code>in</code> in a security scheme only if
+          <code>query</code> is not applicable.</span>  
+          <span class="rfc2119-assertion" id="td-security-in-uri-variable">The URIs provided
+          in interactions where a security scheme using <code>uri</code> as the value for <code>in</code>
+          <em class="rfc2119" title="MUST">MUST</em> be a URI template including the defined variable.
+          </span>  
+          </dd>
+          </dl>
+          If multiple parameters are needed for a security scheme, repeat the security scheme definition for
+          each parameter and combine them using a <code>combo</code> security scheme and <code>allOf</code>.
+          In some cases parameters may not actually be secret but a user may wish to leave them
+          out of the TD to help protect privacy.  As an example of this, some security mechanisms
+          require both a client identifier and a secret key.  In theory, the client identifier is 
+          public however it may be hard to update and pose a tracking risk.  In such a case it can
+          be provided as an additional security parameter so it does not appear in the TD."""^^rdf:HTML ;
     sh:closed false ;
     sh:order 1 ;
     sh:property [
@@ -876,20 +894,16 @@
     skos:definition """API key authentication security configuration
           identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a>
           <code>apikey</code> (i.e., <code>"scheme":
-          "apikey"</code>). This is for the case where the access
-          token is opaque and is not using a standard token
-          format."""^^rdf:HTML ;
+          "apikey"</code>). 
+          This scheme is to be used when the access token is opaque,
+          for example when a key in an unknown or proprietary format is provided by a cloud service provider.
+          In this case the key may not be using a standard token format.
+          This scheme indicates that the key provided by the service provider 
+          needs to be supplied as part 
+          of service requests using the mechanism indicated by the <code>\"in\"</code> field."""^^rdf:HTML ;
     sh:closed false ;
     sh:order 6 ;
     sh:property _:in ;
-    sh:property [
-        sh:path td:hasUriTemplateSchema ;
-#       sh:path wotsec:uriVariables ;
-        skos:definition """Define URI query template variables as collection
-                based on DataSchema declarations."""^^rdf:HTML ;
-        sh:node :DataSchemaShape ;
-        sh:order 6 ;
-    ] ;
     sh:property _:name .
 
 :BearerSecuritySchemeShape a sh:NodeShape ;
@@ -934,7 +948,9 @@
     skos:definition """Pre-shared key authentication security configuration
           identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a>
           <code>psk</code> (i.e., <code>"scheme":
-          "psk"</code>)."""^^rdf:HTML ;
+          "psk"</code>).
+          This is meant to identify that a standard is used for pre-shared keys such as TLS-PSK [[rfc4279]], 
+          and that the ciphersuite used for keys will be established during protocol negotiation."""^^rdf:HTML ;
     sh:closed false ;
     sh:order 9 ;
     sh:property _:identity .
@@ -1414,7 +1430,7 @@ _:in sh:path wotsec:in ;
     sh:order 100 .
 
 _:name sh:path wotsec:name ;
-       skos:definition """Name for query, header, or cookie
+       skos:definition """Name for query, header, cookie, or uri
                parameters."""^^rdf:HTML ;
        sh:datatype xsd:string ;
        sh:maxCount 1 ;
