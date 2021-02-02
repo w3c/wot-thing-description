@@ -1553,7 +1553,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       </p>
 
       <!-- rendered from RDF definitions -->
-      <section><h3><code>SecurityScheme</code></h3><p>Metadata describing the configuration of a security
+      <section><h3><code>SecurityScheme</code></h3><p><p>Metadata describing the configuration of a security
           mechanism. <span class="rfc2119-assertion" id="td-security-scheme-name">The value assigned to the name
           <code>scheme</code> <em class="rfc2119" title="MUST">MUST</em> be defined within a 
           <a href="#dfn-vocab" class="internalDFN" data-link-type="dfn">Vocabulary</a>
@@ -1612,7 +1612,12 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           out of the TD to help protect privacy.  As an example of this, some security mechanisms
           require both a client identifier and a secret key.  In theory, the client identifier is 
           public however it may be hard to update and pose a tracking risk.  In such a case it can
-          be provided as an additional security parameter so it does not appear in the TD.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-at-type--SecurityScheme"><td><code>@type</code></td><td>JSON-LD keyword to label the object with semantic tags (or types).</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-description--SecurityScheme"><td><code>description</code></td><td>Provides additional (human-readable)
+          be provided as an additional security parameter so it does not appear in the TD.
+          </p><p>
+          <span class="rfc2119-assertion" id="td-security-uri-variables-distinct">The names of URI variables 
+          declared in a <code>SecurityScheme</code> 
+          <em class="rfc2119" title="MUST">MUST</em> be distinct from all other URI variables 
+          declared in the TD.</span></p></p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-at-type--SecurityScheme"><td><code>@type</code></td><td>JSON-LD keyword to label the object with semantic tags (or types).</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-description--SecurityScheme"><td><code>description</code></td><td>Provides additional (human-readable)
                       information based on a default language.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-descriptions--SecurityScheme"><td><code>descriptions</code></td><td>Can be used to support (human-readable)
                        information in different languages. Also see <cite><a href='#multilanguage'>MultiLanguage</a></cite>.</td><td>optional</td><td><a>Map</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
@@ -2987,6 +2992,59 @@ In summary, this requires the following:
     ...
 }
 </pre>
+
+  <p>To give another example of the use of
+  the <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> and the
+  use of URI templates to embed security keys in URLs, suppose there is a security scheme
+  where a client ID and a "secret" key provided by a cloud service provider must both be
+  embedded in the URL.  Technically, only the key is actually secret and must be handled
+  out-of-band, and the client ID, which is not secret, could be embedded in the TD.
+  However, if the client ID cannot be easily rotated we may want to avoid embedding it in
+  the TD to enhance privacy.
+  In this case we can combine two instances of 
+  <a href="#apikeysecurityscheme"><code>APIKeySecurityScheme</code></a>, both
+  using the <code>uri</code> value for the <code>in</code> location specifier, to 
+  declare two URI variables.  These can then (in fact, they must) be used in the 
+  <code>href</code> in a <code>Form</code> where the security scheme is active.
+  An example follows:
+  </p>
+<pre class="example">
+{
+    ...
+    "securityDefinitions": {
+        "apikey_key": {
+            "scheme": "apikey",
+            "in": "uri",
+            "name": "Key"
+        },
+        "apikey_id": {
+            "scheme": "apikey",
+            "in": "uri",
+            "name": "ClientID"
+        },
+        "apikey_combo": {
+            "scheme": "combo",
+            "allOf": ["apikey_key","apikey_id"]
+        }
+    },
+    "security": "apikey_combo",
+    ...
+    "properties": {
+        "status": {
+            ...
+            "forms": [{
+                "href": "https://example.com/{ClientID}/status/{Key}",
+                ...
+            }]
+        }
+    },
+    ...
+}
+</pre>
+<p>While not shown in this example, it is legal to declare additional URI template
+variables using <code>uriVariables</code> and include them in the same URI template,
+although the names cannot conflict.
+</p>
 
 </section> <!-- end of id="security-serialization-json"-->    
 
