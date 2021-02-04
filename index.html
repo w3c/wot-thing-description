@@ -4726,12 +4726,22 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <p>
         Thing Model can specify which terms should be taken in a TD instance, but their values are unspecific and are first known during TD instantiation. 
         In such a case the placeholder labeling MAY be used in Thing Model that MUST be substituted with a concrete value when TD instance is created 
-        from the Thing Model. The pattern of the placeholder MUST follow <code>{&ZeroWidthSpace;{PLACEHOLDER_IDENTIFIER}}</code> that should hold 
+        from the Thing Model. 
+        <span class="rfc2119-assertion" id="td-model-placeholder">
+        The pattern of the placeholder MUST follow <code>{&ZeroWidthSpace;{PLACEHOLDER_IDENTIFIER}}</code> that should hold 
         an placeholder identifier in upper-case character.
+        </span>
+        Placeholder can be only applied within the value of the JSON name-value pair and the value have to be typed as JSON string. 
+        <span class="rfc2119-assertion" id="td-model-placeholder-retyping"></span>
+        In the case a non string-based value of a JSON name-value pair should have a placeholder the value must be typed as string.
+        </span>
+        After replacing the placeholder, e.g. when creating a Thing Description instance, the original type can be applied with the 
+        corresponding replaced value.            
     </p>
 
     <p>
-        The following Thing Model uses two unique placeholders: <code>{&ZeroWidthSpace;{BUZZER_NUMBER}}</code> and <code>{&ZeroWidthSpace;{MQTT_BROKER_ADDRESS}}</code>.
+        The following Thing Model example defines different placeholders. The placeholder map is used to apply the replacement and to
+        transform the intended value type.    
     </p>
 
     <aside class="example ds-selector-tabs" ><div class="marker">
@@ -4739,27 +4749,49 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
       </div>
         <div class="selectors">
           <button class="selected" data-selects="expanded">Thing Model</button>
+          <button class="selected" data-selects="expanded">Placeholder Map</button>
           <button data-selects="statements">Thing Description</button>
         </div>
         <pre class="expanded input selected nohighlight"> {
             "@context": ["http://www.w3.org/ns/td"], 
             "@type" : "ThingModel",
-            "title": "Buzzer No. {{BUZZER_NUMBER}}",
+            "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
             "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
-            "description": "Definition of a buzzer that makes noise for 10 seconds",
+            "properties": {
+                "temperature": {
+                    "description": "Shows the current temperature value",
+                    "type": "number",
+                    "minimum": -20,
+                    "maximum": "{{THERMOSTATE_TEMPERATURE_MAXIMUM}}",
+                    "observable" : "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}"
             ...
         }</pre>
-        <table class="statements" data-result-for="Sample generated Thing Description instance based on TM placeholders" data-to-rdf="">
-            <pre class="expanded input selected nohighlight"> {
+        <pre class="expanded input selected nohighlight"> {
+            "THERMOSTATE_NUMBER": 4, 
+            "MQTT_BROKER_ADDRESS" : "192.168.178.72:1883",
+            "THERMOSTATE_TEMPERATURE_MAXIMUM": 47.7, 
+            "THERMOSTATE_TEMPERATURE_OBSERVABLE" : true
+            }</pre>
+        <pre class="expanded input selected nohighlight"> {
             "@context": ["http://www.w3.org/ns/td"], 
-            "@type" : "Thing",
-            "title": "Buzzer No. 1",
+            "@type" : "ThingModel",
+            "title": "Thermostate No. 4",
             "base": "mqtt://192.168.178.72:1883",
-            "description": "Definition of a buzzer that makes noise for 10 seconds",
+            "properties": {
+                "temperature": {
+                    "description": "Shows the current temperature value",
+                    "type": "number",
+                    "minimum": -20.0,
+                    "maximum": 47.7,
+                    "observable" : true
             ...
             }</pre>
-        </table>
+        
       </aside>
+
+
+
+
 
       <p>Thing description instances that follow a Thing model can carry the information which type 
           of Thing model is derived. In this context, the linking concept can be used with <code>"rel" : "type"</code> (also see
