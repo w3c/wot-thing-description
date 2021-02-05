@@ -4567,6 +4567,13 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     model describes. They might have URLs (e.g., like token servers) that might need to be omitted or parameterized 
     (with templates) although in a lot of cases these might also be given. 
     </p>
+
+
+    <p>
+        <a>Thing Model</a> can be serialized in the same JSON-based format as a Thing Description which also allows JSON-LD processing. 
+        Note that a <a>Thing Model</a> cannot be validated in the same way as <a>Thing Description</a> instances due to some missing 
+        mandatory terms.
+    </p>
     
     <p>
     A <a>Thing Model</a> is recognized by the top level <em>@type</em>.
@@ -4718,33 +4725,64 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     </p>
 
     <p>
-        Here comes a extend example...
+       Lets assume we have a basic model desciption as provided in the following example:
+    </p>
 
+    <pre class="example" title="Basic On/Off Thing Model Definition">
+        {
+            "@context": ["http://www.w3.org/ns/td"], 
+            "@type" : "ThingModel",
+            "title": "Basic On/Off Thing Model",
+            "properties": {
+                "onOff": {
+                    "type": "boolean"
+                }
+            }
+        }
+    </pre>
+
+    <p>Now it is designed a new device class model called 'Smart Lamp Control' that should be used as template 
+        for creating TD instances. This model will reuse the existing definition of the 'Basic On/Off Thing Model'
+        and extend it with a dimmer property:
     </p>
-    
+
+    <pre class="example" title="Basic On/Off Thing Model Definition">
+        {
+            "@context": ["http://www.w3.org/ns/td"], 
+            "@type" : "ThingModel",
+            "title": "Smart Lamp Control",
+            "links" : [{
+                "rel": "extends",
+                "href": "http://example.com/BasicOnOffTM",
+                "type": "application/td+json"
+             }],
+            "properties" : {
+                "dimmer" : {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                }
+           }
+        }
+    </pre>
     <p>
-    A common Thing Model for a class of devices enables writing applications across vendors and
-    creates a more attractive market for application developers.
-    A concrete Thing Description can implement multiple Thing Model and
-    thus can aggregate function blocks into a combined device.
+    Please note that the <code>title</code> is overwritten and will be used when TD insances are created (also see in the next subsection <a href="#thing-model-td-generation"></a>).
     </p>
-    
-    <p>
-    The business models of cloud vendors are typically built on managing thousands of identical devices.
-    All devices with the same Thing Model can be managed in the same way by cloud services and applications.
-    It is easy to create multiple simulated devices, if the interface and the instance are treated separately.
-    </p>
-    <p>
-        <a>Thing Model</a> can be serialized in the same JSON-based format as a Thing Description which also allows JSON-LD processing. 
-        Note that a <a>Thing Model</a> cannot be validated in the same way as <a>Thing Description</a> instances due to some missing 
-        mandatory terms.
-    </p>
+
 
 
   </section>
 
   <section id="thing-model-td-generation" class="normative">
     <h2>Thing Model Derivation to Thing Description Instances</h2>
+
+    <p>
+        <a>Thing Models</a> can be used as template to generate <a>Thing Description</a> based on the restriction defined in 
+        Sections <a href="#sec-vocabulary-definition"></a> and <a href="#sec-td-serialization"></a>. During this process 
+        missing data such as communication and seceurity metadata have to be complemented to create valid <a>Thing Description</a> instances.
+        In the following further features are introduced that can be applied in <a>Thing Models</a> to optimze the 
+        <a>Thing Descriptions</a> generation.
+    </p>
   
     <p>
         Thing Model can specify which terms should be taken in a TD instance, but their values are unspecific and are first known during TD instantiation. 
