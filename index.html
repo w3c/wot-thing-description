@@ -4689,10 +4689,10 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 
     <p>Now it is designed a new device class model called 'Smart Lamp Control' that should be used as template 
         for creating TD instances. This model will reuse the existing definition of the 'Basic On/Off Thing Model'
-        and extend it with a dimmer property:
+        and extend it with a <code>dim</code> property:
     </p>
 
-    <pre class="example" title="Smart Lamp Control Thing Model Definition">
+    <pre class="example" title="Smart Lamp Control Thing Model Definition" id="td-mmodel-example-smart-lamp-control">
         {
             "@context": ["http://www.w3.org/ns/td"], 
             "@type" : "ThingModel",
@@ -4703,7 +4703,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                 "type": "application/td+json"
              }],
             "properties" : {
-                "dimmer" : {
+                "dim" : {
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 100
@@ -4716,6 +4716,10 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     </p>
 
 
+    <p class="note">
+        The next update of the draft will also introduce an import mechanism that allows to import other Thing Models and to reuse sub-definitions
+        of such models.
+    </p>
 
   </section>
 
@@ -4870,7 +4874,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     and <a>Action</a> interaction <code>toggle</code>. 
     </p>
     
-    <pre class="example" title="MyLampThingModel serialized in JSON">
+    <pre class="example" title="Thing Model with the required term for interaction affordances.">
     {
         "@context": ["http://www.w3.org/ns/td"], 
         "@type" : "ThingModel",
@@ -4906,12 +4910,76 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 
     <p>In the case that no <code>required</code> term is used within the interaction definitions, it is recommended to derive all the 
         interaction definitions in the <a>Thing Description</a>.</p>
-
+    
+    <p> It is noted that some introduced definitions are only valid for <a>Thing Model</a> design. Those definitions shall not show up in TD 
+        instances. The following is therefore specified:
+        <span class="rfc2119-assertion" id="thing-model-td-generation-notAllowed">
+            Specific features which are only valid for <a>Thing Model</a> definitions like the <code>"@type":"ThingModel"</code>, <code>links</code> entry with <code>"rel":"extend"</code>,  or the placeholder concept 
+             MUST be replaced or removed in a <a>Thing Description</a> instance.   
+        </span>
+    </p>
 </section>
 
 
 <section id="thing-model-td-generation-examples" class="normative">
     <h2>Examples</h2>
+
+    <p>
+        The following <a>Thing Model</a> extends the model as shown in Example <a href="#td-mmodel-example-smart-lamp-control"></a> and 
+        overwrites the <code>maximum</code> value of the <code>dim</code> property  
+    </p>
+
+    <pre class="example" title="Extending Smart Control Lamp with a modified dim constrained">
+    {
+        "@context": ["http://www.w3.org/ns/td"], 
+        "@type" : "ThingModel",
+        "links" : [{
+            "rel": "extends",
+            "href": "http://example.com/SmartControlLampTM",
+            "type": "application/td+json"
+         }],
+        "properties" : {
+            "dim" : {
+                "maximum": 200
+            }
+       }
+    }
+    </pre>
+
+    <p>The expected <a>Thing Description</a> that is derived from this <a>Thing Model</a> would be (with HTTP Binding and basic security applied):</p>
+
+    <pre class="example" title="Thing Description">
+        {
+            "@context": ["http://www.w3.org/ns/td"], 
+            "@type" : "Thing",
+            "title": "Smart Lamp Control",
+            "securityDefinitions": {
+                "basic_sc": {"scheme": "basic", "in": "header"}
+            },
+            "security": "basic_sc",
+            "links" : [{
+                "rel": "type",
+                "href": "url/to/SmartLampControlModifiedDimTM",
+                "type": "application/td+json"
+             }
+           ],
+           "properties" : {
+                "onOff : {
+                    "type: "boolean",
+                    "forms": [{"href": "https://smartlamp.example.com/onoff"}]
+                },
+                "dim" : {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 200,
+                    "forms": [{"href": "https://smartlamp.example.com/dim"}]
+                }
+           }
+        }
+    </pre>
+
+    
+
 
 </section>
 
