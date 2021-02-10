@@ -4528,7 +4528,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <h2>Basic Concept</h2>
 
     <p>
-    A <em>Thing Model</em> is a template for <a>Thing Descriptions</a> that have less restriction as 
+    A <em>Thing Model</em>  enables the oppertunity to define the basic information model of a <a>Thing</a>. It can be seen
+    as a template for <a>Thing Descriptions</a>, however, that have less restriction as 
     driven in <a href="#sec-vocabulary-definition"></a> and <a href="#sec-td-serialization"></a>. Typically <a>Thing Model</a> examples 
     does not contain any instance-specific information such as protocol specific data like IP addresses. However, instead of having, e.g., concrete URLs, 
     <a>Thing Model</a> allows the usage of URL templates.  
@@ -4631,13 +4632,12 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         Thing Model instance. 
     </p>
 
-    <pre class="example" title="MyLampThingModel serialized in JSON">
+    <pre class="example" title="Thing Model versioning">
         {
             ...
-            "@type": "ThingModel",
-            "name": "Smart Pump",
-            "description": "Smart Pump live plant and simulator",
-            "id": "urn:smart:device:wot:pump",
+            "@type" : "ThingModel",
+            "title": "Lamp Thing Model",
+            "description": "Lamp Thing Description Model",
             "version" : {"model" : "1.0.0" },
             ...
         }
@@ -4646,60 +4646,6 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <p>
          Due to the definition of <a>Thing Model</a> the term <code>instance</code> can be omitted within the <code>version</code> container. 
         </p>
-
-    <p>    
-        In some cases it is desirable to force the information which interaction model is mandatory 
-        and has to be definitely implemented in a <a>Thing Description</a> instance or can be always expected 
-        by the <a>Thing Model</a>.
-
-        <span class="rfc2119-assertion" id="td-model-required">
-            To guarantee the implementation of particular kind of interaction models,
-             <a>Thing Model</a> definitions MUST use the JSON member 
-            name <code>required</code> at interaction level 
-            (<code>properties</code>, <code>actions</code>, and <code>events</code>)
-            to provide the name of the interaction in a string-based array list.
-        </span>    
-    </p>
-    
-    <p>    
-    The following sample shows the usage of <code>required</code> for the <a>Property</a> interaction <code>status</code>
-    and <a>Action</a> interaction <code>toggle</code>. 
-    </p>
-    
-    <pre class="example" title="MyLampThingModel serialized in JSON">
-    {
-        "@context": ["http://www.w3.org/ns/td"], 
-        "@type" : "ThingModel",
-        "title": "Lamp Thing Model",
-        "description": "Lamp Thing Description Model",
-        "properties": {
-            "status": {
-                "description": "current status of the lamp (on|off)",
-                "type": "string",
-                "readOnly": true
-            },
-            "required": ["status"]
-        },
-        "actions": {
-            "toggle": {
-                "description": "Turn the lamp on or off"
-            },
-            "required": ["toggle"]
-        },
-        "events": {
-            "overheating": {
-                "description": "Lamp reaches a critical temperature (overheating)",
-                "data": {"type": "string"}
-            }
-        }
-    }
-    </pre>
-    
-    <p>
-    Since the <a>Event</a> <code>overheating</code> is not mandatory it may be not available in a <a>Thing Description</a> 
-    instance.
-    </p>
-
 
     <p>
      A <a>Thing Model</a> can also <code>extend</code> an existing <a>Thing Model</a>.
@@ -4746,7 +4692,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         and extend it with a dimmer property:
     </p>
 
-    <pre class="example" title="Basic On/Off Thing Model Definition">
+    <pre class="example" title="Smart Lamp Control Thing Model Definition">
         {
             "@context": ["http://www.w3.org/ns/td"], 
             "@type" : "ThingModel",
@@ -4780,6 +4726,10 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <a>Thing Models</a> can be used as template to generate <a>Thing Description</a> based on the restriction defined in 
         Sections <a href="#sec-vocabulary-definition"></a> and <a href="#sec-td-serialization"></a>. During this process 
         missing data such as communication and seceurity metadata have to be complemented to create valid <a>Thing Description</a> instances.
+        <span class="rfc2119-assertion" id="thing-model-td-generation-inconsistencies">
+            A <a>Thing Model</a> MUST be defined in such a way that there are no inconsistencies that would result in a <a>Thing Description</a> not 
+            being able to meet the requirements as described in Section <a href="#sec-vocabulary-definition"></a> and <a href="#sec-td-serialization"></a>.
+        </span>
         In the following further features are introduced that can be applied in <a>Thing Models</a> to optimze the 
         <a>Thing Descriptions</a> generation.
     </p>
@@ -4901,7 +4851,65 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             The <code>links</code> array can use the entry with <code>"rel" : "type"</code> maximum one.
         </span> 
     </p>
+    <p>    
+        In some cases it is desirable to force the information which interaction model is mandatory 
+        and has to be definitely implemented in a <a>Thing Description</a> instance or can be always expected 
+        by the <a>Thing Model</a>.
+
+        <span class="rfc2119-assertion" id="td-model-required">
+            To guarantee the implementation of particular kind of interaction models,
+             <a>Thing Model</a> definitions MUST use the JSON member 
+            name <code>required</code> at interaction level 
+            (<code>properties</code>, <code>actions</code>, and <code>events</code>)
+            to provide the name of the interaction in a string-based array list.
+        </span>    
+    </p>
+    
+    <p>    
+    The following sample shows the usage of <code>required</code> for the <a>Property</a> interaction <code>status</code>
+    and <a>Action</a> interaction <code>toggle</code>. 
+    </p>
+    
+    <pre class="example" title="MyLampThingModel serialized in JSON">
+    {
+        "@context": ["http://www.w3.org/ns/td"], 
+        "@type" : "ThingModel",
+        "title": "Lamp Thing Model",
+        "description": "Lamp Thing Description Model",
+        "properties": {
+            "status": {
+                "description": "current status of the lamp (on|off)",
+                "type": "string",
+                "readOnly": true
+            },
+            "required": ["status"]
+        },
+        "actions": {
+            "toggle": {
+                "description": "Turn the lamp on or off"
+            },
+            "required": ["toggle"]
+        },
+        "events": {
+            "overheating": {
+                "description": "Lamp reaches a critical temperature (overheating)",
+                "data": {"type": "string"}
+            }
+        }
+    }
+    </pre>
+    
+    <p>
+    Since the <a>Event</a> <code>overheating</code> is not mandatory it may be not available in a <a>Thing Description</a> 
+    instance.
+    </p>
+
+    <p>In the case that no <code>required</code> term is used within the interaction definitions, it is recommended to derive all the 
+        interaction definitions in the <a>Thing Description</a>.</p>
+
 </section>
+
+
 <section id="thing-model-td-generation-examples" class="normative">
     <h2>Examples</h2>
 
