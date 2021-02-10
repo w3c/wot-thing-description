@@ -1553,22 +1553,71 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       </p>
 
       <!-- rendered from RDF definitions -->
-      <section><h3><code>SecurityScheme</code></h3><p>Metadata describing the configuration of a security mechanism.
-          <span class="rfc2119-assertion" id="td-security-scheme-name">The value assigned to the name
+      <section><h3><code>SecurityScheme</code></h3><p><p>Metadata describing the configuration of a security
+          mechanism. <span class="rfc2119-assertion" id="td-security-scheme-name">The value assigned to the name
           <code>scheme</code> <em class="rfc2119" title="MUST">MUST</em> be defined within a 
           <a href="#dfn-vocab" class="internalDFN" data-link-type="dfn">Vocabulary</a>
-          included in the 
-          <a href="#dfn-thing-description" class="internalDFN" data-link-type="dfn">Thing Description</a>,
+          included in the <a href="#dfn-thing-description" class="internalDFN" data-link-type="dfn">Thing Description</a>,
           either in the standard <a href="#dfn-vocab" class="internalDFN" data-link-type="dfn">Vocabulary</a> defined
           in <a href="#sec-vocabulary-definition" class="sec-ref">§&nbsp;<bdi class="secno">5.</bdi> TD
-          Information Model</a> or in a 
-          <a href="#dfn-context-ext" class="internalDFN" data-link-type="dfn">TD Context Extension</a>.
-          </span>
+          Information Model</a> or in a <a href="#dfn-context-ext" class="internalDFN" data-link-type="dfn">TD Context
+          Extension</a>.</span>
+          </p><p>
           <span class="rfc2119-assertion" id="td-security-no-secrets">For all security schemes,
           any private keys, passwords, or other sensitive information directly providing access 
-          should be shared and stored out-of-band and MUST NOT be stored in the TD.</span> 
+          should be shared and stored out-of-band and <em class="rfc2119" title="MUST NOT">MUST NOT</em> be stored in the TD.</span> 
           The purpose of a TD is to describe how to access a Thing if and only if a Consumer 
-          already has authorization, and is not meant be used to grant that authorization.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-at-type--SecurityScheme"><td><code>@type</code></td><td>JSON-LD keyword to label the object with semantic tags (or types).</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-description--SecurityScheme"><td><code>description</code></td><td>Provides additional (human-readable)
+          already has authorization, and is not meant be used to grant that authorization.
+          </p><p>
+          Security schemes generally may require additional authentication
+          parameters, such as a password or key.
+          The location of this information is indicated by the
+          value associated with the name <code>in</code>, often in combination with the value associated with <code>name</code>.
+          The value associated with <code>in</code> can take one of the following values:
+          <dl>
+          <dt><code>header</code>:</dt>
+          <dd>The parameter will be given
+            in a header provided by the protocol, with the name of the header
+            provided by the value of <code>name</code>.</dd>
+          <dt><code>query</code>:</dt>
+          <dd>The parameter will be appended to the URI as a query parameter, with the name of the 
+            query parameter provided by <code>name</code>.</dd>
+          <dt><code>body</code>:</dt>
+          <dd>The parameter will be provided in the body of the request payload, with the data schema element  
+            used provided by <code>name</code>.
+            If <code>name</code> is not given, it is assumed the entire body
+            is to be used as the security parameter.
+          </dd>
+          <dt><code>cookie</code>:</dt>
+          <dd>The parameter is stored in a cookie identified by the value of   
+            <code>name</code>.
+          </dd>
+          <dt><code>uri</code>:</dt>
+          <dd>The parameter is embedded in the URI itself, which is encoded in the
+          relevant interaction using a URI template variable defined by the value of <code>name</code>.
+          This is more general than the <code>query</code> mechanism but more complex. 
+          <span class="rfc2119-assertion" id="td-security-in-query-over-uri">The value <code>uri</code> 
+          <em class="rfc2119" title="SHOULD">SHOULD</em> be specified 
+          for the name <code>in</code> in a security scheme only if
+          <code>query</code> is not applicable.</span>  
+          <span class="rfc2119-assertion" id="td-security-in-uri-variable">The URIs provided
+          in interactions where a security scheme using <code>uri</code> as the value for <code>in</code>
+          <em class="rfc2119" title="MUST">MUST</em> be a URI template including the defined variable.
+          </span>  
+          </dd>
+          </dl>
+          If multiple parameters are needed for a security scheme, repeat the security scheme definition for
+          each parameter and combine them using a <code>combo</code> security scheme and <code>allOf</code>.
+          In some cases parameters may not actually be secret but a user may wish to leave them
+          out of the TD to help protect privacy.  As an example of this, some security mechanisms
+          require both a client identifier and a secret key.  In theory, the client identifier is 
+          public however it may be hard to update and pose a tracking risk.  In such a case it can
+          be provided as an additional security parameter so it does not appear in the TD.
+          </p><p>
+          <span class="rfc2119-assertion" id="td-security-uri-variables-distinct">The names of URI variables 
+          declared in a <code>SecurityScheme</code> 
+          <em class="rfc2119" title="MUST">MUST</em> be distinct from all other URI variables 
+          declared in the TD.</span></p></p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-at-type--SecurityScheme"><td><code>@type</code></td><td>JSON-LD keyword to label the object with semantic tags (or types).</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr><tr class="rfc2119-table-assertion" id="td-vocab-description--SecurityScheme"><td><code>description</code></td><td>Provides additional (human-readable)
                       information based on a default language.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-descriptions--SecurityScheme"><td><code>descriptions</code></td><td>Can be used to support (human-readable)
                        information in different languages. Also see <cite><a href='#multilanguage'>MultiLanguage</a></cite>.</td><td>optional</td><td><a>Map</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
@@ -1598,19 +1647,19 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           <code>"scheme": "basic"</code>), using an unencrypted
           username and password. This scheme should be used with
           some other security mechanism providing confidentiality,
-          for example, TLS.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-name--BasicSecurityScheme"><td><code>name</code></td><td>Name for query, header, or cookie
+          for example, TLS.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-name--BasicSecurityScheme"><td><code>name</code></td><td>Name for query, header, cookie, or uri
                parameters.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-in--BasicSecurityScheme"><td><code>in</code></td><td>Specifies the location of security
-            authentication information.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, or <code>cookie</code>)</td></tr></tbody></table></section>
+            authentication information.  </td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, <code>cookie</code>, or <code>uri</code>)</td></tr></tbody></table></section>
 <section><h3><code>DigestSecurityScheme</code></h3><p>Digest Access Authentication [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc7616" title="HTTP Digest Access Authentication">RFC7616</a></cite>]
           security configuration identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a> <code>digest</code> (i.e.,
           <code>"scheme": "digest"</code>). This scheme is similar
           to basic authentication but with added features to avoid
-          man-in-the-middle attacks.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-name--DigestSecurityScheme"><td><code>name</code></td><td>Name for query, header, or cookie
+          man-in-the-middle attacks.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-name--DigestSecurityScheme"><td><code>name</code></td><td>Name for query, header, cookie, or uri
                parameters.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-qop--DigestSecurityScheme"><td><code>qop</code></td><td>Quality of protection.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>auth</code>, or <code>auth-int</code>)</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-in--DigestSecurityScheme"><td><code>in</code></td><td>Specifies the location of security
-            authentication information.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, or <code>cookie</code>)</td></tr></tbody></table></section>
+            authentication information.  </td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, <code>cookie</code>, or <code>uri</code>)</td></tr></tbody></table></section>
 <section><h3><code>APIKeySecurityScheme</code></h3><p>API key authentication security configuration
           identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a>
           <code>apikey</code> (i.e., <code>"scheme":
@@ -1620,10 +1669,10 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           In this case the key may not be using a standard token format.
           This scheme indicates that the key provided by the service provider 
           needs to be supplied as part 
-          of service requests using the mechanism indicated by the <code>"in"</code> field.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-name--APIKeySecurityScheme"><td><code>name</code></td><td>Name for query, header, or cookie
+          of service requests using the mechanism indicated by the <code>"in"</code> field.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-name--APIKeySecurityScheme"><td><code>name</code></td><td>Name for query, header, cookie, or uri
                parameters.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-in--APIKeySecurityScheme"><td><code>in</code></td><td>Specifies the location of security
-            authentication information.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, or <code>cookie</code>)</td></tr></tbody></table></section>
+            authentication information.  </td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, <code>cookie</code>, or <code>uri</code>)</td></tr></tbody></table></section>
 <section><h3><code>BearerSecurityScheme</code></h3><p>Bearer Token [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc6750" title="The OAuth 2.0 Authorization Framework: Bearer Token Usage">RFC6750</a></cite>]
           security configuration identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a> <code>bearer</code> (i.e.,
           <code>"scheme": "bearer"</code>) for situations where
@@ -1643,13 +1692,13 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           those standards. <span class="rfc2119-assertion" id="td-security-bearer-format-extensions">Other formats and
           algorithms for bearer tokens <em class="rfc2119" title="MAY">MAY</em> be specified in vocabulary
           extensions</span>.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-authorization--BearerSecurityScheme"><td><code>authorization</code></td><td>URI of the authorization server.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-name--BearerSecurityScheme"><td><code>name</code></td><td>Name for query, header, or cookie
+<tr class="rfc2119-table-assertion" id="td-vocab-name--BearerSecurityScheme"><td><code>name</code></td><td>Name for query, header, cookie, or uri
                parameters.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-alg--BearerSecurityScheme"><td><code>alg</code></td><td>Encoding, encryption, or digest algorithm.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (e.g., <code>MD5</code>, <code>ES256</code>, or <code>ES512-256</code>)</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-format--BearerSecurityScheme"><td><code>format</code></td><td>Specifies format of security authentication
                  information.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (e.g., <code>jwt</code>, <code>cwt</code>, <code>jwe</code>, or <code>jws</code>)</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-in--BearerSecurityScheme"><td><code>in</code></td><td>Specifies the location of security
-            authentication information.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, or <code>cookie</code>)</td></tr></tbody></table></section>
+            authentication information.  </td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, <code>cookie</code>, or <code>uri</code>)</td></tr></tbody></table></section>
 <section><h3><code>PSKSecurityScheme</code></h3><p>Pre-shared key authentication security configuration
           identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a>
           <code>psk</code> (i.e., <code>"scheme":
@@ -3082,6 +3131,61 @@ In summary, this requires the following:
     ...
 }
 </pre>
+
+  <p>To give another example of the use of
+  the <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> and the
+  use of URI templates to embed security keys in URLs, suppose there is a security scheme
+  where a client ID and a "secret" key provided by a cloud service provider must both be
+  embedded in the URL.  Technically, only the key is actually secret and must be handled
+  out-of-band, and the client ID, which is not secret, could be embedded in the TD.
+  However, if the client ID cannot be easily rotated we may want to avoid embedding it in
+  the TD to enhance privacy.
+  In this case we can combine two instances of 
+  <a href="#apikeysecurityscheme"><code>APIKeySecurityScheme</code></a>, both
+  using the <code>uri</code> value for the <code>in</code> location specifier, to 
+  declare two URI variables.  These can then (in fact, they must) be used in the 
+  <code>href</code> in a <code>Form</code> where the security scheme is active.
+  An example follows:
+  </p>
+<pre class="example">
+{
+    ...
+    "securityDefinitions": {
+        "apikey_key": {
+            "scheme": "apikey",
+            "in": "uri",
+            "name": "secKey"
+        },
+        "apikey_id": {
+            "scheme": "apikey",
+            "in": "uri",
+            "name": "secClientID"
+        },
+        "apikey_combo": {
+            "scheme": "combo",
+            "allOf": ["apikey_key","apikey_id"]
+        }
+    },
+    "security": "apikey_combo",
+    ...
+    "properties": {
+        "status": {
+            ...
+            "forms": [{
+                "href": "https://example.com/{secClientID}/status/{secKey}",
+                ...
+            }]
+        }
+    },
+    ...
+}
+</pre>
+<p>While not shown in this example, it is legal to declare additional URI template
+variables using <code>uriVariables</code> and include them in the same URI template,
+although the names cannot conflict with those declared in security schemes.  
+Using a specific prefix as in the above example
+for URI variables declared in security schemes can make it easier to avoid name conflicts.
+</p>
 
 </section> <!-- end of id="security-serialization-json"-->    
 
@@ -5415,7 +5519,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         "thing-context-w3c-uri": {
             "type": "string",
             "enum": [
-                "https://www.w3.org/2019/wot/td/v1"
+                "https://www.w3.org/2019/wot/td/v1",
+                "http://www.w3.org/ns/td"
             ]
         },
         "thing-context": {
