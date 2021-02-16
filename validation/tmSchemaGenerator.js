@@ -9,12 +9,14 @@
  Changes to the TD Schema:
  - Remove the term `required` from all levels
  - Remove the term `enum` from all levels
- - Maybe in the future: remove const but there is no use of it at the current state 
+ - Maybe in the future: remove const but there is no use of it at the current state
+ - Remove format from a string type
  - If a term is not of type string, allow also string
  - Adding TM specific link validation (not fully clear yet)
  Expectations:
  - Required: There are currently 21 required in the TD Schema. There should be 2 left that are objects
  - Enum: There are 29 enums, there should be 2 left.
+ - Format: There are 7 formats, there should be 3 left.
 */
 
 
@@ -23,10 +25,11 @@ const fs = require('fs');
 // take the TD Schema
 let tdSchema = JSON.parse(fs.readFileSync('validation/td-json-schema-validation.json'));
 
-let tdSchemaNoReq = removeRequired(tdSchema)
-let tdSchemaNoReqNoEnum = removeEnum(tdSchemaNoReq)
+let tmSchema = removeRequired(tdSchema)
+tmSchema = removeEnum(tmSchema)
+tmSchema = removeFormat(tmSchema)
 
-fs.writeFileSync("validation/tm-json-schema-validation.json", JSON.stringify(tdSchemaNoReqNoEnum,null,2))
+fs.writeFileSync("validation/tm-json-schema-validation.json", JSON.stringify(tmSchema,null,2))
 
 /** 
  * if there is a required, remove that
@@ -84,6 +87,37 @@ function removeEnum(argObject) {
         // removal is done only in objects, other types are not JSON Schema points anyways
         if (typeof(curValue)=="object"){
             argObject[key] = removeEnum(curValue)
+        }
+    } 
+
+    return argObject;
+}
+
+/** 
+ * if there is a format for a string, remove that
+ * once that is done, find a sub item that is of object type, call recursively
+ * if there is no sub item with object, return the current scoped object
+ * This is done to allow putting placeholders for a string that will actually break the format
+ * @param {object} argObject
+ * @return {object}
+**/
+
+function removeFormat(argObject) {
+
+    // remove enum if it exists and is of array type.
+    // check for array is needed since we also specify what a enum is and that it is an object
+    if (("format" in argObject) && (typeof(argObject.format) == "string")){
+        // need to decide whether to delete or replace it with ""
+        // delete is "cleaner" but "" is more explicit
+        delete argObject.format;
+    }
+
+    for (var key in argObject)
+    {
+        let curValue = argObject[key];
+        // removal is done only in objects, other types are not JSON Schema points anyways
+        if (typeof(curValue)=="object"){
+            argObject[key] = removeFormat(curValue)
         }
     } 
 
