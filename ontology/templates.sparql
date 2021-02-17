@@ -81,7 +81,7 @@ template :individuals-section(?ns ?prefix) {
 }
 
 template :classes(?ns ?prefix) {
-    "<section>"
+    format { "<section id=\"%s\">" ?label }
         st:call-template(:term-header, ?c, ?prefix)
         "<table class=\"def\">"
             "<tbody>"
@@ -186,7 +186,7 @@ template :enumeration-member(?c ?prefix) {
 } order by ?member
 
 template :properties(?ns ?prefix ?type) {
-    "<section>"
+    format { "<section id=\"%s\">" ?label }
         st:call-template(:term-header, ?p, ?prefix)
         "<table class=\"def\">"
             "<tbody>"
@@ -249,7 +249,7 @@ template :property-range(?p ?prefix) {
 } order by ?range
 
 template :individuals(?ns ?prefix) {
-    "<section>"
+    format { "<section id=\"%s\">" ?label }
         st:call-template(:term-header, ?i, ?prefix)
         "<table class=\"def\">"
             "<tbody>"
@@ -264,6 +264,7 @@ template :individuals(?ns ?prefix) {
     ?i a ?c .
     ?c rdfs:subClassOf schema:Enumeration .
     filter (strstarts(str(?i), str(?ns)))
+    bind (strafter(str(?i), "#") as ?label)
 }
 
 template :term-header(?term ?prefix) {
@@ -280,7 +281,7 @@ template :term-link(?term ?defaultPrefix) {
     format {
         "<code><a href=\"%s\">%s</a></code>"
         if(?prefix = ?defaultPrefix,
-            concat("#", lcase(?label)),
+            concat("#", ?label),
             str(?term))
         if(?curie, concat(?prefix, ":", ?label), ?label)
     }
