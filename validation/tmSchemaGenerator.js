@@ -25,11 +25,26 @@ const fs = require('fs');
 // take the TD Schema
 let tdSchema = JSON.parse(fs.readFileSync('validation/td-json-schema-validation.json'));
 
-let tmSchema = removeRequired(tdSchema)
+let tmSchema = changeMetadata(tdSchema)
+tmSchema = removeRequired(tmSchema)
 tmSchema = removeEnum(tmSchema)
 tmSchema = removeFormat(tmSchema)
 
 fs.writeFileSync("validation/tm-json-schema-validation.json", JSON.stringify(tmSchema,null,2))
+
+/** 
+ * This function changes the values of metadata terms in the schema.
+ * These are title and description
+ * @param {object} argObject
+ * @return {object}
+**/
+function changeMetadata(argObject){
+
+    argObject.title = "WoT Thing Model Schema - 16 February 2021"
+    argObject.description = "JSON Schema for validating Thing Models. This is automatically generated from the WoT TD Schema."
+
+    return argObject;
+}
 
 /** 
  * if there is a required, remove that
