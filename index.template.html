@@ -6,13 +6,14 @@
     <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove"></script>
     <script class='remove'>
           var respecConfig = {
-              specStatus:     "FPWD"
+              specStatus:     "ED"
             , crEnd: "2019-06-13"
-            , previousMaturity: "CR"
-            , previousPublishDate: "2020-04-09"
+            , previousMaturity: "FPWD"
+            , previousPublishDate: "2020-11-24"
             , implementationReportURI:      "https://w3c.github.io/wot-thing-description/testing/report.html"
-            , processVersion: 2020
-            , shortName:      "wot-thing-description"
+            //, processVersion: 2020
+            //, wgPatentPolicy: "PP2017" // deprecated, "group" option sets this automatically
+            , shortName:      "wot-thing-description11"
             , copyrightStart: 2017
             , noLegacyStyle:  true
             , inlineCSS:      true
@@ -226,7 +227,7 @@ a[href].internalDFN {
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         // let ReSpec do syntax highlighting first
-        document.respecIsReady.then(() => {
+        document.respec.ready.then(() => {
             document.querySelectorAll('.with-default').forEach(n => {
                 let wo = n.querySelector('pre:nth-of-type(1)');
                 let w = n.querySelector('pre:nth-of-type(2)');
@@ -318,7 +319,6 @@ a[href].internalDFN {
 .rfc2119-assertion {
   background-color: rgb(230,230,230)
 }
-{atriskCSS}
 .at-risk {
   background-color: yellow;
 }
@@ -866,7 +866,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
     <hr>
     
     <figure id="hypermedia-model">
-      <img src="visualization/hctl.svg" alt="UML diagram of the TD information model for the hypermedia controls vocabulary" width="40%"/>
+      <img src="visualization/hctl.svg" alt="UML diagram of the TD information model for the hypermedia controls vocabulary"/>
       <figcaption>Hypermedia controls vocabulary (<a href="visualization/hctl.svg">SVG file</a>)</figcaption>
     </figure>
 
@@ -2245,6 +2245,61 @@ In summary, this requires the following:
 }
 </pre>
 
+  <p>To give another example of the use of
+  the <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> and the
+  use of URI templates to embed security keys in URLs, suppose there is a security scheme
+  where a client ID and a "secret" key provided by a cloud service provider must both be
+  embedded in the URL.  Technically, only the key is actually secret and must be handled
+  out-of-band, and the client ID, which is not secret, could be embedded in the TD.
+  However, if the client ID cannot be easily rotated we may want to avoid embedding it in
+  the TD to enhance privacy.
+  In this case we can combine two instances of 
+  <a href="#apikeysecurityscheme"><code>APIKeySecurityScheme</code></a>, both
+  using the <code>uri</code> value for the <code>in</code> location specifier, to 
+  declare two URI variables.  These can then (in fact, they must) be used in the 
+  <code>href</code> in a <code>Form</code> where the security scheme is active.
+  An example follows:
+  </p>
+<pre class="example">
+{
+    ...
+    "securityDefinitions": {
+        "apikey_key": {
+            "scheme": "apikey",
+            "in": "uri",
+            "name": "secKey"
+        },
+        "apikey_id": {
+            "scheme": "apikey",
+            "in": "uri",
+            "name": "secClientID"
+        },
+        "apikey_combo": {
+            "scheme": "combo",
+            "allOf": ["apikey_key","apikey_id"]
+        }
+    },
+    "security": "apikey_combo",
+    ...
+    "properties": {
+        "status": {
+            ...
+            "forms": [{
+                "href": "https://example.com/{secClientID}/status/{secKey}",
+                ...
+            }]
+        }
+    },
+    ...
+}
+</pre>
+<p>While not shown in this example, it is legal to declare additional URI template
+variables using <code>uriVariables</code> and include them in the same URI template,
+although the names cannot conflict with those declared in security schemes.  
+Using a specific prefix as in the above example
+for URI variables declared in security schemes can make it easier to avoid name conflicts.
+</p>
+
 </section> <!-- end of id="security-serialization-json"-->    
 
 <section id="property-serialization-json">
@@ -2475,7 +2530,12 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
     <a>Vocabulary Term</a> as name.
   </span></p>
 
-  <p>A TD snippet of a link object in the <code>links</code> array is given below:</p>
+  <p>It is recommended to follow the link relation values as provided in Section <a href=#link></a>.
+ In the following examples are provide that uses different link relation values.</p>
+
+ <p>A reference can be provided that points to a <a>Thing</a> (e.g., a controller) that controlls the underlying
+    unit (e.g., a lamp). For this <code>controlledBy</code> can be used:</p>
+ 
 
 <aside class="example" id="link-serialization-sample" title="Sample of a Link serialization">
 <pre>
@@ -2489,9 +2549,55 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 </pre>
 </aside>
 
-<p class="note">
-    The new WoT charter addresses the topic to define a set of relationship type values in the WoT context. A requirements document can be found 
-<a href="https://github.com/w3c/wot-architecture/blob/master/REQUIREMENTS/link-relation-types.md">here</a>.
+<p>To point to a developer documentation of a <a>Thing</a> the value <code>service-doc</code> can be used:</p>
+
+    <pre class="example" title="Link to developer documentation">
+        ...
+        "links": [{
+            "rel": "service-doc",
+            "href": "https://example.com/howTo",
+            "type": "application/pdf"
+        }]
+        ...
+    </pre>
+
+    <p>A superordinate Thing can collect a group of Things and refer to them by using the <code>item</code> value:</p>
+
+    <pre class="example" title="An electric drive includes two motors.">
+        "title" : "Electric Drive",
+        ...
+        "links": [{
+            "rel": "item",
+            "href": "coaps://motor1.example.com",
+            "type": " application/td+json"
+        },
+        {
+            "rel": "item",
+            "href": "coaps://motor2.example.com",
+            "type": " application/td+json"
+        }
+        ]
+        ...
+    </pre>
+
+    <p>A Thing refers to a group in which it is collected with the <code>collection</code> value:</p>
+
+    <pre class="example" title="An electric motor is member of the electric drive collection.">
+        "title" : "Electric Motor 1",
+        "base": "coaps://motor1.example.com",
+        ...
+        "links": [{
+            "rel": "collection",
+            "href": "coaps://drive.example.com",
+            "type": " application/td+json"
+        }]
+        ...
+    </pre>
+
+
+
+
+
 </p>
 
 </section> <!-- end of id="link-serialization-json"-->
@@ -2666,7 +2772,6 @@ is shown below:
     ...
 }
 </pre>
-
 
   <p>
   When <code>forms</code> is present at the top level, it can be used to describe meta interactions offered by a <a>Thing</a>.
@@ -3084,7 +3189,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
         provide static latitude and longitude metadata at Thing's top level. 
     </p>
 
-    <pre class="example" id="saref-state-annotation-example">
+    <pre class="example" id="saref-geolocation-annotation-example">
 {
     "@context": [
         "http://www.w3.org/ns/td",
@@ -3109,7 +3214,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
         based on schema.org:
 </p>
 
-<pre class="example" id="saref-state-annotation-example">
+<pre class="example" id="saref-geolocation-annotation-example-2">
 {
     "@context": [
         "http://www.w3.org/ns/td",
@@ -3141,7 +3246,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
         terms to specific vocabulary from an ontology (also see [[JSON-SCHEMA-ONTOLOGY]], Section 3.3 Defining a JSON-LD context for data instances):
 </p>
 
-<pre class="example" id="saref-state-annotation-example">
+<pre class="example" id="saref-geolocation-annotation-example-3">
 {
     "@context": "http://www.w3.org/ns/td",
         {
@@ -3623,6 +3728,77 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     }
 }</pre>
     </aside>
+
+    <p>In the case of a <code>forms</code> entry that has multiple <code>op</code> values the usage 
+        of the <code>htv:methodName</code> is not permitted. A <a>TD Processor</a> will extend
+        the multiple <code>op</code> values to seperate <code>forms</code> entries and associates 
+        a single operation with the default assumption. The address information (e.g. <code>href</code>) and 
+        other metadata are taken over in the extended version.
+    </p>
+    
+        <aside class="example with-default">
+            <div class="with-default-control">
+                <input type="checkbox">
+                <span><i>extended <code>forms</code> in case of multiple values in <code>op</code></i></span>
+            </div>
+            <pre>{
+    "@context": "http://www.w3.org/ns/td",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "title": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [
+                {
+                    "op" : ["readproperty", "writeproperty"],
+                    "href": "https://mylamp.example.com/status"
+                }
+            ]
+        }
+    }
+}</pre>
+        <pre>{
+    "@context": "http://www.w3.org/ns/td",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "title": "MyLampThing",
+    "securityDefinitions": {
+        "basic_sc": {
+            "scheme": "basic",
+            "in": "header"
+        }
+    },
+    "security": [
+        "basic_sc"
+    ],
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [
+                {
+                    "op": "readproperty",
+                    "href": "https://mylamp.example.com/status",
+                    "htv:methodName": "GET"
+                },
+                {
+                    "op": "writeproperty",
+                    "href": "https://mylamp.example.com/status",
+                    "htv:methodName": "PUT"
+                }
+            ]
+        }
+    }
+}</pre>
+    </aside>
+
   </section>
 
   <section>
@@ -4361,8 +4537,10 @@ instance.
 
 </section>
 
+ 
 </section>
   <section id="iana-section" class="normative">
+ 
   <h1>IANA Considerations</h1>
     <section id="media-type-section">
     <h2><code>application/td+json</code> Media Type Registration</h2>
@@ -4775,7 +4953,7 @@ instance.
                     <td><code>https://www.w3.org/2019/wot/hypermedia#hasTarget</code></td>
                 </tr>
                 <tr>
-                    <td>...</td>
+                    <td colspan="3">...</td>
                 </tr>
             </tbody>
         </table>

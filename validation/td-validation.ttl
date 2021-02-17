@@ -267,8 +267,9 @@
           "MUST">MUST</em> be one of the following <em>operation
           types</em>: <code>readallproperties</code>,
           <code>writeallproperties</code>,
-          <code>readmultipleproperties</code>, or
-          <code>writemultipleproperties</code>.</span> (See
+          <code>readmultipleproperties</code>,
+          <code>writemultipleproperties</code>, <code>observeallproperties</code>, or
+          <code>unobserveallproperties</code>.</span> (See
           <a href="#td-forms-readall-example">an example</a> for an
           usage of <code>form</code> in a Thing instance.)</p>
           <p>The data schema for each of these meta-interactions is
@@ -576,6 +577,8 @@
             td:writeAllProperties
             td:readMultipleProperties
             td:writeMultipleProperties
+            td:observeAllProperties
+            td:unobserveAllProperties
         );
         sh:order 1 ;
     ] ;
@@ -692,6 +695,8 @@
     sh:order 6 ;
     sh:property [
         sh:path hctl:hasTarget ;
+        skos:definition """Target IRI of a link or submission target of a
+                form."""^^rdf:HTML ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
         sh:nodeKind sh:IRI ;
@@ -721,7 +726,148 @@
         sh:node sh:IRI ;
         sh:maxCount 1 ;
         sh:order 4 ;
-    ] .
+    ] ;
+    skos:scopeNote """ <p>Link relations can be used to describe relations such as to other Things (e.g., a Switch Thing controls a Lamp Thing), to a specific kind of Thing Models (e.g., a Thing Description
+    is an instance of a specific Thing Model), or to further documentations information (e.g., device manuel of a Thing). It is recommended to reuse existing and established 
+    <a href="https://www.iana.org/assignments/link-relations">Link Relation definitions from IANA.</a>
+    </p>
+        <p>In the following a best practice relation type table is introduced that is recommended to use within WoT <a>Thing Description</a>
+    or <a>Thing Model</a> instances.      
+    </p>
+    <table class="def">
+        <thead>
+            <tr>
+                <th>Value</th>                
+                <th>Occurrence</th>
+                <th>Explanation</th>
+                <th>Source of value origin</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr >
+                <td>
+                    <code>service-doc</code>
+                </td>
+                <td>
+                    0..*
+                </td>
+                <td>Relation to a resource that provide (human-readable) documentation or descriptions.</td>
+                <td>
+                    <a href="https://www.iana.org/assignments/link-relations">IANA Link Relation</a>
+                </td>
+            </tr>
+            <tr >
+                <td>
+                    <code>alternate</code>
+                </td>
+                <td>
+                    0..*
+                </td>
+                <td>Point to alternative representation of the <a>Thing</a> (i.e. RDF-Turtle, human-readable HTML document, ...).</td>
+                <td>
+                    <a href="https://www.iana.org/assignments/link-relations">IANA Link Relation</a>
+                </td>
+            </tr>
+            <tr >
+                <td>
+                    <code>type</code>
+                </td>
+                <td>
+                    0..1
+                </td>
+                <td>Indicate that the <a>Thing</a> is an instance of the target resource such as to a <a>Thing Model</a>.</td>
+                <td>
+                    <a href="https://www.iana.org/assignments/link-relations">IANA Link Relation</a>
+                </td>
+            </tr>
+            <tr >
+                <td>
+                    <code>extend</code>
+                </td>
+                <td>
+                    0..1
+                </td>
+                <td>Extends an existing definition of the targed resource such as a <a>Thing Model</a>.</td>
+                <td>
+                    W3C WoT Thing Model
+                </td>
+            </tr>            
+            <tr >
+                <td>
+                    <code>manifest</code>
+                </td>
+                <td>
+                    0..*
+                </td>
+                <td>Point to a software implementation of the TD.</td>
+                <td>
+                    <a href="https://www.iana.org/assignments/link-relations">IANA Link Relation</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>proxy-to</code>
+                </td>
+                <td>
+                    0..*
+                </td>
+                <td>Target resource provide the address of a proxy.</td>
+                <td>
+                    W3C WoT Security and WoT Binding Template
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>collection</code>
+                </td>
+                <td>
+                    0..1
+                </td>
+                <td>Points to a collections of <a>Things</a>.</td>
+                <td>
+                    <a href="https://www.iana.org/assignments/link-relations">IANA Link Relation</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>item</code>
+                </td>
+                <td>
+                    0..*
+                </td>
+                <td>Points to a <a>Thing</a> that is member of the current <a>Thing</a> collections.</td>
+                <td>
+                    <a href="https://www.iana.org/assignments/link-relations">IANA Link Relation</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>predecessor-version</code>
+                </td>
+                <td>
+                    0..1
+                </td>
+                <td>Points to a previous <a>Thing Description</a> or <a>Thing Model</a> version.</td>
+                <td>
+                    <a href="https://www.iana.org/assignments/link-relations">IANA Link Relation</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>controlledBy</code>
+                </td>
+                <td>
+                    0..*
+                </td>
+                <td>Refers to a <a>Thing</a> that controlls the context <a>Thing</a>.</td>
+                <td>
+                    W3C Thing Description
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    """^^rdf:HTML .
+    
 
 :ExpectedResponseShape a sh:NodeShape ;
     sh:targetClass hctl:ExpectedResponse ;
@@ -741,14 +887,71 @@
 
 :SecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:SecurityScheme ;
-    skos:definition """Metadata describing the configuration of a security
+    skos:definition """<p>Metadata describing the configuration of a security
           mechanism. <span class="rfc2119-assertion" id="td-security-scheme-name">The value assigned to the name
-          <code>scheme</code> <em class="rfc2119" title="MUST">MUST</em> be defined within a <a href="#dfn-vocab" class="internalDFN" data-link-type="dfn">Vocabulary</a>
+          <code>scheme</code> <em class="rfc2119" title="MUST">MUST</em> be defined within a 
+          <a href="#dfn-vocab" class="internalDFN" data-link-type="dfn">Vocabulary</a>
           included in the <a href="#dfn-thing-description" class="internalDFN" data-link-type="dfn">Thing Description</a>,
           either in the standard <a href="#dfn-vocab" class="internalDFN" data-link-type="dfn">Vocabulary</a> defined
           in <a href="#sec-vocabulary-definition" class="sec-ref">§&nbsp;<bdi class="secno">5.</bdi> TD
           Information Model</a> or in a <a href="#dfn-context-ext" class="internalDFN" data-link-type="dfn">TD Context
-          Extension</a>.</span>"""^^rdf:HTML ;
+          Extension</a>.</span>
+          </p><p>
+          <span class="rfc2119-assertion" id="td-security-no-secrets">For all security schemes,
+          any private keys, passwords, or other sensitive information directly providing access 
+          should be shared and stored out-of-band and <em class="rfc2119" title="MUST NOT">MUST NOT</em> be stored in the TD.</span> 
+          The purpose of a TD is to describe how to access a Thing if and only if a Consumer 
+          already has authorization, and is not meant be used to grant that authorization.
+          </p><p>
+          Security schemes generally may require additional authentication
+          parameters, such as a password or key.
+          The location of this information is indicated by the
+          value associated with the name <code>in</code>, often in combination with the value associated with <code>name</code>.
+          The value associated with <code>in</code> can take one of the following values:
+          <dl>
+          <dt><code>header</code>:</dt>
+          <dd>The parameter will be given
+            in a header provided by the protocol, with the name of the header
+            provided by the value of <code>name</code>.</dd>
+          <dt><code>query</code>:</dt>
+          <dd>The parameter will be appended to the URI as a query parameter, with the name of the 
+            query parameter provided by <code>name</code>.</dd>
+          <dt><code>body</code>:</dt>
+          <dd>The parameter will be provided in the body of the request payload, with the data schema element  
+            used provided by <code>name</code>.
+            If <code>name</code> is not given, it is assumed the entire body
+            is to be used as the security parameter.
+          </dd>
+          <dt><code>cookie</code>:</dt>
+          <dd>The parameter is stored in a cookie identified by the value of   
+            <code>name</code>.
+          </dd>
+          <dt><code>uri</code>:</dt>
+          <dd>The parameter is embedded in the URI itself, which is encoded in the
+          relevant interaction using a URI template variable defined by the value of <code>name</code>.
+          This is more general than the <code>query</code> mechanism but more complex. 
+          <span class="rfc2119-assertion" id="td-security-in-query-over-uri">The value <code>uri</code> 
+          <em class="rfc2119" title="SHOULD">SHOULD</em> be specified 
+          for the name <code>in</code> in a security scheme only if
+          <code>query</code> is not applicable.</span>  
+          <span class="rfc2119-assertion" id="td-security-in-uri-variable">The URIs provided
+          in interactions where a security scheme using <code>uri</code> as the value for <code>in</code>
+          <em class="rfc2119" title="MUST">MUST</em> be a URI template including the defined variable.
+          </span>  
+          </dd>
+          </dl>
+          If multiple parameters are needed for a security scheme, repeat the security scheme definition for
+          each parameter and combine them using a <code>combo</code> security scheme and <code>allOf</code>.
+          In some cases parameters may not actually be secret but a user may wish to leave them
+          out of the TD to help protect privacy.  As an example of this, some security mechanisms
+          require both a client identifier and a secret key.  In theory, the client identifier is 
+          public however it may be hard to update and pose a tracking risk.  In such a case it can
+          be provided as an additional security parameter so it does not appear in the TD.
+          </p><p>
+          <span class="rfc2119-assertion" id="td-security-uri-variables-distinct">The names of URI variables 
+          declared in a <code>SecurityScheme</code> 
+          <em class="rfc2119" title="MUST">MUST</em> be distinct from all other URI variables 
+          declared in the TD.</span></p>"""^^rdf:HTML ;
     sh:closed false ;
     sh:order 1 ;
     sh:property [
@@ -849,9 +1052,13 @@
     skos:definition """API key authentication security configuration
           identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a>
           <code>apikey</code> (i.e., <code>"scheme":
-          "apikey"</code>). This is for the case where the access
-          token is opaque and is not using a standard token
-          format."""^^rdf:HTML ;
+          "apikey"</code>). 
+          This scheme is to be used when the access token is opaque,
+          for example when a key in an unknown or proprietary format is provided by a cloud service provider.
+          In this case the key may not be using a standard token format.
+          This scheme indicates that the key provided by the service provider 
+          needs to be supplied as part 
+          of service requests using the mechanism indicated by the <code>\"in\"</code> field."""^^rdf:HTML ;
     sh:closed false ;
     sh:order 6 ;
     sh:property _:in ;
@@ -899,7 +1106,9 @@
     skos:definition """Pre-shared key authentication security configuration
           identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a>
           <code>psk</code> (i.e., <code>"scheme":
-          "psk"</code>)."""^^rdf:HTML ;
+          "psk"</code>).
+          This is meant to identify that a standard is used for pre-shared keys such as TLS-PSK [[rfc4279]], 
+          and that the ciphersuite used for keys will be established during protocol negotiation."""^^rdf:HTML ;
     sh:closed false ;
     sh:order 9 ;
     sh:property _:identity .
@@ -1176,7 +1385,7 @@
     sh:order 4 ;
     sh:property [
         sh:path jsonschema:minimum ;
-        skos:definition """Specifies a minimum numeric value. Only
+        skos:definition """Specifies a minimum numeric value, representing an inclusive lower limit. Only
                 applicable for associated number or integer
                 types."""^^rdf:HTML ;
         # FIXME due to JSON-LD type coercion, datatype can also be integer
@@ -1185,21 +1394,41 @@
         sh:order 1 ;
     ] ;
     sh:property [
+        sh:path jsonschema:exclusiveMinimum ;
+        skos:definition """Specifies a minimum numeric value, representing an exclusive lower limit. Only
+                applicable for associated number or integer
+                types."""^^rdf:HTML ;
+        # FIXME due to JSON-LD type coercion, datatype can also be integer
+        sh:datatype xsd:double ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
+    ] ;
+    sh:property [
         sh:path jsonschema:maximum ;
-        skos:definition """Specifies a maximum numeric value. Only
+        skos:definition """Specifies a maximum numeric value, representing an inclusive upper limit. Only
                 applicable for associated number or integer
                 types."""^^rdf:HTML ;
         # FIXME same as above (JSON-LD type coercion)
         sh:datatype xsd:double ;
         sh:maxCount 1 ;
-        sh:order 2 ;
+        sh:order 3 ;
+    ] ;
+	sh:property [
+        sh:path jsonschema:exclusiveMaximum ;
+        skos:definition """Specifies a maximum numeric value, representing an exclusive upper limit. Only
+                applicable for associated number or integer
+                types."""^^rdf:HTML ;
+        # FIXME same as above (JSON-LD type coercion)
+        sh:datatype xsd:double ;
+        sh:maxCount 1 ;
+        sh:order 4 ;
     ] ;
     sh:property [
         sh:path jsonschema:multipleOf ;
         skos:definition """Specifies the multipleOf value number. The value must strictly greater than 0. Only applicable for associated number or integer types."""^^rdf:HTML ;
         sh:datatype xsd:double ;
         sh:maxCount 1 ;
-        sh:order 3 ;
+        sh:order 5 ;
     ] .
 
 :IntegerSchemaShape a sh:NodeShape ;
@@ -1212,7 +1441,7 @@
     sh:order 5 ;
     sh:property [
         sh:path jsonschema:minimum ;
-        skos:definition """Specifies a minimum numeric value. Only
+        skos:definition """Specifies a minimum numeric value, representing an inclusive lower limit. Only
                 applicable for associated number or integer
                 types."""^^rdf:HTML ;
         sh:datatype xsd:integer ;
@@ -1220,8 +1449,8 @@
         sh:order 1 ;
     ] ;
     sh:property [
-        sh:path jsonschema:maximum ;
-        skos:definition """Specifies a maximum numeric value. Only
+        sh:path jsonschema:exclusiveMinimum ;
+        skos:definition """Specifies a minimum numeric value, representing an exclusive lower limit. Only
                 applicable for associated number or integer
                 types."""^^rdf:HTML ;
         sh:datatype xsd:integer ;
@@ -1229,11 +1458,29 @@
         sh:order 2 ;
     ] ;
     sh:property [
+        sh:path jsonschema:maximum ;
+        skos:definition """Specifies a maximum numeric value, representing an inclusive upper limit. Only
+                applicable for associated number or integer
+                types."""^^rdf:HTML ;
+        sh:datatype xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 3 ;
+    ] ;
+    sh:property [
+        sh:path jsonschema:exclusiveMaximum ;
+        skos:definition """Specifies a maximum numeric value, representing an exclusive upper limit. Only
+                applicable for associated number or integer
+                types."""^^rdf:HTML ;
+        sh:datatype xsd:integer ;
+        sh:maxCount 1 ;
+        sh:order 4 ;
+    ] ;
+    sh:property [
         sh:path jsonschema:multipleOf ;
         skos:definition """Specifies the multipleOf value number. The value must strictly greater than 0. Only applicable for associated number or integer types."""^^rdf:HTML ;
         sh:datatype xsd:integer ;
         sh:maxCount 1 ;
-        sh:order 3 ;
+        sh:order 5 ;
     ] .
     
 :ObjectSchemaShape a sh:NodeShape ;
@@ -1327,7 +1574,7 @@ _:descriptions sh:path dcterms:description ;
 
 _:in sh:path wotsec:in ;
      skos:definition """Specifies the location of security
-            authentication information."""^^rdf:HTML ;
+            authentication information.  """^^rdf:HTML ;
      sh:datatype xsd:string ;
      sh:maxCount 1 ;
      sh:in (
@@ -1335,16 +1582,23 @@ _:in sh:path wotsec:in ;
         "query"
         "body"
         "cookie"
+        "uri"
     );
     sh:defaultValue "header"^^xsd:string ;
     sh:order 100 .
 
 _:name sh:path wotsec:name ;
-       skos:definition """Name for query, header, or cookie
+       skos:definition """Name for query, header, cookie, or uri
                parameters."""^^rdf:HTML ;
        sh:datatype xsd:string ;
        sh:maxCount 1 ;
        sh:order 101 .
+
+_:uriVariables sh:path wotsec:uriVariables ;
+       skos:definition """Declaration of URI template variables to be used in security schemes."""^^rdf:HTML ;
+       sh:node :DataSchemaShape ;
+       sh:maxCount 1 ;
+       sh:order 102 .
 
 _:authorization sh:path wotsec:authorization ;
                 skos:definition """URI of the authorization server."""^^rdf:HTML ;
