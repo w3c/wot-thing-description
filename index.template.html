@@ -3903,7 +3903,10 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         Note that a <a>Thing Model</a> cannot be validated in the same way as <a>Thing Description</a> instances due to some missing 
         mandatory terms.
     </p>
-    
+  </section>
+    <section id="thing-model-declaration" class="normative">
+        <h2>Thing Model Declaration</h2>
+
     <p>
     A <a>Thing Model</a> is recognized by the top level <em>@type</em>.
     <span class="rfc2119-assertion" id="td-model-identification">
@@ -3952,6 +3955,15 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         }
     }
     </pre>
+    </section>
+
+    <section id="thing-model-tools" class="normative">
+        <h2>Modeling Tools</h2>
+
+        <p>In the context of <a>Thing Model</a> definitions specifics features are introduced that can be used for <a>Thing</a> modelling.</p>
+
+    <section id="thing-model-versioning" class="normative">
+        <h3>Versioning</h3>
     
     <p>
         Over time, <a>Thing Model</a> definitions may change and must be made identifiable through versioning.  
@@ -3974,6 +3986,10 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <p>
          Due to the definition of <a>Thing Model</a> the term <code>instance</code> can be omitted within the <code>version</code> container. 
         </p>
+
+    </section>
+    <section id="thing-model-etension-import" class="normative">
+        <h3>Extension and Import</h3>
 
     <p>
      A <a>Thing Model</a> can also <code>extend</code> an existing <a>Thing Model</a>.
@@ -4048,11 +4064,163 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         The next update of the draft will also introduce an import mechanism that allows to import other Thing Models and to reuse sub-definitions
         of such models.
     </p>
+</section>
+
+
+<section id="thing-model-td-placeholder" class="normative">
+    <h3>Placeholder</h3>
+
+<p>
+    <a>Thing Model</a> can specify which terms should be taken in a TD instance, but their values are unspecific and are first known during TD instantiation. 
+    In such a case the placeholder labeling MAY be used in Thing Model that MUST be substituted with a concrete value when TD instance is created 
+    from the Thing Model. 
+    <span class="rfc2119-assertion" id="td-model-placeholder">
+        The string-based pattern of the placeholder MUST follow <code>{&ZeroWidthSpace;{PLACEHOLDER_IDENTIFIER}}</code>, 
+        which should contain a placeholder identifier name. The identifier name can be used to identify the placeholder for the substitution process.
+    </span>
+    <span class="rfc2119-assertion" id="td-model-placeholder-value">
+        Placeholder can be only applied within the value of the JSON name-value pair and the value have to be typed as JSON string. 
+    </span>  
+    <span class="rfc2119-assertion" id="td-model-placeholder-retyping"></span>
+    In the case a non string-based value of a JSON name-value pair should have a placeholder the value must be (temporary) typed 
+    as string.
+    </span>
+    After replacing the placeholder, e.g. when creating a Thing Description instance, the original type can be applied with the 
+    corresponding replaced value.            
+</p>
+
+<p>
+    The following Thing Model example defines different placeholders. The placeholder map is used to apply the replacement and to
+    transform the intended value type.    
+</p>
+
+<aside class="example ds-selector-tabs" ><div class="marker">
+ <span class="example-title">Thing Description generation from Thing Model</span>
+  </div>
+    <div class="selectors">
+      <button class="selected" data-selects="expanded">Thing Model</button>
+      <button class="selected" data-selects="expanded">Placeholder Map</button>
+      <button data-selects="statements">Thing Description</button>
+    </div>
+    <pre class="expanded input selected nohighlight"> {
+        "@context": ["http://www.w3.org/ns/td"], 
+        "@type" : "ThingModel",
+        "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
+        "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
+        "properties": {
+            "temperature": {
+                "description": "Shows the current temperature value",
+                "type": "number",
+                "minimum": -20,
+                "maximum": "{{THERMOSTATE_TEMPERATURE_MAXIMUM}}",
+                "observable" : "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}"
+        ...
+    }</pre>
+    <pre class="expanded input selected nohighlight"> {
+        "THERMOSTATE_NUMBER": 4, 
+        "MQTT_BROKER_ADDRESS" : "192.168.178.72:1883",
+        "THERMOSTATE_TEMPERATURE_MAXIMUM": 47.7, 
+        "THERMOSTATE_TEMPERATURE_OBSERVABLE" : true
+        }</pre>
+    <pre class="expanded input selected nohighlight"> {
+        "@context": ["http://www.w3.org/ns/td"], 
+        "@type" : "Thing",
+        "title": "Thermostate No. 4",
+        "base": "mqtt://192.168.178.72:1883",
+        "properties": {
+            "temperature": {
+                "description": "Shows the current temperature value",
+                "type": "number",
+                "minimum": -20.0,
+                "maximum": 47.7,
+                "observable" : true
+        ...
+        }</pre>
+    
+  </aside>
 
   </section>
 
+  <section id="thing-model-td-required" class="normative">
+    <h2>Required</h2>
+
+
+  <p>    
+    In some cases it is desirable to force the information which interaction model is mandatory 
+    and has to be definitely implemented in a <a>Thing Description</a> instance or can be always expected 
+    by the <a>Thing Model</a>.
+
+    <span class="rfc2119-assertion" id="td-model-required">
+        To guarantee the implementation of particular kind of interaction models,
+         <a>Thing Model</a> definitions MUST use the JSON member 
+        name <code>required</code> at interaction level 
+        (<code>properties</code>, <code>actions</code>, and <code>events</code>)
+        to provide the name of the interaction in a string-based array list.
+    </span>    
+</p>
+
+<p>    
+The following sample shows the usage of <code>required</code> for the <a>Property</a> interaction <code>status</code>
+and <a>Action</a> interaction <code>toggle</code>. 
+</p>
+
+<pre class="example" title="Thing Model with the required term for interaction affordances.">
+{
+    "@context": ["http://www.w3.org/ns/td"], 
+    "@type" : "ThingModel",
+    "title": "Lamp Thing Model",
+    "description": "Lamp Thing Description Model",
+    "properties": {
+        "status": {
+            "description": "current status of the lamp (on|off)",
+            "type": "string",
+            "readOnly": true
+        },
+        "required": ["status"]
+    },
+    "actions": {
+        "toggle": {
+            "description": "Turn the lamp on or off"
+        },
+        "required": ["toggle"]
+    },
+    "events": {
+        "overheating": {
+            "description": "Lamp reaches a critical temperature (overheating)",
+            "data": {"type": "string"}
+        }
+    }
+}
+</pre>
+    
+<p>
+Since the <a>Event</a> <code>overheating</code> is not mandatory it may be not available in a <a>Thing Description</a> 
+instance.
+</p>
+
+
+
+<p>In the case that no <code>required</code> term is used within the interaction definitions, it is recommended to derive all the 
+    interaction definitions in the <a>Thing Description</a>.</p>
+
+<p class="note">
+        Based on the latest feedback, the <code>required</code> at the interaction level is under discussion. Alternatively, JSON pointers 
+        may be used, which would not confuse the <code>required</code> term of the data schema. The next PlugFest will evaluate these kinds of options.
+</p>
+
+
+
+
+</section>
+
+
+
+
+  
+  </section>
+
   <section id="thing-model-td-generation" class="normative">
-    <h2>Thing Model Derivation to Thing Description Instances</h2>
+    <h2>Derivation to Thing Description Instances</h2>
 
     <p>
         <a>Thing Models</a> can be used as template to generate <a>Thing Description</a> based on the restriction defined in 
@@ -4062,80 +4230,22 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             A <a>Thing Model</a> MUST be defined in such a way that there are no inconsistencies that would result in a <a>Thing Description</a> not 
             being able to meet the requirements as described in Section <a href="#sec-vocabulary-definition"></a> and <a href="#sec-td-serialization"></a>.
         </span>
-        In the following further features are introduced that can be applied in <a>Thing Models</a> to optimze the 
-        <a>Thing Descriptions</a> generation.
+        <span class="rfc2119-assertion" id="thing-model-td-generation-processor">
+            A TM-to-TD generation processor MUST at least address the following considerations:
+
+         <ul>
+            <li>All definitions in the applied <a>Thing Model</a> have to taken over in the <a>Thing Description</a> instance. If used, the extension and imports feature according to Section <a href=#thing-model-etension-import></a> must be resolved 
+                and represented in the <a>Thing Description</a> instance as well. </li>
+            <li>The value <code>ThingModel</code> value of the top-level <code>@type</code> have to be replaced by the value <code>Thing</code> in the <a>Thing Description</a> instance.</li>
+            <li>If the <code>required</code> feature is used based on Section <a href=#thing-model-td-required></a>, the required interactions must definitly be taken over in the <a>Thing Description</a> instance.</li>
+            <li>If used, all placholder (see Section <a href="#thing-model-td-placeholder"></a>) in a <a>Thing Model</a> must be replaced with a valid corresponding value in the <a>Thing Description</a>.</li>
+            <li>Missing communication and/or security metadata details have to be complemented in the <a>Thing Description</a> instance based on Section <a href=#security-serialization-json></a> and/or <a href=#form-serialization-json></a>.</li>
+            <li>If used, <code>links</code> entry with <code>"rel":"extend"</code> should not taken over in the <a>Thing Description</a> instance.
+        </ul>
+        </span>
+
     </p>
   
-    <p>
-        Thing Model can specify which terms should be taken in a TD instance, but their values are unspecific and are first known during TD instantiation. 
-        In such a case the placeholder labeling MAY be used in Thing Model that MUST be substituted with a concrete value when TD instance is created 
-        from the Thing Model. 
-        <span class="rfc2119-assertion" id="td-model-placeholder">
-            The string-based pattern of the placeholder MUST follow <code>{&ZeroWidthSpace;{PLACEHOLDER_IDENTIFIER}}</code>, 
-            which should contain a placeholder identifier name. The identifier name can be used to identify the placeholder for the substitution process.
-        </span> 
-        Placeholder can be only applied within the value of the JSON name-value pair and the value have to be typed as JSON string. 
-        <span class="rfc2119-assertion" id="td-model-placeholder-retyping"></span>
-        In the case a non string-based value of a JSON name-value pair should have a placeholder the value must be (temporary) typed 
-        as string.
-        </span>
-        After replacing the placeholder, e.g. when creating a Thing Description instance, the original type can be applied with the 
-        corresponding replaced value.            
-    </p>
-
-    <p>
-        The following Thing Model example defines different placeholders. The placeholder map is used to apply the replacement and to
-        transform the intended value type.    
-    </p>
-
-    <aside class="example ds-selector-tabs" ><div class="marker">
-     <span class="example-title">Thing Description generation from Thing Model</span>
-      </div>
-        <div class="selectors">
-          <button class="selected" data-selects="expanded">Thing Model</button>
-          <button class="selected" data-selects="expanded">Placeholder Map</button>
-          <button data-selects="statements">Thing Description</button>
-        </div>
-        <pre class="expanded input selected nohighlight"> {
-            "@context": ["http://www.w3.org/ns/td"], 
-            "@type" : "ThingModel",
-            "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
-            "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
-            "properties": {
-                "temperature": {
-                    "description": "Shows the current temperature value",
-                    "type": "number",
-                    "minimum": -20,
-                    "maximum": "{{THERMOSTATE_TEMPERATURE_MAXIMUM}}",
-                    "observable" : "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}"
-            ...
-        }</pre>
-        <pre class="expanded input selected nohighlight"> {
-            "THERMOSTATE_NUMBER": 4, 
-            "MQTT_BROKER_ADDRESS" : "192.168.178.72:1883",
-            "THERMOSTATE_TEMPERATURE_MAXIMUM": 47.7, 
-            "THERMOSTATE_TEMPERATURE_OBSERVABLE" : true
-            }</pre>
-        <pre class="expanded input selected nohighlight"> {
-            "@context": ["http://www.w3.org/ns/td"], 
-            "@type" : "Thing",
-            "title": "Thermostate No. 4",
-            "base": "mqtt://192.168.178.72:1883",
-            "properties": {
-                "temperature": {
-                    "description": "Shows the current temperature value",
-                    "type": "number",
-                    "minimum": -20.0,
-                    "maximum": 47.7,
-                    "observable" : true
-            ...
-            }</pre>
-        
-      </aside>
-
-
-
-
 
       <p>Thing description instances that follow a Thing model can carry the information which type 
           of Thing model is derived. In this context, the linking concept can be used with <code>"rel" : "type"</code> (also see
@@ -4183,76 +4293,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             The <code>links</code> array can use the entry with <code>"rel" : "type"</code> maximum one.
         </span> 
     </p>
-    <p>    
-        In some cases it is desirable to force the information which interaction model is mandatory 
-        and has to be definitely implemented in a <a>Thing Description</a> instance or can be always expected 
-        by the <a>Thing Model</a>.
 
-        <span class="rfc2119-assertion" id="td-model-required">
-            To guarantee the implementation of particular kind of interaction models,
-             <a>Thing Model</a> definitions MUST use the JSON member 
-            name <code>required</code> at interaction level 
-            (<code>properties</code>, <code>actions</code>, and <code>events</code>)
-            to provide the name of the interaction in a string-based array list.
-        </span>    
-    </p>
     
-    <p>    
-    The following sample shows the usage of <code>required</code> for the <a>Property</a> interaction <code>status</code>
-    and <a>Action</a> interaction <code>toggle</code>. 
-    </p>
-    
-    <pre class="example" title="Thing Model with the required term for interaction affordances.">
-    {
-        "@context": ["http://www.w3.org/ns/td"], 
-        "@type" : "ThingModel",
-        "title": "Lamp Thing Model",
-        "description": "Lamp Thing Description Model",
-        "properties": {
-            "status": {
-                "description": "current status of the lamp (on|off)",
-                "type": "string",
-                "readOnly": true
-            },
-            "required": ["status"]
-        },
-        "actions": {
-            "toggle": {
-                "description": "Turn the lamp on or off"
-            },
-            "required": ["toggle"]
-        },
-        "events": {
-            "overheating": {
-                "description": "Lamp reaches a critical temperature (overheating)",
-                "data": {"type": "string"}
-            }
-        }
-    }
-    </pre>
-        
-    <p>
-    Since the <a>Event</a> <code>overheating</code> is not mandatory it may be not available in a <a>Thing Description</a> 
-    instance.
-    </p>
 
-
-
-    <p>In the case that no <code>required</code> term is used within the interaction definitions, it is recommended to derive all the 
-        interaction definitions in the <a>Thing Description</a>.</p>
-
-    <p class="note">
-            Based on the latest feedback, the <code>required</code> at the interaction level is under discussion. Alternatively, JSON pointers 
-            may be used, which would not confuse the <code>required</code> term of the data schema. The next PlugFest will evaluate these kinds of options.
-    </p>
-    
-    <p> It is noted that some introduced definitions are only valid for <a>Thing Model</a> design. Those definitions shall not show up in TD 
-        instances. The following is therefore specified:
-        <span class="rfc2119-assertion" id="thing-model-td-generation-notAllowed">
-            Specific features which are only valid for <a>Thing Model</a> definitions like the <code>"@type":"ThingModel"</code>, <code>links</code> entry with <code>"rel":"extend"</code>,  or the placeholder concept 
-             MUST be replaced or removed in a <a>Thing Description</a> instance.   
-        </span>
-    </p>
 </section>
 
 
