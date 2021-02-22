@@ -3206,6 +3206,87 @@ although the names cannot conflict with those declared in security schemes.
 Using a specific prefix as in the above example
 for URI variables declared in security schemes can make it easier to avoid name conflicts.
 </p>
+<p>Security parameters might also be included along with the payload in some
+systems.  For example, suppose a system requires every payload to be a JSON
+object including a member named <code>key</code> whose value is a secret key.
+Depending on the interaction, however, other elements of the JSON object might 
+vary.  This situtation can be dealt with using the <code>body</code> security
+information location.
+Note that for this location, the <code>name</code> parameter is actually a JSON pointer
+evaluated relative to the root of the <code>DataSchema</code> for each interaction
+it is bound with, which allows it to be used with payloads that vary in other respects.
+As an example, here is a light that has a property to set its brightness and color
+and two separate actions to turn it on and off.  Although the JSON payloads
+are different for these actions the <code>key</code> element occurs in the same 
+relative location so single JSON pointer can be used.
+Note: if the security key occurs in inconsistent locations, it will be
+necessary to use multiple security scheme definitions.
+<pre class="example">
+{
+    ...
+    "securityDefinitions": {
+        "apikey_body": {
+            "scheme": "apikey",
+            "in": "body",
+            "name": "/key"
+        }
+    },
+    "security": "apikey_body",
+    ...
+    "properties": {
+        "color": {
+            ...
+            "properties": {
+                "brightness": {
+                    "type": "number",
+                    ...
+                },
+                "rgb": {
+                    "type": "array",
+                    ...
+                },
+                "key": {
+                    "type": "string"
+                }
+            },
+            "required": ["brightness", "rgb", "key"],
+            "forms": [{
+                "href": "https://example.com/status",
+                ...
+            }]
+        }
+    },
+    "action": {
+        "on": {
+            ...
+            "input": {
+                "key": {
+                    "type": "string"
+                }
+            },
+            "required": ["key"],
+            "forms": [{
+                "href": "https://example.com/on",
+                ...
+            }]
+        },
+        "off": {
+            ...
+            "input": {
+                "key": {
+                    "type": "string"
+                }
+            },
+            "required": ["key"],
+            "forms": [{
+                "href": "https://example.com/off",
+                ...
+            }]
+        }
+    },
+    ...
+}
+</pre>
 
 </section> <!-- end of id="security-serialization-json"-->    
 
