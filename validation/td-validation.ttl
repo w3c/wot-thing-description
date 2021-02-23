@@ -546,7 +546,7 @@
                 output communication metadata differ from input
                 metadata (e.g., output contentType differ from the
                 input contentType). The response name contains
-                metadata that is only valid for the response
+                metadata that is only valid for the primary response
                 messages."""^^rdf:HTML ;
         sh:node :ExpectedResponseShape ;
         sh:maxCount 1 ;
@@ -557,8 +557,8 @@
         skos:definition """This optional term can be used if additional expected responses
                 are possible, e.g. for error reporting.  Each additional response needs to be 
                 distinguished from others in some way (for example, by specifying
-                a protocol-specific error code)."""^^rdf:HTML ;
-        sh:node :ExpectedResponseShape ;
+                a protocol-specific error code), and may also have its own data schema."""^^rdf:HTML ;
+        sh:node :AdditionalExpectedResponseShape ;
         sh:order 9 ;
     ] ;
     sh:property [
@@ -655,7 +655,8 @@
           arbitrarily set by servients.</span></p>
           <p>The optional <code>response</code> name-value pair can
           be used to provide metadata for the expected response
-          message. With the core vocabulary, it only includes
+          message. 
+          With the core vocabulary, it only includes
           content type information, but TD Context Extensions could
           be applied. <span class="rfc2119-assertion" id=
           "td-expectedResponse-default-contentType">If no
@@ -664,14 +665,30 @@
           that the content type of the response is equal to the
           content type assigned to the Form instance.</span> Note
           that <code>contentType</code> within an
-          <code>ExpectedResponse</code> <a href="#dfn-class" class=
+          <code>ExpectedResponse</code> 
+          <a href="#dfn-class" class=
           "internalDFN" data-link-type="dfn">Class</a> does not
           have a <a href="#dfn-default-value" class="internalDFN"
           data-link-type="dfn">Default Value</a>. For instance, if
           the value of the content type of the form is
           <code>application/xml</code> the assumed value of the
           content type of the response will be also
-          <code>application/xml</code>.</p>
+          <code>application/xml</code>.
+          In some cases additional responses might be possible.
+          One example of this is error responses but in some cases
+          there might also be additional successful responses.
+          In this case the <code>response</code> name-value pair
+          is still used for the primary response but 
+          <code>additionalResponses</code> may also be provided,
+          whose value is an array of <code>AdditionalExpectedResponse</code>
+          objects.
+          Each additional response must be distinguished in some way from the primary
+          response, either by <code>contentType</code> or by
+          protocol-specific settings such as error code header values.
+          Each additional response may also have a data schema
+          which can differ from the normal output data schema for the
+          interaction.  
+          </p>
           <p>In some use cases, input and output data might be
           represented in a different form, for instance an Action
           that accepts JSON, but returns an image. In such a case,
@@ -682,8 +699,8 @@
           the expected response differs from the content type of
           the form, the <code>Form</code> instance <em class=
           "rfc2119" title="MUST">MUST</em> include a name-value
-          pair with the name <code>response</code>.</span> For
-          instance, an <code>ActionAffordance</code> could only
+          pair with the name <code>response</code>.</span> 
+          For instance, an <code>ActionAffordance</code> could only
           accept <code>application/json</code> for its input data,
           while it will respond with an <code>image/jpeg</code>
           content type for its output data. In that case the
@@ -691,7 +708,25 @@
           name-value pair has to be used to provide response
           content type (<code>image/jpeg</code>) information to the
           <a href="#dfn-consumer" class="internalDFN"
-          data-link-type="dfn">Consumer</a>.</p>"""^^rdf:HTML .
+          data-link-type="dfn">Consumer</a>.
+          Similar considerations apply to additional responses,
+          although in this case the <code>contentType</code> is optional
+          if it is the same as the input content Type (e.g. JSON).
+          <span class="rfc2119-assertion" id=
+          "td-additionalExpectedResponse-contentType">If the content type of
+          an additional expected response differs from the content type of
+          the form, the <code>Form</code> instance <em class=
+          "rfc2119" title="MUST">MUST</em> include an entry in the array
+          associated with the name <code>additionalResponses</code>
+          that includes a value for the name <code>contentType</code>.</span> 
+          <span class="rfc2119-assertion" id=
+          "td-additionalExpectedResponse-schema">If the data schema of
+          an additional expected response differs from the output data schema of
+          the interaction, the <code>Form</code> instance <em class=
+          "rfc2119" title="MUST">MUST</em> include an entry in the array
+          associated with the name <code>additionalResponses</code> that
+          includes a value for the name <code>data</code>.</span> 
+          </p>"""^^rdf:HTML .
     
 :LinkShape a sh:NodeShape ;
     sh:targetClass hctl:Link ;
@@ -881,7 +916,7 @@
 :ExpectedResponseShape a sh:NodeShape ;
     sh:targetClass hctl:ExpectedResponse ;
     skos:definition """Communication metadata describing the expected
-          response message."""^^rdf:HTML ;
+          response message for the primary response."""^^rdf:HTML ;
     sh:closed false ;
     sh:order 9 ;
      sh:property [
@@ -892,6 +927,28 @@
                 the media type [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc2046" title="Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types">RFC2046</a></cite>]."""^^rdf:HTML ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
+    ] .
+
+:AdditionalExpectedResponseShape a sh:NodeShape ;
+    sh:targetClass hctl:AdditionalExpectedResponse ;
+    skos:definition """Communication metadata describing the expected
+          response message for additional responses."""^^rdf:HTML ;
+    sh:closed false ;
+    sh:order 10 ;
+    sh:property [
+        sh:path td:hasAdditionalOutputSchema ;
+        skos:definition """Used to define the output data schema of the Interaction
+                for an additional response."""^^rdf:HTML ;
+        sh:node :DataSchemaShape ;
+        sh:maxCount 1 ;
+    ] ;
+     sh:property [
+        sh:path hctl:forContentType ;
+        skos:definition """Assign a content type based on a media type
+                (e.g., <code>text/plain</code>) and potential
+                parameters (e.g., <code>charset=utf-8</code>) for
+                the media type [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc2046" title="Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types">RFC2046</a></cite>]."""^^rdf:HTML ;
+        sh:datatype xsd:string ;
     ] .
 
 :SecuritySchemeShape a sh:NodeShape ;
