@@ -19,6 +19,32 @@
  - Format: There are 7 formats, there should be 3 left.
 */
 
+/** 
+ * This function returns part of the object given in param with the value found when resolving the path. Similar to JSON Pointers.
+ * In case no path is found, the param defaultValue is echoed back
+ * Taken from https://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-and-arrays-by-string-path/6491621#6491621
+ * @param {object} object
+ * @param {string} path
+ * @param {any} defaultValue
+ * @return {object}
+**/
+const resolvePath = (object, path, defaultValue) => path
+   .split('.')
+   .reduce((o, p) => o ? o[p] : defaultValue, object)
+
+/** 
+ * This function replaces part of the object given in param with the value given as value at the location given in path.
+ * Taken from https://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-and-arrays-by-string-path/6491621#6491621
+ * @param {object} object
+ * @param {string} path
+ * @param {any} defaultValue
+ * @return {object}
+**/
+const setPath = (object, path, value) => path
+.split('.')
+.reduce((o,p,i) => o[p] = path.split('.').length === ++i ? value : o[p] || {}, object)
+
+
 
 const fs = require('fs');
 
@@ -30,6 +56,7 @@ tmSchema = removeRequired(tmSchema)
 tmSchema = removeEnum(tmSchema)
 tmSchema = removeFormat(tmSchema)
 // tmSchema = convertString(tmSchema)
+tmSchema = manualConvertString(tmSchema)
 
 fs.writeFileSync("validation/tm-json-schema-validation.json", JSON.stringify(tmSchema,null,2))
 
@@ -154,6 +181,76 @@ function removeFormat(argObject) {
 
     return argObject;
 }
+
+/** 
+ * This function changes the terms that have values of number, integer or boolean to anyOf with string and that term.
+ * Until convertString function works, this is its more manual version
+ * such types are found in: definitions/dataSchema minimum, maximum, minItems, maxItems, minLength, maxLength, multipleOf, 
+ * writeOnly, readOnly and the exact same in definitions/property_element but there is also observable here
+ * safe and idempotent in definitions/action_element
+ * @param {object} argObject
+ * @return {object}
+**/
+function manualConvertString(argObject){
+    // the exact paths of the above mentioned locations of types
+    let paths = [
+        "definitions.dataSchema.properties.minimum",
+        "definitions.dataSchema.properties.maximum",
+        "definitions.dataSchema.properties.minItems",
+        "definitions.dataSchema.properties.maxItems",
+        "definitions.dataSchema.properties.minLength",
+        "definitions.dataSchema.properties.maxLength",
+        "definitions.dataSchema.properties.multipleOf",
+        "definitions.dataSchema.properties.writeOnly",
+        "definitions.dataSchema.properties.readOnly",
+        "definitions.property_element.properties.minimum",
+        "definitions.property_element.properties.maximum",
+        "definitions.property_element.properties.minItems",
+        "definitions.property_element.properties.maxItems",
+        "definitions.property_element.properties.minLength",
+        "definitions.property_element.properties.maxLength",
+        "definitions.property_element.properties.multipleOf",
+        "definitions.property_element.properties.writeOnly",
+        "definitions.property_element.properties.readOnly",
+        "definitions.property_element.properties.observable",
+        "definitions.action_element.properties.safe",
+        "definitions.action_element.properties.idempotent"
+    ]
+    
+    //iterate over this array and replace for each
+    paths.forEach(element => {
+        console.log(element)
+        let curSchema = resolvePath(argObject,element,"hey");
+        // if (curSchema == "hey") console.log(element)
+        let newSchema = changeToAnyOf(curSchema);
+        setPath(argObject,element, newSchema);
+    });
+    return argObject;
+
+}
+
+/** 
+ * This function take a schema that has type:something and converts it into
+ * anyOf with string
+ * @param {object} argObject
+ * @return {object}
+**/
+function changeToAnyOf(argObject){
+    if ("type" in argObject ){
+        let curType = argObject.type;
+        delete argObject.type;
+
+        argObject.anyOf = [{
+            type: curType
+        },{
+            type: "string"
+        }]
+        return argObject;
+    } else {
+        return argObject
+    }
+}
+
 
 /** 
  * if there is a term that does not have `string` in the type key,
