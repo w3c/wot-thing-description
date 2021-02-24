@@ -17,7 +17,13 @@
  - Required: There are currently 21 required in the TD Schema. There should be 2 left that are objects
  - Enum: There are 29 enums, there should be 2 left.
  - Format: There are 7 formats, there should be 3 left.
+ - anyOf: 1 anyOf in the td schema, should be 20 in the generated
 */
+
+
+const fs = require('fs');
+
+// some copied functions to manipulate objects
 
 /** 
  * This function returns part of the object given in param with the value found when resolving the path. Similar to JSON Pointers.
@@ -45,19 +51,18 @@ const setPath = (object, path, value) => path
 .reduce((o,p,i) => o[p] = path.split('.').length === ++i ? value : o[p] || {}, object)
 
 
-
-const fs = require('fs');
-
 // take the TD Schema
 let tdSchema = JSON.parse(fs.readFileSync('validation/td-json-schema-validation.json'));
 
+// do all the manipulation in order
 let tmSchema = staticReplace(tdSchema)
 tmSchema = removeRequired(tmSchema)
 tmSchema = removeEnum(tmSchema)
 tmSchema = removeFormat(tmSchema)
-// tmSchema = convertString(tmSchema)
 tmSchema = manualConvertString(tmSchema)
 
+// write a new file for the schema. Overwrites the existing one
+// 2 spaces for easier reading
 fs.writeFileSync("validation/tm-json-schema-validation.json", JSON.stringify(tmSchema,null,2))
 
 /** 
@@ -249,86 +254,4 @@ function changeToAnyOf(argObject){
     } else {
         return argObject
     }
-}
-
-
-/** 
- * if there is a term that does not have `string` in the type key,
- * convert that into an anyOf where one option is a string
- * this allows the use of {{MY_PLACEHOLDER}} kind of placeholders that are always string
- * If the term already is an anyOf or similar, it might be tricky to find an elegant option
- * If the type is object or array, it is not touched, right? Is it allowed to have something like: "properties":"{{}}"
- * @param {object} argObject
- * @return {object}
-**/
-
-function convertString(argObject) {
-    console.log("---")
-    console.log(JSON.stringify(argObject))
-    // look for any type
-    if (("type" in argObject)){
-        //check if it is not a string and add it as anyOf
-        // console.log("there is type")
-        let curType = argObject.type;
-        // if((curType != "string") && (curType != "object") && (curType != "array")){
-        if(curType == "number"){
-            console.log(curType)
-            console.log(argObject)
-            process.exit(0)
-            delete argObject.type;
-            // this is the minimum
-            argObject.anyOf = [{
-                type: curType
-            },{
-                type: "string"
-            }]
-            console.log(argObject)
-        }
-
-    }
-    
-
-    // console.log(Object.keys(argObject))
-    
-    for (var key in argObject)
-    {
-        let curValue = argObject[key];
-        // removal is done only in objects, other types are not JSON Schema points anyways
-        if (typeof(curValue)=="object"){
-            if ("type" in curValue) {
-                if (curValue.type == "object"){
-                    // console.log(curValue)
-                    curValue = convertString(curValue)
-                    argObject[key] = curValue
-                }
-                else if (curValue.type == "array"){
-                    // think about iterating arrays as well
-                }
-            } else {
-                curValue = convertString(curValue)
-                argObject[key] = curValue
-            }
-
-        }
-        else {
-            // console.log(curValue);
-        }
-    } 
-    
-    return argObject;
-}
-
-/* 
- Why the following wishful thinking will not work:
- - If there is a maximum with the type number, it needs to be detected and put into the anyOf. So a string replacement is not the good approach
-*/
-
-
-function replaceWithString(argObject) {
-
-    argString = JSON.stringify(argObject);
-    // pick the types that will be replaced: number, integer, boolean
-    let resultString = argString.replace('"type":"number"','"anyOf":[{"type":"number"},{"type":"string"}]');
-    resultString = resultString.replace('"type":"integer"','"anyOf":[{"type":"number"},{"type":"string"}]');
-    return JSON.parse(resultString);
 }
