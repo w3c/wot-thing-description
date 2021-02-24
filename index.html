@@ -1450,10 +1450,10 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                       information based on a default language.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-descriptions--DataSchema"><td><code>descriptions</code></td><td>Can be used to support (human-readable)
                        information in different languages. Also see <cite><a href='#multilanguage'>MultiLanguage</a></cite>.</td><td>optional</td><td><a>Map</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-const--DataSchema"><td><code>const</code></td><td>Provides a constant value.</td><td>optional</td><td>any type</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-unit--DataSchema"><td><code>unit</code></td><td>Provides unit information that is used, e.g.,
                 in international science, engineering, and
                 business.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-const--DataSchema"><td><code>const</code></td><td>Provides a constant value.</td><td>optional</td><td>any type</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-oneOf--DataSchema"><td><code>oneOf</code></td><td>Used to ensure that the data is valid against
                 one of the specified schemas in the array.</td><td>optional</td><td><a>Array</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-enum--DataSchema"><td><code>enum</code></td><td>Restricted set of values provided as an
@@ -1855,7 +1855,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
             </tr>
             <tr >
                 <td>
-                    <code>extend</code>
+                    <code>extends</code>
                 </td>
                 <td>
                     0..1
@@ -5382,7 +5382,7 @@ instance.
             <li>If the <code>required</code> feature is used based on Section <a href=#thing-model-td-required></a>, the required interactions must definitly be taken over in the <a>Thing Description</a> instance.</li>
             <li>If used, all placholder (see Section <a href="#thing-model-td-placeholder"></a>) in a <a>Thing Model</a> must be replaced with a valid corresponding value in the <a>Thing Description</a>.</li>
             <li>Missing communication and/or security metadata details have to be complemented in the <a>Thing Description</a> instance based on Section <a href=#security-serialization-json></a> and/or <a href=#form-serialization-json></a>.</li>
-            <li>If used, <code>links</code> entry with <code>"rel":"extend"</code> should not taken over in the <a>Thing Description</a> instance.
+            <li>If used, <code>links</code> entry with <code>"rel":"extends"</code> should not taken over in the <a>Thing Description</a> instance.
         </ul>
         </span>
 
@@ -5858,7 +5858,7 @@ instance.
     </p>
     <pre class="advisement">
 {
-    "title": "WoT TD Schema - 20 November 2020",
+    "title": "WoT TD Schema - 16 February 2021",
     "description": "JSON Schema for validating TD instances against the TD model. TD instances can be with or without terms that have default values",
     "$schema ": "http://json-schema.org/draft-07/schema#",
     "definitions": {
@@ -5946,12 +5946,14 @@ instance.
         },
         "type_declaration": {
             "oneOf": [{
-                    "type": "string"
+                    "type": "string",
+                    "not": {"const":"ThingModel"}
                 },
                 {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "not": {"const":"ThingModel"}
                     }
                 }
             ]
@@ -6460,6 +6462,17 @@ instance.
                 "maximum": {
                     "type": "number"
                 },
+                "minLength":{
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "maxLength":{
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "multipleOf":{
+                    "oneOf":[{"type": "integer"},{"type": "number"}]
+                },
                 "properties": {
                     "additionalProperties": {
                         "$ref": "#/definitions/dataSchema"
@@ -6582,7 +6595,8 @@ instance.
                     "type": "string"
                 },
                 "rel": {
-                    "type": "string"
+                    "type": "string",
+                    "not": {"const":"extends"}
                 },
                 "anchor": {
                     "$ref": "#/definitions/anyUri"
