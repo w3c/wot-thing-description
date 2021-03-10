@@ -1,0 +1,43 @@
+# This is a workflow that checks whether some files that should not be changed are actually changed in a PR
+
+name: File Change Check
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  node-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Change text file
+        run: |
+          echo "Modified" > new.txt
+      - name: Change file in directory
+        run: |
+          echo "Changed" > test_directory/new.txt
+      - name: Verify Changed files
+        uses: tj-actions/verify-changed-files@v5.5
+        id: changed_files
+        with:
+          files: |
+             validation/tm-json-schema-validation.json
+             validation/tmSchemaGenerator.js
+             validation/td-json-schema-validation.json
+      - name: Display changed files
+        if: steps.changed_files.outputs.files_changed == 'true'
+        run: |
+          echo "Changed files: ${{ steps.changed_files.outputs.changed_files }}" 
+      - name: Perform action when files change.
+        if: steps.changed_files.outputs.files_changed == 'true' && includes(steps.changed_files.outputs.changed_files, 'validation/tm-json-schema-validation.json') && ( !includes(steps.changed_files.outputs.changed_files, 'validation/td-json-schema-validation.json') || !includes(steps.changed_files.outputs.changed_files, 'validation/tmSchemaGenerator.js'))
+        run: |
+          echo "You have changed the TM Validation Schema but this is generated from the TD Schema with the tmSchemaGenerator.js file. Please incorporate your changes to one of those."
