@@ -1603,6 +1603,26 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
             <code>body</code> security information location, the value of <code>name</code> 
             <em class="rfc2119" title="MUST">MUST</em> be in the form of a JSON pointer [[!RFC6901]] relative to 
             the root of the input <code>DataSchema</code> for each interaction it is used with.</span> 
+            Since this value is not a fragment identifier, and is not relative to the root of the TD but
+            to whichever data schemas the security scheme is bound to, this value should not start with <code>#</code>;
+            it is a "pure" JSON pointer.
+            Since this value is not a fragment identifier, it also does not
+            need to URL-encode special characters.
+            The targetted element may or may not already exist at the specified location in the referenced data schema.
+            If it does not, it will be inserted. This avoids having to duplicate definitions in the data schemas of
+            every interaction.
+            <span class="rfc2119-assertion" id="sec-body-name-json-pointer-creatable">When an element
+            of a data schema indicated by a JSON pointer indicated in a <code>body</code> locator
+            does not already exist in the indicated schema, it
+            <em class="rfc2119" title="MUST">MUST</em> 
+            be possible to insert the indicated element
+            at the location indicated by the pointer.</span>
+            <span class="rfc2119-assertion" id="sec-body-name-json-pointer-array">The JSON pointer
+            used in the <code>body</code> locator 
+            <em class="rfc2119" title="MAY">MAY</em> 
+            use the "<code>-</code>" character to indicate a non-existent array element when 
+            it is necessary to insert an element after the last element of an existing array.
+            </span>
             If <code>name</code> is not given, it is assumed the entire body
             is to be used as the security parameter.
           </dd>
@@ -1859,7 +1879,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
             </tr>
             <tr >
                 <td>
-                    <code>extend</code>
+                    <code>extends</code>
                 </td>
                 <td>
                     0..1
@@ -1982,8 +2002,12 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 output communication metadata differ from input
                 metadata (e.g., output contentType differ from the
                 input contentType). The response name contains
-                metadata that is only valid for the response
+                metadata that is only valid for the primary response
                 messages.</td><td>optional</td><td><a href="#expectedresponse"><code>ExpectedResponse</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-additionalResponses--Form"><td><code>additionalResponses</code></td><td>This optional term can be used if additional expected responses
+                are possible, e.g. for error reporting.  Each additional response needs to be 
+                distinguished from others in some way (for example, by specifying
+                a protocol-specific error code), and may also have its own data schema.</td><td>optional</td><td><a href="#additionalexpectedresponse"><code>AdditionalExpectedResponse</code></a> or <a>Array</a> of <a href="#additionalexpectedresponse"><code>AdditionalExpectedResponse</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-subprotocol--Form"><td><code>subprotocol</code></td><td>Indicates the exact mechanism by which an
                 interaction will be accomplished for a given
                 protocol when there are multiple options. For
@@ -2025,7 +2049,8 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           arbitrarily set by servients.</span></p>
           <p>The optional <code>response</code> name-value pair can
           be used to provide metadata for the expected response
-          message. With the core vocabulary, it only includes
+          message. 
+          With the core vocabulary, it only includes
           content type information, but TD Context Extensions could
           be applied. <span class="rfc2119-assertion" id=
           "td-expectedResponse-default-contentType">If no
@@ -2034,14 +2059,30 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           that the content type of the response is equal to the
           content type assigned to the Form instance.</span> Note
           that <code>contentType</code> within an
-          <code>ExpectedResponse</code> <a href="#dfn-class" class=
+          <code>ExpectedResponse</code> 
+          <a href="#dfn-class" class=
           "internalDFN" data-link-type="dfn">Class</a> does not
           have a <a href="#dfn-default-value" class="internalDFN"
           data-link-type="dfn">Default Value</a>. For instance, if
           the value of the content type of the form is
           <code>application/xml</code> the assumed value of the
           content type of the response will be also
-          <code>application/xml</code>.</p>
+          <code>application/xml</code>.
+          In some cases additional responses might be possible.
+          One example of this is error responses but in some cases
+          there might also be additional successful responses.
+          In this case the <code>response</code> name-value pair
+          is still used for the primary response but 
+          <code>additionalResponses</code> may also be provided,
+          whose value is an array of <code>AdditionalExpectedResponse</code>
+          objects.
+          Each additional response must be distinguished in some way from the primary
+          response, either by <code>contentType</code> or by
+          protocol-specific settings such as error code header values.
+          Each additional response may also have a data schema
+          which can differ from the normal output data schema for the
+          interaction.  
+          </p>
           <p>In some use cases, input and output data might be
           represented in a different form, for instance an Action
           that accepts JSON, but returns an image. In such a case,
@@ -2052,8 +2093,8 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           the expected response differs from the content type of
           the form, the <code>Form</code> instance <em class=
           "rfc2119" title="MUST">MUST</em> include a name-value
-          pair with the name <code>response</code>.</span> For
-          instance, an <code>ActionAffordance</code> could only
+          pair with the name <code>response</code>.</span> 
+          For instance, an <code>ActionAffordance</code> could only
           accept <code>application/json</code> for its input data,
           while it will respond with an <code>image/jpeg</code>
           content type for its output data. In that case the
@@ -2061,12 +2102,38 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           name-value pair has to be used to provide response
           content type (<code>image/jpeg</code>) information to the
           <a href="#dfn-consumer" class="internalDFN"
-          data-link-type="dfn">Consumer</a>.</p></section>
+          data-link-type="dfn">Consumer</a>.
+          Similar considerations apply to additional responses,
+          although in this case the <code>contentType</code> is optional
+          if it is the same as the input content Type (e.g. JSON).
+          <span class="rfc2119-assertion" id=
+          "td-additionalExpectedResponse-contentType">If the content type of
+          an additional expected response differs from the content type of
+          the form, the <code>Form</code> instance <em class=
+          "rfc2119" title="MUST">MUST</em> include an entry in the array
+          associated with the name <code>additionalResponses</code>
+          that includes a value for the name <code>contentType</code>.</span> 
+          <span class="rfc2119-assertion" id=
+          "td-additionalExpectedResponse-schema">If the data schema of
+          an additional expected response differs from the output data schema of
+          the interaction, the <code>Form</code> instance <em class=
+          "rfc2119" title="MUST">MUST</em> include an entry in the array
+          associated with the name <code>additionalResponses</code> that
+          includes a value for the name <code>schema</code>.</span> 
+          </p></section>
 <section><h3><code>ExpectedResponse</code></h3><p>Communication metadata describing the expected
-          response message.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-contentType--ExpectedResponse"><td><code>contentType</code></td><td>Assign a content type based on a media type
+          response message for the primary response.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-contentType--ExpectedResponse"><td><code>contentType</code></td><td>Assign a content type based on a media type
                 (e.g., <code>text/plain</code>) and potential
                 parameters (e.g., <code>charset=utf-8</code>) for
                 the media type [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc2046" title="Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types">RFC2046</a></cite>].</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table></section>
+<section><h3><code>AdditionalExpectedResponse</code></h3><p>Communication metadata describing the expected
+          response message for additional responses.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-success--AdditionalExpectedResponse"><td><code>success</code></td><td>Signals if an additional response should not be considered an error.</td><td><a href="#sec-default-values">with default</a></td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#boolean"><code>boolean</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-schema--AdditionalExpectedResponse"><td><code>schema</code></td><td>Used to define the output data schema of the Interaction
+                for an additional response.</td><td>optional</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-contentType--AdditionalExpectedResponse"><td><code>contentType</code></td><td>Assign a content type based on a media type
+                (e.g., <code>text/plain</code>) and potential
+                parameters (e.g., <code>charset=utf-8</code>) for
+                the media type [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc2046" title="Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types">RFC2046</a></cite>].</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table></section>
 
 
     </section>
@@ -2139,6 +2206,13 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           "td-default-idempotent">
             <td><code>ActionAffordance</code></td>
             <td><code>idempotent</code></td>
+            <td><code>false</code></td>
+            <td></td>
+          </tr>
+          <tr class="rfc2119-default-assertion" id=
+          "td-default-success">
+            <td><code>AdditionalExpectedResponse</code></td>
+            <td><code>success</code></td>
             <td><code>false</code></td>
             <td></td>
           </tr>
@@ -5414,7 +5488,7 @@ instance.
             <li>If the <code>required</code> feature is used based on Section <a href=#thing-model-td-required></a>, the required interactions must definitly be taken over in the <a>Thing Description</a> instance.</li>
             <li>If used, all placholder (see Section <a href="#thing-model-td-placeholder"></a>) in a <a>Thing Model</a> must be replaced with a valid corresponding value in the <a>Thing Description</a>.</li>
             <li>Missing communication and/or security metadata details have to be complemented in the <a>Thing Description</a> instance based on Section <a href=#security-serialization-json></a> and/or <a href=#form-serialization-json></a>.</li>
-            <li>If used, <code>links</code> entry with <code>"rel":"extend"</code> should not taken over in the <a>Thing Description</a> instance.
+            <li>If used, <code>links</code> entry with <code>"rel":"extends"</code> should not taken over in the <a>Thing Description</a> instance.
         </ul>
         </span>
 
@@ -5890,7 +5964,7 @@ instance.
     </p>
     <pre class="advisement">
 {
-    "title": "WoT TD Schema - 20 November 2020",
+    "title": "WoT TD Schema - 16 February 2021",
     "description": "JSON Schema for validating TD instances against the TD model. TD instances can be with or without terms that have default values",
     "$schema ": "http://json-schema.org/draft-07/schema#",
     "definitions": {
@@ -5978,12 +6052,14 @@ instance.
         },
         "type_declaration": {
             "oneOf": [{
-                    "type": "string"
+                    "type": "string",
+                    "not": {"const":"ThingModel"}
                 },
                 {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "not": {"const":"ThingModel"}
                     }
                 }
             ]
@@ -6150,6 +6226,23 @@ instance.
                             "type": "string"
                         }
                     }
+                },
+                "additionalResponses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "contentType": {
+                                "type": "string"
+                            },
+                            "schema": {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "$ref": "#/definitions/dataSchema"
+                                }
+                            }
+                        }
+                    }
                 }
             },
             "required": [
@@ -6201,6 +6294,23 @@ instance.
                     "properties": {
                         "contentType": {
                             "type": "string"
+                        }
+                    }
+                },
+                "additionalResponses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "contentType": {
+                                "type": "string"
+                            },
+                            "schema": {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "$ref": "#/definitions/dataSchema"
+                                }
+                            }
                         }
                     }
                 }
@@ -6256,6 +6366,23 @@ instance.
                     "properties": {
                         "contentType": {
                             "type": "string"
+                        }
+                    }
+                },
+                "additionalResponses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "contentType": {
+                                "type": "string"
+                            },
+                            "schema": {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "$ref": "#/definitions/dataSchema"
+                                }
+                            }
                         }
                     }
                 }
@@ -6319,6 +6446,23 @@ instance.
                     "properties": {
                         "contentType": {
                             "type": "string"
+                        }
+                    }
+                },
+                "additionalResponses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "contentType": {
+                                "type": "string"
+                            },
+                            "schema": {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "$ref": "#/definitions/dataSchema"
+                                }
+                            }
                         }
                     }
                 }
@@ -6423,6 +6567,17 @@ instance.
                 },
                 "maximum": {
                     "type": "number"
+                },
+                "minLength":{
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "maxLength":{
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "multipleOf":{
+                    "oneOf":[{"type": "integer"},{"type": "number"}]
                 },
                 "properties": {
                     "additionalProperties": {
@@ -6546,7 +6701,8 @@ instance.
                     "type": "string"
                 },
                 "rel": {
-                    "type": "string"
+                    "type": "string",
+                    "not": {"const":"extends"}
                 },
                 "anchor": {
                     "$ref": "#/definitions/anyUri"
@@ -7127,6 +7283,7 @@ instance.
   <section>
   <h2 id="changes-from-recommendation">Changes from Recommendation 9 April 2020</h2>
     <ul>
+      <li>The additional term <em>additionalResponses</em> was added to section <a href="#form"></a>.  These can be used to define error responses.</li>
       <li>Section <a href="#sec-data-schema-vocabulary-definition"></a> defines a list of content types that can be used with data schema.</li>
       <li>Additional terms <em>contentEncoding</em> and <em>contentMediaType</em> were added in section <a href="#dataschema"></a>.  There is an <a href="#example-26">Example 26</a> that shows how to use them to describe binary data embedded in text-based values.</li>
       <li>An additional term <em>multipleOf</em> was added in section <a href="#numberschema"></a>.</li>
