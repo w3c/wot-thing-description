@@ -630,6 +630,14 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 
   <dl>
     <dt>
+        <dfn id="dfn-canonical-td">Canonical TD</dfn>
+    </dt>
+    <dd>
+        A unique serialization of the information in a <a>Thing Description</a> 
+        to support operations where TDs are compared as strings, such as
+        differencing or signing.
+    </dd>
+    <dt>
         <dfn id="dfn-context-ext">TD Context Extension</dfn>
     </dt>
     <dd>
@@ -656,7 +664,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
         in a given format and/or deserialize it from that format. A <a>TD Processor</a> must detect
         semantically inconsistent <a>Thing Descriptions</a>, that is, <a>Thing Descriptions</a>
         that cannot satisfy constraints on the <a>Instance Relation</a> of the <code>Thing</code>
-        class. For that purpose, a <a>TD Processor</a> may compute canonical forms of <a>Thing
+        class. For that purpose, a <a>TD Processor</a> may compute forms of <a>Thing
         Descriptions</a> in which all possible <a>Default Values</a> are assigned. A <a>TD Processor</a>
         is typically a sub-system of a <a>WoT Runtime</a>.
         Implementations of a TD Processor may be a TD producer only (able to serialize to TD Documents)
@@ -3935,9 +3943,58 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
 <section id="canonicalization-serialization-json">
 <h2>Canonicalization</h2>
 
-  <p class="ednote" title="Canonicalization Placeholder">
-  A temporary placeholder.  To be replaced with an appropriate definition of canonicalization.
+  <p>
+  Canonicalization is a process applied to the JSON serialization of a TD that
+  removes variations between different expressions of the same information model,
+  so that the same information always results in the same JSON serialization.
+  This unique representation is called a <a>Canonical TD</a>.
+  Canonical TDs are important for applications that need to compare TDs as strings,
+  for example, to compute signatures on TDs or to compute differences between TDs.
+  Whenever there is a choice of multiple ways to present information, canonicalization
+  selects only one. There are many places in which optional features are included in JSON,
+  such as white space, or where different representation formats are possible, such as
+  the number of digits in a number representation or the order of elements in an object.
+  </p><p>
+  Some of the choices leading to the efficient computation of a canonical form, 
+  such as the suppression of white space and sorting of elements in objects 
+  do make the representation less human readable.
+  In general, the canonical form presented here is optimized for machine-to-machine
+  use cases such as signing and to accommodate devices with limited network and
+  compute capabilities.  Compactness and ease of implementation
+  has been emphasized over human readability.
   </p>
+  <p>Computing a canonical form directly from an RDF triple representation is
+  difficult so the starting point is the JSON serialization of a TD.  
+  The following sequence of transformations are then applied to this serialization: 
+  <ol>
+  <li>Remove any elements that are given their default value. 
+  For example, the default value of <code>observable</code>
+  is <code>false</code>.  
+  If an input TD explictly assigns the value <code>false</code> to <code>observable</code>,
+  this element and the redundant value will be removed.</li>
+  <li>Rewrite values that can be expressed as either an array or as a single value 
+  as a single value if there is only one element.  
+  In other words, remove square brackets around
+  arrays of single elements where this is permitted.
+  </li>
+  <li>For all extension vocabulary terms, sort the base URIs, assign system-generated prefixes 
+  using the template <code>e{n}</code> (where <code>{n}</code> is an integer sequence number starting
+  at 1), and use these prefixes in place of base URIs. Note: some systems discard the prefixes
+  and expand all vocabulary terms into URIs.  This rule allows the canonical form to be
+  generated even in this case. It does, however, lead to the loss of the original prefixes.</li>
+  <li>Apply the JSON Canonicalization Scheme [[!RFC8785]], which among other transformations,
+  sorts object members by name, removes white space, and normalizes number representations.</li>
+  <li>As an exception to the sorted order,
+  move <code>securityDefinitions</code> to just before <code>security</code> at the top level.
+  This is to make single-pass processing easier, so these definitions 
+  occur prior to their first use.</li> 
+  </ol>
+  Note that the JSON Canonicalization Scheme, and by extension the process defined here,
+  preserves the order of elements in arrays.
+  There are some array-valued elements in TDs where the order is not meaningful, such
+  as the list of <code>scopes</code> in a <code>Form</code>.  
+  However, implementations of TD Processors need to preserve the order even in
+  such cases so a Canonical TD can be generated if needed.
 
 </section>
 </section> <!-- end of id="sec-td-serialization"-->
