@@ -4124,7 +4124,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     In the following there is a sample Thing Model for a lamp without any protocol and security information.
     </p>
     
-    <pre class="example" title="MyLampThingModel serialized in JSON">
+    <pre class="example" title="MyLampThingModel serialized in JSON" id="td-model-example-lamp">
     {
         "@context": ["http://www.w3.org/ns/td"], 
         "@type" : "ThingModel",
@@ -4213,7 +4213,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
        Lets assume we have a basic model desciption as provided in the following example:
     </p>
 
-    <pre class="example" title="Basic On/Off Thing Model Definition">
+    <pre class="example" title="Basic On/Off Thing Model Definition" id="td-model-example-basic-on-off">
         {
             "@context": ["http://www.w3.org/ns/td"], 
             "@type" : "ThingModel",
@@ -4235,7 +4235,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         {
             "@context": ["http://www.w3.org/ns/td"], 
             "@type" : "ThingModel",
-            "title": "Smart Lamp Control",
+            "title": "Smart Lamp Control with Dimming",
             "links" : [{
                 "rel": "extends",
                 "href": "http://example.com/BasicOnOffTM",
@@ -4257,17 +4257,28 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <p>
     The <code>extend</code> feature only allows to inherit all definitions of one TM. In many use cases, however,
      it is desired to import sub-definition of one or more TMs. For doing this, the <code>tmRef</code> term is introduced
-     that allows to copy a defintion within an existing TM into a new created context definition.  
+     with a JSON Pointer-based value [[rfc6901]] that allows to copy a defintion within an existing TM into a new created 
+     local context definition.  
      <span class="rfc2119-assertion" id="td-model-tmRef">
-        The value of <code>tmRef</code> term MUST be a valid JSON Pointer that points to an existing definition within a <a>Thing Model</a> instance. 
+        The value of <code>tmRef</code> term MUST be a valid JSON Pointer that identifys to a pre-existing definition based on
+        <a>Thing Model</a> specifications. 
+    </span>
+    <span class="rfc2119-assertion" id="td-model-tmRef">
+        Every time <code>tmRef</code> is used, the referenced pre-definition and its dependencies 
+        (e.g., by context extension) MUST be assumed at this point.
     </span>
     </p>
 
+    <p>
+        The following example shows a new TM definition that imports the existing definition of the property 
+        <code>onOff</code> from <a href="#td-model-example-basic-on-off"></a> into the new property definition 
+        <code>switch</code>.
+    </p>
     <pre class="example" title="Smart Lamp Control imports existing definition" id="td-model-example-tmRef">
         {
             "@context": ["http://www.w3.org/ns/td"], 
             "@type" : "ThingModel",
-            "title": "My Smart Lamp Control",
+            "title": "Smart Lamp Control",
             "properties" : {
                 "switch" : {
                     "tmRef" :"http://example.com/BasicOnOffTM.tm.jsonld#/properties/onOff"
@@ -4276,7 +4287,33 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         }
     </pre>
  
+    <p>
+        The <code>extend</code> and the import mechanism based on <code>tmRef</code> can be also used at the same time in 
+        a TM definition. The following example extends the TM from <a href="#td-model-example-basic-on-off"></a> and imports
+        the <code>status</code> and <code>dim</code> definitions from <a href="#td-model-example-lamp"></a> and 
+        <a href="#td-model-example-smart-lamp-control"></a> respectively.
+    </p>
 
+    <pre class="example" title="Smart Lamp Control Thing Model Definition" id="td-model-example-smart-lamp-control">
+        {
+            "@context": ["http://www.w3.org/ns/td"], 
+            "@type" : "ThingModel",
+            "title": "Smart Lamp Control",
+            "links" : [{
+                "rel": "extends",
+                "href": "http://example.com/BasicOnOffTM",
+                "type": "application/td+json"
+             }],
+            "properties" : {
+                "status" : {
+                    "tmRef" :"http://example.com/LampTM.tm.jsonld#/properties/status"
+                },
+                "dimming" : {
+                    "tmRef" :"http://example.com/LampWithDimmingTM.tm.jsonld#/properties/dim"
+                }
+           }
+        }
+    </pre>
 
 </section>
 
@@ -4528,7 +4565,7 @@ instance.
     <h2>Examples</h2>
 
     <p>
-        The following <a>Thing Model</a> extends the model as shown in Example <a href="#td-mmodel-example-smart-lamp-control"></a> and 
+        The following <a>Thing Model</a> extends the model as shown in <a href="#td-model-example-smart-lamp-control"></a> and 
         overwrites the <code>maximum</code> value of the <code>dim</code> property  
     </p>
 
