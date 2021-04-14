@@ -2318,6 +2318,167 @@ although the names cannot conflict with those declared in security schemes.
 Using a specific prefix as in the above example
 for URI variables declared in security schemes can make it easier to avoid name conflicts.
 </p>
+<p>Security parameters might also be included along with the payload in some
+systems.  For example, suppose a system requires every payload to be a JSON
+object including a member named <code>auth</code> whose value is an object
+containing a member called <code>key</code> containing an access key.
+Depending on the interaction, however, other elements of the JSON object might 
+vary.  This situation can be dealt with using the <code>body</code> security
+information location.
+Note that for this location, the <code>name</code> parameter is actually a JSON pointer
+evaluated relative to the root of the <code>DataSchema</code> for each interaction
+it is bound with, which allows it to be used with payloads that vary in other respects.
+As an example, here is a light that has a property to set its brightness and color
+and two separate actions to turn it on and off.  Although the JSON payloads
+are different for these actions the <code>/auth/key</code> element occurs in the same 
+relative location so single JSON pointer can be used.
+Note: if the security key occurs in different inconsistent locations, it will be
+necessary to use multiple security scheme definitions.
+<pre class="example">
+{
+    ...
+    "securityDefinitions": {
+        "apikey_body": {
+            "scheme": "apikey",
+            "in": "body",
+            "name": "/auth/key"
+        }
+    },
+    "security": "apikey_body",
+    ...
+    "properties": {
+        "color": {
+            ...
+            "type": "object",
+            "properties": {
+                "brightness": {
+                    "type": "number",
+                    ...
+                },
+                "rgb": {
+                    "type": "array",
+                    ...
+                },
+                "auth": {
+                    "type": "object",
+                    "properties": {
+                        "key": {
+                           "type": "string"
+                        }
+                    },
+                    "required": ["key"]
+                }
+            },
+            "required": ["brightness", "rgb", "auth"],
+            "forms": [{
+                "href": "https://example.com/color",
+                ...
+            }]
+        }
+    },
+    "action": {
+        "on": {
+            ...
+            "input": {
+                "auth": {
+                    "type": "object",
+                    "properties": {
+                        "key": {
+                           "type": "string"
+                        }
+                    },
+                    "required": ["key"]
+                }
+            },
+            "required": ["auth"],
+            "forms": [{
+                "href": "https://example.com/on",
+                ...
+            }]
+        },
+        "off": {
+            ...
+            "input": {
+                "auth": {
+                    "type": "object",
+                    "properties": {
+                        "key": {
+                           "type": "string"
+                        }
+                    },
+                    "required": ["key"]
+                }
+            },
+            "required": ["auth"],
+            "forms": [{
+                "href": "https://example.com/off",
+                ...
+            }]
+        }
+    },
+    ...
+}
+</pre>
+However, it is rather annoying and redundant to add the security information
+to every data schema.  It is possible to simplify this example by using
+the feature that the location referenced by a JSON pointer in a <code>body</code>
+location will be automatically inserted if it does not exist.  In this
+case the above example can be simplified to the following.  Note that in fact
+a data schema will effectively be <em>created</em> for the actions "<code>on</code>" and
+"<code>off</code>" to hold just the security information.
+<pre class="example">
+{
+    ...
+    "securityDefinitions": {
+        "apikey_body": {
+            "scheme": "apikey",
+            "in": "body",
+            "name": "/auth/key"
+        }
+    },
+    "security": "apikey_body",
+    ...
+    "properties": {
+        "color": {
+            ...
+            "type": "object",
+            "properties": {
+                "brightness": {
+                    "type": "number",
+                    ...
+                },
+                "rgb": {
+                    "type": "array",
+                    ...
+                }
+            },
+            "required": ["brightness", "rgb"],
+            "forms": [{
+                "href": "https://example.com/color",
+                ...
+            }]
+        }
+    },
+    "action": {
+        "on": {
+            ...
+            "required": ["auth"],
+            "forms": [{
+                "href": "https://example.com/on",
+                ...
+            }]
+        },
+        "off": {
+            ...
+            "forms": [{
+                "href": "https://example.com/off",
+                ...
+            }]
+        }
+    },
+    ...
+}
+</pre>
 
 </section> <!-- end of id="security-serialization-json"-->    
 
