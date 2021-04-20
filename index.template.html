@@ -3186,35 +3186,65 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   such as the suppression of white space and sorting of elements in objects 
   do make the representation less human readable.
   In general, the canonical form presented here is optimized for machine-to-machine
-  use cases such as signing and to accommodate devices with limited network and
-  compute capabilities.
-  Compactness and ease of implementation
-  has been emphasized over human readability.
+  use cases such as signing.
   </p>
-  <p>Computing a canonical form directly from an RDF triple representation is
-  difficult so the starting point for the process described here is 
+  <p>The starting point for the process described here is 
   the JSON serialization of a TD.  
-  The following sequence of transformations are then applied to this serialization: 
+  The following sequence of transformations and constraints are then applied: 
   <ol>
-  <li>Remove any elements that are given their default value. 
+  <li><span class="rfc2119-assertion" id="canonical-datetime">
+  In the <a>Canonical TD</a>, 
+  values that are of type <code>dateTime</code>
+  MUST use the literal <code>Z</code> 
+  representing the UTC time zone instead 
+  of an offset.
+  </li>
+  <li><span class="rfc2119-assertion" id="canonical-defaults">
+  In the <a>Canonical TD</a>,
+  all required elements MUST be given explicitly, even if they have defaults
+  and are assigned their default value.
+  </span>
   For example, the default value of <code>observable</code>
   is <code>false</code>.  
-  If an input TD explictly assigns the value <code>false</code> to <code>observable</code>,
-  this element and the redundant value will be removed.</li>
+  If an input TD omits <code>observable</code> where it is allowed,
+  it must still explictly appear in the canonical form with the value of <code>false</code>.
+  Note that this also applies to extension vocabularies, e.g. for protocol bindings.
+  If any such extension defines default values they must be given explicitly in the canonical form.
+</li>
+<!--
   <li>If removal of entries with default values results in duplicates in any <code>forms</code>
   array, remove all but one duplicate in each such array.</li>
-  <li>Rewrite values that can be expressed as either an array or as a single value 
-  as a single value if there is only one element.  
-  In other words, remove square brackets around
-  arrays of single elements where this is permitted.
+-->
+  <li><span class="rfc2119-assertion" id="canonical-singleton-arrays">
+  In the <a>Canonical TD</a>,
+  all values that can be expressed as either an array or as a single value 
+  MUST be written as a single value if there is only one element.  
+  </span>
+  In other words, square brackets around
+  arrays of single elements must be removed.
   </li>
-  <li>For all extension vocabulary terms, sort the base URIs, assign system-generated prefixes 
+  <li><span class="rfc2119-assertion" id="canonical-extension-prefixes">
+  In the <a>Canonical TD</a>,
+  all extension vocabularies MUST use standardized prefixes of the 
+  form <code>e{n}</code> (where <code>{n}</code> is replaced by an integer starting with 1) and
+  be ordered by the sort order of their context URIs.
+  </span>
+  To acheive this,
+  for all extension vocabulary terms, sort the base URIs, assign system-generated prefixes 
   using the template <code>e{n}</code> (where <code>{n}</code> is an integer sequence number starting
-  at 1), and use these prefixes in place of base URIs. Note: some systems discard the prefixes
-  and expand all vocabulary terms into URIs.  This rule allows the canonical form to be
-  generated even in this case. It does, however, lead to the loss of the original prefixes.</li>
-  <li>Apply the JSON Canonicalization Scheme [[!RFC8785]], which among other transformations,
+  at 1), and use these prefixes in place of base URIs. 
+  Some TD Processors discard the prefixes
+  and expand all vocabulary terms into URIs, then need to collapse the URIs when serializing.  
+  This rule allows the canonical form to be
+  generated even in this case. 
+  It does, however, lead to the loss of the original prefixes.</li>
+  <li><span class="rfc2119-assertion" id="canonical-json">
+  In the <a>Canonical TD</a>,
+  all provisions of the JSON Canonicalization Scheme [[!RFC8785]] MUST be applied.
+  </span>
+  The JSON Canonicalization Scheme [[!RFC8785]], among other transformations,
   sorts object members by name, removes white space, and normalizes number representations.</li>
+<!--
   <li>At the top level object of a TD, elements should be reordered as follows:
     <code>@context</code>,
     <code>@type</code>,
@@ -3237,20 +3267,21 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
     <code>events</code>.
   This reordering is to make single-pass processing easier, so that (for example) definitions 
   occur prior to their first use.</li> 
+-->
   </ol>
   Note that the JSON Canonicalization Scheme, and by extension the process defined here,
   preserves the order of elements in arrays.
   There are some array-valued elements in TDs where the order is not meaningful, such
   as the list of <code>scopes</code> in a <code>Form</code>.  
-  However, implementations of TD Processors need to preserve the order even in
-  such cases so a Canonical TD can be generated if needed.
-  Also, TDs should be validated before being canonicalized.  
+  <span class="rfc2119-assertion" id="processors-preserve-array-order">
+  In order to support canonicalization, implementations 
+  of TD Processors MUST preserve the order of elements in all arrays.</span>
+  TDs should be validated before being canonicalized.  
   This will require that URLs
   in particular be fully confomant with the standard and must in particular 
   percent-encode characters outside the basic set defined for URLs.
 </section>
 </section> <!-- end of id="sec-td-serialization"-->
-
 
 <section id="sec-context-extensions" class="informative">
 <h1>TD Context Extensions</h1>
@@ -4006,7 +4037,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 
     <p>In the case of a <code>forms</code> entry that has multiple <code>op</code> values the usage 
         of the <code>htv:methodName</code> is not permitted. A <a>TD Processor</a> will extend
-        the multiple <code>op</code> values to seperate <code>forms</code> entries and associates 
+        the multiple <code>op</code> values to separate <code>forms</code> entries and associates 
         a single operation with the default assumption. The address information (e.g. <code>href</code>) and 
         other metadata are taken over in the extended version.
     </p>
