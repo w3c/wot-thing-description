@@ -1619,6 +1619,34 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           <dt><code>body</code>:</dt>
           <dd>The parameter will be provided in the body of the request payload, with the data schema element  
             used provided by <code>name</code>.
+            <span class="rfc2119-assertion" id="sec-body-name-json-pointer">When used in the context of a 
+            <code>body</code> security information location, the value of <code>name</code> 
+            <em class="rfc2119" title="MUST">MUST</em> be in the form of a JSON pointer [[!RFC6901]] relative to 
+            the root of the input <code>DataSchema</code> for each interaction it is used with.</span> 
+            Since this value is not a fragment identifier, and is not relative to the root of the TD but
+            to whichever data schemas the security scheme is bound to, this value should not start with <code>#</code>;
+            it is a "pure" JSON pointer.
+            Since this value is not a fragment identifier, it also does not
+            need to URL-encode special characters.
+            The targeted element may or may not already exist at the specified location in the referenced data schema.
+            If it does not, it will be inserted. This avoids having to duplicate definitions in the data schemas of
+            every interaction.
+            <span class="rfc2119-assertion" id="sec-body-name-json-pointer-creatable">When an element
+            of a data schema indicated by a JSON pointer indicated in a <code>body</code> locator
+            does not already exist in the indicated schema, it
+            <em class="rfc2119" title="MUST">MUST</em> 
+            be possible to insert the indicated element
+            at the location indicated by the pointer.</span>
+            <span class="rfc2119-assertion" id="sec-body-name-json-pointer-array">The JSON pointer
+            used in the <code>body</code> locator 
+            <em class="rfc2119" title="MAY">MAY</em> 
+            use the "<code>-</code>" character to indicate a non-existent array element when 
+            it is necessary to insert an element after the last element of an existing array.
+            </span>
+            <span class="rfc2119-assertion" id="sec-body-name-json-pointer-type">The element referenced
+            (or created) by a 
+            <code>body</code> security information location
+            <em class="rfc2119" title="MUST">MUST</em> be required and of type "<code>string</code>".</span> 
             If <code>name</code> is not given, it is assumed the entire body
             is to be used as the security parameter.
           </dd>
@@ -3276,6 +3304,167 @@ although the names cannot conflict with those declared in security schemes.
 Using a specific prefix as in the above example
 for URI variables declared in security schemes can make it easier to avoid name conflicts.
 </p>
+<p>Security parameters might also be included along with the payload in some
+systems.  For example, suppose a system requires every payload to be a JSON
+object including a member named <code>auth</code> whose value is an object
+containing a member called <code>key</code> containing an access key.
+Depending on the interaction, however, other elements of the JSON object might 
+vary.  This situation can be dealt with using the <code>body</code> security
+information location.
+Note that for this location, the <code>name</code> parameter is actually a JSON pointer
+evaluated relative to the root of the <code>DataSchema</code> for each interaction
+it is bound with, which allows it to be used with payloads that vary in other respects.
+As an example, here is a light that has a property to set its brightness and color
+and two separate actions to turn it on and off.  Although the JSON payloads
+are different for these actions the <code>/auth/key</code> element occurs in the same 
+relative location so single JSON pointer can be used.
+Note: if the security key occurs in different inconsistent locations, it will be
+necessary to use multiple security scheme definitions.
+<pre class="example">
+{
+    ...
+    "securityDefinitions": {
+        "apikey_body": {
+            "scheme": "apikey",
+            "in": "body",
+            "name": "/auth/key"
+        }
+    },
+    "security": "apikey_body",
+    ...
+    "properties": {
+        "color": {
+            ...
+            "type": "object",
+            "properties": {
+                "brightness": {
+                    "type": "number",
+                    ...
+                },
+                "rgb": {
+                    "type": "array",
+                    ...
+                },
+                "auth": {
+                    "type": "object",
+                    "properties": {
+                        "key": {
+                           "type": "string"
+                        }
+                    },
+                    "required": ["key"]
+                }
+            },
+            "required": ["brightness", "rgb", "auth"],
+            "forms": [{
+                "href": "https://example.com/color",
+                ...
+            }]
+        }
+    },
+    "action": {
+        "on": {
+            ...
+            "input": {
+                "auth": {
+                    "type": "object",
+                    "properties": {
+                        "key": {
+                           "type": "string"
+                        }
+                    },
+                    "required": ["key"]
+                }
+            },
+            "required": ["auth"],
+            "forms": [{
+                "href": "https://example.com/on",
+                ...
+            }]
+        },
+        "off": {
+            ...
+            "input": {
+                "auth": {
+                    "type": "object",
+                    "properties": {
+                        "key": {
+                           "type": "string"
+                        }
+                    },
+                    "required": ["key"]
+                }
+            },
+            "required": ["auth"],
+            "forms": [{
+                "href": "https://example.com/off",
+                ...
+            }]
+        }
+    },
+    ...
+}
+</pre>
+However, it is rather annoying and redundant to add the security information
+to every data schema.  It is possible to simplify this example by using
+the feature that the location referenced by a JSON pointer in a <code>body</code>
+location will be automatically inserted if it does not exist.  In this
+case the above example can be simplified to the following.  Note that in fact
+a data schema will effectively be <em>created</em> for the actions "<code>on</code>" and
+"<code>off</code>" to hold just the security information.
+<pre class="example">
+{
+    ...
+    "securityDefinitions": {
+        "apikey_body": {
+            "scheme": "apikey",
+            "in": "body",
+            "name": "/auth/key"
+        }
+    },
+    "security": "apikey_body",
+    ...
+    "properties": {
+        "color": {
+            ...
+            "type": "object",
+            "properties": {
+                "brightness": {
+                    "type": "number",
+                    ...
+                },
+                "rgb": {
+                    "type": "array",
+                    ...
+                }
+            },
+            "required": ["brightness", "rgb"],
+            "forms": [{
+                "href": "https://example.com/color",
+                ...
+            }]
+        }
+    },
+    "action": {
+        "on": {
+            ...
+            "required": ["auth"],
+            "forms": [{
+                "href": "https://example.com/on",
+                ...
+            }]
+        },
+        "off": {
+            ...
+            "forms": [{
+                "href": "https://example.com/off",
+                ...
+            }]
+        }
+    },
+    ...
+}
+</pre>
 
 </section> <!-- end of id="security-serialization-json"-->    
 
