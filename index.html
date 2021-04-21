@@ -4189,6 +4189,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   In other words, square brackets around
   arrays of single elements must be removed.
   </li>
+<!--
   <li><span class="rfc2119-assertion" id="canonical-extension-prefixes">
   In the <a>Canonical TD</a>,
   all extension vocabularies MUST use standardized prefixes of the 
@@ -4204,6 +4205,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   This rule allows the canonical form to be
   generated even in this case. 
   It does, however, lead to the loss of the original prefixes.</li>
+-->
   <li><span class="rfc2119-assertion" id="canonical-json">
   In the <a>Canonical TD</a>,
   all provisions of the JSON Canonicalization Scheme [[!RFC8785]] MUST be applied.
@@ -4242,10 +4244,59 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   <span class="rfc2119-assertion" id="processors-preserve-array-order">
   In order to support canonicalization, implementations 
   of TD Processors MUST preserve the order of elements in all arrays.</span>
+  If extension vocabularies are used, the prefixes need to be preserved
+  as well.
+  <span class="rfc2119-assertion" id="processors-preserve-prefixes">
+  In order to support canonicalization, implementations 
+  of TD Processors MUST preserve the prefixes used for extension vocabularies.</span>
+</p><p>
   TDs should be validated before being canonicalized.  
   This will require that URLs
   in particular be fully confomant with the standard and must in particular 
   percent-encode characters outside the basic set defined for URLs.
+</p><p>
+  Here is an example TD that is in canonical form, except that white space
+  and newlines have been inserted to make it more readable:
+<aside class="example" id="canonical-thing-description-sample" title="Canonical Thing Description Example - White Space Inserted">
+<pre>{
+    "@context": "http://www.w3.org/ns/td",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "properties": {
+        "status": {
+            "forms": [
+                {
+                    "href": "https://mylamp.example.com/status",
+                    "htv:methodName": "GET",
+                    "op": "readproperty"
+                },
+                {
+                    "href": "https://mylamp.example.com/status",
+                    "htv:methodName": "PUT",
+                    "op": "writeproperty"
+                }
+            ],
+            "observable": false,
+            "readOnly": false,
+            "type": "string",
+            "writeOnly": false
+        }
+    },
+    "security": "basic_sc",
+    "securityDefinitions": {
+        "basic_sc": {
+            "in": "header",
+            "scheme": "basic"
+        }
+    },
+    "title": "MyLampThing"
+}</pre>
+</aside>
+
+However, the actual true <a>Canonical TD</a> has all extra whitespace removed, and looks like the following:
+<aside class="example" id="canonical-thing-description-nows" title="Canonical Thing Description Example - No White Space">
+<pre>{"@context":"http://www.w3.org/ns/td","id":"urn:dev:ops:32473-WoTLamp-1234","properties":{"status":{"forms":[{"href":"https://mylamp.example.com/status","htv:methodName":"GET","op":"readproperty"},{"href":"https://mylamp.example.com/status","htv:methodName": "PUT","op":"writeproperty"}],"observable": false,"readOnly": false,"type":"string","writeOnly":false}},"security":"basic_sc","securityDefinitions":{"basic_sc":{"in": "header","scheme":"basic"}},"title":"MyLampThing"}</pre>
+</aside>
+
 </section>
 </section> <!-- end of id="sec-td-serialization"-->
 
