@@ -60,6 +60,9 @@ tmSchema = removeRequired(tmSchema)
 tmSchema = removeEnum(tmSchema)
 tmSchema = removeFormat(tmSchema)
 tmSchema = manualConvertString(tmSchema)
+tmSchema = addTmTerms(tmSchema)
+
+// console.log(tmSchema)
 
 // write a new file for the schema. Overwrites the existing one
 // 2 spaces for easier reading
@@ -224,9 +227,7 @@ function manualConvertString(argObject){
     
     //iterate over this array and replace for each
     paths.forEach(element => {
-        console.log(element)
         let curSchema = resolvePath(argObject,element,"hey");
-        // if (curSchema == "hey") console.log(element)
         let newSchema = changeToAnyOf(curSchema);
         setPath(argObject,element, newSchema);
     });
@@ -254,4 +255,32 @@ function changeToAnyOf(argObject){
     } else {
         return argObject
     }
+}
+
+/** 
+ * This function adds tm:required and tm:ref definitions
+ * @param {object} argObject
+ * @return {object}
+**/
+function addTmTerms(argObject){
+    
+    argObject.definitions["tm_required"] = {
+        "type":"array",
+        "items":{
+            "type":"string",
+            "format": "json-pointer",
+            "pattern": "(^#/properties/)|(#/actions/)|(#/events/)"
+        }
+    }
+
+    argObject.properties["tm:required"] = {
+        "$ref": "#/definitions/tm_required"
+    }
+
+    argObject.definitions["tm:ref"] = {
+        "type":"string",
+        "format": "uri-reference"
+    }
+
+    return argObject;
 }
