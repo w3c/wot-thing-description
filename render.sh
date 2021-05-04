@@ -84,7 +84,7 @@ echo "> context/td-context-1.1.jsonld"
 # ontology/wotsec.ttl
 # ontology/hctl.ttl
 
-PREFIXES=("td" "hctl" "jsonschema" "wotsec")
+PREFIXES=("td" "hctl" "jsonschema" "wotsec" "tm")
 FILES=""
 for prefix in ${PREFIXES[@]}; do
 	FILES=$FILES" ontology/"$prefix".ttl"
