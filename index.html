@@ -753,6 +753,10 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
             <td>Hypermedia Controls</td>
             <td><code>https://www.w3.org/ns/hypermedia</code></td>
         </tr>
+        <tr>
+            <td>Thing Model</td>
+            <td><code>http://www.w3.org/ns/tm</code></td>
+        </tr>
     </tbody>
     </table>
   
@@ -5505,17 +5509,19 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     A <a>Thing Model</a> is recognized by the top level <em>@type</em>.
     <span class="rfc2119-assertion" id="td-model-identification">
         <a>Thing Model</a> definitions MUST use the keyword <em>@type</em> at top level 
-        and a value of type string or array that equals or respectively contains <code>ThingModel</code>.
+        and a value of type string or array that equals or respectively contains <code>tm:ThingModel</code>.
     </span>
+    The prefix <code>tm</code> is defined within <a>Thing Descriptions</a>' context and points to the <a>Thing Model</a> namespace as 
+    defined in <a href="#namespaces"></a>. It is intended that vocabulary from the <code>tm</code> context only be used in <a>Thing Model</a>
+    definitions and are removed or replaced when <a>Thing Descriptions</a> are generated (also see <a href="#thing-model-td-generation"></a>).
     </p>
-
     <p>
         <span class="rfc2119-assertion" id="td-model-protocol-security-restriction">
-    A <a>Thing Model</a> MAY NOT contain instance specific <a>Protocol Binding</a> information such as endpoint address.
+    A <a>Thing Model</a> MAY NOT contain instance specific <a>Protocol Binding</a> and security information such as endpoint addresses.
     </span>
 
-    As consequent, <a>Thing Model</a> definitions will be also valid if there are no JSON members like <em>forms</em>, 
-    <em>securityDefinitions</em>, and <em>security</em>. <a>Thing Models</a> are also valid even if these JSON members are used, however,
+    As consequent, <a>Thing Model</a> definitions will be also valid if there are no JSON members like <em>forms</em>, <em>base</em>, 
+    <em>securityDefinitions</em>, and <em>security</em>. <a>Thing Models</a> are also valid even if these JSON members are used (e.g., as template), however,
     the nested mandatory members like <em>href</em> are omitted.
     </p>
 
@@ -5526,7 +5532,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="example" title="MyLampThingModel serialized in JSON" id="td-model-example-lamp">
     {
         "@context": ["http://www.w3.org/ns/td"], 
-        "@type" : "ThingModel",
+        "@type" : "tm:ThingModel",
         "title": "Lamp Thing Model",
         "description": "Lamp Thing Description Model",
         "properties": {
@@ -5569,7 +5575,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="example" title="Thing Model versioning">
         {
             ...
-            "@type" : "ThingModel",
+            "@type" : "tm:ThingModel",
             "title": "Lamp Thing Model",
             "description": "Lamp Thing Description Model",
             "version" : {"model" : "1.0.0" },
@@ -5586,26 +5592,27 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <h3>Extension and Import</h3>
 
     <p>
-     A <a>Thing Model</a> can also <code>extend</code> an existing <a>Thing Model</a>.
+        A <a>Thing model</a> can extend an existing <a>Thing model</a> by using the <code>tm:extends</code> mechanism announced in the <code>links</code> definition: 
      <span class="rfc2119-assertion" id="td-model-extend">
-        A <a>Thing Model</a> MUST use at least one <code>links</code> entry with <code>"rel":"extend"</code> 
+        A <a>Thing Model</a> MUST use at least one <code>links</code> entry with <code>"rel":"tm:extends"</code> 
         that targets to a <a>Thing Model</a> that is be extended.
     </span>
     The <a>Thing Model</a> will inherit all definitions from the extended <a>Thing Model</a>. There is the opportunity 
     to extend the existing definition with further metadata by providing further JSON name-value pairs from existing 
     TD information model (<a href=#sec-vocabulary-definition></a>) or using the context extension concept 
     (<a href=#sec-context-extensions></a>). A <a>Thing Model</a> can also overwrite existing defintions such as <code>title(s)</code> 
-    and <code>description(s)</code>. For this there exists two limitiations: 
+    and <code>maximum</code> etc.. For this there exists two limitiations: 
     <span class="rfc2119-assertion" id="td-model-overwrite-interaction">
         A <a>Thing Model</a> SHOULD NOT overwrite the JSON names defined within the  
         <code>properties</code>, <code>actions</code>, and/or <code>events</code> <a>Map</a> of the extended <a>Thing Model</a>.
     </span>
     <span class="rfc2119-assertion" id="td-model-overwrite-types">
-        The value of the <code>types</code> in data schema definitions of the extended <a>Thing Model</a> SHOULD NOT change the value type.
-        An exception is allowed when the extended <a>Thing Model</a> uses <code>number</code> as data schema type value, the context <a>Thing Model</a> 
-        is allowed only to overwrite this value type to <code>integer</code>.
+        Definitions SHOULD NOT be overwritten in such a way that possible instance values are no longer valid compared to the origin extended definitions.
     </span>
-    Those assertations preserve the semantics throughout of the extended <a>Thing Model</a>.
+    Those assertations preserve the semantics throughout of the extended <a>Thing Model</a>. 
+    E.g., it is not allowed that a <code>"minimum":2 </code>  from a extended <a>Thing Model</a> can be overwritten with <code>"minimum":0</code>. 
+    Meanwhile, overwritting with <code>"minimum":5 </code> would work since all instances values will always fullfill the restrictions of the extended <a>Thing Model</a>.
+
     </p>
 
     <p>
@@ -5615,7 +5622,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="example" title="Basic On/Off Thing Model Definition" id="td-model-example-basic-on-off">
         {
             "@context": ["http://www.w3.org/ns/td"], 
-            "@type" : "ThingModel",
+            "@type" : "tm:ThingModel",
             "title": "Basic On/Off Thing Model",
             "properties": {
                 "onOff": {
@@ -5633,10 +5640,10 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="example" title="Smart Lamp Control Thing Model Definition" id="td-model-example-smart-lamp-control">
         {
             "@context": ["http://www.w3.org/ns/td"], 
-            "@type" : "ThingModel",
+            "@type" : "tm:ThingModel",
             "title": "Smart Lamp Control with Dimming",
             "links" : [{
-                "rel": "extends",
+                "rel": "tm:extends",
                 "href": "http://example.com/BasicOnOffTM",
                 "type": "application/td+json"
              }],
@@ -5654,7 +5661,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     </p>
 
     <p>
-    The <code>extend</code> feature only allows to inherit all definitions of one TM. In many use cases, however,
+    The <code>tm:extends</code> feature only allows to inherit all definitions of one TM. In many use cases, however,
      it is desired to import sub-definition of one or more TMs. For doing this, the <code>tm:ref</code> term is introduced
      with a JSON Pointer-based value [[rfc6901]] that allows to copy a defintion within an existing TM into a new created 
      local context definition.  
@@ -5676,7 +5683,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="example" title="Smart Lamp Control imports existing definition" id="td-model-example-tmRef">
         {
             "@context": ["http://www.w3.org/ns/td"], 
-            "@type" : "ThingModel",
+            "@type" : "tm:ThingModel",
             "title": "Smart Lamp Control",
             "properties" : {
                 "switch" : {
@@ -5694,8 +5701,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         at the same level of the <code>tm:ref</code> declearation that provides a new value.  
        </span>
        <span class="rfc2119-assertion" id="td-model-tmRef-overwrite-semantic-meaning">
-        To keep the semantic meaning of the referenced definition it is not allowed to relax any restriction (e.g., increase value ranges) or
-        change a data type definition. 
+        Similar to <code>tm:extends</code> and to keep the semantic meaning, definitions SHOULD NOT be overwritten in such a way that possible 
+        instance values are no longer valid compared to the origin referenced definition.
        </span>
     </p>
 
@@ -5707,7 +5714,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="example" title="Smart Lamp Control extend and overwrite existing definitions" id="td-model-example-tmRef">
         {
             "@context": ["http://www.w3.org/ns/td"], 
-            "@type" : "ThingModel",
+            "@type" : "tm:ThingModel",
             "title": "Smart Lamp Control",
             "properties" : {
                 "dimming" : {
@@ -5720,7 +5727,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     </pre>
  
     <p>
-        The <code>extend</code> and the import mechanism based on <code>tm:ref</code> can be also used at the same time in 
+        The <code>tm:extends</code> and the import mechanism based on <code>tm:ref</code> can be also used at the same time in 
         a TM definition. The following example extends the TM from <a href="#td-model-example-basic-on-off"></a> and imports
         the <code>status</code> and <code>dim</code> definitions from <a href="#td-model-example-lamp"></a> and 
         <a href="#td-model-example-smart-lamp-control"></a> respectively.
@@ -5729,7 +5736,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="example" title="Smart Lamp Control Thing Model with extend and import mechanism" id="td-model-example-smart-lamp-control">
         {
             "@context": ["http://www.w3.org/ns/td"], 
-            "@type" : "ThingModel",
+            "@type" : "tm:ThingModel",
             "title": "Smart Lamp Control",
             "links" : [{
                 "rel": "extends",
@@ -5788,7 +5795,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="thingmodel exampleTab1 selected ">
 {
 	"@context": ["http://www.w3.org/ns/td"], 
-	"@type" : "ThingModel",
+	"@type" : "tm:ThingModel",
 	"title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
 	"base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
 	"properties": {
@@ -5866,7 +5873,7 @@ and <a>Action</a> interaction <code>toggle</code>.
 <pre class="example" title="Thing Model with the tm:required term for interaction affordances.">
 {
     "@context": ["http://www.w3.org/ns/td"], 
-    "@type" : "ThingModel",
+    "@type" : "tm:ThingModel",
     "title": "Lamp Thing Model",
     "description": "Lamp Thing Description Model",
     "tm:required": [
@@ -5923,8 +5930,8 @@ instance.
          <ul>
             <li class="rfc2119-assertion" id="thing-model-td-generation-processor-imports">Copy all definitions from the input <a>Thing Model</a> to the resulting <a>Partial TD</a> instance. If used, the extension and imports
             feature MUST be resolved and represented in the <a>Partial TD</a> instance according to <a href=#thing-model-extension-import></a></span>.</li>
-            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-extends"> If used, <code>links</code> element entry with <code>"rel":"extends"</code> MUST be removed from the current <a>Partial TD</a></li>
-            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-type">The <code>ThingModel</code> value of the top-level <code>@type</code> MUST to be replaced by the value <code>Thing</code> in the <a>Partial TD</a> instance.</li>
+            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-extends"> If used, <code>links</code> element entry with <code>"rel":"tm:extends"</code> MUST be removed from the current <a>Partial TD</a></li>
+            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-type">The <code>tm:ThingModel</code> value of the top-level <code>@type</code> MUST to be replaced by the value <code>Thing</code> in the <a>Partial TD</a> instance.</li>
             <li class="rfc2119-assertion" id="thing-model-td-generation-processor-required">If the <code>tm:required</code> feature is used based on Section <a href=#thing-model-td-required></a>, the required interactions MUST definitly be taken over in the <a>Partial TD</a> instance.</li>
             <li class="rfc2119-assertion" id="thing-model-td-generation-processor-placeholder">If used, all placholder (see Section <a href="#thing-model-td-placeholder"></a>) in the <a>Thing Model</a> MUST be replaced with a valid corresponding value in the <a>Partial TD</a>.</li>
         </ul>
@@ -5950,7 +5957,7 @@ instance.
            <pre class="selected exampleTab2 thingmodel">
 {
 	...
-	"@type": "ThingModel",
+	"@type": "tm:ThingModel",
 	"name": "Smart Pump",
 	"description": "Smart Pump live plant and simulator",
 	"id": "urn:smart:device:wot:pump",
@@ -6000,9 +6007,9 @@ instance.
     <pre class="example" title="Extending Smart Control Lamp with a modified dim constrained">
     {
         "@context": ["http://www.w3.org/ns/td"], 
-        "@type" : "ThingModel",
+        "@type" : "tm:ThingModel",
         "links" : [{
-            "rel": "extends",
+            "rel": "tm:extends",
             "href": "http://example.com/SmartControlLampTM",
             "type": "application/td+json"
          }],
