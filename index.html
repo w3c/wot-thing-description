@@ -5439,8 +5439,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <a>Thing Model</a> definitions MUST use the keyword <em>@type</em> at top level 
         and a value of type string or array that equals or respectively contains <code>tm:ThingModel</code>.
     </span>
-    The prefix <code>tm</code> is defined within <a>Thing Descriptions</a>' context file and points to the <a>Thing Model</a> namespace as 
-    defined in <a href="#namespaces"></a>. 
+    The prefix <code>tm</code> is defined within <a>Thing Descriptions</a>' context and points to the <a>Thing Model</a> namespace as 
+    defined in <a href="#namespaces"></a>. It is intended that vocabulary from the <code>tm</code> context only be used in <a>Thing Model</a>
+    definitions and are removed or replaced when <a>Thing Descriptions</a> are generated (also see <a href="#thing-model-td-generation"></a>).
     </p>
     <p>
         <span class="rfc2119-assertion" id="td-model-protocol-security-restriction">
@@ -5519,7 +5520,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <h3>Extension and Import</h3>
 
     <p>
-     A <a>Thing Model</a> can also extend an existing <a>Thing Model</a>.
+        A <a>Thing model</a> can extend an existing <a>Thing model</a> by using the <code>tm:extends</code> mechanism announced in the <code>links</code> definition: 
      <span class="rfc2119-assertion" id="td-model-extend">
         A <a>Thing Model</a> MUST use at least one <code>links</code> entry with <code>"rel":"tm:extends"</code> 
         that targets to a <a>Thing Model</a> that is be extended.
@@ -5528,17 +5529,18 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     to extend the existing definition with further metadata by providing further JSON name-value pairs from existing 
     TD information model (<a href=#sec-vocabulary-definition></a>) or using the context extension concept 
     (<a href=#sec-context-extensions></a>). A <a>Thing Model</a> can also overwrite existing defintions such as <code>title(s)</code> 
-    and <code>description(s)</code>. For this there exists two limitiations: 
+    and <code>maximum</code> etc.. For this there exists two limitiations: 
     <span class="rfc2119-assertion" id="td-model-overwrite-interaction">
         A <a>Thing Model</a> SHOULD NOT overwrite the JSON names defined within the  
         <code>properties</code>, <code>actions</code>, and/or <code>events</code> <a>Map</a> of the extended <a>Thing Model</a>.
     </span>
     <span class="rfc2119-assertion" id="td-model-overwrite-types">
-        The value of the <code>types</code> in data schema definitions of the extended <a>Thing Model</a> SHOULD NOT change the value type.
-        An exception is allowed when the extended <a>Thing Model</a> uses <code>number</code> as data schema type value, the context <a>Thing Model</a> 
-        is allowed only to overwrite this value type to <code>integer</code>.
+        Definitions SHOULD NOT be overwritten in such a way that possible instance values are no longer valid compared to the origin extended definitions.
     </span>
-    Those assertations preserve the semantics throughout of the extended <a>Thing Model</a>.
+    Those assertations preserve the semantics throughout of the extended <a>Thing Model</a>. 
+    E.g., it is not allowed that a <code>"minimum":2 </code>  from a extended <a>Thing Model</a> can be overwritten with <code>"minimum":0</code>. 
+    Meanwhile, overwritting with <code>"minimum":5 </code> would work since all instances values will always fullfill the restrictions of the extended <a>Thing Model</a>.
+
     </p>
 
     <p>
@@ -5627,8 +5629,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         at the same level of the <code>tm:ref</code> declearation that provides a new value.  
        </span>
        <span class="rfc2119-assertion" id="td-model-tmRef-overwrite-semantic-meaning">
-        To keep the semantic meaning of the referenced definition it is not allowed to relax any restriction (e.g., increase value ranges) or
-        change a data type definition. 
+        Similar to <code>tm:extends</code> and to keep the semantic meaning, definitions SHOULD NOT be overwritten in such a way that possible 
+        instance values are no longer valid compared to the origin referenced definition.
        </span>
     </p>
 
