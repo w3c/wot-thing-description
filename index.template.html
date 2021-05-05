@@ -3137,7 +3137,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
 
 </section> <!-- end of id="serialization-json"-->
 
-<section>
+<section id="identification-serialization-json">
 <h2>Identification</h2>
 
   <p>
@@ -3145,6 +3145,88 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   the media type <code>application/td+json</code> or the
   CoAP Content-Format ID <code>432</code> (see <a href="#iana-section"></a>).
   </p>
+
+</section>
+
+<section id="validation-serialization-json">
+<h2>Validation</h2>
+  <section class="ednote" title="No Tag Yet">
+  <p>
+  This section refers to
+  tagging of assertions into different categories for the purposes of 
+  validation.  This has not yet been done but will be done prior to CR
+  transition.
+  </p>
+  </section>
+  <section class="ednote" title="Extensions">
+  <p>
+  Validation of extensions is difficult for various reasons 
+  so we may extend this with variants
+  that support extensions or not e.g. "Basic Validation with/without Extensions".
+  </p>
+  </section>
+
+  <p>
+  In several contexts automatic validation of a JSON-based serialization 
+  of a Thing Description is useful.  Formally, a valid TD must statisfy all
+  the assertions in this specification, but not all assertions can be 
+  validated given only the JSON serialization, for instance, the assertions
+  listed under <a>Behavioral Assertions</a> that relate a TD to the
+  behavior of a Thing that it describes.  Extensions are also problematic,
+  in that even if formal metadata is given for validating an extension,
+  dynamically fetching this metadata in a deployment might pose a privacy
+  risk.  In this section, therefore, we name and define various levels of
+  validation appropriate for different contexts.
+  </p>
+  <section id="minimal-validation-serialization-json">
+  <h3>Minimal Validation</h3>
+  <p>Minimal Validation is appropriate where validation needs to be 
+  self-contained (e.g. devices on isolated networks).
+  It does not attempt to validate context extensions and vocabularies.
+  </p><p> 
+  In practice, these assertions can be validated using a JSON Schema 
+  in combination with a few spot checks, for example to check that 
+  security schema names have matching definitions.
+  </p><p> 
+  This level of validation includes all assertions implied by 
+  normative tables in this document as well as all assertions marked
+  with the "Minimal" tag.
+  </p>
+  </section>
+  <section id="Basic-validation-serialization-json">
+  <h3>Basic Validation</h3>
+  <p>Basic validation is appropriate in situations where
+  network access is possible and does not pose a privacy risk, and
+  for relatively unconstrained computing requirements.  It is suitable
+  for gateways, for example, but not for endpoints, since semantic
+  processing is required.  It can validate extensions.
+  </p><p>
+  In this case, context definition files and 
+  SHACL definitions can be used to validate additional
+  assertions and check TDs for semantic consistency.  In addition, if
+  context definitions and SHACL constraints for extension vocabularies 
+  can be fetched, then these
+  can be used to validate extensions.
+  </p><p> 
+  This level of validation includes all those covered by <a>Minimal Validation</a>
+  as well as all assertions marked with the "Basic" tag.
+  </p>
+  </section>
+  <section id="full-validation-serialization-json">
+  <h3>Full Validation</h3>
+  <p>Full validation confirms that all the assertions in this document
+  are satisfied, 
+  including the assertions given in <a>Behavioral Assertions</a> that
+  confirm the TD is consistent with the Thing it describes.
+  This level of validation is appropriate during development, before
+  release, and possibly after installation.
+  Validation during development would have to be on test Things.
+  Actual installation of instances of such Things requires updating the
+  TD with appropriate per-instance identifiers and URLs and so for
+  maximum assurance, in-field validation would have to take place after
+  installation.
+  </p>
+  </section>
 
 </section>
 
@@ -5425,6 +5507,9 @@ instance.
   <section>
   <h2 id="changes-from-recommendation">Changes from Recommendation 9 April 2020</h2>
     <ul>
+      <li>Section <a href="#validation-serialization-json"></a> was added to define multiple levels of
+          validation, appropriate for different use cases including development, deployment,
+          and directory registration.</li>
       <li>Section <a href="#canonicalization-serialization-json"></a> was added to define a 
           canonical serialization, useful for signing and comparison of Thing Descriptions.</li>
       <li>Section <a href="#sec-data-schema-vocabulary-definition"></a> defines a list of content types that can be used with data schema.</li>
