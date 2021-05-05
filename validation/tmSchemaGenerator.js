@@ -89,7 +89,7 @@ function staticReplace(argObject){
                     "type": "string"
                 },
                 "contains":{
-                    "const":"ThingModel"
+                    "const":"tm:ThingModel"
                 }
             }
         ]
