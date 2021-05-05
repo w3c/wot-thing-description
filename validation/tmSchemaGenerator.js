@@ -268,8 +268,7 @@ function addTmTerms(argObject){
         "type":"array",
         "items":{
             "type":"string",
-            "format": "json-pointer",
-            "pattern": "(^#/properties/)|(#/actions/)|(#/events/)"
+            "format": "json-pointer"
         }
     }
 
