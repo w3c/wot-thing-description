@@ -259,6 +259,8 @@ function changeToAnyOf(argObject){
 
 /** 
  * This function adds tm:required and tm:ref definitions
+ * Then these are referenced from the related locations, i.e.
+ * tm:required is used only in the root level and tm:ref can be used anywhere
  * @param {object} argObject
  * @return {object}
 **/
@@ -276,10 +278,42 @@ function addTmTerms(argObject){
         "$ref": "#/definitions/tm_required"
     }
 
-    argObject.definitions["tm:ref"] = {
+    argObject.definitions["tm_ref"] = {
         "type":"string",
         "format": "uri-reference"
     }
+
+    let tmRefRef = {
+        "$ref": "#/definitions/tm_ref"
+    }
+
+    let paths = [
+        "definitions.dataSchema.properties",
+        "definitions.property_element.properties",
+        "definitions.action_element.properties",
+        "definitions.event_element.properties",
+        "definitions.form_element_property.properties",
+        "definitions.form_element_action.properties",
+        "definitions.form_element_event.properties",
+        "definitions.form_element_root.properties",
+        "definitions.securityScheme.oneOf.0.properties",
+        "definitions.securityScheme.oneOf.1.properties",
+        "definitions.securityScheme.oneOf.2.properties",
+        "definitions.securityScheme.oneOf.3.properties",
+        "definitions.securityScheme.oneOf.4.properties",
+        "definitions.securityScheme.oneOf.5.properties",
+        "definitions.securityScheme.oneOf.6.properties",
+        "definitions.securityScheme.oneOf.7.properties",
+        "definitions.securityScheme.oneOf.8.properties"
+    ]
+    
+    //iterate over this array and replace for each
+    paths.forEach(element => {
+        let curSchema = resolvePath(argObject,element,"hey");
+        curSchema["tm:ref"] = tmRefRef;
+        setPath(argObject,element, curSchema);
+    });
+
 
     return argObject;
 }
