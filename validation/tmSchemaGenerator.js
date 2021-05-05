@@ -81,7 +81,7 @@ function staticReplace(argObject){
     argObject.properties["@type"] = {
         "oneOf": [{
                 "type": "string",
-                "const":"ThingModel"
+                "const":"tm:ThingModel"
             },
             {
                 "type": "array",
