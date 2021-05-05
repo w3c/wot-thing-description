@@ -78,7 +78,7 @@ function staticReplace(argObject){
 
     argObject.title = "WoT Thing Model Schema - 16 February 2021"
     argObject.description = "JSON Schema for validating Thing Models. This is automatically generated from the WoT TD Schema."
-    argObject.properties["@type"] = {
+    argObject.definitions.type_declaration = {
         "oneOf": [{
                 "type": "string",
                 "const":"tm:ThingModel"
