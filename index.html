@@ -4264,7 +4264,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   </p><p>
   Some of the choices leading to the efficient computation of a canonical form, 
   such as the suppression of white space and sorting of elements in objects 
-  do make the representation less human readable.
+  do make the representation less human readable, more verbose, and more redundant.
   In general, the canonical form presented here is optimized for machine-to-machine
   use cases such as signing.
   </p>
@@ -4303,6 +4303,17 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   Note that this also applies to extension vocabularies, e.g. for protocol bindings.
   If any such extension defines default values they must be given explicitly in the canonical form.
   </li>
+<!--
+  <li><span class="rfc2119-assertion" id="canonical-no-base">
+  In the <a>Canonical TD</a>,
+  <code>base</code> MUST NOT be used.</span>  
+  All URLs need to be given in absolute form.
+  </li>
+-->
+  <li><span class="rfc2119-assertion" id="canonical-prefix-mandatory">
+  In the Canonical TD, if a prefix is
+  defined it MUST be used in place of that URL.</span>
+  </li>
   <li><span class="rfc2119-assertion" id="canonical-singleton-arrays">
   In the <a>Canonical TD</a>,
   all values that can be expressed as either an array or as a single value 
@@ -4337,19 +4348,46 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   <span class="rfc2119-assertion" id="processors-preserve-prefixes">
   In order to support canonicalization, implementations 
   of TD Processors MUST preserve the prefixes used for extension vocabularies.</span>
-  This includes preserving and expressing a vocabulary term as a URL if no prefix was used.
+  This includes preserving and expressing a vocabulary term as a URL 
+  if no prefix is defined for that URL.
+  However, we need to
+  support stable reserialization in TD Processors that expand all
+  prefixes into URLs and then need to collapse them back to prefixes
+  when TDs are exported.
+  This is why if a prefix is defined, it is mandatory to use it in
+  place of the corresponding URL.
   </p><p>
   Some systems support different forms of URLs that are equivalent, for example,
   by mapping upper to lower case.  It is also legal to percent-encode
   unreserved characters, even though this is unnecessary and discouraged [[!RFC3986]]. 
   For canonicalization, however, such URL variants cannot be considered equivalent.
-  <span class="rfc2119-assertion" id="processors-preserve-prefixes">
+  <span class="rfc2119-assertion" id="processors-preserve-URLs">
   In order to support canonicalization, implementations 
-  of TD Processors MUST NOT modify input URLs.</span>
+  of TD Processors MUST NOT modify how input URLs are expressed.
+  </span>
   Of course some applications will need to modify URLs in TDs, 
   i.e. to express the result of protocol translation
   or to add entry points to a proxy.
+  Installation of a TD may also require modifying the base URL.
   The result should technically be considered a new TD related to the old one, but not equivalent.
+<!--
+  This is also why <code>base</code> is forbidden in Canonical TDs, since it
+  leads to multiple ways to express the same URLs.
+-->
+  Note that the use of <code>base</code> can also technically
+  lead to different ways to 
+  express the same URL.
+  However, the URLs that <code>base</code>
+  refers to are interaction endpoints, not semantic terms, and so 
+  should not be affected by semantic processing.  
+  Although it is just a special case of the above rule, we will
+  state this explicitly for clarity:
+  <span class="rfc2119-assertion" id="processors-preserve-base">
+  In order to support canonicalization, implementations 
+  of TD Processors MUST NOT modify how input URLs are expressed
+  as a combination of <code>base</code> and a relative URL in an
+  interaction.</span>
+  </p>
   </p><p>
   TDs should be validated before being canonicalized.  
   TD validation requires that URLs
