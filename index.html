@@ -4303,13 +4303,14 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   Note that this also applies to extension vocabularies, e.g. for protocol bindings.
   If any such extension defines default values they must be given explicitly in the canonical form.
   </li>
-<!--
-  <li><span class="rfc2119-assertion" id="canonical-no-base">
+  <li><span class="rfc2119-assertion" id="canonical-form-security">
   In the <a>Canonical TD</a>,
-  <code>base</code> MUST NOT be used.</span>  
-  All URLs need to be given in absolute form.
+  <code>security</code> MUST NOT be used at the <code>Thing</code> level.</span>
+  Instead, assignment of <code>SecurityScheme</code> configuration objects
+  to interactions need to all take place at the <code>Form</code> level. 
+  This means that in a <a>Canonical TD</a> every <code>Form</code> must have 
+  a <code>security</code> entry (even if they are all the same).
   </li>
--->
   <li><span class="rfc2119-assertion" id="canonical-prefix-mandatory">
   In the Canonical TD, if a prefix is
   defined it MUST be used in place of that URL.</span>
@@ -4370,11 +4371,8 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   or to add entry points to a proxy.
   Installation of a TD may also require modifying the base URL.
   The result should technically be considered a new TD related to the old one, but not equivalent.
-<!--
-  This is also why <code>base</code> is forbidden in Canonical TDs, since it
-  leads to multiple ways to express the same URLs.
--->
-  Note that the use of <code>base</code> can also technically
+  </p><p>
+  The use of <code>base</code> can also technically
   lead to different ways to 
   express the same URL.
   However, the URLs that <code>base</code>
@@ -4409,13 +4407,15 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
                     "contentType": "application/json",
                     "href": "https://mylamp.example.com/status",
                     "htv:methodName": "GET",
-                    "op": "readproperty"
+                    "op": "readproperty",
+                    "security": "basic_sc"
                 },
                 {
                     "contentType": "application/json",
                     "href": "https://mylamp.example.com/status",
                     "htv:methodName": "PUT",
-                    "op": "writeproperty"
+                    "op": "writeproperty",
+                    "security": "basic_sc"
                 }
             ],
             "observable": false,
@@ -4424,7 +4424,6 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
             "writeOnly": false
         }
     },
-    "security": "basic_sc",
     "securityDefinitions": {
         "basic_sc": {
             "in": "header",
@@ -4437,7 +4436,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
 
 However, the actual true <a>Canonical TD</a> has all extra whitespace removed, and looks like the following:
 <aside class="example" id="canonical-thing-description-nows" title="Canonical Thing Description Example - No White Space">
-<pre>{"@context":"http://www.w3.org/ns/td","id":"urn:dev:ops:32473-WoTLamp-1234","properties":{"status":{"forms":[{"contentType":"application/json","href":"https://mylamp.example.com/status","htv:methodName":"GET","op":"readproperty"},{"contentType":"application/json","href":"https://mylamp.example.com/status","htv:methodName":"PUT","op":"writeproperty"}],"observable":false,"readOnly":false,"type":"string","writeOnly":false}},"security":"basic_sc","securityDefinitions":{"basic_sc":{"in":"header","scheme":"basic"}},"title":"MyLampThing"}</pre>
+<pre>{"@context":"http://www.w3.org/ns/td","id":"urn:dev:ops:32473-WoTLamp-1234","properties":{"status":{"forms":[{"contentType":"application/json","href":"https://mylamp.example.com/status","htv:methodName":"GET","op":"readproperty","security":"basic_sc"},{"contentType":"application/json","href":"https://mylamp.example.com/status","htv:methodName":"PUT","op":"writeproperty","security":"basic_sc"}],"observable":false,"readOnly":false,"type":"string","writeOnly":false}},"securityDefinitions":{"basic_sc":{"in":"header","scheme":"basic"}},"title":"MyLampThing"}</pre>
 </aside>
 
 </section>
