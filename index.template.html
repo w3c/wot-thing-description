@@ -400,6 +400,8 @@ a[href].internalDFN {
 
   <section id="introduction" class="informative">
   <h1>Introduction</h1>
+  <section id="introduction-td">
+    <h2>Thing Description</h2>
   <p>
   The WoT Thing Description (TD) is a central building block in the W3C Web of
   Things (WoT) and can be considered as the entry point of a <a>Thing</a>
@@ -440,7 +442,7 @@ a[href].internalDFN {
   illustrates the <a>Interaction Model</a> with Properties, Actions, and Events
   by describing a lamp <a>Thing</a> with the title <i>MyLampThing</i>.
   </p>
-<aside class="example" id="simple-thing-description-sample" title="Thing Description Sample">
+<aside class="example" id="simple-thing-description-sample" title="Thing Description sample">
     <pre>{
     "@context": "http://www.w3.org/ns/td",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
@@ -589,7 +591,64 @@ a[href].internalDFN {
     <a href="#json-ld-ctx-usage"></a> and the documentation under the namespace IRIs, e.g.,
     <a href="https://www.w3.org/2019/wot/td">https://www.w3.org/2019/wot/td</a>).
 </p>
+</section>
+<section id="introduction-tm">
+    <h2>Thing Model</h2>
+    
+    <p>One of the main intentions of a <a>Thing Description</a> is to provide a <a>Consumer</a> 
+        with all the details necessary to successfully interact with a <a>Thing</a>.  
+        In some IoT application scenarios, a full detailed <a>Thing Description</a>, e.g., with 
+        communication metadata is not necessary (e.g., IoT ecosystems implicitly handle communication separately),
+        or may not be available because a new entity has not yet been deployed (e.g., IP address is not yet known). 
+        Sometime also a kind of class definition is required that forces capability definitions that shall be 
+        available for all created instances (e.g., large-scale production of new devices).
+    </p> 
+        
+    <p>Addressing such or other scenarios the <a>Thing Model</a> can be used that mainly provides the data model 
+        definitions within <a>Things</a>' <a>Properties</a>, <a>Actions</a>, and/or <a>Events</a> and can potential 
+        be used as template for creating <a>Thing Description</a> instances. In the following a sample 
+        <a>Thing Model</a> is presented that can be seen as a model for the <a>Thing Description</a>
+        instance in <a href="#simple-thing-description-sample"></a>. 
+    </p>
 
+    <pre class="example" title="Thing Model sample" id="td-model-example-lamp">
+        {
+            "@context": ["http://www.w3.org/ns/td"], 
+            "@type" : "tm:ThingModel",
+            "title": "Lamp Thing Model",
+            "properties": {
+                "status": {
+                    "description": "current status of the lamp (on|off)",
+                    "type": "string",
+                    "readOnly": true
+                }
+            },
+            "actions": {
+                "toggle": {
+                    "description": "Turn the lamp on or off"
+                }
+            },
+            "events": {
+                "overheating": {
+                    "description": "Lamp reaches a critical temperature (overheating)",
+                    "data": {"type": "string"}
+                }
+            }
+        }
+        </pre>
+        <p>
+            <a>Thing Model</a> definitions are identified by the <code>"@type": "tm:ThingModel"</code>. 
+            As the example shows, it does not provide details about a single <a>Thing</a> instance due to the 
+            lack of communication and security metadata provided.        
+        </p>
+
+        <p>
+            This specification presents a procedure for deriving valid <a>Thing Description</a> instances 
+            and the feature tools that can be used to design a <a>Thing Model</a> that also allows, among 
+            others, overwriting, extending, and reusing existing <a>Thing Model</a> definitions.
+        </p>
+
+</section>
 </section>
 
 <section id="conformance">
@@ -763,6 +822,11 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
         </tr>
     </tbody>
     </table>
+
+    <p class="note">
+        Please note that the namespaces listed above are temporary namespaces and will be 
+        replaced by final namespaces when this document reaches Candidate Recommendation. 
+      </p>
   
     <p>
         The <a>Vocabularies</a> are independent from each other.
@@ -1040,6 +1104,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
             <a href="https://www.w3.org/2019/wot/td">https://www.w3.org/2019/wot/td</a>.
         </p>
 
+        
     </section>
     
       <section>
@@ -4524,35 +4589,10 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     </p>
 
     <p>    
-    In the following there is a sample Thing Model for a lamp without any protocol and security information.
+    <a href="#td-model-example-lamp"></a> shows a valid sample lamp <a>Thing Model</a> without any protocol and security information.
     </p>
     
-    <pre class="example" title="MyLampThingModel serialized in JSON" id="td-model-example-lamp">
-    {
-        "@context": ["http://www.w3.org/ns/td"], 
-        "@type" : "tm:ThingModel",
-        "title": "Lamp Thing Model",
-        "description": "Lamp Thing Description Model",
-        "properties": {
-            "status": {
-                "description": "current status of the lamp (on|off)",
-                "type": "string",
-                "readOnly": true
-            }
-        },
-        "actions": {
-            "toggle": {
-                "description": "Turn the lamp on or off"
-            }
-        },
-        "events": {
-            "overheating": {
-                "description": "Lamp reaches a critical temperature (overheating)",
-                "data": {"type": "string"}
-            }
-        }
-    }
-    </pre>
+
     </section>
 
     <section id="thing-model-tools" class="normative">
