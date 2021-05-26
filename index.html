@@ -360,6 +360,10 @@ a[href].internalDFN {
   externally when a <a>Thing</a> has resource restrictions (e.g., limited memory space)
   or when a Web of Things-compatible legacy device is retrofitted 
   with a Thing Description.
+  Furthermore, this document introduces the Thing Model, which allows to describe 
+  only the model or class of an IoT entity. Thing Models can be seen as a template for Thing 
+  Description instances, but with reduced constraints such as no or few requirements for specific 
+  communication metadata. 
   </p>
 
   <p>
@@ -396,6 +400,8 @@ a[href].internalDFN {
 
   <section id="introduction" class="informative">
   <h1>Introduction</h1>
+  <section id="introduction-td">
+    <h2>Thing Description</h2>
   <p>
   The WoT Thing Description (TD) is a central building block in the W3C Web of
   Things (WoT) and can be considered as the entry point of a <a>Thing</a>
@@ -436,7 +442,7 @@ a[href].internalDFN {
   illustrates the <a>Interaction Model</a> with Properties, Actions, and Events
   by describing a lamp <a>Thing</a> with the title <i>MyLampThing</i>.
   </p>
-<aside class="example" id="simple-thing-description-sample" title="Thing Description Sample">
+<aside class="example" id="simple-thing-description-sample" title="Thing Description sample">
     <pre>{
     "@context": "http://www.w3.org/ns/td",
     "id": "urn:dev:ops:32473-WoTLamp-1234",
@@ -585,7 +591,61 @@ a[href].internalDFN {
     <a href="#json-ld-ctx-usage"></a> and the documentation under the namespace IRIs, e.g.,
     <a href="https://www.w3.org/2019/wot/td">https://www.w3.org/2019/wot/td</a>).
 </p>
+</section>
+<section id="introduction-tm">
+    <h2>Thing Model</h2>
+    
+    <p>One of the main intentions of a <a>Thing Description</a> is to provide a <a>Consumer</a> 
+        with all the details necessary to successfully interact with a <a>Thing</a>.  
+        In some IoT application scenarios, a fully detailed <a>Thing Description</a>, e.g., with 
+        communication metadata is not necessary (e.g., IoT ecosystems may implicitly handle communication separately),
+        or may not be available because a new entity has not yet been deployed (e.g., IP address is not yet known). 
+        Sometimes, also a kind of class definition is required that forces capability definitions that should be 
+        available for all created instances (e.g., large-scale production of new devices).
+    </p> 
+        
+    <p>In order to address the above-mentioned scenarios or others, the <a>Thing Model</a> can be used that mainly provides the data model 
+        definitions within <a>Things</a>' <a>Properties</a>, <a>Actions</a>, and/or <a>Events</a> and can be potentially used 
+        as template for creating <a>Thing Description</a> instances. In the following a sample 
+        <a>Thing Model</a> is presented that can be seen as a model for the <a>Thing Description</a>
+        instance in <a href="#simple-thing-description-sample"></a>. 
+    </p>
 
+    <pre class="example" title="Thing Model sample" id="td-model-example-lamp">
+        {
+            "@context": ["http://www.w3.org/ns/td"], 
+            "@type" : "tm:ThingModel",
+            "title": "Lamp Thing Model",
+            "properties": {
+                "status": {
+                    "description": "current status of the lamp (on|off)",
+                    "type": "string",
+                    "readOnly": true
+                }
+            },
+            "actions": {
+                "toggle": {
+                    "description": "Turn the lamp on or off"
+                }
+            },
+            "events": {
+                "overheating": {
+                    "description": "Lamp reaches a critical temperature (overheating)",
+                    "data": {"type": "string"}
+                }
+            }
+        }
+        </pre>
+        <p>
+            <a>Thing Model</a> definitions are identified by the <code>"@type": "tm:ThingModel"</code>. 
+            As the example shows, it does not provide details about a single <a>Thing</a> instance due to the 
+            lack of communication and security metadata.        
+            This specification presents a mechanism for deriving valid <a>Thing Description</a> instances from 
+            such <a>Thing Model</a> definitions. In addition, other design concepts are specified, including how 
+            to override, extend, and reuse existing <a>Thing Model</a> definitions.
+        </p>
+
+</section>
 </section>
 
 <section id="conformance">
@@ -699,7 +759,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 
   <p class="note">
     The following introduced namespaces for Thing Description 1.1 are placeholders for the time the specification has the <i>Draft</i> status. 
-  Final namespaces are introduced at the time of the <i>Candidate Recommendation</i>status.  
+  Final namespaces are introduced at the time of the <i>Candidate Recommendation</i> status.  
   </p>
 
   <p>
@@ -759,6 +819,11 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
         </tr>
     </tbody>
     </table>
+
+    <p class="note">
+        Please note that the namespaces listed above are temporary namespaces and will be 
+        replaced by final namespaces when this document reaches Candidate Recommendation. 
+      </p>
   
     <p>
         The <a>Vocabularies</a> are independent from each other.
@@ -1036,6 +1101,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
             <a href="https://www.w3.org/2019/wot/td">https://www.w3.org/2019/wot/td</a>.
         </p>
 
+        
     </section>
     
       <section>
@@ -1497,7 +1563,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           <code>format</code> value to perform additional
           validation accordingly.</span> <span class="rfc2119-assertion" id="td-format-validation-other-values">When a value that is
           not found in the known set of values is assigned to
-          <code>format</code>, such a validation <em class="rfc2119" title="SHOULD">SHOULD</em> succeed.</span></p><p class="note">The <code>format</code> term is not widly implemented by JSON Schema tools. 
+          <code>format</code>, such a validation <em class="rfc2119" title="SHOULD">SHOULD</em> succeed.</span></p><p class="note">The <code>format</code> term is not widely implemented by JSON Schema tools. 
           In addition, the term <code>format</code> is being discussed by the JSON Schema standardisation community and may be replaced by another mechanism or removed in a future JSON Schema version.</p></section>
 <section><h3><code>ArraySchema</code></h3><p>Metadata describing data of type <a href="#dfn-array" class="internalDFN" data-link-type="dfn">Array</a>. This
           <a href="#dfn-subclass" class="internalDFN" data-link-type="dfn">Subclass</a> is indicated by the
@@ -1847,7 +1913,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 <tr class="rfc2119-table-assertion" id="td-vocab-sizes--Link"><td><code>sizes</code></td><td>Target attribute that specifies one or more sizes for the referenced icon. 
                     Only applicable for relation type "icon". The value pattern follows 
                     {Height}x{Width} (e.g., "16x16", "16x16 32x32").</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table> <p>Link relations can be used to describe relations such as to other Things (e.g., a Switch Thing controls a Lamp Thing), to a specific kind of Thing Models (e.g., a Thing Description
-    is an instance of a specific Thing Model), or to further documentations information (e.g., device manuel of a Thing). It is recommended to reuse existing and established 
+    is an instance of a specific Thing Model), or to further documentations information (e.g., device manual of a Thing). It is recommended to reuse existing and established 
     <a href="https://www.iana.org/assignments/link-relations">Link Relation definitions from IANA.</a>
     </p>
         <p>In the following a best practice relation type table is introduced that is recommended to use within WoT <a>Thing Description</a>
@@ -1918,7 +1984,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 <td>
                     0..1
                 </td>
-                <td>Extends an existing definition of the targed resource such as a <a>Thing Model</a>. Only applicable for Thing Model definitions.</td>
+                <td>Extends an existing definition of the target resource such as a <a>Thing Model</a>. Only applicable for Thing Model definitions.</td>
                 <td>
                     W3C WoT Thing Model
                 </td>
@@ -1990,7 +2056,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 <td>
                     0..*
                 </td>
-                <td>Refers to a <a>Thing</a> that controlls the context <a>Thing</a>.</td>
+                <td>Refers to a <a>Thing</a> that controls the context <a>Thing</a>.</td>
                 <td>
                     W3C Thing Description
                 </td>
@@ -2854,7 +2920,7 @@ In summary, this requires the following:
     ],
     "title": "MeinDing",
     "titles": {
-        "en":"MyThing",
+        "en": "MyThing",
         "de": "MeinDing",
         "ja": "私の物",
         "zh-Hans": "我的东西", 
@@ -2862,7 +2928,7 @@ In summary, this requires the following:
     },
     "description": "Menschenlesbare Informationen.",
     "descriptions": {
-        "en":"Human readable information.",
+        "en": "Human readable information.",
         "de": "Menschenlesbare Informationen.",
         "ja": "人間が読むことができる情報",
         "zh-Hans": "人们可阅读的信息", 
@@ -3045,7 +3111,7 @@ In summary, this requires the following:
         },
         "combo_sc": {
             "scheme": "combo",
-            "allOf": ["proxy_sc", "bearer_sc"],
+            "allOf": ["proxy_sc", "bearer_sc"]
         }
     },
     "security": "combo_sc",
@@ -3716,7 +3782,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
   <p>It is recommended to follow the link relation values as provided in Section <a href=#link></a>.
  In the following examples are provide that uses different link relation values.</p>
 
- <p>A reference can be provided that points to a <a>Thing</a> (e.g., a controller) that controlls the underlying
+ <p>A reference can be provided that points to a <a>Thing</a> (e.g., a controller) that controls the underlying
     unit (e.g., a lamp). For this <code>controlledBy</code> can be used:</p>
  
 
@@ -3868,7 +3934,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
 <p>
     <code>uriVariables</code> are mainly for properties and events. When retrofitting an existing system, it may be necessary to use
-    <code>uriVariables</code> for actions. In general, it is recommended to avoid <code>uriVariables</code> as much as possbile when a 
+    <code>uriVariables</code> for actions. In general, it is recommended to avoid <code>uriVariables</code> as much as possible when a 
     new WoT-based system is designed.
 </p>
 
@@ -3935,8 +4001,8 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 </pre>
 
 <p>
-In some cases binary data is embedded in text-based values, e.g., a JSON string-based value embedds a base64 encoded image.
-The terms <code>contentMediaType</code> and <code>contentEncoding</code> can be used to clearify the context and encoding 
+In some cases binary data is embedded in text-based values, e.g., a JSON string-based value embeds a base64 encoded image.
+The terms <code>contentMediaType</code> and <code>contentEncoding</code> can be used to clarify the context and encoding 
 format of such name-value pairs. A sample usage of <code>contentMediaType</code> and <code>contentEncoding</code>
 is shown below:
 </p>
@@ -3954,7 +4020,7 @@ is shown below:
 			    "op": "readproperty", 
 			    "href": "coaps://mylamp.example.com/lastPicture", 
 			    "cov:methodName": "GET",
-                "contentType": "application/json" 
+			    "contentType": "application/json" 
 		    }] 
         }
     },
@@ -4180,7 +4246,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
 
   <p>
   In several contexts automatic validation of a JSON-based serialization 
-  of a Thing Description is useful.  Formally, a valid TD must statisfy all
+  of a Thing Description is useful.  Formally, a valid TD must satisfy all
   the assertions in this specification, but not all assertions can be 
   validated given only the JSON serialization, for instance, the assertions
   listed under <a href="#behavior"></a> that relate a TD to the
@@ -4302,7 +4368,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   For example, the default value of <code>observable</code>
   is <code>false</code>.  
   If an input TD omits <code>observable</code> where it is allowed,
-  it must still explictly appear in the canonical form with the value of <code>false</code>.
+  it must still explicitly appear in the canonical form with the value of <code>false</code>.
   Note that this also applies to extension vocabularies, e.g. for protocol bindings.
   If any such extension defines default values they must be given explicitly in the canonical form.
   </li>
@@ -4356,7 +4422,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   </p><p>
   TDs should be validated before being canonicalized.  
   TD validation requires that URLs
-  be fully confomant with the standard [[!RFC3986]] and this in particular 
+  be fully conformant with the standard [[!RFC3986]] and this in particular 
   requires (for example) that
   characters outside the basic set defined for URLs 
   be percent-encoded. 
@@ -4679,10 +4745,12 @@ However, the actual true <a>Canonical TD</a> has all extra whitespace removed, a
 
 <pre class="example" id="saref-geolocation-annotation-example-3">
 {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": [
+        "http://www.w3.org/ns/td",
         {
             "schema": "http://schema.org#"
         }
+    ],
     ...
     "properties": {
         "position": {
@@ -5454,14 +5522,14 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     The following section has its origin in [[wot-thing-description]], Annex C. Here Thing Description 
     Template is renamed to <a>Thing Model</a>, but keeps the same intention.
     For this version of the specification, <a>Thing Model</a> and its model features (e.g., extensions, referencing, obligations, placeholder) are formal 
-    introduced. For Thing Model, an own content type is under discussion. Pleace note this section is in work in progress.
+    introduced. For Thing Model, an own content type is under discussion. Please note this section is in work in progress.
   </p>
 
   <section id="thing-model-concept" class="normative">
     <h2>Basic Concept</h2>
 
     <p>
-    A <em>Thing Model</em>  enables the oppertunity to define the basic information model of a <a>Thing</a>. It can be seen
+    A <em>Thing Model</em>  enables the opportunity to define the basic information model of a <a>Thing</a>. It can be seen
     as a template for <a>Thing Descriptions</a>, however, that have less restriction as 
     driven in <a href="#sec-vocabulary-definition"></a> and <a href="#sec-td-serialization"></a>. Typically <a>Thing Model</a> examples 
     does not contain any instance-specific information such as protocol specific data like IP addresses. However, instead of having, e.g., concrete URLs, 
@@ -5533,35 +5601,10 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     </p>
 
     <p>    
-    In the following there is a sample Thing Model for a lamp without any protocol and security information.
+    <a href="#td-model-example-lamp"></a> shows a valid sample lamp <a>Thing Model</a> without any protocol and security information.
     </p>
     
-    <pre class="example" title="MyLampThingModel serialized in JSON" id="td-model-example-lamp">
-    {
-        "@context": ["http://www.w3.org/ns/td"], 
-        "@type" : "tm:ThingModel",
-        "title": "Lamp Thing Model",
-        "description": "Lamp Thing Description Model",
-        "properties": {
-            "status": {
-                "description": "current status of the lamp (on|off)",
-                "type": "string",
-                "readOnly": true
-            }
-        },
-        "actions": {
-            "toggle": {
-                "description": "Turn the lamp on or off"
-            }
-        },
-        "events": {
-            "overheating": {
-                "description": "Lamp reaches a critical temperature (overheating)",
-                "data": {"type": "string"}
-            }
-        }
-    }
-    </pre>
+
     </section>
 
     <section id="thing-model-tools" class="normative">
@@ -5575,7 +5618,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <p>
         Over time, <a>Thing Model</a> definitions may change and must be made identifiable through versioning.  
         In that case the string-based term <code>model</code> can be used within the <code>version</code> container to 
-        provide a version pattern like [[SEMVER]]. The following snopped shows the usage of <code>model</code> in a
+        provide a version pattern like [[SEMVER]]. The following snippet shows the usage of <code>model</code> in a
         Thing Model instance. 
     </p>
 
@@ -5607,8 +5650,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     The <a>Thing Model</a> will inherit all definitions from the extended <a>Thing Model</a>. There is the opportunity 
     to extend the existing definition with further metadata by providing further JSON name-value pairs from existing 
     TD information model (<a href=#sec-vocabulary-definition></a>) or using the context extension concept 
-    (<a href=#sec-context-extensions></a>). A <a>Thing Model</a> can also overwrite existing defintions such as <code>title(s)</code> 
-    and <code>maximum</code> etc.. For this there exists two limitiations: 
+    (<a href=#sec-context-extensions></a>). A <a>Thing Model</a> can also overwrite existing definitions such as <code>title(s)</code> 
+    and <code>maximum</code> etc.. For this there exists two limitations: 
     <span class="rfc2119-assertion" id="td-model-overwrite-interaction">
         A <a>Thing Model</a> SHOULD NOT overwrite the JSON names defined within the  
         <code>properties</code>, <code>actions</code>, and/or <code>events</code> <a>Map</a> of the extended <a>Thing Model</a>.
@@ -5618,12 +5661,12 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     </span>
     Those assertations preserve the semantics throughout of the extended <a>Thing Model</a>. 
     E.g., it is not allowed that a <code>"minimum":2 </code>  from a extended <a>Thing Model</a> can be overwritten with <code>"minimum":0</code>. 
-    Meanwhile, overwritting with <code>"minimum":5 </code> would work since all instances values will always fullfill the restrictions of the extended <a>Thing Model</a>.
+    Meanwhile, overwriting with <code>"minimum":5 </code> would work since all instances values will always fulfill the restrictions of the extended <a>Thing Model</a>.
 
     </p>
 
     <p>
-       Lets assume we have a basic model desciption as provided in the following example:
+       Lets assume we have a basic model description as provided in the following example:
     </p>
 
     <pre class="example" title="Basic On/Off Thing Model Definition" id="td-model-example-basic-on-off">
@@ -5664,16 +5707,16 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         }
     </pre>
     <p>
-    Please note that the <code>title</code> is overwritten and will be used when TD insances are created (also see in the next subsection <a href="#thing-model-td-generation"></a>).
+    Please note that the <code>title</code> is overwritten and will be used when TD instances are created (also see in the next subsection <a href="#thing-model-td-generation"></a>).
     </p>
 
     <p>
     The <code>tm:extends</code> feature only allows to inherit all definitions of one TM. In many use cases, however,
      it is desired to import sub-definition of one or more TMs. For doing this, the <code>tm:ref</code> term is introduced
-     with a JSON Pointer-based value [[rfc6901]] that allows to copy a defintion within an existing TM into a new created 
+     with a JSON Pointer-based value [[rfc6901]] that allows to copy a definition within an existing TM into a new created 
      local context definition.  
      <span class="rfc2119-assertion" id="td-model-tmRef">
-        The value of <code>tm:ref</code> term MUST be a valid JSON Pointer that identifys to a pre-existing definition based on
+        The value of <code>tm:ref</code> term MUST be a valid JSON Pointer that identifies to a pre-existing definition based on
         <a>Thing Model</a> specifications. 
     </span>
     <span class="rfc2119-assertion" id="td-model-tmRef">
@@ -5702,7 +5745,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 
     <p>
       At the place the "tm:ref" is defined, additional name-value pairs can be added. 
-      It is also allow to override name-value pairs from the referenced definition.  
+      It is also allowed to override name-value pairs from the referenced definition.  
       <span class="rfc2119-assertion" id="td-model-tmRef-overwrite">
         If it is intended to override an existing JSON name-value pair definition from <code>tm:ref</code>, the same JSON name MUST be used
         at the same level of the <code>tm:ref</code> declearation that provides a new value.  
@@ -5772,7 +5815,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     In such a case the placeholder labeling MAY be used in Thing Model that MUST be substituted with a concrete value when TD instance is created 
     from the Thing Model. 
     <span class="rfc2119-assertion" id="td-model-placeholder">
-        The string-based pattern of the placeholder MUST follow <code>{{PLACEHOLDER_IDENTIFIER}}</code>, 
+        The string-based pattern of the placeholder MUST follow <code>{{\PLACEHOLDER_IDENTIFIER}}</code>, 
         which should contain a placeholder identifier name. The identifier name can be used to identify the placeholder for the substitution process.
     </span>
     <span class="rfc2119-assertion" id="td-model-placeholder-value">
@@ -7794,27 +7837,92 @@ instance.
 <section id="changes" class="appendix">
   <h1>Recent Specification Changes</h1>
   <section>
-  <h2 id="changes-from-recommendation">Changes from Recommendation 9 April 2020</h2>
+  <h2 id="changes-from-fpwd">Changes from First Public Working Draft 24 November 2020</h2>
     <ul>
-      <li>Section <a href="#validation-serialization-json"></a> was added to define multiple levels of
-          validation, appropriate for different use cases including development, deployment,
-          and directory registration.</li>
-      <li>Section <a href="#canonicalization-serialization-json"></a> was added to define a 
-          canonical serialization, useful for signing and comparison of Thing Descriptions.</li>
-      <li>Section <a href="#sec-data-schema-vocabulary-definition"></a> defines a list of content types that can be used with data schema.</li>
-      <li>The additional term <em>additionalResponses</em> was added to section <a href="#form"></a>.  These can be used to define error responses.</li>
-      <li>Section <a href="#sec-data-schema-vocabulary-definition"></a> defines a list of content types that can be used with data schema.</li>
-      <li>Additional terms <em>contentEncoding</em> and <em>contentMediaType</em> were added in section <a href="#dataschema"></a>.  There is an <a href="#example-26">Example 26</a> that shows how to use them to describe binary data embedded in text-based values.</li>
-      <li>An additional term <em>multipleOf</em> was added in section <a href="#numberschema"></a>.</li>
-      <li>Additional terms <em>minLength</em>, <em>maxLength</em> were added in section <a href="#stringschema"></a>.</li>
-      <li>A new security scheme <a href="#combosecurityscheme"></a> was added.</li>
-      <li>Section <a href="#oauth2securityscheme"></a> was updated with two additional flows <em>client</em> and <em>device</em>. The section also notes that all other flows besides the ones defined in the section should be specified using an extension.</li>
-      <li>In section <a href="#x5-4-default-value-definitions"></a>, the default value definition given for <em>op</em> term in <em>EventAffordance</em>'s <em>form</em>s was changed.</li>
-      <li><a href="#example-23">Example 23</a> was updated to show an example use of URI Template variables in a property definition.</li>
-      <li>Section <a href="#semantic-annotations-example-geoloc"></a> was added to describe three examples that show how to embed location based data or annotate data schema elements with location based semantics.
-</li>
-      <li>The section describing <a href="#thing-model"></a> was moved to the main body of this document. It was previously in the appendix.</li>
+      <!-- 3 -->
+      <li>In section <a href="#terminology"></a>, a new WoT terminology <a>Canonical TD</a> was given definition.</li>
+      <!-- 4 -->
+      <li>In section <a href="#namespaces"></a>, Thing Model vocabulary was assigned a namespace IRI.</li>
+      <!-- 5.3.1.1 -->
+      <li>In section <a href="#thing"></a>, a new term <code>profile</code> is added</li>
+      <!-- 5.3.1.2 -->
+      <li>In section <a href="#interactionaffordance"></a>, the description for <code>uriVariables</code> was clarified.</li>
+      <!-- 5.3.1.3 -->
+      <li>In section <a href="#propertyaffordance"></a>, the description for <code>observable</code> was clarified.</li>      <!-- 5.3.1.6 -->
+      <li>In section <a href="#versioninfo"></a>, a new term <code>model</code> was added.</li>
+      <!-- 5.3.2.1 -->
+      <li>In section <a href="#dataschema"></a>:
+        <ul>
+          <li>A new term <code>default</code> was added.</li>
+          <li>A note was added to inform readers of the status of <code>format</code> implementations and standardisation.</li>
+        </ul>
+      </li>
+      <!-- 5.3.2.4 -->
+      <li>In sections <a href="#numberschema"></a> and <a href="#integerschema"></a>, two new terms <code>exclusiveMinimum</code> and <code>exclusiveMaximum</code> were added.</li>
+      <!-- 5.3.2.7 -->
+      <li>In section <a href="#stringschema"></a>, a new term <code>pattern</code> was added.</li>
+      <!-- 5.3.3.1 -->
+      <li>In section <a href="#securityscheme"></a>:
+        <ul>
+          <li>It was noted that any private keys, passwords, or other sensitive information must not be stored in the TD.</li>
+          <li>Descriptions on the use of <code>in</code> were added, including how <code>in</code> together with <code>name</code> can be used to represent multiple parameters.</li>
+          <li>A string <code>uri</code> was added as one of valid values of <code>in</code>.</li>
+        </ul>
+      </li>
+      <!-- 5.3.3.6 -->
+      <li>In section <a href="#apikeysecurityscheme"></a>, the description of the schemes was improved.</li>
+      <!-- 5.3.3.8 -->
+      <li>In section <a href="#psksecurityscheme"></a>, the description of the schemes was improved.</li>
+      <!-- 5.3.4 -->
+      <li>In section <a href="#sec-hypermedia-vocabulary-definition"></a>:
+        <ul>
+          <!-- 5.3.4.1 -->
+          <li>In section <a href="#link"></a>:
+            <ul>
+              <li>A new term <code>sizes</code> is now available.</li>
+              <li>A set of best practice relation types are now available for use as <code>rel</code> values.</li>
+            </ul>
+          </li>
+          <!-- 5.3.4.2 -->
+          <li>In section <a href="#form"></a>:
+            <ul>
+              <li>A new term <code>additionalResponses</code> was added. It can be used to define error responses.</li>
+              <li><code>observeallproperties</code> and <code>unobserveallproperties</code> were added to the definition of <code>op</code>.</li>
+              <li>Type definitions for terms <code>contentType</code>, <code>contentCoding</code>, <code>security</code>, <code>op</code> were changed.</li> 
+              <li>A paragraph was added to describe how a Consumer can behave given multiple form choices.</li>
+            </ul>
+          </li>
+          <!-- 5.3.4.4 -->
+          <li>A new subsection <a href="#additionalexpectedresponse"></a> was introduced.</li>
+        </ul>
+      </li>
+      <!-- 5.4 -->
+      <li>In section <a href="#sec-default-values"></a>:
+        <ul>
+          <li>The default value was changed for <code>Form</code> class's <code>op</code> term used in <code>PropertyAffordance</code>.</li>
+          <li>An entry was added for the default value of <code>AdditionalExpectedResponse</code> class's <code>success</code> term.</li>
+        </ul>
+      </li>
+      <!-- 6.3.4 -->
+      <li>In section <a href="#security-serialization-json"></a>, three examples (Example <a href="#example-18">Example 18</a>, <a href="#example-19">Example 19</a> and <a href="#example-20">Example 20</a>) were added.</li>
+      <!-- 6.3.8 -->
+      <li>In section <a href="#link-serialization-json"></a>, two example serializations were added to further demonstrate the use of <code>rel</code>.</li>
+      <!-- 6.3.9 -->
+      <li>In section <a href="#form-serialization-json"></a>, the usage of <code>uriVariables</code> was clarified.</li>
+      <!-- 6.5 -->
+      <li>Section <a href="#validation-serialization-json"></a> was added to define multiple levels of validation, appropriate for different use cases including development, deployment, and directory registration.</li>
+      <!-- 6.6 -->
+      <li>Section <a href="#canonicalization-serialization-json"></a> was added to define a canonical serialization, useful for signing and comparison of Thing Descriptions.</li>
+      <!-- 8.3.1 -->
+      <li>In section <a href="#http-binding-assertions"></a>, it was clarified that the use of <code>htv:methodName</code> is not permitted when the <code>forms</code> entry has multiple <code>op</code> values.</li>
+      <!-- 10 -->
+      <li>In section <a href="#thing-model"></a>, descriptions were both extended (see section <a href="#thing-model-tools"></a> in particular) and split into subsections.</li>
+      <li>In section <a href="#references"></a>, normative references to RFC6901, ECMA-262 and xmlschema-2 were added.</li>
     </ul>
+  </section>
+  <section>
+  <h2 id="changes-from-recommendation">Changes from Recommendation 9 April 2020</h2>
+    <p>Changes from Recommendation 9 April 2020 are described in the <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#changes">First Public Working Draft</a></p>
   </section>
 
 </section>
