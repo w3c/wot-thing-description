@@ -330,7 +330,16 @@
           "dfn">Array</a> that contains the intended
           <code>PropertyAffordances</code> instance names, which is
           serialized to the content type specified by the
-          <code>Form</code> instance.</p>"""^^rdf:HTML .
+          <code>Form</code> instance.</p>"""^^rdf:HTML ;
+    sh:property [
+        sh:path td:hasSignature ;
+        skos:definition """Provides enveloped signature which can
+                be used to validate the
+                integrity of a specified subset of the enclosing 
+                Thing Description."""^^rdf:HTML ;
+        sh:node :SignatureShape ;
+        sh:order 18 ;
+    ] .
     
 :InteractionAffordanceShape a sh:NodeShape ;
     sh:targetClass td:InteractionAffordance ;
@@ -966,8 +975,7 @@
                 </td>
                 <td>
                     0..1
-                </td>
-                <td>Points to a previous <a>Thing Description</a> or <a>Thing Model</a> version.</td>
+                </td> <td>Points to a previous <a>Thing Description</a> or <a>Thing Model</a> version.</td>
                 <td>
                     <a href="https://www.iana.org/assignments/link-relations">IANA Link Relation</a>
                 </td>
@@ -986,6 +994,111 @@
             </tr>
         </tbody>
     </table>
+    """^^rdf:HTML .
+
+:SignatureShape a sh:NodeShape ;
+    sh:targetClass wotsec:Signature ;
+    skos:definition """A signature includes a query to extract
+          a subset (a <a>Partial TD</a>) of the enclosing Thing Description, 
+          a hash of the query result after canonicalization, and
+          an encrypted value which can be used to confirm that the 
+          content returned by the query is identical to the result that
+          was returned when the signature was computed."""^^rdf:HTML ;
+    sh:closed false ;
+    sh:order 8 ;
+    sh:property [
+        sh:path wotsec:hasQuery ;
+        skos:definition """Query string identifying the subset of the
+                Thing Description to compute a hash of.  The result
+                must be a <a>Partial TD<a/>."""^^rdf:HTML ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:order 1 ;
+    ] ;
+    sh:property [
+        sh:path wotsec:queryLanguage ;
+        skos:definition """The query language used to define the subset 
+                of the Thing Descrption to sign.  Can be one of 
+                <code>jsonpointer</code>,
+                <code>jsonpath</code>, 
+                <code>xpath</code>, 
+                or <code>sparql.</code>"""^^rdf:HTML ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:order 2 ;
+    ] ;
+    sh:property [
+        sh:path wotsec:hasHash ;
+        skos:definition """A hash value computed from the 
+                <a>Canonical Partial TD</a> returned from the specified
+                query."""^^rdf:HTML ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:order 3 ;
+    ] ;
+    sh:property [
+        sh:path wotsec:hashAlg ;
+        skos:definition """The algorithm used to compute the
+                hash value.  Can be one of
+                <code>sha256</code>."""^^rdf:HTML ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:order 4 ;
+    ] ;
+    sh:property [
+        sh:path wotsec:hasSigValue ;
+        skos:definition """Signature value computed over the content of
+                the signature object."""^^rdf:HTML ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:order 5 ;
+    ] ;
+    sh:property [
+        sh:path wotsec:sigAlg ;
+        skos:definition """The algorithm used to compute the
+                signature value.  Can be one of
+                <code>nistP256</code> or <code>x25519</code>."""^^rdf:HTML ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:order 6 ;
+    ] ;
+    skos:scopeNote """ <p><a>TD Signatures</a> 
+      are used to verify the integrity of
+      the information contained in a TD.
+      Generally speaking, <a>TD signatures</a>
+      follow the structure of XML Signatures [[XML-Signatures]], although they
+      are expressed in JSON.
+      Signatures use a query to extract
+      the information to be signed, using one of the query languages also
+      supported by <a>Thing Description Directories.</a>  The result of this
+      query is a <a>Partial TD</a>, which is then converted into a 
+      <a>Canonical Partial TD</a>.  Note that the query result can also
+      include previous signatures, allowing signatures to be chained.
+      A hash of the <a>Canonical Partial TD</a> is then computed and
+      an initial signature object is created, which is then itself expressed
+      in canonical form.  Finally, the signature value is computed,
+      inserted into the <a>Signature</a> object, and the final signature
+      is appended to the <em>end</em> 
+      of the array of existing signatures if any;
+      otherwise a new <code>signatures</code> member is inserted.
+      Inserting the new signature at the end of the array of existing
+      signatures makes it easier to stably select existing signatures using
+      certain queries, e.g. JSON Pointers.</p>
+      <p class="ednote" title="Relationship to Linked Data Signatures">
+      A parallel effort is being made to define signatures for RDF datasets,
+      called Linked Data Signatures. In the future we may extend this
+      signature mechanism to support such signatures, once they are 
+      fully defined.  The current LCS proposal, however, would require the
+      conversion of the TD into a sorted set of RDF triples, and so would
+      require RDF processing.  The current definition of TD Signatures
+      requires only JSON processing, so we expect both to continue to be
+      useful in different circumstances.</p>
     """^^rdf:HTML .
     
 
