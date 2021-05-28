@@ -1646,17 +1646,76 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       <h2>Security Vocabulary Definitions</h2>
 
       <p>
-      This specification provides a selection of well-established security mechanisms
+      This section defines a <code>Signature</code> object and signing process that
+      can be used to preserve the integrity of all or part of a <a>Thing Description</a>.
+      </p><p>
+      This section also provides a selection of well-established security schemes
       that are directly built into protocols eligible as <a>Protocol Bindings</a> for W3C WoT
       or are widely in use with those protocols.
-      The current set of HTTP security schemes is partly based on 
+      The current set of security schemes is partly based on 
       <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#securitySchemeObject">OpenAPI 3.0.1</a> (see also [[?OPENAPI]]). 
-      However while the HTTP security schemes, <a>Vocabulary</a>, and syntax
+      However while the security schemes, <a>Vocabulary</a>, and syntax
       given in this specification share many similarities with OpenAPI, they are not compatible.
       </p>
 
       <!-- rendered from RDF definitions -->
-      <section><h3><code>SecurityScheme</code></h3><p><p>Metadata describing the configuration of a security
+      <section><h3><code>Signature</code></h3><p>A signature includes a query to extract
+          a subset (a <a>Partial TD</a>) of the enclosing Thing Description, 
+          a hash of the query result after canonicalization, and
+          an encrypted value which can be used to confirm that the 
+          content returned by the query is identical to the result that
+          was returned when the signature was computed.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-query--Signature"><td><code>query</code></td><td>Query string identifying the subset of the
+                Thing Description to compute a hash of.  The result
+                must be a <a>Partial TD<a/>.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-queryLanguage--Signature"><td><code>queryLanguage</code></td><td>The query language used to define the subset 
+                of the Thing Descrption to sign.  Can be one of 
+                <code>jsonpointer</code>,
+                <code>jsonpath</code>, 
+                <code>xpath</code>, 
+                or <code>sparql.</code></td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-hash--Signature"><td><code>hash</code></td><td>A hash value computed from the 
+                <a>Canonical Partial TD</a> returned from the specified
+                query.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-hashAlg--Signature"><td><code>hashAlg</code></td><td>The algorithm used to compute the
+                hash value.  Can be one of
+                <code>sha256</code>.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-sig--Signature"><td><code>sig</code></td><td>Signature value computed over the content of
+                the signature object.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-sigAlg--Signature"><td><code>sigAlg</code></td><td>The algorithm used to compute the
+                signature value.  Can be one of
+                <code>nistP256</code> or <code>x25519</code>.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table> <p><a>TD Signatures</a> 
+      are used to verify the integrity of
+      the information contained in a TD.
+      Generally speaking, <a>TD signatures</a>
+      follow the structure of XML Signatures [[XML-Signatures]], although they
+      are expressed in JSON.
+      Signatures use a query to extract
+      the information to be signed, using one of the query languages also
+      supported by <a>Thing Description Directories.</a>  The result of this
+      query is a <a>Partial TD</a>, which is then converted into a 
+      <a>Canonical Partial TD</a>.  Note that the query result can also
+      include previous signatures, allowing signatures to be chained.
+      A hash of the <a>Canonical Partial TD</a> is then computed and
+      an initial signature object is created, which is then itself expressed
+      in canonical form.  Finally, the signature value is computed,
+      inserted into the <a>Signature</a> object, and the final signature
+      is appended to the <em>end</em> 
+      of the array of existing signatures if any;
+      otherwise a new <code>signatures</code> member is inserted.
+      Inserting the new signature at the end of the array of existing
+      signatures makes it easier to stably select existing signatures using
+      certain queries, e.g. JSON Pointers.</p>
+      <p class="ednote" title="Relationship to Linked Data Signatures">
+      A parallel effort is being made to define signatures for RDF datasets,
+      called Linked Data Signatures. In the future we may extend this
+      signature mechanism to support such signatures, once they are 
+      fully defined.  The current LCS proposal, however, would require the
+      conversion of the TD into a sorted set of RDF triples, and so would
+      require RDF processing.  The current definition of TD Signatures
+      requires only JSON processing, so we expect both to continue to be
+      useful in different circumstances.</p>
+    </section>
+<section><h3><code>SecurityScheme</code></h3><p><p>Metadata describing the configuration of a security
           mechanism. <span class="rfc2119-assertion" id="td-security-scheme-name">The value assigned to the name
           <code>scheme</code> <em class="rfc2119" title="MUST">MUST</em> be defined within a 
           <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary</a>
@@ -1830,62 +1889,6 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                  information.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (e.g., <code>jwt</code>, <code>cwt</code>, <code>jwe</code>, or <code>jws</code>)</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-in--BearerSecurityScheme"><td><code>in</code></td><td>Specifies the location of security
             authentication information.  </td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, <code>cookie</code>, or <code>uri</code>)</td></tr></tbody></table></section>
-<section><h3><code>Signature</code></h3><p>A signature includes a query to extract
-          a subset (a <a>Partial TD</a>) of the enclosing Thing Description, 
-          a hash of the query result after canonicalization, and
-          an encrypted value which can be used to confirm that the 
-          content returned by the query is identical to the result that
-          was returned when the signature was computed.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-query--Signature"><td><code>query</code></td><td>Query string identifying the subset of the
-                Thing Description to compute a hash of.  The result
-                must be a <a>Partial TD<a/>.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-queryLanguage--Signature"><td><code>queryLanguage</code></td><td>The query language used to define the subset 
-                of the Thing Descrption to sign.  Can be one of 
-                <code>jsonpointer</code>,
-                <code>jsonpath</code>, 
-                <code>xpath</code>, 
-                or <code>sparql.</code></td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-hash--Signature"><td><code>hash</code></td><td>A hash value computed from the 
-                <a>Canonical Partial TD</a> returned from the specified
-                query.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-hashAlg--Signature"><td><code>hashAlg</code></td><td>The algorithm used to compute the
-                hash value.  Can be one of
-                <code>sha256</code>.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-sig--Signature"><td><code>sig</code></td><td>Signature value computed over the content of
-                the signature object.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-sigAlg--Signature"><td><code>sigAlg</code></td><td>The algorithm used to compute the
-                signature value.  Can be one of
-                <code>nistP256</code> or <code>x25519</code>.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table> <p><a>TD Signatures</a> 
-      are used to verify the integrity of
-      the information contained in a TD.
-      Generally speaking, <a>TD signatures</a>
-      follow the structure of XML Signatures [[XML-Signatures]], although they
-      are expressed in JSON.
-      Signatures use a query to extract
-      the information to be signed, using one of the query languages also
-      supported by <a>Thing Description Directories.</a>  The result of this
-      query is a <a>Partial TD</a>, which is then converted into a 
-      <a>Canonical Partial TD</a>.  Note that the query result can also
-      include previous signatures, allowing signatures to be chained.
-      A hash of the <a>Canonical Partial TD</a> is then computed and
-      an initial signature object is created, which is then itself expressed
-      in canonical form.  Finally, the signature value is computed,
-      inserted into the <a>Signature</a> object, and the final signature
-      is appended to the <em>end</em> 
-      of the array of existing signatures if any;
-      otherwise a new <code>signatures</code> member is inserted.
-      Inserting the new signature at the end of the array of existing
-      signatures makes it easier to stably select existing signatures using
-      certain queries, e.g. JSON Pointers.</p>
-      <p class="ednote" title="Relationship to Linked Data Signatures">
-      A parallel effort is being made to define signatures for RDF datasets,
-      called Linked Data Signatures. In the future we may extend this
-      signature mechanism to support such signatures, once they are 
-      fully defined.  The current LCS proposal, however, would require the
-      conversion of the TD into a sorted set of RDF triples, and so would
-      require RDF processing.  The current definition of TD Signatures
-      requires only JSON processing, so we expect both to continue to be
-      useful in different circumstances.</p>
-    </section>
 <section><h3><code>PSKSecurityScheme</code></h3><p>Pre-shared key authentication security configuration
           identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a>
           <code>psk</code> (i.e., <code>"scheme":
