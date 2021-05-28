@@ -4369,14 +4369,6 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   Note that this also applies to extension vocabularies, e.g. for protocol bindings.
   If any such extension defines default values they must be given explicitly in the canonical form.
   </li>
-  <li><span class="rfc2119-assertion" id="canonical-form-security">
-  In the <a>Canonical TD</a>,
-  <code>security</code> MUST NOT be used at the <code>Thing</code> level.</span>
-  Instead, assignment of <code>SecurityScheme</code> configuration objects
-  to interactions need to all take place at the <code>Form</code> level. 
-  This means that in a <a>Canonical TD</a> every <code>Form</code> must have 
-  a <code>security</code> entry (even if they are all the same).
-  </li>
   <li><span class="rfc2119-assertion" id="canonical-prefix-mandatory">
   In the Canonical TD, if a prefix is
   defined it MUST be used in place of that URL.</span>
@@ -4428,13 +4420,24 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   using different names for the <code>SecurityScheme</code> objects defined in 
   <code>securityDefinitions</code>, since these are just arbitrary strings 
   acting as internal references to definitions.
-  However, to avoid variants, these names should be preserved as well.
+  However, to avoid variants, these names should be preserved.
   <span class="rfc2119-assertion" id="processors-preserve-security-names">
   In order to support canonicalization, implementations 
   of TD Processors MUST preserve the strings used to identify <code>SecurityScheme</code>
   objects in <code>SecurityDefinitions</code> and referenced in <code>security</code>
   elements.</span>
   </p><p>
+  Another issue that arises with <code>security</code> is that the
+  same <code>SecurityScheme</code> could be redundantly applied at both the 
+  <code>Thing</code> and <code>Form</code> level.  
+  <span class="rfc2119-assertion" id="processors-preserve-security-instances">
+  In order to support canonicalization, implementations 
+  of TD Processors MUST preserve the presence (and absence) of 
+  <code>security</code> terms at the <code>Form</code> level.</span>
+  In other words, in order to avoid generating variant serializations,
+  a TD processor must not attempt to "optimize" a TD by removing such
+  redundant definitions.
+  <p>
   Some systems support different forms of URLs that are equivalent, for example,
   by mapping upper to lower case.  It is also legal to percent-encode
   unreserved characters, even though this is unnecessary and discouraged [[!RFC3986]]. 
