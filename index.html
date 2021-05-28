@@ -1193,7 +1193,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 <tr class="rfc2119-table-assertion" id="td-vocab-signatures--Thing"><td><code>signatures</code></td><td>Provides enveloped signature which can
                 be used to validate the
                 integrity of a specified subset of the enclosing 
-                Thing Description.</td><td>optional</td><td><a href="#signature"><code>Signature</code></a> or <a>Array</a> of <a href="#signature"><code>Signature</code></a></td></tr></tbody></table><p><span class="rfc2119-assertion" id=
+                <a>Thing Description.</a></td><td>optional</td><td><a href="#signature"><code>Signature</code></a> or <a>Array</a> of <a href="#signature"><code>Signature</code></a></td></tr></tbody></table><p><span class="rfc2119-assertion" id=
           "td-context-ns-thing-mandatory">The <code>@context</code>
           name-value pair <em class="rfc2119" title=
           "MUST">MUST</em> contain the anyURI
@@ -1673,8 +1673,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 or
                 <code>xpath</code>.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-hash--Signature"><td><code>hash</code></td><td>A hash value computed from the 
-                result of the specified
-                query.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+                result of the specified query.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-hashAlg--Signature"><td><code>hashAlg</code></td><td>The algorithm used to compute the
                 hash value.  Currently can only be
                 <code>sha256</code>.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
@@ -1688,23 +1687,137 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       the information contained in a TD.
       Generally speaking, <a>TD signatures</a>
       follow the structure of XML Signatures [[XML-Signatures]], although they
-      are expressed in JSON.
-      Signatures use a query to extract
-      the information to be signed, using one of the query languages also
-      supported by <a>Thing Description Directories.</a>  The result of this
-      query is a <a>Partial TD</a>, which is then converted into a 
-      <a>Canonical Partial TD</a>.  Note that the query result can also
-      include previous signatures, allowing signatures to be chained.
-      A hash of the <a>Canonical Partial TD</a> is then computed and
-      an initial signature object is created, which is then itself expressed
-      in canonical form.  Finally, the signature value is computed,
-      inserted into the <a>Signature</a> object, and the final signature
-      is appended to the <em>end</em> 
-      of the array of existing signatures if any;
-      otherwise a new <code>signatures</code> member is inserted.
-      Inserting the new signature at the end of the array of existing
-      signatures makes it easier to stably select existing signatures using
-      certain queries, e.g. JSON Pointers.</p>
+      are expressed in JSON and are used to sign JSON.
+      </p><p>
+      <span class="rfc2119-assertion" id="td-signature-computation">
+      The signature MUST be computed as described below:
+      </span>
+      <ol>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--initial-signature-object">
+      As input, the signer must construct a template for a <code>Signature</code>
+      object, with all fields filled in except for the <code>hash</code> and
+      <code>sig</code> values.  This must be kept separate from the input TD while
+      the signature is under construction.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--canonicalization">
+      The <a>TD</a> serialization must be expressed as a <a>Canonical TD</a>.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--name-expansion">
+      References to named objects must be expanded. Specifically, whenever 
+      a <code>security</code> or <code>schema</code> refers to an object
+      defined in a <code>securityDefinition</code> or <code>schemaDefinition</code>,
+      the string (and its enclosing quotes) 
+      must be replaced with a JSON Canonical Serialization [[JCS]] of
+      the object it refers to.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--prefix-expansion">
+      Prefixes must all be expanded into URLs wherever they are used. Note: the
+      <code>@context</code> object should be retained as is.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--query">
+      The <code>query</code> expressed in the specified <code>queryLanguage</code>
+      must be applied to the output of the previous step
+      to extract a result, which may be a JSON fragment or a JSON element.  
+      This result must also be
+      expressed in JSON Canonical Serialization [[JCS]] form.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--hash">
+      A <code>hash</code> value must be computed using the specified <code>hashAlg</code>
+      from the output of the previous step.  This value must be added to the 
+      <code>Signature</code> object.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--sign">
+      The <code>Signature</code> object must be expressed in JSON Canonical Serialization
+      [[JCS]] form and the signature algorithm specified in <code>sigAlg</code> applied to
+      the resulting string to compute a signature value.  This value must be placed in the
+      <code>sig</code> field of the <code>Signature</code> object.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--insertion">
+      The completed <code>Signature</code> object must be inserted
+      into the TD either as a new value for a <code>signatures</code> member or added 
+      to the end of an array of <code>Signature</code> objects stored in the
+      <code>signature</code> member if it already exists.
+      </span>
+      </li>
+      </ol>
+      </p><p>
+      <span class="rfc2119-assertion" id="td-signature-validation">
+      To verify a signature, the following process MUST be followed:
+      </span>
+      <ol>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--extraction">
+      The identified <code>Signature</code> object and all <code>Signature</code>
+      objects following it in the array associated with the <code>signatures</code>
+      member MUST be removed from the TD.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--canonicalization">
+      The <a>TD</a> serialization MUST be expressed as a <a>Canonical TD</a>.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--name-expansion">
+      References to named objects MUST be replaced with their
+      referents as described for the signing process.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--prefix-expansion">
+      References to prefixes MUST be replaced with their
+      referents as described for the signing process.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--query">
+      The <code>query</code> MUST be performed as described for the signing process.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--hash">
+      The <code>hash</code> computation MUST be performed as described for the signing process.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--sign">
+      After removing the <code>sig</code> value from the target <code>Signature</code>
+      object, the <code>sig</code> computation MUST be performed as described for the signing process.
+      <p class="ednote" title="Fix">This is not quite correct.  If using a public key,
+      what should happen is decrypting the sig using the public key and comparing the
+      result with the hash. This step and the following one need to be described more carefully
+      after reviewing the wording of the XML Signature validation process.</p>
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--compare">
+      The given and the newly computed <code>sig</code> values MUST be compared;
+      if they match the signature is considered valid.
+      </span>
+      </li>
+      </ol>
+      </p><p>
+      The <code>query</code> can include previous <code>Signature</code> objects, 
+      allowing signatures to be chained.
+      Inserting the new <code>Signature</code> object at the end of any existing
+      <code>signatures</code> array makes it easier to stably select existing signatures using
+      certain queries, e.g. JSON Pointers.
+      </p>
       <p class="ednote" title="Relationship to Linked Data Signatures">
       A parallel effort is being made to define signatures for RDF datasets,
       called Linked Data Signatures. In the future we may extend this
