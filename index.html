@@ -682,7 +682,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
   <dfn>Servient</dfn>,
   <dfn>Vocabulary</dfn>,
   <dfn>Term</dfn>,
-  <dfn>Vocabulary Term</dfn>,
+  <dfn id="dfn-vocab-term">Vocabulary Term</dfn>,
   <dfn>WoT Interface</dfn>, and
   <dfn>WoT Runtime</dfn>
   are defined in <a href="https://www.w3.org/TR/wot-architecture/#terminology">Section 3</a>
@@ -1185,7 +1185,11 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 (definitions only). Not actually applied unless
                 names are used in a <code>security</code>
                 name-value pair.</td><td>mandatory</td><td><a>Map</a> of <a href="#securityscheme"><code>SecurityScheme</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-profile--Thing"><td><code>profile</code></td><td>Indicates the WoT Profile mechanisms followed by this Thing Description and the corresponding Thing implementation.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr></tbody></table><p><span class="rfc2119-assertion" id=
+<tr class="rfc2119-table-assertion" id="td-vocab-profile--Thing"><td><code>profile</code></td><td>Indicates the WoT Profile mechanisms followed by this Thing Description and the corresponding Thing implementation.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-schemaDefinitions--Thing"><td><code>schemaDefinitions</code></td><td>Set of named data schemas.
+                To be used in a <code>schema</code>
+                name-value pair inside an 
+                <code>AdditionalExpectedResponse</code> object.</td><td>optional</td><td><a>Map</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><p><span class="rfc2119-assertion" id=
           "td-context-ns-thing-mandatory">The <code>@context</code>
           name-value pair <em class="rfc2119" title=
           "MUST">MUST</em> contain the anyURI
@@ -1651,9 +1655,9 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       <section><h3><code>SecurityScheme</code></h3><p><p>Metadata describing the configuration of a security
           mechanism. <span class="rfc2119-assertion" id="td-security-scheme-name">The value assigned to the name
           <code>scheme</code> <em class="rfc2119" title="MUST">MUST</em> be defined within a 
-          <a href="#dfn-vocab" class="internalDFN" data-link-type="dfn">Vocabulary</a>
+          <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary</a>
           included in the <a href="#dfn-thing-description" class="internalDFN" data-link-type="dfn">Thing Description</a>,
-          either in the standard <a href="#dfn-vocab" class="internalDFN" data-link-type="dfn">Vocabulary</a> defined
+          either in the standard <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary</a> defined
           in <a href="#sec-vocabulary-definition" class="sec-ref">§&nbsp;<bdi class="secno">5.</bdi> TD
           Information Model</a> or in a <a href="#dfn-context-ext" class="internalDFN" data-link-type="dfn">TD Context
           Extension</a>.</span>
@@ -2235,8 +2239,12 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 the media type [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc2046" title="Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types">RFC2046</a></cite>].</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table></section>
 <section><h3><code>AdditionalExpectedResponse</code></h3><p>Communication metadata describing the expected
           response message for additional responses.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-success--AdditionalExpectedResponse"><td><code>success</code></td><td>Signals if an additional response should not be considered an error.</td><td><a href="#sec-default-values">with default</a></td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#boolean"><code>boolean</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-schema--AdditionalExpectedResponse"><td><code>schema</code></td><td>Used to define the output data schema of the Interaction
-                for an additional response.</td><td>optional</td><td><a href="#dataschema"><code>DataSchema</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-schema--AdditionalExpectedResponse"><td><code>schema</code></td><td>Used to define the output data schema 
+                for an additional response if it differs from the default
+                output data schema. 
+                Rather than a <code>DataSchema</code> object, the
+                name of a previous definition given in a 
+                <code>schemaDefinitions</code> map must be used.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-contentType--AdditionalExpectedResponse"><td><code>contentType</code></td><td>Assign a content type based on a media type
                 (e.g., <code>text/plain</code>) and potential
                 parameters (e.g., <code>charset=utf-8</code>) for
@@ -6733,10 +6741,7 @@ instance.
                                 "type": "string"
                             },
                             "schema": {
-                                "type": "object",
-                                "additionalProperties": {
-                                    "$ref": "#/definitions/dataSchema"
-                                }
+                                "type": "string"
                             }
                         }
                     }
@@ -6803,10 +6808,7 @@ instance.
                                 "type": "string"
                             },
                             "schema": {
-                                "type": "object",
-                                "additionalProperties": {
-                                    "$ref": "#/definitions/dataSchema"
-                                }
+                                "type": "string"
                             }
                         }
                     }
@@ -6875,10 +6877,7 @@ instance.
                                 "type": "string"
                             },
                             "schema": {
-                                "type": "object",
-                                "additionalProperties": {
-                                    "$ref": "#/definitions/dataSchema"
-                                }
+                                "type": "string"
                             }
                         }
                     }
@@ -6955,10 +6954,7 @@ instance.
                                 "type": "string"
                             },
                             "schema": {
-                                "type": "object",
-                                "additionalProperties": {
-                                    "$ref": "#/definitions/dataSchema"
-                                }
+                                "type": "string"
                             }
                         }
                     }
@@ -7683,6 +7679,13 @@ instance.
             "minProperties": 1,
             "additionalProperties": {
                 "$ref": "#/definitions/securityScheme"
+            }
+        },
+        "schemaDefinitions": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+                "$ref": "#/definitions/dataSchema"
             }
         },
         "support": {
