@@ -1078,9 +1078,10 @@
     ] ;
     sh:property [
         sh:path wotsec:hasSigValue ;
-        skos:definition """Signature value computed over the 
+        skos:definition """JWS [[RFC7515]] signature value computed using the
                 JSON canonicalized serialization of
-                the signature object."""^^rdf:HTML ;
+                the <code>signedInfo</code> field as payload and header set using
+                corresponding fields from the <code>Signature</code> object."""^^rdf:HTML ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
@@ -1111,20 +1112,42 @@
                 <code>Ed25519</code>
                 or
                 <code>Ed448</code>
-                from [[RFC8037]]"""^^rdf:HTML ;
+                from [[RFC8037]].
+                Considered part of the JWS header used for computing the signature value."""^^rdf:HTML ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
         sh:order 3 ;
     ] ;
-    skos:scopeNote """ <p><code>Signature</code> objects 
+    sh:property [
+        sh:path wotsec:sigJku ;
+        skos:definition """A URI referring to a JWK Set [[RFC7517]].
+                Considered part of the JWS header used for computing the signature value."""^^rdf:HTML ;
+        sh:datatype xsd:anyURI ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:order 4 ;
+    ] ;
+    sh:property [
+        sh:path wotsec:sigKid ;
+        skos:definition """An identifier specifying an element of a JWK Set [[RFC7517]].
+                Considered part of the JWS header used for computing the signature value."""^^rdf:HTML ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:order 5 ;
+    ] ;
+    skos:scopeNote """<p><code>Signature</code> objects 
       are used to verify the integrity of
       a specified subset of the information contained in a <a>Thing Description</a>.
       Generally speaking, <code>Signature</code> objects
       follow the structure of XML Signatures [[xmldsig-core1]] to enable flexible
-      extraction of the subset of information to be signed
-      but use signature algorithms drawn from JSON Web Algorithms (JWA) [[RFC7518]] and extensions [[RFC8037]]
+      extraction of the subset of information to be signed, that is, the payload.
+      However, signature algorithms are drawn from JSON Web Algorithms (JWA) [[RFC7518]] and extensions [[RFC8037]]
       consistent with their use in JSON Web Signatures (JWS) [[RFC7515]].
+      The signature value itself is computed by constructing a JWS header from
+      the information contained in the <code>Signature</code> object and using it to sign
+      the specified payload.
       </p><p>
       <span class="rfc2119-assertion" id="td-signature-computation">
       Each <code>Signature</code> object and the array containing all
@@ -1135,8 +1158,12 @@
       <span class="rfc2119-assertion" id="td-signature-computation--initial-signature-object">
       As input, 
       the signer MUST construct a template for a <code>Signature</code>
-      object, with all fields filled in except for <code>digest</code> fields
-      and <code>sig</code> values.  
+      object, with all mandatory fields filled in except for <code>digest</code> fields
+      and <code>sig</code> values.  If a key needs to be specfied, 
+      then appropriate values for both
+      <code>jku</code> and <code>kid</code> fields should be given.
+      If values for these fields are not given, then the key will have to be known to the Consumer
+      by context.
       </span>
       </li>
       <li>
@@ -1167,8 +1194,7 @@
       a <code>security</code> or <code>schema</code> refers to an object
       defined in a <code>securityDefinition</code> or <code>schemaDefinition</code>,
       the string (and its enclosing quotes) 
-      must be replaced with a JSON Canonical Serialization [[RFC8785]] of
-      the object it refers to.
+      must be replaced with the object it refers to.
       </span>
       </li>
       <li>
@@ -1201,9 +1227,25 @@
       </span>
       </li>
       <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--payload">
+      The array of <code>SignedInfo</code> objects MUST be serialized in JSON Canonical Serialization
+      [[RFC8785]] form.  
+      This string will be used as the JWS payload.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--header">
+      A JSON object MUST be created using the <code>alg</code> value as well as the
+      <code>jku</code> and <code>kid</code> values, if specified,
+      from the <code>Signature</code> object, using corresponding member names,
+      and then serialized in JSON Canonical Serialization [[RFC8785]] form.
+      This string will be used as the JWS header.
+      </span>
+      </li>
+      <li>
       <span class="rfc2119-assertion" id="td-signature-computation--sign">
-      The array of <code>SignedInfo</code> objects MUST be expressed in JSON Canonical Serialization
-      [[RFC8785]] form and the signature algorithm specified in <code>sigAlg</code> applied to
+      Using the header and the payload computed in the previous steps, the signature value MUST 
+      then computed as specified for JSON Web Signatures [[RFC7515]].
       the resulting string to compute a signature value.  This value is then inserted into the
       <code>sig</code> field of the template <code>Signature</code> object, which is now complete,
       with all mandatory elements specified.
@@ -1270,13 +1312,13 @@
       <li>
       <span class="rfc2119-assertion" id="td-signature-validation--sign">
       The <code>sig</code> computation MUST be performed as described for the signing process, 
-      and the validation process appropriate for the signature type performed.
+      and the validation process appropriate for the signature type performed as specified in 
+      JWS [[RFC7515]], JWA [[RFC7518]] and extensions [[RFC8037]].
       </span>
-      Note that in general validation is not as simple as comparing results.
-      In general the specific validation process for each signature 
-      type needs to be followed as specified for the given algorithm in
-      JWA [[RFC7518]] or its extension [[RFC8037]], and may require additional inputs,
-      such as keys.
+      Note that in general validation is not as simple as comparing signature values.
+      The specific validation process for each signature 
+      type needs to be followed as specified,
+      and may require additional inputs, such as keys.
       </li>
       </ol>
       </p><p>
@@ -1295,8 +1337,7 @@
       conversion of the TD into a sorted set of RDF triples, and so would
       require RDF processing.  The current definition of TD Signatures
       requires only JSON processing, so we expect both to continue to be
-      useful in different circumstances.</p>
-    """^^rdf:HTML .
+      useful in different circumstances.</p>"""^^rdf:HTML .
     
 
 :ExpectedResponseShape a sh:NodeShape ;
