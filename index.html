@@ -1683,25 +1683,42 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 <section><h3><code>Signature</code></h3><p>A <code>Signature</code> includes an array of 
           <code>SignedInfo</code> and 
           an encrypted value which can be used to confirm that the 
-          content of this array is identical to that which was present
+          content of this array and the information it references is identical to that which was present
           when the <code>Signature</code> was created.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-signedInfo--Signature"><td><code>signedInfo</code></td><td>Information to be signed.</td><td>mandatory</td><td><a href="#signedinfo"><code>SignedInfo</code></a> or <a>Array</a> of <a href="#signedinfo"><code>SignedInfo</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-sig--Signature"><td><code>sig</code></td><td>Signature value computed over the 
                 JSON canonicalized serialization of
                 the signature object.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-sigAlg--Signature"><td><code>sigAlg</code></td><td>The algorithm used to compute the
-                signature value. Can be one of
-                <code>P256</code>,
-                <code>P384</code>,
-                <code>P512</code>,
-                <code>x25519</code>,
+                signature value. Can be any digital signature or MAC algorithm
+                specified in either [[RFC7518]] or
+                [[RFC8037]] corresponding to values of <code>alg</code> allowable
+                in JWS [[RFC7515]].  
+                These include
+                <code>HS256</code>,
+                <code>HS384</code>,
+                <code>HS512</code>,
+                <code>RS256</code>,
+                <code>RS384</code>,
+                <code>RS512</code>,
+                <code>ES256</code>,
+                <code>ES384</code>,
+                <code>ES512</code>,
+                <code>PS256</code>,
+                <code>PS384</code>,
                 or
-                <code>x448</code>.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table> <p><code>Signature</code> objects 
+                <code>PS512</code>
+                from [[RFC7518]] and
+                <code>Ed25519</code>
+                or
+                <code>Ed448</code>
+                from [[RFC8037]]</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table> <p><code>Signature</code> objects 
       are used to verify the integrity of
-      the information contained in a <a>Thing Description</a>.
+      a specified subset of the information contained in a <a>Thing Description</a>.
       Generally speaking, <code>Signature</code> objects
-      follow the structure of XML Signatures [[XML-Signatures]], 
-      although they
-      are expressed in JSON and are used to sign JSON.
+      follow the structure of XML Signatures [[xmldsig-core1]] to enable flexible
+      extraction of the subset of information to be signed
+      but use signature algorithms drawn from JSON Web Algorithms (JWA) [[RFC7518]] and extensions [[RFC8037]]
+      consistent with their use in JSON Web Signatures (JWS) [[RFC7515]].
       </p><p>
       <span class="rfc2119-assertion" id="td-signature-computation">
       Each <code>Signature</code> object and the array containing all
@@ -1711,7 +1728,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       <li>
       <span class="rfc2119-assertion" id="td-signature-computation--initial-signature-object">
       As input, 
-      the signer must construct a template for a <code>Signature</code>
+      the signer MUST construct a template for a <code>Signature</code>
       object, with all fields filled in except for <code>digest</code> fields
       and <code>sig</code> values.  
       </span>
@@ -1724,7 +1741,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       creating a new array if necessary.</span>
       This allows <code>SignedInfo</code> sections of the template
       to optionally refer to (and therefore protect, if necessary) elements
-      outside the <code>SignedInfo</code> objects, such as the
+      of the <code>Signature</code> object itself, such as the
       definition of the signature algorithm.
       <li>
       <span class="rfc2119-assertion" id="td-signature-computation--canonicalization">
@@ -1733,12 +1750,14 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       needs to make an allowance to allow the 
       partial <code>Signature</code> object inserted
       in the previous step, since it is missing some mandatory fields
-      (such as <code>digest</code>).
+      (such as <code>digest</code>).  Omission of these mandatory fields should
+      only be allowed for the most recent <code>Signature</code> object inserted,
+      corresponding to the template.
       </span>
       </li>
       <li>
       <span class="rfc2119-assertion" id="td-signature-computation--name-expansion">
-      References to named objects must be expanded. Specifically, whenever 
+      References to named objects MUST be expanded. Specifically, whenever 
       a <code>security</code> or <code>schema</code> refers to an object
       defined in a <code>securityDefinition</code> or <code>schemaDefinition</code>,
       the string (and its enclosing quotes) 
@@ -1748,7 +1767,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       </li>
       <li>
       <span class="rfc2119-assertion" id="td-signature-computation--prefix-expansion">
-      Prefixes must all be expanded into URLs wherever they are used. Note: the
+      Prefixes MUST all be expanded into URLs wherever they are used. Note: the
       <code>@context</code> object should be retained as is.
       </span>
       </li>
@@ -1762,30 +1781,31 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       Each <code>reference</code> 
       result may be a JSON fragment or a JSON element,  
       and MUST be
-      expressed in JSON Canonical Serialization [[RFC8785]] form.
+      transformed into JSON Canonical Serialization [[RFC8785]] form.
       </span>
       </li>
       <li>
       <span class="rfc2119-assertion" id="td-signature-computation--digest">
-      A <code>digest</code> value must be computed for
+      A <code>digest</code> value MUST be computed 
       using the specified <code>digestAlg</code>
       from the output of the previous step
       for each <code>SignedInfo</code> object.  
-      These values must be added to the corresponding
+      These values are then inserted into the corresponding
       <code>SignedInfo</code> objects.
       </span>
       </li>
       <li>
       <span class="rfc2119-assertion" id="td-signature-computation--sign">
-      The array of <code>SignedInfo</code> objects must be expressed in JSON Canonical Serialization
+      The array of <code>SignedInfo</code> objects MUST be expressed in JSON Canonical Serialization
       [[RFC8785]] form and the signature algorithm specified in <code>sigAlg</code> applied to
-      the resulting string to compute a signature value.  This value must be placed in the
-      <code>sig</code> field of the <code>Signature</code> object.
+      the resulting string to compute a signature value.  This value is then inserted into the
+      <code>sig</code> field of the template <code>Signature</code> object, which is now complete,
+      with all mandatory elements specified.
       </span>
       </li>
       <li>
       <span class="rfc2119-assertion" id="td-signature-computation--insertion">
-      The completed <code>Signature</code> object must be inserted
+      The completed <code>Signature</code> object MUST be inserted
       into the <a>Thing Description</a>, replacing the already inserted
       template object. 
       </span>
@@ -1808,14 +1828,15 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       <span class="rfc2119-assertion" id="td-signature-validation--template-recon">
       A template <code>Signature</code> object MUST be reconstructed
       by deleting the <code>digest</code> and <code>sig</code> fields
-      and reinserted at the end of the <code>signatures</code> array,
-      (re)creating it if necessary.
+      and reinserting it at the end of the <code>signatures</code> array,
+      (re)creating the <code>signatures</code> array if necessary.
       </span>
       </li>
       <li>
       <span class="rfc2119-assertion" id="td-signature-validation--canonicalization">
       The <a>TD</a> serialization MUST be expressed as a <a>Canonical TD</a>,
-      with the same validation exception noted above.
+      with the same validation exception for the most recent <code>Signature</code> 
+      object being incomplete noted above.
       </span>
       </li>
       <li>
@@ -1832,7 +1853,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       </li>
       <li>
       <span class="rfc2119-assertion" id="td-signature-validation--query">
-      The <code>query</code> MUST be performed as described for the signing process.
+      All <code>reference</code> queries MUST be performed as described for the signing process.
       </span>
       </li>
       <li>
@@ -1842,12 +1863,13 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       </li>
       <li>
       <span class="rfc2119-assertion" id="td-signature-validation--sign">
-      The <code>sig</code> computation MUST be performed as described for the signing process, and the validation process appropriate for the 
-      signature type performed.
+      The <code>sig</code> computation MUST be performed as described for the signing process, 
+      and the validation process appropriate for the signature type performed.
       </span>
       Note that in general validation is not as simple as comparing results.
       In general the specific validation process for each signature 
-      type needs to be followed, and may require additional inputs,
+      type needs to be followed as specified for the given algorithm in
+      JWA [[RFC7518]] or its extension [[RFC8037]], and may require additional inputs,
       such as keys.
       </li>
       </ol>
@@ -1857,13 +1879,13 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       allowing signatures to be chained.
       Inserting the new <code>Signature</code> object at the end of any existing
       <code>signatures</code> array makes it easier to stably select existing signatures using
-      certain queries, e.g. JSON Pointers.
+      references such as JSON Pointers.
       </p>
       <p class="ednote" title="Relationship to Linked Data Signatures">
       A parallel effort is being made to define signatures for RDF datasets,
       called Linked Data Signatures. In the future we may extend this
       signature mechanism to support such signatures, once they are 
-      fully defined.  The current LCS proposal, however, would require the
+      fully defined.  The current LDS proposal, however, would require the
       conversion of the TD into a sorted set of RDF triples, and so would
       require RDF processing.  The current definition of TD Signatures
       requires only JSON processing, so we expect both to continue to be
