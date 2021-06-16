@@ -1189,7 +1189,11 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 <tr class="rfc2119-table-assertion" id="td-vocab-schemaDefinitions--Thing"><td><code>schemaDefinitions</code></td><td>Set of named data schemas.
                 To be used in a <code>schema</code>
                 name-value pair inside an 
-                <code>AdditionalExpectedResponse</code> object.</td><td>optional</td><td><a>Map</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><p><span class="rfc2119-assertion" id=
+                <code>AdditionalExpectedResponse</code> object.</td><td>optional</td><td><a>Map</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-signatures--Thing"><td><code>signatures</code></td><td>Provides enveloped signature which can
+                be used to validate the
+                integrity of a specified subset of the enclosing 
+                <a>Thing Description</a>.</td><td>optional</td><td><a href="#signature"><code>Signature</code></a> or <a>Array</a> of <a href="#signature"><code>Signature</code></a></td></tr></tbody></table><p><span class="rfc2119-assertion" id=
           "td-context-ns-thing-mandatory">The <code>@context</code>
           name-value pair <em class="rfc2119" title=
           "MUST">MUST</em> contain the anyURI
@@ -1642,17 +1646,279 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       <h2>Security Vocabulary Definitions</h2>
 
       <p>
-      This specification provides a selection of well-established security mechanisms
+      This section defines a <code>Signature</code> object and signing process that
+      can be used to preserve the integrity of all or part of a <a>Thing Description</a>.
+      </p><p>
+      This section also provides a selection of well-established security schemes
       that are directly built into protocols eligible as <a>Protocol Bindings</a> for W3C WoT
       or are widely in use with those protocols.
-      The current set of HTTP security schemes is partly based on 
+      The current set of security schemes is partly based on 
       <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#securitySchemeObject">OpenAPI 3.0.1</a> (see also [[?OPENAPI]]). 
-      However while the HTTP security schemes, <a>Vocabulary</a>, and syntax
+      However while the security schemes, <a>Vocabulary</a>, and syntax
       given in this specification share many similarities with OpenAPI, they are not compatible.
       </p>
 
       <!-- rendered from RDF definitions -->
-      <section><h3><code>SecurityScheme</code></h3><p><p>Metadata describing the configuration of a security
+      <section><h3><code>SignedInfo</code></h3><p>A collection of information to be
+          protected by a <code>Signature</code>, including a reference (which
+          may be one of several query types) to
+          a subset of the enclosing <a>Thing Description</a>, 
+          a digest (hash) of the reference result, and
+          an identification of the digest algorithms used.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-reference--SignedInfo"><td><code>reference</code></td><td>Pointer or query string identifying 
+                the subset of the Thing Description to sign.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-referenceType--SignedInfo"><td><code>referenceType</code></td><td>The type of reference used to define the subset 
+                of the <a>Thing Description</a> to sign.  Can be one of 
+                <code>jsonpointer</code>,
+                <code>jsonpath</code>, 
+                or
+                <code>xpath</code>.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-digest--SignedInfo"><td><code>digest</code></td><td>A digest value computed from the 
+                result of the specified reference.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-digestAlg--SignedInfo"><td><code>digestAlg</code></td><td>The algorithm used to compute the
+                digest value.  One of
+                <code>sha256</code>,
+                <code>sha384</code>,
+                or
+                <code>sha512</code>.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table></section>
+<section><h3><code>Signature</code></h3><p>A <code>Signature</code> includes an array of 
+          <code>SignedInfo</code> and 
+          an encrypted value which can be used to confirm that the 
+          content of this array and the information it references is identical to that which was present
+          when the <code>Signature</code> was created.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-signedInfo--Signature"><td><code>signedInfo</code></td><td>Information to be signed.</td><td>mandatory</td><td><a href="#signedinfo"><code>SignedInfo</code></a> or <a>Array</a> of <a href="#signedinfo"><code>SignedInfo</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-sig--Signature"><td><code>sig</code></td><td>JWS [[RFC7515]] signature value computed using the
+                JSON canonicalized serialization of
+                the <code>signedInfo</code> field as payload and header set using
+                corresponding fields from the <code>Signature</code> object.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-alg--Signature"><td><code>alg</code></td><td>The algorithm used to compute the
+                signature value. Can be any digital signature or MAC algorithm
+                specified in either [[RFC7518]] or
+                [[RFC8037]] corresponding to values of <code>alg</code> allowable
+                in JWS [[RFC7515]].  
+                These include
+                <code>HS256</code>,
+                <code>HS384</code>,
+                <code>HS512</code>,
+                <code>RS256</code>,
+                <code>RS384</code>,
+                <code>RS512</code>,
+                <code>ES256</code>,
+                <code>ES384</code>,
+                <code>ES512</code>,
+                <code>PS256</code>,
+                <code>PS384</code>,
+                or
+                <code>PS512</code>
+                from [[RFC7518]] and
+                <code>Ed25519</code>
+                or
+                <code>Ed448</code>
+                from [[RFC8037]].
+                Considered part of the JWS header used for computing the signature value.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-jku--Signature"><td><code>jku</code></td><td>A URI referring to a JWK Set [[RFC7517]].
+                Considered part of the JWS header used for computing the signature value.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-kid--Signature"><td><code>kid</code></td><td>An identifier specifying an element of a JWK Set [[RFC7517]].
+                Considered part of the JWS header used for computing the signature value.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table><p><code>Signature</code> objects 
+      are used to verify the integrity of
+      a specified subset of the information contained in a <a>Thing Description</a>.
+      Generally speaking, <code>Signature</code> objects
+      follow the structure of XML Signatures [[xmldsig-core1]] to enable flexible
+      extraction of the subset of information to be signed, that is, the payload.
+      However, signature algorithms are drawn from JSON Web Algorithms (JWA) [[RFC7518]] and extensions [[RFC8037]]
+      consistent with their use in JSON Web Signatures (JWS) [[RFC7515]].
+      The signature value itself is computed by constructing a JWS header from
+      the information contained in the <code>Signature</code> object and using it to sign
+      the specified payload.
+      </p><p>
+      <span class="rfc2119-assertion" id="td-signature-computation">
+      Each <code>Signature</code> object and the array containing all
+      signatures MUST be computed (and the array extended) as described below:
+      </span>
+      <ol>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--initial-signature-object">
+      As input, 
+      the signer MUST construct a template for a <code>Signature</code>
+      object, with all mandatory fields filled in except for <code>digest</code> fields
+      and <code>sig</code> values.  If a key needs to be specfied, 
+      then appropriate values for both
+      <code>jku</code> and <code>kid</code> fields should be given.
+      If values for these fields are not given, then the key will have to be known to the Consumer
+      by context.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--template">
+      The template <code>Signature</code> object
+      MUST then be inserted into the <a>Thing Description</a>
+      to be signed, at the end of the <code>signatures</code> array,
+      creating a new array if necessary.</span>
+      This allows <code>SignedInfo</code> sections of the template
+      to optionally refer to (and therefore protect, if necessary) elements
+      of the <code>Signature</code> object itself, such as the
+      definition of the signature algorithm.
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--canonicalization">
+      The <a>TD</a> serialization must be expressed as a <a>Canonical TD</a>.
+      The validation prior to generation of the Canonical TD
+      needs to make an allowance to allow the 
+      partial <code>Signature</code> object inserted
+      in the previous step, since it is missing some mandatory fields
+      (such as <code>digest</code>).  Omission of these mandatory fields should
+      only be allowed for the most recent <code>Signature</code> object inserted,
+      corresponding to the template.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--name-expansion">
+      References to named objects MUST be expanded. Specifically, whenever 
+      a <code>security</code> or <code>schema</code> refers to an object
+      defined in a <code>securityDefinition</code> or <code>schemaDefinition</code>,
+      the string (and its enclosing quotes) 
+      must be replaced with the object it refers to.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--prefix-expansion">
+      Prefixes MUST all be expanded into URLs wherever they are used. Note: the
+      <code>@context</code> object should be retained as is.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--ref-results">
+      All <code>reference</code> queries 
+      MUST be applied to the output of the previous step
+      to extract a result for each <code>SignedInfo</code> object.
+      </span>
+      <span class="rfc2119-assertion" id="td-signature-computation--ref-canonicalization">
+      Each <code>reference</code> 
+      result may be a JSON fragment or a JSON element,  
+      and MUST be
+      transformed into JSON Canonical Serialization [[RFC8785]] form.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--digest">
+      A <code>digest</code> value MUST be computed 
+      using the specified <code>digestAlg</code>
+      from the output of the previous step
+      for each <code>SignedInfo</code> object.  
+      These values are then inserted into the corresponding
+      <code>SignedInfo</code> objects.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--payload">
+      The array of <code>SignedInfo</code> objects MUST be serialized in JSON Canonical Serialization
+      [[RFC8785]] form.  
+      This string will be used as the JWS payload.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--header">
+      A JSON object MUST be created using the <code>alg</code> value as well as the
+      <code>jku</code> and <code>kid</code> values, if specified,
+      from the <code>Signature</code> object, using corresponding member names,
+      and then serialized in JSON Canonical Serialization [[RFC8785]] form.
+      This string will be used as the JWS header.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--sign">
+      Using the header and the payload computed in the previous steps, the signature value MUST 
+      then computed as specified for JSON Web Signatures [[RFC7515]].
+      the resulting string to compute a signature value.  This value is then inserted into the
+      <code>sig</code> field of the template <code>Signature</code> object, which is now complete,
+      with all mandatory elements specified.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-computation--insertion">
+      The completed <code>Signature</code> object MUST be inserted
+      into the <a>Thing Description</a>, replacing the already inserted
+      template object. 
+      </span>
+      </li>
+      </ol>
+      </p><p>
+      <span class="rfc2119-assertion" id="td-signature-validation">
+      To verify a signature, the following process MUST be followed:
+      </span>
+      <ol>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--extraction">
+      The identified <code>Signature</code> object and all <code>Signature</code>
+      objects following it in the array associated with the <code>signatures</code>
+      member MUST be removed from the TD.
+      </span>
+      If the resulting array is empty it should be removed.
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--template-recon">
+      A template <code>Signature</code> object MUST be reconstructed
+      by deleting the <code>digest</code> and <code>sig</code> fields
+      and reinserting it at the end of the <code>signatures</code> array,
+      (re)creating the <code>signatures</code> array if necessary.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--canonicalization">
+      The <a>TD</a> serialization MUST be expressed as a <a>Canonical TD</a>,
+      with the same validation exception for the most recent <code>Signature</code> 
+      object being incomplete noted above.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--name-expansion">
+      References to named objects MUST be replaced with their
+      referents as described for the signing process.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--prefix-expansion">
+      References to prefixes MUST be replaced with their
+      referents as described for the signing process.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--query">
+      All <code>reference</code> queries MUST be performed as described for the signing process.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--hash">
+      The <code>digest</code> computation MUST be performed as described for the signing process.
+      </span>
+      </li>
+      <li>
+      <span class="rfc2119-assertion" id="td-signature-validation--sign">
+      The <code>sig</code> computation MUST be performed as described for the signing process, 
+      and the validation process appropriate for the signature type performed as specified in 
+      JWS [[RFC7515]], JWA [[RFC7518]] and extensions [[RFC8037]].
+      </span>
+      Note that in general validation is not as simple as comparing signature values.
+      The specific validation process for each signature 
+      type needs to be followed as specified,
+      and may require additional inputs, such as keys.
+      </li>
+      </ol>
+      </p><p>
+      The <code>reference</code> values in <code>SignedInfo</code> objects
+      can include previous <code>Signature</code> objects, 
+      allowing signatures to be chained.
+      Inserting the new <code>Signature</code> object at the end of any existing
+      <code>signatures</code> array makes it easier to stably select existing signatures using
+      references such as JSON Pointers.
+      </p>
+      <p class="ednote" title="Relationship to Linked Data Signatures">
+      A parallel effort is being made to define signatures for RDF datasets,
+      called Linked Data Signatures. In the future we may extend this
+      signature mechanism to support such signatures, once they are 
+      fully defined.  The current LDS proposal, however, would require the
+      conversion of the TD into a sorted set of RDF triples, and so would
+      require RDF processing.  The current definition of TD Signatures
+      requires only JSON processing, so we expect both to continue to be
+      useful in different circumstances.</p></section>
+<section><h3><code>SecurityScheme</code></h3><p><p>Metadata describing the configuration of a security
           mechanism. <span class="rfc2119-assertion" id="td-security-scheme-name">The value assigned to the name
           <code>scheme</code> <em class="rfc2119" title="MUST">MUST</em> be defined within a 
           <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary</a>
@@ -1753,7 +2019,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 corresponding security configuration is for the
                 endpoint.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-scheme--SecurityScheme"><td><code>scheme</code></td><td>Identification of the security mechanism being
-                configured.</td><td>optional</td><td>any type (one of <code>nosec</code>, <code>combo</code>, <code>basic</code>, <code>digest</code>, <code>bearer</code>, <code>psk</code>, <code>oauth2</code>, or <code>apikey</code>)</td></tr></tbody></table><p>The class <code>SecurityScheme</code> has the following subclasses:</p><ul><li><a href="#nosecurityscheme"><code>NoSecurityScheme</code></a></li>
+                configured.</td><td>optional</td><td>any type (one of <code>nosec</code>, <code>combo</code>, <code>basic</code>, <code>DigestSecurityScheme</code>, <code>bearer</code>, <code>psk</code>, <code>oauth2</code>, or <code>apikey</code>)</td></tr></tbody></table><p>The class <code>SecurityScheme</code> has the following subclasses:</p><ul><li><a href="#nosecurityscheme"><code>NoSecurityScheme</code></a></li>
 <li><a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a></li>
 <li><a href="#basicsecurityscheme"><code>BasicSecurityScheme</code></a></li>
 <li><a href="#digestsecurityscheme"><code>DigestSecurityScheme</code></a></li>
@@ -1784,9 +2050,9 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           to basic authentication but with added features to avoid
           man-in-the-middle attacks.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-name--DigestSecurityScheme"><td><code>name</code></td><td>Name for query, header, cookie, or uri
                parameters.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-qop--DigestSecurityScheme"><td><code>qop</code></td><td>Quality of protection.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>auth</code>, or <code>auth-int</code>)</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-in--DigestSecurityScheme"><td><code>in</code></td><td>Specifies the location of security
-            authentication information.  </td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, <code>cookie</code>, or <code>uri</code>)</td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-qop--DigestSecurityScheme"><td><code>qop</code></td><td>Quality of protection.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>auth</code>, or <code>auth-int</code>)</td></tr></tbody></table></section>
+            authentication information.  </td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, <code>cookie</code>, or <code>uri</code>)</td></tr></tbody></table></section>
 <section><h3><code>APIKeySecurityScheme</code></h3><p>API key authentication security configuration
           identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a>
           <code>apikey</code> (i.e., <code>"scheme":
@@ -1821,7 +2087,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           extensions</span>.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-authorization--BearerSecurityScheme"><td><code>authorization</code></td><td>URI of the authorization server.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-name--BearerSecurityScheme"><td><code>name</code></td><td>Name for query, header, cookie, or uri
                parameters.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-alg--BearerSecurityScheme"><td><code>alg</code></td><td>Encoding, encryption, or digest algorithm.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (e.g., <code>MD5</code>, <code>ES256</code>, or <code>ES512-256</code>)</td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab---BearerSecurityScheme"><td><code></code></td><td>Encoding, encryption, or digest algorithm.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (e.g., <code>MD5</code>, <code>ES256</code>, or <code>ES512-256</code>)</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-format--BearerSecurityScheme"><td><code>format</code></td><td>Specifies format of security authentication
                  information.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (e.g., <code>jwt</code>, <code>cwt</code>, <code>jwe</code>, or <code>jws</code>)</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-in--BearerSecurityScheme"><td><code>in</code></td><td>Specifies the location of security
@@ -2047,8 +2313,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 </td>
                 <td>
                     0..1
-                </td>
-                <td>Points to a previous <a>Thing Description</a> or <a>Thing Model</a> version.</td>
+                </td> <td>Points to a previous <a>Thing Description</a> or <a>Thing Model</a> version.</td>
                 <td>
                     <a href="https://www.iana.org/assignments/link-relations">IANA Link Relation</a>
                 </td>
@@ -6517,8 +6782,8 @@ instance.
     </p>
     <pre class="advisement">
 {
-    "title": "WoT TD Schema - 16 February 2021",
-    "description": "JSON Schema for validating TD instances against the TD model. TD instances can be with or without terms that have default values",
+    "title": "WoT TD Schema - 02 June 2021",
+    "description": "JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values",
     "$schema ": "http://json-schema.org/draft-07/schema#",
     "definitions": {
         "anyUri": {
@@ -6544,7 +6809,8 @@ instance.
             }
         },
         "security": {
-            "oneOf": [{
+            "oneOf": [
+                {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -6556,7 +6822,8 @@ instance.
             ]
         },
         "scopes": {
-            "oneOf": [{
+            "oneOf": [
+                {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -6569,7 +6836,7 @@ instance.
         },
         "subprotocol": {
             "type": "string",
-            "enum": [
+            "examples": [
                 "longpoll",
                 "websub",
                 "sse"
@@ -6583,13 +6850,17 @@ instance.
             ]
         },
         "thing-context": {
-            "oneOf": [{
+            "oneOf": [
+                {
                     "type": "array",
-                    "items": [{
-                        "$ref": "#/definitions/thing-context-w3c-uri"
-                    }],
+                    "items": [
+                        {
+                            "$ref": "#/definitions/thing-context-w3c-uri"
+                        }
+                    ],
                     "additionalItems": {
-                        "anyOf": [{
+                        "anyOf": [
+                            {
                                 "$ref": "#/definitions/anyUri"
                             },
                             {
@@ -6604,15 +6875,20 @@ instance.
             ]
         },
         "type_declaration": {
-            "oneOf": [{
+            "oneOf": [
+                {
                     "type": "string",
-                    "not": {"const":"tm:ThingModel"}
+                    "not": {
+                        "const": "tm:ThingModel"
+                    }
                 },
                 {
                     "type": "array",
                     "items": {
                         "type": "string",
-                        "not": {"const":"tm:ThingModel"}
+                        "not": {
+                            "const": "tm:ThingModel"
+                        }
                     }
                 }
             ]
@@ -6659,10 +6935,10 @@ instance.
                     "type": "string"
                 },
                 "const": {},
-                "contentEncoding":{
+                "contentEncoding": {
                     "type": "string"
                 },
-                "contentMediaType":{
+                "contentMediaType": {
                     "type": "string"
                 },
                 "type": {
@@ -6678,7 +6954,8 @@ instance.
                     ]
                 },
                 "items": {
-                    "oneOf": [{
+                    "oneOf": [
+                        {
                             "$ref": "#/definitions/dataSchema"
                         },
                         {
@@ -6703,16 +6980,23 @@ instance.
                 "maximum": {
                     "type": "number"
                 },
-                "minLength":{
+                "minLength": {
                     "type": "integer",
                     "minimum": 0
                 },
-                "maxLength":{
+                "maxLength": {
                     "type": "integer",
                     "minimum": 0
                 },
-                "multipleOf":{
-                    "oneOf":[{"type": "integer"},{"type": "number"}]
+                "multipleOf": {
+                    "oneOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ]
                 },
                 "properties": {
                     "additionalProperties": {
@@ -6731,7 +7015,8 @@ instance.
             "type": "object",
             "properties": {
                 "op": {
-                    "oneOf": [{
+                    "oneOf": [
+                        {
                             "type": "string",
                             "enum": [
                                 "readproperty",
@@ -6804,7 +7089,8 @@ instance.
             "type": "object",
             "properties": {
                 "op": {
-                    "oneOf": [{
+                    "oneOf": [
+                        {
                             "type": "string",
                             "enum": [
                                 "invokeaction"
@@ -6871,7 +7157,8 @@ instance.
             "type": "object",
             "properties": {
                 "op": {
-                    "oneOf": [{
+                    "oneOf": [
+                        {
                             "type": "string",
                             "enum": [
                                 "subscribeevent",
@@ -6940,7 +7227,8 @@ instance.
             "type": "object",
             "properties": {
                 "op": {
-                    "oneOf": [{
+                    "oneOf": [
+                        {
                             "type": "string",
                             "enum": [
                                 "readallproperties",
@@ -7084,7 +7372,8 @@ instance.
                     ]
                 },
                 "items": {
-                    "oneOf": [{
+                    "oneOf": [
+                        {
                             "$ref": "#/definitions/dataSchema"
                         },
                         {
@@ -7109,16 +7398,23 @@ instance.
                 "maximum": {
                     "type": "number"
                 },
-                "minLength":{
+                "minLength": {
                     "type": "integer",
                     "minimum": 0
                 },
-                "maxLength":{
+                "maxLength": {
                     "type": "integer",
                     "minimum": 0
                 },
-                "multipleOf":{
-                    "oneOf":[{"type": "integer"},{"type": "number"}]
+                "multipleOf": {
+                    "oneOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ]
                 },
                 "properties": {
                     "additionalProperties": {
@@ -7302,12 +7598,16 @@ instance.
                             "type": "string",
                             "pattern": "[0-9]*x[0-9]+"
                         }
-                    }
+                    },
+                    "required": [
+                        "rel"
+                    ]
                 }
             ]
         },
         "securityScheme": {
-            "oneOf": [{
+            "oneOf": [
+                {
                     "type": "object",
                     "properties": {
                         "@type": {
@@ -7358,12 +7658,13 @@ instance.
                             "type": "array",
                             "minItems": 2,
                             "items": {
-                               "type": "string"
+                                "type": "string"
                             }
                         }
                     },
                     "required": [
-                        "scheme"
+                        "scheme",
+                        "oneOf"
                     ]
                 },
                 {
@@ -7391,12 +7692,13 @@ instance.
                             "type": "array",
                             "minItems": 2,
                             "items": {
-                               "type": "string"
+                                "type": "string"
                             }
                         }
                     },
                     "required": [
-                        "scheme"
+                        "scheme",
+                        "allOf"
                     ]
                 },
                 {
@@ -7627,7 +7929,8 @@ instance.
                             "$ref": "#/definitions/anyUri"
                         },
                         "scopes": {
-                            "oneOf": [{
+                            "oneOf": [
+                                {
                                     "type": "array",
                                     "items": {
                                         "type": "string"
@@ -7712,6 +8015,12 @@ instance.
                 ]
             }
         },
+        "signatures": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/signature_element"
+            }
+        },
         "forms": {
             "type": "array",
             "minItems": 1,
@@ -7748,7 +8057,8 @@ instance.
             "format": "date-time"
         },
         "security": {
-            "oneOf": [{
+            "oneOf": [
+                {
                     "type": "string"
                 },
                 {
@@ -7774,8 +8084,7 @@ instance.
         "@context"
     ],
     "additionalProperties": true
-}
-    </pre>
+}    </pre>
 
   </section>
 
