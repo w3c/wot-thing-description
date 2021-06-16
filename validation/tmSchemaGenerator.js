@@ -76,7 +76,7 @@ fs.writeFileSync("validation/tm-json-schema-validation.json", JSON.stringify(tmS
 **/
 function staticReplace(argObject){
 
-    argObject.title = "WoT Thing Model Schema - 16 February 2021"
+    argObject.title = "Thing Model"
     argObject.description = "JSON Schema for validating Thing Models. This is automatically generated from the WoT TD Schema."
     argObject.definitions.type_declaration = {
         "oneOf": [{

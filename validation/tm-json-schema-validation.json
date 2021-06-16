@@ -1,5 +1,6 @@
 {
-  "title": "WoT Thing Model Schema - 16 February 2021",
+  "title": "Thing Model",
+  "version": "1.1-04-June-2021",
   "description": "JSON Schema for validating Thing Models. This is automatically generated from the WoT TD Schema.",
   "$schema ": "http://json-schema.org/draft-07/schema#",
   "definitions": {
@@ -51,7 +52,12 @@
       ]
     },
     "subprotocol": {
-      "type": "string"
+      "type": "string",
+      "examples": [
+        "longpoll",
+        "websub",
+        "sse"
+      ]
     },
     "thing-context-w3c-uri": {
       "type": "string"
@@ -317,10 +323,7 @@
                 "type": "string"
               },
               "schema": {
-                "type": "object",
-                "additionalProperties": {
-                  "$ref": "#/definitions/dataSchema"
-                }
+                "type": "string"
               }
             }
           }
@@ -382,10 +385,7 @@
                 "type": "string"
               },
               "schema": {
-                "type": "object",
-                "additionalProperties": {
-                  "$ref": "#/definitions/dataSchema"
-                }
+                "type": "string"
               }
             }
           }
@@ -447,10 +447,7 @@
                 "type": "string"
               },
               "schema": {
-                "type": "object",
-                "additionalProperties": {
-                  "$ref": "#/definitions/dataSchema"
-                }
+                "type": "string"
               }
             }
           }
@@ -512,10 +509,7 @@
                 "type": "string"
               },
               "schema": {
-                "type": "object",
-                "additionalProperties": {
-                  "$ref": "#/definitions/dataSchema"
-                }
+                "type": "string"
               }
             }
           }
@@ -821,7 +815,7 @@
       },
       "additionalProperties": true
     },
-    "link_element": {
+    "base_link_element": {
       "type": "object",
       "properties": {
         "href": {
@@ -831,16 +825,55 @@
           "type": "string"
         },
         "rel": {
-          "type": "string",
-          "not": {
-            "const": "extends"
-          }
+          "type": "string"
         },
         "anchor": {
           "$ref": "#/definitions/anyUri"
         }
       },
       "additionalProperties": true
+    },
+    "link_element": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/base_link_element"
+        },
+        {
+          "not": {
+            "description": "A basic link element should not contain sizes",
+            "type": "object",
+            "properties": {
+              "sizes": {}
+            }
+          }
+        },
+        {
+          "not": {
+            "description": "A basic link element should not contain icon or tm:extends",
+            "properties": {
+              "rel": {}
+            }
+          }
+        }
+      ]
+    },
+    "icon_link_element": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/base_link_element"
+        },
+        {
+          "properties": {
+            "rel": {
+              "const": "icon"
+            },
+            "sizes": {
+              "type": "string",
+              "pattern": "[0-9]*x[0-9]+"
+            }
+          }
+        }
+      ]
     },
     "securityScheme": {
       "oneOf": [
@@ -1189,7 +1222,14 @@
     "links": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/link_element"
+        "oneOf": [
+          {
+            "$ref": "#/definitions/link_element"
+          },
+          {
+            "$ref": "#/definitions/icon_link_element"
+          }
+        ]
       }
     },
     "forms": {
@@ -1207,6 +1247,13 @@
       "minProperties": 1,
       "additionalProperties": {
         "$ref": "#/definitions/securityScheme"
+      }
+    },
+    "schemaDefinitions": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/definitions/dataSchema"
       }
     },
     "support": {
