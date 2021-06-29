@@ -1,6 +1,7 @@
 {
-    "title": "WoT TD Schema - 20 November 2020",
-    "description": "JSON Schema for validating TD instances against the TD model. TD instances can be with or without terms that have default values",
+    "title": "Thing Description",
+    "version": "1.1-04-June-2021",
+    "description": "JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values",
     "$schema ": "http://json-schema.org/draft-07/schema#",
     "definitions": {
         "anyUri": {
@@ -26,7 +27,8 @@
             }
         },
         "security": {
-            "oneOf": [{
+            "oneOf": [
+                {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -38,7 +40,8 @@
             ]
         },
         "scopes": {
-            "oneOf": [{
+            "oneOf": [
+                {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -51,7 +54,7 @@
         },
         "subprotocol": {
             "type": "string",
-            "enum": [
+            "examples": [
                 "longpoll",
                 "websub",
                 "sse"
@@ -65,13 +68,17 @@
             ]
         },
         "thing-context": {
-            "oneOf": [{
+            "oneOf": [
+                {
                     "type": "array",
-                    "items": [{
-                        "$ref": "#/definitions/thing-context-w3c-uri"
-                    }],
+                    "items": [
+                        {
+                            "$ref": "#/definitions/thing-context-w3c-uri"
+                        }
+                    ],
                     "additionalItems": {
-                        "anyOf": [{
+                        "anyOf": [
+                            {
                                 "$ref": "#/definitions/anyUri"
                             },
                             {
@@ -86,13 +93,20 @@
             ]
         },
         "type_declaration": {
-            "oneOf": [{
-                    "type": "string"
+            "oneOf": [
+                {
+                    "type": "string",
+                    "not": {
+                        "const": "tm:ThingModel"
+                    }
                 },
                 {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "not": {
+                            "const": "tm:ThingModel"
+                        }
                     }
                 }
             ]
@@ -139,10 +153,10 @@
                     "type": "string"
                 },
                 "const": {},
-                "contentEncoding":{
+                "contentEncoding": {
                     "type": "string"
                 },
-                "contentMediaType":{
+                "contentMediaType": {
                     "type": "string"
                 },
                 "type": {
@@ -158,7 +172,8 @@
                     ]
                 },
                 "items": {
-                    "oneOf": [{
+                    "oneOf": [
+                        {
                             "$ref": "#/definitions/dataSchema"
                         },
                         {
@@ -183,16 +198,23 @@
                 "maximum": {
                     "type": "number"
                 },
-                "minLength":{
+                "minLength": {
                     "type": "integer",
                     "minimum": 0
                 },
-                "maxLength":{
+                "maxLength": {
                     "type": "integer",
                     "minimum": 0
                 },
-                "multipleOf":{
-                    "oneOf":[{"type": "integer"},{"type": "number"}]
+                "multipleOf": {
+                    "oneOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ]
                 },
                 "properties": {
                     "additionalProperties": {
@@ -207,11 +229,29 @@
                 }
             }
         },
+        "additionalResponsesDefinition":{
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "contentType": {
+                        "type": "string"
+                    },
+                    "schema": {
+                        "type": "string"
+                    },
+                    "success":{
+                        "type":"boolean"
+                    }
+                }
+            }
+        },
         "form_element_property": {
             "type": "object",
             "properties": {
                 "op": {
-                    "oneOf": [{
+                    "oneOf": [
+                        {
                             "type": "string",
                             "enum": [
                                 "readproperty",
@@ -259,6 +299,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "additionalResponses": {
+                    "$ref":"#/definitions/additionalResponsesDefinition"
                 }
             },
             "required": [
@@ -270,7 +313,8 @@
             "type": "object",
             "properties": {
                 "op": {
-                    "oneOf": [{
+                    "oneOf": [
+                        {
                             "type": "string",
                             "enum": [
                                 "invokeaction"
@@ -312,6 +356,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "additionalResponses": {
+                    "$ref":"#/definitions/additionalResponsesDefinition"
                 }
             },
             "required": [
@@ -323,7 +370,8 @@
             "type": "object",
             "properties": {
                 "op": {
-                    "oneOf": [{
+                    "oneOf": [
+                        {
                             "type": "string",
                             "enum": [
                                 "subscribeevent",
@@ -367,6 +415,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "additionalResponses": {
+                    "$ref":"#/definitions/additionalResponsesDefinition"
                 }
             },
             "required": [
@@ -378,7 +429,8 @@
             "type": "object",
             "properties": {
                 "op": {
-                    "oneOf": [{
+                    "oneOf": [
+                        {
                             "type": "string",
                             "enum": [
                                 "readallproperties",
@@ -430,6 +482,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "additionalResponses": {
+                    "$ref":"#/definitions/additionalResponsesDefinition"
                 }
             },
             "required": [
@@ -508,7 +563,8 @@
                     ]
                 },
                 "items": {
-                    "oneOf": [{
+                    "oneOf": [
+                        {
                             "$ref": "#/definitions/dataSchema"
                         },
                         {
@@ -532,6 +588,24 @@
                 },
                 "maximum": {
                     "type": "number"
+                },
+                "minLength": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "maxLength": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "multipleOf": {
+                    "oneOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ]
                 },
                 "properties": {
                     "additionalProperties": {
@@ -645,7 +719,7 @@
             ],
             "additionalProperties": true
         },
-        "link_element": {
+        "base_link_element": {
             "type": "object",
             "properties": {
                 "href": {
@@ -666,8 +740,65 @@
             ],
             "additionalProperties": true
         },
+        "link_element": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/base_link_element"
+                },
+                {
+                    "not": {
+                        "description": "A basic link element should not contain sizes",
+                        "type": "object",
+                        "properties": {
+                            "sizes": {}
+                        },
+                        "required": [
+                            "sizes"
+                        ]
+                    }
+                },
+                {
+                    "not": {
+                        "description": "A basic link element should not contain icon or tm:extends",
+                        "properties": {
+                            "rel": {
+                                "enum": [
+                                    "icon",
+                                    "tm:extends"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "rel"
+                        ]
+                    }
+                }
+            ]
+        },
+        "icon_link_element": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/base_link_element"
+                },
+                {
+                    "properties": {
+                        "rel": {
+                            "const": "icon"
+                        },
+                        "sizes": {
+                            "type": "string",
+                            "pattern": "[0-9]*x[0-9]+"
+                        }
+                    },
+                    "required": [
+                        "rel"
+                    ]
+                }
+            ]
+        },
         "securityScheme": {
-            "oneOf": [{
+            "oneOf": [
+                {
                     "type": "object",
                     "properties": {
                         "@type": {
@@ -718,12 +849,13 @@
                             "type": "array",
                             "minItems": 2,
                             "items": {
-                               "type": "string"
+                                "type": "string"
                             }
                         }
                     },
                     "required": [
-                        "scheme"
+                        "scheme",
+                        "oneOf"
                     ]
                 },
                 {
@@ -751,12 +883,13 @@
                             "type": "array",
                             "minItems": 2,
                             "items": {
-                               "type": "string"
+                                "type": "string"
                             }
                         }
                     },
                     "required": [
-                        "scheme"
+                        "scheme",
+                        "allOf"
                     ]
                 },
                 {
@@ -987,7 +1120,8 @@
                             "$ref": "#/definitions/anyUri"
                         },
                         "scopes": {
-                            "oneOf": [{
+                            "oneOf": [
+                                {
                                     "type": "array",
                                     "items": {
                                         "type": "string"
@@ -1062,7 +1196,14 @@
         "links": {
             "type": "array",
             "items": {
-                "$ref": "#/definitions/link_element"
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/link_element"
+                    },
+                    {
+                        "$ref": "#/definitions/icon_link_element"
+                    }
+                ]
             }
         },
         "forms": {
@@ -1082,6 +1223,13 @@
                 "$ref": "#/definitions/securityScheme"
             }
         },
+        "schemaDefinitions": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+                "$ref": "#/definitions/dataSchema"
+            }
+        },
         "support": {
             "$ref": "#/definitions/anyUri"
         },
@@ -1094,7 +1242,8 @@
             "format": "date-time"
         },
         "security": {
-            "oneOf": [{
+            "oneOf": [
+                {
                     "type": "string"
                 },
                 {
