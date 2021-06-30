@@ -16,6 +16,7 @@ ctx.subscription['@context'] = jsonschema['@context'];
 ctx.cancellation['@context'] = jsonschema['@context'];
 
 ctx.security['@context'] = wotsec['@context'];
+ctx.securityDefinitions['@context'] = wotsec['@context'];
 
 ctx.forms['@context'] = hctl['@context'];
 ctx.links['@context'] = hctl['@context'];
