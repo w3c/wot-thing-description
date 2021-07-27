@@ -3067,8 +3067,96 @@ In summary, this requires the following:
     ...
 </pre>
 
+<p>
+    Security configuration in the TD is mandatory.
+    <span class="rfc2119-assertion" id="td-security-mandatory">
+    At least one security definition MUST be activated through the
+    <code>security</code> member at the Thing level (i.e., in the TD root object).
+    </span>
+    This configuration can be seen as the default security mechanism required to interact with the <a>Thing</a>.
+    <span class="rfc2119-assertion" id="td-security-overrides">
+    Security definitions MAY also be activated at the form level by including a
+    <code>security</code> member in form objects,
+    which overrides (i.e., completely replace) all definitions activated at the Thing level.
+    </span>
+    </p>
+  
+    <p>
+    The <code>nosec</code> security scheme is provided for the case that 
+    no security is needed.
+    The minimal security configuration for a <a>Thing</a> is activation
+    of the <code>nosec</code> security scheme 
+    at the Thing level, as shown in the following example:
+    </p>
+  
+  <pre class="example">
+  {
+      "@context": "http://www.w3.org/ns/td",
+      "id": "urn:dev:ops:32473-Thing-1234",
+      "title": "MyThing",
+      "description": "Human readable information.",
+      "support": "https://servient.example.com/contact",
+      "securityDefinitions": { "nosec_sc": { "scheme": "nosec" }},
+      "security": "nosec_sc",
+      "properties": {...},
+      "actions": {...},
+      "events": {...},
+      "links": [...]
+  }
+  </pre> 
+  
+    <p>
+    To give a more complex example, 
+    suppose we have a <a>Thing</a> where all <a>Interaction Affordances</a>
+    require basic authentication except for one, for which
+    no authentication is required.
+    For the <code>status</code> Property and the <code>toggle</code> Action,
+    <code>basic</code> authentication is required and defined at the Thing level.
+    For the <code>overheating</code> Event, however,
+    no authentication is required, and hence the security configuration is
+    overridden at the form level.
+    </p>
+  
+  <pre class="example">
+  {
+      ...
+      "securityDefinitions": {
+          "basic_sc": {"scheme": "basic"},
+          "nosec_sc": {"scheme": "nosec"}
+      },
+      "security": "basic_sc",
+      ...
+      "properties": {
+          "status": {
+              ...
+              "forms": [{
+                  "href": "https://mylamp.example.com/status"
+              }]
+          }
+      },
+      "actions": {
+          "toggle": {
+              ...
+              "forms": [{
+                  "href": "https://mylamp.example.com/toggle"
+              }]
+          }
+      },
+      "events": {
+          "overheating": {
+              ...
+              "forms": [{
+                  "href": "https://mylamp.example.com/oh",
+                  "security": "nosec_sc"
+              }]
+          }
+      }
+  }
+  </pre>
+
   <p>
-  Here is a more complex example: a TD snippet showing digest authentication
+  TDs can specify a combination of security schemes as well.
+  Below is a TD snippet showing digest authentication
   on a proxy combined with bearer token authentication on the <a>Thing</a>.
   In the <code>digest</code> scheme, the <a>Default Value</a> of <code>in</code>
   (i.e., <code>header</code>) is omitted, but still applies.
@@ -3125,93 +3213,6 @@ In summary, this requires the following:
     },
     "security": "combo_sc",
     ...
-</pre>
-
-  <p>
-  Security configuration in the TD is mandatory.
-  <span class="rfc2119-assertion" id="td-security-mandatory">
-  At least one security definition MUST be activated through the
-  <code>security</code> member at the Thing level (i.e., in the TD root object).
-  </span>
-  This configuration can be seen as the default security mechanism required to interact with the <a>Thing</a>.
-  <span class="rfc2119-assertion" id="td-security-overrides">
-  Security definitions MAY also be activated at the form level by including a
-  <code>security</code> member in form objects,
-  which overrides (i.e., completely replace) all definitions activated at the Thing level.
-  </span>
-  </p>
-
-  <p>
-  The <code>nosec</code> security scheme is provided for the case that 
-  no security is needed.
-  The minimal security configuration for a <a>Thing</a> is activation
-  of the <code>nosec</code> security scheme 
-  at the Thing level, as shown in the following example:
-  </p>
-
-<pre class="example">
-{
-    "@context": "http://www.w3.org/ns/td",
-    "id": "urn:dev:ops:32473-Thing-1234",
-    "title": "MyThing",
-    "description": "Human readable information.",
-    "support": "https://servient.example.com/contact",
-    "securityDefinitions": { "nosec_sc": { "scheme": "nosec" }},
-    "security": "nosec_sc",
-    "properties": {...},
-    "actions": {...},
-    "events": {...},
-    "links": [...]
-}
-</pre> 
-
-  <p>
-  To give a more complex example, 
-  suppose we have a <a>Thing</a> where all <a>Interaction Affordances</a>
-  require basic authentication except for one, for which
-  no authentication is required.
-  For the <code>status</code> Property and the <code>toggle</code> Action,
-  <code>basic</code> authentication is required and defined at the Thing level.
-  For the <code>overheating</code> Event, however,
-  no authentication is required, and hence the security configuration is
-  overridden at the form level.
-  </p>
-
-<pre class="example">
-{
-    ...
-    "securityDefinitions": {
-        "basic_sc": {"scheme": "basic"},
-        "nosec_sc": {"scheme": "nosec"}
-    },
-    "security": "basic_sc",
-    ...
-    "properties": {
-        "status": {
-            ...
-            "forms": [{
-                "href": "https://mylamp.example.com/status"
-            }]
-        }
-    },
-    "actions": {
-        "toggle": {
-            ...
-            "forms": [{
-                "href": "https://mylamp.example.com/toggle"
-            }]
-        }
-    },
-    "events": {
-        "overheating": {
-            ...
-            "forms": [{
-                "href": "https://mylamp.example.com/oh",
-                "security": "nosec_sc"
-            }]
-        }
-    }
-}
 </pre>
 
   <p>
