@@ -110,9 +110,11 @@ function removeRequired(argObject) {
     // remove required if it exists and is of array type.
     // check for array is needed since we also specify what a required is and that it is an object
     if (("required" in argObject) && (Array.isArray(argObject.required))){
-        // need to decide whether to delete or replace it with ""
-        // delete is "cleaner" but "" is more explicit
-        delete argObject.required;
+        if (!(argObject["required"] == "sizes" || argObject["required"] == "rel")) {
+            // need to decide whether to delete or replace it with ""
+            // delete is "cleaner" but "" is more explicit
+            delete argObject.required;
+        }
     }
 
     for (var key in argObject)
