@@ -319,6 +319,7 @@ function addTmTerms(argObject){
         setPath(argObject,element, curSchema);
     });
 
+    argObject.required = ["@context", "@type"]
 
     return argObject;
 }
