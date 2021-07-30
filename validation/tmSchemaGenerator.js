@@ -122,6 +122,9 @@ function removeRequired(argObject) {
     // remove required if it exists and is of array type.
     // check for array is needed since we also specify what a required is and that it is an object
     if (("required" in argObject) && (Array.isArray(argObject.required))){
+        // skip removal of required if the current object is a link_element subschema
+        // that requires a "sizes" or "rel" field. Otherwise it is not possible to use
+        // this two fields in link definitions
         if (!(argObject["required"] == "sizes" || argObject["required"] == "rel")) {
             // need to decide whether to delete or replace it with ""
             // delete is "cleaner" but "" is more explicit
