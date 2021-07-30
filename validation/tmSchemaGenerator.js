@@ -80,6 +80,18 @@ function staticReplace(argObject){
     argObject.description = "JSON Schema for validating Thing Models. This is automatically generated from the WoT TD Schema."
     argObject.definitions.type_declaration = {
         "oneOf": [{
+                "type": "string"
+            },
+            {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        ]
+    }
+    argObject.definitions.tm_type_declaration = {
+        "oneOf": [{
                 "type": "string",
                 "const":"tm:ThingModel"
             },
@@ -320,6 +332,7 @@ function addTmTerms(argObject){
     });
 
     argObject.required = ["@context", "@type"]
+    argObject.properties["@type"]["$ref"] = "#/definitions/tm_type_declaration"
 
     return argObject;
 }
