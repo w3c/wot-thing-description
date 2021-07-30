@@ -114,6 +114,9 @@ function removeRequired(argObject) {
             // need to decide whether to delete or replace it with ""
             // delete is "cleaner" but "" is more explicit
             delete argObject.required;
+        } else if ("description" in argObject && argObject.description.includes(" or tm:extends")) {
+            argObject.description = argObject.description.replace(" or tm:extends", "")
+            argObject.properties.rel.enum = argObject.properties.rel.enum.filter(item => item !== "tm:extends")
         }
     }
 
