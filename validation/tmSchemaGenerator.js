@@ -57,7 +57,7 @@ let tdSchema = JSON.parse(fs.readFileSync('validation/td-json-schema-validation.
 // do all the manipulation in order
 let tmSchema = staticReplace(tdSchema)
 tmSchema = removeRequired(tmSchema)
-tmSchema = removeEnum(tmSchema)
+// tmSchema = removeEnum(tmSchema)
 tmSchema = removeFormat(tmSchema)
 tmSchema = manualConvertString(tmSchema)
 tmSchema = addTmTerms(tmSchema)
