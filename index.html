@@ -3081,8 +3081,96 @@ In summary, this requires the following:
     ...
 </pre>
 
+<p>
+    Security configuration in the TD is mandatory.
+    <span class="rfc2119-assertion" id="td-security-mandatory">
+    At least one security definition MUST be activated through the
+    <code>security</code> member at the Thing level (i.e., in the TD root object).
+    </span>
+    This configuration can be seen as the default security mechanism required to interact with the <a>Thing</a>.
+    <span class="rfc2119-assertion" id="td-security-overrides">
+    Security definitions MAY also be activated at the form level by including a
+    <code>security</code> member in form objects,
+    which overrides (i.e., completely replace) all definitions activated at the Thing level.
+    </span>
+    </p>
+  
+    <p>
+    The <code>nosec</code> security scheme is provided for the case that 
+    no security is needed.
+    The minimal security configuration for a <a>Thing</a> is activation
+    of the <code>nosec</code> security scheme 
+    at the Thing level, as shown in the following example:
+    </p>
+  
+  <pre class="example">
+  {
+      "@context": "http://www.w3.org/ns/td",
+      "id": "urn:dev:ops:32473-Thing-1234",
+      "title": "MyThing",
+      "description": "Human readable information.",
+      "support": "https://servient.example.com/contact",
+      "securityDefinitions": { "nosec_sc": { "scheme": "nosec" }},
+      "security": "nosec_sc",
+      "properties": {...},
+      "actions": {...},
+      "events": {...},
+      "links": [...]
+  }
+  </pre> 
+  
+    <p>
+    To give a more complex example, 
+    suppose we have a <a>Thing</a> where all <a>Interaction Affordances</a>
+    require basic authentication except for one, for which
+    no authentication is required.
+    For the <code>status</code> Property and the <code>toggle</code> Action,
+    <code>basic</code> authentication is required and defined at the Thing level.
+    For the <code>overheating</code> Event, however,
+    no authentication is required, and hence the security configuration is
+    overridden at the form level.
+    </p>
+  
+  <pre class="example">
+  {
+      ...
+      "securityDefinitions": {
+          "basic_sc": {"scheme": "basic"},
+          "nosec_sc": {"scheme": "nosec"}
+      },
+      "security": "basic_sc",
+      ...
+      "properties": {
+          "status": {
+              ...
+              "forms": [{
+                  "href": "https://mylamp.example.com/status"
+              }]
+          }
+      },
+      "actions": {
+          "toggle": {
+              ...
+              "forms": [{
+                  "href": "https://mylamp.example.com/toggle"
+              }]
+          }
+      },
+      "events": {
+          "overheating": {
+              ...
+              "forms": [{
+                  "href": "https://mylamp.example.com/oh",
+                  "security": "nosec_sc"
+              }]
+          }
+      }
+  }
+  </pre>
+
   <p>
-  Here is a more complex example: a TD snippet showing digest authentication
+  TDs can specify a combination of security schemes as well.
+  Below is a TD snippet showing digest authentication
   on a proxy combined with bearer token authentication on the <a>Thing</a>.
   In the <code>digest</code> scheme, the <a>Default Value</a> of <code>in</code>
   (i.e., <code>header</code>) is omitted, but still applies.
@@ -3139,93 +3227,6 @@ In summary, this requires the following:
     },
     "security": "combo_sc",
     ...
-</pre>
-
-  <p>
-  Security configuration in the TD is mandatory.
-  <span class="rfc2119-assertion" id="td-security-mandatory">
-  At least one security definition MUST be activated through the
-  <code>security</code> member at the Thing level (i.e., in the TD root object).
-  </span>
-  This configuration can be seen as the default security mechanism required to interact with the <a>Thing</a>.
-  <span class="rfc2119-assertion" id="td-security-overrides">
-  Security definitions MAY also be activated at the form level by including a
-  <code>security</code> member in form objects,
-  which overrides (i.e., completely replace) all definitions activated at the Thing level.
-  </span>
-  </p>
-
-  <p>
-  The <code>nosec</code> security scheme is provided for the case that 
-  no security is needed.
-  The minimal security configuration for a <a>Thing</a> is activation
-  of the <code>nosec</code> security scheme 
-  at the Thing level, as shown in the following example:
-  </p>
-
-<pre class="example">
-{
-    "@context": "http://www.w3.org/ns/td",
-    "id": "urn:dev:ops:32473-Thing-1234",
-    "title": "MyThing",
-    "description": "Human readable information.",
-    "support": "https://servient.example.com/contact",
-    "securityDefinitions": { "nosec_sc": { "scheme": "nosec" }},
-    "security": "nosec_sc",
-    "properties": {...},
-    "actions": {...},
-    "events": {...},
-    "links": [...]
-}
-</pre> 
-
-  <p>
-  To give a more complex example, 
-  suppose we have a <a>Thing</a> where all <a>Interaction Affordances</a>
-  require basic authentication except for one, for which
-  no authentication is required.
-  For the <code>status</code> Property and the <code>toggle</code> Action,
-  <code>basic</code> authentication is required and defined at the Thing level.
-  For the <code>overheating</code> Event, however,
-  no authentication is required, and hence the security configuration is
-  overridden at the form level.
-  </p>
-
-<pre class="example">
-{
-    ...
-    "securityDefinitions": {
-        "basic_sc": {"scheme": "basic"},
-        "nosec_sc": {"scheme": "nosec"}
-    },
-    "security": "basic_sc",
-    ...
-    "properties": {
-        "status": {
-            ...
-            "forms": [{
-                "href": "https://mylamp.example.com/status"
-            }]
-        }
-    },
-    "actions": {
-        "toggle": {
-            ...
-            "forms": [{
-                "href": "https://mylamp.example.com/toggle"
-            }]
-        }
-    },
-    "events": {
-        "overheating": {
-            ...
-            "forms": [{
-                "href": "https://mylamp.example.com/oh",
-                "security": "nosec_sc"
-            }]
-        }
-    }
-}
 </pre>
 
   <p>
@@ -3356,9 +3357,40 @@ In summary, this requires the following:
 }
 </pre>
 
+<p>A Thing can require an onboarding process that results in the Consumer requiring an API key
+    to interact with the Thing. This API key can be included in the request to the Thing in different ways 
+    as the API key scheme specifies. Below is an example of how it can be used as a URI template where the API key 
+    should be replaced in the URI by the Consumer when sending an HTTPS request.
+</p>
+
+
+<pre class="example">
+    {
+        ...
+        "securityDefinitions": {
+            "apikey_key": {
+                "scheme": "apikey",
+                "in": "uri",
+                "name": "adminKey"
+            }
+        },
+        "security": "apikey_key",
+        "properties": {
+            "status": {
+                ...
+                "forms": [{
+                    "href": "https://example.com/{adminKey}/status",
+                    ...
+                }]
+            }
+        },
+        ...
+    }
+    </pre>
+
   <p>To give another example of the use of
-  the <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> and the
-  use of URI templates to embed security keys in URLs, suppose there is a security scheme
+  the <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> in addition to the
+  use of URI templates example shown above, suppose there is a security scheme
   where a client ID and a "secret" key provided by a cloud service provider must both be
   embedded in the URL.  Technically, only the key is actually secret and must be handled
   out-of-band, and the client ID, which is not secret, could be embedded in the TD.
@@ -3410,7 +3442,7 @@ although the names cannot conflict with those declared in security schemes.
 Using a specific prefix as in the above example
 for URI variables declared in security schemes can make it easier to avoid name conflicts.
 </p>
-<p>Security parameters might also be included along with the payload in some
+<p> <b>API Key in Body:</b> Security parameters might also be included along with the payload in some
 systems.  For example, suppose a system requires every payload to be a JSON
 object including a member named <code>auth</code> whose value is an object
 containing a member called <code>key</code> containing an access key.
