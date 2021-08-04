@@ -44,8 +44,8 @@ const manual_csvfile = path.join(testing_dir, "manual.csv");         // assertio
 const suppressed_csvfile = path.join(testing_dir, "suppressed.csv"); // assertions to be suppressed from IR
 //-----------------------------------------------------------------------
 
-// Outputs
-const report_htmlfile = path.join(report_dir, "report.html");
+// Outputs (note report includes version since 1.1)
+const report_htmlfile = path.join(report_dir, "report11.html");
 const results_csvfile = path.join(results_dir,"template.csv");
 
 // Base URL to use for internal links (necessary since we use <base> in
