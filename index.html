@@ -10,7 +10,7 @@
             , crEnd: "2019-06-13"
             , previousMaturity: "FPWD"
             , previousPublishDate: "2020-11-24"
-            , implementationReportURI:      "https://w3c.github.io/wot-thing-description/testing/report.html"
+            , implementationReportURI:      "https://w3c.github.io/wot-thing-description/testing/report11.html"
             //, processVersion: 2020
             //, wgPatentPolicy: "PP2017" // deprecated, "group" option sets this automatically
             , shortName:      "wot-thing-description11"
@@ -1415,7 +1415,11 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           <span class="rfc2119-assertion" id="td-op-for-action">When a Form instance is within an
           <code>ActionAffordance</code> instance, the value
           assigned to op <em class="rfc2119" title="MUST">MUST</em>
-          be <code>invokeaction</code>.</span></p></section>
+          either be <code>invokeaction</code>, <code>queryaction</code>, 
+          <code>cancelaction</code> or an 
+          <a href="#dfn-array" class="internalDFN" data-link-type="dfn">Array</a>
+          containing a combination of these terms.
+          </span></p></section>
 <section><h3><code>EventAffordance</code></h3><p>An Interaction Affordance that describes an event
           source, which asynchronously pushes event data to
           <a href="#dfn-consumer" class="internalDFN" data-link-type="dfn">Consumers</a> (e.g., overheating
@@ -2136,7 +2140,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 the correct form for the operation required. op can
                 be assigned one or more interaction verb(s) each
                 representing a semantic intention of an
-                operation.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, <code>writemultipleproperties</code>, <code>observeallproperties</code>, <code>unobserveallproperties</code>, <code>subscribeallevents</code>, or <code>unsubscribeallevents</code>)</td></tr></tbody></table><p>Possible values for the <code>contentCoding</code>
+                operation.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>queryaction</code>, <code>cancelaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, <code>writemultipleproperties</code>, <code>observeallproperties</code>, <code>unobserveallproperties</code>, <code>subscribeallevents</code>, or <code>unsubscribeallevents</code>)</td></tr></tbody></table><p>Possible values for the <code>contentCoding</code>
           property can be found, e.g., in the <a href=
           "https://www.iana.org/assignments/http-parameters/http-parameters.xhtml#content-coding">
           IANA HTTP content coding registry</a>.</p>
@@ -3081,8 +3085,96 @@ In summary, this requires the following:
     ...
 </pre>
 
+<p>
+    Security configuration in the TD is mandatory.
+    <span class="rfc2119-assertion" id="td-security-mandatory">
+    At least one security definition MUST be activated through the
+    <code>security</code> member at the Thing level (i.e., in the TD root object).
+    </span>
+    This configuration can be seen as the default security mechanism required to interact with the <a>Thing</a>.
+    <span class="rfc2119-assertion" id="td-security-overrides">
+    Security definitions MAY also be activated at the form level by including a
+    <code>security</code> member in form objects,
+    which overrides (i.e., completely replace) all definitions activated at the Thing level.
+    </span>
+    </p>
+  
+    <p>
+    The <code>nosec</code> security scheme is provided for the case that 
+    no security is needed.
+    The minimal security configuration for a <a>Thing</a> is activation
+    of the <code>nosec</code> security scheme 
+    at the Thing level, as shown in the following example:
+    </p>
+  
+  <pre class="example">
+  {
+      "@context": "http://www.w3.org/ns/td",
+      "id": "urn:dev:ops:32473-Thing-1234",
+      "title": "MyThing",
+      "description": "Human readable information.",
+      "support": "https://servient.example.com/contact",
+      "securityDefinitions": { "nosec_sc": { "scheme": "nosec" }},
+      "security": "nosec_sc",
+      "properties": {...},
+      "actions": {...},
+      "events": {...},
+      "links": [...]
+  }
+  </pre> 
+  
+    <p>
+    To give a more complex example, 
+    suppose we have a <a>Thing</a> where all <a>Interaction Affordances</a>
+    require basic authentication except for one, for which
+    no authentication is required.
+    For the <code>status</code> Property and the <code>toggle</code> Action,
+    <code>basic</code> authentication is required and defined at the Thing level.
+    For the <code>overheating</code> Event, however,
+    no authentication is required, and hence the security configuration is
+    overridden at the form level.
+    </p>
+  
+  <pre class="example">
+  {
+      ...
+      "securityDefinitions": {
+          "basic_sc": {"scheme": "basic"},
+          "nosec_sc": {"scheme": "nosec"}
+      },
+      "security": "basic_sc",
+      ...
+      "properties": {
+          "status": {
+              ...
+              "forms": [{
+                  "href": "https://mylamp.example.com/status"
+              }]
+          }
+      },
+      "actions": {
+          "toggle": {
+              ...
+              "forms": [{
+                  "href": "https://mylamp.example.com/toggle"
+              }]
+          }
+      },
+      "events": {
+          "overheating": {
+              ...
+              "forms": [{
+                  "href": "https://mylamp.example.com/oh",
+                  "security": "nosec_sc"
+              }]
+          }
+      }
+  }
+  </pre>
+
   <p>
-  Here is a more complex example: a TD snippet showing digest authentication
+  TDs can specify a combination of security schemes as well.
+  Below is a TD snippet showing digest authentication
   on a proxy combined with bearer token authentication on the <a>Thing</a>.
   In the <code>digest</code> scheme, the <a>Default Value</a> of <code>in</code>
   (i.e., <code>header</code>) is omitted, but still applies.
@@ -3139,93 +3231,6 @@ In summary, this requires the following:
     },
     "security": "combo_sc",
     ...
-</pre>
-
-  <p>
-  Security configuration in the TD is mandatory.
-  <span class="rfc2119-assertion" id="td-security-mandatory">
-  At least one security definition MUST be activated through the
-  <code>security</code> member at the Thing level (i.e., in the TD root object).
-  </span>
-  This configuration can be seen as the default security mechanism required to interact with the <a>Thing</a>.
-  <span class="rfc2119-assertion" id="td-security-overrides">
-  Security definitions MAY also be activated at the form level by including a
-  <code>security</code> member in form objects,
-  which overrides (i.e., completely replace) all definitions activated at the Thing level.
-  </span>
-  </p>
-
-  <p>
-  The <code>nosec</code> security scheme is provided for the case that 
-  no security is needed.
-  The minimal security configuration for a <a>Thing</a> is activation
-  of the <code>nosec</code> security scheme 
-  at the Thing level, as shown in the following example:
-  </p>
-
-<pre class="example">
-{
-    "@context": "http://www.w3.org/ns/td",
-    "id": "urn:dev:ops:32473-Thing-1234",
-    "title": "MyThing",
-    "description": "Human readable information.",
-    "support": "https://servient.example.com/contact",
-    "securityDefinitions": { "nosec_sc": { "scheme": "nosec" }},
-    "security": "nosec_sc",
-    "properties": {...},
-    "actions": {...},
-    "events": {...},
-    "links": [...]
-}
-</pre> 
-
-  <p>
-  To give a more complex example, 
-  suppose we have a <a>Thing</a> where all <a>Interaction Affordances</a>
-  require basic authentication except for one, for which
-  no authentication is required.
-  For the <code>status</code> Property and the <code>toggle</code> Action,
-  <code>basic</code> authentication is required and defined at the Thing level.
-  For the <code>overheating</code> Event, however,
-  no authentication is required, and hence the security configuration is
-  overridden at the form level.
-  </p>
-
-<pre class="example">
-{
-    ...
-    "securityDefinitions": {
-        "basic_sc": {"scheme": "basic"},
-        "nosec_sc": {"scheme": "nosec"}
-    },
-    "security": "basic_sc",
-    ...
-    "properties": {
-        "status": {
-            ...
-            "forms": [{
-                "href": "https://mylamp.example.com/status"
-            }]
-        }
-    },
-    "actions": {
-        "toggle": {
-            ...
-            "forms": [{
-                "href": "https://mylamp.example.com/toggle"
-            }]
-        }
-    },
-    "events": {
-        "overheating": {
-            ...
-            "forms": [{
-                "href": "https://mylamp.example.com/oh",
-                "security": "nosec_sc"
-            }]
-        }
-    }
-}
 </pre>
 
   <p>
@@ -3356,9 +3361,40 @@ In summary, this requires the following:
 }
 </pre>
 
+<p>A Thing can require an onboarding process that results in the Consumer requiring an API key
+    to interact with the Thing. This API key can be included in the request to the Thing in different ways 
+    as the API key scheme specifies. Below is an example of how it can be used as a URI template where the API key 
+    should be replaced in the URI by the Consumer when sending an HTTPS request.
+</p>
+
+
+<pre class="example">
+    {
+        ...
+        "securityDefinitions": {
+            "apikey_key": {
+                "scheme": "apikey",
+                "in": "uri",
+                "name": "adminKey"
+            }
+        },
+        "security": "apikey_key",
+        "properties": {
+            "status": {
+                ...
+                "forms": [{
+                    "href": "https://example.com/{adminKey}/status",
+                    ...
+                }]
+            }
+        },
+        ...
+    }
+    </pre>
+
   <p>To give another example of the use of
-  the <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> and the
-  use of URI templates to embed security keys in URLs, suppose there is a security scheme
+  the <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> in addition to the
+  use of URI templates example shown above, suppose there is a security scheme
   where a client ID and a "secret" key provided by a cloud service provider must both be
   embedded in the URL.  Technically, only the key is actually secret and must be handled
   out-of-band, and the client ID, which is not secret, could be embedded in the TD.
@@ -3410,7 +3446,7 @@ although the names cannot conflict with those declared in security schemes.
 Using a specific prefix as in the above example
 for URI variables declared in security schemes can make it easier to avoid name conflicts.
 </p>
-<p>Security parameters might also be included along with the payload in some
+<p> <b>API Key in Body:</b> Security parameters might also be included along with the payload in some
 systems.  For example, suppose a system requires every payload to be a JSON
 object including a member named <code>auth</code> whose value is an object
 containing a member called <code>key</code> containing an access key.
@@ -4368,8 +4404,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   representing the UTC time zone instead 
   of an offset.</span>
   </li>
-<<<<<<< HEAD
-=======
+
   <li><span class="rfc2119-assertion" id="canonical-datetime-fracsec">
   In the <a>Canonical TD</a>, 
   values that are of type <code>dateTime</code>
@@ -4382,7 +4417,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   values that are of type <code>dateTime</code>
   MUST NOT use '24' in the hours field.</span>
   </li>
->>>>>>> upstream/main
+
   <li><span class="rfc2119-assertion" id="canonical-defaults">
   In the <a>Canonical TD</a>,
   all required elements MUST be given explicitly, even if they have defaults
@@ -6744,14 +6779,7 @@ instance.
                     "minimum": 0
                 },
                 "multipleOf": {
-                    "oneOf": [
-                        {
-                            "type": "integer"
-                        },
-                        {
-                            "type": "number"
-                        }
-                    ]
+                    "$ref": "#/definitions/multipleOfDefinition"
                 },
                 "properties": {
                     "additionalProperties": {
@@ -6782,6 +6810,18 @@ instance.
                     }
                 }
             }
+        },
+        "multipleOfDefinition": {
+            "anyOf": [
+                {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                },
+                {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                }
+            ]
         },
         "form_element_property": {
             "type": "object",
@@ -6854,7 +6894,9 @@ instance.
                         {
                             "type": "string",
                             "enum": [
-                                "invokeaction"
+                                "invokeaction",
+                                "queryaction",
+                                "cancelaction"
                             ]
                         },
                         {
@@ -6862,7 +6904,9 @@ instance.
                             "items": {
                                 "type": "string",
                                 "enum": [
-                                    "invokeaction"
+                                    "invokeaction",
+                                    "queryaction",
+                                    "cancelaction"
                                 ]
                             }
                         }
@@ -7139,14 +7183,7 @@ instance.
                     "minimum": 0
                 },
                 "multipleOf": {
-                    "oneOf": [
-                        {
-                            "type": "integer"
-                        },
-                        {
-                            "type": "number"
-                        }
-                    ]
+                    "$ref": "#/definitions/multipleOfDefinition"
                 },
                 "properties": {
                     "additionalProperties": {
@@ -7934,7 +7971,10 @@ instance.
       <!-- 5.3.1.2 -->
       <li>In section <a href="#interactionaffordance"></a>, the description for <code>uriVariables</code> was clarified.</li>
       <!-- 5.3.1.3 -->
-      <li>In section <a href="#propertyaffordance"></a>, the description for <code>observable</code> was clarified.</li>      <!-- 5.3.1.6 -->
+      <li>In section <a href="#propertyaffordance"></a>, the description for <code>observable</code> was clarified.</li>
+      <!-- 5.3.1.4 -->
+      <li>In section <a href="#actionaffordance"></a>, the allowed values of the <code>op</code> member of a <code>Form</code> were expanded to include <code>queryaction</code> and <code>cancelaction</code>.</li>
+      <!-- 5.3.1.6 -->
       <li>In section <a href="#versioninfo"></a>, a new term <code>model</code> was added.</li>
       <!-- 5.3.2.1 -->
       <li>In section <a href="#dataschema"></a>:
@@ -7973,7 +8013,7 @@ instance.
           <li>In section <a href="#form"></a>:
             <ul>
               <li>A new term <code>additionalResponses</code> was added. It can be used to define error responses.</li>
-              <li><code>observeallproperties</code>, <code>unobserveallproperties</code>, <code>subscribeallevents</code> and <code>unsubscribeallevents</code> were added to the definition of <code>op</code>.</li>
+              <li><code>queryaction</code>, <code>cancelaction</code>, <code>observeallproperties</code>, <code>unobserveallproperties</code>, <code>subscribeallevents</code> and <code>unsubscribeallevents</code> were added to the definition of <code>op</code>.</li>
               <li>Type definitions for terms <code>contentType</code>, <code>contentCoding</code>, <code>security</code>, <code>op</code> were changed.</li> 
               <li>A paragraph was added to describe how a Consumer can behave given multiple form choices.</li>
             </ul>
