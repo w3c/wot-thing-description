@@ -4994,48 +4994,429 @@ instance.
         <h3>Composition</h3>
 <p>
     In some applications, it is beneficial to reuse existing <a>Thing Model</a> definitions and compose them to a new IoT system. 
-    An example can be that a Smart Ventilator <a>Thing Model</a> consist of two <a>Thing Model</a> definitions such as 
+    An example can be that a new Smart Ventilator should be designed which consist of two sub/child <a>Thing Model</a> definitions such as 
     a Ventilation <a>Thing Model</a> that provides <code>on/off</code> and <code>adjustRpm</code> capabilities, and an LED <a>Thing Model</a> that 
     provides <code>dimmable</code> and <code>RGB</code> capabilities. 
 </p>
 
-<pre class="example" title="Thing Model with the compose feature.">
-    {
-        "@context": "http://www.w3.org/ns/td",
-        "@type": "tm:ThingModel",
-        "title": "Smart Ventilator Thing Model",
-        "version" : { "model" : "1.0.0" },
-        "links": [
-          {
-            "rel": "tm:submodel",
-            "href": "./Ventilation.tm.jsonld",
-            "type": "application/tm+json",
-            "instanceName": "ventilation"
-          },
-          {
-            "rel": "tm:submodel",
-            "href": "./LED.tm.jsonld",
-            "type": "application/tm+json",
-            "instanceName": "led"
-          }
-        ],
-        "properties" : {
-            "status" : {"type": "string", "enum": ["On", "Off", "Error"]}
-        }
-      }
-    </pre>
+    <aside class="example ds-selector-tabs" ><div class="marker">
+        <span class="example-title">Top level/parent Smart Ventilator Thing Model </span>
+         </div>
+           <div class="selectors">
+             <button class="selected exampleTab1 SmartVentilator" onclick="openTab('exampleTab1', 'SmartVentilator')">Smart Ventilator TM</button>
+             <button class="exampleTab1 Ventilation"         onclick="openTab('exampleTab1', 'Ventilation')">Ventilation TM</button>
+             <button class="exampleTab1 LED"    onclick="openTab('exampleTab1', 'LED')">LED TM</button>
+           </div>
+           <pre class="SmartVentilator exampleTab1 selected ">
+            {
+                "@context": "http://www.w3.org/ns/td",
+                "@type": "tm:ThingModel",
+                "title": "Smart Ventilator Thing Model",
+                "version" : { "model" : "1.0.0" },
+                "links": [
+                  {
+                    "rel": "tm:submodel",
+                    "href": "./Ventilation.tm.jsonld",
+                    "type": "application/tm+json",
+                    "instanceName": "ventilation"
+                  },
+                  {
+                    "rel": "tm:submodel",
+                    "href": "./LED.tm.jsonld",
+                    "type": "application/tm+json",
+                    "instanceName": "led"
+                  }
+                ],
+                "properties" : {
+                    "status" : {"type": "string", "enum": ["On", "Off", "Error"]}
+                }
+              }
+           </pre>
+           <pre class="Ventilation exampleTab1">
+            {
+                "@context": "http://www.w3.org/ns/td",
+                "@type": "tm:ThingModel",
+                "title": "Ventilator Thing Model",
+                "version": {
+                    "model": "1.0.0"
+                },
+                "properties": {
+                    "switch": {
+                        "type": "boolean",
+                        "description": "True=On; False=Off"
+                    },
+                    "adjustRpm": {
+                        "type": "number",
+                        "minimum": 200,
+                        "maximum": 1200
+                    }
+                }
+            }
+           </pre>
+           <pre class="LED exampleTab1">
+            {
+                "@context": "http://www.w3.org/ns/td",
+                "@type": "tm:ThingModel",
+                "title": "LED Thing Model",
+                "version": {
+                    "model": "1.0.0"
+                },
+                "properties": {
+                    "R": {
+                        "type": "number",
+                        "description": "Red color"
+                    },
+                    "G": {
+                        "type": "number",
+                        "description": "Green color"
+                    },
+                    "B": {
+                        "type": "number",
+                        "description": "Blue color"
+                    }
+                },
+                "actions": {
+                    "fadeIn": {
+                        "title": "fadeIn",
+                        "input": {
+                            "type": "number",
+                            "description": "fadeIn in ms"
+                        }
+                    },
+                    "fadeOut": {
+                        "title": "fadeIn",
+                        "input": {
+                            "type": "number",
+                            "description": "fadeOut in ms"
+                        }
+                    }
+                }
+            }
+           </pre>
+         </aside>
+
 
     <p>
         Such composition can be introduced by the usage of the <code>links</code> container: 
         <span class="rfc2119-assertion" id="tm-compose-submodel">
-            A <a>Thing Model</a> MUST use at least one <code>links</code> entry with <code>"rel":"tm:submodel"</code> 
-            that targets to a (sub-) <a>Thing Model</a> that is be composed.
+            A parent <a>Thing Model</a> MUST use at least one <code>links</code> entry with <code>"rel":"tm:submodel"</code> 
+            that targets to a (sub-) or child <a>Thing Model</a> that is be composed.
         </span>
         <span class="rfc2119-assertion" id="tm-compose-instanceName">
             Optional an <code>instanceName</code> can be provided to associate an individual name to the composed (sub-) <a>Thing Model</a>.
         </span> 
         This is useful when multiple same <a>Thing Model</a> definitions are composed and needs to be distinguised. 
     </p>
+
+
+    <p>
+        Different strategies can be followed to generate <a>Thing Descriptions</a>. The default recommendation is to generate from each
+         parent and sub/child <a>Thing Model</a> a corresponding <a>Thing Descriptions</a> (also see <a href="#thing-model-td-generation"></a>). 
+       The composition relation can be reflected by the <code>collection</code> and <code>item</code> relation types in the links container of the 
+       <a>Thing Descriptions</a>. An example based on Smart Ventilation is given here:   
+    </p>
+
+
+    <aside class="example ds-selector-tabs" ><div class="marker">
+        <span class="example-title">Thing Descriptions of the Smart Ventilator</span>
+         </div>
+           <div class="selectors">
+             <button class="selected exampleTab1 SmartVentilator" onclick="openTab('exampleTab1', 'SmartVentilator')">Top level Smart Ventilator TD</button>
+             <button class="exampleTab1 Ventilation"         onclick="openTab('exampleTab1', 'Ventilation')">Ventilation TD</button>
+             <button class="exampleTab1 LED"    onclick="openTab('exampleTab1', 'LED')">LED TD</button>
+           </div>
+           <pre class="SmartVentilator exampleTab1 selected ">
+            {
+                "@context": "http://www.w3.org/ns/td",
+                "title": "Smart Ventilator",
+                "securityDefinitions": {
+                    "basic_sc": {
+                        "scheme": "basic",
+                        "in": "header"
+                    }
+                },
+                "security": "basic_sc",
+                "links": [
+                    {
+                        "rel": "item",
+                        "href": "./Ventilation.td.jsonld",
+                        "type": "application/td+json"
+                    },
+                    {
+                        "rel": "item",
+                        "href": "./LED.td.jsonld",
+                        "type": "application/td+json"
+                    },
+                    {
+                        "rel": "type",
+                        "href": "./SmartVentilator.tm.jsonld",
+                        "type": "application/tm+json"
+                    }
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "On",
+                            "Off",
+                            "Error"
+                        ],
+                        "forms": [
+                            {
+                                "href": "http://127.0.13.232:4563/status"
+                            }
+                        ]
+                    }
+                }
+            }
+           </pre>
+           <pre class="Ventilation exampleTab1">
+            {
+                "@context": "http://www.w3.org/ns/td",
+                "title": "Ventilator",
+                "securityDefinitions": {
+                    "basic_sc": {
+                        "scheme": "basic",
+                        "in": "header"
+                    }
+                },
+                "security": "basic_sc",
+                "links": [
+                    {
+                        "rel": "collection",
+                        "href": "./SmartVentilation.td.jsonld",
+                        "type": "application/td+json"
+                    },
+                    {
+                        "rel": "type",
+                        "href": "./Ventilation.tm.jsonld",
+                        "type": "application/tm+json"
+                    }
+                ],
+                "security": "basic_sc",
+                "properties": {
+                    "switch": {
+                        "type": "boolean",
+                        "description": "True=On; False=Off",
+                        "forms": [
+                            {
+                                "href": "http://127.0.13.212:4563/switch"
+                            }
+                        ]
+                    },
+                    "adjustRpm": {
+                        "type": "number",
+                        "minimum": 200,
+                        "maximum": 1200,
+                        "forms": [
+                            {
+                                "href": "http://127.0.13.212:4563/adjustRpm"
+                            }
+                        ]
+                    }
+                }
+            }
+           </pre>
+           <pre class="LED exampleTab1">
+            {
+                "@context": "http://www.w3.org/ns/td",
+                "title": "LED Thing Model",
+                "securityDefinitions": {
+                    "basic_sc": {
+                        "scheme": "basic",
+                        "in": "header"
+                    }
+                },
+                "security": "basic_sc",
+                "links": [
+                    {
+                        "rel": "collection",
+                        "href": "./SmartVentilation.td.jsonld",
+                        "type": "application/td+json"
+                    },
+                    {
+                        "rel": "type",
+                        "href": "./LED.tm.jsonld",
+                        "type": "application/tm+json"
+                    }
+                ],
+                "properties": {
+                    "R": {
+                        "type": "number",
+                        "description": "Red color",
+                        "forms": [
+                            {
+                                "href": "http://127.0.13.211:4563/R"
+                            }
+                        ]
+                    },
+                    "G": {
+                        "type": "number",
+                        "description": "Green color",
+                        "forms": [
+                            {
+                                "href": "http://127.0.13.211:4563/G"
+                            }
+                        ]
+                    },
+                    "B": {
+                        "type": "number",
+                        "description": "Blue color",
+                        "forms": [
+                            {
+                                "href": "http://127.0.13.211:4563/B"
+                            }
+                        ]
+                    }
+                },
+                "actions": {
+                    "fadeIn": {
+                        "title": "fadeIn",
+                        "input": {
+                            "type": "number",
+                            "description": "fadeIn in ms"
+                        },
+                        "forms": [
+                            {
+                                "href": "http://127.0.13.211:4563/fadeIn"
+                            }
+                        ]
+                    },
+                    "fadeOut": {
+                        "title": "fadeOut",
+                        "input": {
+                            "type": "number",
+                            "description": "fadeOut in ms"
+                        },
+                        "forms": [
+                            {
+                                "href": "http://127.0.13.211:4563/fadeOut"
+                            }
+                        ]
+                    }
+                }
+            }
+           </pre>
+         </aside>
+
+
+
+    <p>
+        A single TD can be also generated which contains the interaction definitions of the top level/parent
+        <a>Thing Model</a> and all interaction definitions of all sub/child <a>Thing Models</a>. 
+        <span class="rfc2119-assertion" id="tm-compose-name-collision">
+           To avoid name collisions of the sub/child interaction names it is recommended to rename the JSON name to the <code>instanceName</code> followed with <code>'_'</code> and the interaction name of the sub/child <a>Thing Model</a>.
+        </span> 
+        The following example shows a generated (self-contained) <a>Thing Description</a> of the Smart Ventilator Thing Model.
+    </p>
+
+    <pre class="example" title="Self-contained TD of the Smart Ventilator TM">
+        {
+            "@context": "http://www.w3.org/ns/td",
+            "title": "Smart Ventilator",
+            "securityDefinitions": {
+                "basic_sc": {
+                    "scheme": "basic",
+                    "in": "header"
+                }
+            },
+            "security": "basic_sc",
+            "links": [
+                {
+                    "rel": "type",
+                    "href": "./SmartVentilator.tm.jsonld",
+                    "type": "application/tm+json"
+                }
+            ],
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "On",
+                        "Off",
+                        "Error"
+                    ],
+                    "forms": [
+                        {
+                            "href": "http://127.0.13.232:4563/status"
+                        }
+                    ]
+                },
+                "ventilation_switch": {
+                    "type": "boolean",
+                    "description": "True=On; False=Off",
+                    "forms": [
+                        {
+                            "href": "http://127.0.13.212:4563/switch"
+                        }
+                    ]
+                },
+                "ventilation_adjustRpm": {
+                    "type": "number",
+                    "minimum": 200,
+                    "maximum": 1200,
+                    "forms": [
+                        {
+                            "href": "http://127.0.13.212:4563/adjustRpm"
+                        }
+                    ]
+                },
+                "led_R": {
+                    "type": "number",
+                    "description": "Red color",
+                    "forms": [
+                        {
+                            "href": "http://127.0.13.211:4563/R"
+                        }
+                    ]
+                },
+                "led_G": {
+                    "type": "number",
+                    "description": "Green color",
+                    "forms": [
+                        {
+                            "href": "http://127.0.13.211:4563/G"
+                        }
+                    ]
+                },
+                "led_B": {
+                    "type": "number",
+                    "description": "Blue color",
+                    "forms": [
+                        {
+                            "href": "http://127.0.13.211:4563/B"
+                        }
+                    ]
+                }
+            },
+            "actions": {
+                "led_fadeIn": {
+                    "title": "fadeIn",
+                    "input": {
+                        "type": "number",
+                        "description": "fadeIn in ms"
+                    },
+                    "forms": [
+                        {
+                            "href": "http://127.0.13.211:4563/fadeIn"
+                        }
+                    ]
+                },
+                "led_fadeOut": {
+                    "title": "fadeOut",
+                    "input": {
+                        "type": "number",
+                        "description": "fadeOut in ms"
+                    },
+                    "forms": [
+                        {
+                            "href": "http://127.0.13.211:4563/fadeOut"
+                        }
+                    ]
+                }
+            }
+        }
+        </pre>
 
     </section>
 
