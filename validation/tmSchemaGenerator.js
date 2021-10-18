@@ -50,14 +50,24 @@ const setPath = (object, path, value) => path
 .split('.')
 .reduce((o,p,i) => o[p] = path.split('.').length === ++i ? value : o[p] || {}, object)
 
-
+const placeholderPattern = "{{2}[0-Za-z]+\}{2}";
 // take the TD Schema
 let tdSchema = JSON.parse(fs.readFileSync('validation/td-json-schema-validation.json'));
 
 // do all the manipulation in order
 let tmSchema = staticReplace(tdSchema)
 tmSchema = removeRequired(tmSchema)
-// tmSchema = removeEnum(tmSchema)
+tmSchema = replaceEnum(tmSchema)
+
+// after replace enum, wot context uri needs to be updated
+tmSchema.definitions["thing-context-w3c-uri"] = {
+    "type": "string",
+    "enum": [
+      "https://www.w3.org/2019/wot/td/v1",
+      "http://www.w3.org/ns/td"
+    ]
+  };
+
 tmSchema = removeFormat(tmSchema)
 tmSchema = manualConvertString(tmSchema)
 tmSchema = addTmTerms(tmSchema)
@@ -148,8 +158,8 @@ function removeRequired(argObject) {
 }
 
 /** 
- * if there is a enum, remove that
- * once that is done, find a sub item that is of object type, call recursively
+ * if there is a enum, replace that with an oneOf of the same enum and a pattern for placeholder
+ * once that is done, remove find a sub item that is of object type, call recursively
  * if there is no sub item with object, return the current scoped object
  * This is done to allow putting placeholders for a string that would be limited with
  * a list of allowed values in an enum
@@ -157,24 +167,37 @@ function removeRequired(argObject) {
  * @return {object}
 **/
 
-function removeEnum(argObject) {
-
-    // remove enum if it exists and is of array type.
+function replaceEnum(argObject) {
+    
+    // this is created to have a custom array of the keys so that we don't call the function
+    // an infinite amount of times. Otherwise we would call replaceEnum on "oneOf"
+    var argObjectKeys = Object.keys(argObject);
+    // replace enum if it exists and is of array type.
     // check for array is needed since we also specify what a enum is and that it is an object
     if (("enum" in argObject) && (Array.isArray(argObject.enum))){
-        // need to decide whether to delete or replace it with ""
-        // delete is "cleaner" but "" is more explicit
+        // first the found enum is deleted
+        // 
+        var newEnum = argObject.enum;
         delete argObject.enum;
+        // the following will not work if somehow there is an enum and oneOf at the same time
+        // in the TD Schema. It will replace the oneOf with this 
+        argObject.oneOf = [
+            {enum:newEnum},
+            {
+                "type":"string",
+                "pattern":placeholderPattern
+            }
+        ]
+
     }
 
-    for (var key in argObject)
-    {
+    argObjectKeys.forEach(key => {
         let curValue = argObject[key];
         // removal is done only in objects, other types are not JSON Schema points anyways
         if (typeof(curValue)=="object"){
-            argObject[key] = removeEnum(curValue)
+            argObject[key] = replaceEnum(curValue)
         }
-    } 
+    });
 
     return argObject;
 }
