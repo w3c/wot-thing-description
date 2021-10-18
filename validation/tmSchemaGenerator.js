@@ -35,7 +35,8 @@ const fs = require('fs');
  * @return {object}
 **/
 const resolvePath = (object, path, defaultValue) => path
-   .split('.')
+   .split(/[\.\[\]\'\"]/)
+   .filter(p => p)
    .reduce((o, p) => o ? o[p] : defaultValue, object)
 
 /** 
@@ -50,6 +51,7 @@ const setPath = (object, path, value) => path
 .split('.')
 .reduce((o,p,i) => o[p] = path.split('.').length === ++i ? value : o[p] || {}, object)
 
+// regex/pattern to be used for strings when we want to enforce the {{PLACEHOLDER}} pattern
 const placeholderPattern = "{{2}[0-Za-z]+\}{2}";
 // take the TD Schema
 let tdSchema = JSON.parse(fs.readFileSync('validation/td-json-schema-validation.json'));
@@ -235,7 +237,7 @@ function removeFormat(argObject) {
 
 /** 
  * This function changes the terms that have values of number, integer or boolean to anyOf with string and that term.
- * Until convertString function works, this is its more manual version
+ * Until a more recursive function works, this is its more manual version
  * such types are found in: definitions/dataSchema minimum, maximum, minItems, maxItems, minLength, maxLength, multipleOf, 
  * writeOnly, readOnly and the exact same in definitions/property_element but there is also observable here
  * safe and idempotent in definitions/action_element
@@ -245,13 +247,13 @@ function removeFormat(argObject) {
 function manualConvertString(argObject){
     // the exact paths of the above mentioned locations of types
     let paths = [
+        "definitions.multipleOfDefinition",
         "definitions.dataSchema.properties.minimum",
         "definitions.dataSchema.properties.maximum",
         "definitions.dataSchema.properties.minItems",
         "definitions.dataSchema.properties.maxItems",
         "definitions.dataSchema.properties.minLength",
         "definitions.dataSchema.properties.maxLength",
-        "definitions.dataSchema.properties.multipleOf",
         "definitions.dataSchema.properties.writeOnly",
         "definitions.dataSchema.properties.readOnly",
         "definitions.property_element.properties.minimum",
@@ -260,7 +262,6 @@ function manualConvertString(argObject){
         "definitions.property_element.properties.maxItems",
         "definitions.property_element.properties.minLength",
         "definitions.property_element.properties.maxLength",
-        "definitions.property_element.properties.multipleOf",
         "definitions.property_element.properties.writeOnly",
         "definitions.property_element.properties.readOnly",
         "definitions.property_element.properties.observable",
@@ -270,7 +271,11 @@ function manualConvertString(argObject){
     
     //iterate over this array and replace for each
     paths.forEach(element => {
-        let curSchema = resolvePath(argObject,element,"hey");
+        let curSchema = resolvePath(argObject,element,"NotFound");
+        if (curSchema == undefined || curSchema == "NotFound") {
+            console.log("The element " + element + " could not be found in the paths array");
+            process.exit(1)
+        }
         let newSchema = changeToAnyOf(curSchema);
         setPath(argObject,element, newSchema);
     });
@@ -286,13 +291,12 @@ function manualConvertString(argObject){
 **/
 function changeToAnyOf(argObject){
     if ("type" in argObject ){
-        let curType = argObject.type;
-        delete argObject.type;
-
-        argObject.anyOf = [{
-            type: curType
-        },{
-            type: "string"
+        let curSchema = argObject;
+        argObject = {};
+        argObject.anyOf = [
+            curSchema,{
+            type: "string",
+            "pattern":placeholderPattern
         }]
         return argObject;
     } else {
