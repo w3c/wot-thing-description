@@ -5695,7 +5695,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <h3>Extension and Import</h3>
 
     <p>
-        A <a>Thing model</a> can extend an existing <a>Thing model</a> by using the <code>tm:extends</code> mechanism announced in the <code>links</code> definition: 
+        A <a>Thing Model</a> can extend an existing <a>Thing Model</a> by using the <code>tm:extends</code> mechanism announced in the <code>links</code> definition: 
      <span class="rfc2119-assertion" id="tm-extend">
         A <a>Thing Model</a> MUST use at least one <code>links</code> entry with <code>"rel":"tm:extends"</code> 
         that targets to a <a>Thing Model</a> that is be extended.
@@ -5753,6 +5753,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
              }],
             "properties" : {
                 "dim" : {
+                    "title": "Dimming level"
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 100
@@ -5765,17 +5766,20 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     </p>
 
     <p>
-    The <code>tm:extends</code> feature only allows to inherit all definitions of one TM. In many use cases, however,
-     it is desired to import sub-definition of one or more TMs. For doing this, the <code>tm:ref</code> term is introduced
-     with a JSON Pointer-based value [[rfc6901]] that allows to copy a definition within an existing TM into a new created 
-     local context definition.  
+    The <code>tm:extends</code> feature only allows to inherit all definitions of one <a>Thing Model</a>. In many use cases, however,
+     it is desired only to import pieces of definitions of one or more existing <a>Thing Models</a>. 
+     For doing this, the <code>tm:ref</code> term is introduced that provides the location of an exisiting (sub-)definition that should be reused.
      <span class="rfc2119-assertion" id="tm-tmRef">
-        The value of <code>tm:ref</code> term MUST be a valid JSON Pointer that identifies to a pre-existing definition based on
-        <a>Thing Model</a> specifications. 
+     The <code>tm:ref</code> value MUST follow the pattern
+     <ul>
+        <li>file location as URI [[RFC3986]](Section 4.1)), followed by</li>
+        <li><code>#</code> character, and followed by</li>
+        <li>JSON Pointer [[RFC6901]] definition.</li>
+     </ul>
     </span>
     <span class="rfc2119-assertion" id="tm-tmRef">
         Every time <code>tm:ref</code> is used, the referenced pre-definition and its dependencies 
-        (e.g., by context extension) MUST be assumed at this point.
+        (e.g., by context extension) MUST be assumed at the new defined definition.
     </span>
     </p>
 
@@ -5797,13 +5801,23 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         }
     </pre>
 
+
+
     <p>
       At the place the "tm:ref" is defined, additional name-value pairs can be added. 
       It is also allowed to override name-value pairs from the referenced definition.  
       <span class="rfc2119-assertion" id="tm-tmRef-overwrite">
         If it is intended to override an existing JSON name-value pair definition from <code>tm:ref</code>, the same JSON name MUST be used
-        at the same level of the <code>tm:ref</code> declearation that provides a new value.  
+        at the same level of the <code>tm:ref</code> declearation that provides a new value. This process MUST follow the 
+        JSON Merge Patch algorithm as defined in [RFC7396] where the content of the referenced definition is patched with the new provided JSON name-value 
+        pair.
        </span>
+    </p>
+    <p>
+       It is noted that the values can also be based on a JSON <code>object</code> or <code>array</code>, or simply be a <code>null</code> value. <code>null</code> would result 
+       to a removal of existing JSON name-value pair in the target.
+    </p>
+    <p>
        <span class="rfc2119-assertion" id="tm-tmRef-overwrite-semantic-meaning">
         Similar to <code>tm:extends</code> and to keep the semantic meaning, definitions SHOULD NOT be overwritten in such a way that possible 
         instance values are no longer valid compared to the origin referenced definition.
@@ -5811,8 +5825,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     </p>
 
     <p>
-        The following example shows a new TM definition that overwrite and extend an existing definition from
-         <a href="#td-model-example-smart-lamp-control"></a>.
+        The following example shows a new TM definition that overwrite (<code>maximum</code>), enhanced (<code>unit</code>), and removes (<code>title</code>) existing definitions from
+         <a href="#td-model-example-smart-lamp-control"></a>. 
     </p>
 
     <pre class="example" title="Smart Lamp Control extend and overwrite existing definitions" id="td-model-example-tmRef">
@@ -5823,12 +5837,17 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             "properties" : {
                 "dimming" : {
                     "tm:ref" :"http://example.com/SmartLampControlwithDimming.tm.jsonld#/properties/dim",
+                    "title": null,
                     "maximum": 80,
                     "unit" : "%"
                 }
            }
         }
     </pre>
+
+    <p>
+        Based on the JSON Merge Patch algorithm the <code>{"title": null,"maximum": 80,"unit" : "%"}</code> would act as a patch for the referenced origin content <code>{"title": "Dimming level",  "type": "integer", "minimum": 0, "maximum": 100}</code>.
+    </p>
  
     <p>
         The <code>tm:extends</code> and the import mechanism based on <code>tm:ref</code> can be also used at the same time in 
@@ -5865,7 +5884,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     Three <a>Thing Models</a> using the <code>tm:ref</code> or <code>tm:extends</code> feature to reuse TM definitions of the Smart Lamp Control <a>Thing Model</a>.
     The first <a>Thing Model</a> imports and overwrite the <code>maximum</code> value to <code>120</code> within the <code>dimmer</code> property. However, this results 
     in possible instance values (at runtime) that may not be in the range of the original <code>dim</code> definition between <code>0</code> and <code>100</code> of the dim definition of the Smart Lamp Control 
-    Thing model. Thus, such kind of <a>Thing Model</a> definition is not allowed.  
+    Thing Model. Thus, such kind of <a>Thing Model</a> definition is not allowed.  
      
      The second model overwrites the property <code>type</code> value by <code>number</code>. Again, this will potential result to numeric <code>dim</code> values that are not
      accepted by the definition of the origin <code>dim</code> type definition (integer) of the Smart Lamp Control <a>Thing Model</a>.  
@@ -6498,8 +6517,8 @@ instance.
     </p>
   
 
-      <p>Thing description instances that follow a Thing model can carry the information which type 
-          of Thing model is derived. In this context, the linking concept can be used with <code>"rel" : "type"</code> (also see
+      <p>Thing description instances that follow a Thing Model can carry the information which type 
+          of Thing Model is derived. In this context, the linking concept can be used with <code>"rel" : "type"</code> (also see
           Section <a href="#link"></a>), as shown in the following example: 
       </p>
 
