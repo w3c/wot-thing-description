@@ -52,7 +52,10 @@ const setPath = (object, path, value) => path
 .reduce((o,p,i) => o[p] = path.split('.').length === ++i ? value : o[p] || {}, object)
 
 // regex/pattern to be used for strings when we want to enforce the {{PLACEHOLDER}} pattern
-const placeholderPattern = "{{2}[0-Za-z]+\}{2}";
+// ascii matching trick from https://stackoverflow.com/a/14608823/3806426
+// tests available for now at https://regex101.com/r/dIHC4y/1
+const placeholderPattern = "{{2}[ -~]+}{2}";
+
 // take the TD Schema
 let tdSchema = JSON.parse(fs.readFileSync('validation/td-json-schema-validation.json'));
 
@@ -73,8 +76,7 @@ tmSchema.definitions["thing-context-w3c-uri"] = {
 tmSchema = removeFormat(tmSchema)
 tmSchema = manualConvertString(tmSchema)
 tmSchema = addTmTerms(tmSchema)
-
-// console.log(tmSchema)
+tmSchema = replaceSecurityOneOf(tmSchema)
 
 // write a new file for the schema. Overwrites the existing one
 // 2 spaces for easier reading
@@ -177,8 +179,8 @@ function replaceEnum(argObject) {
     // replace enum if it exists and is of array type.
     // check for array is needed since we also specify what a enum is and that it is an object
     if (("enum" in argObject) && (Array.isArray(argObject.enum))){
-        // first the found enum is deleted
-        // 
+        // first the found enum is saved
+        // then it is deleted to be put in an oneOf
         var newEnum = argObject.enum;
         delete argObject.enum;
         // the following will not work if somehow there is an enum and oneOf at the same time
@@ -190,7 +192,6 @@ function replaceEnum(argObject) {
                 "pattern":placeholderPattern
             }
         ]
-
     }
 
     argObjectKeys.forEach(key => {
@@ -198,6 +199,13 @@ function replaceEnum(argObject) {
         // removal is done only in objects, other types are not JSON Schema points anyways
         if (typeof(curValue)=="object"){
             argObject[key] = replaceEnum(curValue)
+        } else if(typeof(curValue)=="array") {
+            curValue.forEach((item,x) => {
+                if (typeof(item)=="object"){
+
+                    item = replaceEnum(item)
+                }
+            });
         }
     });
 
@@ -364,5 +372,18 @@ function addTmTerms(argObject){
     argObject.required = ["@context", "@type"]
     argObject.properties["@type"]["$ref"] = "#/definitions/tm_type_declaration"
 
+    return argObject;
+}
+
+/** 
+ * This very simple function changes the oneOf constraint of security definitions to
+ * anyOf since a placeholder used at scheme makes a TM validate all security schemes
+ * @param {object} argObject
+ * @return {object}
+**/
+function replaceSecurityOneOf(argObject){
+    
+    argObject.definitions.securityScheme.anyOf = argObject.definitions.securityScheme.oneOf;
+    delete argObject.definitions.securityScheme.oneOf;
     return argObject;
 }
