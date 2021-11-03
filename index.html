@@ -3361,6 +3361,75 @@ In summary, this requires the following:
     ...
 }
 </pre>
+<p>
+    <a href="#oauth2securityscheme">OAuth2SecurityScheme</a> can specify different <code>flow</code>s, the next two examples report
+    the typical configuration of the <code>client</code> and the <code>device</code> flows. Typically, 
+    the <code>client</code> flow is used for machine to machine communication, consequently the example 
+    shows a fictional Split Air Conditioner that can be controller by his companion thermostat using the 
+    pre-shared client id and client secret. On the other hand, the second example describe a <a>Thing Description</a>
+    of a device that offers the <code>device</code> flow for other Things that do not have a rich user 
+    interface. From the <a>Thing Description</a> prospective <code>device</code> flow is similar to <code>code</code>
+    but complaint clients will act differently following OAuth 2.0 specification. 
+</p>
+<pre class="example">
+{
+   ...
+   "title": "Split Air Conditioner"
+   "securityDefinitions":{
+      "oauth2_sc":{
+         "scheme":"oauth2",
+         "flow":"client",
+         "token":"https://auth0tenat/token",
+      }
+   },
+   "security":[
+      "oauth2_sc"
+   ],
+   "actions":{
+      "activate":{
+         "description":"Start cooling the room",
+         "forms": [ ... ]
+      }
+   }
+}
+</pre>
+
+<pre class="example">
+{
+    ...
+    "securityDefinitions": {
+        "oauth2_sc": {
+            "scheme": "oauth2",
+            ...
+            "flow": "device",
+            "authorization": "https://device.com/authorization/",
+            "token": "https://device.com/token",
+            "scopes": ["limited", "special"]
+        }
+    },
+    "security": "oauth2_sc",
+    ...
+    "properties": {
+        "status": {
+            ...
+            "forms": [{
+                "href": "https://scopes.example.com/status",
+                "scopes": ["limited"]
+            }]
+        }
+    },
+    "actions": {
+        "configure": {
+            ...
+            "forms": [{
+                "href": "https://scopes.example.com/configure",
+                "scopes": ["special"]
+            }]
+        }
+    },
+    ...
+}
+</pre>
 
 <p>A Thing can require an onboarding process that results in the Consumer requiring an API key
     to interact with the Thing. This API key can be included in the request to the Thing in different ways 
