@@ -1,6 +1,6 @@
 {
   "title": "Thing Model",
-  "version": "1.1-04-June-2021",
+  "version": "1.1-13-October-2021",
   "description": "JSON Schema for validating Thing Models. This is automatically generated from the WoT TD Schema.",
   "$schema ": "http://json-schema.org/draft-07/schema#",
   "definitions": {
@@ -107,12 +107,46 @@
     "dataSchema-type": {
       "oneOf": [
         {
-          "type": "string"
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "boolean",
+                "integer",
+                "number",
+                "string",
+                "object",
+                "array",
+                "null"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "{{2}[ -~]+}{2}"
+            }
+          ]
         },
         {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "oneOf": [
+              {
+                "enum": [
+                  "boolean",
+                  "integer",
+                  "number",
+                  "string",
+                  "object",
+                  "array",
+                  "null"
+                ]
+              },
+              {
+                "type": "string",
+                "pattern": "{{2}[ -~]+}{2}"
+              }
+            ]
           }
         }
       ]
@@ -318,6 +352,14 @@
         }
       ]
     },
+    "expectedResponse": {
+      "type": "object",
+      "properties": {
+        "contentType": {
+          "type": "string"
+        }
+      }
+    },
     "form_element_property": {
       "type": "object",
       "properties": {
@@ -381,12 +423,7 @@
           "$ref": "#/definitions/scopes"
         },
         "response": {
-          "type": "object",
-          "properties": {
-            "contentType": {
-              "type": "string"
-            }
-          }
+          "$ref": "#/definitions/expectedResponse"
         },
         "additionalResponses": {
           "$ref": "#/definitions/additionalResponsesDefinition"
@@ -407,7 +444,9 @@
               "oneOf": [
                 {
                   "enum": [
-                    "invokeaction"
+                    "invokeaction",
+                    "queryaction",
+                    "cancelaction"
                   ]
                 },
                 {
@@ -423,7 +462,9 @@
                 "oneOf": [
                   {
                     "enum": [
-                      "invokeaction"
+                      "invokeaction",
+                      "queryaction",
+                      "cancelaction"
                     ]
                   },
                   {
@@ -454,12 +495,7 @@
           "$ref": "#/definitions/scopes"
         },
         "response": {
-          "type": "object",
-          "properties": {
-            "contentType": {
-              "type": "string"
-            }
-          }
+          "$ref": "#/definitions/expectedResponse"
         },
         "additionalResponses": {
           "$ref": "#/definitions/additionalResponsesDefinition"
@@ -529,12 +565,7 @@
           "$ref": "#/definitions/scopes"
         },
         "response": {
-          "type": "object",
-          "properties": {
-            "contentType": {
-              "type": "string"
-            }
-          }
+          "$ref": "#/definitions/expectedResponse"
         },
         "additionalResponses": {
           "$ref": "#/definitions/additionalResponsesDefinition"
@@ -561,6 +592,7 @@
                     "writemultipleproperties",
                     "observeallproperties",
                     "unobserveallproperties",
+                    "queryallactions",
                     "subscribeallevents",
                     "unsubscribeallevents"
                   ]
@@ -584,6 +616,7 @@
                       "writemultipleproperties",
                       "observeallproperties",
                       "unobserveallproperties",
+                      "queryallactions",
                       "subscribeallevents",
                       "unsubscribeallevents"
                     ]
@@ -616,12 +649,7 @@
           "$ref": "#/definitions/scopes"
         },
         "response": {
-          "type": "object",
-          "properties": {
-            "contentType": {
-              "type": "string"
-            }
-          }
+          "$ref": "#/definitions/expectedResponse"
         },
         "additionalResponses": {
           "$ref": "#/definitions/additionalResponsesDefinition"
@@ -1012,42 +1040,42 @@
         }
       ]
     },
-    "securityScheme": {
-      "anyOf": [
-        {
-          "type": "object",
-          "properties": {
-            "@type": {
-              "$ref": "#/definitions/type_declaration"
-            },
-            "description": {
-              "$ref": "#/definitions/description"
-            },
-            "descriptions": {
-              "$ref": "#/definitions/descriptions"
-            },
-            "proxy": {
-              "$ref": "#/definitions/anyUri"
-            },
-            "scheme": {
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "nosec"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "pattern": "{{2}[ -~]+}{2}"
-                }
+    "noSecurityScheme": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "$ref": "#/definitions/type_declaration"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "descriptions": {
+          "$ref": "#/definitions/descriptions"
+        },
+        "proxy": {
+          "$ref": "#/definitions/anyUri"
+        },
+        "scheme": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "nosec"
               ]
             },
-            "tm:ref": {
-              "$ref": "#/definitions/tm_ref"
+            {
+              "type": "string",
+              "pattern": "{{2}[ -~]+}{2}"
             }
-          }
+          ]
         },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
+        }
+      }
+    },
+    "comboSecurityScheme": {
+      "oneOf": [
         {
           "type": "object",
           "properties": {
@@ -1129,353 +1157,390 @@
               "$ref": "#/definitions/tm_ref"
             }
           }
+        }
+      ]
+    },
+    "basicSecurityScheme": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "$ref": "#/definitions/type_declaration"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "descriptions": {
+          "$ref": "#/definitions/descriptions"
+        },
+        "proxy": {
+          "$ref": "#/definitions/anyUri"
+        },
+        "scheme": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "basic"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "{{2}[ -~]+}{2}"
+            }
+          ]
+        },
+        "in": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "header",
+                "query",
+                "body",
+                "cookie"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "{{2}[ -~]+}{2}"
+            }
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
+        }
+      }
+    },
+    "digestSecurityScheme": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "$ref": "#/definitions/type_declaration"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "descriptions": {
+          "$ref": "#/definitions/descriptions"
+        },
+        "proxy": {
+          "$ref": "#/definitions/anyUri"
+        },
+        "scheme": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "digest"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "{{2}[ -~]+}{2}"
+            }
+          ]
+        },
+        "qop": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "auth",
+                "auth-int"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "{{2}[ -~]+}{2}"
+            }
+          ]
+        },
+        "in": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "header",
+                "query",
+                "body",
+                "cookie"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "{{2}[ -~]+}{2}"
+            }
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
+        }
+      }
+    },
+    "apiKeySecurityScheme": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "$ref": "#/definitions/type_declaration"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "descriptions": {
+          "$ref": "#/definitions/descriptions"
+        },
+        "proxy": {
+          "$ref": "#/definitions/anyUri"
+        },
+        "scheme": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "apikey"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "{{2}[ -~]+}{2}"
+            }
+          ]
+        },
+        "in": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "header",
+                "query",
+                "body",
+                "cookie"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "{{2}[ -~]+}{2}"
+            }
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
+        }
+      }
+    },
+    "bearerSecurityScheme": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "$ref": "#/definitions/type_declaration"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "descriptions": {
+          "$ref": "#/definitions/descriptions"
+        },
+        "proxy": {
+          "$ref": "#/definitions/anyUri"
+        },
+        "scheme": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "bearer"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "{{2}[ -~]+}{2}"
+            }
+          ]
+        },
+        "authorization": {
+          "$ref": "#/definitions/anyUri"
+        },
+        "alg": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
+        },
+        "in": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "header",
+                "query",
+                "body",
+                "cookie"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "{{2}[ -~]+}{2}"
+            }
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
+        }
+      }
+    },
+    "pskSecurityScheme": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "$ref": "#/definitions/type_declaration"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "descriptions": {
+          "$ref": "#/definitions/descriptions"
+        },
+        "proxy": {
+          "$ref": "#/definitions/anyUri"
+        },
+        "scheme": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "psk"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "{{2}[ -~]+}{2}"
+            }
+          ]
+        },
+        "identity": {
+          "type": "string"
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
+        }
+      }
+    },
+    "oAuth2SecurityScheme": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "$ref": "#/definitions/type_declaration"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "descriptions": {
+          "$ref": "#/definitions/descriptions"
+        },
+        "proxy": {
+          "$ref": "#/definitions/anyUri"
+        },
+        "scheme": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": [
+                "oauth2"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "{{2}[ -~]+}{2}"
+            }
+          ]
+        },
+        "authorization": {
+          "$ref": "#/definitions/anyUri"
+        },
+        "token": {
+          "$ref": "#/definitions/anyUri"
+        },
+        "refresh": {
+          "$ref": "#/definitions/anyUri"
+        },
+        "scopes": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "flow": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string",
+              "oneOf": [
+                {
+                  "enum": [
+                    "code",
+                    "client",
+                    "device"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "pattern": "{{2}[ -~]+}{2}"
+                }
+              ]
+            }
+          ]
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
+        }
+      }
+    },
+    "securityScheme": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/noSecurityScheme"
         },
         {
-          "type": "object",
-          "properties": {
-            "@type": {
-              "$ref": "#/definitions/type_declaration"
-            },
-            "description": {
-              "$ref": "#/definitions/description"
-            },
-            "descriptions": {
-              "$ref": "#/definitions/descriptions"
-            },
-            "proxy": {
-              "$ref": "#/definitions/anyUri"
-            },
-            "scheme": {
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "basic"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "pattern": "{{2}[ -~]+}{2}"
-                }
-              ]
-            },
-            "in": {
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "header",
-                    "query",
-                    "body",
-                    "cookie"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "pattern": "{{2}[ -~]+}{2}"
-                }
-              ]
-            },
-            "name": {
-              "type": "string"
-            },
-            "tm:ref": {
-              "$ref": "#/definitions/tm_ref"
-            }
-          }
+          "$ref": "#/definitions/comboSecurityScheme"
         },
         {
-          "type": "object",
-          "properties": {
-            "@type": {
-              "$ref": "#/definitions/type_declaration"
-            },
-            "description": {
-              "$ref": "#/definitions/description"
-            },
-            "descriptions": {
-              "$ref": "#/definitions/descriptions"
-            },
-            "proxy": {
-              "$ref": "#/definitions/anyUri"
-            },
-            "scheme": {
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "digest"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "pattern": "{{2}[ -~]+}{2}"
-                }
-              ]
-            },
-            "qop": {
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "auth",
-                    "auth-int"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "pattern": "{{2}[ -~]+}{2}"
-                }
-              ]
-            },
-            "in": {
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "header",
-                    "query",
-                    "body",
-                    "cookie"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "pattern": "{{2}[ -~]+}{2}"
-                }
-              ]
-            },
-            "name": {
-              "type": "string"
-            },
-            "tm:ref": {
-              "$ref": "#/definitions/tm_ref"
-            }
-          }
+          "$ref": "#/definitions/basicSecurityScheme"
         },
         {
-          "type": "object",
-          "properties": {
-            "@type": {
-              "$ref": "#/definitions/type_declaration"
-            },
-            "description": {
-              "$ref": "#/definitions/description"
-            },
-            "descriptions": {
-              "$ref": "#/definitions/descriptions"
-            },
-            "proxy": {
-              "$ref": "#/definitions/anyUri"
-            },
-            "scheme": {
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "apikey"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "pattern": "{{2}[ -~]+}{2}"
-                }
-              ]
-            },
-            "in": {
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "header",
-                    "query",
-                    "body",
-                    "cookie"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "pattern": "{{2}[ -~]+}{2}"
-                }
-              ]
-            },
-            "name": {
-              "type": "string"
-            },
-            "tm:ref": {
-              "$ref": "#/definitions/tm_ref"
-            }
-          }
+          "$ref": "#/definitions/digestSecurityScheme"
         },
         {
-          "type": "object",
-          "properties": {
-            "@type": {
-              "$ref": "#/definitions/type_declaration"
-            },
-            "description": {
-              "$ref": "#/definitions/description"
-            },
-            "descriptions": {
-              "$ref": "#/definitions/descriptions"
-            },
-            "proxy": {
-              "$ref": "#/definitions/anyUri"
-            },
-            "scheme": {
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "bearer"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "pattern": "{{2}[ -~]+}{2}"
-                }
-              ]
-            },
-            "authorization": {
-              "$ref": "#/definitions/anyUri"
-            },
-            "alg": {
-              "type": "string"
-            },
-            "format": {
-              "type": "string"
-            },
-            "in": {
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "header",
-                    "query",
-                    "body",
-                    "cookie"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "pattern": "{{2}[ -~]+}{2}"
-                }
-              ]
-            },
-            "name": {
-              "type": "string"
-            },
-            "tm:ref": {
-              "$ref": "#/definitions/tm_ref"
-            }
-          }
+          "$ref": "#/definitions/apiKeySecurityScheme"
         },
         {
-          "type": "object",
-          "properties": {
-            "@type": {
-              "$ref": "#/definitions/type_declaration"
-            },
-            "description": {
-              "$ref": "#/definitions/description"
-            },
-            "descriptions": {
-              "$ref": "#/definitions/descriptions"
-            },
-            "proxy": {
-              "$ref": "#/definitions/anyUri"
-            },
-            "scheme": {
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "psk"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "pattern": "{{2}[ -~]+}{2}"
-                }
-              ]
-            },
-            "identity": {
-              "type": "string"
-            },
-            "tm:ref": {
-              "$ref": "#/definitions/tm_ref"
-            }
-          }
+          "$ref": "#/definitions/bearerSecurityScheme"
         },
         {
-          "type": "object",
-          "properties": {
-            "@type": {
-              "$ref": "#/definitions/type_declaration"
-            },
-            "description": {
-              "$ref": "#/definitions/description"
-            },
-            "descriptions": {
-              "$ref": "#/definitions/descriptions"
-            },
-            "proxy": {
-              "$ref": "#/definitions/anyUri"
-            },
-            "scheme": {
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "oauth2"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "pattern": "{{2}[ -~]+}{2}"
-                }
-              ]
-            },
-            "authorization": {
-              "$ref": "#/definitions/anyUri"
-            },
-            "token": {
-              "$ref": "#/definitions/anyUri"
-            },
-            "refresh": {
-              "$ref": "#/definitions/anyUri"
-            },
-            "scopes": {
-              "oneOf": [
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                {
-                  "type": "string"
-                }
-              ]
-            },
-            "flow": {
-              "type": "string",
-              "oneOf": [
-                {
-                  "enum": [
-                    "code"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "pattern": "{{2}[ -~]+}{2}"
-                }
-              ]
-            },
-            "tm:ref": {
-              "$ref": "#/definitions/tm_ref"
-            }
-          }
+          "$ref": "#/definitions/pskSecurityScheme"
+        },
+        {
+          "$ref": "#/definitions/oAuth2SecurityScheme"
         }
       ]
     },
