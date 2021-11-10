@@ -35,7 +35,8 @@ const fs = require('fs');
  * @return {object}
 **/
 const resolvePath = (object, path, defaultValue) => path
-   .split('.')
+   .split(/[\.\[\]\'\"]/)
+   .filter(p => p)
    .reduce((o, p) => o ? o[p] : defaultValue, object)
 
 /** 
@@ -50,6 +51,10 @@ const setPath = (object, path, value) => path
 .split('.')
 .reduce((o,p,i) => o[p] = path.split('.').length === ++i ? value : o[p] || {}, object)
 
+// regex/pattern to be used for strings when we want to enforce the {{PLACEHOLDER}} pattern
+// ascii matching trick from https://stackoverflow.com/a/14608823/3806426
+// tests available for now at https://regex101.com/r/dIHC4y/1
+const placeholderPattern = "{{2}[ -~]+}{2}";
 
 // take the TD Schema
 let tdSchema = JSON.parse(fs.readFileSync('validation/td-json-schema-validation.json'));
@@ -57,12 +62,21 @@ let tdSchema = JSON.parse(fs.readFileSync('validation/td-json-schema-validation.
 // do all the manipulation in order
 let tmSchema = staticReplace(tdSchema)
 tmSchema = removeRequired(tmSchema)
-tmSchema = removeEnum(tmSchema)
+tmSchema = replaceEnum(tmSchema)
+
+// after replace enum, wot context uri needs to be updated
+tmSchema.definitions["thing-context-w3c-uri"] = {
+    "type": "string",
+    "enum": [
+      "https://www.w3.org/2019/wot/td/v1",
+      "http://www.w3.org/ns/td"
+    ]
+  };
+
 tmSchema = removeFormat(tmSchema)
 tmSchema = manualConvertString(tmSchema)
 tmSchema = addTmTerms(tmSchema)
-
-// console.log(tmSchema)
+tmSchema = replaceSecurityOneOf(tmSchema)
 
 // write a new file for the schema. Overwrites the existing one
 // 2 spaces for easier reading
@@ -79,6 +93,18 @@ function staticReplace(argObject){
     argObject.title = "Thing Model"
     argObject.description = "JSON Schema for validating Thing Models. This is automatically generated from the WoT TD Schema."
     argObject.definitions.type_declaration = {
+        "oneOf": [{
+                "type": "string"
+            },
+            {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        ]
+    }
+    argObject.definitions.tm_type_declaration = {
         "oneOf": [{
                 "type": "string",
                 "const":"tm:ThingModel"
@@ -110,9 +136,17 @@ function removeRequired(argObject) {
     // remove required if it exists and is of array type.
     // check for array is needed since we also specify what a required is and that it is an object
     if (("required" in argObject) && (Array.isArray(argObject.required))){
-        // need to decide whether to delete or replace it with ""
-        // delete is "cleaner" but "" is more explicit
-        delete argObject.required;
+        // skip removal of required if the current object is a link_element subschema
+        // that requires a "sizes" or "rel" field. Otherwise it is not possible to use
+        // these two fields in link definitions
+        if (!(argObject["required"] == "sizes" || argObject["required"] == "rel")) {
+            // need to decide whether to delete or replace it with ""
+            // delete is "cleaner" but "" is more explicit
+            delete argObject.required;
+        } else if ("description" in argObject && argObject.description.includes(" or tm:extends")) {
+            argObject.description = argObject.description.replace(" or tm:extends", "")
+            argObject.properties.rel.enum = argObject.properties.rel.enum.filter(item => item !== "tm:extends")
+        }
     }
 
     for (var key in argObject)
@@ -128,8 +162,8 @@ function removeRequired(argObject) {
 }
 
 /** 
- * if there is a enum, remove that
- * once that is done, find a sub item that is of object type, call recursively
+ * if there is a enum, replace that with an oneOf of the same enum and a pattern for placeholder
+ * once that is done, remove find a sub item that is of object type, call recursively
  * if there is no sub item with object, return the current scoped object
  * This is done to allow putting placeholders for a string that would be limited with
  * a list of allowed values in an enum
@@ -137,24 +171,43 @@ function removeRequired(argObject) {
  * @return {object}
 **/
 
-function removeEnum(argObject) {
-
-    // remove enum if it exists and is of array type.
+function replaceEnum(argObject) {
+    
+    // this is created to have a custom array of the keys so that we don't call the function
+    // an infinite amount of times. Otherwise we would call replaceEnum on "oneOf"
+    var argObjectKeys = Object.keys(argObject);
+    // replace enum if it exists and is of array type.
     // check for array is needed since we also specify what a enum is and that it is an object
     if (("enum" in argObject) && (Array.isArray(argObject.enum))){
-        // need to decide whether to delete or replace it with ""
-        // delete is "cleaner" but "" is more explicit
+        // first the found enum is saved
+        // then it is deleted to be put in an oneOf
+        var newEnum = argObject.enum;
         delete argObject.enum;
+        // the following will not work if somehow there is an enum and oneOf at the same time
+        // in the TD Schema. It will replace the oneOf with this 
+        argObject.oneOf = [
+            {enum:newEnum},
+            {
+                "type":"string",
+                "pattern":placeholderPattern
+            }
+        ]
     }
 
-    for (var key in argObject)
-    {
+    argObjectKeys.forEach(key => {
         let curValue = argObject[key];
         // removal is done only in objects, other types are not JSON Schema points anyways
         if (typeof(curValue)=="object"){
-            argObject[key] = removeEnum(curValue)
+            argObject[key] = replaceEnum(curValue)
+        } else if(typeof(curValue)=="array") {
+            curValue.forEach((item,x) => {
+                if (typeof(item)=="object"){
+
+                    item = replaceEnum(item)
+                }
+            });
         }
-    } 
+    });
 
     return argObject;
 }
@@ -192,7 +245,7 @@ function removeFormat(argObject) {
 
 /** 
  * This function changes the terms that have values of number, integer or boolean to anyOf with string and that term.
- * Until convertString function works, this is its more manual version
+ * Until a more recursive function works, this is its more manual version
  * such types are found in: definitions/dataSchema minimum, maximum, minItems, maxItems, minLength, maxLength, multipleOf, 
  * writeOnly, readOnly and the exact same in definitions/property_element but there is also observable here
  * safe and idempotent in definitions/action_element
@@ -202,13 +255,13 @@ function removeFormat(argObject) {
 function manualConvertString(argObject){
     // the exact paths of the above mentioned locations of types
     let paths = [
+        "definitions.multipleOfDefinition",
         "definitions.dataSchema.properties.minimum",
         "definitions.dataSchema.properties.maximum",
         "definitions.dataSchema.properties.minItems",
         "definitions.dataSchema.properties.maxItems",
         "definitions.dataSchema.properties.minLength",
         "definitions.dataSchema.properties.maxLength",
-        "definitions.dataSchema.properties.multipleOf",
         "definitions.dataSchema.properties.writeOnly",
         "definitions.dataSchema.properties.readOnly",
         "definitions.property_element.properties.minimum",
@@ -217,7 +270,6 @@ function manualConvertString(argObject){
         "definitions.property_element.properties.maxItems",
         "definitions.property_element.properties.minLength",
         "definitions.property_element.properties.maxLength",
-        "definitions.property_element.properties.multipleOf",
         "definitions.property_element.properties.writeOnly",
         "definitions.property_element.properties.readOnly",
         "definitions.property_element.properties.observable",
@@ -227,7 +279,11 @@ function manualConvertString(argObject){
     
     //iterate over this array and replace for each
     paths.forEach(element => {
-        let curSchema = resolvePath(argObject,element,"hey");
+        let curSchema = resolvePath(argObject,element,"NotFound");
+        if (curSchema == undefined || curSchema == "NotFound") {
+            console.log("The element " + element + " could not be found in the paths array");
+            process.exit(1)
+        }
         let newSchema = changeToAnyOf(curSchema);
         setPath(argObject,element, newSchema);
     });
@@ -243,13 +299,12 @@ function manualConvertString(argObject){
 **/
 function changeToAnyOf(argObject){
     if ("type" in argObject ){
-        let curType = argObject.type;
-        delete argObject.type;
-
-        argObject.anyOf = [{
-            type: curType
-        },{
-            type: "string"
+        let curSchema = argObject;
+        argObject = {};
+        argObject.anyOf = [
+            curSchema,{
+            type: "string",
+            "pattern":placeholderPattern
         }]
         return argObject;
     } else {
@@ -314,6 +369,21 @@ function addTmTerms(argObject){
         setPath(argObject,element, curSchema);
     });
 
+    argObject.required = ["@context", "@type"]
+    argObject.properties["@type"]["$ref"] = "#/definitions/tm_type_declaration"
 
+    return argObject;
+}
+
+/** 
+ * This very simple function changes the oneOf constraint of security definitions to
+ * anyOf since a placeholder used at scheme makes a TM validate all security schemes
+ * @param {object} argObject
+ * @return {object}
+**/
+function replaceSecurityOneOf(argObject){
+    
+    argObject.definitions.securityScheme.anyOf = argObject.definitions.securityScheme.oneOf;
+    delete argObject.definitions.securityScheme.oneOf;
     return argObject;
 }
