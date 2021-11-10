@@ -1996,7 +1996,19 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 <td>
                     W3C WoT Thing Model
                 </td>
-            </tr>            
+            </tr>
+            <tr >
+                <td>
+                    <code>tm:submodel</code>
+                </td>
+                <td>
+                    0..*
+                </td>
+                <td>Used to compose one or multiple <a>Thing Models</a>. Only applicable for Thing Model definitions.</td>
+                <td>
+                    W3C WoT Thing Model
+                </td>
+            </tr>                         
             <tr >
                 <td>
                     <code>manifest</code>
@@ -2139,7 +2151,9 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 the correct form for the operation required. op can
                 be assigned one or more interaction verb(s) each
                 representing a semantic intention of an
-                operation.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>queryaction</code>, <code>cancelaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, <code>writemultipleproperties</code>, <code>observeallproperties</code>, <code>unobserveallproperties</code>, <code>subscribeallevents</code>, <code>unsubscribeallevents</code>, or <code>queryallactions</code>)</td></tr></tbody></table><p>Possible values for the <code>contentCoding</code>
+
+                operation.</td><td><a href="#sec-default-values">with default</a></td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, <code>writemultipleproperties</code>, <code>observeallproperties</code>, <code>unobserveallproperties</code>, <code>subscribeallevents</code>, or <code>unsubscribeallevents</code>)</td></tr></tbody></table><p>Possible values for the <code>contentCoding</code>
+
           property can be found, e.g., in the <a href=
           "https://www.iana.org/assignments/http-parameters/http-parameters.xhtml#content-coding">
           IANA HTTP content coding registry</a>.</p>
@@ -5847,6 +5861,12 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
          Due to the definition of <a>Thing Model</a> the term <code>instance</code> can be omitted within the <code>version</code> container. 
         </p>
 
+        <p>
+            When <a>Thing Models</a> are updated and have a new version, it should be aware that this may affect 
+            other <a>Thing Models</a> that uses the extension and import features (see Section <a href="#thing-model-extension-import"></a>). 
+            In some cases it is useful to reflect a new version also in the file name and/or in a corresponding URL to identify the version.
+          </p>
+
     </section>
     <section id="thing-model-extension-import" class="normative">
         <h3>Extension and Import</h3>
@@ -6715,7 +6735,7 @@ instance.
 		</pre>
         </aside>
 
-         <p>Please not that a TD can only be an instance of only one TM at a time. 
+         <p>Please note that a TD can only be an instance of only one TM at a time. 
              That means for Thing Descriptions:
          <span class="rfc2119-assertion" id="tm-rel-type-maximum">
             The <code>links</code> array can use the entry with <code>"rel" : "type"</code> maximum one.
@@ -7404,16 +7424,8 @@ instance.
             }
         },
         "multipleOfDefinition": {
-            "anyOf": [
-                {
-                    "type": "integer",
-                    "exclusiveMinimum": 0
-                },
-                {
-                    "type": "number",
-                    "exclusiveMinimum": 0
-                }
-            ]
+            "type": ["integer","number"],
+            "exclusiveMinimum": 0
         },
         "expectedResponse": {
             "type": "object",
