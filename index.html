@@ -405,13 +405,13 @@ a[href].internalDFN {
   <p>
   The WoT Thing Description (TD) is a central building block in the W3C Web of
   Things (WoT) and can be considered as the entry point of a <a>Thing</a>
-  (much like the <i>index.html</i> of a Web site). A TD instance has four main
+  (much like the <i>index.html</i> of a Web site). A TD instance has five main
   components: textual metadata about the <a href="#thing">Thing</a> itself,
   a set of <a href="#interactionaffordance">Interaction Affordances</a>
   that indicate how the <a>Thing</a> can be used,
   <a href="#sec-data-schema-vocabulary-definition">schemas</a> for the data
-  exchanged with the <a>Thing</a> for machine-understandability,
-  and, finally, <a href="#sec-hypermedia-vocabulary-definition">Web links</a> to 
+  exchanged with the <a>Thing</a> for machine-understandability, <a href="#sec-security-vocabulary-definition">Security Definitions</a>
+  provide metadata about the security mode of the <a>Thing</a> that must be used for secure interaction, and, finally, <a href="#sec-hypermedia-vocabulary-definition">Web links</a> to 
   express any formal or informal relation to other <a>Things</a> or documents on the Web.
   </p>
   <p>
@@ -2151,9 +2151,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 the correct form for the operation required. op can
                 be assigned one or more interaction verb(s) each
                 representing a semantic intention of an
-
-                operation.</td><td><a href="#sec-default-values">with default</a></td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, <code>writemultipleproperties</code>, <code>observeallproperties</code>, <code>unobserveallproperties</code>, <code>subscribeallevents</code>, or <code>unsubscribeallevents</code>)</td></tr></tbody></table><p>Possible values for the <code>contentCoding</code>
-
+                operation.</td><td><a href="#sec-default-values">with default</a></td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>queryaction</code>, <code>cancelaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, <code>writemultipleproperties</code>, <code>observeallproperties</code>, <code>unobserveallproperties</code>, <code>subscribeallevents</code>, <code>unsubscribeallevents</code>, or <code>queryallactions</code>)</td></tr></tbody></table><p>Possible values for the <code>contentCoding</code>
           property can be found, e.g., in the <a href=
           "https://www.iana.org/assignments/http-parameters/http-parameters.xhtml#content-coding">
           IANA HTTP content coding registry</a>.</p>
@@ -4791,34 +4789,38 @@ However, the actual true <a>Canonical TD</a> has all extra whitespace removed, a
     </p>
 
     <section id="semantic-annotations-example-version-units">
-    <h3>Example I: Version and Unit Annotations</h3>
+    <h3>Example I: Additional Basic Metadata</h3>
 
     <p>
-      The TD snippet given below extends the version information container
-      by adding version numbers for the hardware and firmware of the <a>Thing</a>, and uses
-      values from external <a>Vocabularies</a> for the <a>Thing</a> and for the
-      data schema unit: <a href="https://w3id.org/saref">SAREF</a>,
-      also used in <a href="#thing-description-full-serialization"></a>, and 
-      <a href="http://www.ontology-of-units-of-measure.org/resource/om-2/">OM</a>, the
-      Ontology of Units of Measure [[?RIJGERSBERG]]. These <a>Vocabularies</a>
-      are used as examples—others may exist, in particular in the home automation domain.
+      The sample TD snippet below provides additional metadata terms from different 
+      external context files as provided in <code>@context</code>. The version information 
+      container is extended by adding additional version information about the used software (<code>s:softwareVersion</code>). 
+      <a href="schema.org">schema.org</a> is used for providing serial number and organisation information such as the company name of the <a>Thing</a>. 
+      The <a href="https://w3id.org/saref">SAREF</a> ontology is used to provide a semantic context of the 
+      <a>Thing</a> (<code>saref:TemperatureSensor</code>), and for the unit assignment for the temperature property 
+      the  <a href="http://www.ontology-of-units-of-measure.org/resource/om-2/">Ontology of Units of Measure (OM)</a>
+      is used. 
     </p>
 
+    <p class="note">
+        Please note that these <a>Vocabularies</a> and ontologies are used as examples. Others can be used based on application domain and use case.
+    </p>
 <pre class="example">
 {
     "@context": [
         "http://www.w3.org/ns/td",
         {
-            "v": "http://www.example.org/versioningTerms#",
             "saref": "https://w3id.org/saref#",
-            "om": "http://www.ontology-of-units-of-measure.org/resource/om-2/"
+            "om": "http://www.ontology-of-units-of-measure.org/resource/om-2/",
+            "s": "http://schema.org" 
         }
     ],
     "version": {
         "instance": "1.2.1",
-        "v:firmware": "0.9.1",
-        "v:hardware": "1.0"
+        "s:softwareVersion" : "1.0.1"
     },
+    "s:serialNumber": "4CE0460D0G",
+    "s:manufacturer": {"name": "CompanyName"},
     ...
     "@type": "saref:TemperatureSensor",
     "properties": {
@@ -7154,7 +7156,8 @@ instance.
         order to perform a stricter validation in case no external vocabularies are used.
     </p>
 
-    <p class="note"> Please note that some JSON Schema validation tools do not support the <code>iri</code> string format.
+    <p class="note"> Please note that some JSON Schema validation tools do not support the <code>iri-reference</code> string format. 
+	    It can be replaced with <code>uri-reference</code> or the term <code>format</code> can removed from the definition of <code>anyUri</code>.
     </p>
 
     <p>
