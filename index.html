@@ -1172,11 +1172,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 relate to the specified Thing Description.</td><td>optional</td><td><a>Array</a> of <a href="#link"><code>Link</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-forms--Thing"><td><code>forms</code></td><td>Set of form hypermedia controls that describe how
                   an operation can be performed. Forms are
-                  serializations of Protocol Bindings. In this
-                  version of TD, all operations that can be
-                  described at the Thing level are concerning how
-                  to interact with the Thing's <a href='#propertyaffordance'>Properties</a> collectively
-                  at once.</td><td>optional</td><td><a>Array</a> of <a href="#form"><code>Form</code></a></td></tr>
+                  serializations of Protocol Bindings. Thing-level forms are used to describe endpoints for a group of interaction affordances.</td><td>optional</td><td><a>Array</a> of <a href="#form"><code>Form</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-security--Thing"><td><code>security</code></td><td>Set of security definition names, chosen from
                 those defined in <code>securityDefinitions</code>.
                 These must all be satisfied for access to
@@ -1547,7 +1543,9 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 <tr class="rfc2119-table-assertion" id="td-vocab-default--DataSchema"><td><code>default</code></td><td>Supply a default value. The value should validate against the data schema in which it resides.</td><td>optional</td><td>any type</td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-unit--DataSchema"><td><code>unit</code></td><td>Provides unit information that is used, e.g.,
                 in international science, engineering, and
-                business.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+                business. To preserve uniqueness, it is recommended that 
+                the value of the unit points to a semantic definition (also see Section <a href="#semantic-annotations-example-version-units"
+          class="internalDFN" data-link-type="dfn">Semantic Annotations</a>).</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-oneOf--DataSchema"><td><code>oneOf</code></td><td>Used to ensure that the data is valid against
                 one of the specified schemas in the array.</td><td>optional</td><td><a>Array</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-enum--DataSchema"><td><code>enum</code></td><td>Restricted set of values provided as an
@@ -2003,7 +2001,19 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 <td>
                     W3C WoT Thing Model
                 </td>
-            </tr>            
+            </tr>
+            <tr >
+                <td>
+                    <code>tm:submodel</code>
+                </td>
+                <td>
+                    0..*
+                </td>
+                <td>Used to compose one or multiple <a>Thing Models</a>. Only applicable for Thing Model definitions.</td>
+                <td>
+                    W3C WoT Thing Model
+                </td>
+            </tr>                         
             <tr >
                 <td>
                     <code>manifest</code>
@@ -2146,7 +2156,9 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 the correct form for the operation required. op can
                 be assigned one or more interaction verb(s) each
                 representing a semantic intention of an
-                operation.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>queryaction</code>, <code>cancelaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, <code>writemultipleproperties</code>, <code>observeallproperties</code>, <code>unobserveallproperties</code>, <code>subscribeallevents</code>, <code>unsubscribeallevents</code>, or <code>queryallactions</code>)</td></tr></tbody></table><p>Possible values for the <code>contentCoding</code>
+
+                operation.</td><td><a href="#sec-default-values">with default</a></td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>readproperty</code>, <code>writeproperty</code>, <code>observeproperty</code>, <code>unobserveproperty</code>, <code>invokeaction</code>, <code>subscribeevent</code>, <code>unsubscribeevent</code>, <code>readallproperties</code>, <code>writeallproperties</code>, <code>readmultipleproperties</code>, <code>writemultipleproperties</code>, <code>observeallproperties</code>, <code>unobserveallproperties</code>, <code>subscribeallevents</code>, or <code>unsubscribeallevents</code>)</td></tr></tbody></table><p>Possible values for the <code>contentCoding</code>
+
           property can be found, e.g., in the <a href=
           "https://www.iana.org/assignments/http-parameters/http-parameters.xhtml#content-coding">
           IANA HTTP content coding registry</a>.</p>
@@ -5859,6 +5871,12 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
          Due to the definition of <a>Thing Model</a> the term <code>instance</code> can be omitted within the <code>version</code> container. 
         </p>
 
+        <p>
+            When <a>Thing Models</a> are updated and have a new version, it should be aware that this may affect 
+            other <a>Thing Models</a> that uses the extension and import features (see Section <a href="#thing-model-extension-import"></a>). 
+            In some cases it is useful to reflect a new version also in the file name and/or in a corresponding URL to identify the version.
+          </p>
+
     </section>
     <section id="thing-model-extension-import" class="normative">
         <h3>Extension and Import</h3>
@@ -7155,7 +7173,7 @@ instance.
     <pre class="advisement">
 {
     "title": "Thing Description",
-    "version": "1.1-04-June-2021",
+    "version": "1.1-13-October-2021",
     "description": "JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values",
     "$schema ": "http://json-schema.org/draft-07/schema#",
     "definitions": {
@@ -7418,6 +7436,16 @@ instance.
         "multipleOfDefinition": {
             "type": ["integer","number"],
             "exclusiveMinimum": 0
+
+        },
+        "expectedResponse": {
+            "type": "object",
+            "properties": {
+                "contentType": {
+                    "type": "string"
+                }
+            }
+
         },
         "form_element_property": {
             "type": "object",
@@ -7466,12 +7494,7 @@ instance.
                     "$ref": "#/definitions/scopes"
                 },
                 "response": {
-                    "type": "object",
-                    "properties": {
-                        "contentType": {
-                            "type": "string"
-                        }
-                    }
+                    "$ref": "#/definitions/expectedResponse"          
                 },
                 "additionalResponses": {
                     "$ref":"#/definitions/additionalResponsesDefinition"
@@ -7527,12 +7550,7 @@ instance.
                     "$ref": "#/definitions/scopes"
                 },
                 "response": {
-                    "type": "object",
-                    "properties": {
-                        "contentType": {
-                            "type": "string"
-                        }
-                    }
+                    "$ref": "#/definitions/expectedResponse"          
                 },
                 "additionalResponses": {
                     "$ref":"#/definitions/additionalResponsesDefinition"
@@ -7586,12 +7604,7 @@ instance.
                     "$ref": "#/definitions/scopes"
                 },
                 "response": {
-                    "type": "object",
-                    "properties": {
-                        "contentType": {
-                            "type": "string"
-                        }
-                    }
+                    "$ref": "#/definitions/expectedResponse"          
                 },
                 "additionalResponses": {
                     "$ref":"#/definitions/additionalResponsesDefinition"
@@ -7659,12 +7672,7 @@ instance.
                     "$ref": "#/definitions/scopes"
                 },
                 "response": {
-                    "type": "object",
-                    "properties": {
-                        "contentType": {
-                            "type": "string"
-                        }
-                    }
+                    "$ref": "#/definitions/expectedResponse"          
                 },
                 "additionalResponses": {
                     "$ref":"#/definitions/additionalResponsesDefinition"
@@ -7963,9 +7971,7 @@ instance.
                 }
             ]
         },
-        "securityScheme": {
-            "oneOf": [
-                {
+        "noSecurityScheme": {
                     "type": "object",
                     "properties": {
                         "@type": {
@@ -7991,6 +7997,8 @@ instance.
                         "scheme"
                     ]
                 },
+        "comboSecurityScheme": {
+            "oneOf": [
                 {
                     "type": "object",
                     "properties": {
@@ -8058,8 +8066,10 @@ instance.
                         "scheme",
                         "allOf"
                     ]
+                }
+            ]
                 },
-                {
+        "basicSecurityScheme": {
                     "type": "object",
                     "properties": {
                         "@type": {
@@ -8097,7 +8107,7 @@ instance.
                         "scheme"
                     ]
                 },
-                {
+        "digestSecurityScheme": {
                     "type": "object",
                     "properties": {
                         "@type": {
@@ -8142,7 +8152,7 @@ instance.
                         "scheme"
                     ]
                 },
-                {
+        "apiKeySecurityScheme": {
                     "type": "object",
                     "properties": {
                         "@type": {
@@ -8180,7 +8190,7 @@ instance.
                         "scheme"
                     ]
                 },
-                {
+        "bearerSecurityScheme": {
                     "type": "object",
                     "properties": {
                         "@type": {
@@ -8227,7 +8237,7 @@ instance.
                         "scheme"
                     ]
                 },
-                {
+        "pskSecurityScheme": {
                     "type": "object",
                     "properties": {
                         "@type": {
@@ -8256,7 +8266,7 @@ instance.
                         "scheme"
                     ]
                 },
-                {
+        "oAuth2SecurityScheme": {
                     "type": "object",
                     "properties": {
                         "@type": {
@@ -8300,15 +8310,49 @@ instance.
                             ]
                         },
                         "flow": {
-                            "type": "string",
-                            "enum": [
-                                "code"
-                            ]
+                           "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "string",
+                                "enum": [
+                                    "code",
+                                    "client",
+                                    "device"
+                                ]
+                            }]
                         }
                     },
                     "required": [
                         "scheme"
                     ]
+        },
+        "securityScheme": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/noSecurityScheme"
+                },
+                {
+                    "$ref": "#/definitions/comboSecurityScheme"
+                },
+                {
+                    "$ref": "#/definitions/basicSecurityScheme"
+                },
+                {
+                    "$ref": "#/definitions/digestSecurityScheme"
+                },
+                {
+                    "$ref": "#/definitions/apiKeySecurityScheme"
+                },
+                {
+                    "$ref": "#/definitions/bearerSecurityScheme"
+                },
+                {
+                    "$ref": "#/definitions/pskSecurityScheme"
+                },
+                {
+                    "$ref": "#/definitions/oAuth2SecurityScheme"
                 }
             ]
         }
