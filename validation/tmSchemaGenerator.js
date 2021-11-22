@@ -342,6 +342,8 @@ function addTmTerms(argObject){
         "$ref": "#/definitions/tm_ref"
     }
 
+    // Note: this paths are statically defined
+    // please update the list if rector the td schema
     let paths = [
         "definitions.dataSchema.properties",
         "definitions.property_element.properties",
@@ -351,20 +353,27 @@ function addTmTerms(argObject){
         "definitions.form_element_action.properties",
         "definitions.form_element_event.properties",
         "definitions.form_element_root.properties",
-        "definitions.securityScheme.oneOf.0.properties",
-        "definitions.securityScheme.oneOf.1.properties",
-        "definitions.securityScheme.oneOf.2.properties",
-        "definitions.securityScheme.oneOf.3.properties",
-        "definitions.securityScheme.oneOf.4.properties",
-        "definitions.securityScheme.oneOf.5.properties",
-        "definitions.securityScheme.oneOf.6.properties",
-        "definitions.securityScheme.oneOf.7.properties",
-        "definitions.securityScheme.oneOf.8.properties"
+        "definitions.noSecurityScheme.properties",
+        "definitions.comboSecurityScheme.oneOf.0.properties",
+        "definitions.comboSecurityScheme.oneOf.1.properties",
+        "definitions.basicSecurityScheme.properties",
+        "definitions.digestSecurityScheme.properties",
+        "definitions.apiKeySecurityScheme.properties",
+        "definitions.bearerSecurityScheme.properties",
+        "definitions.pskSecurityScheme.properties",
+        "definitions.oAuth2SecurityScheme.properties",
     ]
-    
+
     //iterate over this array and replace for each
     paths.forEach(element => {
         let curSchema = resolvePath(argObject,element,"hey");
+
+        if (curSchema == undefined) {
+            console.log("The element " + element + " could not be found in the paths array");
+            console.log("Did you forget to update the static paths above?");
+            process.exit(1)
+        }
+    
         curSchema["tm:ref"] = tmRefRef;
         setPath(argObject,element, curSchema);
     });
