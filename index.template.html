@@ -2293,7 +2293,7 @@ In summary, this requires the following:
   with a token containing the <code>special</code> scope.
   Scopes are not identical to roles, but are often associated with them;
   for example, perhaps only those in an administrative role are authorized to perform "special" interactions.
-  Tokens can have more than one scope are issued by dedicated web services to users.
+  Tokens can have more than one scope and are issued by dedicated web services to users.
   In this example, an administrator could be issued tokens with both the <code>limited</code> and <code>special</code> scopes,
   while ordinary users could be provided with tokens with the <code>limited</code> scope.
   </p>
@@ -2304,8 +2304,7 @@ In summary, this requires the following:
     "securityDefinitions": {
         "oauth2_sc": {
             "scheme": "oauth2",
-            "flow": "code",
-            "authorization": "https://example.com/authorization",
+            "flow": "client",
             "token": "https://example.com/token",
             "scopes": ["limited", "special"]
         }
@@ -2333,81 +2332,6 @@ In summary, this requires the following:
     ...
 }
 </pre>
-<p>
-    <a href="#oauth2securityscheme">OAuth2SecurityScheme</a> can specify different <code>flow</code>s, the next two examples report
-    the typical configuration of the <code>client</code> and the <code>device</code> flows. Typically, 
-    the <code>client</code> flow is used for machine to machine communication, consequently the first example below
-    shows a fictional Split Air Conditioner that can be controller by his companion thermostat using the 
-    pre-shared client id and client secret. On the other hand, the second example describe a <a>Thing Description</a>
-    of a device that offers the <code>device</code> flow for clients that do not have a standard 
-    interface (no-display or/and no-keyboard). From the <a>Thing Description</a> prospective <code>device</code> flow is similar to <code>code</code> flow as 
-    both flows require actual user input as part of the process authorization process. However, <code>device</code>
-    flow adopt a polling approach waiting for user input from another device with a richer user interface. 
-</p>
-<p class="ednote" title="Other flows">
-    Note that <code>implicit</code> and <code>password</code> flows are now deprecated and therefore are not included
-    in this document. As explained in section <a href="#oauth2securityscheme">OAuth2SecurityScheme</a>, they can only be
-    used through an explicit JSON-LD vocabulary extension.
-</p>
-<pre class="example">
-{
-   ...
-   "title": "Split Air Conditioner"
-   "securityDefinitions":{
-      "oauth2_sc":{
-         "scheme":"oauth2",
-         "flow":"client",
-         "token":"https://auth0tenat/token",
-      }
-   },
-   "security":[
-      "oauth2_sc"
-   ],
-   "actions":{
-      "activate":{
-         "description":"Start cooling the room",
-         "forms": [ ... ]
-      }
-   }
-}
-</pre>
-
-<pre class="example">
-{
-    ...
-    "securityDefinitions": {
-        "oauth2_sc": {
-            "scheme": "oauth2",
-            "flow": "device",
-            "authorization": "https://device.com/authorization/",
-            "token": "https://device.com/token",
-            "scopes": ["limited", "special"]
-        }
-    },
-    "security": "oauth2_sc",
-    ...
-    "properties": {
-        "status": {
-            ...
-            "forms": [{
-                "href": "https://scopes.example.com/status",
-                "scopes": ["limited"]
-            }]
-        }
-    },
-    "actions": {
-        "configure": {
-            ...
-            "forms": [{
-                "href": "https://scopes.example.com/configure",
-                "scopes": ["special"]
-            }]
-        }
-    },
-    ...
-}
-</pre>
-
 <p>A Thing can require an onboarding process that results in the Consumer requiring an API key
     to interact with the Thing. This API key can be included in the request to the Thing in different ways 
     as the API key scheme specifies. Below is an example of how it can be used as a URI template where the API key 
