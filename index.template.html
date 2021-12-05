@@ -710,14 +710,6 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 
   <dl>
     <dt>
-        <dfn id="dfn-canonical-td">Canonical TD</dfn>
-    </dt>
-    <dd>
-        A unique serialization of the information in a <a>Thing Description</a> 
-        to support operations where TDs are compared as strings, such as
-        differencing or signing.
-    </dd>
-    <dt>
         <dfn id="dfn-context-ext">TD Context Extension</dfn>
     </dt>
     <dd>
@@ -1223,7 +1215,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       that are directly built into protocols eligible as <a>Protocol Bindings</a> for W3C WoT
       or are widely in use with those protocols.
       The current set of HTTP security schemes is partly based on 
-      <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.1.md#securitySchemeObject">OpenAPI 3.0.1</a> (see also [[?OPENAPI]]). 
+      <a href="https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.1.md#securitySchemeObject">OpenAPI 3.0.1</a> (see also [[?OPENAPI]]). 
       However while the HTTP security schemes, <a>Vocabulary</a>, and syntax
       given in this specification share many similarities with OpenAPI, they are not compatible.
       </p>
@@ -1628,6 +1620,7 @@ In summary, this requires the following:
             "type": "string",
             "readOnly": false,
             "writeOnly": false,
+            "observable": false,
             "forms": [{
                 "op": [
                     "readproperty",
@@ -3362,223 +3355,9 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   installation.
   </p>
   </section>
-
+  
 </section>
 
-<section id="canonicalization-serialization-json">
-<h2>Canonicalization</h2>
-
-  <p>
-  Canonicalization is a process applied to the JSON serialization of a TD that
-  removes variations between different expressions of the same information model,
-  so that the same information always results in the same JSON serialization.
-  This unique representation of the information in a TD is called a <a>Canonical TD</a>.
-  Canonical TDs are important for applications that need to compare TDs as strings,
-  for example, to compute signatures on TDs, or to compute differences between TDs.
-  There are many places in which optional features are included in JSON,
-  such as white space, or where different representation formats are possible, such as
-  the number of digits in a number representation or the order of elements in an object.
-  In addition to variation due to JSON serialization, 
-  TDs have additional features that also permit different ways to express the
-  same thing.
-  However, whenever there is a choice of multiple ways to present information,
-  canonicalization needs to select only one. 
-  </p><p>
-  Some of the choices leading to the efficient computation of a canonical form, 
-  such as the suppression of white space and sorting of elements in objects 
-  do make the representation less human readable.
-  In general, the canonical form presented here is optimized for machine-to-machine
-  use cases such as signing.
-  </p>
-  <p>The starting point for the process described here is 
-  the JSON serialization of a TD.  
-  The following sequence of transformations and constraints are then applied: 
-  <ol>
-  <li><span class="rfc2119-assertion" id="canonical-datetime-timezone">
-  In the <a>Canonical TD</a>, 
-  values that are of type <code>dateTime</code>
-  MUST use the literal "<code>Z</code>" 
-  representing the UTC time zone instead 
-  of an offset.</span>
-  </li>
-
-  <li><span class="rfc2119-assertion" id="canonical-datetime-fracsec">
-  In the <a>Canonical TD</a>, 
-  values that are of type <code>dateTime</code>
-  MUST serialize the fractional part of the seconds field as other numbers under the JSON Canonicalization Scheme, 
-  except that negative numbers and exponents are not permitted.</span>
-  Note in particular that trailing zeros and zero fractional seconds are not permitted under this serialization.
-  </li>
-  <li><span class="rfc2119-assertion" id="canonical-datetime-not24">
-  In the <a>Canonical TD</a>, 
-  values that are of type <code>dateTime</code>
-  MUST NOT use '24' in the hours field.</span>
-  </li>
-
-  <li><span class="rfc2119-assertion" id="canonical-defaults">
-  In the <a>Canonical TD</a>,
-  all required elements MUST be given explicitly, even if they have defaults
-  and are assigned their default value.
-  </span>
-  For example, the default value of <code>writeOnly</code>
-  is <code>false</code>.  
-  If an input TD omits <code>observable</code> where it is allowed,
-  it must still explicitly appear in the canonical form with the value of <code>false</code>.
-  Note that this also applies to extension vocabularies, e.g. for protocol bindings.
-  If any such extension defines default values they must be given explicitly in the canonical form.
-  </li>
-  <li><span class="rfc2119-assertion" id="canonical-prefix-mandatory">
-  In the Canonical TD, if a prefix is
-  defined it MUST be used in place of that URL.</span>
-  </li>
-  <li><span class="rfc2119-assertion" id="canonical-singleton-arrays">
-  In the <a>Canonical TD</a>,
-  all values that can be expressed as either an array or as a single value 
-  MUST be written as a single value if there is only one element.  
-  </span>
-  In other words, square brackets around
-  arrays of single elements must be removed.
-  </li>
-  <li><span class="rfc2119-assertion" id="canonical-json">
-  In the <a>Canonical TD</a>,
-  all provisions of the JSON Canonicalization Scheme [[!RFC8785]] MUST be applied.
-  </span>
-  The JSON Canonicalization Scheme [[!RFC8785]], among other transformations,
-  sorts object members by name, removes white space, and normalizes number representations.</li>
-  </ol>
-  <p>The <code>dateTime</code> restrictions specified above are consistent with the
-  restrictions used in Canonical XML as defined in XML Schema 2 [[xmlschema-2]].
-  </p><p>
-  The JSON Canonicalization Scheme, and by extension the process defined here,
-  preserves the order of elements in arrays.
-  There are some array-valued elements in TDs where the order is not meaningful, such
-  as the list of <code>scopes</code> in a <code>Form</code>.  
-  <span class="rfc2119-assertion" id="processors-preserve-array-order">
-  In order to support canonicalization, implementations 
-  of TD Processors MUST preserve the order of elements in all arrays.</span>
-  </p><p>
-  If extension vocabularies are used, the prefixes need to be preserved
-  as well.
-  In theory for JSON-LD prefixes are just shorthand for URLs and can be changed without
-  changing the meaning of a TD.
-  However, doing so would result in a different serialization.
-  <span class="rfc2119-assertion" id="processors-preserve-prefixes">
-  In order to support canonicalization, implementations 
-  of TD Processors MUST preserve the prefixes used for extension vocabularies.</span>
-  This includes preserving and expressing a vocabulary term as a URL 
-  if no prefix is defined for that URL.
-  However, we need to
-  support stable reserialization in TD Processors that expand all
-  prefixes into URLs and then need to collapse them back to prefixes
-  when TDs are exported.
-  This is why if a prefix is defined, it is mandatory to use it in
-  place of the corresponding URL.
-  </p><p>
-  Likewise, it would be in theory be possible to express the same information
-  using different names for the <code>SecurityScheme</code> objects defined in 
-  <code>securityDefinitions</code>, since these are just arbitrary strings 
-  acting as internal references to definitions.
-  However, to avoid variants, these names should be preserved.
-  <span class="rfc2119-assertion" id="processors-preserve-security-names">
-  In order to support canonicalization, implementations 
-  of TD Processors MUST preserve the strings used to identify <code>SecurityScheme</code>
-  objects in <code>SecurityDefinitions</code> and referenced in <code>security</code>
-  elements.</span>
-  </p><p>
-  Another issue that arises with <code>security</code> is that the
-  same <code>SecurityScheme</code> could be redundantly applied at both the 
-  <code>Thing</code> and <code>Form</code> level.  
-  <span class="rfc2119-assertion" id="processors-preserve-security-instances">
-  In order to support canonicalization, implementations 
-  of TD Processors MUST preserve the presence (and absence) of 
-  <code>security</code> terms at the <code>Form</code> level.</span>
-  In other words, in order to avoid generating variant serializations,
-  a TD processor must not attempt to "optimize" a TD by removing such
-  redundant definitions.
-  <p>
-  Some systems support different forms of URLs that are equivalent, for example,
-  by mapping upper to lower case.  It is also legal to percent-encode
-  unreserved characters, even though this is unnecessary and discouraged [[!RFC3986]]. 
-  For canonicalization, however, such URL variants cannot be considered equivalent.
-  <span class="rfc2119-assertion" id="processors-preserve-URLs">
-  In order to support canonicalization, implementations 
-  of TD Processors MUST NOT modify how input URLs are expressed.
-  </span>
-  Of course some applications will need to modify URLs in TDs, 
-  i.e. to express the result of protocol translation
-  or to add entry points to a proxy.
-  Installation of a TD may also require modifying the base URL.
-  The result should technically be considered a new TD related to the old one, but not equivalent.
-  </p><p>
-  The use of <code>base</code> can also technically
-  lead to different ways to 
-  express the same URL.
-  However, the URLs that <code>base</code>
-  refers to are interaction endpoints, not semantic terms, and so 
-  should not be affected by semantic processing.  
-  Although it is just a special case of the above rule, we will
-  state this explicitly for clarity:
-  <span class="rfc2119-assertion" id="processors-preserve-base">
-  In order to support canonicalization, implementations 
-  of TD Processors MUST NOT modify how input URLs are expressed
-  as a combination of <code>base</code> and a relative URL in an
-  interaction.</span>
-  </p>
-  </p><p>
-  TDs should be validated before being canonicalized.  
-  TD validation requires that URLs
-  be fully conformant with the standard [[!RFC3986]] and this in particular 
-  requires (for example) that
-  characters outside the basic set defined for URLs 
-  be percent-encoded. 
-  </p><p>
-  Here is an example TD that is in canonical form, except that white space
-  and newlines have been inserted to make it more readable:
-<aside class="example" id="canonical-thing-description-sample" title="Canonical Thing Description Example - White Space Inserted">
-<pre>{
-    "@context": "http://www.w3.org/ns/td",
-    "id": "urn:dev:ops:32473-WoTLamp-1234",
-    "properties": {
-        "status": {
-            "forms": [
-                {
-                    "contentType": "application/json",
-                    "href": "https://mylamp.example.com/status",
-                    "htv:methodName": "GET",
-                    "op": "readproperty",
-                    "security": "basic_sc"
-                },
-                {
-                    "contentType": "application/json",
-                    "href": "https://mylamp.example.com/status",
-                    "htv:methodName": "PUT",
-                    "op": "writeproperty",
-                    "security": "basic_sc"
-                }
-            ],
-            "observable": false,
-            "readOnly": false,
-            "type": "string",
-            "writeOnly": false
-        }
-    },
-    "securityDefinitions": {
-        "basic_sc": {
-            "in": "header",
-            "scheme": "basic"
-        }
-    },
-    "security":["basic_sc"],
-    "title": "MyLampThing"
-}</pre>
-</aside>
-
-However, the actual true <a>Canonical TD</a> has all extra whitespace removed, and looks like the following:
-<aside class="example" id="canonical-thing-description-nows" title="Canonical Thing Description Example - No White Space">
-<pre>{"@context":"http://www.w3.org/ns/td","id":"urn:dev:ops:32473-WoTLamp-1234","properties":{"status":{"forms":[{"contentType":"application/json","href":"https://mylamp.example.com/status","htv:methodName":"GET","op":"readproperty","security":"basic_sc"},{"contentType":"application/json","href":"https://mylamp.example.com/status","htv:methodName":"PUT","op":"writeproperty","security":"basic_sc"}],"observable":false,"readOnly":false,"type":"string","writeOnly":false}},"securityDefinitions":{"basic_sc":{"in":"header","scheme":"basic"}},"security":["basic_sc"],"title":"MyLampThing"}</pre>
-</aside>
-
-</section>
 </section> <!-- end of id="sec-td-serialization"-->
 
 <section id="sec-context-extensions" class="informative">
@@ -3661,7 +3440,7 @@ However, the actual true <a>Canonical TD</a> has all extra whitespace removed, a
       The sample TD snippet below provides additional metadata terms from different 
       external context files as provided in <code>@context</code>. The version information 
       container is extended by adding additional version information about the used software (<code>s:softwareVersion</code>). 
-      <a href="schema.org">schema.org</a> is used for providing serial number and organisation information such as the company name of the <a>Thing</a>. 
+      <a href="http://schema.org">schema.org</a> is used for providing serial number and organisation information such as the company name of the <a>Thing</a>. 
       The <a href="https://w3id.org/saref">SAREF</a> ontology is used to provide a semantic context of the 
       <a>Thing</a> (<code>saref:TemperatureSensor</code>), and for the unit assignment for the temperature property 
       the  <a href="http://www.ontology-of-units-of-measure.org/resource/om-2/">Ontology of Units of Measure (OM)</a>
@@ -4135,7 +3914,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 
   <p>
     Every form in a WoT Thing Description must have a submission target,
-    given by the <code>href</code> member. The URI scheme of this
+    given by the <code>href</code> member. The URI scheme [[!RFC3986]] of this
     submission target indicates what <a>Protocol Binding</a> the <a>Thing</a> implements
     [[?WOT-ARCHITECTURE]].
     For instance, if the target starts with <code>http</code> or
@@ -4146,7 +3925,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <li>
             <span class="rfc2119-assertion" id="bindings-requirements-scheme">
                 Every form in a WoT Thing Description MUST follow the requirements
-                of the <a>Protocol Binding</a> indicated by the URI scheme of its
+                of the <a>Protocol Binding</a> indicated by the URI scheme [[!RFC3986]] of its
                 <code>href</code> member.
             </span>
         </li>
@@ -4158,6 +3937,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
             </span>
         </li>
     </ul>
+
   </p>
 
   <section id="http-binding-assertions">
@@ -4814,7 +4594,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     The <code>tm:extends</code> feature only allows to inherit all definitions of one <a>Thing Model</a>. In many use cases, however,
      it is desired only to import pieces of definitions of one or more existing <a>Thing Models</a>. 
      For doing this, the <code>tm:ref</code> term is introduced that provides the location of an exisiting (sub-)definition that should be reused.
-     <span class="rfc2119-assertion" id="tm-tmRef">
+     <span class="rfc2119-assertion" id="tm-tmRef1">
      The <code>tm:ref</code> value MUST follow the pattern
      <ul>
         <li>file location as URI [[RFC3986]](Section 4.1)), followed by</li>
@@ -4822,7 +4602,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <li>JSON Pointer [[RFC6901]] definition.</li>
      </ul>
     </span>
-    <span class="rfc2119-assertion" id="tm-tmRef">
+    <span class="rfc2119-assertion" id="tm-tmRef2">
         Every time <code>tm:ref</code> is used, the referenced pre-definition and its dependencies 
         (e.g., by context extension) MUST be assumed at the new defined definition.
     </span>
@@ -4874,7 +4654,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
          <a href="#td-model-example-smart-lamp-control"></a>. 
     </p>
 
-    <pre class="example" title="Smart Lamp Control extend and overwrite existing definitions" id="td-model-example-tmRef">
+    <pre class="example" title="Smart Lamp Control extend and overwrite existing definitions" id="td-model-example-tmRef2">
         {
             "@context": ["http://www.w3.org/ns/td"], 
             "@type" : "tm:ThingModel",
@@ -4901,7 +4681,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <a href="#td-model-example-smart-lamp-control"></a> respectively.
     </p>
 
-    <pre class="example" title="Smart Lamp Control Thing Model with extend and import mechanism" id="td-model-example-smart-lamp-control">
+    <pre class="example" title="Smart Lamp Control Thing Model with extend and import mechanism" id="td-model-example-smart-lamp-control-extend-import">
         {
             "@context": ["http://www.w3.org/ns/td"], 
             "@type" : "tm:ThingModel",
@@ -5757,12 +5537,12 @@ instance.
         </p>
       </dd>
       <dt>Published specification:</dt>
-      <dd><a href="https://w3c.github.io/wot-thing-description">https://w3c.github.io/wot-thing-description</a></dd>
+      <dd><a href="https://w3c.github.io/wot-thing-description/">https://w3c.github.io/wot-thing-description/</a></dd>
       <dt>Applications that use this media type:</dt>
       <dd>
         All participating entities in the W3C Web of Things, that is,
         <a>Things</a>, <a>Consumers</a>, and Intermediaries as defined in the
-        <a href="https://www.w3.org/TR/wot-architecture">Web of Things (WoT) Architecture</a>.</dd>
+        <a href="https://www.w3.org/TR/wot-architecture/">Web of Things (WoT) Architecture</a>.</dd>
       <dt>Fragment identifier considerations:</dt>
       <dd>See <a href="https://tools.ietf.org/html/rfc6839#section-3.1">RFC&nbsp;6839, section 3.1</a>.</dd>
       <dt>Additional information:</dt>
@@ -5807,7 +5587,7 @@ instance.
       <dt>ID:</dt>
       <dd>432</dd>
       <dt>Reference:</dt>
-      <dd>[<a href="https://w3c.github.io/wot-thing-description">"Web of Things (WoT) Thing Description", May 2019</a>]</dd>
+      <dd>[<a href="https://w3c.github.io/wot-thing-description/">"Web of Things (WoT) Thing Description", May 2019</a>]</dd>
     </section>
   </section>
 
@@ -6146,8 +5926,6 @@ instance.
   <section>
   <h2 id="changes-from-fpwd">Changes from First Public Working Draft 24 November 2020</h2>
     <ul>
-      <!-- 3 -->
-      <li>In section <a href="#terminology"></a>, a new WoT terminology <a>Canonical TD</a> was given definition.</li>
       <!-- 4 -->
       <li>In section <a href="#namespaces"></a>, Thing Model vocabulary was assigned a namespace IRI.</li>
       <!-- 5.3.1.1 -->
@@ -6221,8 +5999,6 @@ instance.
       <li>In section <a href="#form-serialization-json"></a>, the usage of <code>uriVariables</code> was clarified.</li>
       <!-- 6.5 -->
       <li>Section <a href="#validation-serialization-json"></a> was added to define multiple levels of validation, appropriate for different use cases including development, deployment, and directory registration.</li>
-      <!-- 6.6 -->
-      <li>Section <a href="#canonicalization-serialization-json"></a> was added to define a canonical serialization, useful for signing and comparison of Thing Descriptions.</li>
       <!-- 8.3.1 -->
       <li>In section <a href="#http-binding-assertions"></a>, it was clarified that the use of <code>htv:methodName</code> is not permitted when the <code>forms</code> entry has multiple <code>op</code> values.</li>
       <!-- 10 -->
