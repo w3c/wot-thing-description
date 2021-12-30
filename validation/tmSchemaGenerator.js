@@ -53,7 +53,7 @@ const setPath = (object, path, value) => path
 
 // regex/pattern to be used for strings when we want to enforce the {{PLACEHOLDER}} pattern
 // ascii matching trick from https://stackoverflow.com/a/14608823/3806426
-// tests available for now at https://regex101.com/r/dIHC4y/1
+// tests available for now at https://regex101.com/r/Oxu9j2/1
 const placeholderPattern = "^.*{{2}[ -~]+}{2}.*$";
 
 // take the TD Schema
