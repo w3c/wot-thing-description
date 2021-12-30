@@ -26,7 +26,7 @@ const validTMs = [
         "forms": [
           {
             "href": "https://example.com",
-            "op": "{{INVALID-PLACEHOLDER}}"
+            "op": "{{MY_PLACEHOLDER}}"
           }
         ]
     },
@@ -39,7 +39,7 @@ const validTMs = [
         "$comment":"example 3 of the spec",
         "@context": ["http://www.w3.org/ns/td"], 
         "@type" : "tm:ThingModel",
-        "title": "Lamp Thing Model",
+        "title": "Valid Model 4",
         "properties": {
             "status": {
                 "description": "current status of the lamp (on|off)",
@@ -63,7 +63,7 @@ const validTMs = [
         "$comment":"example 51 of the spec",
         "@context": ["http://www.w3.org/ns/td"], 
         "@type" : "tm:ThingModel",
-        "title": "Basic On/Off Thing Model",
+        "title": "Valid Model 5",
         "properties": {
             "onOff": {
                 "type": "boolean"
@@ -74,7 +74,7 @@ const validTMs = [
         "$comment":"example 52",
         "@context": ["http://www.w3.org/ns/td"], 
         "@type" : "tm:ThingModel",
-        "title": "Smart Lamp Control with Dimming",
+        "title": "Valid Model 6",
         "links" : [{
             "rel": "tm:extends",
             "href": "http://example.com/BasicOnOffTM",
@@ -92,7 +92,7 @@ const validTMs = [
         "$comment":"example 53 of the spec",
         "@context": ["http://www.w3.org/ns/td"], 
         "@type" : "tm:ThingModel",
-        "title": "Smart Lamp Control",
+        "title": "Valid Model 7",
         "properties" : {
             "switch" : {
                 "tm:ref" :"http://example.com/BasicOnOffTM.tm.jsonld#/properties/onOff"
@@ -103,7 +103,7 @@ const validTMs = [
         "$comment":"example 54 of the spec",
         "@context": ["http://www.w3.org/ns/td"], 
         "@type" : "tm:ThingModel",
-        "title": "Smart Lamp Control",
+        "title": "Valid Model 8",
         "properties" : {
             "dimming" : {
                 "tm:ref" :"http://example.com/SmartLampControlwithDimming.tm.jsonld#/properties/dim",
@@ -116,7 +116,7 @@ const validTMs = [
         "$comment":"example 55 of the spec",
         "@context": ["http://www.w3.org/ns/td"], 
         "@type" : "tm:ThingModel",
-        "title": "Smart Lamp Control",
+        "title": "Valid Model 9",
         "links" : [{
             "rel": "extends",
             "href": "http://example.com/BasicOnOffTM",
@@ -132,7 +132,7 @@ const validTMs = [
        }
     },
     {
-        "$comment":"example 56 of the spec",
+        "$comment":"example 56 of the spec. Valid Model 10",
         "@context": ["http://www.w3.org/ns/td"], 
         "@type" : "tm:ThingModel",
         "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
@@ -151,7 +151,7 @@ const validTMs = [
         "$comment":"example 57 of the spec",
         "@context": ["http://www.w3.org/ns/td"], 
         "@type" : "tm:ThingModel",
-        "title": "Lamp Thing Model",
+        "title": "Valid Model 11",
         "description": "Lamp Thing Description Model",
         "tm:required": [
             "#/properties/status",
@@ -196,18 +196,18 @@ const invalidTMs = [
     {
         "$comment":"absence of @type",
         "@context": ["http://www.w3.org/ns/td"],
-        "title": "Invalid model 2"
+        "title": "Invalid model 1"
     },
     {
         "$comment":"absence of @context",
         "@type" : "tm:ThingModel",
-        "title": "Valid model 2"
+        "title": "Invalid model 2"
     },
     {
         "$comment":"single curly bracket",
         "@context": ["http://www.w3.org/ns/td"], 
         "@type" : "tm:ThingModel",
-        "title": "Valid model 1",
+        "title": "Invalid model 3",
         "securityDefinitions": {
             "example_sc": {
                 "scheme": "{PLACEHOLDER}"
@@ -219,7 +219,7 @@ const invalidTMs = [
         "$comment":"no curly bracket",
         "@context": ["http://www.w3.org/ns/td"], 
         "@type" : "tm:ThingModel",
-        "title": "Valid model 1",
+        "title": "Invalid model 4",
         "securityDefinitions": {
             "example_sc": {
                 "scheme": "PLACEHOLDER"
@@ -230,14 +230,19 @@ const invalidTMs = [
 ];
 
 validTMs.forEach(element => {
-    const valid = ajv.validate(tmSchema,element)
-    if (!valid) console.log(ajv.errors)
+    const valid = ajv.validate(JSON.parse(tmSchema),element)
+    if (!valid) {
+        console.log(element)
+        console.log(ajv.errors)
+    }
     assert.strictEqual(valid,true)
 });
 
 invalidTMs.forEach(element => {
-    const valid = ajv.validate(tmSchema,element)
-    console.log(valid)
-    console.log(element)
+    const valid = ajv.validate(JSON.parse(tmSchema),element)
+    if (valid) {
+        console.log(element)
+        console.log(ajv.errors)
+    }
     assert.strictEqual(valid,false)
 });
