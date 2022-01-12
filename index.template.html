@@ -5830,76 +5830,142 @@ instance.
               which must be submitted through the <code>subscribeevent</code> form.
               The read-only parameter <code>subscriptionID</code> is returned by the subscription.
               The <i>WebhookThing</i> will then periodically POST to this callback URI with a payload defined by <code>data</code>.
-              To unsubscribe, the <a>Consumer</a> has to submit the <code>unsubscribeevent</code> form,
-              which makes use of a URI Template.
-              The <code>uriVariables</code> member informs the <a>Consumer</a> to include the <code>subscriptionID</code> string.
-              This can be further automated by using a <a>TD Context Extension</a> to include proper semantic annotations.
-              Alternatively, one can imagine unsubscribing using the <code>cancellation</code> member similarly to <code>subscription</code>
-              and combine this with a <code>unsubscribeevent</code> form that describes a POST request with payload to unsubscribe.
+              To unsubscribe, the <a>Consumer</a> has to submit the <code>unsubscribeevent</code> form with the <code>subscriptionID</code> as described in <code>cancellation</code>.
+              Alternatively, <code>uriVariables</code> approache can be used that informs the <a>Consumer</a> to include the <code>subscriptionID</code> string 
+              into the URI that have to be called with the delete method (see tab 'With uriVariables'). In such setup, the <code>cancellation</code> container can be obmitted.
+              In general, this example can be further automated by using a <a>TD Context Extension</a> to include proper semantic annotations.
           </li>
       </ul>
-    
-<pre class="example" title="Temperature Event with subscription and cancellation">
-{
-    "@context": "https://www.w3.org/2022/wot/td/v1.1",
-    "id": "urn:dev:ops:32473-Thing-1234",
-    "title": "WebhookThing",
-    "description": "Webhook-based Event with subscription and unsubscribe form.",
-    "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
-    "security": ["nosec_sc"],
-    "events": {
-        "temperature": {
-            "description": "Provides periodic temperature value updates.",
-            "subscription": {
-                "type": "object",
-                "properties": {
-                    "callbackURL": {
-                        "type": "string",
-                        "format": "uri",
-                        "description": "Callback URL provided by subscriber for Webhook notifications.",
-                        "writeOnly": true
+
+
+
+<aside class="example ds-selector-tabs" ><div class="marker">
+    <span class="example-title">Temperature Event with subscription and cancellation</span>
+     </div>
+       <div class="selectors">
+         <button class="selected exampleTab1 without" onclick="openTab('exampleTab1', 'without')">Without uriVariables</button>
+         <button class="exampleTab1 with"         onclick="openTab('exampleTab1', 'with')">With uriVariables</button>
+       </div>
+       <pre class="without exampleTab1 selected ">
+        {
+            "@context": "http://www.w3.org/ns/td",
+            "id": "urn:dev:ops:32473-Thing-1234",
+            "title": "WebhookThing",
+            "description": "Webhook-based Event with subscription and unsubscribe form.",
+            "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+            "security": ["nosec_sc"],
+            "events": {
+                "temperature": {
+                    "description": "Provides periodic temperature value updates.",
+                    "subscription": {
+                        "type": "object",
+                        "properties": {
+                            "callbackURL": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "Callback URL provided by subscriber for Webhook notifications.",
+                                "writeOnly": true
+                            },
+                            "subscriptionID": {
+                                "type": "string",
+                                "description": "Unique subscription ID for cancellation provided by WebhookThing.",
+                                "readOnly": true
+                            }
+                        }
                     },
-                    "subscriptionID": {
-                        "type": "string",
-                        "description": "Unique subscription ID for cancellation provided by WebhookThing.",
-                        "readOnly": true
-                    }
+                    "data": {
+                        "type": "number",
+                        "description": "Latest temperature value that is sent to the callback URL."
+                    },
+                    "cancellation": {
+                        "type": "object",
+                        "properties": {
+                            "subscriptionID": {
+                                "type": "integer",
+                                "description": "Required subscription ID to cancel subscription.",
+                                "writeOnly": true
+                            }
+                        }
+                    },
+                    "forms": [
+                        {
+                            "op": "subscribeevent",
+                            "href": "http://192.168.0.124:8080/events/temp/subscribe",
+                            "contentType": "application/json",
+                            "htv:methodName": "POST"
+                        },
+                        {
+                            "op": "unsubscribeevent",
+                            "href": "http://192.168.0.124:8080/events/temp/cancel",
+                            "htv:methodName": "POST"
+                        }
+                    ]
                 }
-            },
-            "data": {
-                "type": "number",
-                "description": "Latest temperature value that is sent to the callback URL."
-            },
-            "cancellation": {
-                "type": "object",
-                "properties": {
-                    "subscriptionID": {
-                        "type": "integer",
-                        "description": "Required subscription ID to cancel subscription.",
-                        "writeOnly": true
-                    }
-                }
-            },
-            "uriVariables": {
-                "subscriptionID": { "type": "string" }
-            },
-            "forms": [
-                {
-                    "op": "subscribeevent",
-                    "href": "http://192.168.0.124:8080/events/temp/subscribe",
-                    "contentType": "application/json",
-                    "htv:methodName": "POST"
-                },
-                {
-                    "op": "unsubscribeevent",
-                    "href": "http://192.168.0.124:8080/events/temp/{subscriptionID}",
-                    "htv:methodName": "DELETE"
-                }
-            ]
+            }
         }
-    }
-}
-</pre>
+       </pre>
+       <pre class="with exampleTab1">
+        {
+            "@context": "http://www.w3.org/ns/td",
+            "id": "urn:dev:ops:32473-Thing-1234",
+            "title": "WebhookThing",
+            "description": "Webhook-based Event with subscription and unsubscribe form.",
+            "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+            "security": ["nosec_sc"],
+            "events": {
+                "temperature": {
+                    "description": "Provides periodic temperature value updates.",
+                    "subscription": {
+                        "type": "object",
+                        "properties": {
+                            "callbackURL": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "Callback URL provided by subscriber for Webhook notifications.",
+                                "writeOnly": true
+                            },
+                            "subscriptionID": {
+                                "type": "string",
+                                "description": "Unique subscription ID for cancellation provided by WebhookThing.",
+                                "readOnly": true
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "number",
+                        "description": "Latest temperature value that is sent to the callback URL."
+                    },
+                    "uriVariables": {
+                        "subscriptionID": { "type": "string" }
+                    },
+                    "forms": [
+                        {
+                            "op": "subscribeevent",
+                            "href": "http://192.168.0.124:8080/events/temp/subscribe",
+                            "contentType": "application/json",
+                            "htv:methodName": "POST"
+                        },
+                        {
+                            "op": "unsubscribeevent",
+                            "href": "http://192.168.0.124:8080/events/temp/{subscriptionID}",
+                            "htv:methodName": "DELETE"
+                        }
+                    ]
+                }
+            }
+        }
+       </pre>
+     </aside>
+
+     <p class="ednote">
+        Instead of a periodically POST call of the Thing the consumer may provide a response data with information when the next POST should be 
+        provided by the Thing. The WoT WG is currently working on a definition that covers this scenario for the next update of the TD document (W3C TD 1.1 CR).   
+      </p>
+    
+
+
+
+
 
     </section>
   </section>
