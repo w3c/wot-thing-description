@@ -27,7 +27,7 @@
     sh:closed false ;
     sh:order 1 ;
     sh:property [
-        sh:path dcterms:title ;
+        sh:path td:title ;
         skos:definition """Provides a human-readable title (e.g., display
                 a text for UI representation) based on a default
                 language."""^^rdf:HTML ;
@@ -108,7 +108,7 @@
     ] ;
     sh:property [
         sh:path td:hasPropertyAffordance ;
-        skos:definition """All Property-based <a href='dfn-interaction-affordance' class="internalDFN" data-link-type="dfn">Interaction Affordances</a>
+        skos:definition """All Property-based <a href='#dfn-interaction-affordance' class="internalDFN" data-link-type="dfn">Interaction Affordances</a>
                   of the Thing."""^^rdf:HTML ;
         sh:node :PropertyAffordanceShape ;
         sh:order 10 ;
@@ -153,7 +153,7 @@
         sh:order 15 ;
     ] ;
     sh:property [
-        sh:path td:securityDefinitions ;
+        sh:path td:definesSecurityScheme ;
         skos:definition """Set of named security configurations
                 (definitions only). Not actually applied unless
                 names are used in a <code>security</code>
@@ -181,15 +181,17 @@
           "td-context-ns-thing-mandatory">The <code>@context</code>
           name-value pair <em class="rfc2119" title=
           "MUST">MUST</em> contain the anyURI
-          <code>https://www.w3.org/2019/wot/td/v1</code> either
-          directly when of type <code>anyURI</code> or as first
-          element when of type <a href="#dfn-array" class=
-          "internalDFN" data-link-type="dfn">Array</a>.</span>
+          <code>https://www.w3.org/2022/wot/td/v1.1</code>
+          in order to identify the document as a TD 1.1 which would allow <a>Consumers</a> to use the newly introduced terms. When there are possibly TD 1.0 consumers the anyURI
+          <code>https://www.w3.org/2019/wot/td/v1</code>
+          <em class="rfc2119" title=
+          "MUST">MUST</em> be the first entry and the <code>https://www.w3.org/2022/wot/td/v1.1</code> <em class="rfc2119" title=
+          "MUST">MUST</em> be the second entry.</span>
           <span class="rfc2119-assertion" id=
           "td-context-ns-thing-optional">When <code>@context</code>
           is an <a href="#dfn-array" class="internalDFN"
           data-link-type="dfn">Array</a>, the anyURI
-          <code>https://www.w3.org/2019/wot/td/v1</code> <em class=
+          <code>https://www.w3.org/2022/wot/td/v1.1</code> <em class=
           "rfc2119" title="MAY">MAY</em> be followed by elements of
           type <code>anyURI</code> or type <a href="#dfn-map"
           class="internalDFN" data-link-type="dfn">Map</a> in any
@@ -199,6 +201,7 @@
           "dfn">Map</a> with all the name-value pairs in the
           <code>@context</code> <a href="#dfn-array" class=
           "internalDFN" data-link-type="dfn">Array</a>.</span>
+
           <span class="rfc2119-assertion" id=
           "td-context-ns-thing-map-of-namespaces"><a href=
           "#dfn-map" class="internalDFN" data-link-type=
@@ -293,8 +296,8 @@
           class="internalDFN" data-link-type="dfn">Interaction
           Affordances</a> in the <code>properties</code>,
           <code>actions</code>, and <code>events</code> <a href=
-          "#dfn-array" class="internalDFN" data-link-type=
-          "dfn">Arrays</a>, a <a href="#dfn-thing" class=
+          "#dfn-map" class="internalDFN" data-link-type=
+          "dfn">Maps</a>, a <a href="#dfn-thing" class=
           "internalDFN" data-link-type="dfn">Thing</a> can also
           provide meta-interactions, which are indicated by
           <code>Form</code> instances in its optional
@@ -374,8 +377,8 @@
 :PropertyAffordanceShape a sh:NodeShape ;
     sh:targetClass td:PropertyAffordance ;
     skos:definition """An Interaction Affordance that exposes state of the
-          Thing. This state can then be retrieved (read) and
-          optionally updated (write). Things can also choose to
+          Thing. This state can then be retrieved (read) and/or updated (write).
+           Things can also choose to
           make Properties observable by pushing the new state after
           a change."""^^rdf:HTML ;
     sh:closed false ;
@@ -406,7 +409,11 @@
           containing a combination of these terms.</span></p><p class="note">
 		  It is considered to be good practice that each <code>observeproperty</code> has a corresponding
 		  <code>unobserveproperty</code> unless the protocol supports implicit unsubscription mechanisms
-		  (e.g., heartbeat to detect connection loss).</p>"""^^rdf:HTML .
+		  (e.g., heartbeat to detect connection loss).</p><p class="note">
+		  The observation mechanism depends on the underlying protocol or sub-protocol. Having said that, it is not 
+          guaranteed that the current <a>Property</a> value will be provided once the subscription is initiated. Hence, it may be 
+          necessary to read the current <a>Property</a> value before/after the subscription to get a first value. 
+          </p>"""^^rdf:HTML .
 		  
 :ActionAffordanceShape a sh:NodeShape ;
     sh:targetClass td:ActionAffordance ;
@@ -511,6 +518,16 @@
           <a href="#dfn-array" class="internalDFN" data-link-type="dfn">Array</a>.</span></p><p class="note">
 		  It is considered to be good practice that each <code>subscribeevent</code> has a corresponding <code>unsubscribeevent</code> unless the protocol
 		  supports implicit unsubscription mechanisms (e.g., heartbeat to detect connection loss).</p>"""^^rdf:HTML .
+
+:MultiLanguageShape a sh:NodeShape ;
+    sh:targetClass td:MultiLanguage ;
+    skos:definition """<p>A <a>Map</a> providing a set of human-readable texts in different languages identified by language tags described in [[BCP47]]. See <a href="#titles-descriptions-serialization-json"></a> for example usages of this container in a Thing Description instance.</p>
+            <p><span class="rfc2119-assertion" id="td-multilanguage-language-tag">Each name of the <code>MultiLanguage</code> <a>Map</a> MUST be a language tag as defined in [[!BCP47]].</span>
+            <span class="rfc2119-assertion" id="td-multilanguage-value"> Each value of the <code>MultiLanguage</code> <a>Map</a> MUST be of type <code>string</code>. </span> </p>"""^^rdf:HTML ;
+    sh:closed false ;
+    sh:order 18 .
+
+
 
 :VersionInfoShape a sh:NodeShape ;
     sh:targetClass td:VersionInfo ;
@@ -1144,7 +1161,7 @@
           response message for the primary response."""^^rdf:HTML ;
     sh:closed false ;
     sh:order 9 ;
-     sh:property [
+    sh:property [
         sh:path hctl:forContentType ;
         skos:definition """Assign a content type based on a media type
                 (e.g., <code>text/plain</code>) and potential
@@ -1341,8 +1358,8 @@
     # FIXME should be exactly one of oneOf or allOf
     sh:property _:oneOf ;
     sh:property _:allOf ;
-    skos:scopeNote """<p class="ednote" title="Recursive Use">The 
-<a href="#combosecurityscheme">ComboSecurityScheme</a> may be applied recursively to generate Boolean expressions for combinations of security schemes. One use case for this is when multiple security schemes are needed for a proxy in combination with multiple security schemes for an endpoint.  Suppose for example a proxy accepts either schemes A or B, and then the endpoint accepts either C or D.  Then the possible combinations are AC, AD, BC, and BD.  These could be expressed directly at the <code>Form</code> level but would require four-fold redundancy.  Instead, three <code>combo</code> nodes can be used to combine the four leaf schemes in the correct way into a single scheme.  It is not clear however if other use cases exist for deeper expression trees and if not, we may consider limiting the recursion depth to two.</p>"""^^rdf:HTML .
+    skos:scopeNote """<!-- <p class="ednote" title="Recursive Use">The 
+<a href="#combosecurityscheme">ComboSecurityScheme</a> may be applied recursively to generate Boolean expressions for combinations of security schemes. One use case for this is when multiple security schemes are needed for a proxy in combination with multiple security schemes for an endpoint.  Suppose for example a proxy accepts either schemes A or B, and then the endpoint accepts either C or D.  Then the possible combinations are AC, AD, BC, and BD.  These could be expressed directly at the <code>Form</code> level but would require four-fold redundancy.  Instead, three <code>combo</code> nodes can be used to combine the four leaf schemes in the correct way into a single scheme.  It is not clear however if other use cases exist for deeper expression trees and if not, we may consider limiting the recursion depth to two.</p>-->"""^^rdf:HTML .
 
 :BasicSecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:BasicSecurityScheme ;
@@ -1538,7 +1555,8 @@
             defined in [[!RFC8628]]. The mandatory elements for each flow are summarized in the
             following table:
             <table class="def"> <tr><th>Element</th><th><code>code</code></th><th><code>client</code></th><th><code>device</code></th></tr> <tr><td><code>authorization</code></td><td>mandatory</td><td>omit</td><td>mandatory; refers to device authorization endpoint</td></tr> <tr><td><code>token</code></td><td>mandatory</td><td>mandatory</td><td>mandatory</td></tr> <tr><td><code>refresh</code></td><td>optional</td><td>optional</td><td>optional</td></tr> </table>
-            </p><p class="ednote"> Note that the <code>OAuth2SecurityScheme</code> class definition lists these elements as "optional". 
+            </p><!-- 
+	    <p class="ednote"> Note that the <code>OAuth2SecurityScheme</code> class definition lists these elements as "optional". 
             In fact whether they are mandatory or not depends on the flow.  The <code>token</code>
             element is listed as optional even though it is mandatory for all predefined flows
             since it might not be mandatory for some flows defined in an extension.  We should
@@ -1560,7 +1578,8 @@
             the regular authorization endpoint there should be no ambiguity.  We are considering
             however an alternative design where there is a separate element,
             <code>device_authorization</code>, which MUST be included for the <code>device</code>
-            flow (and then the regular authorization endpoint then MUST NOT be used).</p>"""^^rdf:HTML .
+            flow (and then the regular authorization endpoint then MUST NOT be used).</p>
+	    -->"""^^rdf:HTML .
     
 :DataSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:DataSchema ;
@@ -1815,7 +1834,7 @@
     
 :ObjectSchemaShape a sh:NodeShape ;
     sh:targetClass jsonschema:ObjectSchema ;
-    skos:definition """Metadata describing data of type <code>object</code>.
+    skos:definition """Metadata describing data of type <a href="#dfn-object" class="internalDFN" data-link-type="dfn">Object</a>.
           This <a href="#dfn-subclass" class="internalDFN" data-link-type="dfn">Subclass</a> is indicated by the
           value <code>object</code> assigned to <code>type</code>
           in <code>DataSchema</code> instances."""^^rdf:HTML ;
@@ -1859,7 +1878,7 @@
     ] ;
     sh:property [
         sh:path jsonschema:pattern ;
-        skos:definition """Provides a regular expressions to express constraints of the string value. The regular expression must follow the [[ECMA-262]] dialect."""^^rdf:HTML ;
+        skos:definition """Provides a regular expression to express constraints of the string value. The regular expression must follow the [[ECMA-262]] dialect."""^^rdf:HTML ;
         sh:datatype xsd:string ;
         sh:maxCount 1 ;
         sh:order 3 ;
@@ -1904,7 +1923,7 @@
     sh:closed false ;
     sh:order 8 .
 
-_:title sh:path dcterms:title ;
+_:title sh:path td:title ;
         skos:definition """Provides a human-readable title (e.g., display
                 a text for UI representation) based on a default
                 language."""^^rdf:HTML ;
@@ -1912,25 +1931,25 @@ _:title sh:path dcterms:title ;
         sh:maxCount 1 ;
         sh:order 1 .
 
-_:titles sh:path dcterms:title ;
+_:titles sh:path td:titleInLanguage ;
          skos:definition """Provides multi-language human-readable titles
                 (e.g., display a text for UI representation in
                 different languages). Also see <cite><a href='#multilanguage'>MultiLanguage</a></cite>."""^^rdf:HTML ;
-         sh:datatype xsd:string ;
+         sh:node :MultiLanguageShape ;
        	 sh:uniqueLang true ;
          sh:order 2 .
 
-_:description sh:path dcterms:description ;
+_:description sh:path td:description ;
               skos:definition """Provides additional (human-readable)
                       information based on a default language."""^^rdf:HTML ;
               sh:datatype xsd:string ;
               sh:maxCount 1 ;
               sh:order 3 .
 
-_:descriptions sh:path dcterms:description ;
+_:descriptions sh:path td:descriptionInLanguage ;
                skos:definition """Can be used to support (human-readable)
                        information in different languages. Also see <cite><a href='#multilanguage'>MultiLanguage</a></cite>."""^^rdf:HTML ;
-               sh:datatype xsd:string ;
+               sh:node :MultiLanguageShape ;
        		   sh:uniqueLang true ;
                sh:order 4 .
 
@@ -1938,6 +1957,7 @@ _:in sh:path wotsec:in ;
      skos:definition """Specifies the location of security
             authentication information.  """^^rdf:HTML ;
      sh:datatype xsd:string ;
+     sh:defaultValue "header"^^xsd:string ;
      sh:maxCount 1 ;
      sh:in (
         "header"
@@ -1946,7 +1966,6 @@ _:in sh:path wotsec:in ;
         "cookie"
         "uri"
     );
-    sh:defaultValue "header"^^xsd:string ;
     sh:order 100 .
 
 _:name sh:path wotsec:name ;

@@ -133,27 +133,34 @@ template :field(?class ?ns) {
         "<td>"
             format {
                 "%s"
-                if(?hasDefault || ?prop = <https://www.w3.org/2019/wot/hypermedia#hasOperationType>,
+
+                 # work around only for forOperationType, in, qop etc.
+                if(?hasDefault || ?prop = <https://www.w3.org/2019/wot/hypermedia#hasOperationType> || ?prop = <https://www.w3.org/2019/wot/security#in> 
+                || ?prop = <https://www.w3.org/2019/wot/security#qop> || ?prop = <https://www.w3.org/2019/wot/security#alg> || ?prop = <https://www.w3.org/2019/wot/security#format> ,
                    "<a href=\"#sec-default-values\">with default</a>",
                    if(?mandatory, "mandatory", "optional"))
             }
         "</td>"
         "<td>"
-            format {
-                "%s%s"
-                if(?array, "<a>Array</a> of ",
-                if(?map, "<a>Map</a> of ",
-                if(!?singleton && ?hasType,
-                   concat(st:call-template(:type, ?class, ?prop, ?ns), " or <a>Array</a> of "),
-                   "")))
-                if(?hasType, st:call-template(:type, ?class, ?prop, ?ns), "any type")
-            }
-            format {
-                "%s%s%s"
-                if(?hasEnum, " (", "")
-                st:call-template(:enum, ?class, ?prop, ?ns, 0)
-                if(?hasEnum, ")", "")
-            }
+
+            # work around only for description(s) and title(s) otherwise it returns 'string MultiLanguage' at the same time
+             if ((?prop = <http://purl.org/dc/terms/description> || ?prop = <http://purl.org/dc/terms/title>),
+                if(?map, "<a href=\"#multilanguage\"><code>MultiLanguage</code></a>", "<a href=\"https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string\"><code>string</code></a>"),
+
+                    # start the normal processing 
+                    concat(
+                        if(?array, "<a>Array</a> of ",
+                            if(?map, "<a>Map</a> of ",
+                            if(!?singleton && ?hasType,
+                            concat(st:call-template(:type, ?class, ?prop, ?ns), " or <a>Array</a> of "),
+                            ""))),
+                        if(?hasType, st:call-template(:type, ?class, ?prop, ?ns), "any type"),                
+                        if(?hasEnum, " (", ""),
+                        st:call-template(:enum, ?class, ?prop, ?ns, 0),
+                        if(?hasEnum, ")", "")
+                    )
+                
+            )
         "</td>"
     "</tr>"
 } where {
@@ -349,15 +356,15 @@ template :default-label(?term) {
     format { "%s" strafter(str(?term), "#") }
 } where {}
 
-template :desc(?term) {
-    format {
-        "%s%s"
-        if(strends(?desc, "."), ?desc, concat(?desc, "."))
-        if(?term = <https://www.w3.org/2019/wot/td#MultiLanguage>, 
-            " See <a href=\"#titles-descriptions-serialization-json\"></a> for example usages of this container in a Thing Description instance.",
-            "")
-
-    } ; separator = " "
-} where {
-    ?term rdfs:comment ?desc .
-}
+#template :desc(?term) {
+#    format {
+#        "%s%s"
+#        if(strends(?desc, "."), ?desc, concat(?desc, "."))
+#        if(?term = <https://www.w3.org/2019/wot/td#MultiLanguage>, 
+#            " See <a href=\"#titles-descriptions-serialization-json\"></a> for example usages of this container in a Thing Description instance.",
+#            "")
+#
+#    } ; separator = " "
+#} where {
+#    ?term rdfs:comment ?desc .
+#}
