@@ -53,8 +53,8 @@ const setPath = (object, path, value) => path
 
 // regex/pattern to be used for strings when we want to enforce the {{PLACEHOLDER}} pattern
 // ascii matching trick from https://stackoverflow.com/a/14608823/3806426
-// tests available for now at https://regex101.com/r/dIHC4y/1
-const placeholderPattern = "{{2}[ -~]+}{2}";
+// tests available for now at https://regex101.com/r/Oxu9j2/1
+const placeholderPattern = "^.*[{]{2}[ -~]+[}]{2}.*$";
 
 // take the TD Schema
 let tdSchema = JSON.parse(fs.readFileSync('validation/td-json-schema-validation.json'));
@@ -185,7 +185,7 @@ function replaceEnum(argObject) {
         delete argObject.enum;
         // the following will not work if somehow there is an enum and oneOf at the same time
         // in the TD Schema. It will replace the oneOf with this 
-        argObject.oneOf = [
+        argObject.anyOf = [
             {enum:newEnum},
             {
                 "type":"string",
