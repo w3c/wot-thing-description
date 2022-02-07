@@ -101,6 +101,24 @@ can even include systems whose compromise would have safety implications.
 ### 4 [How do the features in your specification deal with sensitive information?](https://www.w3.org/TR/security-privacy-questionnaire/#sensitive-data)
 
 ### 5 [Do the features in your specification introduce new state for an origin that persists across browsing sessions?](https://www.w3.org/TR/security-privacy-questionnaire/#persistent-origin-specific-state)
+**No**, for both the interpretation of "session" as a browser session
+and as a WoT Runtime instance.
+
+This is not a browser-oriented specification although
+WoT Things can be accessed through browsers as if they
+were web services. 
+However, no new state is introduced or required in browsers beyond
+current mechanisms (cookies, etc).
+
+WoT Things can also act as clients, however, accessing
+web services and other WoT Things acting as servers.
+It is also possible that the same device could instantiate
+multiple WoT Runtimes.  However, there is no mechanism provided
+for sharing state between such instances. Therefore if we consider each instance
+to be a session, then no state can be shared across such "sessions", 
+at least via implicit internal mechanisms.
+Of course these instances could define and engage in explicit network interactions
+and share information that way.
 
 ### 6 [Do the features in your specification expose information about the underlying platform to origins?](https://www.w3.org/TR/security-privacy-questionnaire/#underlying-platform-data)
 
@@ -134,10 +152,8 @@ by the device can be determined.
 ### 14 [How do the features in this specification work in the context of a browser’s Private Browsing or Incognito mode?](https://www.w3.org/TR/security-privacy-questionnaire/#private-browsing)
 
 ### 15 [Does this specification have both "Security Considerations" and "Privacy Considerations" sections?](https://www.w3.org/TR/security-privacy-questionnaire/#considerations)
-**Yes**.
-
-Mitigations for each security and privacy consideration are discussed in
-the appropriate sections of this document as well as the
+**Yes**.  Also, mitigations for each security and privacy consideration are discussed in
+the appropriate sections of the document as well as the
 [WoT Security and Privacy Guidelines](https://github.com/w3c/wot-security/) document.
 
 ### 16 [Do features in your specification enable origins to downgrade default security protections?](https://www.w3.org/TR/security-privacy-questionnaire/#relaxed-sop)
