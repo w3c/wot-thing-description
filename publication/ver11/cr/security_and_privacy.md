@@ -120,6 +120,32 @@ users (for example, via a directory service protected by access controls or to a
 and only be cached for a limited time.
 
 ### 4 [How do the features in your specification deal with sensitive information?](https://www.w3.org/TR/security-privacy-questionnaire/#sensitive-data)
+**TODO**.  This was a response to a question about "high-value" data but the actual description
+was about credential management (which is one form of sensitive information).
+This needs to be updated and aligned with the details of the question and 
+perhaps discuss other forms of sensitive data (e.g. financial information).
+
+**Yes.**  A WoT Thing may both require credentials to be accessed and
+use credentials to access other devices.  However, these are generally
+to secure M2M communication and are not (or should not be) tied directly to
+user credentials used for other services.  We also
+define an architecture for managing sensitive credentials
+securely.
+
+The WoT architecture deals with the operational phase of IoT devices
+and does not itself specify how credentials are provisioned to devices.
+The WoT Architecture document does however recommend a strict separation
+of private security data from public data and metadata, and
+recommends the use of an isolated private security data subsystem
+in the implementation of IoT devices,
+such as a TPM (Trusted Platform Module).
+
+The WoT Runtime and WoT Scripting API are defined in such a way
+that they do not have direct access to private credentials.
+Instead, an "abstract data type" is used in the WoT Protocol Bindings 
+to implement security operations such as authentication and encryption.
+These operations can be implemented in such a way that they do not
+reveal private security data to WoT Applications or to other devices.
 
 ### 5 [Do the features in your specification introduce new state for an origin that persists across browsing sessions?](https://www.w3.org/TR/security-privacy-questionnaire/#persistent-origin-specific-state)
 **No**, for both the interpretation of "session" as a browser session
