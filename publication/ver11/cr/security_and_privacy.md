@@ -216,11 +216,20 @@ architecture and is also currently considered to be out of scope.
 ### 14 [How do the features in this specification work in the context of a browser’s Private Browsing or Incognito mode?](https://www.w3.org/TR/security-privacy-questionnaire/#private-browsing)
 
 ### 15 [Does this specification have both "Security Considerations" and "Privacy Considerations" sections?](https://www.w3.org/TR/security-privacy-questionnaire/#considerations)
-**Yes**.  Also, mitigations for each security and privacy consideration are discussed in
-the appropriate sections of the document as well as the
+**Yes**.  These sections in the WoT Thing Description document are
+specific to the Thing Description.
+Some more general considerations are also given in the WoT Architecture document.
+Mitigations for each security and privacy consideration are discussed in
+the appropriate sections of these document as well as the
 [WoT Security and Privacy Guidelines](https://github.com/w3c/wot-security/) document.
 
 ### 16 [Do features in your specification enable origins to downgrade default security protections?](https://www.w3.org/TR/security-privacy-questionnaire/#relaxed-sop)
+**No**.  A WoT Thing Description describes what a WoT Thing does and
+requires, no more and no less.
+There is however an option in the WoT Thing Description to specify
+use of one of several different alternative security mechanisms to access a resource.
+The designer of a WoT Server needs to ensure that the least secure alternative
+is sufficiently secure for the intended application.
 
 ### 17 [How does your feature handle non-"fully active" documents?](https://www.w3.org/TR/security-privacy-questionnaire/#non-fully-active)
 
