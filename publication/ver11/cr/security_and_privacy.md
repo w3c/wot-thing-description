@@ -225,6 +225,7 @@ their software development process.
 ### 13 [How does this specification distinguish between behavior in first-party and third-party contexts?](https://www.w3.org/TR/security-privacy-questionnaire/#first-third-party)
 
 ### 14 [How do the features in this specification work in the context of a browser’s Private Browsing or Incognito mode?](https://www.w3.org/TR/security-privacy-questionnaire/#private-browsing)
+**N/A**.  This concept is not applicable to the WoT context, as there is no user agent.
 
 ### 15 [Does this specification have both "Security Considerations" and "Privacy Considerations" sections?](https://www.w3.org/TR/security-privacy-questionnaire/#considerations)
 **Yes**.  These sections in the WoT Thing Description document are
