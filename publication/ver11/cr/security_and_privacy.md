@@ -208,6 +208,17 @@ architecture and is also currently considered to be out of scope.
 ### 10 [Do features in this specification allow an origin to access other devices?](https://www.w3.org/TR/security-privacy-questionnaire/#remote-device)
 
 ### 11 [Do features in this specification allow an origin some measure of control over a user agent’s native UI?](https://www.w3.org/TR/security-privacy-questionnaire/#native-ui)
+**No**.  The WoT Architecture is M2M and makes no mention of direct
+user interfaces.
+
+However, some devices connected via the WoT may have
+local user interfaces of various kinds (buttons, speakers, displays, etc.)
+which might be exposed to control
+over network interactions.
+Exposure of such controls
+is at the discretion of individual device manufacturers,
+who should do an analysis of security risks as part of
+their software development process.
 
 ### 12 [What temporary identifiers do the features in this specification create or expose to the web?](https://www.w3.org/TR/security-privacy-questionnaire/#temporary-id)
 
