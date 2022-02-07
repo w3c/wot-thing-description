@@ -97,6 +97,27 @@ can even include systems whose compromise would have safety implications.
 ### 2 [Do features in your specification expose the minimum amount of information necessary to enable their intended uses?](https://www.w3.org/TR/security-privacy-questionnaire/#minimum-data)
 
 ### 3 [How do the features in your specification deal with personal information, personally-identifiable information (PII), or information derived from them?](https://www.w3.org/TR/security-privacy-questionnaire/#personal-data)
+**TO DO**: The following is the answer to a slightly different question, about *whether* we have PII.  It needs to be updated.
+
+**Yes, Indirectly.**  The WoT Thing Description describes IoT devices and may include
+information such as location and type.  If these devices can be associated
+with an owner, then it may be possible to infer information about the
+owner.  For example, if a user is associated with a device as an owner,
+and that device is a baby monitor, then the user may have a baby,
+the user is probably in a certain age range, and so forth.
+
+The WoT Thing Description (TD) also allows extension via the inclusion
+of custom vocabularies.  Although the WoT standard itself does not
+have any requirement for PII, it is possible an extension might.  We
+consider this aspect of PII inclusion to be out of scope.
+
+As for the indirect risk, in our Security Considerations
+we recommend that as a precaution a 
+WoT Thing Description should be treated _as if_ it contained PII
+and be stored, cached, and transmitted accordingly.  For example,
+we recommend that TDs only be distributed to authorized and authenticated
+users (for example, via a directory service protected by access controls or to a registered owner)
+and only be cached for a limited time.
 
 ### 4 [How do the features in your specification deal with sensitive information?](https://www.w3.org/TR/security-privacy-questionnaire/#sensitive-data)
 
