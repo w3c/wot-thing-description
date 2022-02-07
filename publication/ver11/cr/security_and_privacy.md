@@ -1,20 +1,45 @@
-# W3C Web of Things
+# W3C Web of Things (WoT)
 ## Responses to the W3C Security and Privacy Questionnaire
 
-This document was prepared by the Web of Things Working Group,
-responding to the questions raised in the
-[Self-Review Questionnaire: Security and Privacy](https://www.w3.org/TR/security-privacy-questionnaire/) 
-document published by the W3C TAG. 
-These responses are related to both the 
-[WoT Architecture](https://github.com/w3c/wot-architecture) document
-and the
-[WoT Thing Description](https://github.com/w3c/wot-thing-description) document.
-When a response is specific to one or the other, this will be indicated in the text.
+This document was prepared by the Web of Things (WoT) Working Group,
+responding to the questions raised in the December 16, 2021 version of the 
+[Self-Review Questionnaire: Security and Privacy](https://www.w3.org/TR/2021/NOTE-security-privacy-questionnaire-20211216)
+document published by the W3C and required as part of both Security and Privacy
+Wide Review processes.
 
-Please raise issues specific to the WoT Architecture document on the
-[WoT Architecture GitHub Issue page](https://github.com/w3c/wot-architecture/issues)
-and to the WoT Thing Description document on the
-[WoT Thing Description GitHub Issue page](https://github.com/w3c/wot-thing-description/issues).
+These responses are related specifically to the 
+[Web of Things (WoT) Thing Description](https://github.com/w3c/wot-thing-description) document.
+
+In some cases a question needs to be considered with respect to another document:
+* For the WoT system as a whole we include a set of responses associated with the
+[Web of Things (WoT) Architecture](https://github.com/w3c/wot-architecture) document.
+* The [Web of Things (WoT) Thing Description](https://github.com/w3c/wot-thing-description) 
+specification is about a metadata information model 
+and a file format expressing it, and fulfills a similar function to HTML. 
+Responses related to the information model and the metadata encoding will be associated with this document.
+* The [Web of Things (WoT) Discovery](https://github.com/w3c/wot-discovery) specification
+describes how WoT Thing Descriptions are delivered to WoT Consumers, with WoT Consumers being
+an analogue to browsers and WoT Discovery being an analogue to the HTTP protocol content delivery
+mechanism.  
+Responses related to content delivery will be associated with this document.
+* There is also a [Web of Things (WoT) Profile](https://github.com/w3c/wot-profile) specification
+describing constraints on certain WoT Implementations to improve interoperability.
+Only when such constraints have a security impact they will be discussed in association with that
+document.  Otherwise system satisfying a profile are special cases of the system
+described in the other documents.
+
+In the following we have used this mapping to interpret the various
+questions, and so if a question or part of a question is relevant to content delivery
+then it makes sense to consider it in whole or in part under Discovery, as opposed to
+under Thing Description.
+
+When appropriate we will cross-link our responses to responses associated with these other documents.
+
+Please raise issues specific to specific documents on the appropriate issue tracker:
+* [Web of Things (WoT) Architecture GitHub Issue page](https://github.com/w3c/wot-architecture/issues)
+* [Web of Things (WoT) Thing Description GitHub Issue page](https://github.com/w3c/wot-thing-description/issues)
+* [Web of Things (WoT) Discovery GitHub Issue page](https://github.com/w3c/wot-discovery/issues)
+* [Web of Things (WoT) Profile GitHub Issue page](https://github.com/w3c/wot-profile/issues)
 
 ## Background
 
