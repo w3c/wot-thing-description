@@ -121,12 +121,20 @@ can even include systems whose compromise would have safety implications.
 ### 14 [How do the features in this specification work in the context of a browser’s Private Browsing or Incognito mode?](https://www.w3.org/TR/security-privacy-questionnaire/#private-browsing)
 
 ### 15 [Does this specification have both "Security Considerations" and "Privacy Considerations" sections?](https://www.w3.org/TR/security-privacy-questionnaire/#considerations)
+*Yes*.
+
+Mitigations for each security and privacy consideration are discussed in
+the appropriate sections of this document as well as the
+[WoT Security and Privacy Guidelines](https://github.com/w3c/wot-security/) document.
 
 ### 16 [Do features in your specification enable origins to downgrade default security protections?](https://www.w3.org/TR/security-privacy-questionnaire/#relaxed-sop)
 
 ### 17 [How does your feature handle non-"fully active" documents?](https://www.w3.org/TR/security-privacy-questionnaire/#non-fully-active)
 
 ### 18 [What should this questionnaire have asked?](https://www.w3.org/TR/security-privacy-questionnaire/#missing-questions)
+
+
+
 
 ## OLD Questions and Answers
 These were the responses to the last questionnaire, and
@@ -468,17 +476,4 @@ There is however an option in the WoT Thing Description to specify
 use of one of several different alternative security mechanisms to access a resource.
 The designer of a WoT Server needs to ensure that the least secure alternative
 is sufficiently secure for the intended application.
-
-## Mitigations
-
-Mitigations for each security and privacy consideration are discussed in
-the Security and Privacy Considerations section of this document as well as the
-[WoT Security and Privacy Considerations](https://github.com/w3c/wot-security/)
-document and Security and Privacy Considerations section of each
-document describing a building block of the WoT, such as the
-[WoT Thing Description](https://github.com/w3c/wot-thing-description/),
-[WoT Binding Templates](https://github.com/w3c/wot-binding-templates/),
-and the 
-[WoT Scripting API](https://github.com/w3c/wot-scripting-api/)
-documents.
 
