@@ -107,6 +107,19 @@ can even include systems whose compromise would have safety implications.
 ### 7 [Does this specification allow an origin to send data to the underlying platform?](https://www.w3.org/TR/security-privacy-questionnaire/#send-to-platform)
 
 ### 8 [Do features in this specification enable access to device sensors?](https://www.w3.org/TR/security-privacy-questionnaire/#sensor-data)
+**Yes.**  Many other sensors can be attached to an IoT 
+device and we do not constrain these in any way.
+
+It is the responsibility of the user to only connect and
+provision devices they trust, to select devices with
+good security, and manage the data that is
+collected appropriately.
+
+The metadata provided in the WoT Thing Description
+can be helpful in this regard since the security mechanisms
+supported by a device can be easily inspected and,
+via semantic annotations, the type of data provided
+by the device can be determined.
 
 ### 9 [Do features in this specification enable new script execution/loading mechanisms?](https://www.w3.org/TR/security-privacy-questionnaire/#string-to-script)
 
@@ -121,7 +134,7 @@ can even include systems whose compromise would have safety implications.
 ### 14 [How do the features in this specification work in the context of a browser’s Private Browsing or Incognito mode?](https://www.w3.org/TR/security-privacy-questionnaire/#private-browsing)
 
 ### 15 [Does this specification have both "Security Considerations" and "Privacy Considerations" sections?](https://www.w3.org/TR/security-privacy-questionnaire/#considerations)
-*Yes*.
+**Yes**.
 
 Mitigations for each security and privacy consideration are discussed in
 the appropriate sections of this document as well as the
