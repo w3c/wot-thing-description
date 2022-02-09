@@ -120,6 +120,7 @@ function staticReplace(argObject){
             }
         ]
     }
+    argObject["$id"] = "https://raw.githubusercontent.com/w3c/wot-thing-description/main/validation/tm-json-schema-validation.json"
     return argObject;
 }
 
