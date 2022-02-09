@@ -1199,9 +1199,11 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 name-value pair inside an 
                 <code>AdditionalExpectedResponse</code> object.</td><td>optional</td><td><a>Map</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-uriVariables--Thing"><td><code>uriVariables</code></td><td>Define URI template variables according to [[RFC6570]]  as collection
-                based on DataSchema declarations. The Thing level <code>uriVariables</code> can be used in Thing-level <code>forms</code> or in Interaction Affordances.
+                based on DataSchema declarations. The Thing level <code>uriVariables</code> can be used in Thing-level 
+                <code>forms</code> or in Interaction Affordances.
                 The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema.
-                If the same variable is also declared in Thing-level <code>uriVariables</code>, Interaction Affordance level variable takes precedence.</td><td>optional</td><td><a>Map</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><p><span class="rfc2119-assertion" id=
+                If the same variable is both declared in Thing-level <code>uriVariables</code> and in Interaction Affordance level,
+                 the Interaction Affordance level variable takes precedence.</td><td>optional</td><td><a>Map</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><p><span class="rfc2119-assertion" id=
           "td-context-ns-thing-mandatory">The <code>@context</code>
           name-value pair <em class="rfc2119" title=
           "MUST">MUST</em> contain the anyURI
@@ -1386,7 +1388,8 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 serializations of Protocol Bindings.</td><td>mandatory</td><td><a>Array</a> of <a href="#form"><code>Form</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-uriVariables--InteractionAffordance"><td><code>uriVariables</code></td><td>Define URI template variables according to [[RFC6570]]  as collection
                 based on DataSchema declarations. The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema. 
-                If the same variable is also declared in Thing-level <code>uriVariables</code>, Interaction Affordance level variable takes precedence.</td><td>optional</td><td><a>Map</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><p>The class <code>InteractionAffordance</code> has the following subclasses:</p><ul><li><a href="#propertyaffordance"><code>PropertyAffordance</code></a></li>
+                If the same variable is both declared in Thing-level <code>uriVariables</code>and in Interaction Affordance level, 
+                the Interaction Affordance level variable takes precedence.</td><td>optional</td><td><a>Map</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><p>The class <code>InteractionAffordance</code> has the following subclasses:</p><ul><li><a href="#propertyaffordance"><code>PropertyAffordance</code></a></li>
 <li><a href="#actionaffordance"><code>ActionAffordance</code></a></li>
 <li><a href="#eventaffordance"><code>EventAffordance</code></a></li></ul></section>
 <section><h3><code>PropertyAffordance</code></h3><p>An Interaction Affordance that exposes state of the
@@ -4439,7 +4442,7 @@ can be set:
         }, 
         {
             "op": "readmultipleproperties",
-            "href": "https://mylamp.example.com/properties{?fields,unitSystem}",
+            "href": "https://mylamp.example.com/properties{?propertyNames,unitSystem}",
             "contentType": "application/json",
             "htv:methodName": "GET"
         }]
@@ -4447,7 +4450,7 @@ can be set:
     </pre>
 
     <p>For a <code>readmultipleproperties</code> operation, an example HTTP GET request to the URI 
-        <code>https://mylamp.example.com/properties?fields=humidity,temperature&unitSystem=metric</code> would return
+        <code>https://mylamp.example.com/properties?propertyNames=humidity,temperature&unitSystem=metric</code> would return
         the values <code>humidity</code> and <code>temperature</code> Property Affordances, with the <code>metric</code> 
         System of Measurement.
     </p>
@@ -8487,6 +8490,12 @@ instance.
             }
           }
         ]
+      },
+      "uriVariables": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/definitions/dataSchema"
+        }
       },
       "@type": {
         "$ref": "#/definitions/type_declaration"
