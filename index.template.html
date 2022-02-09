@@ -855,7 +855,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
         optimize payload sizes of messages exchanged between constrained devices. It
         also avoids any privacy leakage resulting from devices accessing publicly
         available vocabularies from private networks (see also
-        <a href="#sec-security-consideration-context"></a>).
+        <a href="#sec-private-consideration-context"></a>).
     </p>
 
   </section>
@@ -4379,20 +4379,23 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 
 </section> <!-- end of id="behavior"-->
 
+  <p class="ednote">
+	Needs to be updated to include points noted in
+	<a href="https://github.com/w3c/wot-thing-description/issues/1348">TD Issue 1348</a>.  
+	Note that separate Security and Privacy Consideration sections are now required, so this
+	section has been refactored.
+  </p>  
+
 <section id="sec-security-consideration" class="informative">
-  <h4>Security and Privacy Considerations</h4>
-  
+  <h4>Security Considerations</h4>
   <p>
   In general the security measures taken to protect a WoT 
   system will depend on the threats and attackers that system
   may face and the value of the assets needs to protect.
-  In addition privacy risks will depend on the association of 
-  Things with identifiable people and both the direct information and 
-  the inferred information available from such an association.
-  A detailed discussion of security and privacy considerations for the Web of Things,
+  A detailed discussion of security (and privacy) considerations for the Web of Things,
   including a threat model that can be adapted to various circumstances, is
   presented in the informative document [[WOT-SECURITY-GUIDELINES]].  
-  This section discusses only security and privacy risks
+  This section discusses only security risks
   and possible mitigations directly relevant to the WoT Thing Description.
   </p>
   <p>A WoT Thing Description can describe both secure and 
@@ -4401,11 +4404,59 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   security status of the network interface is to be expected.
   </p>
   <p>The use of a WoT Thing Description introduces  
-  the security and privacy risks given in the following sections.
+  the privacy risks given in the following sections.
   After each risk, we suggest some possible mitigations.
   </p>
-  <section id="sec-security-consideration-context">
-  <h5>Context Fetching Privacy Risk</h5>
+   <section id="sec-security-consideration-TD-tampering">
+   <h5>TD Interception and Tampering Risk</h5>
+      <p>Intercepting and tampering with TDs can be used to launch man-in-the-middle attacks,
+      for example by rewriting URLs in TDs to redirect accesses to a malicious 
+      intermediary that can capture or manipulate data.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+          Obtain Thing Descriptions only through
+          mutually authenticated secure channels.
+          This ensures that the <a>Consumer</a> and the server are both sure of the
+          identity of the other party to the communication.
+          This is also necessary in order to deliver TDs only to authorized users.
+      </dd></dl>
+   </section>
+   <section id="sec-security-consideration-context-tampering">
+   <h5>Context Interception and Tampering Risk</h5>
+      <p>Intercepting and tampering with context files can be used to facilitate attacks
+      by modifying the interpretation of vocabulary. 
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+	      Ideally context files would only be obtained through secure
+	      channels established by mutual authentication
+	      but it is notable (and unfortunate) that many contexts are indicated using
+	      HTTP URLs, which are vulnerable to interception and modification if 
+	      dereferenced.  However, if context files are immutable and cached, 
+	      and dereferencing is avoided whenever possible, then this risk can be reduced.
+	      If it is necessary to fetch a context file,
+	      an implementation may also attempt to use HTTPS (HTTP over TLS) 
+	      even when only an HTTP URL is given.
+      </dd></dl>
+   </section>
+</section>
+<section id="sec-privacy-consideration" class="informative">
+  <h4>Privacy Considerations</h4>
+  <p>
+  Privacy risks will depend on the association of 
+  Things with identifiable people and both the direct information and 
+  the inferred information available from such an association.
+  A detailed discussion of privacy (and security) considerations for the Web of Things,
+  including a threat model that can be adapted to various circumstances, is
+  presented in the informative document [[WOT-SECURITY-GUIDELINES]].  
+  This section discusses only privacy risks
+  and possible mitigations directly relevant to the WoT Thing Description.
+  </p>
+  <p>The use of a WoT Thing Description introduces  
+  the privacy risks given in the following sections.
+  After each risk, we suggest some possible mitigations.
+  </p>
+  <section id="sec-privacy-consideration-context">
+  <h5>Context Fetching</h5>
       <p>Fetching the vocabulary files given in the <code>@context</code>
           member of any JSON-LD [[?json-ld11]] document can be a privacy risk.
           In the case of the WoT, an attacker can observe the network
@@ -4430,8 +4481,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
           to systems interpreting the metadata in a Thing Description.
       </dd></dl>
    </section>
-   <section id="sec-security-consideration-id">
-   <h5>Immutable Identifiers Privacy Risk</h5>
+   <section id="sec-privacy-consideration-id">
+   <h5>Immutable Identifiers</h5>
       <p>A Thing Description containing an identifier (<code>id</code>) may
          describe a Thing that is associated with an identifiable
          person.  Such identifiers pose various risks including tracking.
@@ -4466,8 +4517,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
           </dd></dl>
       </p>
    </section>
-   <section id="sec-security-consideration-fingerprint">
-   <h5>Fingerprinting Privacy Risk</h5>
+   <section id="sec-privacy-consideration-fingerprint">
+   <h5>Fingerprinting</h5>
       <p>As noted above, the <code>id</code> member in a TD can pose a privacy risk.  
       However, even if the <code>id</code> is updated as described to mitigate its
       tracking risk, it may still be possible to associate
@@ -4498,7 +4549,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
       </dd></dl>
    </section>
    <section id="sec-security-consideration-global-id-risk">
-   <h5>Globally Unique Identifier Privacy Risk</h5>
+   <h5>Globally Unique Identifiers</h5>
       <p>Globally unique identifiers pose a privacy risk if a centralized authority is needed to
       create and distribute them, since then a third party has knowledge of the identifiers.
       </p>
@@ -4513,35 +4564,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
           that only distinguish Things in a certain context, such as within a home or factory.
       </dd></dl>
    </section>
-   <section id="sec-security-consideration-TD-tampering">
-   <h5>TD Interception and Tampering Security Risk</h5>
-      <p>Intercepting and tampering with TDs can be used to launch man-in-the-middle attacks,
-      for example by rewriting URLs in TDs to redirect accesses to a malicious 
-      intermediary that can capture or manipulate data.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-          Obtain Thing Descriptions only through
-          mutually authenticated channels.
-          This ensures that the <a>Consumer</a> and the server are both sure of the
-          identity of the other party to the communication.
-          This is also necessary in order to deliver TDs only to authorized users.
-      </dd></dl>
-   </section>
-   <section id="sec-security-consideration-context-tampering">
-   <h5>Context Interception and Tampering Security Risk</h5>
-      <p>Intercepting and tampering with context files can be used to facilitate attacks
-      by modifying the interpretation of vocabulary. 
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-	      Ideally context files would only be obtained through authenticated channels
-	      but it is notable (and unfortunate) that many contexts are indicated using
-	      HTTP URLs, which are vulnerable to interception and modification if 
-	      dereferenced.  However, if context files are immutable and cached, 
-	      and dereferencing is avoided whenever possible, then this risk can be reduced.
-      </dd></dl>
-   </section>
    <section id="sec-security-consideration-inferencing">
-   <h5>Inferencing of Personally Identifiable Information Privacy Risk</h5>
+   <h5>Inferencing of Personally Identifiable Information</h5>
       <p>In many locales, in order to protect the privacy of users,
       there are legal requirements for the handling of
       personally identifiable information,
