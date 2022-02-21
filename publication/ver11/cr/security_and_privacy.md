@@ -135,7 +135,8 @@ The following addresses this question for each deliverable:
   This additional metadata is necessary to identify stale information.
 
 ### 3 [How do the features in your specification deal with personal information, personally-identifiable information (PII), or information derived from them?](https://www.w3.org/TR/security-privacy-questionnaire/#personal-data)
-The WoT Thing Description describes IoT devices and may include
+Currently WoT specifications do not deal directly with sensor data but with metadata.
+The WoT Thing Description metadata describes IoT devices and may include
 information such as location and type.  If these devices can be associated
 with an owner, then it may be possible to infer information about the
 owner.  For example, if a user is associated with a device as an owner,
@@ -160,34 +161,59 @@ In particular, TD Directories (part of the Discovery specification)
 support access control (so that TDs can be limited in distribution to authorized
 parties) and expiry requirements (so that TDs will be automatically removed when
 they expire) and mechanisms to explicitly delete registered TDs.
+Access controls are based on known best methods for web services (OAuth, etc).
+Other security and privacy considerations warn against embedding metadata in
+public information that is not protected,
+such as URLs presented during Discovery's Introduction phase.
 
 ### 4 [How do the features in your specification deal with sensitive information?](https://www.w3.org/TR/security-privacy-questionnaire/#sensitive-data)
-**TODO**.  This was a response to a question about "high-value" data but the actual description
-was about credential management (which is one form of sensitive information).
-This needs to be updated and aligned with the details of the question and 
-perhaps discuss other forms of sensitive data (e.g. financial information).
-
-**Yes.**  A WoT Thing may both require credentials to be accessed and
+Sensitive information can include both security secrets (which should never
+be distributed to other parties) and information that may be distributed
+but only under specific conditions. 
+ 
+A WoT Thing may both require credentials to be accessed and
 use credentials to access other devices.  However, these are generally
 to secure M2M communication and are not (or should not be) tied directly to
-user credentials used for other services.  We also
-define an architecture for managing sensitive credentials
-securely.
+user credentials used for other services.
 
 The WoT architecture deals with the operational phase of IoT devices
-and does not itself specify how credentials are provisioned to devices.
+and does not itself directly specify how credentials are provisioned to devices.
 The WoT Architecture document does however recommend a strict separation
 of private security data from public data and metadata, and
 recommends the use of an isolated private security data subsystem
 in the implementation of IoT devices,
 such as a TPM (Trusted Platform Module).
+Sensitive information such as secrets should never be stored or
+distributed in TDs in particular.
 
-The WoT Runtime and WoT Scripting API are defined in such a way
-that they do not have direct access to private credentials.
-Instead, an "abstract data type" is used in the WoT Protocol Bindings 
+The test implementations supporting WoT, such as the Scripting API 
+supported by node-wat, have been defined in such a way
+that user-provided code defining behavior does not have direct access to private credentials.
+Instead, an "abstract data type" is used 
 to implement security operations such as authentication and encryption.
-These operations can be implemented in such a way that they do not
+Implementations have therefore demonstrated that 
+these operations can be implemented in such a way that they do not
 reveal private security data to WoT Applications or to other devices.
+
+For selectively accessible sensitive information,
+Discovery defines a web service to provide TDs and some Things described by 
+TDs may need to manage sensitive data internally and provide a network interface 
+equivalent to a web service that provides selective access to it.
+Both cases should manage sensitive information using known best practices i
+for web services, including encrypting data at rest, using secure transport, and enforcing access control.
+
+As noted above, in some cases TDs themselves may be considered "sensitive information",
+for example if they describe known-vulnerable devices.  
+This may be the case during development, for example.
+In this case appropriate access controls should be put in place to restrict
+access to TDs.  This is supported by the WoT Discovery specification, just like 
+any other web service managing access to sensitive information. 
+Known-vulnerable Things
+themselves should be protected by additional means such as a segmented network,
+an approach also described in the Architecture document.
+
+These issues are discussed in the Security Considerations sections of the 
+various specifications.
 
 ### 5 [Do the features in your specification introduce new state for an origin that persists across browsing sessions?](https://www.w3.org/TR/security-privacy-questionnaire/#persistent-origin-specific-state)
 **No**, for both the interpretation of "session" as a browser session
