@@ -312,6 +312,19 @@ In general, the behaviour of a WoT Thing needs to be defined somehow but this
 definition is beyond the scope of the current set of normative specs.
 
 ### 10 [Do features in this specification allow an origin to access other devices?](https://www.w3.org/TR/security-privacy-questionnaire/#remote-device)
+An origin is a WoT Thing and is like any other web service which can access other
+web services. So the question is really asking if features in the specification allow
+a *server* (in WoT terminology, a Thing) unmediated access to capabilities of the *client* (a WoT Consumer).
+The answer to this question is **No**.
+
+The roles might be reversed however and a WoT Thing might be a device managed by a user that
+exposes that network interface to a WoT Consumer managed by an organization.
+Depending on the use case, the WoT Thing may provide mediated (indirect) access to other WoT Things.
+For example, it could be a proxy or shadow that forwards interactions to another device.  
+However, the key factor here is that access is mediated:
+like a web service, which may call other web service, a WoT Thing describes and provides
+access to only its own API.  The provider of a WoT Thing choses what interactions it
+exposes and what it can do.
 
 ### 11 [Do features in this specification allow an origin some measure of control over a user agent’s native UI?](https://www.w3.org/TR/security-privacy-questionnaire/#native-ui)
 **No**. The WoT Architecture is M2M and makes no mention of direct
