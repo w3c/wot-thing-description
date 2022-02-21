@@ -4462,19 +4462,22 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 	      via discovery.  This is, however, not a recommended
 	      approach since security by obscurity is a poor defence: an attacker can still
 	      discover the system by other means, even if the TD has limited distribution.
-	      The definition of "vulnerable" depends on the context 
+	      The definition of "vulnerable" however depends on the context 
 	      in which the information is made available, and to whom it is made available to.
 	      Ideally, only those with the rights to access the Things
-	      described by TDs will get access to those TDs.
+	      described by TDs should get access to those TDs.
       </dd></dl>
    </section>
    <section id="sec-security-consideration-script-injection">
    <h5>Script Injection</h5>
-   <p>Many strings given in TDs, in particular the values assigned to  <code>title</code>
-      and <code>description</code>, are meant to be human-readable.  
+   <p>Many strings given in TDs, in particular the values carried in 
+      <code>title</code>/<code>titles</code>
+      and 
+      <code>description</code>/<code>descriptions</code>, 
+      are meant to be human-readable.  
       An application may take
       such strings and use them to generate a user interface, 
-      for example, a dashboard listing a set of
+      for example, a web dashboard listing a set of
       available Things with their titles and descriptions. 
       If such an interface is naively generated using
       string substitution, for example inserting the values of these strings into
@@ -4490,7 +4493,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
       </p>
       <dl><dt>Mitigation:</dt><dd>
 	      Strings sourced from TDs should be treated like any other source of external string
-	      when generating HTML: with care.  Strings should either be sanitized using a carefully vetted HTML
+	      when generating HTML: with care. 
+	      Strings should either be sanitized using a carefully vetted HTML
 	      sanitizer that disables any markup or should be inserted into an HTML template using
 	      DOM node manipulation APIs that will escape any markup.
 	      It is also possible that strings sourced from TDs could be used to generate documents
@@ -4498,7 +4502,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 	      Such usages should take equivalent
 	      precautions to ensure that string values are sanitized before insertion in a template.
 	      Unfortunately such sanitization also will disable any HTML markup included for
-	      internationalization purposes, for example to set the initial direction of text rendering in 
+	      internationalization purposes, 
+	      for example to set the initial direction of text rendering in 
 	      bidirectional text.  
 	      HTML markup should not be used for such purposes in TD strings.
       </dd></dl>
@@ -4662,6 +4667,24 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
           As a second example, if we consider a TD to contain personally
           identifiable information, then it should not be retained indefinitely
           or used for purposes other than those for which consent was given.
+      </dd></dl>
+   </section>
+   <section id="sec-security-consideration-id-embedded-metadata">
+   <h5>Identifiers with Embedded Metadata</h5>
+      <p>The identifiers used in TDs (and related data, such as the URLs used to distributed TDs via
+      WoT Discovery processes) are set by the TD producer.
+      One way of generating IDs that are easy to remember is to embed meaningful metadata
+      into the ID, such as the type of the device or even the owner.
+      However, if IDs are distributed in untrusted contexts, then this embedded metadata 
+      can be used to infer PII.  
+      As an example, consider the ID "Bobs-Home-InsulinPump-1234",
+      which identifies the owner, the location, and the type of the device, the latter of
+      which can be used to infer a medical condition; all of this is PII.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+	 IDs (and related URIs) should not contain any embedded metadata.
+	 Instead, IDs should be generated using crytpographic means and encoded as a UUID.
+	 Such an approach also avoids the accidental collision of IDs.
       </dd></dl>
   </section>
 
