@@ -314,10 +314,12 @@ definition is beyond the scope of the current set of normative specs.
 ### 10 [Do features in this specification allow an origin to access other devices?](https://www.w3.org/TR/security-privacy-questionnaire/#remote-device)
 
 ### 11 [Do features in this specification allow an origin some measure of control over a user agent’s native UI?](https://www.w3.org/TR/security-privacy-questionnaire/#native-ui)
-**No**.  The WoT Architecture is M2M and makes no mention of direct
-user interfaces.
+**No**. The WoT Architecture is M2M and makes no mention of direct
+user interfaces.  One key part of this question is "control".
+WoT Consumer reading data from a WoT Thing or a WoT Thing receiving data
+is not ceding direct control to any UI that may be associated with these entities.
 
-However, some devices connected via the WoT may have
+Some devices connected via the WoT may have
 local user interfaces of various kinds (buttons, speakers, displays, etc.)
 which might be exposed to control
 over network interactions.
@@ -325,6 +327,15 @@ Exposure of such controls
 is at the discretion of individual device manufacturers,
 who should do an analysis of security risks as part of
 their software development process.
+
+Strings defined in a TD might also be used to generate UIs, such as 
+web dashboards. 
+Some strings in fact, such as "title", are explicitly included for this use case.
+We include a security consideration in the TD spec to 
+warn that any strings in TDs should be sanitized before being included in
+a UI, for instance including it in HTML sent to another client, 
+as with any other source
+of external string content.
 
 ### 12 [What temporary identifiers do the features in this specification create or expose to the web?](https://www.w3.org/TR/security-privacy-questionnaire/#temporary-id)
 
