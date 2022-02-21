@@ -305,23 +305,11 @@ via semantic annotations, the type of data provided
 by the device can be determined.
 
 ### 9 [Do features in this specification enable new script execution/loading mechanisms?](https://www.w3.org/TR/security-privacy-questionnaire/#string-to-script)
-**TODO**: this is really an question that should be answered in Architecture.  For TDs themselves the 
-answer is **No**, and since the Scripting API is not normative the answer is technically "No" even for architecture,
-although we should mention the existence of the Scripting API.
+The normative specifications under review themselves the answer is **No**.
 
-**Yes, to execution.**
-The WoT architecture enables WoT Things to run applications based
-on ECMAScript, using a constrained API, and with suitable
-restrictions, such as no direct access to private security data.
-
-**No, to loading.**
-A mechanism for loading new scripts is not defined
-and is currently considered to be out of scope.
-Our architecture assumes the scripts running inside a WoT Thing
-are trusted implementations provided by the manufacturer
-of the device and installed using a suitable update
-mechanism; but this update mechanism is not defined in our
-architecture and is also currently considered to be out of scope.
+A Scripting API is discussed in WoT Architecture but it is not normative.
+In general, the behaviour of a WoT Thing needs to be defined somehow but this
+definition is beyond the scope of the current set of normative specs.
 
 ### 10 [Do features in this specification allow an origin to access other devices?](https://www.w3.org/TR/security-privacy-questionnaire/#remote-device)
 
