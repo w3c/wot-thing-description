@@ -93,8 +93,46 @@ can even include systems whose compromise would have safety implications.
 ## Questions and Answers
 
 ### 1 [What information might this feature expose to Web sites or other parties, and for what purposes is that exposure necessary?](https://www.w3.org/TR/security-privacy-questionnaire/#purpose)
+The following addresses this question for each deliverable:
+* Thing Description (TD): A TD includes information about a Thing's network API
+  for the purpose of interacting with it.
+  This includes a description of security mechanisms used for the purpose of developers 
+  needing to know what is necessary to interact with a Thing.
+  This metadata is non-secret information only, but if TDs are freely available this
+  could allow attackers to scan for vulnerabilities; this is discussed in the "Vulnerability Auditing"
+  Security Consideration in the TD document.
+  One issue is that TDs are descriptive and so can be used to describe insecure interfaces
+  as well as secure ones.  TDs describing insecure interfaces should not be generally distributed
+  but the interfaces they describe should also not be made generally available but should be protected
+  by other means, such as being on a segmented network.
+  A TD can optionally link to related resources and metadata at the discretion of the provider,
+  on an as-needed basis.  In general, publishing information in a TD should be treated in the same
+  way as publishing information on a web site, such as a blog, and with similar access controls.
+* Profiles restrict the information available from TDs: 
+  they define a strict subset, with the purpose of improving interoperability.
+  As a subset, all information published under a Profile is already covered by the TD specification.
+  Profiles, do, however, have additional recommendations about best practices which should be 
+  followed by new implementations.
+* Discovery defines a means of distributing TDs that allows for access control.
+  It is not required, but when implemented following this specification would have two phases,
+  strictly separated: Introduction (first contact) and Exploration (metadata access).
+  Introductions provide locations (URLs) of Exploration services without providing any metadata.
+  They may use potentially insecure mechanisms to broadcast these URLs (for example, a QR code)
+  but Introductions are for the purpose of finding Exploration services only. 
+  Exploration services provide TDs as above, 
+  but only after an opportunity to check authentication and authorizations.
+* Architecture addresses an overview of the above and describes some usage patterns.
 
 ### 2 [Do features in your specification expose the minimum amount of information necessary to enable their intended uses?](https://www.w3.org/TR/security-privacy-questionnaire/#minimum-data)
+* TDs provide the necessary API information for a developer to interact with a Thing.
+  Some of the information provided in a TD is also available upon actually interacting with a Thing 
+  (for example, the security mechanism used) but in some use cases for TDs (such as development) this
+  information is necessary in advance of actually interacting with a Thing instance.
+  Through several design iterations we have converged on the set of information needed to allow
+  a TD Consumer to reliably connect to a described Thing.
+* Profiles define a subset of all TDs, so the information provided is also a subset.
+* Discovery provides a set of TDs, and additional metadata for managing TDs, such as time of last update. 
+  This additional metadata is necessary to identify stale information.
 
 ### 3 [How do the features in your specification deal with personal information, personally-identifiable information (PII), or information derived from them?](https://www.w3.org/TR/security-privacy-questionnaire/#personal-data)
 **TO DO**: The following is the answer to a slightly different question, about *whether* we have PII.  It needs to be updated.
