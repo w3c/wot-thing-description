@@ -216,24 +216,29 @@ These issues are discussed in the Security Considerations sections of the
 various specifications.
 
 ### 5 [Do the features in your specification introduce new state for an origin that persists across browsing sessions?](https://www.w3.org/TR/security-privacy-questionnaire/#persistent-origin-specific-state)
-**No**, for both the interpretation of "session" as a browser session
-and as a WoT Runtime instance.
-
 This is not a browser-oriented specification although
-WoT Things can be accessed through browsers as if they
-were web services. 
+WoT Things can be accessed through browsers as if they were web services. 
 However, no new state is introduced or required in browsers beyond
-current mechanisms (cookies, etc).
+current mechanisms (cookies, OAuth sessions, etc).
+A WoT Thing can be thought of as simply another web service, so no *new* mechanisms are defined.
+An IoT device can also be a client of a WoT Thing but in this case
+implements only the functionality required by HTTP and the interface described in
+the TD. 
+Clients only support existing mechanisms (such as OAuth sessions) already supported
+by browsers. 
+No "new" mechanisms are defined *by the specification* to retain state.
 
-WoT Things can also act as clients, however, accessing
-web services and other WoT Things acting as servers.
-It is also possible that the same device could instantiate
-multiple WoT Runtimes.  However, there is no mechanism provided
-for sharing state between such instances. Therefore if we consider each instance
-to be a session, then no state can be shared across such "sessions", 
-at least via implicit internal mechanisms.
-Of course these instances could define and engage in explicit network interactions
-and share information that way.
+A given client may, however, choose to retain state between sessions
+since in IoT devices there is no clear definition of "session".
+In fact, such data retention
+may be part of the device's purpose (for example, a device designed to log history data
+from a sensor).
+
+We also define a Directory web service as part of Discovery whose
+*purpose* is to retain information about other Things and make it available to 
+other Things with suitable access rights.
+This web service however includes an API that allows the client to manage what state is
+retained and to delete it if necessary.
 
 ### 6 [Do the features in your specification expose information about the underlying platform to origins?](https://www.w3.org/TR/security-privacy-questionnaire/#underlying-platform-data)
 
