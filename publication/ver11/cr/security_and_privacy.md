@@ -257,15 +257,46 @@ There are use cases where this is appropriate, for example a user wanting to sha
 from a health monitoring system with their doctor.
 
 ### 7 [Does this specification allow an origin to send data to the underlying platform?](https://www.w3.org/TR/security-privacy-questionnaire/#send-to-platform)
+The answer to this is yes, since common WoT Things are sensors whose purpose
+is to generate data and make it available (either via pull or push interactions) with the
+client.  
+In either case a client has to take specific actions to initiate a data transfer (for
+pull, a request is necessary; for push, a subscription is necessary).
+However, this question can also be considered an extension of question 6,
+but with roles reversed.
+
+An "origin" in the WoT system could be a Thing or a Thing Description
+Directory.  
+Both of these are web services.  
+A Thing can send any kind of data, a 
+Thing Description Directory specifically sends Thing Descriptions.
+
+The detailed description of the above question in the link specifically discusses
+whether the platform (client) can handle URLs of various kinds, 
+including (for example) file URIs.
+TDs include a variety of data but can include URIs of various kinds which need to 
+be dereferenced to perform interactions.
+In Architecture we describe how WoT Runtimes should execute in a restricted sandbox
+so dereferencing of URLs provided in TDs will be restricted in what they can access.
+In particular a platform should restrict access to specific protocols.
+(TODO: should be a Consideration about this in the TD and/or Architecture specification).
 
 ### 8 [Do features in this specification enable access to device sensors?](https://www.w3.org/TR/security-privacy-questionnaire/#sensor-data)
-**Yes.**  Many other sensors can be attached to an IoT 
-device and we do not constrain these in any way.
+**Yes.**  The intent of this question is that the "device" is the browser.
+Please note however that we are interpreting this more broadly
+to mean "devices managed by the user".
+Such devices may include WoT Things (which is actually
+an origin according to the platform/origin view).
+
+Many sensors can be attached to an IoT 
+device and WoT does not constrain these in any way,
+but neither do we make it mandatory that this data be
+available to any client.
 
 It is the responsibility of the user to only connect and
 provision devices they trust, to select devices with
-good security, and manage the data that is
-collected appropriately.
+good security, and manage the distribution of data that is
+collected appropriately using access controls.
 
 The metadata provided in the WoT Thing Description
 can be helpful in this regard since the security mechanisms
