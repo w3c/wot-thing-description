@@ -351,18 +351,55 @@ as with any other source
 of external string content.
 
 ### 12 [What temporary identifiers do the features in this specification create or expose to the web?](https://www.w3.org/TR/security-privacy-questionnaire/#temporary-id)
+The WoT Thing Description has an optional element,
+"id" which is should be an URN unique within the local
+context (set of all addressable Things for the current application).
+It is recommended that such identifiers are cryptographically
+generated and take the form of UUIDs without any embedded
+metadata.
+
+Such identifiers are necessary to support Linked Data and RDF.
+In particular, WoT Directories optionally support SPARQL endpoints
+and managed Linked Data.  In order to be managed under this
+system, TDs need identifiers. 
+However, since identifiers are optional, it is possible to
+register an "anonymous" TDs with a Directory for
+the purposes of Discovery.  In this case, the Directory will
+assign an ID local to the Directory which can be used to manage
+the entry, including deleting it.  If the same TD is registered
+after deletion, it will be assigned a new local id.  Different
+instances of a Directory service will have different local ids
+even if the same anonymous TD is registered in them.
+Anonymous TDs do, however, make use of specific devices for
+specific purposes more difficult.
+
+Some domains, such as medical devices in the US,
+have a legal requirement to support immutable identifiers.
+In this case (as well as a general mitigation in other cases),
+access controls can be used to prevent access to TDs by
+those unauthorized to access the associated Things.
+
+The tracking risk ids pose can
+also be mitigated, whenever possible (e.g. if not legally disallowed
+as discussed above) by allowing such identifiers to be periodically
+updated.  At the very least, identifiers should be replaced
+when the devices are reprovisioned, which will occur upon a change of
+ownership.
 
 ### 13 [How does this specification distinguish between behavior in first-party and third-party contexts?](https://www.w3.org/TR/security-privacy-questionnaire/#first-third-party)
+**N/A**.
 
 ### 14 [How do the features in this specification work in the context of a browser’s Private Browsing or Incognito mode?](https://www.w3.org/TR/security-privacy-questionnaire/#private-browsing)
 **N/A**.  This concept is not applicable to the WoT context, as there is no user agent.
 
 ### 15 [Does this specification have both "Security Considerations" and "Privacy Considerations" sections?](https://www.w3.org/TR/security-privacy-questionnaire/#considerations)
-**Yes**.  These sections in the WoT Thing Description document are
-specific to the Thing Description.
-Some more general considerations are also given in the WoT Architecture document.
+**Yes**.  General considerations are given in the WoT Architecture document.
+More specific considerations are presented in each of the 
+WoT Thing Description, WoT Discovery, and WoT Profile documents.
 Mitigations for each security and privacy consideration are discussed in
-the appropriate sections of these document as well as the
+the appropriate sections of these documents.
+A threat model and a discussion of risks along with proposed best
+practices is presented in the informative
 [WoT Security and Privacy Guidelines](https://github.com/w3c/wot-security/) document.
 
 ### 16 [Do features in your specification enable origins to downgrade default security protections?](https://www.w3.org/TR/security-privacy-questionnaire/#relaxed-sop)
@@ -370,14 +407,39 @@ the appropriate sections of these document as well as the
 requires, no more and no less.
 There is however an option in the WoT Thing Description to specify
 use of one of several different alternative security mechanisms to access a resource.
-The designer of a WoT Server needs to ensure that the least secure alternative
-is sufficiently secure for the intended application.
+The designer of a WoT Thing needs to ensure that the least secure security
+mechanism exposed is sufficiently secure for the intended application.
+
+In addition, the WoT Thing Description does not specify what an origin must do,
+it only describes what it actually does.
 
 ### 17 [How does your feature handle non-"fully active" documents?](https://www.w3.org/TR/security-privacy-questionnaire/#non-fully-active)
+**N/A**. WoT Consumers do not process HTML, do not render documents, and do not support the concept of sessions. 
+They may, however, consume multiple TDs and connect to all of them 
+simultaneously, but the behaviour is defined by the Consumer, not by any of the origins.
 
 ### 18 [What should this questionnaire have asked?](https://www.w3.org/TR/security-privacy-questionnaire/#missing-questions)
+* Is your networking model different from the usual client/server model used by browsers and web servers?
+A WoT Consumer and WoT Thing can participate in a client/server communication model
+especially if they are using a protocol such as HTTP or CoAP based on this model.
+However, WoT Things can also provide networking models based on other communication 
+approaches, such as publish/subscribe under MQTT.  In addition, explicit publish/subscribe
+patterns are supported even under HTTP and CoAP.
 
+* Do you specify the behaviour of origins as well as the client?
+Yes.  WoT Things can act as origins, and WoT Thing Descriptions describe Things.
+This impacts many of the answers above.  For instance, it would be considered
+unusual and a privacy risk to give a fixed identifier to a browser, but it is common
+practice to assign a fixed URL to a web server.  WoT Things could be providing
+services from an institution or as part of a fixed installation, in which case 
+assigning them identifiers as is done with web servers makes sense.  But Things
+can also be associated with people like browsers can, in which case making them
+anonymous may be the better choice.
 
+* Does your client generally have a user agent, and can it render HTML?
+IoT devices may have user interfaces but they are generally very simple and 
+not designed to render arbitrary content.  They do not render HTML; we have
+browsers for that.
 
 
 ## OLD Questions and Answers
