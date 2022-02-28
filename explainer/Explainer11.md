@@ -33,7 +33,7 @@ Lets assume there is a smart lamp that offers an interface with following charac
 --- | --- |  --- |
 |Name|MyLampThing| 
 |Protocol |HTTPS| 
-|Security |Basic authentification| 
+|Security |Basic authentication| 
 |Local server address |192.168.2.134| 
 |Content type |application/json| 
 |Data / function offerings: |status (type: string) | Resource (GET): /status
@@ -202,7 +202,7 @@ The following are explictly NOT goals of the TD specification:
    - TDs support the use of domain-specific vocabularies,
      but no domain-specific vocabularies are defined as part of the specification.
 - Modification of existing protocols or security mechanisms.
-- Specification on new protocols or security mechanisms.
+- Specifications of new protocols or security mechanisms.
    - TDs are meant to describe existing practice, not prescribe new practices.
 
 TDs are also limited to protocols that have resources and access points that can
