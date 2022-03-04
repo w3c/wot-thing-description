@@ -114,7 +114,7 @@ The following addresses this question for each deliverable:
   they define a strict subset, with the purpose of improving interoperability.
   As a subset, all information published under a Profile is already covered by the TD specification.
   Profiles, do, however, have additional recommendations about best practices which should be 
-  followed by new implementations.
+  followed by new implementations to improve security.
 * Discovery defines a means of distributing TDs that allows for access control.
   It is not required, but when implemented following this specification would have two phases,
   strictly separated: Introduction (first contact) and Exploration (metadata access).
@@ -243,13 +243,16 @@ This web service however includes an API that allows the client to manage what s
 retained and to delete it if necessary.
 
 ### 6 [Do the features in your specification expose information about the underlying platform to origins?](https://www.w3.org/TR/security-privacy-questionnaire/#underlying-platform-data)
-If we map "platform (browser)" to WoT Consumer and "origin" to WoT Thing then the
+If we interpret "platform (browser)" as the hardware/software platform running the
+implementation of the WoT Consumer and interpret "origin" as the WoT Thing the
+WoT Consumer is interacting with then the
 answer is no: WoT defines a TD for WoT Things, not WoT Consumers, so the exposure of 
-information is from the "origin" to the "platform", not the other way around.
+any information is from the "origin" to the "platform", not the other way around.
 
-However, the *intent* of this question is whether a device associated with a private user can
+However, the *intent* of this question is whether a device associated with a "user" can
 expose information about that device to an external entity, such as a 
-company or organizationi, which may seek to capture data about the user.
+company or organization, which may seek to capture data about the user.
+
 This can indeed happen if a user chooses to make a Thing Description about a device
 they control available to an organization by sending it to them or giving them access rights.
 The design of Discovery, however, provides for access controls on mechanisms used to distribute such
@@ -257,6 +260,9 @@ information so the user would have to grant access rights to the organization or
 register the information with a Directory service made available by the organization. 
 There are use cases where this is appropriate, for example a user wanting to share data
 from a health monitoring system with their doctor.
+
+However, the TD does not by default include information about the underlying 
+hardware or software platform implementing the Thing.
 
 ### 7 [Does this specification allow an origin to send data to the underlying platform?](https://www.w3.org/TR/security-privacy-questionnaire/#send-to-platform)
 The answer to this is yes, since common WoT Things are sensors whose purpose
@@ -307,7 +313,7 @@ via semantic annotations, the type of data provided
 by the device can be determined.
 
 ### 9 [Do features in this specification enable new script execution/loading mechanisms?](https://www.w3.org/TR/security-privacy-questionnaire/#string-to-script)
-The normative specifications under review themselves the answer is **No**.
+For the normative specifications under review themselves the answer is **No**.
 
 A Scripting API is discussed in WoT Architecture but it is not normative.
 In general, the behaviour of a WoT Thing needs to be defined somehow but this
