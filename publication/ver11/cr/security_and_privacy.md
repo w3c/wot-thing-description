@@ -7,10 +7,9 @@ responding to the questions raised in the December 16, 2021 version of the
 document published by the W3C and required as part of both Security and Privacy
 Wide Review processes.
 
-These responses are related specifically to the 
-[Web of Things (WoT) Thing Description](https://github.com/w3c/wot-thing-description) document.
-
-In some cases a question needs to be considered with respect to another document:
+These responses relate to all WoT deliverables being developed as part of the current charter.
+In some cases a question needs to be considered with respect to a particular deliverable,
+and these will be identified when necessary:
 * For the WoT system as a whole we include a set of responses associated with the
 [Web of Things (WoT) Architecture](https://github.com/w3c/wot-architecture) document.
 * The [Web of Things (WoT) Thing Description](https://github.com/w3c/wot-thing-description) 
@@ -23,17 +22,15 @@ an analogue to browsers and WoT Discovery being an analogue to the HTTP protocol
 mechanism.  
 Responses related to content delivery will be associated with this document.
 * There is also a [Web of Things (WoT) Profile](https://github.com/w3c/wot-profile) specification
-describing constraints on certain WoT Implementations to improve interoperability.
+describing constraints on certain WoT Implementations to achieve out-of-the-box interoperability.
 Only when such constraints have a security impact they will be discussed in association with that
-document.  Otherwise system satisfying a profile are special cases of the system
+document.  Otherwise WoT systems satisfying a profile are special cases of the systems
 described in the other documents.
 
 In the following we have used this mapping to interpret the various
-questions, and so if a question or part of a question is relevant to content delivery
-then it makes sense to consider it in whole or in part under Discovery, as opposed to
-under Thing Description.
-
-When appropriate we will cross-link our responses to responses associated with these other documents.
+questions.  For example, if a question or part of a question is relevant to content delivery
+then we will consider it in whole or in part as relating to the Discovery deliverable, as opposed to
+the Thing Description deliverable.
 
 Please raise issues specific to specific documents on the appropriate issue tracker:
 * [Web of Things (WoT) Architecture GitHub Issue page](https://github.com/w3c/wot-architecture/issues)
@@ -62,16 +59,17 @@ In addition, we define a general security testing procedure for WoT implementati
 In the documents above we address the threats and attack surfaces of the
 WoT in detail.  In the following we have answered the questions posed by the
 W3C Security and Privacy Questionnaire as best as we could... but please take into consideration
-that most of these questions are not fully applicable to our situation.
+that many of these questions are not fully applicable to our situation, or 
+may have required some additional interpretation to clarify the intent.
 
-Security in the IoT is unavoidably more complex than in the web.
+Security in the IoT is unavoidably more complex than in the Web.
 IoT systems often use patterns of communication that are more general
-than the relatively straightforward client-server architecture of web servers and browsers.
-For example, the "same origin policy" is considered a cornerstone of web security.
+than the relatively straightforward client-server architecture of Web servers and browsers.
+For example, the "same origin policy" is considered a cornerstone of Web security.
 However, a single IoT device may connect and integrate information from several other
 IoT devices (and even send commands to them) as a fundamental part of its operation.
 In addition,
-security on the web is often concerned with the "user's device" or the "user agent",
+security on the Web is often concerned with the "user's device" or the "user agent",
 which is always a single client (the browser).
 The IoT is often more concerned with machine-to-machine communication;
 there is frequently not even a human "user" directly associated with a device.
@@ -81,14 +79,18 @@ a server---or even both at the same time.
 Devices may also be associated with many users, not just one.
 Finally, even if an IoT device has
 a "user interface" it will be more varied than that of the browser,
-and this UI will be under control of the device manufacturer, not the proposed WoT standard.
+may involve physical buttons and actuators not under the control of the usual
+HTML-based Web platform or programming model,
+and this UI will be under control of the device manufacturer,
+not the proposed WoT standard.
 
 The kinds of risks we have to deal with in the WoT are also different than
 those in the Web.  For example, unlike HTML the WoT does not directly support downloading
 and executing scripts from other network services.  So many risks having
 to deal with such execution are not relevant.  On the other hand, among other risks, the types
 of sensors and actuators supported by IoT devices are much broader and
-can even include systems whose compromise would have safety implications.
+can even include systems that,
+when compromised, could have safety implications.
 
 ## Questions and Answers
 
