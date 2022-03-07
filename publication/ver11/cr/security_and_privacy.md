@@ -171,14 +171,22 @@ public information that is not protected,
 such as URLs presented during Discovery's Introduction phase.
 
 ### 4 [How do the features in your specification deal with sensitive information?](https://www.w3.org/TR/security-privacy-questionnaire/#sensitive-data)
-Sensitive information can include both security secrets (which should never
+Sensitive information can include both security secrets (such as private keys, which should never
 be distributed to other parties) and information that may be distributed
 but only under specific conditions. 
  
-A WoT Thing may both require credentials to be accessed and
-use credentials to access other devices.  However, these are generally
-to secure M2M communication and are not (or should not be) tied directly to
-user credentials used for other services.
+A WoT Thing may have credentials to establish its identity (authentication) and allow
+for the creation of trusted secure communication channels with other trusted and
+authenticated entities.
+Additional authorization information may be used in addition to manage access rights to
+specific entities.
+Authorizations for secure M2M communication may also reveal the identity
+of the accessor but this may not be desired when the accessing entity is a 
+person or a device that can be associated with a person.
+In this case, mechanisms such as tokens and OAuth2 can be used, as with other
+web services,
+to avoid directly revealing user identities or requiring devices to associate
+authorizations directly with users.
 
 The WoT architecture deals with the operational phase of IoT devices
 and does not itself directly specify how credentials are provisioned to devices.
