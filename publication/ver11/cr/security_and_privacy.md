@@ -104,9 +104,11 @@ The following addresses this question for each deliverable:
   could allow attackers to scan for vulnerabilities; this is discussed in the "Vulnerability Auditing"
   Security Consideration in the TD document.
   One issue is that TDs are descriptive and so can be used to describe insecure interfaces
-  as well as secure ones.  TDs describing insecure interfaces should not be generally distributed
-  but the interfaces they describe should also not be made generally available but should be protected
-  by other means, such as being on a segmented network.
+  as well as secure ones.  
+  An insecure interface is one with a known vulnerability.
+  TDs describing insecure interfaces should not be generally distributed.
+  However, the interfaces they describe should also not be made generally available but should be protected
+  by other means, such as being on a segmented secure network.
   A TD can optionally link to related resources and metadata at the discretion of the provider,
   on an as-needed basis.  In general, publishing information in a TD should be treated in the same
   way as publishing information on a web site, such as a blog, and with similar access controls.
