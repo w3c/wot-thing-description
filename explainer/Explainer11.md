@@ -113,8 +113,11 @@ TD also helps to mange your IoT system that typically consist of a heterogeneous
 
 
 ## What else is possible with the Thing Description specification?
-Besides the definitions of how a Thing description should be designed, there are other features provided around the TD, such as the TD context extensions and Thing Model definitions. 
+Besides the definitions of how a Thing description should be designed, there are other features provided around the TD, such as the Protocol Binding concept, TD context extensions, and Thing Model definitions. 
 
+### Protocol Binding
+Thing Description is not limited to http based interfaces as shown in the example above. In general, WoT is a protocol agnostic approach and provides a common mechanism to define how specific protocols such as MQTT, HTTP, CoAP or Modbus can be mapped to the WoT’s interaction properties-action-event abstraction within the Thing Description forms definition. More details is provide in the [Protocol Binding section](https://w3c.github.io/wot-thing-description/#protocol-bindings).  
+ 
 
 ### TD Context Extensions
 Through JSON-LD serialization, the WoT Thing Description provides the ability to add context knowledge from additional namespaces. This mechanism can be used to enrich the Thing Description instances with additional (e.g., domain-specific) semantics. It can also be used to import additional Protocol Bindings or new security schemes in the future. 
@@ -230,13 +233,11 @@ Bosch, Smart Things, ERCIM, Hitachi, Intel, Oracle, Panasonic, Fujitsu and Sieme
 The latest list of implementations can be found in the [implementation report](https://w3c.github.io/wot-thing-description/testing/report11.html) or in the [developer space](https://www.w3.org/WoT/developers/) at the W3C WoT main page. 
 
 ## Related Work
-There are already several service description languages on the market.
-However, most of them do not focus on IoT application cases and do not
-support IoT-based protocols like MQTT, CoAP, Modbus, etc.
-In addition, the alignment of a semantic approach is also missing to
-enable the reuse of existing domain usages and to increase interoperability
-in IoT scenarios.
-In the following, well-known service description languages are listed:
+There are already several interface description languages on the market.
+However, most of them do not focus on IoT use cases and do not support IoT-based protocols such as MQTT, CoAP and Modbus, or some are also very specific to a particular application domain. 
+In addition, the alignment of a semantic approach (e.g., based on RDF) is also missing to
+enable the reuse of existing domain usages to increase interoperability
+in IoT scenarios. In the following, well-known description languages are listed:
 
 * WSDL: Around 15 years ago, [WSDL](https://www.w3.org/TR/wsdl20/) 
   was quite popular to describe SOAP based web services and to realize
