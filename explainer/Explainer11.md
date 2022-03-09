@@ -211,6 +211,18 @@ Structured payloads are supported but should be
 conceptually interconvertible with JSON.
 
 
+## Differentiation to Thing Description 1.0
+The main difference of this new specification from Thing Description 1.0 is that it includes the Thing Model concept (see above). This was only discussed in the Annex of the Thing Description 1.0 and was called Thing Description Template that time. 
+
+A new features is also possible to signalize that a Thing is following a specific profile such as the [W3C WoT Core Profile](https://w3c.github.io/wot-profile/). 
+
+In general, TD 1.1 specification describes a superset of the features defined in Thing Description 1.0. The new minor version update is also used to redefine some features more clearly and to add additional examples to make it easier to understand. 
+
+The complete change log with the new features and refinements can be found in the [change log section](https://w3c.github.io/wot-thing-description/#changes). 
+
+
+
+
 ## Implementations
 
 Implementations were built by
@@ -226,7 +238,7 @@ enable the reuse of existing domain usages and to increase interoperability
 in IoT scenarios.
 In the following, well-known service description languages are listed:
 
-* WSDL: Around 10 years ago, [WSDL](https://www.w3.org/TR/wsdl20/) 
+* WSDL: Around 15 years ago, [WSDL](https://www.w3.org/TR/wsdl20/) 
   was quite popular to describe SOAP based web services and to realize
   SOA-based architectures.
   One of the strength (however, which is also a weakness),
@@ -270,4 +282,5 @@ In the following, well-known service description languages are listed:
   there is a lack of standardized semantic support without a query/discovery mechanism
   as well as the limitation to the HTTP protocol.
 
-* Industry Device Descriptions: tbd
+* Electronic Device Description Language (EDDL): EDDL is an IEC standard ([IEC 61804-3](https://webstore.iec.ch/publication/60628)) for describing the communication characteristics of the field devices and its parameters such as device status, diagnostic data, and configuration details for an operating system and human machine
+interface (HMI) environment. Initially EDDL was developed in 1992 for use as part of the HART Communication Protocol and was adopted into the Foundation fieldbus and Profibus standards in 1994. Today, EDDL is mainly used in the process automation domain with appropriate tools to generate an interpretative code to support parameter handling, operation, and monitoring of automation system components (e.g., remote I/Os, controllers, sensors).
