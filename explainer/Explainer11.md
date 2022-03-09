@@ -38,7 +38,7 @@ Lets assume there is a smart lamp that offers an interface with following charac
 |Content type |application/json| 
 |Data / function offerings: |status (type: string) | Resource (GET): /status
 |  |toggle | Resource (POST): /toggle
-|  |overheating | Resource (GET & longpoll): /oh
+|  |overheating (type: string) | Resource (GET & longpoll): /oh
 
 
 Based on such information a Thing Description can be simple designed in the following way
