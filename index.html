@@ -5689,29 +5689,44 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   </p>
   <section id="sec-privacy-consideration-context">
   <h5>Context Fetching</h5>
-      <p>Fetching the vocabulary files given in the <code>@context</code>
-          member of any JSON-LD [[?json-ld11]] document can be a privacy risk.
-          In the case of the WoT, an attacker can observe the network
+        <p>
+          WoT Thing Descriptions can be evaluated with a 
+	  JSON-LD 1.1 processor [[json-ld11]],
+          which typically follows links to remote contexts (i.e., TD context
+          extensions, see <a href="https://www.w3.org/TR/wot-thing-description/#sec-context-extensions"></a>)
+          automatically, resulting in the transfer of files
+          without the explicit request of the <a>Consumer</a> for each one. 
+	  If remote
+          contexts are served by third parties, it may allow them to gather
+          usage patterns or similar information leading to disclosure
+	  of private information, or information that can be used to infer
+	  private information.
+          In the case of the WoT, an attacker can also observe the network
           traffic produced by such fetches and can use the metadata
           of the fetch, such as the destination IP address,
-          to infer information about the device especially if domain-specific
-          vocabularies are used.  This is a risk even if the connection
+          to infer information about the device, 
+	  especially if domain-specific vocabularies are used.  
+	  This is a risk even if the connection
           is encrypted, and is related to DNS privacy leaks.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-          Avoid actual fetching of vocabulary files.
-          Vocabulary files should be cached whenever possible.
-          Ideally they would be made immutable, built into the interpreting device,
-          and not fetched at all,
-          with the URI in the <code>@context</code> member serving only as 
-          an identifier of the (known) vocabulary. 
-          This requires the use of strict version control, as updates
-          should use a new URI to ensure that existing URIs can refer to 
-          immutable data.
-          Use well-known standard vocabulary files whenever possible to
-          improve the chances that the context file will be available locally
-          to systems interpreting the metadata in a Thing Description.
-      </dd></dl>
+      <dl>
+	<dt>Mitigation:</dt>
+	<dd>
+          Implementations on resource-constrained devices are expected
+          to perform raw JSON processing (as opposed to JSON-LD processing)
+	  and support only a limited set of domain-specific extensions.
+	  This set of extensions can be established by a WoT Profile, for
+	  example.
+	  <span class="rfc2119-assertion" id="security-remote-context">
+          Implementations SHOULD statically cache vetted
+          versions of their supported context extensions and not follow links
+          to remote contexts.
+          </span>
+	  In this case the URLs are used only to identify extensions,
+	  not to fetch their definitions.
+          Supported context extensions can be managed
+          through a secure software update mechanism instead.
+        </dd>
+     </dl>
    </section>
    <section id="sec-privacy-consideration-id">
    <h5>Immutable Identifiers</h5>
@@ -6906,25 +6921,8 @@ instance.
       <dt>Encoding considerations:</dt>
       <dd>See <a href="https://tools.ietf.org/html/rfc6839#section-3.1">RFC&nbsp;6839, section 3.1</a>.</dd>
       <dt>Security considerations:</dt>
-      <dd>See <a href="#security-consideration-execution"></a>.
-        <p>
-          WoT Thing Descriptions can be evaluated with a JSON-LD 1.1 processor,
-          which typically follows links to remote contexts (i.e., TD context
-          extensions, see <a href="https://www.w3.org/TR/wot-thing-description/#sec-context-extensions">W3C WoT Thing Description, section 7</a>)
-          automatically, resulting in the transfer of files
-          without the explicit request of the <a>Consumer</a> for each one. If remote
-          contexts are served by third parties, it may allow them to gather
-          usage patterns or similar information leading to privacy concerns.
-          <span class="rfc2119-assertion" id="iana-security-remote">
-          While implementations on resource-constrained devices are expected
-          to perform raw JSON processing (as opposed to JSON-LD processing),
-          implementations in general SHOULD statically cache vetted
-          versions of their supported context extensions and not to follow links
-          to remote contexts.
-          </span>
-          Supported context extensions can be managed
-          through a secure software update mechanism instead.
-        </p>
+      <dd>See <a href="#security-consideration-execution"></a>
+      and <a href="#sec-privacy-consideration-context"></a>.
         <p>
           Context Extensions (see <a href="https://www.w3.org/TR/wot-thing-description/#sec-context-extensions">W3C WoT Thing Description, section 7</a>)
           that are loaded from the Web over non-secure connections,
