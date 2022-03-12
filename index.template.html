@@ -4434,19 +4434,38 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
    </section>
    <section id="sec-security-consideration-context-tampering">
    <h5>Context Interception and Tampering</h5>
-      <p>Intercepting and tampering with context files can be used to facilitate attacks
+      <p>Intercepting and tampering with context definition
+      files can be used to facilitate attacks
       by modifying the interpretation of vocabulary. 
+      Context extensions 
+      (see <a href="#sec-context-extensions"></a>)
+      that are loaded from the Web over non-secure connections,
+      such as HTTP, run the risk of being altered by an attacker, and
+      may modify the <a>TD Information Model</a> in ways that could
+      compromise security.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-	      Ideally context files would only be obtained through secure
+	      Ideally context definition files would only be obtained through secure
 	      channels established by mutual authentication
 	      but it is notable (and unfortunate) that many contexts are indicated using
-	      HTTP URLs, which are vulnerable to interception and modification if 
-	      dereferenced.  However, if context files are immutable and cached, 
+	      plain HTTP URLs, which are vulnerable to interception and modification if 
+	      dereferenced without establishing a secure transport channel. 
+	      However, if context definition files are immutable and cached, 
 	      and dereferencing is avoided whenever possible, then this risk can be reduced.
-	      If it is necessary to fetch a context file,
-	      an implementation may also attempt to use HTTPS (HTTP over TLS) 
+              <span class="rfc2119-assertion" id="security-context-alter">
+              <a>Consumers</a> SHOULD vet and cache remote context definitions before 
+              allowing their use for interpreting TDs.
+              </span>
+	      As recommended in 
+	      <a href="#sec-privacy-consideration-context"></a>, ideally
+	      context definition files would be pre-installed using a secure software
+	      update process and the context URLs only used to identify
+	      known contexts.
+	      <span class="rfc2119-assertion" id="security-context-secure-fetch">
+	      If it is necessary to fetch a context definition file,
+	      an implementation SHOULD first attempt to use HTTPS (HTTP over TLS) 
 	      even when only an HTTP URL is given.
+	      </span>
       </dd></dl>
    </section>
    <section id="security-consideration-access-duration">
@@ -4476,7 +4495,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 	</dd>
      </dl>
 </section>
-   <section id="security-consideration-execution">
+   <section id="sec-security-consideration-execution">
       <h5>JSON Parsing</h5>
       <p>
       See <a href="https://tools.ietf.org/html/rfc8259#section-12">RFC&nbsp;8259, section 12</a>: JSON should not be parsed as JavaScript using <code>eval()</code>.
@@ -4516,7 +4535,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
           WoT Thing Descriptions can be evaluated with a 
 	  JSON-LD 1.1 processor [[json-ld11]],
           which typically follows links to remote contexts (i.e., TD context
-          extensions, see <a href="https://www.w3.org/TR/wot-thing-description/#sec-context-extensions"></a>)
+          extensions, see <a href="#sec-context-extensions"></a>)
           automatically, resulting in the transfer of files
           without the explicit request of the <a>Consumer</a> for each one. 
 	  If remote
@@ -5744,20 +5763,11 @@ instance.
       <dt>Encoding considerations:</dt>
       <dd>See <a href="https://tools.ietf.org/html/rfc6839#section-3.1">RFC&nbsp;6839, section 3.1</a>.</dd>
       <dt>Security considerations:</dt>
-      <dd>See <a href="#security-consideration-execution"></a>
-      and <a href="#sec-privacy-consideration-context"></a>.
-        <p>
-          Context Extensions (see <a href="https://www.w3.org/TR/wot-thing-description/#sec-context-extensions">W3C WoT Thing Description, section 7</a>)
-          that are loaded from the Web over non-secure connections,
-          such as HTTP, run the risk of being altered by an attacker such that
-          they may modify the <a>TD Information Model</a> in a way that could
-          compromise security.
-          <span class="rfc2119-assertion" id="iana-security-alter">
-          For this reason, <a>Consumer</a> again
-          SHOULD vet and cache remote contexts before allowing the system
-          to use it.
-          </span>
-        </p>
+      <dd>See 
+      <a href="#sec-security-consideration-context-tampering"></a>,
+      <a href="#sec-security-consideration-execution"></a>, 
+      and
+      <a href="#sec-privacy-consideration-context"></a>.
         <p>
           Given that JSON-LD processing usually includes the substitution of
           long IRIs [[RFC3987]] with short terms,
