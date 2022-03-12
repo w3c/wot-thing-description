@@ -4444,23 +4444,24 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
       may modify the <a>TD Information Model</a> in ways that could
       compromise security.
       </p>
+      <p>
+      As recommended in 
+      <a href="#sec-privacy-consideration-context"></a>, 
+      on constrained implementations 
+      context definition files should be pre-installed and managed
+      using a secure software
+      update process and the context URLs only used to identify
+      known contexts, not to fetch them.
+      This consideration therefore applies only when fetching context definition
+      files dynamically is otherwise unavoidable, for example in a directory
+      service supporting general semantic processing.
+      </p>
       <dl><dt>Mitigation:</dt><dd>
 	      Ideally context definition files would only be obtained through secure
 	      channels established by mutual authentication
 	      but it is notable (and unfortunate) that many contexts are indicated using
 	      plain HTTP URLs, which are vulnerable to interception and modification if 
 	      dereferenced without establishing a secure transport channel. 
-	      However, if context definition files are immutable and cached, 
-	      and dereferencing is avoided whenever possible, then this risk can be reduced.
-              <span class="rfc2119-assertion" id="security-context-alter">
-              <a>Consumers</a> SHOULD vet and cache remote context definitions before 
-              allowing their use for interpreting TDs.
-              </span>
-	      As recommended in 
-	      <a href="#sec-privacy-consideration-context"></a>, ideally
-	      context definition files would be pre-installed using a secure software
-	      update process and the context URLs only used to identify
-	      known contexts.
 	      <span class="rfc2119-assertion" id="security-context-secure-fetch">
 	      If it is necessary to fetch a context definition file,
 	      an implementation SHOULD first attempt to use HTTPS (HTTP over TLS) 
@@ -4550,23 +4551,29 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 	  especially if domain-specific vocabularies are used.  
 	  This is a risk even if the connection
           is encrypted, and is related to DNS privacy leaks.
+	  See also <a href="#sec-security-consideration-context-tampering"></a>,
+	  which is a related security risk with overlapping mitigations.
       <dl>
 	<dt>Mitigation:</dt>
 	<dd>
           Implementations on resource-constrained devices are expected
           to perform raw JSON processing (as opposed to JSON-LD processing)
 	  and support only a limited set of domain-specific extensions.
-	  This set of extensions can be established by a WoT Profile, for
+	  The set of supported extensions can be established by a WoT Profile, for
 	  example.
-	  <span class="rfc2119-assertion" id="security-remote-context">
-          Implementations SHOULD statically cache vetted
-          versions of their supported context extensions and not follow links
-          to remote contexts.
+	  <span class="rfc2119-assertion" id="security-static-context">
+          Constrained implementations SHOULD use statically managed and vetted
+          versions of their supported context extensions. 
           </span>
+	  <span class="rfc2119-assertion" id="security-remote-context">
+          Constrained implementations SHOULD NOT follow links to remote contexts.
+	  </span>
 	  In this case the URLs are used only to identify extensions,
 	  not to fetch their definitions.
-          Supported context extensions can be managed
-          through a secure software update mechanism instead.
+	  <span class="rfc2119-assertion" id="security-update-contexts">
+          Supported context extensions on constrained implementations MAY be managed
+          through secure software update mechanisms.
+	  </span>
         </dd>
      </dl>
    </section>
