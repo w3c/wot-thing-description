@@ -6658,11 +6658,20 @@ instance.
       intermediary that can capture or manipulate data.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-          Obtain Thing Descriptions only through
+	  <span class="rfc2119-assertion" id="security-mutual-auth-td">
+          Thing Descriptions SHOULD be obtained only through
           mutually authenticated secure channels.
-          This ensures that the <a>Consumer</a> and the server are both sure of the
+	  </span>
+          Mutual authentication
+	  ensures that the <a>Consumer</a> and the TD provider are both sure of the
           identity of the other party to the communication.
-          This is also necessary in order to deliver TDs only to authorized users.
+	  However, mutual authentication also can be used to identify the 
+	  Consumer, which may be undesirable in some cases (privacy risk).
+	  <span class="rfc2119-assertion" id="security-server-auth-td">
+	  In cases where the Consumer is associated
+	  with a person, e.g. browsers, TDs MAY be obtained
+	  through a channel where only the TD provider is authenticated.
+	  </span>
       </dd></dl>
    </section>
    <section id="sec-security-consideration-context-tampering">
@@ -6705,24 +6714,32 @@ instance.
    <section id="security-consideration-access-duration">
       <h5>Limited Duration Accesses</h5>
       <p>
-      In peer-to-peer scenarios,
-      it may be desired by an "owner" to limit the scope and duration of
-      access to a Thing by a "guest."
-      For example, if a guest is visiting the owner's house, the owner may
-      want to provide the guest with access to the garage door opener and
-      car charger so the guest can use them.
-      The scope however may be limited so that the guest cannot access
-      certain functions of these Things (for example, to change how long
+      In some scenarios,
+      it may be desirable to limit the scope and duration of
+      access to a set of Things by some users.
+      For example, if A is visiting B's house, B may
+      want to provide A with temporary and limited access to the garage door opener and
+      car charger so A can use them.
+      The scope however may be limited so that A cannot access
+      certain administrative functions of these Things (for example, to change how long
       the garage door can remain open, or to change the charging rate).
-      In addition, the access should expire after the guest is expected to have left,
+      In addition, the access should expire after A is expected to have left,
       e.g. after one week.
       </p>
       <dl>
 	<dt>Mitigations:</dt>
 	<dd>
-	The owner should use security mechanisms such as OAuth2.
-	A token/auth provider (which could also be managed by the owner if
-	appropriate or desired for privacy) can then 
+	<span class="rfc2119-assertion" id="security-oauth-limits">
+	To limit the scope and duration of access to Things, tokens SHOULD
+	be used to manage access.
+	</span>
+	Note that this includes mechanisms such as OAuth2, which provide
+	for token generation flows where verifying the authentication and 
+	authorization of a user is handled by a separate token provider 
+	service.
+	Token provider services (which could be managed directly 
+	by the Thing's administrator if
+	appropriate or desired for privacy) can
 	provide limited duration tokens and use scopes to limit access.
 	Scopes can limit access to specific interactions but
 	are not sufficient to limit duration.
@@ -6843,13 +6860,16 @@ instance.
          track that person.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-          All identifiers should be mutable,
-          and there should be a mechanism to update the <code>id</code>
-          of a <a>Thing</a>.
+	  <span class="rfc2119-assertion" id="privacy-mutable-identifiers">
+          All identifiers used in a TD SHOULD be mutable,
+          and in particular there should be a mechanism to update the <code>id</code>
+          of a <a>Thing</a> when necessary.
+	  </span>
           Specifically,
           the <code>id</code> of a <a>Thing</a> should not be fixed in hardware.
           This does, however, conflict with the Linked Data ideal that
-          identifiers are fixed URIs.  In many circumstances it
+          identifiers are fixed URIs.  
+	  In many circumstances it
           will be acceptable to only allow updates to identifiers if
           a <a>Thing</a> is reinitialized.  In this case as a software entity the
           old <a>Thing</a> ceases to exist and a new <a>Thing</a> is created.
@@ -6863,7 +6883,8 @@ instance.
           may require immutable IDs by law in some jurisdictions.
           In this case extra attention should be paid to secure 
           access to files, such as Thing Descriptions, containing such
-          immutable identifiers.  It may also be desirable to not share
+          immutable identifiers.  
+	  It may also be desirable to not share
           the "true" immutable identifier in such a case in the TD whenever possible.
           </dd></dl>
       </p>
@@ -6882,9 +6903,15 @@ instance.
       identifiable person, such as a medical condition.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-          Only authorized users should be provided access
-          to the Thing Description for a <a>Thing</a>, and only the amount of
-          information needed for the level of authorization and the use case should be provided.
+	  <span class="rfc2119-assertion" id="privacy-auth-users-only">
+          Only authorized users SHOULD be provided access
+          to the Thing Description for a <a>Thing</a>.
+	  </span>
+	  <span class="rfc2119-assertion" id="privacy-essential-metadata-only">
+	  Only the amount of
+          information needed for the level of authorization and the use case 
+	  SHOULD be provided in a TD.
+	  </span>
           If the TD is only distributed to authorized users 
           through secure and confidential channels, for
           example through a directory service that requires authentication,
@@ -6893,29 +6920,64 @@ instance.
           use case of a TD should be omitted whenever possible.  For example,
           for an ad-hoc connection to a device where the Consumer does 
           not store state about the Thing, the <code>id</code> can be omitted.
-          If the Consumer does not need certain interactions for its use case, they can be omitted.
-          If the Consumer is not authorized to use certain interactions, they can likewise be omitted.
+          If the Consumer does not need certain interactions for its use case, 
+	  they can be omitted.
+          If the Consumer is not authorized to use certain interactions, 
+	  they can likewise be omitted.
+	  <!-- we don't have any mechanism to support this; a "null" language 
+	   negotiation might be suitable.
           If the Consumer does not have any capability to display human-readable information
-          such as titles or descriptions, they can be omitted or replaced with zero-length strings.
+          such as titles or descriptions, 
+	  they can be omitted or replaced with zero-length strings.
+	  -->
       </dd></dl>
    </section>
-   <section id="sec-security-consideration-global-id-risk">
+   <section id="sec-privacy-consideration-id-metadata">
+   <h5>ID Metadata</h5>
+      <p>The value of the <code>id</code> field of a TD might become available to 
+      entities that do not have access to the full TD.  If the value of the <code>id</code>
+      contains embedded metadata, such as the type of the device or the owner, this 
+      could be used to infer personal information.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+	  <span class="rfc2119-assertion" id="privacy-id-metadata">
+	  The value of the <code>id</code> of a TD SHOULD NOT contain metadata
+	  describing the Thing or from the TD itself.
+	  </span>
+	  <span class="rfc2119-assertion" id="privacy-temp-id-metadata">
+          Any temporary ID generated to manage TDs, for example an ID for a database 
+	  or directory service, SHOULD NOT contain metadata 
+	  describing the Thing or from the TD itself.
+	  </span>
+	  Using random UUIDs as recommended in 
+	  <a href="#sec-privacy-consideration-global-id-risk"></a> also mitigates this
+	  risk.
+      </dd></dl>
+   </section>
+   <section id="sec-privacy-consideration-global-id-risk">
    <h5>Globally Unique Identifiers</h5>
       <p>Globally unique identifiers pose a privacy risk if a centralized authority is needed to
       create and distribute them, since then a third party has knowledge of the identifiers.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-          The <code>id</code> field in TDs are intentionally not required to be globally unique.
-          There are several cryptographic mechanisms available to generate suitable IDs in a 
+          The <code>id</code> field in TDs is intentionally not required to be globally unique.
+          There are several cryptographic mechanisms (e.g. random UUIDs) available to generate suitable IDs in a 
           distributed fashion that do
           not require a central registry.  These mechanisms typically have a very low probability
           of generating duplicate identifiers, and this needs to be taken into account in the system
           design; for example, by detecting duplicates and regenerating IDs when necessary.
           The scope of IDs also does not need to be global: it is acceptable to use identifiers
           that only distinguish Things in a certain context, such as within a home or factory.
+	  <span class="rfc2119-assertion" id="privacy-distributed-ids">
+          TD identifiers SHOULD be generated using a distributed mechanism such as UUIDs
+	  that provides a high probability of uniqueness.
+	  </span>
+	  <span class="rfc2119-assertion" id="privacy-centralized-ids">
+          TD identifiers SHOULD NOT be generated using a centralized authority.
+	  </span>
       </dd></dl>
    </section>
-   <section id="sec-security-consideration-inferencing">
+   <section id="sec-privacy-consideration-inferencing">
    <h5>Inferencing of Personally Identifiable Information</h5>
       <p>In many locales, in order to protect the privacy of users,
       there are legal requirements for the handling of
@@ -6932,9 +6994,11 @@ instance.
       which can lead to additional inferences about that person.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-          Treat a Thing Description associated with a 
-	      personal device as if it contained
-	      personally identifiable information.
+	  <span class="rfc2119-assertion" id="privacy-td-pii">
+          A Thing Description associated with a 
+	  personal device SHOULD be treated as if it contained
+	  personally identifiable information, even if this information is not explicit.
+	  </span>
           As an example application of this principle,
           consider how to obtain user consent.  
           Consent for usage of personally identifiable data
