@@ -2058,10 +2058,9 @@ In summary, this requires the following:
   basic username/password authentication in the header.
   The value given for <code>in</code> is actually the <a>Default Value</a> (<code>header</code>)
   and could be omitted.
-  A named security configuration must be given
-  in the <code>securityDefinitions</code> map.
-  That definition must be activated by including its JSON name in the
-  <code>security</code> member, which can and should be of type string when only one definition is activated.
+  A named security configuration (<code>basic_sc</code>) is given in the <code>securityDefinitions</code> map.
+  In this example, that definition is activated by including its JSON name in the
+  <code>security</code> member. 
   </p>
 
 <pre class="example" id="security-basic-example">
@@ -2083,6 +2082,7 @@ In summary, this requires the following:
     <code>security</code> member at the Thing level (i.e., in the TD root object).
     </span>
     This configuration can be seen as the default security mechanism required to interact with the <a>Thing</a>.
+    In cases where only one definition is present, this definition becomes the only definition that is activated.
     <span class="rfc2119-assertion" id="td-security-overrides">
     Security definitions MAY also be activated at the form level by including a
     <code>security</code> member in form objects,
@@ -2173,7 +2173,7 @@ In summary, this requires the following:
   In the <code>digest</code> scheme, the <a>Default Value</a> of <code>in</code>
   (i.e., <code>header</code>) is omitted, but still applies.
   Note that the corresponding private security configuration
-  such as username/password and tokens must be configured in the <a>Consumer</a>
+  such as username/password and tokens are configured in the <a>Consumer</a>
   to interact successfully.
   When activating multiple security definitions, 
   the <code>security</code> member becomes an array.
@@ -2197,11 +2197,13 @@ In summary, this requires the following:
     "security": ["proxy_sc", "bearer_sc"],
     ...
 </pre>
- 
-  <p>However, the use of an array with multiple elements to combine security schemes
-  in a <code>security</code> element is now deprecated.
-  A <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> 
-  should be used instead as in the following example, which is exactly equivalent to the one above:
+<p>
+    <span class="rfc2119-assertion" id="td-security-combo-deprecation">
+        However, the use of an array with multiple elements to combine security schemes
+        in a <code>security</code> element is now deprecated, instead a <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> 
+        SHOULD be used instead.
+    </span>
+  In the following example, which is exactly equivalent to the one above, this is demonstrated:
   </p>
 
 <pre class="example" id="security-digest-example2">
@@ -3458,8 +3460,9 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
 
   <p>
   In several contexts automatic validation of a JSON-based serialization 
-  of a Thing Description is useful.  Formally, a valid TD must satisfy all
-  the assertions in this specification, but not all assertions can be 
+  of a Thing Description is useful.  Formally, a valid TD satisfies all
+  the assertions in this specification with their corresponding degree of assertiveness,
+   but not all assertions can be 
   validated given only the JSON serialization, for instance, the assertions
   listed under <a href="#behavior"></a> that relate a TD to the
   behavior of a Thing that it describes.  Extensions are also problematic,
@@ -3892,8 +3895,11 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   This example uses a fictional ACE security scheme
   based on [[?ACE]] that is, for this example,
   defined by the namespace at <code>http://www.example.org/ace-security#</code>.
-  Note that such additional security schemes must be <a>Subclasses</a> of the
-  <a>Class</a> <a href="#securityscheme" class="sec-ref"><code>SecurityScheme</code></a>.
+    <span class="rfc2119-assertion" 
+      id="td-security-extension">
+      Note that such additional security schemes MUST be <a>Subclasses</a> of the
+      <a>Class</a> <a href="#securityscheme" class="sec-ref"><code>SecurityScheme</code></a>.
+    </span>
   </p>
     
 <pre class="example">
@@ -3961,14 +3967,14 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
  However, note that TDs are descriptive, and may in particular be used to
  describe pre-existing network interfaces. In these cases, assertions cannot
  be made that constrain the behavior of such pre-existing interfaces.  Instead,
- the assertions must be interpreted as constraints on the TD to accurately
+ the assertions are to be interpreted as constraints on the TD to accurately
  represent such interfaces. 
  </p> 
 <section id="behavior-security">
 <h3>Security Configurations</h3>
  <p>
  To enable secure interoperation, 
- security configurations must accurately reflect the requirements of the <a>Thing</a>:
+ security configurations need to accurately reflect the requirements of the <a>Thing</a>:
 <ul>
 <li>
  <span class="rfc2119-assertion" id="td-security-binding">
@@ -3998,7 +4004,9 @@ data payloads returned and accepted by the described <a>Thing</a>
 in the interactions specified in the TD.  In general, <a>Consumers</a> should
 follow the data schemas strictly, not generating anything not given
 in the WoT Thing Description, but should accept additional data from
-the <a>Thing</a> not given explicitly in the WoT Thing Description.  In general, <a>Things</a> are <em>described</em> by WoT Thing Descriptions,
+the <a>Thing</a> not given explicitly in the WoT Thing Description.
+<!-- The above assertions are ok since they are repeated below -->
+In general, <a>Things</a> are <em>described</em> by WoT Thing Descriptions,
 but <a>Consumers</a> are <em>constrained</em> to follow WoT Thing Descriptions when
 interacting with <a>Things</a>.
 <ul>
@@ -4076,10 +4084,11 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   </p>
 
   <p>
-    Every form in a WoT Thing Description must have a submission target,
-    given by the <code>href</code> member. The URI scheme [[!RFC3986]] of this
-    submission target indicates what <a>Protocol Binding</a> the <a>Thing</a> implements
-    [[?WOT-ARCHITECTURE]].
+    <span class="rfc2119-assertion" id="td-form-existence">
+        Every form in a WoT Thing Description MUST have a submission target,
+        given by the <code>href</code> member. 
+    </span>
+    The URI scheme [[!RFC3986]] of this submission target indicates what <a>Protocol Binding</a> the <a>Thing</a> implements [[?WOT-ARCHITECTURE]].
     For instance, if the target starts with <code>http</code> or
     <code>https</code>, a <a>Consumer</a> can then infer the <a>Thing</a> implements the
     <a>Protocol Binding</a> based on HTTP and it should expect HTTP-specific terms in the
@@ -4469,7 +4478,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
       </p>
       <dl><dt>Mitigation:</dt><dd>
           Avoid actual fetching of vocabulary files.
-          Vocabulary files should be cached whenever possible.
+          <span class="rfc2119-assertion" id="td-context-caching">
+            Vocabulary files SHOULD be cached whenever possible.
+          </span>
           Ideally they would be made immutable, built into the interpreting device,
           and not fetched at all,
           with the URI in the <code>@context</code> member serving only as 
@@ -4493,11 +4504,16 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
          track that person.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-          All identifiers should be mutable,
-          and there should be a mechanism to update the <code>id</code>
-          of a <a>Thing</a>.
-          Specifically,
-          the <code>id</code> of a <a>Thing</a> should not be fixed in hardware.
+        <span class="rfc2119-assertion" id="td-identifier-mutable">
+            All identifiers SHOULD be mutable.
+          </span>
+          <span class="rfc2119-assertion" id="td-identifier-updatable">
+            There SHOULD be a mechanism to update the <code>id</code>
+            of a <a>Thing</a>.
+          </span>
+          <span class="rfc2119-assertion" id="td-identifier-hardware-independent">
+              Specifically, the <code>id</code> of a <a>Thing</a> SHOULD not be fixed in hardware.
+          </span>
           This does, however, conflict with the Linked Data ideal that
           identifiers are fixed URIs.  In many circumstances it
           will be acceptable to only allow updates to identifiers if
@@ -4532,16 +4548,21 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
       identifiable person, such as a medical condition.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-          Only authorized users should be provided access
-          to the Thing Description for a <a>Thing</a>, and only the amount of
-          information needed for the level of authorization and the use case should be provided.
+        <span class="rfc2119-assertion" id="td-authorized-access">
+            Only authorized users SHOULD be provided access to the Thing Description for a <a>Thing</a>.
+        </span>
+        <span class="rfc2119-assertion" id="td-access-level">
+        Additionally, only the amount of information needed for the level of authorization and the use case SHOULD be provided.
+        </span>
           If the TD is only distributed to authorized users 
           through secure and confidential channels, for
           example through a directory service that requires authentication,
           then external unauthorized parties will not have access to the TD to fingerprint it.
-          To further mitigate this risk, information not necessary for a particular
-          use case of a TD should be omitted whenever possible.  For example,
-          for an ad-hoc connection to a device where the Consumer does 
+          <span class="rfc2119-assertion" id="td-fingerprinting-information-omitting">
+            To further mitigate the fingerprinting risk, information not necessary for a particular
+            use case of a TD SHOULD be omitted whenever possible.
+          </span>
+            For example, for an ad-hoc connection to a device where the Consumer does 
           not store state about the Thing, the <code>id</code> can be omitted.
           If the Consumer does not need certain interactions for its use case, they can be omitted.
           If the Consumer is not authorized to use certain interactions, they can likewise be omitted.
@@ -4685,9 +4706,11 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <h3>Versioning</h3>
     
     <p>
-        Over time, <a>Thing Model</a> definitions may change and must be made identifiable through versioning.  
-        In that case the string-based term <code>model</code> can be used within the <code>version</code> container to 
-        provide a version pattern like [[SEMVER]]. The following snippet shows the usage of <code>model</code> in a
+        <span class="rfc2119-assertion" id="tm-versioning">
+            When the <a>Thing Model</a> definitions change over time, this SHOULD be reflected in the version container.
+            </span>
+        The string-based term <code>model</code> is used within the <code>version</code> container to 
+        provide such versioning information, like [[SEMVER]]. The following snippet shows the usage of <code>model</code> in a
         Thing Model instance. 
     </p>
 
@@ -4762,8 +4785,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         }
     </pre>
 
-    <p>Now it is designed a new device class model called 'Smart Lamp Control' that should be used as template 
-        for creating TD instances. This model will reuse the existing definition of the 'Basic On/Off Thing Model'
+    <p>Now a new device class model called 'Smart Lamp Control' that will be used as template 
+        for creating TD instances is designed. This model will reuse the existing definition of the 'Basic On/Off Thing Model'
         and extend it with a <code>dim</code> property:
     </p>
 
@@ -4794,7 +4817,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <p>
     The <code>tm:extends</code> feature only permits inheriting all definitions of one <a>Thing Model</a>. In many use cases, however,
      it is desired only to import pieces of definitions of one or more existing <a>Thing Models</a>. 
-     For doing this, the <code>tm:ref</code> term is introduced that provides the location of an existing (sub-)definition that should be reused.
+     <span class="rfc2119-assertion" id="tm-tmRef-usecase">
+     For import pieces of definitions of one or more existing <a>Thing Models</a>, the <code>tm:ref</code> term is introduced that provides the location of an existing (sub-)definition that SHOULD be reused.
+    </span>
      <span class="rfc2119-assertion" id="tm-tmRef1">
      The <code>tm:ref</code> value MUST follow the pattern
      <ul>
@@ -5041,7 +5066,7 @@ provides <code>dimmable</code> and <code>RGB</code> capabilities.
         that targets to the (sub-) <a>Thing Models</a>.
     </span>
     <span class="rfc2119-assertion" id="tm-compose-instanceName">
-        Optionally an <code>instanceName</code> can be provided to associate an individual name to the composed (sub-) <a>Thing Model</a>.
+        Optionally an <code>instanceName</code> MAY be provided to associate an individual name to the composed (sub-) <a>Thing Model</a>.
     </span> 
     This is useful when multiple similar <a>Thing Model</a> definitions are composed and needs to be distinguished. 
 </p>
@@ -5430,19 +5455,26 @@ instance.
 
 <p>
     A <a>Thing Model</a> can specify which terms should be used in a TD instance, but their values are unspecific and are first known during TD instantiation. 
-    In such a case the placeholder labeling MAY be used in Thing Model that MUST be substituted with a concrete value when TD instance is created 
-    from the Thing Model. 
+    <span class="rfc2119-assertion" id="tm-placeholder-usecase">
+        In a case where TD instance terms, but not their values, are known in advance, the placeholder labeling MAY be used in a Thing Model.
+    </span>
+    <span class="rfc2119-assertion" id="tm-placeholder-replacement">
+        The placeholder labeling MUST be substituted with a concrete value when TD instance is created from the Thing Model. 
+    </span>
     <span class="rfc2119-assertion" id="tm-placeholder">
         The string-based pattern of the placeholder MUST follow a valid pattern based on the regular expression <code>{{2}[ -~]+}{2}</code> (e.g., <code>{{</code><code>PLACEHOLDER_IDENTIFIER</code><code>}}</code>). 
         The characters between <code>{{</code> and <code>}}</code> are used as identifier name of the placeholder. The identifier name can be used to identify the placeholder for the substitution process.
     </span>
     <span class="rfc2119-assertion" id="tm-placeholder-value">
-        A placeholder can only be applied within the value of the JSON name-value pair and the value has to be a JSON string. 
+        A placeholder MUST be applied within the value of the JSON name-value pair. 
     </span>  
     <span class="rfc2119-assertion" id="tm-placeholder-retyping">
-    In the case that a non string-based value of a JSON name-value pair should have a placeholder, the value must be (temporarily) typed as string. After replacing the placeholder, e.g. when creating a Thing Description instance, the original type can be applied with the 
-    corresponding replaced value.  
+        In the case that a non string-based value of a JSON name-value pair SHOULD have a placeholder, the value MUST be (temporarily) typed as string. 
     </span>
+    
+    After replacing the placeholder, e.g. when creating a Thing Description instance, the original type is applied with the 
+    corresponding replaced value.  
+    
           
 </p>
 
