@@ -72,7 +72,10 @@ tmSchema.definitions["thing-context-w3c-uri"] = {
       "http://www.w3.org/ns/td"
     ]
   };
-
+tmSchema.definitions["placeholder-pattern"] = {
+    type: "string",
+    "pattern":placeholderPattern
+}
 tmSchema = removeFormat(tmSchema)
 tmSchema = manualConvertString(tmSchema)
 tmSchema = addTmTerms(tmSchema)
@@ -189,8 +192,7 @@ function replaceEnum(argObject) {
         argObject.anyOf = [
             {enum:newEnum},
             {
-                "type":"string",
-                "pattern":placeholderPattern
+                "$ref":"#/definitions/placeholder-pattern"
             }
         ]
     }
@@ -304,8 +306,7 @@ function changeToAnyOf(argObject){
         argObject = {};
         argObject.anyOf = [
             curSchema,{
-            type: "string",
-            "pattern":placeholderPattern
+            "$ref":"#/definitions/placeholder-pattern"
         }]
         return argObject;
     } else {
