@@ -62,6 +62,8 @@ let tdSchema = JSON.parse(fs.readFileSync('validation/td-json-schema-validation.
 // do all the manipulation in order
 let tmSchema = staticReplace(tdSchema)
 tmSchema = removeRequired(tmSchema)
+tmSchema = addPlaceholderRestrictionObjectNames(tmSchema)
+
 tmSchema = replaceEnum(tmSchema)
 
 // after replace enum, wot context uri needs to be updated
@@ -159,6 +161,37 @@ function removeRequired(argObject) {
         // removal is done only in objects, other types are not JSON Schema points anyways
         if (typeof(curValue)=="object"){
             argObject[key] = removeRequired(curValue)
+        }
+    } 
+
+    return argObject;
+}
+
+/** 
+ * if there is an object, add the assertion that property names cannot follow the 
+ * placeholder pattern, i.e. "{{asd}}": "mqtt://{{MQTT_BROKER_ADDRESS}}" is not allowed
+ * @param {object} argObject
+ * @return {object}
+**/
+
+function addPlaceholderRestrictionObjectNames(argObject) {
+
+    argObject["propertyNames"]={
+        "not":{
+          "$ref":"#/definitions/placeholder-pattern"
+        }
+      }
+    for (var key in argObject)
+    {
+        let curObject = argObject[key];
+        if (typeof(curObject)=="object"){
+            for (var key2 in curObject)
+            {
+                curValue=curObject[key2]
+                if (curValue.type=="object"){
+                    argObject[key][key2]= addPlaceholderRestrictionObjectNames(curValue)
+                }
+            }
         }
     } 
 

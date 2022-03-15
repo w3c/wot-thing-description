@@ -226,6 +226,22 @@ const invalidTMs = [
             }
         },
         "security": ["example_sc"]
+    },
+    {
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
+        "@type" : "tm:ThingModel",
+        "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
+        "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
+        "properties": {
+            "temperature": {
+                "description": "Shows the current temperature value",
+                "type": "number",
+                "minimum": -20,
+                "maximum": "{{THERMOSTATE_TEMPERATURE_MAXIMUM}}",
+                "observable" : "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}",
+                "{{myvar}}":true
+            }
+        }
     }
 ];
 
