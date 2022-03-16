@@ -2172,7 +2172,7 @@ In summary, this requires the following:
   In the <code>digest</code> scheme, the <a>Default Value</a> of <code>in</code>
   (i.e., <code>header</code>) is omitted, but still applies.
   Note that the corresponding private security configuration
-  such as username/password and tokens are configured in the <a>Consumer</a>
+  such as username/password and tokens need to be configured in the <a>Consumer</a>
   to interact successfully.
   When activating multiple security definitions, 
   the <code>security</code> member becomes an array.
@@ -2200,7 +2200,7 @@ In summary, this requires the following:
     <span class="rfc2119-assertion" id="td-security-combo-deprecation">
         However, the use of an array with multiple elements to combine security schemes
         in a <code>security</code> element is now deprecated, instead a <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> 
-        SHOULD be used instead.
+        SHOULD be used.
     </span>
   In the following example, which is exactly equivalent to the one above, this is demonstrated:
   </p>
@@ -3460,8 +3460,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   <p>
   In several contexts automatic validation of a JSON-based serialization 
   of a Thing Description is useful.  Formally, a valid TD satisfies all
-  the assertions in this specification with their corresponding degree of assertiveness,
-   but not all assertions can be 
+  the assertions in this specification, but not all assertions can be 
   validated given only the JSON serialization, for instance, the assertions
   listed under <a href="#behavior"></a> that relate a TD to the
   behavior of a Thing that it describes.  Extensions are also problematic,
@@ -3896,7 +3895,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   defined by the namespace at <code>http://www.example.org/ace-security#</code>.
     <span class="rfc2119-assertion" 
       id="td-security-extension">
-      Note that such additional security schemes MUST be <a>Subclasses</a> of the
+      Additional security schemes MUST be <a>Subclasses</a> of the
       <a>Class</a> <a href="#securityscheme" class="sec-ref"><code>SecurityScheme</code></a>.
     </span>
   </p>
@@ -4083,10 +4082,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   </p>
 
   <p>
-    <span class="rfc2119-assertion" id="td-form-existence">
-        Every form in a WoT Thing Description MUST have a submission target,
-        given by the <code>href</code> member. 
-    </span>
+    Every form in a WoT Thing Description needs to have a submission target, given by the <code>href</code> member, as indicated in <a>Form</a>. 
     The URI scheme [[!RFC3986]] of this submission target indicates what <a>Protocol Binding</a> the <a>Thing</a> implements [[?WOT-ARCHITECTURE]].
     For instance, if the target starts with <code>http</code> or
     <code>https</code>, a <a>Consumer</a> can then infer the <a>Thing</a> implements the
@@ -4477,9 +4473,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
       </p>
       <dl><dt>Mitigation:</dt><dd>
           Avoid actual fetching of vocabulary files.
-          <span class="rfc2119-assertion" id="td-context-caching">
-            Vocabulary files SHOULD be cached whenever possible.
-          </span>
+          Vocabulary files should be cached whenever possible.
           Ideally they would be made immutable, built into the interpreting device,
           and not fetched at all,
           with the URI in the <code>@context</code> member serving only as 
@@ -4503,16 +4497,14 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
          track that person.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-        <span class="rfc2119-assertion" id="td-identifier-mutable">
-            All identifiers SHOULD be mutable.
-          </span>
-          <span class="rfc2119-assertion" id="td-identifier-updatable">
-            There SHOULD be a mechanism to update the <code>id</code>
-            of a <a>Thing</a>.
-          </span>
-          <span class="rfc2119-assertion" id="td-identifier-hardware-independent">
-              Specifically, the <code>id</code> of a <a>Thing</a> SHOULD not be fixed in hardware.
-          </span>
+          All identifiers should be mutable,
+          and there should be a mechanism to update the <code>id</code>
+          of a <a>Thing</a>.
+          Specifically,
+          the <code>id</code> of a <a>Thing</a> should not be fixed in hardware.
+          This does, however, conflict with the Linked Data ideal that
+          identifiers are fixed URIs.  In many circumstances it
+          will be acceptable to only allow updates to identifiers if
           This does, however, conflict with the Linked Data ideal that
           identifiers are fixed URIs.  In many circumstances it
           will be acceptable to only allow updates to identifiers if
@@ -4547,27 +4539,22 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
       identifiable person, such as a medical condition.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-        <span class="rfc2119-assertion" id="td-authorized-access">
-            Only authorized users SHOULD be provided access to the Thing Description for a <a>Thing</a>.
-        </span>
-        <span class="rfc2119-assertion" id="td-access-level">
-        Additionally, only the amount of information needed for the level of authorization and the use case SHOULD be provided.
-        </span>
-          If the TD is only distributed to authorized users 
-          through secure and confidential channels, for
-          example through a directory service that requires authentication,
-          then external unauthorized parties will not have access to the TD to fingerprint it.
-          <span class="rfc2119-assertion" id="td-fingerprinting-information-omitting">
-            To further mitigate the fingerprinting risk, information not necessary for a particular
-            use case of a TD SHOULD be omitted whenever possible.
-          </span>
-            For example, for an ad-hoc connection to a device where the Consumer does 
-          not store state about the Thing, the <code>id</code> can be omitted.
-          If the Consumer does not need certain interactions for its use case, they can be omitted.
-          If the Consumer is not authorized to use certain interactions, they can likewise be omitted.
-          If the Consumer does not have any capability to display human-readable information
-          such as titles or descriptions, they can be omitted or replaced with zero-length strings.
-      </dd></dl>
+        Only authorized users should be provided access
+        to the Thing Description for a <a>Thing</a>, and only the amount of
+        information needed for the level of authorization and the use case should be provided.
+        If the TD is only distributed to authorized users 
+        through secure and confidential channels, for
+        example through a directory service that requires authentication,
+        then external unauthorized parties will not have access to the TD to fingerprint it.
+        To further mitigate this risk, information not necessary for a particular
+        use case of a TD should be omitted whenever possible.  For example,
+        for an ad-hoc connection to a device where the Consumer does 
+        not store state about the Thing, the <code>id</code> can be omitted.
+        If the Consumer does not need certain interactions for its use case, they can be omitted.
+        If the Consumer is not authorized to use certain interactions, they can likewise be omitted.
+        If the Consumer does not have any capability to display human-readable information
+        such as titles or descriptions, they can be omitted or replaced with zero-length strings.
+    </dd></dl>
    </section>
    <section id="sec-security-consideration-global-id-risk">
    <h5>Globally Unique Identifiers</h5>
@@ -4817,7 +4804,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     The <code>tm:extends</code> feature only permits inheriting all definitions of one <a>Thing Model</a>. In many use cases, however,
      it is desired only to import pieces of definitions of one or more existing <a>Thing Models</a>. 
      <span class="rfc2119-assertion" id="tm-tmRef-usecase">
-     For import pieces of definitions of one or more existing <a>Thing Models</a>, the <code>tm:ref</code> term is introduced that provides the location of an existing (sub-)definition that SHOULD be reused.
+     For importing pieces of definitions of one or more existing <a>Thing Models</a>, the <code>tm:ref</code> term is introduced that provides the location of an existing (sub-)definition that SHOULD be reused.
     </span>
      <span class="rfc2119-assertion" id="tm-tmRef1">
      The <code>tm:ref</code> value MUST follow the pattern
@@ -5468,7 +5455,7 @@ instance.
         A placeholder MUST be applied within the value of the JSON name-value pair. 
     </span>  
     <span class="rfc2119-assertion" id="tm-placeholder-retyping">
-        In the case that a non string-based value of a JSON name-value pair SHOULD have a placeholder, the value MUST be (temporarily) typed as string. 
+        If a non string-based value of a JSON name-value pair has a placeholder, the value MUST be (temporarily) typed as string. 
     </span>
     
     After replacing the placeholder, e.g. when creating a Thing Description instance, the original type is applied with the 
