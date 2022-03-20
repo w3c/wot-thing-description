@@ -133,7 +133,7 @@ const validTMs = [
     },
     {
         "$comment":"example 56 of the spec. Valid Model 10",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2019/wot/td/v1"], 
         "@type" : "tm:ThingModel",
         "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
         "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
@@ -149,7 +149,7 @@ const validTMs = [
     },
     {
         "$comment":"example 57 of the spec",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel",
         "title": "Valid Model 11",
         "description": "Lamp Thing Description Model",
@@ -178,7 +178,7 @@ const validTMs = [
     },
     {
         "$comment":"example 59 of the spec",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel",
         "links" : [{
             "rel": "tm:extends",
