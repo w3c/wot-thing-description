@@ -12,7 +12,7 @@ This is an updated version of the [Explainer for TD 1.0](Explainer.md).
 interoperability across IoT Platforms and application domains using Web technology.)
 
 In the [WoT Architecture](https://w3c.github.io/wot-architecture/index.html), 
-a Thing is defined as an abstraction of a physical IoT device such as a sensor (temperature, CO2, ...), an actuator (lamp, motor, ...), or a service like a weather service. The Thing Description (TD) provides descriptive metadata for a Thing's interface.
+a Thing is defined as an abstraction of a physical IoT device such as a sensor (temperature, CO2, ...), an actuator (lamp, motor, ...), or a virtual entity (e.g., composition of one or more Things, weather service). The Thing Description (TD) provides descriptive metadata for a Thing's network interface.
 
 
 With a TD, clients are informed of the choices they can make when interacting with Things such reading a temperature value or switching on a lamp. This can drive applications in the same way that Web HTML pages allow users to
@@ -27,7 +27,7 @@ TDs are designed to provide all the information needed to interact with a Thing.
 
 ## Getting started
 
-Lets assume there is a smart lamp that offers an interface with following characteristics:
+Let us assume there is a smart lamp that offers an interface with following characteristics:
 
 | |  ||  
 --- | --- |  --- |
@@ -41,7 +41,7 @@ Lets assume there is a smart lamp that offers an interface with following charac
 |  |overheating (type: string) | Resource (GET & longpoll): /oh
 
 
-Based on such information a Thing Description can be simple designed in the following way
+Based on such information a Thing Description can be designed in the following way
 
 ```json
 {
@@ -74,7 +74,7 @@ Based on such information a Thing Description can be simple designed in the foll
 }
 ```
 
-Before going in detail an important paradigm is explained that is defined by the [WoT Architecture](https://w3c.github.io/wot-architecture/index.html), namely about the interaction affordances **properties, actions**, and **events**. 
+Before going into detail an important paradigm is explained that is defined by the [WoT Architecture](https://w3c.github.io/wot-architecture/index.html), namely about the interaction affordances **properties, actions**, and **events**. 
 
 Each Thing and its data and functions offerings that is possible via the interface can be classified in those affordances. Sensor and/or parameter data are considered as **properties**. Functions like on/off, dimming, etc. are seen as **actions**. Data events, streams etc.  are considered as **events**. 
 
@@ -193,7 +193,7 @@ In order to address the above-mentioned scenarios or others, the Thing Model can
     }
 }
 ```
-Thing Model definitions are identified by the "@type": "tm:ThingModel". As the example shows, it does not provide details about a single Thing instance due to the lack of communication and security metadata. This specification presents a mechanism for deriving valid Thing Description instances from such Thing Model definitions. In addition, other design concepts are specified, including how to override, extend, and reuse existing Thing Model definitions. 
+Thing Model definitions are identified by the `@type`: `tm:ThingModel`. As the example shows, it does not provide details about a single Thing instance due to the lack of communication and security metadata. This specification presents a mechanism for deriving valid Thing Description instances from such Thing Model definitions. In addition, other design concepts are specified, including how to override, extend, and reuse existing Thing Model definitions. 
 
 
 
@@ -214,12 +214,14 @@ Structured payloads are supported but should be
 conceptually interconvertible with JSON.
 
 
-## Differentiation to Thing Description 1.0
-The main difference of this new specification from Thing Description 1.0 is that it includes the Thing Model concept (see above). This was only discussed in the Annex of the Thing Description 1.0 and was called Thing Description Template that time. 
+## Differentiation to Thing Description 1.0 and Backward Compatibility
+The main difference of this new specification from Thing Description 1.0 is that it includes the Thing Model concept (see above). This was only discussed in the Annex of the Thing Description 1.0 and was called Thing Description Template at that time. 
 
-A new features is also possible to signalize that a Thing is following a specific profile such as the [W3C WoT Core Profile](https://w3c.github.io/wot-profile/). 
+A new features is also possible to indicate that a Thing is following a specific profile such as the [W3C WoT Core Profile](https://w3c.github.io/wot-profile/). 
 
-In general, TD 1.1 specification describes a superset of the features defined in Thing Description 1.0. The new minor version update is also used to redefine some features more clearly and to add additional examples to make it easier to understand. 
+In general, TD 1.1 is backward compatible with implementations that follow version TD 1.0.  
+
+The new minor version update is also used to redefine some features more clearly and to add additional examples to make it easier to understand. 
 
 The complete change log with the new features and refinements can be found in the [change log section](https://w3c.github.io/wot-thing-description/#changes). 
 
@@ -228,8 +230,7 @@ The complete change log with the new features and refinements can be found in th
 
 ## Implementations
 
-Implementations were built by
-Bosch, Smart Things, ERCIM, Hitachi, Intel, Oracle, Panasonic, Fujitsu and Siemens (**list needs to be updated**).
+Implementations were built, among others, by Bosch, Smart Things, ERCIM, Hitachi, Intel, Oracle, Panasonic, Fujitsu, ECHONET, NHK, and Siemens.
 The latest list of implementations can be found in the [implementation report](https://w3c.github.io/wot-thing-description/testing/report11.html) or in the [developer space](https://www.w3.org/WoT/developers/) at the W3C WoT main page. 
 
 ## Related Work
