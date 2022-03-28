@@ -5581,7 +5581,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   <p>
   In general the security measures taken to protect a WoT 
   system will depend on the threats and attackers that system
-  may face and the value of the assets needs to protect.
+  may face and the value of the assets that need to be protected.
   A detailed discussion of security (and privacy) considerations for the Web of Things,
   including a threat model that can be adapted to various circumstances, is
   presented in the informative document [[WOT-SECURITY-GUIDELINES]].  
@@ -5589,7 +5589,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   In addition to the specific security considerations below,
   the security risks and mitigations discussed in
   guides such as the OWASP Top 10 [[OWASP-Top-10]] for web services should be
-  evaluated and if applicable, addressed.
+  evaluated, and if applicable, addressed.
   This section discusses only security risks
   and possible mitigations directly relevant to the WoT Thing Description.
   </p>
@@ -5653,11 +5653,12 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 	      Ideally context definition files would only be obtained through secure
 	      channels established by mutual authentication
 	      but it is notable (and unfortunate) that many contexts are indicated using
-	      plain HTTP URLs, which are vulnerable to interception and modification if 
-	      dereferenced without establishing a secure transport channel. 
+	      "plain" HTTP URLs.  
+	      However, the HTTP protocol is vulnerable to interception and modification if 
+	      used without first establishing a secure transport channel using TLS. 
 	      <span class="rfc2119-assertion" id="security-context-secure-fetch">
 	      If it is necessary to fetch a context definition file,
-	      an implementation SHOULD first attempt to use HTTPS (HTTP over TLS) 
+	      an implementation SHOULD first attempt to use HTTP over TLS 
 	      even when only an HTTP URL is given.
 	      </span>
       </dd></dl>
@@ -5694,6 +5695,11 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 	provide limited duration tokens and use scopes to limit access.
 	Scopes can limit access to specific interactions but
 	are not sufficient to limit duration.
+	See [[?ACE-OAuth]].
+	<p class="ednote" title="RFC9200">
+	Upgrade informative ACE-OAuth citation to normative RFC9200 citation if it 
+	passes.
+	</p>
 	</dd>
      </dl>
 </section>
@@ -5713,6 +5719,14 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         function to be parsed.
 	</span></dd>
      </dl>
+     <p class="ednote" title="Other Injection Risks">
+     There are additional code injection risks discussed in
+     [[WOT-DISCOVERY]]. Other strings in TDs, such as the values given for
+     <code>title</code> and <code>description</code>, should be sanitized before being
+     used in templates for SQL, HTML, or other executable contexts.
+     This risk, however, is specifically about the Javascript injection risk
+     when parsing JSON.
+     </p>
   </section>
    <section id="sec-security-consideration-jsonld-expansion">
       <h5>JSON-LD Expansion</h5>
