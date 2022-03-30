@@ -62,6 +62,8 @@ let tdSchema = JSON.parse(fs.readFileSync('validation/td-json-schema-validation.
 // do all the manipulation in order
 let tmSchema = staticReplace(tdSchema)
 tmSchema = removeRequired(tmSchema)
+tmSchema = addPlaceholderRestrictionObjectNames(tmSchema)
+
 tmSchema = replaceEnum(tmSchema)
 
 // after replace enum, wot context uri needs to be updated
@@ -72,7 +74,10 @@ tmSchema.definitions["thing-context-w3c-uri"] = {
       "http://www.w3.org/ns/td"
     ]
   };
-
+tmSchema.definitions["placeholder-pattern"] = {
+    type: "string",
+    "pattern":placeholderPattern
+}
 tmSchema = removeFormat(tmSchema)
 tmSchema = manualConvertString(tmSchema)
 tmSchema = addTmTerms(tmSchema)
@@ -163,6 +168,37 @@ function removeRequired(argObject) {
 }
 
 /** 
+ * if there is an object, add the assertion that property names cannot follow the 
+ * placeholder pattern, i.e. "{{asd}}": "mqtt://{{MQTT_BROKER_ADDRESS}}" is not allowed
+ * @param {object} argObject
+ * @return {object}
+**/
+
+function addPlaceholderRestrictionObjectNames(argObject) {
+
+    argObject["propertyNames"]={
+        "not":{
+          "$ref":"#/definitions/placeholder-pattern"
+        }
+      }
+    for (var key in argObject)
+    {
+        let curObject = argObject[key];
+        if (typeof(curObject)=="object"){
+            for (var key2 in curObject)
+            {
+                curValue=curObject[key2]
+                if (curValue.type=="object"){
+                    argObject[key][key2]= addPlaceholderRestrictionObjectNames(curValue)
+                }
+            }
+        }
+    } 
+
+    return argObject;
+}
+
+/** 
  * if there is a enum, replace that with an oneOf of the same enum and a pattern for placeholder
  * once that is done, remove find a sub item that is of object type, call recursively
  * if there is no sub item with object, return the current scoped object
@@ -189,8 +225,7 @@ function replaceEnum(argObject) {
         argObject.anyOf = [
             {enum:newEnum},
             {
-                "type":"string",
-                "pattern":placeholderPattern
+                "$ref":"#/definitions/placeholder-pattern"
             }
         ]
     }
@@ -304,8 +339,7 @@ function changeToAnyOf(argObject){
         argObject = {};
         argObject.anyOf = [
             curSchema,{
-            type: "string",
-            "pattern":placeholderPattern
+            "$ref":"#/definitions/placeholder-pattern"
         }]
         return argObject;
     } else {
