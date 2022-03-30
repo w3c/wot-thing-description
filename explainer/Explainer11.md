@@ -1,4 +1,4 @@
-# WoT Thing Description (TD) 1.1 Explainer (DRAFT - WIP)
+# WoT Thing Description (TD) 1.1 Explainer
 This is an updated version of the [Explainer for TD 1.0](Explainer.md).
 
 
