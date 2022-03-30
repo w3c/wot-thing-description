@@ -1820,6 +1820,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 endpoint.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-scheme--SecurityScheme"><td><code>scheme</code></td><td>Identification of the security mechanism being
                 configured.</td><td>optional</td><td>any type (one of <code>nosec</code>, <code>combo</code>, <code>basic</code>, <code>digest</code>, <code>bearer</code>, <code>psk</code>, <code>oauth2</code>, or <code>apikey</code>)</td></tr></tbody></table><p>The class <code>SecurityScheme</code> has the following subclasses:</p><ul><li><a href="#nosecurityscheme"><code>NoSecurityScheme</code></a></li>
+<li><a href="#autosecurityscheme"><code>AutoSecurityScheme</code></a></li>
 <li><a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a></li>
 <li><a href="#basicsecurityscheme"><code>BasicSecurityScheme</code></a></li>
 <li><a href="#digestsecurityscheme"><code>DigestSecurityScheme</code></a></li>
@@ -1832,6 +1833,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           <code>nosec</code> (i.e., <code>"scheme":
           "nosec"</code>), indicating there is no authentication or
           other mechanism required to access the resource.</p></section>
+<section><h3><code>AutoSecurityScheme</code></h3><p>An auto authentication security configuration identified by the term <code>auto</code> (i.e., <code>"scheme": "auto"</code>). This scheme can be used to indicate that the security parameters are going to be negotiated by the underlying protocols at runtime.</p></section>
 <section><h3><code>ComboSecurityScheme</code></h3><p><span class="at-risk">This section is at risk.</span></p><p>A combination of other security schemes identified by the <a>Vocabulary Term</a> <code>combo</code> (i.e., <code>"scheme": "combo"</code>).  Elements of this scheme define various ways in which other named schemes defined in <code>securityDefinitions</code>, including other <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> definitions, are to be combined to create a new scheme definition.  <span class="rfc2119-assertion" id="td-security-combo-exclusive-oneof-or-allof">Exactly one of either <code>oneOf</code> or <code>allOf</code> MUST be included.</span> <!-- Redundant, table states "two or more" already <scan class="rfc2119-assertion">The array given as a value associated with either <code>oneOf</code> or <code>allOf</code> MUST have at least two elements.</scan> --> Only security scheme definitions which can be used together can be combined with <code>allOf</code>.  For example, it is not possible in general to combine different OAuth 2.0 flows together using <code>allOf</code> unless one applies to a proxy and one to the endpoint.  Note that when multiple named security scheme definitions are listed in a <code>security</code> field the same semantics apply as in an <code>allOf</code> combination (and the same limitations on allowable combinations).  The <code>oneOf</code> combination is equivalent to using different security schemes on forms that are otherwise identical.  In this sense a <code>oneOf</code> scheme is not an essential feature but it does avoid redundancy in such cases.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-oneOf--ComboSecurityScheme"><td><code>oneOf</code></td><td>Array of two or more strings identifying other named security scheme definitions, any one of which, when satisfied, will allow access.  Only one may be chosen for use.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-allOf--ComboSecurityScheme"><td><code>allOf</code></td><td>Array of two or more strings identifying other named security scheme definitions, all of which must be satisfied for access.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table><!-- <p class="ednote" title="Recursive Use">The 
 <a href="#combosecurityscheme">ComboSecurityScheme</a> may be applied recursively to generate Boolean expressions for combinations of security schemes. One use case for this is when multiple security schemes are needed for a proxy in combination with multiple security schemes for an endpoint.  Suppose for example a proxy accepts either schemes A or B, and then the endpoint accepts either C or D.  Then the possible combinations are AC, AD, BC, and BD.  These could be expressed directly at the <code>Form</code> level but would require four-fold redundancy.  Instead, three <code>combo</code> nodes can be used to combine the four leaf schemes in the correct way into a single scheme.  It is not clear however if other use cases exist for deeper expression trees and if not, we may consider limiting the recursion depth to two.</p>--></section>
@@ -3273,10 +3275,9 @@ In summary, this requires the following:
   basic username/password authentication in the header.
   The value given for <code>in</code> is actually the <a>Default Value</a> (<code>header</code>)
   and could be omitted.
-  A named security configuration must be given
-  in the <code>securityDefinitions</code> map.
-  That definition must be activated by including its JSON name in the
-  <code>security</code> member, which can and should be of type string when only one definition is activated.
+  A named security configuration (<code>basic_sc</code>) is given in the <code>securityDefinitions</code> map.
+  In this example, that definition is activated by including its JSON name in the
+  <code>security</code> member. 
   </p>
 
 <pre class="example" id="security-basic-example">
@@ -3388,7 +3389,7 @@ In summary, this requires the following:
   In the <code>digest</code> scheme, the <a>Default Value</a> of <code>in</code>
   (i.e., <code>header</code>) is omitted, but still applies.
   Note that the corresponding private security configuration
-  such as username/password and tokens must be configured in the <a>Consumer</a>
+  such as username/password and tokens need to be configured in the <a>Consumer</a>
   to interact successfully.
   When activating multiple security definitions, 
   the <code>security</code> member becomes an array.
@@ -3412,11 +3413,13 @@ In summary, this requires the following:
     "security": ["proxy_sc", "bearer_sc"],
     ...
 </pre>
- 
-  <p>However, the use of an array with multiple elements to combine security schemes
-  in a <code>security</code> element is now deprecated.
-  A <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> 
-  should be used instead as in the following example, which is exactly equivalent to the one above:
+<p>
+    <span class="rfc2119-assertion" id="td-security-combo-deprecation">
+        However, the use of an array with multiple elements to combine security schemes
+        in a <code>security</code> element is now deprecated, instead a <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> 
+        SHOULD be used.
+    </span>
+  In the following example, which is exactly equivalent to the one above, this is demonstrated:
   </p>
 
 <pre class="example" id="security-digest-example2">
@@ -4673,7 +4676,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
 
   <p>
   In several contexts automatic validation of a JSON-based serialization 
-  of a Thing Description is useful.  Formally, a valid TD must satisfy all
+  of a Thing Description is useful.  Formally, a valid TD satisfies all
   the assertions in this specification, but not all assertions can be 
   validated given only the JSON serialization, for instance, the assertions
   listed under <a href="#behavior"></a> that relate a TD to the
@@ -5107,8 +5110,11 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   This example uses a fictional ACE security scheme
   based on [[?ACE]] that is, for this example,
   defined by the namespace at <code>http://www.example.org/ace-security#</code>.
-  Note that such additional security schemes must be <a>Subclasses</a> of the
-  <a>Class</a> <a href="#securityscheme" class="sec-ref"><code>SecurityScheme</code></a>.
+    <span class="rfc2119-assertion" 
+      id="td-security-extension">
+      Additional security schemes MUST be <a>Subclasses</a> of the
+      <a>Class</a> <a href="#securityscheme" class="sec-ref"><code>SecurityScheme</code></a>.
+    </span>
   </p>
     
 <pre class="example">
@@ -5176,14 +5182,14 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
  However, note that TDs are descriptive, and may in particular be used to
  describe pre-existing network interfaces. In these cases, assertions cannot
  be made that constrain the behavior of such pre-existing interfaces.  Instead,
- the assertions must be interpreted as constraints on the TD to accurately
+ the assertions are to be interpreted as constraints on the TD to accurately
  represent such interfaces. 
  </p> 
 <section id="behavior-security">
 <h3>Security Configurations</h3>
  <p>
  To enable secure interoperation, 
- security configurations must accurately reflect the requirements of the <a>Thing</a>:
+ security configurations need to accurately reflect the requirements of the <a>Thing</a>:
 <ul>
 <li>
  <span class="rfc2119-assertion" id="td-security-binding">
@@ -5213,7 +5219,9 @@ data payloads returned and accepted by the described <a>Thing</a>
 in the interactions specified in the TD.  In general, <a>Consumers</a> should
 follow the data schemas strictly, not generating anything not given
 in the WoT Thing Description, but should accept additional data from
-the <a>Thing</a> not given explicitly in the WoT Thing Description.  In general, <a>Things</a> are <em>described</em> by WoT Thing Descriptions,
+the <a>Thing</a> not given explicitly in the WoT Thing Description.
+<!-- The above assertions are ok since they are repeated below -->
+In general, <a>Things</a> are <em>described</em> by WoT Thing Descriptions,
 but <a>Consumers</a> are <em>constrained</em> to follow WoT Thing Descriptions when
 interacting with <a>Things</a>.
 <ul>
@@ -5291,10 +5299,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   </p>
 
   <p>
-    Every form in a WoT Thing Description must have a submission target,
-    given by the <code>href</code> member. The URI scheme [[!RFC3986]] of this
-    submission target indicates what <a>Protocol Binding</a> the <a>Thing</a> implements
-    [[?WOT-ARCHITECTURE]].
+    Every form in a WoT Thing Description needs to have a submission target, given by the <code>href</code> member, as indicated in <a>Form</a>. 
+    The URI scheme [[!RFC3986]] of this submission target indicates what <a>Protocol Binding</a> the <a>Thing</a> implements [[?WOT-ARCHITECTURE]].
     For instance, if the target starts with <code>http</code> or
     <code>https</code>, a <a>Consumer</a> can then infer the <a>Thing</a> implements the
     <a>Protocol Binding</a> based on HTTP and it should expect HTTP-specific terms in the
@@ -6067,28 +6073,6 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
           or used for purposes other than those for which consent was given.
       </dd></dl>
    </section>
-   <section id="sec-security-consideration-id-embedded-metadata">
-   <h5>Identifiers with Embedded Metadata</h5>
-      <p>The identifiers used in TDs (and related data, such as the URLs used to distributed TDs via
-      WoT Discovery processes) are set by the TD producer.
-      One way of generating IDs that are easy to remember is to embed meaningful metadata
-      into the ID, such as the type of the device or even the owner.
-      However, if IDs are distributed in untrusted contexts, then this embedded metadata 
-      can be used to infer PII.  
-      As an example, consider the ID "Bobs-Home-InsulinPump-1234",
-      which identifies the owner, the location, and the type of the device, the latter of
-      which can be used to infer a medical condition; all of this is PII.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-	 <span class="rfc2119-assertion" id="sec-ids-no-metadata">
-	 IDs (and related URIs) SHOULD NOT contain any embedded metadata.
-	 </span>
-	 <span class="rfc2119-assertion" id="sec-ids-uuid">
-	 IDs SHOULD be generated using crytpographic means and encoded as a UUID.
-	 </span>
-	 Such an approach also avoids the accidental collision of IDs.
-      </dd></dl>
-  </section>
 </section>
 
 <section id="thing-model" class="normative">
@@ -6132,7 +6116,11 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <a>Thing Model</a> can be serialized in the same JSON-based format as a Thing Description which also allows JSON-LD processing. 
         Note that a <a>Thing Model</a> cannot be validated in the same way as <a>Thing Description</a> instances due to some missing 
         mandatory terms.
+        You can use <a href="https://raw.githubusercontent.com/w3c/wot-thing-description/main/validation/tm-json-schema-validation.json">the JSON Schema in the GitHub repository</a> to validate TM instances that are serialized as JSON.
     </p>
+    <p class="note">
+        The link for the TM needs to be updated to a permanent one before publication.
+      </p>
   </section>
     <section id="thing-model-declaration" class="normative">
         <h2>Thing Model Declaration</h2>
@@ -6173,9 +6161,11 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <h3>Versioning</h3>
     
     <p>
-        Over time, <a>Thing Model</a> definitions may change and must be made identifiable through versioning.  
-        In that case the string-based term <code>model</code> can be used within the <code>version</code> container to 
-        provide a version pattern like [[SEMVER]]. The following snippet shows the usage of <code>model</code> in a
+        <span class="rfc2119-assertion" id="tm-versioning">
+            When the <a>Thing Model</a> definitions change over time, this SHOULD be reflected in the version container.
+            </span>
+        The string-based term <code>model</code> is used within the <code>version</code> container to 
+        provide such versioning information, like [[SEMVER]]. The following snippet shows the usage of <code>model</code> in a
         Thing Model instance. 
     </p>
 
@@ -6209,8 +6199,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <p>
         A <a>Thing Model</a> can extend an existing <a>Thing Model</a> by using the <code>tm:extends</code> mechanism announced in the <code>links</code> definition: 
      <span class="rfc2119-assertion" id="tm-extend">
-        A <a>Thing Model</a> MUST use at least one <code>links</code> entry with <code>"rel":"tm:extends"</code> 
-        that targets a <a>Thing Model</a> that is be extended.
+        When a Thing Model extends another Thing Model, at least one <code>links</code> entry with <code>"rel":"tm:extends"</code> 
+        that targets a <a>Thing Model</a> that is be extended MUST be used.
     </span>
     The <a>Thing Model</a> will inherit all definitions from the extended <a>Thing Model</a>. There is the opportunity 
 
@@ -6250,8 +6240,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         }
     </pre>
 
-    <p>Now it is designed a new device class model called 'Smart Lamp Control' that should be used as template 
-        for creating TD instances. This model will reuse the existing definition of the 'Basic On/Off Thing Model'
+    <p>Now a new device class model called 'Smart Lamp Control' that will be used as template 
+        for creating TD instances is designed. This model will reuse the existing definition of the 'Basic On/Off Thing Model'
         and extend it with a <code>dim</code> property:
     </p>
 
@@ -6282,7 +6272,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <p>
     The <code>tm:extends</code> feature only permits inheriting all definitions of one <a>Thing Model</a>. In many use cases, however,
      it is desired only to import pieces of definitions of one or more existing <a>Thing Models</a>. 
-     For doing this, the <code>tm:ref</code> term is introduced that provides the location of an existing (sub-)definition that should be reused.
+     <span class="rfc2119-assertion" id="tm-tmRef-usecase">
+     For importing pieces of definitions of one or more existing <a>Thing Models</a>, the <code>tm:ref</code> term is introduced that provides the location of an existing (sub-)definition that SHOULD be reused.
+    </span>
      <span class="rfc2119-assertion" id="tm-tmRef1">
      The <code>tm:ref</code> value MUST follow the pattern
      <ul>
@@ -6320,11 +6312,12 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <p>
       At the place the "tm:ref" is defined, additional name-value pairs can be added. 
       It is also permitted to override name-value pairs from the referenced definition.  
-      <span class="rfc2119-assertion" id="tm-tmRef-overwrite">
-        If the intention is to override an existing JSON name-value pair definition from <code>tm:ref</code>, the same JSON name MUST be used
-        at the same level of the <code>tm:ref</code> declaration that provides a new value. This process MUST follow the 
-        JSON Merge Patch algorithm as defined in [RFC7396] where the content of the referenced definition is patched with the new provided JSON name-value 
-        pairs.
+        <span class="rfc2119-assertion" id="tm-tmRef-overwrite-possibility">
+            If the intention is to override an existing JSON name-value pair definition from <code>tm:ref</code>, the same JSON name MUST be used
+            at the same level of the <code>tm:ref</code> declaration that provides a new value. 
+        </span>
+        <span class="rfc2119-assertion" id="tm-tmRef-overwrite-process">The process to overwrite MUST follow the 
+            JSON Merge Patch algorithm as defined in [RFC7396] where the content of the referenced definition is patched with the new provided JSON name-value pairs.
        </span>
     </p>
     <p>
@@ -6529,7 +6522,7 @@ provides <code>dimmable</code> and <code>RGB</code> capabilities.
         that targets to the (sub-) <a>Thing Models</a>.
     </span>
     <span class="rfc2119-assertion" id="tm-compose-instanceName">
-        Optionally an <code>instanceName</code> can be provided to associate an individual name to the composed (sub-) <a>Thing Model</a>.
+        Optionally an <code>instanceName</code> MAY be provided to associate an individual name to the composed (sub-) <a>Thing Model</a>.
     </span> 
     This is useful when multiple similar <a>Thing Model</a> definitions are composed and needs to be distinguished. 
 </p>
@@ -6918,19 +6911,26 @@ instance.
 
 <p>
     A <a>Thing Model</a> can specify which terms should be used in a TD instance, but their values are unspecific and are first known during TD instantiation. 
-    In such a case the placeholder labeling MAY be used in Thing Model that MUST be substituted with a concrete value when TD instance is created 
-    from the Thing Model. 
+    <span class="rfc2119-assertion" id="tm-placeholder-usecase">
+        In a case where TD instance terms, but not their values, are known in advance, the placeholder labeling MAY be used in a Thing Model.
+    </span>
+    <span class="rfc2119-assertion" id="tm-placeholder-replacement">
+        The placeholder labeling MUST be substituted with a concrete value when TD instance is created from the Thing Model. 
+    </span>
     <span class="rfc2119-assertion" id="tm-placeholder">
         The string-based pattern of the placeholder MUST follow a valid pattern based on the regular expression <code>{{2}[ -~]+}{2}</code> (e.g., <code>{{</code><code>PLACEHOLDER_IDENTIFIER</code><code>}}</code>). 
         The characters between <code>{{</code> and <code>}}</code> are used as identifier name of the placeholder. The identifier name can be used to identify the placeholder for the substitution process.
     </span>
     <span class="rfc2119-assertion" id="tm-placeholder-value">
-        A placeholder can only be applied within the value of the JSON name-value pair and the value has to be a JSON string. 
+        A placeholder MUST be applied within the value of the JSON name-value pair. 
     </span>  
     <span class="rfc2119-assertion" id="tm-placeholder-retyping">
-    In the case that a non string-based value of a JSON name-value pair should have a placeholder, the value must be (temporarily) typed as string. After replacing the placeholder, e.g. when creating a Thing Description instance, the original type can be applied with the 
-    corresponding replaced value.  
+        If a non string-based value of a JSON name-value pair has a placeholder, the value MUST be (temporarily) typed as string. 
     </span>
+    
+    After replacing the placeholder, e.g. when creating a Thing Description instance, the original type is applied with the 
+    corresponding replaced value.  
+    
           
 </p>
 
@@ -8337,6 +8337,32 @@ instance.
           "scheme"
         ]
       },
+      "autoSecurityScheme": {
+        "type": "object",
+        "properties": {
+          "@type": {
+            "$ref": "#/definitions/type_declaration"
+          },
+          "description": {
+            "$ref": "#/definitions/description"
+          },
+          "descriptions": {
+            "$ref": "#/definitions/descriptions"
+          },
+          "proxy": {
+            "$ref": "#/definitions/anyUri"
+          },
+          "scheme": {
+            "type": "string",
+            "enum": [
+              "auto"
+            ]
+          }
+        },
+        "required": [
+          "scheme"
+        ]
+      },
       "comboSecurityScheme": {
         "oneOf": [
           {
@@ -8678,6 +8704,9 @@ instance.
             "$ref": "#/definitions/noSecurityScheme"
           },
           {
+            "$ref": "#/definitions/autoSecurityScheme"
+          },
+          {
             "$ref": "#/definitions/comboSecurityScheme"
           },
           {
@@ -8844,7 +8873,8 @@ instance.
       "@context"
     ],
     "additionalProperties": true
-  }    </pre>
+  }
+    </pre>
 
   </section>
 
