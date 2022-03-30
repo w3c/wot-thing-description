@@ -51,6 +51,11 @@
                 }
               ]
             , localBiblio: {
+                "OWASP-Top-10": {
+                  title: "OWASP Top Ten"
+                , href: "https://owasp.org/www-project-top-ten"
+                , publisher: "OWASP"
+                },
                 "JSON-SCHEMA": {
                   title:    "JSON Schema Validation: A Vocabulary for Structural Validation of JSON"
                 , href:     "https://tools.ietf.org/html/draft-handrews-json-schema-validation-01"
@@ -95,6 +100,19 @@
                   , "Toru Kawaguchi"
                   , "Kunihiko Toumura"
                   , "Kazuo Kajimoto"
+                  ]
+                , publisher: "W3C"
+                , date: "November 2020"
+                }
+              , "WOT-PROFILE": {
+                  title: "Web of Things (WoT) Profile"
+                , href: "https://www.w3.org/TR/wot-profile/"
+                , authors:  [
+                    "Michael Lagally"
+                  , "Michael McCool"
+                  , "Ryuichi Matsukura"
+                  , "Sebastian Kaebisch"
+                  , "Tomoaki Mizushima"
                   ]
                 , publisher: "W3C"
                 , date: "November 2020"
@@ -4404,22 +4422,21 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 
 </section> <!-- end of id="behavior"-->
 
-  <p class="ednote">
-	Needs to be updated to include points noted in
-	<a href="https://github.com/w3c/wot-thing-description/issues/1348">TD Issue 1348</a>.  
-	Note that separate Security and Privacy Consideration sections are now required, so this
-	section has been refactored.
-  </p>  
 
-<section id="sec-security-consideration" class="informative">
+<section id="sec-security-consideration">
   <h4>Security Considerations</h4>
   <p>
   In general the security measures taken to protect a WoT 
   system will depend on the threats and attackers that system
-  may face and the value of the assets needs to protect.
+  may face and the value of the assets that need to be protected.
   A detailed discussion of security (and privacy) considerations for the Web of Things,
   including a threat model that can be adapted to various circumstances, is
   presented in the informative document [[WOT-SECURITY-GUIDELINES]].  
+  Many WoT Things are similar to and use the same technologies as web services.
+  In addition to the specific security considerations below,
+  the security risks and mitigations discussed in
+  guides such as the OWASP Top 10 [[OWASP-Top-10]] for web services should be
+  evaluated, and if applicable, addressed.
   This section discusses only security risks
   and possible mitigations directly relevant to the WoT Thing Description.
   </p>
@@ -4429,7 +4446,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   security status of the network interface is to be expected.
   </p>
   <p>The use of a WoT Thing Description introduces  
-  the risks given in the following sections.
+  the security risks given in the following sections.
   After each risk, we suggest some possible mitigations.
   </p>
    <section id="sec-security-consideration-TD-tampering">
@@ -4439,29 +4456,99 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
       intermediary that can capture or manipulate data.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-          Obtain Thing Descriptions only through
+	  <span class="rfc2119-assertion" id="security-mutual-auth-td">
+          Thing Descriptions SHOULD be obtained only through
           mutually authenticated secure channels.
-          This ensures that the <a>Consumer</a> and the server are both sure of the
+	  </span>
+          Mutual authentication
+	  ensures that the <a>Consumer</a> and the TD provider are both sure of the
           identity of the other party to the communication.
-          This is also necessary in order to deliver TDs only to authorized users.
+	  However, mutual authentication also can be used to identify the 
+	  Consumer, which may be undesirable in some cases (privacy risk).
+	  <span class="rfc2119-assertion" id="security-server-auth-td">
+	  In cases where the Consumer is associated
+	  with a person, e.g. browsers, TDs MAY be obtained
+	  through a channel where only the TD provider is authenticated.
+	  </span>
       </dd></dl>
    </section>
    <section id="sec-security-consideration-context-tampering">
    <h5>Context Interception and Tampering</h5>
-      <p>Intercepting and tampering with context files can be used to facilitate attacks
+      <p>Intercepting and tampering with context definition
+      files can be used to facilitate attacks
       by modifying the interpretation of vocabulary. 
+      Context extensions 
+      (see <a href="#sec-context-extensions"></a>)
+      that are loaded from the Web over non-secure connections,
+      such as HTTP, run the risk of being altered by an attacker, and
+      may modify the <a>TD Information Model</a> in ways that could
+      compromise security.
+      </p>
+      <p>
+      As recommended in 
+      <a href="#sec-privacy-consideration-context"></a>, 
+      on constrained implementations 
+      context definition files should be pre-installed and managed
+      using a secure software
+      update process and the context URLs only used to identify
+      known contexts, not to fetch them.
+      This consideration therefore applies only when fetching context definition
+      files dynamically is otherwise unavoidable, for example in a directory
+      service supporting general semantic processing.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-	      Ideally context files would only be obtained through secure
+	      Ideally context definition files would only be obtained through secure
 	      channels established by mutual authentication
 	      but it is notable (and unfortunate) that many contexts are indicated using
-	      HTTP URLs, which are vulnerable to interception and modification if 
-	      dereferenced.  However, if context files are immutable and cached, 
-	      and dereferencing is avoided whenever possible, then this risk can be reduced.
-	      If it is necessary to fetch a context file,
-	      an implementation may also attempt to use HTTPS (HTTP over TLS) 
+	      "plain" HTTP URLs.  
+	      However, the HTTP protocol is vulnerable to interception and modification if 
+	      used without first establishing a secure transport channel using TLS. 
+	      <span class="rfc2119-assertion" id="security-context-secure-fetch">
+	      If it is necessary to fetch a context definition file,
+	      an implementation SHOULD first attempt to use HTTP over TLS 
 	      even when only an HTTP URL is given.
+	      </span>
       </dd></dl>
+   </section>
+   <section id="security-consideration-access-duration">
+      <h5>Limited Duration Accesses</h5>
+      <p>
+      In some scenarios,
+      it may be desirable to limit the scope and duration of
+      access to a set of Things by some users.
+      For example, if A is visiting B's house, B may
+      want to provide A with temporary and limited access to the garage door opener and
+      car charger so A can use them.
+      The scope however may be limited so that A cannot access
+      certain administrative functions of these Things (for example, to change how long
+      the garage door can remain open, or to change the charging rate).
+      In addition, the access should expire after A is expected to have left,
+      e.g. after one week.
+      </p>
+      <dl>
+	<dt>Mitigations:</dt>
+	<dd>
+	<span class="rfc2119-assertion" id="security-oauth-limits">
+	To limit the scope and duration of access to Things, tokens SHOULD
+	be used to manage access.
+	</span>
+	Note that this includes mechanisms such as OAuth2, which provide
+	for token generation flows where verifying the authentication and 
+	authorization of a user is handled by a separate token provider 
+	service.
+	Token provider services (which could be managed directly 
+	by the Thing's administrator if
+	appropriate or desired for privacy) can
+	provide limited duration tokens and use scopes to limit access.
+	Scopes can limit access to specific interactions but
+	are not sufficient to limit duration.
+	See [[?ACE-OAuth]].
+	<p class="ednote" title="RFC9200">
+	Upgrade informative ACE-OAuth citation to normative RFC9200 citation if it 
+	passes.
+	</p>
+	</dd>
+     </dl>
    </section>
    <section id="sec-security-consideration-vulnerability-auditing">
    <h5>Vulnerability Auditing</h5>
@@ -4481,6 +4568,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 	      in which the information is made available, and to whom it is made available to.
 	      Ideally, only those with the rights to access the Things
 	      described by TDs should get access to those TDs.
+	      <span class="rfc2119-assertion" id="sec-vuln-auto">
+	      The <code>auto</code> security scheme MAY be used if vulnerability
+	      scanning is a concern.</span>
       </dd></dl>
    </section>
    <section id="sec-security-consideration-script-injection">
@@ -4509,9 +4599,11 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
       <dl><dt>Mitigation:</dt><dd>
 	      Strings sourced from TDs should be treated like any other source of external string
 	      when generating HTML: with care. 
-	      Strings should either be sanitized using a carefully vetted HTML
+	      <span class="rfc2119-assertion" id="sec-inj-sanitize">
+		      Strings sourced from TDs MUST either be sanitized using a carefully vetted HTML
 	      sanitizer that disables any markup or should be inserted into an HTML template using
 	      DOM node manipulation APIs that will escape any markup.
+	      </span>
 	      It is also possible that strings sourced from TDs could be used to generate documents
 	      in other markup languages, such as MD files or XML.  
 	      Such usages should take equivalent
@@ -4520,11 +4612,60 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 	      internationalization purposes, 
 	      for example to set the initial direction of text rendering in 
 	      bidirectional text.  
-	      HTML markup should not be used for such purposes in TD strings.
+	      <span class="rfc2119-assertion" id="sec-inj-no-intl-markup">
+	      HTML markup SHOULD NOT be used for internationalization purposes in TD strings.
+	      </span>
+
       </dd></dl>
    </section>
+   <section id="sec-security-consideration-execution">
+      <h5>JSON Parsing</h5>
+      <p>
+      See <a href="https://tools.ietf.org/html/rfc8259#section-12">RFC&nbsp;8259, section 12</a>: JSON should not be parsed as JavaScript using <code>eval()</code>.
+      A WoT Thing Description is intended to be a pure data exchange format for
+      <a>Thing</a> metadata, not for holding executable content.
+      An (invalid) TD may, however, contain JavaScript code that,
+      when executed, could have side effects compromising the security of a system.
+      <dl>
+	<dt>Mitigation:</dt>
+	<dd><span class="rfc2119-assertion" id="security-no-execution">
+        A WoT Thing Description JSON-LD serialization MUST NOT be passed through a
+        code execution mechanism such as JavaScript's <code>eval()</code>
+        function to be parsed.
+	</span></dd>
+     </dl>
+     <p class="ednote" title="Other Injection Risks">
+     There are additional code injection risks discussed in
+     [[WOT-DISCOVERY]]. Other strings in TDs, such as the values given for
+     <code>title</code> and <code>description</code>, should be sanitized before being
+     used in templates for SQL, HTML, or other executable contexts.
+     This risk, however, is specifically about the Javascript injection risk
+     when parsing JSON.
+     </p>
+  </section>
+   <section id="sec-security-consideration-jsonld-expansion">
+      <h5>JSON-LD Expansion</h5>
+      <p>
+      JSON-LD processing usually includes the replacement of short terms with
+      longer IRIs [[RFC3987]].
+      For this reason, WoT Thing Descriptions may expand considerably when processed using
+      a JSON-LD 1.1 processor and, in the worst case, the resulting data
+      might consume all of the recipient's resources or cause an exploitable
+      buffer overflow.
+      <dl>
+	<dt>Mitigation:</dt>
+	<dd>
+          <span class="rfc2119-assertion" id="security-jsonld-expansion">
+          <a>Consumers</a> SHOULD 
+	  set and enforce limits on
+	  memory usage to prevent buffer overflow and resource exhaustion
+	  during JSON-LD processing.
+          </span>
+        </dd>
+     </dl>
+  </section>
 </section>
-<section id="sec-privacy-consideration" class="informative">
+<section id="sec-privacy-consideration">
   <h4>Privacy Considerations</h4>
   <p>
   Privacy risks will depend on the association of 
@@ -4542,29 +4683,51 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
   </p>
   <section id="sec-privacy-consideration-context">
   <h5>Context Fetching</h5>
-      <p>Fetching the vocabulary files given in the <code>@context</code>
-          member of any JSON-LD [[?json-ld11]] document can be a privacy risk.
-          In the case of the WoT, an attacker can observe the network
+        <p>
+          WoT Thing Descriptions can be evaluated with a 
+	  JSON-LD 1.1 processor [[json-ld11]],
+          which typically follows links to remote contexts (i.e., TD context
+          extensions, see <a href="#sec-context-extensions"></a>)
+          automatically, resulting in the transfer of files
+          without the explicit request of the <a>Consumer</a> for each one. 
+	  If remote
+          contexts are served by third parties, it may allow them to gather
+          usage patterns or similar information leading to disclosure
+	  of private information, or information that can be used to infer
+	  private information.
+          In the case of the WoT, an attacker can also observe the network
           traffic produced by such fetches and can use the metadata
           of the fetch, such as the destination IP address,
-          to infer information about the device especially if domain-specific
-          vocabularies are used.  This is a risk even if the connection
+          to infer information about the device, 
+	  especially if domain-specific vocabularies are used.  
+	  This is a risk even if the connection
           is encrypted, and is related to DNS privacy leaks.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-          Avoid actual fetching of vocabulary files.
-          Vocabulary files should be cached whenever possible.
-          Ideally they would be made immutable, built into the interpreting device,
-          and not fetched at all,
-          with the URI in the <code>@context</code> member serving only as 
-          an identifier of the (known) vocabulary. 
-          This requires the use of strict version control, as updates
-          should use a new URI to ensure that existing URIs can refer to 
-          immutable data.
-          Use well-known standard vocabulary files whenever possible to
-          improve the chances that the context file will be available locally
-          to systems interpreting the metadata in a Thing Description.
-      </dd></dl>
+	  See also <a href="#sec-security-consideration-context-tampering"></a>,
+	  which is a related security risk which can also be avoided with the
+	  following mitigations.
+      <dl>
+	<dt>Mitigation:</dt>
+	<dd>
+          Implementations on resource-constrained devices are expected
+          to perform raw JSON processing (as opposed to JSON-LD processing)
+	  and support only a limited set of domain-specific extensions.
+	  The set of supported extensions can be established by a 
+	  WoT Profile [[WOT-PROFILE]], for example.
+	  <span class="rfc2119-assertion" id="security-static-context">
+          Constrained implementations SHOULD use statically managed and vetted
+          versions of their supported context extensions. 
+          </span>
+	  <span class="rfc2119-assertion" id="security-remote-context">
+          Constrained implementations SHOULD NOT follow links to remote contexts.
+	  </span>
+	  In this case the URLs are used only to identify extensions,
+	  not to fetch their definitions.
+	  <span class="rfc2119-assertion" id="security-update-contexts">
+          Supported context extensions on constrained implementations MAY be managed
+          through secure software update mechanisms.
+	  </span>
+        </dd>
+     </dl>
    </section>
    <section id="sec-privacy-consideration-id">
    <h5>Immutable Identifiers</h5>
@@ -4577,13 +4740,16 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
          track that person.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-          All identifiers should be mutable,
-          and there should be a mechanism to update the <code>id</code>
-          of a <a>Thing</a>.
+	  <span class="rfc2119-assertion" id="privacy-mutable-identifiers">
+          All identifiers used in a TD SHOULD be mutable,
+          and in particular there should be a mechanism to update the <code>id</code>
+          of a <a>Thing</a> when necessary.
+	  </span>
           Specifically,
           the <code>id</code> of a <a>Thing</a> should not be fixed in hardware.
           This does, however, conflict with the Linked Data ideal that
-          identifiers are fixed URIs.  In many circumstances it
+          identifiers are fixed URIs.  
+	  In many circumstances it
           will be acceptable to only allow updates to identifiers if
           a <a>Thing</a> is reinitialized.  In this case as a software entity the
           old <a>Thing</a> ceases to exist and a new <a>Thing</a> is created.
@@ -4597,7 +4763,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
           may require immutable IDs by law in some jurisdictions.
           In this case extra attention should be paid to secure 
           access to files, such as Thing Descriptions, containing such
-          immutable identifiers.  It may also be desirable to not share
+          immutable identifiers.  
+	  It may also be desirable to not share
           the "true" immutable identifier in such a case in the TD whenever possible.
           </dd></dl>
       </p>
@@ -4616,9 +4783,15 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
       identifiable person, such as a medical condition.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-          Only authorized users should be provided access
-          to the Thing Description for a <a>Thing</a>, and only the amount of
-          information needed for the level of authorization and the use case should be provided.
+	  <span class="rfc2119-assertion" id="privacy-auth-users-only">
+          Only authorized users SHOULD be provided access
+          to the Thing Description for a <a>Thing</a>.
+	  </span>
+	  <span class="rfc2119-assertion" id="privacy-essential-metadata-only">
+	  Only the amount of
+          information needed for the level of authorization and the use case 
+	  SHOULD be provided in a TD.
+	  </span>
           If the TD is only distributed to authorized users 
           through secure and confidential channels, for
           example through a directory service that requires authentication,
@@ -4627,29 +4800,64 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
           use case of a TD should be omitted whenever possible.  For example,
           for an ad-hoc connection to a device where the Consumer does 
           not store state about the Thing, the <code>id</code> can be omitted.
-          If the Consumer does not need certain interactions for its use case, they can be omitted.
-          If the Consumer is not authorized to use certain interactions, they can likewise be omitted.
+          If the Consumer does not need certain interactions for its use case, 
+	  they can be omitted.
+          If the Consumer is not authorized to use certain interactions, 
+	  they can likewise be omitted.
+	  <!-- we don't have any mechanism to support this; a "null" language 
+	   negotiation might be suitable.
           If the Consumer does not have any capability to display human-readable information
-          such as titles or descriptions, they can be omitted or replaced with zero-length strings.
-    </dd></dl>
+          such as titles or descriptions, 
+	  they can be omitted or replaced with zero-length strings.
+	  -->
+      </dd></dl>
    </section>
-   <section id="sec-security-consideration-global-id-risk">
+   <section id="sec-privacy-consideration-id-metadata">
+   <h5>ID Metadata</h5>
+      <p>The value of the <code>id</code> field of a TD might become available to 
+      entities that do not have access to the full TD.  If the value of the <code>id</code>
+      contains embedded metadata, such as the type of the device or the owner, this 
+      could be used to infer personal information.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+	  <span class="rfc2119-assertion" id="privacy-id-metadata">
+	  The value of the <code>id</code> of a TD SHOULD NOT contain metadata
+	  describing the Thing or from the TD itself.
+	  </span>
+	  <span class="rfc2119-assertion" id="privacy-temp-id-metadata">
+          Any temporary ID generated to manage TDs, for example an ID for a database 
+	  or directory service, SHOULD NOT contain metadata 
+	  describing the Thing or from the TD itself.
+	  </span>
+	  Using random UUIDs as recommended in 
+	  <a href="#sec-privacy-consideration-global-id-risk"></a> also mitigates this
+	  risk.
+      </dd></dl>
+   </section>
+   <section id="sec-privacy-consideration-global-id-risk">
    <h5>Globally Unique Identifiers</h5>
       <p>Globally unique identifiers pose a privacy risk if a centralized authority is needed to
       create and distribute them, since then a third party has knowledge of the identifiers.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-          The <code>id</code> field in TDs are intentionally not required to be globally unique.
-          There are several cryptographic mechanisms available to generate suitable IDs in a 
+          The <code>id</code> field in TDs is intentionally not required to be globally unique.
+          There are several cryptographic mechanisms (e.g. random UUIDs) available to generate suitable IDs in a 
           distributed fashion that do
           not require a central registry.  These mechanisms typically have a very low probability
           of generating duplicate identifiers, and this needs to be taken into account in the system
           design; for example, by detecting duplicates and regenerating IDs when necessary.
           The scope of IDs also does not need to be global: it is acceptable to use identifiers
           that only distinguish Things in a certain context, such as within a home or factory.
+	  <span class="rfc2119-assertion" id="privacy-distributed-ids">
+          TD identifiers SHOULD be generated using a distributed mechanism such as UUIDs
+	  that provides a high probability of uniqueness.
+	  </span>
+	  <span class="rfc2119-assertion" id="privacy-centralized-ids">
+          TD identifiers SHOULD NOT be generated using a centralized authority.
+	  </span>
       </dd></dl>
    </section>
-   <section id="sec-security-consideration-inferencing">
+   <section id="sec-privacy-consideration-inferencing">
    <h5>Inferencing of Personally Identifiable Information</h5>
       <p>In many locales, in order to protect the privacy of users,
       there are legal requirements for the handling of
@@ -4666,9 +4874,11 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
       which can lead to additional inferences about that person.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-          Treat a Thing Description associated with a 
-	      personal device as if it contained
-	      personally identifiable information.
+	  <span class="rfc2119-assertion" id="privacy-td-pii">
+          A Thing Description associated with a 
+	  personal device SHOULD be treated as if it contained
+	  personally identifiable information, even if this information is not explicit.
+	  </span>
           As an example application of this principle,
           consider how to obtain user consent.  
           Consent for usage of personally identifiable data
@@ -4684,28 +4894,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
           or used for purposes other than those for which consent was given.
       </dd></dl>
    </section>
-   <section id="sec-security-consideration-id-embedded-metadata">
-   <h5>Identifiers with Embedded Metadata</h5>
-      <p>The identifiers used in TDs (and related data, such as the URLs used to distributed TDs via
-      WoT Discovery processes) are set by the TD producer.
-      One way of generating IDs that are easy to remember is to embed meaningful metadata
-      into the ID, such as the type of the device or even the owner.
-      However, if IDs are distributed in untrusted contexts, then this embedded metadata 
-      can be used to infer PII.  
-      As an example, consider the ID "Bobs-Home-InsulinPump-1234",
-      which identifies the owner, the location, and the type of the device, the latter of
-      which can be used to infer a medical condition; all of this is PII.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-	 IDs (and related URIs) should not contain any embedded metadata.
-	 Instead, IDs should be generated using crytpographic means and encoded as a UUID.
-	 Such an approach also avoids the accidental collision of IDs.
-      </dd></dl>
-  </section>
+</section>
 
-  </section>
-
-  <section id="thing-model" class="normative">
+<section id="thing-model" class="normative">
   <h1>Thing Model</h1>
       
   <p class="note">
@@ -5768,15 +5959,9 @@ instance.
            }
         }
     </pre>
-
-    
-
-
+  </section>
 </section>
-
- 
-</section>
-  <section id="iana-section" class="normative">
+<section id="iana-section" class="normative">
  
   <h1>IANA Considerations</h1>
     <section id="media-type-section">
@@ -5791,60 +5976,20 @@ instance.
       <dt>Optional parameters:</dt>
       <dd>None</dd>
       <dt>Encoding considerations:</dt>
-      <dd>See <a href="https://tools.ietf.org/html/rfc6839#section-3.1">RFC&nbsp;6839, section 3.1</a>.</dd>
+      <dd>See <a href="https://tools.ietf.org/html/rfc6839#section-3.1">RFC&nbsp;6839, section 3.1</a>.
+      <p class="ednote" title="Other Encoding Considerations">
+      The cited section allows UTF-16 and UTF-32. 
+      We probably should state that only UTF-8 is allowed (8-bit compatible, RFC2045).
+      </p>
+      </dd>
       <dt>Security considerations:</dt>
-      <dd>See <a href="https://tools.ietf.org/html/rfc8259#section-12">RFC&nbsp;8259, section 12</a>.
-        <p>
-          <span class="rfc2119-assertion" id="iana-security-execution">
-            Since WoT Thing Description is intended to be a pure data exchange format for
-            <a>Thing</a> metadata, the serialization SHOULD NOT be passed through a
-            code execution mechanism such as JavaScript's <code>eval()</code>
-            function to be parsed.
-          </span>
-          An (invalid) document may contain code that,
-          when executed, could lead to unexpected side effects compromising
-          the security of a system.
-        </p>
-        <p>
-          WoT Thing Descriptions can be evaluated with a JSON-LD 1.1 processor,
-          which typically follows links to remote contexts (i.e., TD context
-          extensions, see <a href="https://www.w3.org/TR/wot-thing-description/#sec-context-extensions">W3C WoT Thing Description, section 7</a>)
-          automatically, resulting in the transfer of files
-          without the explicit request of the <a>Consumer</a> for each one. If remote
-          contexts are served by third parties, it may allow them to gather
-          usage patterns or similar information leading to privacy concerns.
-          <span class="rfc2119-assertion" id="iana-security-remote">
-          While implementations on resource-constrained devices are expected
-          to perform raw JSON processing (as opposed to JSON-LD processing),
-          implementations in general SHOULD statically cache vetted
-          versions of their supported context extensions and not to follow links
-          to remote contexts.
-          </span>
-          Supported context extensions can be managed
-          through a secure software update mechanism instead.
-        </p>
-        <p>
-          Context Extensions (see <a href="https://www.w3.org/TR/wot-thing-description/#sec-context-extensions">W3C WoT Thing Description, section 7</a>)
-          that are loaded from the Web over non-secure connections,
-          such as HTTP, run the risk of being altered by an attacker such that
-          they may modify the <a>TD Information Model</a> in a way that could
-          compromise security.
-          <span class="rfc2119-assertion" id="iana-security-alter">
-          For this reason, <a>Consumer</a> again
-          SHOULD vet and cache remote contexts before allowing the system
-          to use it.
-          </span>
-        </p>
-        <p>
-          Given that JSON-LD processing usually includes the substitution of
-          long IRIs [[RFC3987]] with short terms,
-          WoT Thing Descriptions may expand considerably when processed using
-          a JSON-LD 1.1 processor and, in the worst case, the resulting data
-          might consume all of the recipient's resources.
-          <span class="rfc2119-assertion" id="iana-security-expansion">
-          <a>Consumers</a> SHOULD treat any TD metadata with due skepticism.
-          </span>
-        </p>
+      <dd>See 
+      <a href="#sec-security-consideration-context-tampering"></a>,
+      <a href="#sec-security-consideration-execution"></a>, 
+      <a href="#sec-security-consideration-jsonld-expansion"></a>,
+      and
+      <a href="#sec-privacy-consideration-context"></a> in
+      the published specification.
       </dd>
       <dt>Interoperability considerations:</dt>
       <dd>See <a href="https://tools.ietf.org/html/rfc8259">RFC&nbsp;8259</a>.
@@ -5854,33 +5999,70 @@ instance.
         </p>
       </dd>
       <dt>Published specification:</dt>
-      <dd><a href="https://w3c.github.io/wot-thing-description/">https://w3c.github.io/wot-thing-description/</a></dd>
+      <dd>
+        <a href="https://www.w3.org/TR/wot-thing-description11/">W3C 
+        Web of Things (WoT) Thing Description 1.1: 
+        https://www.w3.org/TR/wot-thing-description11/</a>
+        <p class="ednote" title="Versions">
+	This has been updated to point to the TD 1.1 specification.
+	Should we note that versions (and TDs vs. TMs) can be distinguished using
+	information interior to the content?
+	</p>
+        </dd>
       <dt>Applications that use this media type:</dt>
       <dd>
         All participating entities in the W3C Web of Things, that is,
         <a>Things</a>, <a>Consumers</a>, and Intermediaries as defined in the
-        <a href="https://www.w3.org/TR/wot-architecture/">Web of Things (WoT) Architecture</a>.</dd>
+        <a href="https://www.w3.org/TR/wot-architecture11/">W3C 
+	Web of Things (WoT) Architecture 1.1:
+        https://www.w3.org/TR/wot-architecture11/ 
+	</a> document.
+      </dd>
       <dt>Fragment identifier considerations:</dt>
-      <dd>See <a href="https://tools.ietf.org/html/rfc6839#section-3.1">RFC&nbsp;6839, section 3.1</a>.</dd>
+      <dd>See <a href="https://tools.ietf.org/html/rfc6839#section-3.1">RFC&nbsp;6839, section 3.1</a>.
+      <p class="ednote" title="Other Fragment Identifier Considerations">
+      We may 
+      want to explictly allow use of JSON Pointer as a fragment identifier [[RFC6901]].
+      There is in fact an assertion requiring them in TMs for <code>tm:required</code>.
+      These are internal references, however, so we <em>might</em> not have to allow
+      them for external references.
+      By default
+      the json media type does not support a fragment identifier but td+json could.
+      </p>
+      </dd>
       <dt>Additional information:</dt>
       <dd>
         <dl>
           <dt>Magic number(s):</dt>
           <dd>Not Applicable</dd>
           <dt>File extension(s):</dt>
-          <dd>.jsontd</dd>
+          <dd>.jsontd
+	  <p class="ednote" title="Other Extensions">
+	  We have been using .td.jsonld and .tm.jsonld in testing.  
+	  Should we also define these formally? 
+	  If we are using the same media type for TMs, should we still have
+	  a distinct filename extension?  
+	  If so, should we (also?) define .jsontm for consistency?
+	  Note: the IANA Considerations for HTML allows multiple
+	  suffixes, html and htm.
+	  </p>
+	  </dd>
           <dt>Macintosh file type code(s):</dt>
           <dd>TEXT</dd>
         </dl>
       </dd>
       <dt>Person &amp; email address to contact for further information:</dt>
-      <dd>Matthias Kovatsch &lt;w3c@kovatsch.net&gt;</dd>
+      <dd>Matthias Kovatsch &lt;w3c@kovatsch.net&gt;
+      <p class="ednote" title="Update Contact">
+      Should the contact be updated?
+      </p>
+      </dd>
       <dt>Intended usage:</dt>
       <dd>COMMON</dd>
       <dt>Restrictions on usage:</dt>
       <dd>None</dd>
       <dt>Author(s):</dt>
-      <dd>The WoT Thing Description specification is a product of the Web of Things Working Group.</dd>
+      <dd>The Web of Things (WoT) Thing Description specification is a product of the Web of Things Working Group.</dd>
       <dt>Change controller:</dt>
       <dd><abbr title="World Wide Web Consortium">W3C</abbr></dd>
     </dl>
