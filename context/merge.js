@@ -22,6 +22,7 @@ ctx.properties['@context'] = tmp;
 ctx.input['@context'] = jsonschema['@context'];
 ctx.output['@context'] = jsonschema['@context'];
 ctx.data['@context'] = jsonschema['@context'];
+ctx.dataResponse['@context'] = jsonschema['@context'];
 ctx.subscription['@context'] = jsonschema['@context'];
 ctx.cancellation['@context'] = jsonschema['@context'];
 
