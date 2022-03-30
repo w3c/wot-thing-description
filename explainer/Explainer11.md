@@ -76,11 +76,11 @@ Based on such information a Thing Description can be designed in the following w
 
 Before going into detail an important paradigm is explained that is defined by the [WoT Architecture](https://w3c.github.io/wot-architecture/index.html), namely about the interaction affordances **properties, actions**, and **events**. 
 
-Each Thing and its data and functions offerings that is possible via the interface can be classified in those affordances. Sensor and/or parameter data are considered as **properties**. Functions like on/off, dimming, etc. are seen as **actions**. Data events, streams etc.  are considered as **events**. 
+Each Thing and its data and functions offerings that is possible via the interface can be classified in those affordances. Sensor and/or parameter data are considered **properties**. Functions like on/off, dimming, etc. are considered **actions**. Notifications and data streams are considered **events**. 
 
-In this context, the MyLampThing example above would result in declaring status a property, toggling an action, and overheating an event. 
+In this context, the MyLampThing example above would result in declaring `status` a property, `toggling` an action, and `overheating` an event. 
 
-Now, by reading the above example TD,  one can obtain knowledge about the Thing named `MyLampThing`, including the following:
+Now, by processing the above example TD,  a client can obtain knowledge about the Thing named `MyLampThing`, including the following:
 
 - The Thing requires the use of HTTP Basic Authentication when 
   accessing all interaction resources (announced by securityDefinitions and security).
@@ -99,30 +99,30 @@ Now, by reading the above example TD,  one can obtain knowledge about the Thing 
   - Each message pushed by the Thing is a string value.
 
 
-## What you can do with a Thing Description (TD)?
+## What can you do with a Thing Description (TD)?
 
-Based on such information in a TD a WoT stack such as designed based on the [W3C Web of Things Scripting API](https://w3c.github.io/wot-scripting-api/) can simple interpret the TD content and abstract all the communication details. Developer just working with the **properties, actions**, and **events** paradigm and do not need to take care protocol specifics such as the HTTP method, the resource address, port number, etc.. The following video gives an inside about this aspect:
+Based on the information in a TD, a WoT software stack such as that described in the [W3C Web of Things Scripting API](https://w3c.github.io/wot-scripting-api/) can interpret the TD content and automatically handle all the communication details. A developer working with the **properties, actions**, and **events** affordances does not need to deal with protocol specific details such as the HTTP method, the resource address, port number, etc.. The following video gives an insight about this aspect:
 
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/lt_P2BU8e3I/0.jpg)](http://www.youtube.com/watch?v=lt_P2BU8e3I "TD usage with a programming API")
 
-This example also shows that TDs can be used to easily onboard Things into any IoT ecosystems (e.g., IoT cloud services, edge systems, etc.). TDs helps to understand what the Things offers and how the offered data and functions can be bound to applications processes (e.g., creating service mash-ups, dashboards, etc.). The following example shows how TD are used in a node-red application:
+This example also shows that TDs can be used to onboard Things into an IoT ecosystem (e.g., IoT cloud services, edge systems, etc.). TD helps a client to understand what the Things offers and how the offered data and functions can be bound to application processes (e.g., creating service mash-ups, dashboards, etc.). The following example shows how a TD is used in a Node-RED application:
 
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/oAcYbJ6P9bU/0.jpg)](http://www.youtube.com/watch?v=oAcYbJ6P9bU "TD usage in node-red")
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/oAcYbJ6P9bU/0.jpg)](http://www.youtube.com/watch?v=oAcYbJ6P9bU "TD usage in Node-RED")
 
-TD also helps to mange your IoT system that typically consist of a heterogeneous device landscape based on different vendors and technologies that are used (e.g., HTTP, MQTT, Modbus, etc). Directories can be used to manage the TDs (e.g., create, search, etc). [The W3C WoT Discovery](https://w3c.github.io/wot-discovery/) provides details about a standardized how the interface of such directories can look like.  
+TD also helps to manage IoT systems. An IoT system typically consists of a heterogenous set of devices provided by different vendors and based on different technologies and protocols (e.g. HTTP, MQTT, Modbus, etc). Directories can be used to manage the TDs (e.g., create, search, etc). [The W3C WoT Discovery](https://w3c.github.io/wot-discovery/) defines mechanisms for controlled distribution and access to TDs, including searchable directories in which TDs can be dynamically registered. 
 
 
-## What else is possible with the Thing Description specification?
-Besides the definitions of how a Thing description should be designed, there are other features provided around the TD, such as the Protocol Binding concept, TD context extensions, and Thing Model definitions. 
+## What Other Features Support the Thing Description Specification?
+Other features complementary to the TD, including Protocol Bindings, Context Extensions, and Thing Models, support and extend its functionality.
 
 ### Protocol Binding
-Thing Description is not limited to http based interfaces as shown in the example above. In general, WoT is a protocol agnostic approach and provides a common mechanism to define how specific protocols such as MQTT, HTTP, CoAP or Modbus can be mapped to the WoT’s interaction properties-action-event abstraction within the Thing Description forms definition. More details is provide in the [Protocol Binding section](https://w3c.github.io/wot-thing-description/#protocol-bindings).  
+A Thing Description is not limited to HTTP based interfaces as shown in the example above. In general, WoT is a protocol agnostic approach and provides a common mechanism to define how specific protocols such as MQTT, HTTP, CoAP or Modbus can be mapped to the WoT’s interaction properties-action-event abstraction within the Thing Description `forms` definition. More details is provide in the [Protocol Binding section](https://w3c.github.io/wot-thing-description/#protocol-bindings).  
  
 
 ### TD Context Extensions
-Through JSON-LD serialization, the WoT Thing Description provides the ability to add context knowledge from additional namespaces. This mechanism can be used to enrich the Thing Description instances with additional (e.g., domain-specific) semantics. It can also be used to import additional Protocol Bindings or new security schemes in the future. 
+Through JSON-LD serialization, the WoT Thing Description provides the ability to add vocabulary and concepts defined in additional namespaces. This mechanism can be used to enrich the Thing Description instances with additional (e.g., domain-specific) semantics. It can also be used to import additional Protocol Bindings or new security schemes. 
 
- The following TD extends the TD above by introducing a second definition in the @context to declare the prefix saref as referring to SAREF. This IoT ontology includes terms interpreted as semantic labels that can be set as values of the @type field, giving the semantics of Things and their interaction affordances. In the example below, the Thing is labelled with saref:LightSwitch, the status Property is labelled with saref:OnOffState and the toggle Action with saref:ToggleCommand.
+ The following TD extends the TD above by introducing a second definition in the `@context` to declare the prefix `saref` as referring to SAREF. This IoT ontology includes terms interpreted as semantic labels that can be set as values of the `@type` field, giving the semantics of Things and their interaction affordances. In the example below, the Thing is labelled with `saref:LightSwitch`, the status Property is labelled with `saref:OnOffState` and the toggle Action with `saref:ToggleCommand`.
 
  ```json
 {
@@ -164,7 +164,7 @@ Through JSON-LD serialization, the WoT Thing Description provides the ability to
 }
 ```
 ### Thing Model definition
-One of the main intentions of a Thing Description is to provide a Consumer with all the details necessary to successfully interact with a Thing. In some IoT application scenarios, a fully detailed Thing Description, e.g., with communication metadata is not necessary (e.g., IoT ecosystems may implicitly handle communication separately), or may not be available because a new entity has not yet been deployed (e.g., IP address is not yet known). Sometimes, also a kind of class definition is required that forces capability definitions that should be available for all created instances (e.g., large-scale production of new devices).
+One of the main intentions of a Thing Description is to provide a client with all the details necessary to successfully interact with a Thing. In some IoT application scenarios, a fully detailed Thing Description, e.g., with communication metadata is not necessary (e.g., some IoT ecosystems may implicitly handle communication separately), or may not be available because a new entity has not yet been deployed (e.g., IP address is not yet known). Sometimes, also a kind of class definition is required that provides capability definitions that should be available for all created instances (e.g., large-scale production of new devices).
 
 In order to address the above-mentioned scenarios or others, the Thing Model can be used that mainly provides the data model definitions within Things' Properties, Actions, and/or Events and can be potentially used as template for creating Thing Description instances. In the following a sample Thing Model is presented that can be seen as a model for the Thing Description instance in the first TD example above.
 
