@@ -66,15 +66,6 @@ tmSchema = addPlaceholderRestrictionObjectNames(tmSchema)
 
 tmSchema = replaceEnum(tmSchema)
 
-// after replace enum, wot context uri needs to be updated
-tmSchema.definitions["thing-context-w3c-uri"] = {
-    "type": "string",
-    "enum": [
-      "https://www.w3.org/2019/wot/td/v1",
-      "http://www.w3.org/ns/td",
-      "https://www.w3.org/2022/wot/td/v1.1"
-    ]
-  };
 tmSchema.definitions["placeholder-pattern"] = {
     type: "string",
     "pattern":placeholderPattern
