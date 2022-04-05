@@ -8,7 +8,7 @@ const ajv = new Ajv({"strict":false})
 const validTMs = [
     {
         "$comment":"security allowing placeholders in scheme",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel",
         "title": "Valid model 1",
         "securityDefinitions": {
@@ -20,7 +20,7 @@ const validTMs = [
     },
     {
         "$comment":"placeholder with underscore",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel",
         "title": "Valid model 2",
         "forms": [
@@ -32,12 +32,12 @@ const validTMs = [
     },
     {
         "$comment":"missing title",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel"
     },
     {
         "$comment":"example 3 of the spec",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel",
         "title": "Valid Model 4",
         "properties": {
@@ -61,7 +61,7 @@ const validTMs = [
     },
     {
         "$comment":"example 51 of the spec",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel",
         "title": "Valid Model 5",
         "properties": {
@@ -72,7 +72,7 @@ const validTMs = [
     },
     {
         "$comment":"example 52",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel",
         "title": "Valid Model 6",
         "links" : [{
@@ -90,7 +90,7 @@ const validTMs = [
     },
     {
         "$comment":"example 53 of the spec",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel",
         "title": "Valid Model 7",
         "properties" : {
@@ -101,7 +101,7 @@ const validTMs = [
     },
     {
         "$comment":"example 54 of the spec",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel",
         "title": "Valid Model 8",
         "properties" : {
@@ -114,7 +114,7 @@ const validTMs = [
     },
     {
         "$comment":"example 55 of the spec",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel",
         "title": "Valid Model 9",
         "links" : [{
@@ -133,7 +133,7 @@ const validTMs = [
     },
     {
         "$comment":"example 56 of the spec. Valid Model 10",
-        "@context": ["https://www.w3.org/2019/wot/td/v1"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel",
         "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
         "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
@@ -195,7 +195,7 @@ const validTMs = [
 const invalidTMs = [    
     {
         "$comment":"absence of @type",
-        "@context": ["http://www.w3.org/ns/td"],
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
         "title": "Invalid model 1"
     },
     {
@@ -205,7 +205,7 @@ const invalidTMs = [
     },
     {
         "$comment":"single curly bracket",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel",
         "title": "Invalid model 3",
         "securityDefinitions": {
@@ -217,7 +217,7 @@ const invalidTMs = [
     },
     {
         "$comment":"no curly bracket",
-        "@context": ["http://www.w3.org/ns/td"], 
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
         "@type" : "tm:ThingModel",
         "title": "Invalid model 4",
         "securityDefinitions": {
