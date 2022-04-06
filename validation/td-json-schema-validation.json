@@ -1,8 +1,9 @@
 {
     "title": "Thing Description",
-    "version": "1.1-29-December-2021",
+    "version": "1.1-28-January-2022",
     "description": "JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values",
     "$schema ": "http://json-schema.org/draft-07/schema#",
+    "$id":"https://raw.githubusercontent.com/w3c/wot-thing-description/main/validation/td-json-schema-validation.json",
     "definitions": {
       "anyUri": {
         "type": "string",
@@ -64,7 +65,8 @@
         "type": "string",
         "enum": [
           "https://www.w3.org/2019/wot/td/v1",
-          "http://www.w3.org/ns/td"
+          "http://www.w3.org/ns/td",
+          "https://www.w3.org/2022/wot/td/v1.1"
         ]
       },
       "thing-context": {
@@ -112,34 +114,15 @@
         ]
       },
       "dataSchema-type": {
-        "oneOf": [
-          {
-            "type": "string",
-            "enum": [
-              "boolean",
-              "integer",
-              "number",
-              "string",
-              "object",
-              "array",
-              "null"
-            ]
-          },
-          {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "boolean",
-                "integer",
-                "number",
-                "string",
-                "object",
-                "array",
-                "null"
-              ]
-            }
-          }
+        "type": "string",
+        "enum": [
+          "boolean",
+          "integer",
+          "number",
+          "string",
+          "object",
+          "array",
+          "null"
         ]
       },
       "dataSchema": {
@@ -184,6 +167,7 @@
             "type": "string"
           },
           "const": {},
+          "default": {},
           "contentEncoding": {
             "type": "string"
           },
@@ -218,6 +202,12 @@
             "type": "number"
           },
           "maximum": {
+            "type": "number"
+          },
+          "exclusiveMinimum": {
+            "type": "number"
+          },
+          "exclusiveMaximum": {
             "type": "number"
           },
           "minLength": {
@@ -521,6 +511,7 @@
             "type": "string"
           },
           "const": {},
+          "default": {},
           "type": {
             "$ref": "#/definitions/dataSchema-type"
           },
@@ -549,6 +540,12 @@
             "type": "number"
           },
           "maximum": {
+            "type": "number"
+          },
+          "exclusiveMinimum": {
+            "type": "number"
+          },
+          "exclusiveMaximum": {
             "type": "number"
           },
           "minLength": {
@@ -665,6 +662,9 @@
           "data": {
             "$ref": "#/definitions/dataSchema"
           },
+          "dataResponse": {
+            "$ref": "#/definitions/dataSchema"
+          },
           "cancellation": {
             "$ref": "#/definitions/dataSchema"
           }
@@ -777,6 +777,32 @@
           "scheme"
         ]
       },
+      "autoSecurityScheme": {
+        "type": "object",
+        "properties": {
+          "@type": {
+            "$ref": "#/definitions/type_declaration"
+          },
+          "description": {
+            "$ref": "#/definitions/description"
+          },
+          "descriptions": {
+            "$ref": "#/definitions/descriptions"
+          },
+          "proxy": {
+            "$ref": "#/definitions/anyUri"
+          },
+          "scheme": {
+            "type": "string",
+            "enum": [
+              "auto"
+            ]
+          }
+        },
+        "required": [
+          "scheme"
+        ]
+      },
       "comboSecurityScheme": {
         "oneOf": [
           {
@@ -876,7 +902,8 @@
               "header",
               "query",
               "body",
-              "cookie"
+              "cookie",
+              "auto"
             ]
           },
           "name": {
@@ -921,7 +948,8 @@
               "header",
               "query",
               "body",
-              "cookie"
+              "cookie",
+              "auto"
             ]
           },
           "name": {
@@ -1006,7 +1034,8 @@
               "header",
               "query",
               "body",
-              "cookie"
+              "cookie",
+              "auto"
             ]
           },
           "name": {
@@ -1113,6 +1142,9 @@
         "oneOf": [
           {
             "$ref": "#/definitions/noSecurityScheme"
+          },
+          {
+            "$ref": "#/definitions/autoSecurityScheme"
           },
           {
             "$ref": "#/definitions/comboSecurityScheme"
@@ -1233,6 +1265,20 @@
         "type": "string",
         "format": "date-time"
       },
+      "profile": {
+        "oneOf": [
+          {
+            "$ref": "#/definitions/anyUri"
+          },
+          {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/definitions/anyUri"
+            }
+          }
+        ]
+      },
       "security": {
         "oneOf": [
           {
@@ -1246,6 +1292,12 @@
             }
           }
         ]
+      },
+      "uriVariables": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/definitions/dataSchema"
+        }
       },
       "@type": {
         "$ref": "#/definitions/type_declaration"
