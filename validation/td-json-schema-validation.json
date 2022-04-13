@@ -61,21 +61,26 @@
           "sse"
         ]
       },
-      "thing-context-w3c-uri": {
+      "thing-context-td-uri-v1": {
         "type": "string",
-        "enum": [
-          "https://www.w3.org/2019/wot/td/v1",
-          "http://www.w3.org/ns/td",
-          "https://www.w3.org/2022/wot/td/v1.1"
-        ]
+        "const": "https://www.w3.org/2019/wot/td/v1"
       },
-      "thing-context": {
+      "thing-context-td-uri-v1.1": {
+        "type": "string",
+        "const": "https://www.w3.org/2022/wot/td/v1.1"
+      },
+      "thing-context-td-uri-temp": {
+        "type": "string",
+        "const": "http://www.w3.org/ns/td"
+      },
+      "thing-context": {     
         "oneOf": [
           {
+            "$comment":"New context URI with other vocabularies after it but not the old one",
             "type": "array",
             "items": [
               {
-                "$ref": "#/definitions/thing-context-w3c-uri"
+                "$ref": "#/definitions/thing-context-td-uri-v1.1"
               }
             ],
             "additionalItems": {
@@ -86,11 +91,41 @@
                 {
                   "type": "object"
                 }
-              ]
+              ],
+              "not":{
+                "$ref": "#/definitions/thing-context-td-uri-v1"
+              }
             }
           },
           {
-            "$ref": "#/definitions/thing-context-w3c-uri"
+            "$comment":"Only the new context URI",
+            "$ref": "#/definitions/thing-context-td-uri-v1.1"
+          },
+          {
+            "$comment":"Old context URI, followed by the new one and possibly other vocabularies. minItems and contains are required since prefixItems does not say all items should be provided",
+            "type": "array",
+            "prefixItems": [
+              {
+                "$ref": "#/definitions/thing-context-td-uri-v1"
+              },
+              {
+                "$ref": "#/definitions/thing-context-td-uri-v1.1"
+              }
+            ],
+            "minItems":2,
+            "contains":{
+              "$ref": "#/definitions/thing-context-td-uri-v1.1"
+            },
+            "additionalItems": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/anyUri"
+                },
+                {
+                  "type": "object"
+                }
+              ]
+            }
           }
         ]
       },
