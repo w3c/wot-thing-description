@@ -50,6 +50,7 @@
                 , companyURL: "https://www.siemens.com/"
                 }
               ]
+            , xref: ["i18n-glossary"]  
             , localBiblio: {
                 "LINKSET-MEDIA-TYPES": {
                   title: "Linkset: Media Types and a Link Relation Type for Link Sets"
@@ -1822,20 +1823,6 @@ In summary, this requires the following:
     In other words, a <a>TD Processor</a> cannot carry forward changes in direction from one string to another,
     or infer direction for one string from another one elsewhere in the TD.
   </p>
-
-  <p class="note">
-    Strings on the Web [[?STRING-META]] suggests 
-    both strong-first and language-based inferencing as means
-    to determine the base text direction.
-    Given that the Thing Description format is based on JSON-LD 1.1 
-    [[?json-ld11]], which currently lacks explicit direction metadata,
-    these approaches are currently considered appropriate 
-    at the time of this publication. 
-    However, if JSON-LD 1.1 adopts support for explicit
-    base direction metadata as recommended by [[?STRING-META]],
-    the Thing Description format should be updated to take advantage of 
-    that feature.
-  </p>
   
   <p>
   A TD snippet using <code>title</code> and <code>description</code> is 
@@ -1868,6 +1855,54 @@ In summary, this requires the following:
     ...
 }
 </pre>
+
+
+  <p>
+    Strings on the Web [[?STRING-META]] recommends the use of metadata to determine the <a>base 
+    direction</a> of string values. 
+		<span class="rfc2119-assertion" id="td-text-at-direction"> 
+			Given that the Thing Description format is based on JSON-LD 1.1 
+			[[?json-ld11]], <code>@direction</code> with the string values <code>"ltr"</code>, 
+			<code>"rtl"</code> and null value <code>null</code> MAY be used inside the <code>@context</code> to 
+			indicate the default text direction for the human readable strings in the entire TD document.
+		</span>
+        <span class="rfc2119-assertion" id="td-text-direction-first-strong"> 
+            When metadata such as <code>@direction</code> is not present, TD Consumers SHOULD use [=first-strong detection=] as a fallback. 
+        </span>
+        <span class="rfc2119-assertion" id="td-text-direction-language-tag">
+            For the MultiLanguage <a>Map</a>, TD Consumers MAY infer the [=base direction=] from the language tag of the individual strings.
+        </span>
+		The example below illustrates the use of the <code>@direction</code> term. See [[?json-ld11]] and [[string-meta]] 
+		for more detailed information.
+		<pre class="example">
+			{
+        "@context": [
+            "https://www.w3.org/2022/wot/td/v1.1",
+            { 
+              "@language": "ar-EG",
+              "@direction": "rtl" 
+            }
+        ],
+        "title": "شيء يخصني يقيس درجة الحرارة",
+        "description":"شيء يقيس درجة الحرارة و يظهر حالته",
+        ...
+        "properties": {
+            "temp": {
+                "title": "درجة الحرارة",
+                "type": "boolean",
+                "forms": [...]
+            },
+            "status": {
+                "title": "حالة",
+                "type": "object",
+                ...
+                "forms": [...]
+            }
+        },
+        ...
+    }
+			</pre>
+  </p>
 
   <p>
   The JSON members named <code>titles</code> and <code>descriptions</code> are 
