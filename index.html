@@ -1811,7 +1811,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 corresponding security configuration is for the
                 endpoint.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-scheme--SecurityScheme"><td><code>scheme</code></td><td>Identification of the security mechanism being
-                configured.</td><td>optional</td><td>any type (one of <code>nosec</code>, <code>combo</code>, <code>basic</code>, <code>digest</code>, <code>bearer</code>, <code>psk</code>, <code>oauth2</code>, or <code>apikey</code>)</td></tr></tbody></table><p>The class <code>SecurityScheme</code> has the following subclasses:</p><ul><li><a href="#nosecurityscheme"><code>NoSecurityScheme</code></a></li>
+                configured.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (e.g., <code>nosec</code>, <code>combo</code>, <code>basic</code>, <code>digest</code>, <code>bearer</code>, <code>psk</code>, <code>oauth2</code>, or <code>apikey</code>)</td></tr></tbody></table><p>The class <code>SecurityScheme</code> has the following subclasses:</p><ul><li><a href="#nosecurityscheme"><code>NoSecurityScheme</code></a></li>
 <li><a href="#autosecurityscheme"><code>AutoSecurityScheme</code></a></li>
 <li><a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a></li>
 <li><a href="#basicsecurityscheme"><code>BasicSecurityScheme</code></a></li>
@@ -6415,8 +6415,15 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     </pre>
 
     <p>
+        The <code>tm:extends</code> and the import mechanism based on <code>tm:ref</code> explicitly support transitive extension (a hierarchy of extensions). 
+        For example, assuming there are 3 TMs: "A" which defines a <code>tm:extends</code> of the TM "B" which itself defines a <code>tm:extends</code> of the TM "C".
+        Consequently, the "A" TM also extend all definitions of both "B" and "C".
+        <span class="rfc2119-assertion" id="tm-ref-recursive-extensions">
+        Recursive extensions leading to an infinite loop MUST NOT be defined. 
+        </span>
+    </p>
 
-
+    <p>
     The following figure summarizes the allowable override behaviour of the extension and imports TM functions presented in this section.
     Three <a>Thing Models</a> use the <code>tm:ref</code> or <code>tm:extends</code> feature to reuse TM definitions of the Smart Lamp Control <a>Thing Model</a>.
     The first <a>Thing Model</a> imports and overwrites the <code>maximum</code> value to <code>120</code> within the <code>dimmer</code> property. However, this results 
@@ -7666,8 +7673,9 @@ instance.
         "type": "string",
         "const": "http://www.w3.org/ns/td"
       },
-      "thing-context": {     
-        "oneOf": [
+      "thing-context": {
+        "anyOf": [
+
           {
             "$comment":"New context URI with other vocabularies after it but not the old one",
             "type": "array",
@@ -8379,6 +8387,41 @@ instance.
           }
         ]
       },
+      "additionalSecurityScheme": {
+        "description": "Applies to additional SecuritySchemes not defined in the WoT TD specification.",
+        "$comment": "Additional SecuritySchemes should always be defined via a context extension, using a prefixed value for the scheme. This prefix (e.g. 'ace', see the example below) must contain at least one character in order to reference a valid JSON-LD context extension.",
+        "examples": [
+          {
+            "scheme": "ace:ACESecurityScheme",
+            "ace:as": "coaps://as.example.com/token",
+            "ace:audience": "coaps://rs.example.com",
+            "ace:scopes": ["limited", "special"],
+            "ace:cnonce": true
+          }
+        ],
+        "type": "object",
+        "properties": {
+          "@type": {
+            "$ref": "#/definitions/type_declaration"
+          },
+          "description": {
+            "$ref": "#/definitions/description"
+          },
+          "descriptions": {
+            "$ref": "#/definitions/descriptions"
+          },
+          "proxy": {
+            "$ref": "#/definitions/anyUri"
+          },
+          "scheme": {
+            "type": "string",
+            "pattern": ".+:.*"
+          }
+        },
+        "required": [
+          "scheme"
+        ]
+      },
       "noSecurityScheme": {
         "type": "object",
         "properties": {
@@ -8794,6 +8837,9 @@ instance.
           },
           {
             "$ref": "#/definitions/oAuth2SecurityScheme"
+          },
+          {
+            "$ref": "#/definitions/additionalSecurityScheme"
           }
         ]
       }
