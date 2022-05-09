@@ -1209,6 +1209,10 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 names are used in a <code>security</code>
                 name-value pair.</td><td>mandatory</td><td><a>Map</a> of <a href="#securityscheme"><code>SecurityScheme</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-profile--Thing"><td><code>profile</code></td><td>Indicates the WoT Profile mechanisms followed by this Thing Description and the corresponding Thing implementation.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-schemaDefinitions--Thing"><td><code>schemaDefinitions</code></td><td>Set of named data schemas.
+                To be used in a <code>schema</code>
+                name-value pair inside an 
+                <code>AdditionalExpectedResponse</code> object.</td><td>optional</td><td><a>Map</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-uriVariables--Thing"><td><code>uriVariables</code></td><td>Define URI template variables according to [[RFC6570]]  as collection
                 based on DataSchema declarations. The Thing level <code>uriVariables</code> can be used in Thing-level 
                 <code>forms</code> or in Interaction Affordances.
@@ -1222,7 +1226,6 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           "td-context-ns-thing-mandatory">
 
           The <code>@context</code>
-
           name-value pair <em class="rfc2119" title=
           "MUST">MUST</em> contain the anyURI
           <code>https://www.w3.org/2022/wot/td/v1.1</code>
@@ -1288,47 +1291,15 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           </ul>
 
           </p>
-          <p>The computation of the base direction of all
-          human-readable text strings is defined by the following
-          set of rules:</p>
-          <ul>
-            <li><span class="rfc2119-assertion" id=
-            "td-context-default-language-direction-heuristic">If no
-            language tag is given, the base direction <em class=
-            "rfc2119" title="SHOULD">SHOULD</em> be inferred
-            through first-strong heuristics or detection algorithms
-            such as the CLDR Likely Subtags [<cite><a class=
-            "bibref" data-link-type="biblio" href="#bib-ldml"
-            title="Unicode Technical Standard #35: Unicode Locale Data Markup Language (LDML)">LDML</a></cite>].</span></li>
-            <li><span class="rfc2119-assertion" id=
-            "td-context-default-language-direction-inference">Outside
-            of <code>MultiLanguage</code> <a href="#dfn-map" class=
-            "internalDFN" data-link-type="dfn">Maps</a>, the base
-            direction <em class="rfc2119" title="MAY">MAY</em> be
-            inferred from the language tag of the default
-            language.</span></li>
-            <li><span class="rfc2119-assertion" id=
-            "td-context-ns-multilanguage-text-direction-infer">Inside
-            of <code>MultiLanguage</code> <a href="#dfn-map" class=
-            "internalDFN" data-link-type="dfn">Maps</a>, the base
-            direction of each value of the name-value pairs
-            <em class="rfc2119" title="MAY">MAY</em> be inferred
-            from the language tag given in the corresponding
-            name.</span></li>
-            <li><span class="rfc2119-assertion" id=
-            "td-context-default-language-direction-script">In cases
-            where a language can be written in more than one script
-            with different base directions, the corresponding
-            language tag given in <code>@language</code> or
-            <code>MultiLanguage</code> <a href="#dfn-map" class=
-            "internalDFN" data-link-type="dfn">Maps</a> <em class=
-            "rfc2119" title="MUST">MUST</em> include a script
-            subtag, so that an appropriate base direction can be
-            inferred.</span> An example is Azeri, which is written
-            LTR when Latin script is used (specified using
-            <code>az-Latn</code>) and RTL when Arabic script is
-            used (specified using <code>az-Arab</code>).</li>
-          </ul>
+          <p>To determine the base direction of all
+          human-readable text in <a>Thing Description</a> 
+          and <a>Thing Model</a> instances this specification 
+           recommends to follow the [[STRING-META]] guideline about 
+           <a href="https://www.w3.org/TR/string-meta/#string_specific_direction">string-specific directional information</a>
+           when no built-in mechanism for associating base direction metadata
+           is available.
+           </p>
+
           <p><a href="#dfn-td-processor" class="internalDFN"
           data-link-type="dfn">TD Processors</a> should be aware of
           certain special cases when processing bidirectional text.
@@ -6433,9 +6404,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     </pre>
 
     <p>
-        The <code>tm:extends</code> and the import mechanism based on <code>tm:ref</code> explicitly support transitive extension (a hierarchy of extensions). 
+        The <code>tm:extends</code> and the import mechanism based on <code>tm:ref</code> explicitly supports transitive extension (a hierarchy of extensions). 
         For example, assuming there are 3 TMs: "A" which defines a <code>tm:extends</code> of the TM "B" which itself defines a <code>tm:extends</code> of the TM "C".
-        Consequently, the "A" TM also extend all definitions of both "B" and "C".
+        Consequently, the "A" TM extends all definitions of both "B" and "C".
         <span class="rfc2119-assertion" id="tm-ref-recursive-extensions">
         Recursive extensions leading to an infinite loop MUST NOT be defined. 
         </span>
@@ -7686,7 +7657,6 @@ instance.
       "thing-context-td-uri-v1.1": {
         "type": "string",
         "const": "https://www.w3.org/2022/wot/td/v1.1"
-
       },
       "thing-context-td-uri-temp": {
         "type": "string",
@@ -7694,7 +7664,6 @@ instance.
       },
       "thing-context": {
         "anyOf": [
-
           {
             "$comment":"New context URI with other vocabularies after it but not the old one",
             "type": "array",
