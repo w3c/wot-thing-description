@@ -244,31 +244,45 @@ a[href].internalDFN {
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // let ReSpec do syntax highlighting first
-        document.respec.ready.then(() => {
-            document.querySelectorAll('.with-default').forEach(n => {
-                let wo = n.querySelector('pre:nth-of-type(1)');
-                let w = n.querySelector('pre:nth-of-type(2)');
-                let cbox = n.querySelector('.with-default-control input[type="checkbox"]');
+	function defaultCheckboxListener() {
+		document.querySelectorAll('.with-default').forEach(n => {
+			let wo = n.querySelector('pre:nth-of-type(1)');
+			let w = n.querySelector('pre:nth-of-type(2)');
+			let cbox = n.querySelector('.with-default-control input[type="checkbox"]');
 
-                w.classList.add('selected');
-                cbox.checked = true;
+			w.classList.add('selected');
+			cbox.checked = true;
 
-                cbox.addEventListener('change', e => {
-                    if (e.target.checked) {
-                        // with default
-                        w.classList.add('selected');
-                        wo.classList.remove('selected');
-                    } else {
-                        // without
-                        w.classList.remove('selected');
-                        wo.classList.add('selected');
-                    }
-                });
-            });
-        });
-    });
+			cbox.addEventListener('change', e => {
+				if (e.target.checked) {
+					// with default
+					w.classList.add('selected');
+					wo.classList.remove('selected');
+				} else {
+					// without
+					w.classList.remove('selected');
+					wo.classList.add('selected');
+				}
+			});
+		});
+	}
+
+	if (document.respec) {
+		// ReSpec mode
+		document.addEventListener('DOMContentLoaded', () => {
+			// let ReSpec do syntax highlighting first
+			document.respec.ready.then(() => {
+				defaultCheckboxListener();
+			});
+		});
+	} else {
+		// W3C specs on the W3C server don't use ReSpec
+		document.addEventListener('readystatechange', () => {
+			if (document.readyState === 'complete') {
+				defaultCheckboxListener();
+			}
+		});
+	}
 </script>
 <script>
 	function openTab(example, tabClass) {
@@ -1311,17 +1325,17 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
         <tbody>
           <tr class="rfc2119-default-assertion" id=
           "td-default-readOnly">
-            <td><code>DataSchema</code></td>
+            <td><code>PropertyAffordance</code></td>
             <td><code>readOnly</code></td>
             <td><code>false</code></td>
-            <td></td>
+            <td>The default value for this vocabulary term applies only to the <code>PropertyAffordance</code> level definition. In other contexts, such as <code>DataSchema</code> definitions, the vocabulary term is optional.</td>
           </tr>
           <tr class="rfc2119-default-assertion" id=
           "td-default-writeOnly">
-            <td><code>DataSchema</code></td>
+            <td><code>PropertyAffordance</code></td>
             <td><code>writeOnly</code></td>
             <td><code>false</code></td>
-            <td></td>
+            <td>The default value for this vocabulary term applies only to the <code>PropertyAffordance</code> level definition. In other contexts, such as <code>DataSchema</code> definitions, the vocabulary term is optional.</td>
           </tr>
           <tr class="rfc2119-default-assertion" id=
           "td-default-observable">
@@ -3551,8 +3565,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   </p>
   <p> 
   This level of validation includes all assertions implied by 
-  normative tables in this document as well as all assertions marked
-  with the "Minimal" tag.
+  normative tables in this document.
   </p>
   </section>
   <section id="basic-validation-serialization-json">
@@ -3571,8 +3584,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   can be used to validate extensions.
   </p><p> 
   This level of validation includes all those covered by 
-  <a href="#minimal-validation-serialization-json"></a>
-  as well as all assertions marked with the "Basic" tag.
+  <a href="#minimal-validation-serialization-json"></a>.
   </p>
   </section>
   <section id="full-validation-serialization-json">
@@ -4980,10 +4992,13 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <h2>Thing Model Declaration</h2>
 
     <p>
-    A <a>Thing Model</a> is recognized by the top level <em>@type</em>.
+    A <a>Thing Model</a> is recognized by the top level <code>@type</code>.
     <span class="rfc2119-assertion" id="tm-identification">
-        <a>Thing Model</a> definitions MUST use the keyword <em>@type</em> at top level 
+        <a>Thing Model</a> definitions MUST use the keyword <code>@type</code> at top level 
         and a value of type string or array that equals or respectively contains <code>tm:ThingModel</code>.
+    </span>
+    <span class="rfc2119-assertion" id="tm-context-requirement">
+        Additionally, in order to identify it as a JSON-LD document, <a>Thing Model</a> definitions MUST use the keyword <code>@context</code> at top level with same rules as a Thing Description.
     </span>
     The prefix <code>tm</code> is defined within <a>Thing Descriptions</a>' context and points to the <a>Thing Model</a> namespace as 
     defined in <a href="#namespaces"></a>. It is intended that vocabulary from the <code>tm</code> context only be used in <a>Thing Model</a>
@@ -5239,8 +5254,15 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     </pre>
 
     <p>
+        The <code>tm:extends</code> and the import mechanism based on <code>tm:ref</code> explicitly supports transitive extension (a hierarchy of extensions). 
+        For example, assuming there are 3 TMs: "A" which defines a <code>tm:extends</code> of the TM "B" which itself defines a <code>tm:extends</code> of the TM "C".
+        Consequently, the "A" TM extends all definitions of both "B" and "C".
+        <span class="rfc2119-assertion" id="tm-ref-recursive-extensions">
+        Recursive extensions leading to an infinite loop MUST NOT be defined. 
+        </span>
+    </p>
 
-
+    <p>
     The following figure summarizes the allowable override behaviour of the extension and imports TM functions presented in this section.
     Three <a>Thing Models</a> use the <code>tm:ref</code> or <code>tm:extends</code> feature to reuse TM definitions of the Smart Lamp Control <a>Thing Model</a>.
     The first <a>Thing Model</a> imports and overwrites the <code>maximum</code> value to <code>120</code> within the <code>dimmer</code> property. However, this results 
@@ -6102,8 +6124,79 @@ instance.
       <dt>Change controller:</dt>
       <dd><abbr title="World Wide Web Consortium">W3C</abbr></dd>
     </dl>
-
     </section>
+
+    <section id="media-type-section-tm">
+        <h2><code>application/tm+json</code> Media Type Registration</h2>
+        <dl>
+          <dt>Type name:</dt>
+          <dd>application</dd>
+          <dt>Subtype name:</dt>
+          <dd>tm+json</dd>
+          <dt>Required parameters:</dt>
+          <dd>None</dd>
+          <dt>Optional parameters:</dt>
+          <dd>None</dd>
+          <dt>Encoding considerations:</dt>
+          <dd>See <a href="https://tools.ietf.org/html/rfc6839#section-3.1">RFC&nbsp;6839, section 3.1</a>.
+          </dd>
+          <dt>Security considerations:</dt>
+          <dd>See 
+          <a href="#sec-security-consideration-context-tampering"></a>,
+          <a href="#sec-security-consideration-execution"></a>, 
+          <a href="#sec-security-consideration-jsonld-expansion"></a>,
+          and
+          <a href="#sec-privacy-consideration-context"></a> in
+          the published specification.
+          </dd>
+          <dt>Interoperability considerations:</dt>
+          <dd>See <a href="https://tools.ietf.org/html/rfc8259">RFC&nbsp;8259</a>.
+            <p>
+            Rules for processing both conforming and non-conforming content are
+            defined in this specification.
+            </p>
+          </dd>
+          <dt>Published specification:</dt>
+          <dd>
+            <a href="https://www.w3.org/TR/wot-thing-description11/">W3C 
+            Web of Things (WoT) Thing Description 1.1</a>
+         </dd>
+          <dt>Applications that use this media type:</dt>
+          <dd>
+            All participating entities in the W3C Web of Things, that is,
+            <a>Things</a>, <a>Consumers</a>, and Intermediaries as defined in the
+            <a href="https://www.w3.org/TR/wot-architecture11/">W3C 
+        Web of Things (WoT) Architecture 1.1</a> document.
+          </dd>
+          <dt>Fragment identifier considerations:</dt>
+          <dd>See <a href="https://www.rfc-editor.org/rfc/rfc6901#section-3">RFC&nbsp;6901, section 3</a>. 
+            Note that reserved characters may be percent encoded.
+          </dd>
+          <dt>Additional information:</dt>
+          <dd>
+            <dl>
+              <dt>Magic number(s):</dt>
+              <dd>Not Applicable</dd>
+              <dt>File extension(s):</dt>
+              <dd>.jsontm, .tm.json, .tm.jsonld (preferred file extension)</dd>
+              <dt>Macintosh file type code(s):</dt>
+              <dd>TEXT</dd>
+            </dl>
+          </dd>
+          <dt>Person &amp; email address to contact for further information:</dt>
+          <dd>Sebastian.Kaebisch@siemens.com
+          </dd>
+          <dt>Intended usage:</dt>
+          <dd>COMMON</dd>
+          <dt>Restrictions on usage:</dt>
+          <dd>None</dd>
+          <dt>Author(s):</dt>
+          <dd>The Web of Things (WoT) Thing Description specification is a product of the Web of Things Working Group.</dd>
+          <dt>Change controller:</dt>
+          <dd><abbr title="World Wide Web Consortium">W3C</abbr></dd>
+        </dl>
+        </section>
+
     <section id="content-format-section">
     <h2>CoAP Content-Format Registration</h2>
     <p>
@@ -6112,18 +6205,36 @@ instance.
       subregistry within the
       <a href="https://www.iana.org/assignments/core-parameters/core-parameters.xhtml">Constrained RESTful Environments (CoRE) Parameters</a>
       registry [[RFC7252]].
-      The Content-Format ID for WoT Thing Description is 432.
+      The Content-Format ID for WoT Thing Description is 432 and for the WoT Thing Model is - (tbd).
     </p>
-    <dl>
-      <dt>Media Type:</dt>
-      <dd>application/td+json</dd>
-      <dt>Encoding:</dt>
-      <dd>-</dd>
-      <dt>ID:</dt>
-      <dd>432</dd>
-      <dt>Reference:</dt>
-      <dd>[<a href="https://w3c.github.io/wot-thing-description/">"Web of Things (WoT) Thing Description", May 2019</a>]</dd>
-    </dl>
+        <section>
+            <h2>WoT Thing Description</h2>
+            <dl>
+                <dt>Media Type:</dt>
+                <dd>application/td+json</dd>
+                <dt>Encoding:</dt>
+                <dd>-</dd>
+                <dt>ID:</dt>
+                <dd>432</dd>
+                <dt>Reference:</dt>
+                <dd>[<a href="https://w3c.github.io/wot-thing-description/">"Web of Things (WoT) Thing Description 1.1", April 2022</a>]</dd>
+            </dl>
+        </section>
+
+        <section>
+            <h2>WoT Thing Model</h2>
+        <dl>
+            <dt>Media Type:</dt>
+            <dd>application/tm+json</dd>
+            <dt>Encoding:</dt>
+            <dd>-</dd>
+            <dt>ID:</dt>
+            <dd>tbd</dd>
+            <dt>Reference:</dt>
+            <dd>[<a href="https://w3c.github.io/wot-thing-description/">"Web of Things (WoT) Thing Description 1.1", April 2022</a>]</dd>
+        </dl>
+        </section>
+
     </section>
   </section>
 
@@ -6392,8 +6503,10 @@ instance.
   <section id="json-schema-for-validation" class="appendix informative">
   <h1>JSON Schema for TD Instance Validation</h1>
     <p>
-        Below is a JSON Schema [[?JSON-SCHEMA]] document for syntactically validating Thing Description instances serialized in JSON based format.
+        A JSON Schema [[?JSON-SCHEMA]] document for syntactically validating Thing Description instances serialized in JSON based format is available in <a href="https://github.com/w3c/wot-thing-description/blob/main/validation/td-json-schema-validation.json">the GitHub repository</a>.
+        This JSON Schema does not require the terms with <a>Default Values</a> to be present. Thus, the terms with <a>Default Values</a> are optional. (see also <a href="#sec-default-values"></a>)
     </p>
+
     <p class="note">The Thing Description defined by this document allows for 
         adding external vocabularies by using <code>@context</code> mechanism 
         known from JSON-LD [[?json-ld11]], and the terms in those external vocabularies can be
@@ -6404,19 +6517,8 @@ instance.
         order to perform a stricter validation in case no external vocabularies are used.
     </p>
 
-    <p class="note"> Please note that some JSON Schema validation tools do not support the <code>iri-reference</code> string format. 
-	    It can be replaced with <code>uri-reference</code> or the term <code>format</code> can removed from the definition of <code>anyUri</code>.
+    <p class="note"> The <code>$id</code> field in the JSON Schemas need to be updated to a static URL before publication, as well as the actual link pointing to the schema.
     </p>
-
-    <p class="note"> The <code>$id</code> field in the JSON Schemas need to be updated to a static URL before publication.
-    </p>
-
-    <p>
-        The following JSON Schema for validating TD instances does not require the terms with <a>Default Values</a> to be present. Thus the terms with <a>Default Values</a> are optional. (see also <a href="#sec-default-values"></a>)
-    </p>
-    <pre class="advisement">
-    {td.json-schema.validation}
-    </pre>
 
   </section>
 
