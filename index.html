@@ -1238,8 +1238,8 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
             <li>
     <span class="rfc2119-assertion" id=
           "td-context-ns-thing-mandatory">
-
           The <code>@context</code>
+
           name-value pair <em class="rfc2119" title=
           "MUST">MUST</em> contain the anyURI
           <code>https://www.w3.org/2022/wot/td/v1.1</code>
@@ -2384,6 +2384,94 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           </table>
         </div>
 
+        <p>
+          A <a>Thing Description</a> of a WoT producer may have multiple forms entries with, e.g., different 
+          protocol and/or content types declarations that a <a>Consumer</a> could possibly support. In that case 
+          the Consumer may choose any form entry that works (e.g., the protocol and content type is supported) for them. 
+          When one form is chosen, it is expected that the <a>Consumer</a> will continue to use it as long as possible 
+          for every new interaction with the WoT producer.
+        </p>
+
+        <section id="sec-op-data-schema-mapping" class="informative">
+        <h4>Mapping op Values to Data Schemas</h4>
+
+        <p>
+            Protocols that can be used with TDs follow request-response or eventing mechanisms. 
+            The Data Schema of an affordance generally correlates with the <code>op</code> keywords used in <code>forms</code>.
+            The table below informatively summarizes the available data schema related terms with the <code>op</code> keywords.
+
+            <ul>
+                <li>Consumer to Thing applies for messages sent by the Consumer to the Thing, such as the value for writing a property.</li>
+                <li>Thing to Consumer applies for messages sent by the Thing to the Consumer, such as the value of a property value as the result of reading a property.</li>
+                <li>In case that there is no correlation with the data schema and the operation, it implies that no payload is required for executing the operation or no 
+                payload is expected as a result of the operation.</li>
+            </ul>
+
+            <table class="def">
+            <thead>
+              <tr>
+                <th>Operation Type</th>
+                <th>Consumer to Thing DataSchema Correlation</th>
+                <th>Thing to Consumer DataSchema Correlation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>readproperty</td>
+                <td>No correlation.</td>
+                <td>All fields in the Property Affordance without <code>"writeOnly":true</code>.</td>
+              </tr>
+              <tr>
+                <td>writeproperty</td>
+                <td>All fields in the Property Affordance without <code>"readOnly":true</code>.</td>
+                <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
+              </tr>
+              <tr>
+                <td>observeproperty</td>
+                <td>No correlation.</td>
+                <td>All fields in the Property Affordance without <code>"writeOnly":true</code>.</td>
+              </tr>
+              <tr>
+                <td>unobserveproperty</td>
+                <td>No correlation.</td>
+                <td>No correlation.</td>
+              </tr>
+              <tr>
+                <td>invokeaction</td>
+                <td>Value of the <code>input</code> key.</td>
+                <td>Value of the <code>output</code> key.</td>
+              </tr>
+              <tr>
+                <td>queryaction</td>
+                <td>No correlation.</td>
+                <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
+              </tr>
+              <tr>
+                <td>cancelaction</td>
+                <td>No correlation.</td>
+                <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
+              </tr>
+              <tr>
+                <td>subscribeevent</td>
+                <td>Value of the <code>subscription</code> key with all fields without <code>"readOnly":true</code></td>
+                <td>Value of the <code>subscription</code> key with all fields without <code>"writeOnly":true</code></td>
+              </tr>
+              <tr>
+                <td>unsubscribeevent</td>
+                <td>Value of the <code>subscription</code> key with all fields without <code>"readOnly":true</code></td>
+                <td>Value of the <code>subscription</code> key with all fields without <code>"writeOnly":true</code></td>
+              </tr>
+            </tbody>
+            </table>
+        </p>
+        <p class="ednote" title="Data Schemas of meta operations">
+            The data schemas for meta operations such as <code>readallproperties</code> is currently under discussion.
+        </p>
+        </section>
+
+        <section id="sec-response-usage">
+        <h4>Response-related Terms Usage</h4>
+
           <p>The optional <code>response</code> name-value pair can
           be used to provide metadata for the expected response
           message. 
@@ -2457,13 +2545,8 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           "rfc2119" title="MUST">MUST</em> include an entry in the array
           associated with the name <code>additionalResponses</code> that
           includes a value for the name <code>schema</code>.</span> 
-          </p><p>
-          A <a>Thing Description</a> of a WoT producer may have multiple forms entries with, e.g., different 
-          protocol and/or content types declarations that a <a>Consumer</a> could possibly support. In that case 
-          the Consumer may choose any form entry that works (e.g., the protocol and content type is supported) for them. 
-          When one form is chosen, it is expected that the <a>Consumer</a> will continue to use it as long as possible 
-          for every new interaction with the WoT producer.
           </p>
+          </section>
           </section>
 <section><h3><code>ExpectedResponse</code></h3><p>Communication metadata describing the expected
           response message for the primary response.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-contentType--ExpectedResponse"><td><code>contentType</code></td><td>Assign a content type based on a media type
@@ -7715,7 +7798,6 @@ instance.
 
     <p class="note"> The <code>$id</code> field in the JSON Schemas need to be updated to a static URL before publication, as well as the actual link pointing to the schema.
     </p>
-
 
   </section>
 
