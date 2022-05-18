@@ -188,16 +188,30 @@
         sh:node :DataSchemaShape ;
         sh:order 18 ;
     ] ;
-    skos:scopeNote """<p><span class="rfc2119-assertion" id=
-          "td-context-ns-thing-mandatory">The <code>@context</code>
+    skos:scopeNote """<p>
+              For <code>@context</code> the following rules are defined for <a>Thing Description</a> instances:
+        <ul>
+            <li>
+    <span class="rfc2119-assertion" id=
+          "td-context-ns-thing-mandatory">
+
+          The <code>@context</code>
           name-value pair <em class="rfc2119" title=
           "MUST">MUST</em> contain the anyURI
           <code>https://www.w3.org/2022/wot/td/v1.1</code>
-          in order to identify the document as a TD 1.1 which would allow <a>Consumers</a> to use the newly introduced terms. When there are possibly TD 1.0 consumers the anyURI
+          in order to identify the document as a TD 1.1 which would allow <a>Consumers</a> to use the newly introduced terms.
+          </span>
+          </li>
+          <li>
+              <span class="rfc2119-assertion" id=
+          "td-context-ns-td10-namespace"> 
+          When there are possibly TD 1.0 consumers the anyURI
           <code>https://www.w3.org/2019/wot/td/v1</code>
           <em class="rfc2119" title=
           "MUST">MUST</em> be the first entry and the <code>https://www.w3.org/2022/wot/td/v1.1</code> <em class="rfc2119" title=
           "MUST">MUST</em> be the second entry.</span>
+          </li>
+          <li>
           <span class="rfc2119-assertion" id=
           "td-context-ns-thing-optional">When <code>@context</code>
           is an <a href="#dfn-array" class="internalDFN"
@@ -212,7 +226,8 @@
           "dfn">Map</a> with all the name-value pairs in the
           <code>@context</code> <a href="#dfn-array" class=
           "internalDFN" data-link-type="dfn">Array</a>.</span>
-
+          </li>
+        <li>
           <span class="rfc2119-assertion" id=
           "td-context-ns-thing-map-of-namespaces"><a href=
           "#dfn-map" class="internalDFN" data-link-type=
@@ -223,6 +238,8 @@
           identifier of type <code>anyURI</code> and the name a
           <a href="#dfn-term" class="internalDFN" data-link-type=
           "dfn">Term</a> or prefix denoting that namespace.</span>
+          </li>
+          <li>
           <span class="rfc2119-assertion" id=
           "td-context-default-language">One <a href="#dfn-map"
           class="internalDFN" data-link-type="dfn">Map</a>
@@ -239,7 +256,11 @@
           "Tags for Identifying Languages">BCP47</a></cite>] (e.g.,
           <code>en</code>, <code>de-AT</code>, <code>gsw-CH</code>,
           <code>zh-Hans</code>, <code>zh-Hant-HK</code>,
-          <code>sl-nedis</code>).</span></p>
+          <code>sl-nedis</code>).</span>
+          </li>
+          </ul>
+
+          </p>
           <p>The computation of the base direction of all
           human-readable text strings is defined by the following
           set of rules:</p>
@@ -871,6 +892,94 @@
           </table>
         </div>
 
+        <p>
+          A <a>Thing Description</a> of a WoT producer may have multiple forms entries with, e.g., different 
+          protocol and/or content types declarations that a <a>Consumer</a> could possibly support. In that case 
+          the Consumer may choose any form entry that works (e.g., the protocol and content type is supported) for them. 
+          When one form is chosen, it is expected that the <a>Consumer</a> will continue to use it as long as possible 
+          for every new interaction with the WoT producer.
+        </p>
+
+        <section id="sec-op-data-schema-mapping" class="informative">
+        <h4>Mapping op Values to Data Schemas</h4>
+
+        <p>
+            Protocols that can be used with TDs follow request-response or eventing mechanisms. 
+            The Data Schema of an affordance generally correlates with the <code>op</code> keywords used in <code>forms</code>.
+            The table below informatively summarizes the available data schema related terms with the <code>op</code> keywords.
+
+            <ul>
+                <li>Consumer to Thing applies for messages sent by the Consumer to the Thing, such as the value for writing a property.</li>
+                <li>Thing to Consumer applies for messages sent by the Thing to the Consumer, such as the value of a property value as the result of reading a property.</li>
+                <li>In case that there is no correlation with the data schema and the operation, it implies that no payload is required for executing the operation or no 
+                payload is expected as a result of the operation.</li>
+            </ul>
+
+            <table class="def">
+            <thead>
+              <tr>
+                <th>Operation Type</th>
+                <th>Consumer to Thing DataSchema Correlation</th>
+                <th>Thing to Consumer DataSchema Correlation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>readproperty</td>
+                <td>No correlation.</td>
+                <td>All fields in the Property Affordance without <code>"writeOnly":true</code>.</td>
+              </tr>
+              <tr>
+                <td>writeproperty</td>
+                <td>All fields in the Property Affordance without <code>"readOnly":true</code>.</td>
+                <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
+              </tr>
+              <tr>
+                <td>observeproperty</td>
+                <td>No correlation.</td>
+                <td>All fields in the Property Affordance without <code>"writeOnly":true</code>.</td>
+              </tr>
+              <tr>
+                <td>unobserveproperty</td>
+                <td>No correlation.</td>
+                <td>No correlation.</td>
+              </tr>
+              <tr>
+                <td>invokeaction</td>
+                <td>Value of the <code>input</code> key.</td>
+                <td>Value of the <code>output</code> key.</td>
+              </tr>
+              <tr>
+                <td>queryaction</td>
+                <td>No correlation.</td>
+                <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
+              </tr>
+              <tr>
+                <td>cancelaction</td>
+                <td>No correlation.</td>
+                <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
+              </tr>
+              <tr>
+                <td>subscribeevent</td>
+                <td>Value of the <code>subscription</code> key with all fields without <code>"readOnly":true</code></td>
+                <td>Value of the <code>subscription</code> key with all fields without <code>"writeOnly":true</code></td>
+              </tr>
+              <tr>
+                <td>unsubscribeevent</td>
+                <td>Value of the <code>subscription</code> key with all fields without <code>"readOnly":true</code></td>
+                <td>Value of the <code>subscription</code> key with all fields without <code>"writeOnly":true</code></td>
+              </tr>
+            </tbody>
+            </table>
+        </p>
+        <p class="ednote" title="Data Schemas of meta operations">
+            The data schemas for meta operations such as <code>readallproperties</code> is currently under discussion.
+        </p>
+        </section>
+
+        <section id="sec-response-usage">
+        <h4>Response-related Terms Usage</h4>
+
           <p>The optional <code>response</code> name-value pair can
           be used to provide metadata for the expected response
           message. 
@@ -944,13 +1053,8 @@
           "rfc2119" title="MUST">MUST</em> include an entry in the array
           associated with the name <code>additionalResponses</code> that
           includes a value for the name <code>schema</code>.</span> 
-          </p><p>
-          A <a>Thing Description</a> of a WoT producer may have multiple forms entries with, e.g., different 
-          protocol and/or content types declarations that a <a>Consumer</a> could possibly support. In that case 
-          the Consumer may choose any form entry that works (e.g., the protocol and content type is supported) for them. 
-          When one form is chosen, it is expected that the <a>Consumer</a> will continue to use it as long as possible 
-          for every new interaction with the WoT producer.
           </p>
+          </section>
           """^^rdf:HTML .
     
 :LinkShape a sh:NodeShape ;
@@ -1336,11 +1440,14 @@
     sh:order 1 ;
     sh:property [
         sh:path rdf:type ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
         skos:definition """Identification of the security mechanism being
                 configured."""^^rdf:HTML ;
         # FIXME declare securityDefinitions as @included
         # sh:minCount 1 ;
-        sh:in (
+        skos:example (
             wotsec:NoSecurityScheme
             wotsec:ComboSecurityScheme
             wotsec:BasicSecurityScheme

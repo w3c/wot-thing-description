@@ -46,6 +46,9 @@ function context(obj, id) {
         if (!iri.startsWith('@')) {
             txt+= `_:${scope}${k} <${ld}iri> <${iri}> .\r\n`;
         }
+        else if (iri == "@type") {
+            txt+= `_:${scope}${k} <${ld}iri> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> .\r\n`;
+        }
         
         if (v instanceof Object) {
             if (v['@container']) {
