@@ -276,7 +276,7 @@ function removeFormat(argObject) {
  * Until a more recursive function works, this is its more manual version
  * such types are found in: definitions/dataSchema minimum, maximum, minItems, maxItems, minLength, maxLength, multipleOf, 
  * writeOnly, readOnly and the exact same in definitions/property_element but there is also observable here
- * safe and idempotent in definitions/action_element
+ * safe, idempotent, synchronous in definitions/action_element
  * @param {object} argObject
  * @return {object}
 **/
@@ -302,7 +302,8 @@ function manualConvertString(argObject){
         "definitions.property_element.properties.readOnly",
         "definitions.property_element.properties.observable",
         "definitions.action_element.properties.safe",
-        "definitions.action_element.properties.idempotent"
+        "definitions.action_element.properties.idempotent",
+        "definitions.action_element.properties.synchronous"
     ]
     
     //iterate over this array and replace for each
