@@ -36,23 +36,22 @@ fs.readFile(docFilename, 'utf8', (err, data) => {
         arr_data.sort((a, b) => {
             let sa = a.html.attr("id");
             let sb = b.html.attr("id");
-            return (sa < sb) - (sa > sb); // case-sensitive order
+            return (sb < sa) - (sb > sa); // case-sensitive order
         });
     }
 
     // Initialize headers in output CSV file
-    console.log(`"Index","ID","Status","Comment"${addAssertionTxt?',"Assertion"':''}`);
+    console.log(`"ID","Status"${addAssertionTxt?',"Assertion"':''}`);
 
     // Output each row of array data into CSV, with optional assertion text
     for (j = 0; j < arr_data.length; j++) {
         let element = arr_data[j];
-        let i = element.index;
         let id = element.html.attr('id');
         let text = element.html.text();
         let assertionTxt = "";
         if (addAssertionTxt) {
             assertionTxt = ',"' + text.trim().replace(/\r?\n/g, '').replace(/\s+/g, ' ').replace(/"/g, '""') + '"';
         }
-        console.log(`${i},"${id}","null","not testable with Assertion Tester"${assertionTxt}`);
+        console.log(`"${id}","null"${assertionTxt}`);
     }
 });
