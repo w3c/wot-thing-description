@@ -14,7 +14,7 @@ If you want to update your input for a Member organization, please go to [WoT IG
 
 ## Updating Implementation Report
 
-### w3c/wot Repository: Updating Results from Inputs
+### w3c/wot-testing Repository: Updating Results from Inputs
 
 Test inputs are collected via the WoT IG and are currently in `wot/testing/tests/2019-05`.
 
@@ -23,11 +23,11 @@ Test inputs are collected via the WoT IG and are currently in `wot/testing/tests
 #### First Time Only
 To update a test run to incorporate new results or test cases, first check out the `wot` repo,
 ```
-git clone https://github.com/w3c/wot.git
+git clone https://github.com/w3c/wot-testing.git
 ```
 and install the dependencies for the AssertionTester tool:
 ```
-cd wot/testing/tools/thingweb-playground/AssertionTester
+git clone https://github.com/thingweb/thingweb-playground.git
 npm install
 ```
 
