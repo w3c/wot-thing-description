@@ -1,6 +1,6 @@
 {
   "title": "Thing Model",
-  "version": "1.1-28-January-2022",
+  "version": "1.1-10-June-2022",
   "description": "JSON Schema for validating Thing Models. This is automatically generated from the WoT TD Schema.",
   "$schema ": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/w3c/wot-thing-description/main/validation/tm-json-schema-validation.json",
@@ -135,6 +135,33 @@
               }
             ]
           }
+        },
+        {
+          "$comment": "Old context URI, followed by possibly other vocabularies. minItems and contains are required since prefixItems does not say all items should be provided",
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/definitions/thing-context-td-uri-v1"
+            }
+          ],
+          "minItems": 1,
+          "contains": {
+            "$ref": "#/definitions/thing-context-td-uri-v1"
+          },
+          "additionalItems": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/anyUri"
+              },
+              {
+                "type": "object"
+              }
+            ]
+          }
+        },
+        {
+          "$comment": "Only the new context URI",
+          "$ref": "#/definitions/thing-context-td-uri-v1"
         }
       ]
     },
@@ -218,9 +245,16 @@
           "type": "string"
         },
         "enum": {
-          "type": "array",
-          "minItems": 1,
-          "uniqueItems": true
+          "anyOf": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "format": {
           "type": "string"
@@ -328,10 +362,17 @@
           }
         },
         "required": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "tm:ref": {
           "$ref": "#/definitions/tm_ref"
@@ -764,9 +805,16 @@
           "type": "string"
         },
         "enum": {
-          "type": "array",
-          "minItems": 1,
-          "uniqueItems": true
+          "anyOf": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "format": {
           "type": "string"
@@ -868,10 +916,17 @@
           }
         },
         "required": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "tm:ref": {
           "$ref": "#/definitions/tm_ref"
