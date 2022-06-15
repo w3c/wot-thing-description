@@ -27,16 +27,16 @@ jobs:
       # This is done so that it can be compared later on
         run: |
           mkdir .temp
-          cp testing/inputs/results-template.csv .temp/template.current.csv
-          cat .temp/template.current.csv
+          cp testing/assertions.csv .temp/assertions.current.csv
+          cat .temp/assertions.current.csv
       - name: generate template.csv
       # this generates other stuff as well but we are interested in template.csv
-        run: node assertions.js
+        run: node testing/extractFile.js > testing/assertions.csv
       - name: Look for changes
         continue-on-error: true 
         run: |
-          cat testing/inputs/results/template.csv
-          git diff --no-index testing/inputs/results/template.csv .temp/template.current.csv
+          cat testing/assertions.csv
+          git diff --no-index testing/assertions.csv .temp/assertions.current.csv
           echo "::set-output name=changed::$?"
         id: diff
       - name: Sync file
@@ -45,11 +45,11 @@ jobs:
       - name: Add generated file and commit
         if: ${{ ! steps.diff.outputs.changed }}
         run: |
-          git config user.name 'GitHub Action'
-          git config user.email 'egekorkan@users.noreply.github.com'
+          git config user.name 'Ege Korkan'
+          git config user.email 'egekorkan@gmail.com'
           git reset
-          git add testing/inputs/results/template.csv
-          git commit -m "chore(testing): sync template.csv with the current assertions in the spec"
+          git add testing/assertions.csv
+          git commit -m "chore(testing): sync assertions.csv with the current assertions in the spec"
 
       - name: Create Pull Request
         if: ${{ ! steps.diff.outputs.changed }}
@@ -57,10 +57,10 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           add-paths: |
-            testing/inputs/results/template.csv
+            testing/assertions.csv
           branch: assertion-csv-sync
           delete-branch: true
-          title: 'Update template.csv for testing'
+          title: 'Update assertions.csv for testing'
           body: |
             Update template.csv
             - Updated with *today's* date
