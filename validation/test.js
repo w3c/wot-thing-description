@@ -190,6 +190,22 @@ const validTMs = [
                 "maximum": 200
             }
        }
+    },
+    {
+        "$comment": "Enum with placeholder",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
+        "links": [{
+            "rel": "tm:extends",
+            "href": "http://example.com/SmartControlLampTM",
+            "type": "application/td+json"
+        }],
+        "properties": {
+            "dim": {
+                "type": "string",
+                "enum":"{{MY_ENUMS}}"
+            }
+        }
     }
 ];
 const invalidTMs = [    

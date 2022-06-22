@@ -175,6 +175,21 @@
                   ]
                 , publisher: "W3C"
                 }
+                , "RFC9200": {
+                    "href": "https://www.rfc-editor.org/rfc/rfc9200",
+                    "title": "Authentication and Authorization for Constrained Environments (ACE) Using the OAuth 2.0 Framework (ACE-OAuth)",
+                    "authors": [
+                      "L. Seitz",
+                      "G. Selander",
+                      "E. Wahlstroem", 
+                      "S. Erdtman",
+                      "H. Tschofenig"
+                    ],
+                    "status": "Publication in process",
+                    "publisher": "IETF",
+                    "id": "rfc9200",
+                    "date": "March 2022"
+                }
               }
             , otherLinks: [
                 {
@@ -1713,13 +1728,12 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
       </p>
 
       <p>
-      If a value of <code>auto</code> is set for the <code>in</code> field of a 
-      <code>SecurityScheme</code>, then the <code>name</code> field SHOULD NOT
-      be set.
-      In this case, the application of the <code>SecurityScheme</code> MUST
-      follow the respective specification for the given protocol (e. g. 
-      [[!RFC8288]] when using the <code>BasicSecurityScheme</code> with 
-      HTTP).
+      Generally, security schemes require some form of secure transport to be effective,
+      such as TLS or DTLS.  
+      Requirements for the use of secure transport are given in 
+      Section <a href="#sec-security-consideration"></a>
+      in this document and in the Security Considerations
+      section of [[wot-architecture11]].
       </p>
 
       <!-- rendered from RDF definitions -->
@@ -1803,6 +1817,15 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           <em class="rfc2119" title="MUST">MUST</em> be a URI template including the defined variable.
           </span>  
           </dd>
+          <dt><code>auto</code>:</dt>
+          <dd>The location is determined as part of the protocol, or negotiated. 
+          <span class="rfc2119-assertion" id="sec-security-vocab-auto-in-no-name">If a value of <code>auto</code> 
+          is set for the <code>in</code> field of a <code>SecurityScheme</code>, 
+          then the <code>name</code> field SHOULD NOT be set.</span> 
+          In this case, the application of the <code>SecurityScheme</code> is subject to 
+          the respective specification for the given protocol (e.g. [[!RFC8288]] when using the 
+          <code>BasicSecurityScheme</code> with HTTP).
+          </dd>
           </dl>
           If multiple parameters are needed for a security scheme, repeat the security scheme definition for
           each parameter and combine them using a <code>combo</code> security scheme and <code>allOf</code>.
@@ -1838,16 +1861,14 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           <code>nosec</code> (i.e., <code>"scheme":
           "nosec"</code>), indicating there is no authentication or
           other mechanism required to access the resource.</p></section>
-<section><h3><code>AutoSecurityScheme</code></h3><p>An auto authentication security configuration identified by the term <code>auto</code> (i.e., <code>"scheme": "auto"</code>). This scheme can be used to indicate that the security parameters are going to be negotiated by the underlying protocols at runtime.</p></section>
+<section><h3><code>AutoSecurityScheme</code></h3><p>An automatic authentication security configuration identified by the term <code>auto</code> (i.e., <code>"scheme": "auto"</code>). This scheme indicates that the security parameters are going to be negotiated by the underlying protocols at runtime, subject to the respective specifications for the protocol (e.g. [[!RFC8288]] for Basic Authentication when using HTTP).</p></section>
 <section><h3><code>ComboSecurityScheme</code></h3><p><span class="at-risk">This section is at risk.</span></p><p>A combination of other security schemes identified by the <a>Vocabulary Term</a> <code>combo</code> (i.e., <code>"scheme": "combo"</code>).  Elements of this scheme define various ways in which other named schemes defined in <code>securityDefinitions</code>, including other <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> definitions, are to be combined to create a new scheme definition.  <span class="rfc2119-assertion" id="td-security-combo-exclusive-oneof-or-allof">Exactly one of either <code>oneOf</code> or <code>allOf</code> MUST be included.</span> <!-- Redundant, table states "two or more" already <scan class="rfc2119-assertion">The array given as a value associated with either <code>oneOf</code> or <code>allOf</code> MUST have at least two elements.</scan> --> Only security scheme definitions which can be used together can be combined with <code>allOf</code>.  For example, it is not possible in general to combine different OAuth 2.0 flows together using <code>allOf</code> unless one applies to a proxy and one to the endpoint.  Note that when multiple named security scheme definitions are listed in a <code>security</code> field the same semantics apply as in an <code>allOf</code> combination (and the same limitations on allowable combinations).  The <code>oneOf</code> combination is equivalent to using different security schemes on forms that are otherwise identical.  In this sense a <code>oneOf</code> scheme is not an essential feature but it does avoid redundancy in such cases.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-oneOf--ComboSecurityScheme"><td><code>oneOf</code></td><td>Array of two or more strings identifying other named security scheme definitions, any one of which, when satisfied, will allow access.  Only one may be chosen for use.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-allOf--ComboSecurityScheme"><td><code>allOf</code></td><td>Array of two or more strings identifying other named security scheme definitions, all of which must be satisfied for access.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table><!-- <p class="ednote" title="Recursive Use">The 
 <a href="#combosecurityscheme">ComboSecurityScheme</a> may be applied recursively to generate Boolean expressions for combinations of security schemes. One use case for this is when multiple security schemes are needed for a proxy in combination with multiple security schemes for an endpoint.  Suppose for example a proxy accepts either schemes A or B, and then the endpoint accepts either C or D.  Then the possible combinations are AC, AD, BC, and BD.  These could be expressed directly at the <code>Form</code> level but would require four-fold redundancy.  Instead, three <code>combo</code> nodes can be used to combine the four leaf schemes in the correct way into a single scheme.  It is not clear however if other use cases exist for deeper expression trees and if not, we may consider limiting the recursion depth to two.</p>--></section>
 <section><h3><code>BasicSecurityScheme</code></h3><p>Basic Authentication [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc7617" title="The 'Basic' HTTP Authentication Scheme">RFC7617</a></cite>]
           security configuration identified by the <a href="#dfn-vocab-term" class="internalDFN" data-link-type="dfn">Vocabulary Term</a> <code>basic</code> (i.e.,
           <code>"scheme": "basic"</code>), using an unencrypted
-          username and password. This scheme should be used with
-          some other security mechanism providing confidentiality,
-          for example, TLS.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-name--BasicSecurityScheme"><td><code>name</code></td><td>Name for query, header, cookie, or uri
+          username and password.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-name--BasicSecurityScheme"><td><code>name</code></td><td>Name for query, header, cookie, or uri
                parameters.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-in--BasicSecurityScheme"><td><code>in</code></td><td>Specifies the location of security
             authentication information.  </td><td><a href="#sec-default-values">with default</a></td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>header</code>, <code>query</code>, <code>body</code>, <code>cookie</code>, or <code>auto</code>)</td></tr></tbody></table></section>
@@ -5237,7 +5258,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   Finally, new security schemes that are not included in <a href="#sec-security-vocabulary-definition"></a>
   can be imported using the <a>TD Context Extension</a> mechanism.
   This example uses a fictional ACE security scheme
-  based on [[?ACE-OAuth]] that is, for this example,
+  based on [[?RFC9200]] that is, for this example,
   defined by the namespace at <code>http://www.example.org/ace-security#</code>.
     <span class="rfc2119-assertion" 
       id="td-security-extension">
@@ -5729,480 +5750,6 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 </section>
 
 </section> <!-- end of id="behavior"-->
-
-
-<section id="sec-security-consideration">
-  <h4>Security Considerations</h4>
-  <p>
-  In general the security measures taken to protect a WoT 
-  system will depend on the threats and attackers that system
-  may face and the value of the assets that need to be protected.
-  A detailed discussion of security (and privacy) considerations for the Web of Things,
-  including a threat model that can be adapted to various circumstances, is
-  presented in the informative document [[WOT-SECURITY-GUIDELINES]].  
-  Many WoT Things are similar to and use the same technologies as web services.
-  In addition to the specific security considerations below,
-  the security risks and mitigations discussed in
-  guides such as the OWASP Top 10 [[OWASP-Top-10]] for web services should be
-  evaluated, and if applicable, addressed.
-  This section discusses only security risks
-  and possible mitigations directly relevant to the WoT Thing Description.
-  </p>
-  <p>A WoT Thing Description can describe both secure and 
-  insecure network interfaces.  When a Thing Description is 
-  retro-fitted to an existing network interface, no change in the 
-  security status of the network interface is to be expected.
-  </p>
-  <p>The use of a WoT Thing Description introduces  
-  the security risks given in the following sections.
-  After each risk, we suggest some possible mitigations.
-  </p>
-   <section id="sec-security-consideration-TD-tampering">
-   <h5>TD Interception and Tampering</h5>
-      <p>Intercepting and tampering with TDs can be used to launch man-in-the-middle attacks,
-      for example by rewriting URLs in TDs to redirect accesses to a malicious 
-      intermediary that can capture or manipulate data.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-	  <span class="rfc2119-assertion" id="security-mutual-auth-td">
-          Thing Descriptions SHOULD be obtained only through
-          mutually authenticated secure channels.
-	  </span>
-          Mutual authentication
-	  ensures that the <a>Consumer</a> and the TD provider are both sure of the
-          identity of the other party to the communication.
-	  However, mutual authentication also can be used to identify the 
-	  Consumer, which may be undesirable in some cases (privacy risk).
-	  <span class="rfc2119-assertion" id="security-server-auth-td">
-	  In cases where the Consumer is associated
-	  with a person, e.g. browsers, TDs MAY be obtained
-	  through a channel where only the TD provider is authenticated.
-	  </span>
-      </dd></dl>
-   </section>
-   <section id="sec-security-consideration-context-tampering">
-   <h5>Context Interception and Tampering</h5>
-      <p>Intercepting and tampering with context definition
-      files can be used to facilitate attacks
-      by modifying the interpretation of vocabulary. 
-      Context extensions 
-      (see <a href="#sec-context-extensions"></a>)
-      that are loaded from the Web over non-secure connections,
-      such as HTTP, run the risk of being altered by an attacker, and
-      may modify the <a>TD Information Model</a> in ways that could
-      compromise security.
-      </p>
-      <p>
-      As recommended in 
-      <a href="#sec-privacy-consideration-context"></a>, 
-      on constrained implementations 
-      context definition files should be pre-installed and managed
-      using a secure software
-      update process and the context URLs only used to identify
-      known contexts, not to fetch them.
-      This consideration therefore applies only when fetching context definition
-      files dynamically is otherwise unavoidable, for example in a directory
-      service supporting general semantic processing.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-	      Ideally context definition files would only be obtained through secure
-	      channels established by mutual authentication
-	      but it is notable (and unfortunate) that many contexts are indicated using
-	      "plain" HTTP URLs.  
-	      However, the HTTP protocol is vulnerable to interception and modification if 
-	      used without first establishing a secure transport channel using TLS. 
-	      <span class="rfc2119-assertion" id="security-context-secure-fetch">
-	      If it is necessary to fetch a context definition file,
-	      an implementation SHOULD first attempt to use HTTP over TLS 
-	      even when only an HTTP URL is given.
-	      </span>
-      </dd></dl>
-   </section>
-   <section id="security-consideration-access-duration">
-      <h5>Limited Duration Accesses</h5>
-      <p>
-      In some scenarios,
-      it may be desirable to limit the scope and duration of
-      access to a set of Things by some users.
-      For example, if A is visiting B's house, B may
-      want to provide A with temporary and limited access to the garage door opener and
-      car charger so A can use them.
-      The scope however may be limited so that A cannot access
-      certain administrative functions of these Things (for example, to change how long
-      the garage door can remain open, or to change the charging rate).
-      In addition, the access should expire after A is expected to have left,
-      e.g. after one week.
-      </p>
-      <dl>
-	<dt>Mitigations:</dt>
-	<dd>
-	<span class="rfc2119-assertion" id="security-oauth-limits">
-	To limit the scope and duration of access to Things, tokens SHOULD
-	be used to manage access.
-	</span>
-	Note that this includes mechanisms such as OAuth2, which provide
-	for token generation flows where verifying the authentication and 
-	authorization of a user is handled by a separate token provider 
-	service.
-	Token provider services (which could be managed directly 
-	by the Thing's administrator if
-	appropriate or desired for privacy) can
-	provide limited duration tokens and use scopes to limit access.
-	Scopes can limit access to specific interactions but
-	are not sufficient to limit duration.
-	See [[?ACE-OAuth]].
-	<p class="ednote" title="RFC9200">
-	Upgrade informative ACE-OAuth citation to normative RFC9200 citation if it 
-	passes.
-	</p>
-	</dd>
-     </dl>
-   </section>
-   <section id="sec-security-consideration-vulnerability-auditing">
-   <h5>Vulnerability Auditing</h5>
-      <p>An attacker with access to a set of TDs, for example those returned by
-      WoT Discovery, may be able to use this information to identify vulnerable devices
-      and plan attacks on them.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-	      Deployers of IoT systems can use the same information to audit their IoT systems
-	      and ensure that vulnerable systems are adequately protected (if necessary
-	      by external means such as transport security and/or segmented networks) or hardened.
-	      It is also possible to not make the TDs for known-vulnerable systems available
-	      via discovery.  This is, however, not a recommended
-	      approach since security by obscurity is a poor defence: an attacker can still
-	      discover the system by other means, even if the TD has limited distribution.
-	      The definition of "vulnerable" however depends on the context 
-	      in which the information is made available, and to whom it is made available to.
-	      Ideally, only those with the rights to access the Things
-	      described by TDs should get access to those TDs.
-	      <span class="rfc2119-assertion" id="sec-vuln-auto">
-	      The <code>auto</code> security scheme MAY be used if vulnerability
-	      scanning is a concern.</span>
-      </dd></dl>
-   </section>
-   <section id="sec-security-consideration-script-injection">
-   <h5>Script Injection</h5>
-   <p>Many strings given in TDs, in particular the values carried in 
-      <code>title</code>/<code>titles</code>
-      and 
-      <code>description</code>/<code>descriptions</code>, 
-      are meant to be human-readable.  
-      An application may take
-      such strings and use them to generate a user interface, 
-      for example, a web dashboard listing a set of
-      available Things with their titles and descriptions. 
-      If such an interface is naively generated using
-      string substitution, for example inserting the values of these strings into
-      marked places in a HTML template to create final HTML, any HTML 
-      markup in the original string will be interpreted in the context
-      of the browser displaying the dashboard.  
-      It is possible for an attacker to embed scripts in HTML in
-      various ways and have these scripts executed upon user interaction or even automatically (e.g. upon
-      page load, or upon an error, which can be done intentionally).  
-      Since the string will be 
-      generated by the TD producer and the dashboard will be generated by a different origin,
-      this is a form of cross-site-scripting (XSS) attack.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-	      Strings sourced from TDs should be treated like any other source of external string
-	      when generating HTML: with care. 
-	      <span class="rfc2119-assertion" id="sec-inj-sanitize">
-		      Strings sourced from TDs MUST either be sanitized using a carefully vetted HTML
-	      sanitizer that disables any markup or should be inserted into an HTML template using
-	      DOM node manipulation APIs that will escape any markup.
-	      </span>
-	      It is also possible that strings sourced from TDs could be used to generate documents
-	      in other markup languages, such as MD files or XML.  
-	      Such usages should take equivalent
-	      precautions to ensure that string values are sanitized before insertion in a template.
-	      Unfortunately such sanitization also will disable any HTML markup included for
-	      internationalization purposes, 
-	      for example to set the initial direction of text rendering in 
-	      bidirectional text.  
-	      <span class="rfc2119-assertion" id="sec-inj-no-intl-markup">
-	      HTML markup SHOULD NOT be used for internationalization purposes in TD strings.
-	      </span>
-
-      </dd></dl>
-   </section>
-   <section id="sec-security-consideration-execution">
-      <h5>JSON Parsing</h5>
-      <p>
-      See <a href="https://tools.ietf.org/html/rfc8259#section-12">RFC&nbsp;8259, section 12</a>: JSON should not be parsed as JavaScript using <code>eval()</code>.
-      A WoT Thing Description is intended to be a pure data exchange format for
-      <a>Thing</a> metadata, not for holding executable content.
-      An (invalid) TD may, however, contain JavaScript code that,
-      when executed, could have side effects compromising the security of a system.
-      <dl>
-	<dt>Mitigation:</dt>
-	<dd><span class="rfc2119-assertion" id="security-no-execution">
-        A WoT Thing Description JSON-LD serialization MUST NOT be passed through a
-        code execution mechanism such as JavaScript's <code>eval()</code>
-        function to be parsed.
-	</span></dd>
-     </dl>
-     <p class="ednote" title="Other Injection Risks">
-     There are additional code injection risks discussed in
-     [[WOT-DISCOVERY]]. Other strings in TDs, such as the values given for
-     <code>title</code> and <code>description</code>, should be sanitized before being
-     used in templates for SQL, HTML, or other executable contexts.
-     This risk, however, is specifically about the Javascript injection risk
-     when parsing JSON.
-     </p>
-  </section>
-   <section id="sec-security-consideration-jsonld-expansion">
-      <h5>JSON-LD Expansion</h5>
-      <p>
-      JSON-LD processing usually includes the replacement of short terms with
-      longer IRIs [[RFC3987]].
-      For this reason, WoT Thing Descriptions may expand considerably when processed using
-      a JSON-LD 1.1 processor and, in the worst case, the resulting data
-      might consume all of the recipient's resources or cause an exploitable
-      buffer overflow.
-      <dl>
-	<dt>Mitigation:</dt>
-	<dd>
-          <span class="rfc2119-assertion" id="security-jsonld-expansion">
-          <a>Consumers</a> SHOULD 
-	  set and enforce limits on
-	  memory usage to prevent buffer overflow and resource exhaustion
-	  during JSON-LD processing.
-          </span>
-        </dd>
-     </dl>
-  </section>
-</section>
-<section id="sec-privacy-consideration">
-  <h4>Privacy Considerations</h4>
-  <p>
-  Privacy risks will depend on the association of 
-  Things with identifiable people and both the direct information and 
-  the inferred information available from such an association.
-  A detailed discussion of privacy (and security) considerations for the Web of Things,
-  including a threat model that can be adapted to various circumstances, is
-  presented in the informative document [[WOT-SECURITY-GUIDELINES]].  
-  This section discusses only privacy risks
-  and possible mitigations directly relevant to the WoT Thing Description.
-  </p>
-  <p>The use of a WoT Thing Description introduces  
-  the privacy risks given in the following sections.
-  After each risk, we suggest some possible mitigations.
-  </p>
-  <section id="sec-privacy-consideration-context">
-  <h5>Context Fetching</h5>
-        <p>
-          WoT Thing Descriptions can be evaluated with a 
-	  JSON-LD 1.1 processor [[json-ld11]],
-          which typically follows links to remote contexts (i.e., TD context
-          extensions, see <a href="#sec-context-extensions"></a>)
-          automatically, resulting in the transfer of files
-          without the explicit request of the <a>Consumer</a> for each one. 
-	  If remote
-          contexts are served by third parties, it may allow them to gather
-          usage patterns or similar information leading to disclosure
-	  of private information, or information that can be used to infer
-	  private information.
-          In the case of the WoT, an attacker can also observe the network
-          traffic produced by such fetches and can use the metadata
-          of the fetch, such as the destination IP address,
-          to infer information about the device, 
-	  especially if domain-specific vocabularies are used.  
-	  This is a risk even if the connection
-          is encrypted, and is related to DNS privacy leaks.
-	  See also <a href="#sec-security-consideration-context-tampering"></a>,
-	  which is a related security risk which can also be avoided with the
-	  following mitigations.
-      <dl>
-	<dt>Mitigation:</dt>
-	<dd>
-          Implementations on resource-constrained devices are expected
-          to perform raw JSON processing (as opposed to JSON-LD processing)
-	  and support only a limited set of domain-specific extensions.
-	  The set of supported extensions can be established by a 
-	  WoT Profile [[WOT-PROFILE]], for example.
-	  <span class="rfc2119-assertion" id="security-static-context">
-          Constrained implementations SHOULD use statically managed and vetted
-          versions of their supported context extensions. 
-          </span>
-	  <span class="rfc2119-assertion" id="security-remote-context">
-          Constrained implementations SHOULD NOT follow links to remote contexts.
-	  </span>
-	  In this case the URLs are used only to identify extensions,
-	  not to fetch their definitions.
-	  <span class="rfc2119-assertion" id="security-update-contexts">
-          Supported context extensions on constrained implementations MAY be managed
-          through secure software update mechanisms.
-	  </span>
-        </dd>
-     </dl>
-   </section>
-   <section id="sec-privacy-consideration-id">
-   <h5>Immutable Identifiers</h5>
-      <p>A Thing Description containing an identifier (<code>id</code>) may
-         describe a Thing that is associated with an identifiable
-         person.  Such identifiers pose various risks including tracking.
-         However, if the identifier is also immutable, then the 
-         tracking risk is amplified, since a device
-         may be sold or given to another person and the known ID used to 
-         track that person.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-	  <span class="rfc2119-assertion" id="privacy-mutable-identifiers">
-          All identifiers used in a TD SHOULD be mutable,
-          and in particular there should be a mechanism to update the <code>id</code>
-          of a <a>Thing</a> when necessary.
-	  </span>
-          Specifically,
-          the <code>id</code> of a <a>Thing</a> should not be fixed in hardware.
-          This does, however, conflict with the Linked Data ideal that
-          identifiers are fixed URIs.  
-	  In many circumstances it
-          will be acceptable to only allow updates to identifiers if
-          a <a>Thing</a> is reinitialized.  In this case as a software entity the
-          old <a>Thing</a> ceases to exist and a new <a>Thing</a> is created.
-          This can be sufficient to break a tracking chain when, for
-          example, a device is sold to a new owner.
-          Alternatively, if more frequent changes are desired during 
-          the operational phase of a device,
-          a mechanism can be put into place to notify only authorized users
-          of the change in identifier when a change is made.
-          Note however that some classes of devices, e.g., medical devices,
-          may require immutable IDs by law in some jurisdictions.
-          In this case extra attention should be paid to secure 
-          access to files, such as Thing Descriptions, containing such
-          immutable identifiers.  
-	  It may also be desirable to not share
-          the "true" immutable identifier in such a case in the TD whenever possible.
-          </dd></dl>
-      </p>
-   </section>
-   <section id="sec-privacy-consideration-fingerprint">
-   <h5>Fingerprinting</h5>
-      <p>As noted above, the <code>id</code> member in a TD can pose a privacy risk.  
-      However, even if the <code>id</code> is updated as described to mitigate its
-      tracking risk, it may still be possible to associate
-      a TD with a particular physical device, and from there to an identifiable person, 
-      through fingerprinting.
-      </p>
-      <p>Even if a specific device instance cannot be identified through fingerprinting,
-      it may be possible to infer the type of a device from the information in the TD, such
-      as the set of interactions, and use this type to infer private information about an
-      identifiable person, such as a medical condition.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-	  <span class="rfc2119-assertion" id="privacy-auth-users-only">
-          Only authorized users SHOULD be provided access
-          to the Thing Description for a <a>Thing</a>.
-	  </span>
-	  <span class="rfc2119-assertion" id="privacy-essential-metadata-only">
-	  Only the amount of
-          information needed for the level of authorization and the use case 
-	  SHOULD be provided in a TD.
-	  </span>
-          If the TD is only distributed to authorized users 
-          through secure and confidential channels, for
-          example through a directory service that requires authentication,
-          then external unauthorized parties will not have access to the TD to fingerprint it.
-          To further mitigate this risk, information not necessary for a particular
-          use case of a TD should be omitted whenever possible.  For example,
-          for an ad-hoc connection to a device where the Consumer does 
-          not store state about the Thing, the <code>id</code> can be omitted.
-          If the Consumer does not need certain interactions for its use case, 
-	  they can be omitted.
-          If the Consumer is not authorized to use certain interactions, 
-	  they can likewise be omitted.
-	  <!-- we don't have any mechanism to support this; a "null" language 
-	   negotiation might be suitable.
-          If the Consumer does not have any capability to display human-readable information
-          such as titles or descriptions, 
-	  they can be omitted or replaced with zero-length strings.
-	  -->
-      </dd></dl>
-   </section>
-   <section id="sec-privacy-consideration-id-metadata">
-   <h5>ID Metadata</h5>
-      <p>The value of the <code>id</code> field of a TD might become available to 
-      entities that do not have access to the full TD.  If the value of the <code>id</code>
-      contains embedded metadata, such as the type of the device or the owner, this 
-      could be used to infer personal information.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-	  <span class="rfc2119-assertion" id="privacy-id-metadata">
-	  The value of the <code>id</code> of a TD SHOULD NOT contain metadata
-	  describing the Thing or from the TD itself.
-	  </span>
-	  <span class="rfc2119-assertion" id="privacy-temp-id-metadata">
-          Any temporary ID generated to manage TDs, for example an ID for a database 
-	  or directory service, SHOULD NOT contain metadata 
-	  describing the Thing or from the TD itself.
-	  </span>
-	  Using random UUIDs as recommended in 
-	  <a href="#sec-privacy-consideration-global-id-risk"></a> also mitigates this
-	  risk.
-      </dd></dl>
-   </section>
-   <section id="sec-privacy-consideration-global-id-risk">
-   <h5>Globally Unique Identifiers</h5>
-      <p>Globally unique identifiers pose a privacy risk if a centralized authority is needed to
-      create and distribute them, since then a third party has knowledge of the identifiers.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-          The <code>id</code> field in TDs is intentionally not required to be globally unique.
-          There are several cryptographic mechanisms (e.g. random UUIDs) available to generate suitable IDs in a 
-          distributed fashion that do
-          not require a central registry.  These mechanisms typically have a very low probability
-          of generating duplicate identifiers, and this needs to be taken into account in the system
-          design; for example, by detecting duplicates and regenerating IDs when necessary.
-          The scope of IDs also does not need to be global: it is acceptable to use identifiers
-          that only distinguish Things in a certain context, such as within a home or factory.
-	  <span class="rfc2119-assertion" id="privacy-distributed-ids">
-          TD identifiers SHOULD be generated using a distributed mechanism such as UUIDs
-	  that provides a high probability of uniqueness.
-	  </span>
-	  <span class="rfc2119-assertion" id="privacy-centralized-ids">
-          TD identifiers SHOULD NOT be generated using a centralized authority.
-	  </span>
-      </dd></dl>
-   </section>
-   <section id="sec-privacy-consideration-inferencing">
-   <h5>Inferencing of Personally Identifiable Information</h5>
-      <p>In many locales, in order to protect the privacy of users,
-      there are legal requirements for the handling of
-      personally identifiable information,
-      that is,
-      information that can be associated with a particular person.
-      Such information can of course be generated by IoT devices directly.
-      However,
-      the existence and metadata of IoT devices
-      (the kind of data stored in a Thing Description)
-      can also contain or be used to infer personally identifiable information.
-      This information can be as simple as the fact that a certain person owns a certain
-      type of device,
-      which can lead to additional inferences about that person.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-	  <span class="rfc2119-assertion" id="privacy-td-pii">
-          A Thing Description associated with a 
-	  personal device SHOULD be treated as if it contained
-	  personally identifiable information, even if this information is not explicit.
-	  </span>
-          As an example application of this principle,
-          consider how to obtain user consent.  
-          Consent for usage of personally identifiable data
-          generated by a <a>Thing</a> is often obtained when a <a>Thing</a> is paired with system
-          consuming the data,
-          which is frequently also when the Thing Description
-          is registered with a local directory or the system consuming the 
-          Thing Description in order to access the device.
-          In this case, consent for using data from a <a>Thing</a> can be combined with
-          consent for accessing the Thing Description of the <a>Thing</a>.
-          As a second example, if we consider a TD to contain personally
-          identifiable information, then it should not be retained indefinitely
-          or used for purposes other than those for which consent was given.
-      </dd></dl>
-   </section>
-</section>
 
 <section id="thing-model" class="normative">
   <h1>Thing Model</h1>
@@ -7291,6 +6838,483 @@ instance.
     </pre>
   </section>
 </section>
+
+<section id="sec-security-consideration">
+  <h4>Security Considerations</h4>
+  <p>
+  In general the security measures taken to protect a WoT 
+  system will depend on the threats and attackers that system
+  may face and the value of the assets that need to be protected.
+  A detailed discussion of security (and privacy) considerations for the Web of Things,
+  including a threat model that can be adapted to various circumstances, is
+  presented in the informative document [[WOT-SECURITY-GUIDELINES]].  
+  Many WoT Things are similar to and use the same technologies as web services.
+  In addition to the specific security considerations below,
+  the security risks and mitigations discussed in
+  guides such as the OWASP Top 10 [[OWASP-Top-10]] for web services should be
+  evaluated, and if applicable, addressed.
+  This section discusses only security risks
+  and possible mitigations directly relevant to the WoT Thing Description.
+  </p>
+  <p>A WoT Thing Description can describe both secure and 
+  insecure network interfaces.  When a Thing Description is 
+  retro-fitted to an existing network interface, no change in the 
+  security status of the network interface is to be expected.
+  </p>
+  <p>The use of a WoT Thing Description introduces  
+  the security risks given in the following sections.
+  After each risk, we suggest some possible mitigations.
+  </p>
+   <section id="sec-security-consideration-TD-tampering">
+   <h5>TD Interception and Tampering</h5>
+      <p>Intercepting and tampering with TDs can be used to launch man-in-the-middle attacks,
+      for example by rewriting URLs in TDs to redirect accesses to a malicious 
+      intermediary that can capture or manipulate data.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+	  <span class="rfc2119-assertion" id="security-mutual-auth-td">
+          Thing Descriptions SHOULD be obtained only through
+          mutually authenticated secure channels.
+	  </span>
+          Mutual authentication
+	  ensures that the <a>Consumer</a> and the TD provider are both sure of the
+          identity of the other party to the communication.
+	  However, mutual authentication also can be used to identify the 
+	  Consumer, which may be undesirable in some cases (privacy risk).
+	  <span class="rfc2119-assertion" id="security-server-auth-td">
+	  In cases where the Consumer is associated
+	  with a person, e.g. browsers, TDs MAY be obtained
+	  through a channel where only the TD provider is authenticated.
+	  </span>
+      </dd></dl>
+   </section>
+   <section id="sec-security-consideration-context-tampering">
+   <h5>Context Interception and Tampering</h5>
+      <p>Intercepting and tampering with context definition
+      files can be used to facilitate attacks
+      by modifying the interpretation of vocabulary. 
+      Context extensions 
+      (see <a href="#sec-context-extensions"></a>)
+      that are loaded from the Web over non-secure connections,
+      such as HTTP, run the risk of being altered by an attacker, and
+      may modify the <a>TD Information Model</a> in ways that could
+      compromise security.
+      </p>
+      <p>
+      As recommended in 
+      <a href="#sec-privacy-consideration-context"></a>, 
+      on constrained implementations 
+      context definition files should be pre-installed and managed
+      using a secure software
+      update process and the context URLs only used to identify
+      known contexts, not to fetch them.
+      This consideration therefore applies only when fetching context definition
+      files dynamically is otherwise unavoidable, for example in a directory
+      service supporting general semantic processing.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+	      Ideally context definition files would only be obtained through secure
+	      channels established by mutual authentication
+	      but it is notable (and unfortunate) that many contexts are indicated using
+	      "plain" HTTP URLs.  
+	      However, the HTTP protocol is vulnerable to interception and modification if 
+	      used without first establishing a secure transport channel using TLS. 
+	      <span class="rfc2119-assertion" id="security-context-secure-fetch">
+	      If it is necessary to fetch a context definition file,
+	      an implementation SHOULD first attempt to use HTTP over TLS 
+	      even when only an HTTP URL is given.
+	      </span>
+      </dd></dl>
+   </section>
+   <section id="security-consideration-access-duration">
+      <h5>Limited Duration Accesses</h5>
+      <p>
+      In some scenarios,
+      it may be desirable to limit the scope and duration of
+      access to a set of Things by some users.
+      For example, if A is visiting B's house, B may
+      want to provide A with temporary and limited access to the garage door opener and
+      car charger so A can use them.
+      The scope however may be limited so that A cannot access
+      certain administrative functions of these Things (for example, to change how long
+      the garage door can remain open, or to change the charging rate).
+      In addition, the access should expire after A is expected to have left,
+      e.g. after one week.
+      </p>
+      <dl>
+	<dt>Mitigations:</dt>
+	<dd>
+	<span class="rfc2119-assertion" id="security-oauth-limits">
+	To limit the scope and duration of access to Things, tokens SHOULD
+	be used to manage access.
+	</span>
+	Note that this includes mechanisms such as OAuth2, which provide
+	for token generation flows where verifying the authentication and 
+	authorization of a user is handled by a separate token provider 
+	service.
+	Token provider services (which could be managed directly 
+	by the Thing's administrator if
+	appropriate or desired for privacy) can
+	provide limited duration tokens and use scopes to limit access.
+	Scopes can limit access to specific interactions but
+	are not sufficient to limit duration.
+	See [[?RFC9200]].
+	</dd>
+     </dl>
+   </section>
+   <section id="sec-security-consideration-vulnerability-auditing">
+   <h5>Vulnerability Auditing</h5>
+      <p>An attacker with access to a set of TDs, for example those returned by
+      WoT Discovery, may be able to use this information to identify vulnerable devices
+      and plan attacks on them.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+	      Deployers of IoT systems can use the same information to audit their IoT systems
+	      and ensure that vulnerable systems are adequately protected (if necessary
+	      by external means such as transport security and/or segmented networks) or hardened.
+	      It is also possible to not make the TDs for known-vulnerable systems available
+	      via discovery.  This is, however, not a recommended
+	      approach since security by obscurity is a poor defence: an attacker can still
+	      discover the system by other means, even if the TD has limited distribution.
+	      The definition of "vulnerable" however depends on the context 
+	      in which the information is made available, and to whom it is made available to.
+	      Ideally, only those with the rights to access the Things
+	      described by TDs should get access to those TDs.
+	      <span class="rfc2119-assertion" id="sec-vuln-auto">
+	      The <code>auto</code> security scheme MAY be used if vulnerability
+	      scanning is a concern.</span>
+      </dd></dl>
+   </section>
+   <section id="sec-security-consideration-script-injection">
+   <h5>Script Injection</h5>
+   <p>Many strings given in TDs, in particular the values carried in 
+      <code>title</code>/<code>titles</code>
+      and 
+      <code>description</code>/<code>descriptions</code>, 
+      are meant to be human-readable.  
+      An application may take
+      such strings and use them to generate a user interface, 
+      for example, a web dashboard listing a set of
+      available Things with their titles and descriptions. 
+      If such an interface is naively generated using
+      string substitution, for example inserting the values of these strings into
+      marked places in a HTML template to create final HTML, any HTML 
+      markup in the original string will be interpreted in the context
+      of the browser displaying the dashboard.  
+      It is possible for an attacker to embed scripts in HTML in
+      various ways and have these scripts executed upon user interaction or even automatically (e.g. upon
+      page load, or upon an error, which can be done intentionally).  
+      Since the string will be 
+      generated by the TD producer and the dashboard will be generated by a different origin,
+      this is a form of cross-site-scripting (XSS) attack.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+	      Strings sourced from TDs should be treated like any other source of external string
+	      when generating HTML: with care. 
+	      <span class="rfc2119-assertion" id="sec-inj-sanitize">
+		      Strings sourced from TDs MUST either be sanitized using a carefully vetted HTML
+	      sanitizer that disables any markup or should be inserted into an HTML template using
+	      DOM node manipulation APIs that will escape any markup.
+	      </span>
+	      It is also possible that strings sourced from TDs could be used to generate documents
+	      in other markup languages, such as MD files or XML.  
+	      Such usages should take equivalent
+	      precautions to ensure that string values are sanitized before insertion in a template.
+	      Unfortunately such sanitization also will disable any HTML markup included for
+	      internationalization purposes, 
+	      for example to set the initial direction of text rendering in 
+	      bidirectional text.  
+	      <span class="rfc2119-assertion" id="sec-inj-no-intl-markup">
+	      HTML markup SHOULD NOT be used for internationalization purposes in TD strings.
+	      </span>
+
+      </dd></dl>
+   </section>
+   <section id="sec-security-consideration-execution">
+      <h5>JSON Parsing</h5>
+      <p>
+      See <a href="https://tools.ietf.org/html/rfc8259#section-12">RFC&nbsp;8259, section 12</a>: JSON should not be parsed as JavaScript using <code>eval()</code>.
+      A WoT Thing Description is intended to be a pure data exchange format for
+      <a>Thing</a> metadata, not for holding executable content.
+      An (invalid) TD may, however, contain JavaScript code that,
+      when executed, could have side effects compromising the security of a system.
+      <dl>
+	<dt>Mitigation:</dt>
+	<dd><span class="rfc2119-assertion" id="security-no-execution">
+        A WoT Thing Description JSON-LD serialization MUST NOT be passed through a
+        code execution mechanism such as JavaScript's <code>eval()</code>
+        function to be parsed.
+	</span></dd>
+     </dl>
+     <p class="ednote" title="Other Injection Risks">
+     There are additional code injection risks discussed in
+     [[WOT-DISCOVERY]]. Other strings in TDs, such as the values given for
+     <code>title</code> and <code>description</code>, should be sanitized before being
+     used in templates for SQL, HTML, or other executable contexts.
+     This risk, however, is specifically about the Javascript injection risk
+     when parsing JSON.
+     </p>
+  </section>
+   <section id="sec-security-consideration-jsonld-expansion">
+      <h5>JSON-LD Expansion</h5>
+      <p>
+      JSON-LD processing usually includes the replacement of short terms with
+      longer IRIs [[RFC3987]].
+      For this reason, WoT Thing Descriptions may expand considerably when processed using
+      a JSON-LD 1.1 processor and, in the worst case, the resulting data
+      might consume all of the recipient's resources or cause an exploitable
+      buffer overflow.
+      <dl>
+	<dt>Mitigation:</dt>
+	<dd>
+          <span class="rfc2119-assertion" id="security-jsonld-expansion">
+          <a>Consumers</a> SHOULD 
+	  set and enforce limits on
+	  memory usage to prevent buffer overflow and resource exhaustion
+	  during JSON-LD processing.
+          </span>
+        </dd>
+     </dl>
+  </section>
+</section>
+<section id="sec-privacy-consideration">
+  <h4>Privacy Considerations</h4>
+  <p>
+  Privacy risks will depend on the association of 
+  Things with identifiable people and both the direct information and 
+  the inferred information available from such an association.
+  A detailed discussion of privacy (and security) considerations for the Web of Things,
+  including a threat model that can be adapted to various circumstances, is
+  presented in the informative document [[WOT-SECURITY-GUIDELINES]].  
+  This section discusses only privacy risks
+  and possible mitigations directly relevant to the WoT Thing Description.
+  </p>
+  <p>The use of a WoT Thing Description introduces  
+  the privacy risks given in the following sections.
+  After each risk, we suggest some possible mitigations.
+  </p>
+  <section id="sec-privacy-consideration-context">
+  <h5>Context Fetching</h5>
+        <p>
+          WoT Thing Descriptions can be evaluated with a 
+	  JSON-LD 1.1 processor [[json-ld11]],
+          which typically follows links to remote contexts (i.e., TD context
+          extensions, see <a href="#sec-context-extensions"></a>)
+          automatically, resulting in the transfer of files
+          without the explicit request of the <a>Consumer</a> for each one. 
+	  If remote
+          contexts are served by third parties, it may allow them to gather
+          usage patterns or similar information leading to disclosure
+	  of private information, or information that can be used to infer
+	  private information.
+          In the case of the WoT, an attacker can also observe the network
+          traffic produced by such fetches and can use the metadata
+          of the fetch, such as the destination IP address,
+          to infer information about the device, 
+	  especially if domain-specific vocabularies are used.  
+	  This is a risk even if the connection
+          is encrypted, and is related to DNS privacy leaks.
+	  See also <a href="#sec-security-consideration-context-tampering"></a>,
+	  which is a related security risk which can also be avoided with the
+	  following mitigations.
+      <dl>
+	<dt>Mitigation:</dt>
+	<dd>
+          Implementations on resource-constrained devices are expected
+          to perform raw JSON processing (as opposed to JSON-LD processing)
+	  and support only a limited set of domain-specific extensions.
+	  The set of supported extensions can be established by a 
+	  WoT Profile [[WOT-PROFILE]], for example.
+	  <span class="rfc2119-assertion" id="security-static-context">
+          Constrained implementations SHOULD use statically managed and vetted
+          versions of their supported context extensions. 
+          </span>
+	  <span class="rfc2119-assertion" id="security-remote-context">
+          Constrained implementations SHOULD NOT follow links to remote contexts.
+	  </span>
+	  In this case the URLs are used only to identify extensions,
+	  not to fetch their definitions.
+	  <span class="rfc2119-assertion" id="security-update-contexts">
+          Supported context extensions on constrained implementations MAY be managed
+          through secure software update mechanisms.
+	  </span>
+        </dd>
+     </dl>
+   </section>
+   <section id="sec-privacy-consideration-id">
+   <h5>Immutable Identifiers</h5>
+      <p>A Thing Description containing an identifier (<code>id</code>) may
+         describe a Thing that is associated with an identifiable
+         person.  Such identifiers pose various risks including tracking.
+         However, if the identifier is also immutable, then the 
+         tracking risk is amplified, since a device
+         may be sold or given to another person and the known ID used to 
+         track that person.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+	  <span class="rfc2119-assertion" id="privacy-mutable-identifiers">
+          All identifiers used in a TD SHOULD be mutable,
+          and in particular there should be a mechanism to update the <code>id</code>
+          of a <a>Thing</a> when necessary.
+	  </span>
+          Specifically,
+          the <code>id</code> of a <a>Thing</a> should not be fixed in hardware.
+          This does, however, conflict with the Linked Data ideal that
+          identifiers are fixed URIs.  
+          However,
+          <span class="rfc2119-assertion" id="privacy-mutable-id-ownership">TD 
+          identifiers SHOULD be updated upon major changes in configuration
+          or reinitialization.</span>
+          Examples of major changes in configuration include moving a Thing to a new
+          local area network, assigning a new domain name,
+          or unregistering the Thing from one hub and registering it with a new
+          one.  Generally, changes in configuration indicating a potential change
+          in ownership should result in a new identifier being created.
+          If more frequent changes are desired during 
+          the operational phase of a device,
+          a mechanism can be put into place to notify only authorized users
+          of the change in identifier when a change is made.
+          Note however that some classes of devices, e.g., medical devices,
+          may require immutable IDs by law in some jurisdictions.
+          <span class="rfc2119-assertion" id="privacy-immutable-id-as-property">
+          Ideally, any required immutable identifiers SHOULD only be 
+          made available via affordances, such as a property, whose value can
+          only be obtained after appropriate authentication and
+          authorization, and managed separately from the TD identifier.</span>
+          If it is necessary to use an immutable identifier as the TD identifier, 
+          extra attention should be paid to secure 
+          access to files, such as Thing Descriptions, containing such
+          immutable identifiers.  
+          </dd></dl>
+      </p>
+   </section>
+   <section id="sec-privacy-consideration-fingerprint">
+   <h5>Fingerprinting</h5>
+      <p>As noted above, the <code>id</code> member in a TD can pose a privacy risk.  
+      However, even if the <code>id</code> is updated as described to mitigate its
+      tracking risk, it may still be possible to associate
+      a TD with a particular physical device, and from there to an identifiable person, 
+      through fingerprinting.
+      </p>
+      <p>Even if a specific device instance cannot be identified through fingerprinting,
+      it may be possible to infer the type of a device from the information in the TD, such
+      as the set of interactions, and use this type to infer private information about an
+      identifiable person, such as a medical condition.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+	  <span class="rfc2119-assertion" id="privacy-auth-users-only">
+          Only authorized users SHOULD be provided access
+          to the Thing Description for a <a>Thing</a>.
+	  </span>
+	  <span class="rfc2119-assertion" id="privacy-essential-metadata-only">
+	  Only the amount of
+          information needed for the level of authorization and the use case 
+	  SHOULD be provided in a TD.
+	  </span>
+          If the TD is only distributed to authorized users 
+          through secure and confidential channels, for
+          example through a directory service that requires authentication,
+          then external unauthorized parties will not have access to the TD to fingerprint it.
+          To further mitigate this risk, information not necessary for a particular
+          use case of a TD should be omitted whenever possible.  For example,
+          for an ad-hoc connection to a device where the Consumer does 
+          not store state about the Thing, the <code>id</code> can be omitted.
+          If the Consumer does not need certain interactions for its use case, 
+	  they can be omitted.
+          If the Consumer is not authorized to use certain interactions, 
+	  they can likewise be omitted.
+	  <!-- we don't have any mechanism to support this; a "null" language 
+	   negotiation might be suitable.
+          If the Consumer does not have any capability to display human-readable information
+          such as titles or descriptions, 
+	  they can be omitted or replaced with zero-length strings.
+	  -->
+      </dd></dl>
+   </section>
+   <section id="sec-privacy-consideration-id-metadata">
+   <h5>ID Metadata</h5>
+      <p>The value of the <code>id</code> field of a TD might become available to 
+      entities that do not have access to the full TD.  If the value of the <code>id</code>
+      contains embedded metadata, such as the type of the device or the owner, this 
+      could be used to infer personal information.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+	  <span class="rfc2119-assertion" id="privacy-id-metadata">
+	  The value of the <code>id</code> of a TD SHOULD NOT contain metadata
+	  describing the Thing or from the TD itself.
+	  </span>
+	  <span class="rfc2119-assertion" id="privacy-temp-id-metadata">
+          Any temporary ID generated to manage TDs, for example an ID for a database 
+	  or directory service, SHOULD NOT contain metadata 
+	  describing the Thing or from the TD itself.
+	  </span>
+	  Using random UUIDs as recommended in 
+	  <a href="#sec-privacy-consideration-global-id-risk"></a> also mitigates this
+	  risk.
+      </dd></dl>
+   </section>
+   <section id="sec-privacy-consideration-global-id-risk">
+   <h5>Globally Unique Identifiers</h5>
+      <p>Globally unique identifiers pose a privacy risk if a centralized authority is needed to
+      create and distribute them, since then a third party has knowledge of the identifiers.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+          The <code>id</code> field in TDs is intentionally not required to be globally unique.
+          There are several cryptographic mechanisms (e.g. random UUIDs) available to generate suitable IDs in a 
+          distributed fashion that do
+          not require a central registry.  These mechanisms typically have a very low probability
+          of generating duplicate identifiers, and this needs to be taken into account in the system
+          design; for example, by detecting duplicates and regenerating IDs when necessary.
+          The scope of IDs also does not need to be global: it is acceptable to use identifiers
+          that only distinguish Things in a certain context, such as within a home or factory.
+	  <span class="rfc2119-assertion" id="privacy-distributed-ids">
+          TD identifiers SHOULD be generated using a distributed mechanism such as UUIDs
+	  that provides a high probability of uniqueness.
+	  </span>
+	  <span class="rfc2119-assertion" id="privacy-centralized-ids">
+          TD identifiers SHOULD NOT be generated using a centralized authority.
+	  </span>
+      </dd></dl>
+   </section>
+   <section id="sec-privacy-consideration-inferencing">
+   <h5>Inferencing of Personally Identifiable Information</h5>
+      <p>In many locales, in order to protect the privacy of users,
+      there are legal requirements for the handling of
+      personally identifiable information,
+      that is,
+      information that can be associated with a particular person.
+      Such information can of course be generated by IoT devices directly.
+      However,
+      the existence and metadata of IoT devices
+      (the kind of data stored in a Thing Description)
+      can also contain or be used to infer personally identifiable information.
+      This information can be as simple as the fact that a certain person owns a certain
+      type of device,
+      which can lead to additional inferences about that person.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+	  <span class="rfc2119-assertion" id="privacy-td-pii">
+          A Thing Description associated with a 
+	  personal device SHOULD be treated as if it contained
+	  personally identifiable information, even if this information is not explicit.
+	  </span>
+          As an example application of this principle,
+          consider how to obtain user consent.  
+          Consent for usage of personally identifiable data
+          generated by a <a>Thing</a> is often obtained when a <a>Thing</a> is paired with system
+          consuming the data,
+          which is frequently also when the Thing Description
+          is registered with a local directory or the system consuming the 
+          Thing Description in order to access the device.
+          In this case, consent for using data from a <a>Thing</a> can be combined with
+          consent for accessing the Thing Description of the <a>Thing</a>.
+          As a second example, if we consider a TD to contain personally
+          identifiable information, then it should not be retained indefinitely
+          or used for purposes other than those for which consent was given.
+      </dd></dl>
+   </section>
+</section>
+
 <section id="iana-section" class="normative">
  
   <h1>IANA Considerations</h1>

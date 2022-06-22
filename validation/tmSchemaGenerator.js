@@ -272,7 +272,7 @@ function removeFormat(argObject) {
 }
 
 /** 
- * This function changes the terms that have values of number, integer or boolean to anyOf with string and that term.
+ * This function changes the terms that have values of number, integer, boolean or array to anyOf with string and that term.
  * Until a more recursive function works, this is its more manual version
  * such types are found in: definitions/dataSchema minimum, maximum, minItems, maxItems, minLength, maxLength, multipleOf, 
  * writeOnly, readOnly and the exact same in definitions/property_element but there is also observable here
@@ -284,23 +284,27 @@ function manualConvertString(argObject){
     // the exact paths of the above mentioned locations of types
     let paths = [
         "definitions.multipleOfDefinition",
+        "definitions.dataSchema.properties.enum",
         "definitions.dataSchema.properties.minimum",
         "definitions.dataSchema.properties.maximum",
         "definitions.dataSchema.properties.minItems",
         "definitions.dataSchema.properties.maxItems",
         "definitions.dataSchema.properties.minLength",
         "definitions.dataSchema.properties.maxLength",
-        "definitions.dataSchema.properties.writeOnly",
         "definitions.dataSchema.properties.readOnly",
+        "definitions.dataSchema.properties.required",
+        "definitions.dataSchema.properties.writeOnly",
+        "definitions.property_element.properties.enum",
         "definitions.property_element.properties.minimum",
         "definitions.property_element.properties.maximum",
         "definitions.property_element.properties.minItems",
         "definitions.property_element.properties.maxItems",
         "definitions.property_element.properties.minLength",
         "definitions.property_element.properties.maxLength",
-        "definitions.property_element.properties.writeOnly",
-        "definitions.property_element.properties.readOnly",
         "definitions.property_element.properties.observable",
+        "definitions.property_element.properties.readOnly",
+        "definitions.property_element.properties.required",
+        "definitions.property_element.properties.writeOnly",
         "definitions.action_element.properties.safe",
         "definitions.action_element.properties.idempotent",
         "definitions.action_element.properties.synchronous"
