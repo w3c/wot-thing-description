@@ -4692,6 +4692,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <li>JSON Pointer [[RFC6901]] definition.</li>
      </ul>
     </span>
+    Note that the URI can also be empty, indicating a same-document reference [[RFC3986]](Section 4.4)).
+    In this case, the <code>tm:ref</code> is supposed to be interpreted as a relative reference.
     <span class="rfc2119-assertion" id="tm-tmRef2">
         Every time <code>tm:ref</code> is used, the referenced pre-definition and its dependencies 
         (e.g., by context extension) MUST be assumed at the new defined definition.
@@ -4723,7 +4725,42 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         }
     </pre>
 
+    <p>
+        As an example for relative imports using <code>tm:ref</code>, the 
+        following Thing Model re-uses and augments (see below) a 
+        <code>genericTemperature</code> property in two more specific 
+        properties, which describe an inner and an outer temperature value, 
+        respectively.
+    </p>
 
+    <pre class="example" title="Multi Sensor Thing Model re-using definitions with relative imports" id="td-model-example-relative-tmRef">
+        {
+            "@context": "https://www.w3.org/2022/wot/td/v1.1", 
+            "@type" : "tm:ThingModel",
+            "title": "Multi Sensor",
+            "properties": {
+                "genericTemperature": {
+                    "type": "number",
+                    "unit": "C"
+                },
+                "innerTemperature": {
+                    "tm:ref": "#/properties/genericTemperature",
+                    "title": "The inner temperature",
+                    "minimum": 10
+                },
+                "outerTemperature": {
+                    "tm:ref": "#/properties/genericTemperature",
+                    "title": "The outer temperature",
+                    "description": "The outer temperature is measured in Kelvin",
+                    "unit": "K"
+                }
+            },
+            "tm:required": [
+                "#/properties/innerTemperature",
+                "#/properties/outerTemperature"
+            ]
+        }
+    </pre>
 
     <p>
       At the place the "tm:ref" is defined, additional name-value pairs can be added. 
