@@ -3,7 +3,7 @@ const fs = require('fs');
 const Ajv = require("ajv")
 
 const tmSchema = fs.readFileSync("validation/tm-json-schema-validation.json")
-const ajv = new Ajv({"strict":false})
+const ajv = new Ajv({"strict":false, "addUsedSchema":false})
 
 const validTMs = [
     {
