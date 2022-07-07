@@ -1,0 +1,17 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "Cleaning up the working directory"
+git commit -m "remove me" --no-verify # temporarly store the staged changes; note that --no-verify is needed to avoid infinite loops
+git stash -u # stash everything so that we can revert it later
+git reset --soft HEAD^  # bring back the staged changes
+
+echo "Working directory clear"
+
+npm run render
+npm run generateTmSchema
+
+echo "Rendering complete"
+
+git add -u # adding generated files 
+
