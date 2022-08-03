@@ -1630,7 +1630,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 below.)</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-type--DataSchema"><td><code>type</code></td><td>Assignment of JSON-based data types compatible
                 with JSON Schema (one of boolean, integer, number,
-                string, object, array, or null).</td><td>optional</td><td>any type (one of <code>object</code>, <code>array</code>, <code>string</code>, <code>number</code>, <code>integer</code>, <code>boolean</code>, or <code>null</code>)</td></tr></tbody></table><p>The class <code>DataSchema</code> has the following subclasses:</p><ul><li><a href="#arrayschema"><code>ArraySchema</code></a></li>
+                string, object, array, or null).</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (one of <code>object</code>, <code>array</code>, <code>string</code>, <code>number</code>, <code>integer</code>, <code>boolean</code>, or <code>null</code>)</td></tr></tbody></table><p>The class <code>DataSchema</code> has the following subclasses:</p><ul><li><a href="#arrayschema"><code>ArraySchema</code></a></li>
 <li><a href="#booleanschema"><code>BooleanSchema</code></a></li>
 <li><a href="#numberschema"><code>NumberSchema</code></a></li>
 <li><a href="#integerschema"><code>IntegerSchema</code></a></li>
@@ -5866,7 +5866,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         </pre>
 
         <p>
-         Due to the definition of <a>Thing Model</a> the term <code>instance</code> can be omitted within the <code>version</code> container. 
+            <span class="rfc2119-assertion" id="tm-versioning">
+                Due to the definition of <a>Thing Model</a> the term <code>instance</code> MUST be omitted within the <code>version</code> container. 
+            <span>
         </p>
 
         <p>
@@ -6576,43 +6578,41 @@ provides <code>dimmable</code> and <code>RGB</code> capabilities.
 </section>
 
   <section id="thing-model-td-required" class="normative">
-    <h2>Required</h2>
+    <h2>tm:optional</h2>
 
 
   <p>    
-    In some cases it is desirable to enforce which interaction affordances are mandatory and have to be implemented in a <a>Thing Description</a> instance or can be always expected 
-    by the <a>Thing Model</a>.
-    <span class="rfc2119-assertion" id="tm-tmRequired">
-        To guarantee the implementation of particular kinds of interaction models, Thing Model definitions MUST use 
-        the JSON member name <code>tm:required</code>. 
+    In some cases it is desirable to not enforce which interaction affordances are mandatory and do not necessarily need to be implemented in a <a>Thing Description</a> instance. 
+
+    <span class="rfc2119-assertion" id="tm-tmOptional">
+        If interaction models are not manditory to be implemented in a <a>Thing Description</a> instance, <a>Thing Model</a> definitions MUST use 
+        the JSON member name <code>tm:optional</code>. 
     </span>
-    <span class="rfc2119-assertion" id="tm-tmRequired-array">
-        <code>tm:required</code> MUST be a JSON array at the top level. 
+    <span class="rfc2119-assertion" id="tm-tmOptional-array">
+        <code>tm:optional</code> MUST be a JSON array at the top level. 
     </span>
-    <span class="rfc2119-assertion" id="tm-tmRequired-JSONPointer">
-        The value of <code>tm:required</code> MUST provide JSON Pointer [[RFC6901]] references to the required interaction model 
+    <span class="rfc2119-assertion" id="tm-tmOptional-JSONPointer">
+        The value of <code>tm:optional</code> MUST provide JSON Pointer [[RFC6901]] references to the required interaction model 
         definitions. 
     </span>
-    <span class="rfc2119-assertion" id="tm-tmRequired-resolver">
-        The JSON Pointers of <code>tm:required</code> MUST resolve to an entire interaction affordance Map 
+    <span class="rfc2119-assertion" id="tm-tmOptional-resolver">
+        The JSON Pointers of <code>tm:optional</code> MUST resolve to an entire interaction affordance Map 
         definition.
     </span>
 </p>
 
 <p>    
-The following sample shows the usage of <code>tm:required</code> for the <a>Property</a> interaction <code>status</code>
-and <a>Action</a> interaction <code>toggle</code>. 
+The following sample shows the usage of <code>tm:optional</code> for the <a>Event</a> interaction <code>overheating</code>. 
 </p>
 
-<pre class="example" title="Thing Model with the tm:required term for interaction affordances.">
+<pre class="example" title="Thing Model with the tm:optional term for interaction affordances.">
 {
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
     "@type" : "tm:ThingModel",
     "title": "Lamp Thing Model",
-    "description": "Lamp Thing Description Model",
-    "tm:required": [
-        "/properties/status",
-        "/actions/toggle"
+    "description": "Lamp Thing Model Description",
+    "tm:optional": [
+        "/events/overheating"
     ],
     "properties": {
         "status": {
@@ -6639,6 +6639,30 @@ and <a>Action</a> interaction <code>toggle</code>.
 Since the <a>Event</a> <code>overheating</code> is not mandatory it may not be available in a <a>Thing Description</a> 
 instance.
 </p>
+
+<p>Please note that an optional definition in a <a>Thing Model</a> definition can be overwritten in the case it is extended by another <a>Thing Model</a> through the use of <code>tm:ref</code>:
+  </p>
+
+  <pre class="example" title="Thing Model overwrites tm:optional of the previous Thing Model example.">
+    {
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
+        "@type" : "tm:ThingModel",
+        "title": "Lamp Thing Model (All Mandatory)",
+        "description": "Lamp Thing Model description expects all interaction affordances (status, toggle, and overheating)",
+        "links":[
+           {
+              "rel":"tm:extends",
+              "href":"./lampThingModel.tm.jsonld",
+              "type":"application/tm+json"
+           }
+        ],
+        "events": {
+            "overheating": {
+                "tm:ref" :"./lampThingModel.tm.jsonld#/events/overheating" 
+            }
+        }
+    }
+    </pre>
 
 </section>
 
@@ -6757,7 +6781,8 @@ instance.
             feature MUST be resolved and represented in the <a>Partial TD</a> instance according to <a href="#thing-model-extension-import"></a>.</li>
             <li class="rfc2119-assertion" id="thing-model-td-generation-processor-extends"> If used, <code>links</code> element entry with <code>"rel":"tm:extends"</code> MUST be removed from the current <a>Partial TD</a></li>
             <li class="rfc2119-assertion" id="thing-model-td-generation-processor-type">The <code>tm:ThingModel</code> value of the top-level <code>@type</code> MUST be removed in the <a>Partial TD</a> instance.</li>
-            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-required">If the <code>tm:required</code> feature is used based on Section <a href="#thing-model-td-required"></a>, the required interactions MUST be taken over to the <a>Partial TD</a> instance.</li>
+            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-required">All required interactions (not listed in <code>tm:optional</code>) MUST be taken over to the <a>Partial TD</a> instance. </li>
+            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-optional">All optional interactions (listed in <code>tm:optional</code>) MAY be taken over to the <a>Partial TD</a> instance. </li>
             <li class="rfc2119-assertion" id="thing-model-td-generation-processor-placeholder">If used, all placeholders (see Section <a href="#thing-model-td-placeholder"></a>) in the <a>Thing Model</a> MUST be replaced with a valid corresponding value in the <a>Partial TD</a>.</li>
         </ul>
         Finally, a TM-to-TD generator will take the resulting <a>Partial TD</a> and transform it into a <a>Thing Description</a> with this last step
