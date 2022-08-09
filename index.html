@@ -1702,8 +1702,8 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           in <code>DataSchema</code> instances.</p><table class="def"><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-minLength--StringSchema"><td><code>minLength</code></td><td>Specifies the minimum length of a string. Only applicable for associated string types.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#unsignedInt"><code>unsignedInt</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-maxLength--StringSchema"><td><code>maxLength</code></td><td>Specifies the maximum length of a string. Only applicable for associated string types.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#unsignedInt"><code>unsignedInt</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-pattern--StringSchema"><td><code>pattern</code></td><td>Provides a regular expression to express constraints of the string value. The regular expression must follow the [[ECMA-262]] dialect.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-contentEncoding--StringSchema"><td><code>contentEncoding</code></td><td>Specifies the encoding used to store the contents, as specified in RFC 2054.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (e.g., <code>7bit</code>, <code>8bit</code>, <code>binary</code>, <code>quoted-printable</code>, or <code>base64</code>)</td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-contentMediaType--StringSchema"><td><code>contentMediaType</code></td><td>Specifies the MIME type of the contents of a string value, as described in RFC 2046.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (e.g., <code>image/png</code>, or <code>audio/mpeg</code>)</td></tr></tbody></table><p class="note">The length of a string (i.e., <code>minLength</code> and
+<tr class="rfc2119-table-assertion" id="td-vocab-contentEncoding--StringSchema"><td><code>contentEncoding</code></td><td>Specifies the encoding used to store the contents, as specified in [[RFC2045]] (Section 6.1) and [[RFC4648]].</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (e.g., <code>7bit</code>, <code>8bit</code>, <code>binary</code>, <code>quoted-printable</code>, <code>base16</code>, <code>base32</code>, or <code>base64</code>)</td></tr>
+<tr class="rfc2119-table-assertion" id="td-vocab-contentMediaType--StringSchema"><td><code>contentMediaType</code></td><td>Specifies the MIME type of the contents of a string value, as described in [[RFC2046]].</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (e.g., <code>image/png</code>, or <code>audio/mpeg</code>)</td></tr></tbody></table><p class="note">The length of a string (i.e., <code>minLength</code> and
         <code>maxLength</code>) is defined as the number
         of Unicode code points, as defined by [[RFC8259]].
 		Note that some <a href="https://www.w3.org/TR/i18n-glossary/#def_grapheme" target="_blank">user-perceived characters</a> are composed of more than one Unicode code point. Arbitrary index values might not fall on these grapheme boundaries, so truncation according to <code>maxLength</code> might alter the appearance or meaning of the string.
@@ -7079,11 +7079,10 @@ instance.
       <dl><dt>Mitigation:</dt><dd>
 	      Strings sourced from TDs should be treated like any other source of external string
 	      when generating HTML: with care. 
-	      <span class="rfc2119-assertion" id="sec-inj-sanitize">
-		      Strings sourced from TDs MUST either be sanitized using a carefully vetted HTML
-	      sanitizer that disables any markup or should be inserted into an HTML template using
-	      DOM node manipulation APIs that will escape any markup.
-	      </span>
+        As a matter of policy, it is strongly suggested that 
+        strings sourced from TDs either be sanitized using a carefully vetted HTML 
+        sanitizer that disables any markup or be inserted into an HTML template using 
+        DOM node manipulation APIs that will escape any markup.
 	      It is also possible that strings sourced from TDs could be used to generate documents
 	      in other markup languages, such as MD files or XML.  
 	      Such usages should take equivalent
@@ -7194,18 +7193,14 @@ instance.
 	  The set of supported extensions can be established by a 
 	  WoT Profile [[WOT-PROFILE]], for example.
 	  <span class="rfc2119-assertion" id="security-static-context">
-          Constrained implementations SHOULD use statically managed and vetted
-          versions of their supported context extensions. 
-          </span>
+          Constrained implementations SHOULD use vetted
+          versions of their supported context extensions 
+          managed statically or as part of a secure update process.</span>
 	  <span class="rfc2119-assertion" id="security-remote-context">
           Constrained implementations SHOULD NOT follow links to remote contexts.
 	  </span>
 	  In this case the URLs are used only to identify extensions,
 	  not to fetch their definitions.
-	  <span class="rfc2119-assertion" id="security-update-contexts">
-          Supported context extensions on constrained implementations MAY be managed
-          through secure software update mechanisms.
-	  </span>
         </dd>
      </dl>
    </section>
@@ -7229,10 +7224,8 @@ instance.
           the <code>id</code> of a <a>Thing</a> should not be fixed in hardware.
           This does, however, conflict with the Linked Data ideal that
           identifiers are fixed URIs.  
-          However,
-          <span class="rfc2119-assertion" id="privacy-mutable-id-ownership">TD 
-          identifiers SHOULD be updated upon major changes in configuration
-          or reinitialization.</span>
+          However, as a matter of policy, it is strongly suggested that deployments 
+          update identifiers upon major changes in configuration or reinitialization.
           Examples of major changes in configuration include moving a Thing to a new
           local area network, assigning a new domain name,
           or unregistering the Thing from one hub and registering it with a new
@@ -7361,11 +7354,10 @@ instance.
       which can lead to additional inferences about that person.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-	  <span class="rfc2119-assertion" id="privacy-td-pii">
-          A Thing Description associated with a 
-	  personal device SHOULD be treated as if it contained
-	  personally identifiable information, even if this information is not explicit.
-	  </span>
+          As a matter of policy, it is strongly suggested that 
+          Thing Descriptions associated with  
+          personal devices be treated as if they contained 
+          personally identifiable information, even if this information is not explicit.
           As an example application of this principle,
           consider how to obtain user consent.  
           Consent for usage of personally identifiable data
