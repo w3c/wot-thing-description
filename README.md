@@ -57,6 +57,10 @@ The latter should always be execute within `render.sh` since it requires some en
 
 For Windows users, the script should be run in a [Cygwin shell](http://cygwin.com/). Git package from Cygwin distribution had better not be used. Alternative Git client distribution such as [Git for Windows](https://gitforwindows.org/) works better when you encounter an issue building the document using Cygwin.
 
+### Automatic rendering
+The repository is equipped with git hooks that automate the rendering process. To enable them, run `npm install` at the root folder. The hooks will render the documents automatically at every commit.
+if you run the rending process manually or you do not want to execute the automatic process add `--no-verify` option to your commit command. 
+
 ## Implementation Report
 
 To generate the implementation report,

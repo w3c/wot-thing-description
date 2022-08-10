@@ -307,7 +307,8 @@ function manualConvertString(argObject){
         "definitions.property_element.properties.writeOnly",
         "definitions.action_element.properties.safe",
         "definitions.action_element.properties.idempotent",
-        "definitions.action_element.properties.synchronous"
+        "definitions.action_element.properties.synchronous",
+        "properties.version"
     ]
     
     //iterate over this array and replace for each
