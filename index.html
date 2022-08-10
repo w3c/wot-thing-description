@@ -4514,6 +4514,72 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 }
 </pre>
 </section>
+<section id="form-additionalResponses">
+    <h3><code>additionalResponses</code></h3>
+
+  <p>
+  In some cases, the message received from the Thing as part of an <a>Interaction Affordance</a> can differ due to different reasons.
+  Such reasons could be error cases or alternative responses for a valid response.
+  In these cases, <code>additionalResponses</code> terms can be used to describe this behavior.
+  </p>
+  <p>
+    For example, an Action Affordance to turn on a car engine may not work in bad weather conditions or in case the
+    engine needs maintenance.
+    In such a case, the Thing needs to reply with payloads that are not usually used.
+  </p>
+  <p>
+    A <code>TD</code> snippet with the <code>additionalResponses</code> member in an Action Affordance is shown
+    below. It describes the case mentioned above when an error response can be sent with another payload than what 
+    is described in the <code>output</code>. The <code>success</code> with the value <code>false</code> refers to the fact that
+    this payload refers to an error case and <code>schema</code> allows linking to the payload description used at 
+    <code>schemaDefinitions</code>:
+  </p>
+
+<pre class="example">
+{
+    ...
+    "schemaDefinitions":{
+      "actionErrorPayload":{
+        "type":"object",
+        "properties":{
+          "reason":{
+            "type":"string",
+            "enum":["cold","hot","maintenance"]
+          },
+          "time":{
+            "description":"UNIX time in numbers indicating when the error happened",
+            "type":"number"
+          }
+        }
+      }
+    },
+    ...
+    "actions": {
+        "startEngine": {
+            "output":{
+              "type":"string"
+            },
+            "forms": [{
+                "op": "invokeaction",
+                "href": "http://mycar.example.com/api/engine",
+                "contentType": "application/json",
+                "additionalResponses": [{
+                    "success":false,
+                    "contentType": "application/json",
+                    "schema":"actionErrorPayload"
+                }]
+            }]
+        }
+    },
+    ...
+}
+</pre>
+
+    <p>
+      The <code>additionalResponses</code> term can be used in non-error cases as well. In that case, <code>success</code>
+      is set to <code>true</code> and another schema can be used to describe the payload.
+    </p>
+</section>
 <section id="form-contentMediaType-contentEncoding">
     <h3><code>contentMediaType</code> and <code>contentEncoding </code></h3>
 
@@ -7079,11 +7145,10 @@ instance.
       <dl><dt>Mitigation:</dt><dd>
 	      Strings sourced from TDs should be treated like any other source of external string
 	      when generating HTML: with care. 
-	      <span class="rfc2119-assertion" id="sec-inj-sanitize">
-		      Strings sourced from TDs MUST either be sanitized using a carefully vetted HTML
-	      sanitizer that disables any markup or should be inserted into an HTML template using
-	      DOM node manipulation APIs that will escape any markup.
-	      </span>
+        As a matter of policy, it is strongly suggested that 
+        strings sourced from TDs either be sanitized using a carefully vetted HTML 
+        sanitizer that disables any markup or be inserted into an HTML template using 
+        DOM node manipulation APIs that will escape any markup.
 	      It is also possible that strings sourced from TDs could be used to generate documents
 	      in other markup languages, such as MD files or XML.  
 	      Such usages should take equivalent
@@ -7194,18 +7259,14 @@ instance.
 	  The set of supported extensions can be established by a 
 	  WoT Profile [[WOT-PROFILE]], for example.
 	  <span class="rfc2119-assertion" id="security-static-context">
-          Constrained implementations SHOULD use statically managed and vetted
-          versions of their supported context extensions. 
-          </span>
+          Constrained implementations SHOULD use vetted
+          versions of their supported context extensions 
+          managed statically or as part of a secure update process.</span>
 	  <span class="rfc2119-assertion" id="security-remote-context">
           Constrained implementations SHOULD NOT follow links to remote contexts.
 	  </span>
 	  In this case the URLs are used only to identify extensions,
 	  not to fetch their definitions.
-	  <span class="rfc2119-assertion" id="security-update-contexts">
-          Supported context extensions on constrained implementations MAY be managed
-          through secure software update mechanisms.
-	  </span>
         </dd>
      </dl>
    </section>
@@ -7229,10 +7290,8 @@ instance.
           the <code>id</code> of a <a>Thing</a> should not be fixed in hardware.
           This does, however, conflict with the Linked Data ideal that
           identifiers are fixed URIs.  
-          However,
-          <span class="rfc2119-assertion" id="privacy-mutable-id-ownership">TD 
-          identifiers SHOULD be updated upon major changes in configuration
-          or reinitialization.</span>
+          However, as a matter of policy, it is strongly suggested that deployments 
+          update identifiers upon major changes in configuration or reinitialization.
           Examples of major changes in configuration include moving a Thing to a new
           local area network, assigning a new domain name,
           or unregistering the Thing from one hub and registering it with a new
@@ -7361,11 +7420,10 @@ instance.
       which can lead to additional inferences about that person.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-	  <span class="rfc2119-assertion" id="privacy-td-pii">
-          A Thing Description associated with a 
-	  personal device SHOULD be treated as if it contained
-	  personally identifiable information, even if this information is not explicit.
-	  </span>
+          As a matter of policy, it is strongly suggested that 
+          Thing Descriptions associated with  
+          personal devices be treated as if they contained 
+          personally identifiable information, even if this information is not explicit.
           As an example application of this principle,
           consider how to obtain user consent.  
           Consent for usage of personally identifiable data
