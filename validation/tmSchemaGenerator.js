@@ -74,6 +74,7 @@ tmSchema = removeFormat(tmSchema)
 tmSchema = manualConvertString(tmSchema)
 tmSchema = addTmTerms(tmSchema)
 tmSchema = replaceSecurityOneOf(tmSchema)
+tmSchema = postProcess(tmSchema)
 
 // write a new file for the schema. Overwrites the existing one
 // 2 spaces for easier reading
@@ -428,4 +429,29 @@ function replaceSecurityOneOf(argObject){
     argObject.definitions.securityScheme.anyOf = argObject.definitions.securityScheme.oneOf;
     delete argObject.definitions.securityScheme.oneOf;
     return argObject;
+}
+
+
+/** 
+ * Some custom logic to apply at the end to make the schema conform
+ * similar to staticReplace
+ * @param {object} argObject
+ * @return {object}
+**/
+function postProcess(argObject){
+    argObject.definitions.security = {
+        "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "string"
+            }
+          ]
+    }
+    argObject.definitions.autoSecurityScheme.not = {"required":["name"]}
+    return argObject
 }
