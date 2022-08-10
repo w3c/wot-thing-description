@@ -346,7 +346,7 @@ function changeToAnyOf(argObject){
 }
 
 /** 
- * This function adds tm:required and tm:ref definitions
+ * This function adds tm:required, tm:ref and instanceName definitions
  * Then these are referenced from the related locations, i.e.
  * tm:required is used only in the root level and tm:ref can be used anywhere
  * @param {object} argObject
@@ -375,8 +375,13 @@ function addTmTerms(argObject){
         "$ref": "#/definitions/tm_ref"
     }
 
+
+    argObject.definitions["base_link_element"].properties["instanceName"] = {
+        "type":"string"
+    }
+
     // Note: this paths are statically defined
-    // please update the list if rector the td schema
+    // please update the list if refactor the td schema
     let paths = [
         "definitions.dataSchema.properties",
         "definitions.property_element.properties",
