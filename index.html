@@ -4530,6 +4530,72 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 }
 </pre>
 </section>
+<section id="form-additionalResponses">
+    <h3><code>additionalResponses</code></h3>
+
+  <p>
+  In some cases, the message received from the Thing as part of an <a>Interaction Affordance</a> can differ due to different reasons.
+  Such reasons could be error cases or alternative responses for a valid response.
+  In these cases, <code>additionalResponses</code> terms can be used to describe this behavior.
+  </p>
+  <p>
+    For example, an Action Affordance to turn on a car engine may not work in bad weather conditions or in case the
+    engine needs maintenance.
+    In such a case, the Thing needs to reply with payloads that are not usually used.
+  </p>
+  <p>
+    A <code>TD</code> snippet with the <code>additionalResponses</code> member in an Action Affordance is shown
+    below. It describes the case mentioned above when an error response can be sent with another payload than what 
+    is described in the <code>output</code>. The <code>success</code> with the value <code>false</code> refers to the fact that
+    this payload refers to an error case and <code>schema</code> allows linking to the payload description used at 
+    <code>schemaDefinitions</code>:
+  </p>
+
+<pre class="example">
+{
+    ...
+    "schemaDefinitions":{
+      "actionErrorPayload":{
+        "type":"object",
+        "properties":{
+          "reason":{
+            "type":"string",
+            "enum":["cold","hot","maintenance"]
+          },
+          "timeStamp":{
+            "description":"UNIX time in numbers indicating when the error happened",
+            "type":"number"
+          }
+        }
+      }
+    },
+    ...
+    "actions": {
+        "startEngine": {
+            "output":{
+              "type":"string"
+            },
+            "forms": [{
+                "op": "invokeaction",
+                "href": "http://mycar.example.com/api/engine",
+                "contentType": "application/json",
+                "additionalResponses": [{
+                    "success":false,
+                    "contentType": "application/json",
+                    "schema":"actionErrorPayload"
+                }]
+            }]
+        }
+    },
+    ...
+}
+</pre>
+
+    <p>
+      The <code>additionalResponses</code> term can be used in non-error cases as well. In that case, <code>success</code>
+      is set to <code>true</code> and another schema can be used to describe the payload.
+    </p>
+</section>
 <section id="form-contentMediaType-contentEncoding">
     <h3><code>contentMediaType</code> and <code>contentEncoding </code></h3>
 
