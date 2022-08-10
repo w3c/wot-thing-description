@@ -18,4 +18,4 @@ After checking Overview.html using the [Pubrules checker](https://www.w3.org/pub
  1. Edit index.html
  1. Generate static.html by ReSpec from the index.html (click "ReSpec" top right and choose "Export" then export as "HTML"
  1. copy static.html to Overview.html and tidy it up
- 1. If there are any remaining errors/warnings with the Pubrues checker results, repeat the edit by going back to #1.
+ 1. If there are any remaining errors/warnings with the Pubrules checker results, repeat the edit by going back to #1.

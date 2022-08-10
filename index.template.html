@@ -4594,7 +4594,9 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         </pre>
 
         <p>
-         Due to the definition of <a>Thing Model</a> the term <code>instance</code> can be omitted within the <code>version</code> container. 
+            <span class="rfc2119-assertion" id="tm-versioning">
+                Due to the definition of <a>Thing Model</a> the term <code>instance</code> MUST be omitted within the <code>version</code> container. 
+            <span>
         </p>
 
         <p>
@@ -5304,43 +5306,41 @@ provides <code>dimmable</code> and <code>RGB</code> capabilities.
 </section>
 
   <section id="thing-model-td-required" class="normative">
-    <h2>Required</h2>
+    <h2>tm:optional</h2>
 
 
   <p>    
-    In some cases it is desirable to enforce which interaction affordances are mandatory and have to be implemented in a <a>Thing Description</a> instance or can be always expected 
-    by the <a>Thing Model</a>.
-    <span class="rfc2119-assertion" id="tm-tmRequired">
-        To guarantee the implementation of particular kinds of interaction models, Thing Model definitions MUST use 
-        the JSON member name <code>tm:required</code>. 
+    In some cases it is desirable to not enforce which interaction affordances are mandatory and do not necessarily need to be implemented in a <a>Thing Description</a> instance. 
+
+    <span class="rfc2119-assertion" id="tm-tmOptional">
+        If interaction models are not manditory to be implemented in a <a>Thing Description</a> instance, <a>Thing Model</a> definitions MUST use 
+        the JSON member name <code>tm:optional</code>. 
     </span>
-    <span class="rfc2119-assertion" id="tm-tmRequired-array">
-        <code>tm:required</code> MUST be a JSON array at the top level. 
+    <span class="rfc2119-assertion" id="tm-tmOptional-array">
+        <code>tm:optional</code> MUST be a JSON array at the top level. 
     </span>
-    <span class="rfc2119-assertion" id="tm-tmRequired-JSONPointer">
-        The value of <code>tm:required</code> MUST provide JSON Pointer [[RFC6901]] references to the required interaction model 
+    <span class="rfc2119-assertion" id="tm-tmOptional-JSONPointer">
+        The value of <code>tm:optional</code> MUST provide JSON Pointer [[RFC6901]] references to the required interaction model 
         definitions. 
     </span>
-    <span class="rfc2119-assertion" id="tm-tmRequired-resolver">
-        The JSON Pointers of <code>tm:required</code> MUST resolve to an entire interaction affordance Map 
+    <span class="rfc2119-assertion" id="tm-tmOptional-resolver">
+        The JSON Pointers of <code>tm:optional</code> MUST resolve to an entire interaction affordance Map 
         definition.
     </span>
 </p>
 
 <p>    
-The following sample shows the usage of <code>tm:required</code> for the <a>Property</a> interaction <code>status</code>
-and <a>Action</a> interaction <code>toggle</code>. 
+The following sample shows the usage of <code>tm:optional</code> for the <a>Event</a> interaction <code>overheating</code>. 
 </p>
 
-<pre class="example" title="Thing Model with the tm:required term for interaction affordances.">
+<pre class="example" title="Thing Model with the tm:optional term for interaction affordances.">
 {
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
     "@type" : "tm:ThingModel",
     "title": "Lamp Thing Model",
-    "description": "Lamp Thing Description Model",
-    "tm:required": [
-        "/properties/status",
-        "/actions/toggle"
+    "description": "Lamp Thing Model Description",
+    "tm:optional": [
+        "/events/overheating"
     ],
     "properties": {
         "status": {
@@ -5367,6 +5367,30 @@ and <a>Action</a> interaction <code>toggle</code>.
 Since the <a>Event</a> <code>overheating</code> is not mandatory it may not be available in a <a>Thing Description</a> 
 instance.
 </p>
+
+<p>Please note that an optional definition in a <a>Thing Model</a> definition can be overwritten in the case it is extended by another <a>Thing Model</a> through the use of <code>tm:ref</code>:
+  </p>
+
+  <pre class="example" title="Thing Model overwrites tm:optional of the previous Thing Model example.">
+    {
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
+        "@type" : "tm:ThingModel",
+        "title": "Lamp Thing Model (All Mandatory)",
+        "description": "Lamp Thing Model description expects all interaction affordances (status, toggle, and overheating)",
+        "links":[
+           {
+              "rel":"tm:extends",
+              "href":"./lampThingModel.tm.jsonld",
+              "type":"application/tm+json"
+           }
+        ],
+        "events": {
+            "overheating": {
+                "tm:ref" :"./lampThingModel.tm.jsonld#/events/overheating" 
+            }
+        }
+    }
+    </pre>
 
 </section>
 
@@ -5485,7 +5509,8 @@ instance.
             feature MUST be resolved and represented in the <a>Partial TD</a> instance according to <a href="#thing-model-extension-import"></a>.</li>
             <li class="rfc2119-assertion" id="thing-model-td-generation-processor-extends"> If used, <code>links</code> element entry with <code>"rel":"tm:extends"</code> MUST be removed from the current <a>Partial TD</a></li>
             <li class="rfc2119-assertion" id="thing-model-td-generation-processor-type">The <code>tm:ThingModel</code> value of the top-level <code>@type</code> MUST be removed in the <a>Partial TD</a> instance.</li>
-            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-required">If the <code>tm:required</code> feature is used based on Section <a href="#thing-model-td-required"></a>, the required interactions MUST be taken over to the <a>Partial TD</a> instance.</li>
+            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-required">All required interactions (not listed in <code>tm:optional</code>) MUST be taken over to the <a>Partial TD</a> instance. </li>
+            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-optional">All optional interactions (listed in <code>tm:optional</code>) MAY be taken over to the <a>Partial TD</a> instance. </li>
             <li class="rfc2119-assertion" id="thing-model-td-generation-processor-placeholder">If used, all placeholders (see Section <a href="#thing-model-td-placeholder"></a>) in the <a>Thing Model</a> MUST be replaced with a valid corresponding value in the <a>Partial TD</a>.</li>
         </ul>
         Finally, a TM-to-TD generator will take the resulting <a>Partial TD</a> and transform it into a <a>Thing Description</a> with this last step
@@ -5782,11 +5807,10 @@ instance.
       <dl><dt>Mitigation:</dt><dd>
 	      Strings sourced from TDs should be treated like any other source of external string
 	      when generating HTML: with care. 
-	      <span class="rfc2119-assertion" id="sec-inj-sanitize">
-		      Strings sourced from TDs MUST either be sanitized using a carefully vetted HTML
-	      sanitizer that disables any markup or should be inserted into an HTML template using
-	      DOM node manipulation APIs that will escape any markup.
-	      </span>
+        As a matter of policy, it is strongly suggested that 
+        strings sourced from TDs either be sanitized using a carefully vetted HTML 
+        sanitizer that disables any markup or be inserted into an HTML template using 
+        DOM node manipulation APIs that will escape any markup.
 	      It is also possible that strings sourced from TDs could be used to generate documents
 	      in other markup languages, such as MD files or XML.  
 	      Such usages should take equivalent
@@ -5897,18 +5921,14 @@ instance.
 	  The set of supported extensions can be established by a 
 	  WoT Profile [[WOT-PROFILE]], for example.
 	  <span class="rfc2119-assertion" id="security-static-context">
-          Constrained implementations SHOULD use statically managed and vetted
-          versions of their supported context extensions. 
-          </span>
+          Constrained implementations SHOULD use vetted
+          versions of their supported context extensions 
+          managed statically or as part of a secure update process.</span>
 	  <span class="rfc2119-assertion" id="security-remote-context">
           Constrained implementations SHOULD NOT follow links to remote contexts.
 	  </span>
 	  In this case the URLs are used only to identify extensions,
 	  not to fetch their definitions.
-	  <span class="rfc2119-assertion" id="security-update-contexts">
-          Supported context extensions on constrained implementations MAY be managed
-          through secure software update mechanisms.
-	  </span>
         </dd>
      </dl>
    </section>
@@ -5932,10 +5952,8 @@ instance.
           the <code>id</code> of a <a>Thing</a> should not be fixed in hardware.
           This does, however, conflict with the Linked Data ideal that
           identifiers are fixed URIs.  
-          However,
-          <span class="rfc2119-assertion" id="privacy-mutable-id-ownership">TD 
-          identifiers SHOULD be updated upon major changes in configuration
-          or reinitialization.</span>
+          However, as a matter of policy, it is strongly suggested that deployments 
+          update identifiers upon major changes in configuration or reinitialization.
           Examples of major changes in configuration include moving a Thing to a new
           local area network, assigning a new domain name,
           or unregistering the Thing from one hub and registering it with a new
@@ -6064,11 +6082,10 @@ instance.
       which can lead to additional inferences about that person.
       </p>
       <dl><dt>Mitigation:</dt><dd>
-	  <span class="rfc2119-assertion" id="privacy-td-pii">
-          A Thing Description associated with a 
-	  personal device SHOULD be treated as if it contained
-	  personally identifiable information, even if this information is not explicit.
-	  </span>
+          As a matter of policy, it is strongly suggested that 
+          Thing Descriptions associated with  
+          personal devices be treated as if they contained 
+          personally identifiable information, even if this information is not explicit.
           As an example application of this principle,
           consider how to obtain user consent.  
           Consent for usage of personally identifiable data
@@ -6697,6 +6714,74 @@ instance.
 
 <section id="changes" class="appendix">
   <h1>Recent Specification Changes</h1>
+  <section>
+  <h2 id="changes-from-march-2022">Changes from Third Public Working Draft 11 March 2022</h2>
+	  <ul>
+		<li>
+			In section <a href="#class-definitions"></a> it was made clear that all
+			vocabulary terms and values are case sensitive.
+		</li>
+		<li>
+			In section <a href="#thing"></a> the rules for <code>@context</code> were
+			clarified by stating that TD 1.1 consumers must accept TD 1.0 TDs.
+		</li>
+		<li>
+			In section <a href="#actionaffordance"></a> the term <code>synchronous</code>
+			was added.
+		</li>
+		<li>
+			In section <a href="#nullschema"></a> it was clarified that <code>null</code>
+			does not mean the absence of a value.
+		</li>
+		<li>
+			The section <a href="#autosecurityscheme"></a> with the corresponding 
+			<code>"scheme": "auto"</code> was added to indicate that the security
+			parameters are going to be negotiated by the underlying protocols at runtime.
+		</li>
+		<li>
+			In section <a href="#link"></a> the vocabulary term <code>hreflang</code>
+			was added that to specify the language of a linked document.
+		</li>
+		<li>
+			The section <a href="#sec-op-data-schema-mapping"></a> was added which
+			summarizes the available data schema related terms with the <code>op</code>
+			keywords.
+		</li>
+		<li>
+			In section <a href="#sec-security-consideration"></a> and the according
+			subsections the text has been  revised and improved following the latest
+			security guidelines. Moreover, new sections about
+			<a href="#security-consideration-access-duration"></a>,
+			<a href="#sec-security-consideration-vulnerability-auditing"></a>,
+			<a href="#sec-security-consideration-script-injection"></a>,
+			<a href="#sec-security-consideration-execution"></a>, and
+			<a href="#sec-security-consideration-jsonld-expansion"></a> have been added.
+		</li>
+		<li>
+			In section <a href="#sec-privacy-consideration"></a> and the according
+			subsections the text has been  revised and improved following the latest
+			security guidelines. In addition, a new section about
+			<a href="#sec-privacy-consideration-id-metadata"></a> was added.
+		</li>
+		<li>
+			In section <a href="#thing-model-extension-import"></a> it was made explicit
+			that <code>tm:extends</code> and the import mechanism based on
+			<code>tm:ref</code> supports transitive extension.
+		</li>
+		<li>
+			The section <a href="#media-type-section-tm"></a> was added to provide
+			Thing Model registration information.
+		</li>
+		<li>
+			The section <a href="#content-format-section"></a> was split into
+			<a href="#wot-thing-description"></a> and <a href="#wot-thing-model"></a>.
+		</li>
+		<li>
+			In appendix <a href="#json-schema-for-validation"></a> the JSON Schema is
+			now linked instead of being included in the specification itself.
+		</li>
+	  </ul>
+  </section>
   <section>
   <h2 id="changes-from-june-2021">Changes from Second Public Working Draft 7 June 2021</h2>
     <ul>
