@@ -21,7 +21,7 @@ information on how to create a pull request.
 __Note (August 2022):__
 
 __Please notice that Thing Description 1.1 is in the review phase for the Candidate Recommendation (CR) transition. 
-In this and subsequent phase, only editorial changes (e.g., adding examples, additional explanations) and bug fixes can be applied to the editorial draft. New feature requests can not be considered and will be postponed to the next version of the Thing Description.__  
+In this and subsequent phase, only editorial changes (e.g., adding examples, additional explanations) and bug fixes can be applied to the [editorial draft](http://w3c.github.io/wot-thing-description/). New feature requests can not be considered and will be postponed to the next version of the Thing Description.__  
 
 ## Thing Description Family
 This repository covers the W3C Web of Things Thing Description family of specifications.
