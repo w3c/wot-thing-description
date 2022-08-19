@@ -346,15 +346,15 @@ function changeToAnyOf(argObject){
 }
 
 /** 
- * This function adds tm:required and tm:ref definitions
+ * This function adds tm:optional and tm:ref definitions
  * Then these are referenced from the related locations, i.e.
- * tm:required is used only in the root level and tm:ref can be used anywhere
+ * tm:optional is used only in the root level and tm:ref can be used anywhere
  * @param {object} argObject
  * @return {object}
 **/
 function addTmTerms(argObject){
     
-    argObject.definitions["tm_required"] = {
+    argObject.definitions["tm_optional"] = {
         "type":"array",
         "items":{
             "type":"string",
@@ -362,8 +362,8 @@ function addTmTerms(argObject){
         }
     }
 
-    argObject.properties["tm:required"] = {
-        "$ref": "#/definitions/tm_required"
+    argObject.properties["tm:optional"] = {
+        "$ref": "#/definitions/tm_optional"
     }
 
     argObject.definitions["tm_ref"] = {
