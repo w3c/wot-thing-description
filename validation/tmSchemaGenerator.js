@@ -74,6 +74,7 @@ tmSchema = removeFormat(tmSchema)
 tmSchema = manualConvertString(tmSchema)
 tmSchema = addTmTerms(tmSchema)
 tmSchema = replaceSecurityOneOf(tmSchema)
+tmSchema = postProcess(tmSchema)
 
 // write a new file for the schema. Overwrites the existing one
 // 2 spaces for easier reading
@@ -346,7 +347,7 @@ function changeToAnyOf(argObject){
 }
 
 /** 
- * This function adds tm:optional and tm:ref definitions
+ * This function adds tm:optional and tm:ref definitions and instanceName definitions
  * Then these are referenced from the related locations, i.e.
  * tm:optional is used only in the root level and tm:ref can be used anywhere
  * @param {object} argObject
@@ -375,8 +376,13 @@ function addTmTerms(argObject){
         "$ref": "#/definitions/tm_ref"
     }
 
+
+    argObject.definitions["base_link_element"].properties["instanceName"] = {
+        "type":"string"
+    }
+
     // Note: this paths are statically defined
-    // please update the list if rector the td schema
+    // please update the list if refactor the td schema
     let paths = [
         "definitions.dataSchema.properties",
         "definitions.property_element.properties",
@@ -428,4 +434,29 @@ function replaceSecurityOneOf(argObject){
     argObject.definitions.securityScheme.anyOf = argObject.definitions.securityScheme.oneOf;
     delete argObject.definitions.securityScheme.oneOf;
     return argObject;
+}
+
+
+/** 
+ * Some custom logic to apply at the end to make the schema conform
+ * similar to staticReplace
+ * @param {object} argObject
+ * @return {object}
+**/
+function postProcess(argObject){
+    argObject.definitions.security = {
+        "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "string"
+            }
+          ]
+    }
+    argObject.definitions.autoSecurityScheme.not = {"required":["name"]}
+    return argObject
 }
