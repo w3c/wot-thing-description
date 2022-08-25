@@ -294,13 +294,23 @@ template :notes(?class) {
 template :href(?term ?ns) {
     if(strstarts(str(?term), "http://www.w3.org/2001/XMLSchema#"),
         st:call-template(:href-xsd, ?term, ?ns),
-        st:call-template(:href-fragment, ?term, ?ns))
+        if(strstarts(str(?term), "http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
+            st:call-template(:href-rdf, ?term, ?ns),
+            st:call-template(:href-fragment, ?term, ?ns))
+        )
 } where {}
 
 template :href-xsd(?term ?ns) {
     format {
         "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#%s"
         st:call-template(:label, ?term, ?ns)
+    }
+} where {}
+
+template :href-rdf(?term ?ns) {
+    format {
+        "https://www.w3.org/TR/rdf-schema/#ch_%s"
+        st:call-template(:label, lcase(?term), ?ns)
     }
 } where {}
 

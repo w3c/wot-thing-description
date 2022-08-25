@@ -20,6 +20,17 @@ const validTDs = [
             "nosec_sc": {
                 "scheme": "nosec"
             }
+        },
+        "properties": {
+            "status": {
+                "type": "string",
+                "title" : "Status",
+                "description": "Current status of the device",
+                "forms": [
+                    {
+                        "href": "https://mydevice.example.com/status",
+                    }]
+            }
         }
     },
     {
@@ -42,7 +53,13 @@ const validTDs = [
    
 ];
 const invalidTDs = [
-    
+    {
+        "@context": [
+            "https://www.w3.org/2019/wot/td/v1",
+            "https://www.w3.org/2022/wot/td/v1.1",
+        ],
+        "title": "Almost empty TD",
+    }
 ];
 
 module.exports = {
