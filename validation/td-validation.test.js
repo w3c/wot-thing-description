@@ -47,6 +47,13 @@ describe('Thing Description validation', () => {
                 assert.equal(valid, true, ajv.errorsText());
             });
         }
+
+        for (const [id, td] of invalidTDs.entries()) {
+            it(`should reject n° ${id}`, () => {
+                const valid = ajv.validate(JSON.parse(tdSchema), td)
+                assert.equal(valid, false, ajv.errorsText());
+            });
+        }
     });
 
     describe('SHACL validation', () => {
@@ -57,6 +64,16 @@ describe('Thing Description validation', () => {
                 const validator = new SHACLValidator(shapes);
                 const report = await validator.validate(dataset);
                 assert.equal(report.conforms, true, prettyPrintSHACLValidationErrors(dataset,report));
+            });
+        }
+
+        for (const [id, td] of invalidTDs.entries()) {
+            it(`should reject n° ${id}`, async () => {
+                const ttl = await jsonld.toRDF(td, { format: 'application/n-quads' })
+                const dataset = await loadDatasetN3(Readable.from([ttl]))
+                const validator = new SHACLValidator(shapes);
+                const report = await validator.validate(dataset);
+                assert.equal(report.conforms, false, prettyPrintSHACLValidationErrors(dataset,report));
             });
         }
     });
