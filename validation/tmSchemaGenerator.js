@@ -357,10 +357,23 @@ function changeToAnyOf(argObject){
 function addTmTerms(argObject){
     
     argObject.definitions["tm_optional"] = {
-        "type":"array",
-        "items":{
-            "type":"string",
-            "format": "json-pointer"
+        "type": "array",
+        "items": {
+          "$comment": "this first checks for the general structure of /properties/myProp and then prohibits using / 3 times",
+          "allOf": [
+            {
+              "type": "string",
+              "pattern": "^((/properties/)|(/actions/)|(/events/))(([^/]))",
+              "$comment": "regex tests available at https://regex101.com/r/UgOzrJ/1"
+            },
+            {
+              "not": {
+                "type": "string",
+                "pattern": "(/)(.*\\1){2}",
+                "$comment": "regex tests available at https://regex101.com/r/Ytzd72/1"
+              }
+            }
+          ]
         }
     }
 

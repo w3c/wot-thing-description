@@ -154,8 +154,8 @@ const validTMs = [
         "title": "Valid Model 11",
         "description": "Lamp Thing Description Model",
         "tm:optional": [
-            "#/events/overheating",
-            "#/actions/toggle"
+            "/events/overheating",
+            "/actions/toggle"
         ],
         "properties": {
             "status": {
@@ -265,7 +265,32 @@ const invalidTMs = [
         "title": "Lamp Thing Model",
         "description": "Lamp Thing Description Model",
         "version" : {"instance" : "1.0.0" }
-     }
+     },
+     {
+        "@context": "https://www.w3.org/2022/wot/td/v1.1", 
+        "@type" : "tm:ThingModel",
+        "title": "Invalid tm optional syntax",
+        "properties": {
+            "genericTemperature": {
+                "type": "number",
+                "unit": "C"
+            },
+            "innerTemperature": {
+                "tm:ref": "#/properties/genericTemperature",
+                "title": "The inner temperature",
+                "minimum": 10
+            },
+            "outerTemperature": {
+                "tm:ref": "#/properties/genericTemperature",
+                "title": "The outer temperature",
+                "description": "The outer temperature is measured in Kelvin",
+                "unit": "K"
+            }
+        },
+        "tm:optional": [
+            "/properties/"
+        ]
+    }
 ];
 
 validTMs.forEach(element => {
