@@ -347,9 +347,9 @@ function changeToAnyOf(argObject){
 }
 
 /** 
- * This function adds tm:required, tm:ref and instanceName definitions
+ * This function adds tm:optional, tm:ref and instanceName definitions
  * Then these are referenced from the related locations, i.e.
- * tm:required is used only in the root level and tm:ref can be used anywhere
+ * tm:optional is used only in the root level and tm:ref can be used anywhere
  * It also add model into the version container and prohibits the use of instance
  * @param {object} argObject
  * @return {object}
