@@ -153,8 +153,8 @@ const validTMs = [
         "@type" : "tm:ThingModel",
         "title": "Valid Model 11",
         "description": "Lamp Thing Description Model",
-        "tm:required": [
-            "#/properties/status",
+        "tm:optional": [
+            "#/events/overheating",
             "#/actions/toggle"
         ],
         "properties": {
@@ -258,7 +258,14 @@ const invalidTMs = [
                 "{{myvar}}":true
             }
         }
-    }
+    },
+    {
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],  
+        "@type" : "tm:ThingModel",
+        "title": "Lamp Thing Model",
+        "description": "Lamp Thing Description Model",
+        "version" : {"instance" : "1.0.0" }
+     }
 ];
 
 validTMs.forEach(element => {
