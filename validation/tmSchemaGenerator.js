@@ -356,7 +356,7 @@ function changeToAnyOf(argObject){
 **/
 function addTmTerms(argObject){
     
-    argObject.definitions["tm_required"] = {
+    argObject.definitions["tm_optional"] = {
         "type":"array",
         "items":{
             "type":"string",
@@ -364,8 +364,8 @@ function addTmTerms(argObject){
         }
     }
 
-    argObject.properties["tm:required"] = {
-        "$ref": "#/definitions/tm_required"
+    argObject.properties["tm:optional"] = {
+        "$ref": "#/definitions/tm_optional"
     }
 
     argObject.definitions["tm_ref"] = {
