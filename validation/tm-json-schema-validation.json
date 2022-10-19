@@ -1,8 +1,8 @@
 {
   "title": "Thing Model",
-  "version": "1.1-10-June-2022",
+  "version": "1.1-05-September-2022",
   "description": "JSON Schema for validating Thing Models. This is automatically generated from the WoT TD Schema.",
-  "$schema ": "http://json-schema.org/draft-07/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/w3c/wot-thing-description/main/validation/tm-json-schema-validation.json",
   "definitions": {
     "anyUri": {
@@ -1833,11 +1833,24 @@
       "type": "string",
       "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
     },
-    "tm_required": {
+    "tm_optional": {
       "type": "array",
       "items": {
-        "type": "string",
-        "format": "json-pointer"
+        "$comment": "this first checks for the general structure of /properties/myProp and then prohibits using / 3 times",
+        "allOf": [
+          {
+            "type": "string",
+            "pattern": "^((/properties/)|(/actions/)|(/events/))(([^/]))",
+            "$comment": "regex tests available at https://regex101.com/r/UgOzrJ/1"
+          },
+          {
+            "not": {
+              "type": "string",
+              "pattern": "(/)(.*\\1){2}",
+              "$comment": "regex tests available at https://regex101.com/r/Ytzd72/1"
+            }
+          }
+        ]
       }
     },
     "tm_ref": {
@@ -1900,7 +1913,7 @@
         {
           "type": "object",
           "properties": {
-            "instance": {
+            "model": {
               "type": "string"
             }
           },
@@ -1908,6 +1921,17 @@
             "not": {
               "$ref": "#/definitions/placeholder-pattern"
             }
+          },
+          "not": {
+            "type": "object",
+            "properties": {
+              "instance": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "instance"
+            ]
           }
         },
         {
@@ -2016,8 +2040,8 @@
     "@context": {
       "$ref": "#/definitions/thing-context"
     },
-    "tm:required": {
-      "$ref": "#/definitions/tm_required"
+    "tm:optional": {
+      "$ref": "#/definitions/tm_optional"
     }
   },
   "additionalProperties": true,
