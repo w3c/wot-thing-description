@@ -172,21 +172,6 @@
                     ],
                     publisher: "W3C",
                     date: "July 2022"
-                }, 
-                "RFC9200": {
-                    "href": "https://www.rfc-editor.org/rfc/rfc9200",
-                    "title": "Authentication and Authorization for Constrained Environments (ACE) Using the OAuth 2.0 Framework (ACE-OAuth)",
-                    "authors": [
-                      "L. Seitz",
-                      "G. Selander",
-                      "E. Wahlstroem", 
-                      "S. Erdtman",
-                      "H. Tschofenig"
-                    ],
-                    "status": "Publication in process",
-                    "publisher": "IETF",
-                    "id": "rfc9200",
-                    "date": "March 2022"
                 }
             },
             otherLinks: [
@@ -414,7 +399,7 @@ a[href].internalDFN {
   or when a Web of Things-compatible legacy device is retrofitted 
   with a Thing Description.
   Furthermore, this document introduces the Thing Model, which allows authors to describe
-  only the model or class of an Internet of Thing (IoT) entity. Thing Models can be seen as a template for Thing 
+  only the model or class of an Internet of Things (IoT) entity. Thing Models can be seen as a template for Thing 
   Description instances, but with reduced constraints such as no or few requirements for specific 
   communication metadata. 
   </p>
@@ -449,6 +434,53 @@ a[href].internalDFN {
       <li>A <a href="#td-writeall-consumer">behavioral assertion</a> for <code>writeallproperties</code> that allows rejection of incomplete writes.</li>
     </ul>
 -->
+    <p>At the time of CR transition, due to insufficient implementation
+    experience the following features are at risk:</p>
+    <ul>
+    <li>Indicating location of security information in body of payload using JSON pointers.
+        <a href="#sec-body-name-json-pointer">sec-body-name-json-pointer</a>,
+        <a href="#sec-body-name-json-pointer-array">sec-body-name-json-pointer-array</a>,
+        <a href="#sec-body-name-json-pointer-creatable">sec-body-name-json-pointer-creatable</a>, and
+        <a href="#sec-body-name-json-pointer-type">sec-body-name-json-pointer-type</a>.
+    </li>
+    <li> Indicating location of security information using URI template.
+        <a href="#td-security-in-query-over-uri">td-security-in-query-over-uri</a> and
+        <a href="#td-security-in-uri-variable">td-security-in-uri-variable</a>.
+        <a href="#td-security-uri-variables-distinct">td-security-uri-variables-distinct</a>.
+    </li>
+    <li>Multilanguage content negotiation.
+        <a href="#td-ns-multilanguage-content-negotiation">td-ns-multilanguage-content-negotiation</a> and
+        <a href="#td-ns-multilanguage-content-negotiation-no-multi">td-ns-multilanguage-content-negotiation-no-multi</a>.
+    </li>
+    <li>TD Processor bidi isolation.
+        <a href="#td-processor-bidi-isolation"> td-processor-bidi-isolation</a>.
+    </li>
+    <li>TD Producer mixed direction scripts.
+        <a href="#td-producer-mixed-direction">td-producer-mixed-direction</a>.
+    </li>
+    <li>Text direction inferencing.
+        <a href="#td-text-direction-first-strong">td-text-direction-first-strong</a> and
+        <a href="#td-text-direction-language-tag">td-text-direction-language-tag</a>.
+    </li>
+    <li>Support for OAuth2 client flow.
+        <a href="#td-security-oauth2-client-flow">td-security-oauth2-client-flow</a> and
+        <a href="#td-security-oauth2-client-flow-no-auth">td-security-oauth2-client-flow-no-auth</a>.
+    </li>
+    <li>Support for OAuth2 device flow.
+        <a href="#td-security-oauth2-device-flow">td-security-oauth2-device-flow</a>.
+    </li>
+    <li>Support for <code>queryallactions</code> operation.
+        <a href="#td-vocab-op--Form">td-vocab-op--Form_queryallactions</a>.
+    </li>
+    </ul>
+    <p>In addition, a number of assertions in the Privacy Considerations 
+    and Security Considerations sections are at risk.  These represent best
+    practices but often relate to deployment policy rather than implementations
+    and in some cases are difficult to validate.  The intention is to complete
+    as many of these as possible by PR; those that cannot be validated but
+    that represent best-practice recommendations will be converted into
+    informative statements.</p>
+    <p class="at-risk">At-risk assertions are marked with yellow highlighting.</span></p>
   </section>
 
   <section id="introduction" class="informative">
@@ -478,7 +510,7 @@ a[href].internalDFN {
   Events (<a href="#eventaffordance"><code>EventAffordance</code></a> class) are used
   for the push model of communication where notifications,
   discrete events, or streams of values are sent asynchronously to the receiver.
-  See [[?WOT-ARCHITECTURE]] for details.
+  See [[wot-architecture11]] for details.
   </p>
   <p>
   In general, the TD provides metadata for different <a>Protocol Bindings</a>
@@ -515,8 +547,8 @@ a[href].internalDFN {
             "forms": [{"href": "https://mylamp.example.com/toggle"}]
         }
     },
-    "events":{
-        "overheating":{
+    "events": {
+        "overheating": {
             "data": {"type": "string"},
             "forms": [{
                 "href": "https://mylamp.example.com/oh",
@@ -667,7 +699,7 @@ a[href].internalDFN {
     <pre class="example" title="Thing Model sample" id="td-model-example-lamp">
         {
             "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-            "@type" : "tm:ThingModel",
+            "@type": "tm:ThingModel",
             "title": "Lamp Thing Model",
             "properties": {
                 "status": {
@@ -739,7 +771,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
   <dfn>WoT Interface</dfn>, and
   <dfn>WoT Runtime</dfn>
   are defined in <a href="https://www.w3.org/TR/wot-architecture/#terminology">Section 3</a>
-  of the WoT Architecture specification [[?WOT-ARCHITECTURE]].
+  of the WoT Architecture specification [[wot-architecture11]].
   </p>
 
   <p>
@@ -752,9 +784,10 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
     </dt>
     <dd>
         A JSON-LD mechanism that links definitions in a <a>Thing Descriptions</a> document to concepts in an (RDF) ontology. 
-        This allows to give further context about the object property and express the domain knowledge in a standardized
-        way. In a <a>Thing Descriptions</a> document, this can seen in <code>@type</code> or as prefixes to a string with the usage
-        of a column (<code>:</code>).
+        This allows Thing Description authors to provide further context and express domain knowledge in a standardized way.  
+        In a <a>Thing Descriptions</a> document, this can be achieved using <code>@type</code> members, and through the use 
+        of string prefixes using a colon (<code>:</code>).
+
     </dd>
     <dt>
         <dfn id="dfn-context-ext">TD Context Extension</dfn>
@@ -928,7 +961,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
             <li>
                 the <em>core</em> TD <a>Vocabulary</a>, which reflects the
                 <a>Interaction Model</a> with the <a>Properties</a>, <a>Actions</a>, and <a>Events</a>
-                <a>Interaction Affordances</a> [[?WOT-ARCHITECTURE]]
+                <a>Interaction Affordances</a> [[wot-architecture11]]
             </li>
             <li>
                 the <em>Data Schema</em> <a>Vocabulary</a>, including (a subset of)
@@ -1230,7 +1263,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                   of the Thing.</td><td>optional</td><td><a>Map</a> of <a href="#eventaffordance"><code>EventAffordance</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-links--Thing"><td><code>links</code></td><td>Provides Web links to arbitrary resources that
                 relate to the specified Thing Description.</td><td>optional</td><td><a>Array</a> of <a href="#link"><code>Link</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-forms--Thing"><td><code>forms</code></td><td>Set of form hypermedia controls that describe how
+<tr class="rfc2119-table-assertion" id="td-vocab-forms--Thing"><td><code>forms</code></td><td>Set of form hypermedia controls that describe how 
                   an operation can be performed. Forms are
                   serializations of Protocol Bindings. Thing-level forms are used to describe endpoints for a group of interaction affordances.</td><td>optional</td><td><a>Array</a> of <a href="#form"><code>Form</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-security--Thing"><td><code>security</code></td><td>Set of security definition names, chosen from
@@ -1432,7 +1465,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                        information in different languages. Also see <cite><a href='#multilanguage'>MultiLanguage</a></cite>.</td><td>optional</td><td><a>Map</a> of <a href="#multilanguage"><code>MultiLanguage</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-forms--InteractionAffordance"><td><code>forms</code></td><td>Set of form hypermedia controls that describe
                 how an operation can be performed. Forms are
-                serializations of Protocol Bindings.</td><td>mandatory</td><td><a>Array</a> of <a href="#form"><code>Form</code></a></td></tr>
+                serializations of Protocol Bindings. The array cannot be empty.</td><td>mandatory</td><td><a>Array</a> of <a href="#form"><code>Form</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-uriVariables--InteractionAffordance"><td><code>uriVariables</code></td><td>Define URI template variables according to [[RFC6570]]  as collection
                 based on DataSchema declarations. The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema since each variable needs
                 to be serialized to a string inside the <code>href</code> upon the execution of the operation. 
@@ -1764,8 +1797,9 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           Extension</a>.</span>
           </p><p>
           <span class="rfc2119-assertion" id="td-security-no-secrets">For all security schemes,
-          any private keys, passwords, or other sensitive information directly providing access 
-          should be shared and stored out-of-band and <em class="rfc2119" title="MUST NOT">MUST NOT</em> be stored in the TD.</span> 
+          any keys, passwords, or other sensitive information directly providing access 
+          <em class="rfc2119" title="MUST NOT">MUST NOT</em> be stored in the TD and should instead
+          be shared and stored out-of-band via other mechanisms.</span> 
           The purpose of a TD is to describe how to access a Thing if and only if a Consumer 
           already has authorization, and is not meant be used to grant that authorization.
           </p><p>Each security scheme object used in a TD defines a set of requirements to be met before access can be granted.
@@ -2274,8 +2308,8 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           includes the well-known types necessary to implement the
           WoT interaction model described in [<cite><a class=
           "bibref" data-link-type="biblio" href=
-          "#bib-wot-architecture" title=
-          "Web of Things (WoT) Architecture">WOT-ARCHITECTURE</a></cite>].
+          "#bib-wot-architecture11" title=
+          "Web of Things (WoT) Architecture 1.1">wot-architecture11</a></cite>].
           Future versions of the standard may extend this list but
           <span class="rfc2119-assertion" id=
           "well-known-operation-types-only">operations types
@@ -2910,7 +2944,7 @@ In summary, this requires the following:
       <input type="checkbox"/>
       <span><i>with Default Values</i></span>
     </div>
-<pre>{
+<pre class="json">{
     "@context": "https://www.w3.org/2022/wot/td/v1.1",
     "id": "urn:uuid:645ab619-19ba-4b37-9933-8f0594398245",
     "title": "MyLampThing",
@@ -2948,7 +2982,7 @@ In summary, this requires the following:
     }
 }
 </pre>
-<pre>{
+<pre class="json">{
     "@context": "https://www.w3.org/2022/wot/td/v1.1",
     "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
     "title": "MyLampThing",
@@ -3044,7 +3078,7 @@ In summary, this requires the following:
 <pre class="example">
 {  
     "@context": "https://www.w3.org/2022/wot/td/v1.1",
-    ...
+    // ...
 }
 </pre>
 
@@ -3064,19 +3098,19 @@ In summary, this requires the following:
     "@type": "Thing",
     "id": "urn:uuid:1b37933b-3212-4dad-9c2c-74c6042c3e2b",
     "title": "MyThing",
-    "titles": {...},
+    "titles": {/*...*/},
     "description": "Human readable information.",
-    "descriptions": {...},
+    "descriptions": {/*...*/},
     "support": "mailto:support@example.com",
-    "version": {...},
+    "version": {/*...*/},
     "created": "2018-11-14T19:10:23.824Z",
     "modified": "2019-06-01T09:12:43.124Z",
-    "securityDefinitions": {...},
-    "security": ...,
+    "securityDefinitions": {/*...*/},
+    "security": /*...*/,
     "base": "https://servient.example.com/",
-    "properties": {...},
-    "actions": {...},
-    "events": {...},
+    "properties": {/*...*/},
+    "actions": {/*...*/},
+    "events": {/*...*/},
     "links": [...],
     "forms": [...]
 }
@@ -3150,11 +3184,11 @@ In summary, this requires the following:
 {
     "@context": [
         "https://www.w3.org/2022/wot/td/v1.1",
-        { "@language" : "en" }
+        { "@language": "en" }
     ],
     "title": "MyThing",
     "description": "Human readable information.",
-    ...
+    // ...
     "properties": {
         "on": {
             "title": "On/Off",
@@ -3164,11 +3198,11 @@ In summary, this requires the following:
         "status": {
             "title": "Status",
             "type": "object",
-            ...
+            // ...
             "forms": [...]
         }
     },
-    ...
+    // ...
 }
 </pre>
 
@@ -3200,8 +3234,8 @@ In summary, this requires the following:
             }
         ],
         "title": "شيء يخصني يقيس درجة الحرارة",
-        "description":"شيء يقيس درجة الحرارة و يظهر حالته",
-        ...
+        "description": "شيء يقيس درجة الحرارة و يظهر حالته",
+        // ...
         "properties": {
             "temp": {
                 "title": "درجة الحرارة",
@@ -3211,11 +3245,11 @@ In summary, this requires the following:
             "status": {
                 "title": "حالة",
                 "type": "object",
-                ...
+                // ...
                 "forms": [...]
             }
         },
-        ...
+        // ...
     }
 			</pre>
   </p>
@@ -3244,20 +3278,20 @@ In summary, this requires the following:
     "@context": "https://www.w3.org/2022/wot/td/v1.1",
     "title": "MyThing",
     "titles": {
-        "en":"MyThing",
+        "en": "MyThing",
         "de": "MeinDing",
         "ja": "私の物",
         "zh-Hans": "我的东西", 
         "zh-Hant": "我的東西"
     },
     "descriptions": {
-        "en":"Human readable information.",
+        "en": "Human readable information.",
         "de": "Menschenlesbare Informationen.",
         "ja": "人間が読むことができる情報",
         "zh-Hans": "人们可阅读的信息", 
         "zh-Hant": "人們可閱讀的資訊"
     },
-    ...
+    // ...
     "properties": {
         "on": {
             "titles": {
@@ -3277,11 +3311,11 @@ In summary, this requires the following:
                 "zh-Hans": "状态",
                 "zh-Hant": "狀態" },
             "type": "object",
-            ...
+            // ...
             "forms": [...]
         }
     },
-    ...
+    // ...
 }
 </pre>
     
@@ -3309,7 +3343,7 @@ In summary, this requires the following:
 {
     "@context": [
         "https://www.w3.org/2022/wot/td/v1.1",
-        { "@language" : "de" }
+        { "@language": "de" }
     ],
     "title": "MeinDing",
     "titles": {
@@ -3327,7 +3361,7 @@ In summary, this requires the following:
         "zh-Hans": "人们可阅读的信息", 
         "zh-Hant": "人們可閱讀的資訊"
     },
-    ...
+    // ...
     "properties": {
         "on": {
             "title": "An/Aus",
@@ -3349,11 +3383,11 @@ In summary, this requires the following:
                 "zh-Hans": "状态",
                 "zh-Hant": "狀態" },
             "type": "object",
-            ...
+            // ...
             "forms": [...]
         }
     },
-    ...
+    // ...
 }
 </pre>
 
@@ -3401,9 +3435,9 @@ In summary, this requires the following:
 
 <pre class="example">
 {
-    ...
+    // ...
     "version": { "instance": "1.2.1" },
-    ...
+    // ...
 }
 </pre>
 
@@ -3449,7 +3483,8 @@ In summary, this requires the following:
   </p>
 
 <pre class="example" id="security-basic-example">
-    ...
+{
+    // ...
     "securityDefinitions": {
         "basic_sc": {
             "scheme": "basic",
@@ -3457,7 +3492,8 @@ In summary, this requires the following:
         }
     },
     "security": "basic_sc",
-    ...
+    // ...
+}
 </pre>
 
 <p>
@@ -3491,10 +3527,10 @@ In summary, this requires the following:
       "support": "https://servient.example.com/contact",
       "securityDefinitions": { "nosec_sc": { "scheme": "nosec" }},
       "security": "nosec_sc",
-      "properties": {...},
-      "actions": {...},
-      "events": {...},
-      "links": [...]
+      "properties": {/*...*/},
+      "actions": {/*...*/},
+      "events": {/*...*/},
+      "links": [/*...*/]
   }
   </pre> 
   
@@ -3515,16 +3551,16 @@ In summary, this requires the following:
   
   <pre class="example">
   {
-      ...
+      // ...
       "securityDefinitions": {
           "basic_sc": {"scheme": "basic"},
           "nosec_sc": {"scheme": "nosec"}
       },
       "security": "basic_sc",
-      ...
+      // ...
       "properties": {
           "status": {
-              ...
+              // ...
               "forms": [{
                   "href": "https://mylamp.example.com/status"
               }]
@@ -3532,7 +3568,7 @@ In summary, this requires the following:
       },
       "actions": {
           "toggle": {
-              ...
+              // ...
               "forms": [{
                   "href": "https://mylamp.example.com/toggle"
               }]
@@ -3540,7 +3576,7 @@ In summary, this requires the following:
       },
       "events": {
           "overheating": {
-              ...
+              // ...
               "forms": [{
                   "href": "https://mylamp.example.com/oh",
                   "security": "nosec_sc"
@@ -3564,7 +3600,8 @@ In summary, this requires the following:
   </p>
 
 <pre class="example" id="security-digest-example">
-    ...
+{
+    // ...
     "securityDefinitions": {
         "proxy_sc": {
             "scheme": "digest",
@@ -3572,14 +3609,15 @@ In summary, this requires the following:
         },
         "bearer_sc": {
             "scheme": "bearer",
-            "in":"header",
+            "in": "header",
             "format": "jwt",
             "alg": "ES256",
             "authorization": "https://servient.example.com:8443/"
         }
     },
     "security": ["proxy_sc", "bearer_sc"],
-    ...
+    // ...
+}
 </pre>
 <p>
     <span class="rfc2119-assertion" id="td-security-combo-deprecation">
@@ -3591,7 +3629,8 @@ In summary, this requires the following:
   </p>
 
 <pre class="example" id="security-digest-example2">
-    ...
+{
+    // ...
     "securityDefinitions": {
         "proxy_sc": {
             "scheme": "digest",
@@ -3599,7 +3638,7 @@ In summary, this requires the following:
         },
         "bearer_sc": {
             "scheme": "bearer",
-            "in":"header",
+            "in": "header",
             "format": "jwt",
             "alg": "ES256",
             "authorization": "https://servient.example.com:8443/"
@@ -3610,7 +3649,8 @@ In summary, this requires the following:
         }
     },
     "security": "combo_sc",
-    ...
+    // ...
+}
 </pre>
 </section>
 <section id="security-security-forms">
@@ -3635,17 +3675,17 @@ In summary, this requires the following:
 
 <pre class="example">
 {
-    ...
+    // ...
     "securityDefinitions": {
         "basic_sc": { "scheme": "basic" },
         "digest_sc": { "scheme": "digest" },
         "bearer_sc": { "scheme": "bearer" }
     },
     "security": "basic_sc",
-    ...
+    // ...
     "properties": {
         "status": {
-            ...
+            // ...
             "forms": [{
                 "href": "https://mylamp.example.com/status"
             }, {
@@ -3657,7 +3697,7 @@ In summary, this requires the following:
             }]
         }
     },
-    ...
+    // ...
 }
 </pre>
 </section>
@@ -3670,7 +3710,7 @@ In summary, this requires the following:
   </p>
 <pre class="example">
 {
-    ...
+    // ...
     "securityDefinitions": {
         "basic_sc": { "scheme": "basic" },
         "digest_sc": { "scheme": "digest" },
@@ -3681,16 +3721,16 @@ In summary, this requires the following:
         }
     },
     "security": "combo_sc",
-    ...
+    // ...
     "properties": {
         "status": {
-            ...
+            // ...
             "forms": [{
                 "href": "https://mylamp.example.com/status"
             }]
         }
     },
-    ...
+    // ...
 }
 </pre>
 </section>
@@ -3714,7 +3754,7 @@ In summary, this requires the following:
   
 <pre class="example">
 {
-    ...
+    // ...
     "securityDefinitions": {
         "oauth2_sc": {
             "scheme": "oauth2",
@@ -3724,10 +3764,10 @@ In summary, this requires the following:
         }
     },
     "security": "oauth2_sc",
-    ...
+    // ...
     "properties": {
         "status": {
-            ...
+            // ...
             "forms": [{
                 "href": "https://scopes.example.com/status",
                 "scopes": ["limited"]
@@ -3736,14 +3776,14 @@ In summary, this requires the following:
     },
     "actions": {
         "configure": {
-            ...
+            // ...
             "forms": [{
                 "href": "https://scopes.example.com/configure",
                 "scopes": ["special"]
             }]
         }
     },
-    ...
+    // ...
 }
 </pre>
 
@@ -3760,7 +3800,7 @@ In summary, this requires the following:
 
 <pre class="example">
     {
-        ...
+        // ...
         "securityDefinitions": {
             "apikey_key": {
                 "scheme": "apikey",
@@ -3771,14 +3811,14 @@ In summary, this requires the following:
         "security": "apikey_key",
         "properties": {
             "status": {
-                ...
+                // ...
                 "forms": [{
                     "href": "https://example.com/{adminKey}/status",
-                    ...
+                    // ...
                 }]
             }
         },
-        ...
+        // ...
     }
     </pre>
 
@@ -3799,7 +3839,7 @@ In summary, this requires the following:
   </p>
 <pre class="example">
 {
-    ...
+    // ...
     "securityDefinitions": {
         "apikey_key": {
             "scheme": "apikey",
@@ -3817,17 +3857,17 @@ In summary, this requires the following:
         }
     },
     "security": "apikey_combo",
-    ...
+    // ...
     "properties": {
         "status": {
-            ...
+            // ...
             "forms": [{
                 "href": "https://example.com/{secClientID}/status/{secKey}",
-                ...
+                // ...
             }]
         }
     },
-    ...
+    // ...
 }
 </pre>
 <p>While not shown in this example, it is legal to declare additional URI template
@@ -3854,7 +3894,7 @@ Note: if the security key occurs in different inconsistent locations, it will be
 necessary to use multiple security scheme definitions.
 <pre class="example">
 {
-    ...
+    // ...
     "securityDefinitions": {
         "apikey_body": {
             "scheme": "apikey",
@@ -3863,19 +3903,19 @@ necessary to use multiple security scheme definitions.
         }
     },
     "security": "apikey_body",
-    ...
+    // ...
     "properties": {
         "color": {
-            ...
+            // ...
             "type": "object",
             "properties": {
                 "brightness": {
                     "type": "number",
-                    ...
+                    // ...
                 },
                 "rgb": {
                     "type": "array",
-                    ...
+                    // ...
                 },
                 "auth": {
                     "type": "object",
@@ -3890,13 +3930,13 @@ necessary to use multiple security scheme definitions.
             "required": ["brightness", "rgb", "auth"],
             "forms": [{
                 "href": "https://example.com/color",
-                ...
+                // ...
             }]
         }
     },
     "action": {
         "on": {
-            ...
+            // ...
             "input": {
                 "auth": {
                     "type": "object",
@@ -3911,11 +3951,11 @@ necessary to use multiple security scheme definitions.
             "required": ["auth"],
             "forms": [{
                 "href": "https://example.com/on",
-                ...
+                // ...
             }]
         },
         "off": {
-            ...
+            // ...
             "input": {
                 "auth": {
                     "type": "object",
@@ -3930,11 +3970,11 @@ necessary to use multiple security scheme definitions.
             "required": ["auth"],
             "forms": [{
                 "href": "https://example.com/off",
-                ...
+                // ...
             }]
         }
     },
-    ...
+    // ...
 }
 </pre>
 However, it is rather annoying and redundant to add the security information
@@ -3946,7 +3986,7 @@ a data schema will effectively be <em>created</em> for the actions <code>on</cod
 <code>off</code> to hold just the security information.
 <pre class="example">
 {
-    ...
+    // ...
     "securityDefinitions": {
         "apikey_body": {
             "scheme": "apikey",
@@ -3955,46 +3995,46 @@ a data schema will effectively be <em>created</em> for the actions <code>on</cod
         }
     },
     "security": "apikey_body",
-    ...
+    // ...
     "properties": {
         "color": {
-            ...
+            // ...
             "type": "object",
             "properties": {
                 "brightness": {
                     "type": "number",
-                    ...
+                    // ...
                 },
                 "rgb": {
                     "type": "array",
-                    ...
+                    // ...
                 }
             },
             "required": ["brightness", "rgb"],
             "forms": [{
                 "href": "https://example.com/color",
-                ...
+                // ...
             }]
         }
     },
     "action": {
         "on": {
-            ...
+            // ...
             "required": ["auth"],
             "forms": [{
                 "href": "https://example.com/on",
-                ...
+                // ...
             }]
         },
         "off": {
-            ...
+            // ...
             "forms": [{
                 "href": "https://example.com/off",
-                ...
+                // ...
             }]
         }
     },
-    ...
+    // ...
 }
 </pre>
 
@@ -4040,7 +4080,8 @@ a data schema will effectively be <em>created</em> for the actions <code>on</cod
 
 <aside class="example" id="property-serialization-sample" title="Sample of Property serializations">
 <pre>
-    ...
+{
+    // ...
     "properties": {
         "on": {
             "type": "boolean",
@@ -4069,7 +4110,8 @@ a data schema will effectively be <em>created</em> for the actions <code>on</cod
             "forms": [...]
         }
     },
-    ...
+    // ...
+}
 </pre>
 </aside>
 
@@ -4119,7 +4161,8 @@ a data schema will effectively be <em>created</em> for the actions <code>on</cod
 
 <aside class="example" id="action-serialization-sample" title="Sample of an Action serialization">
 <pre>
-    ...
+{
+    // ...
     "actions": {
         "fade": {
             "title": "Fade in/out",
@@ -4145,7 +4188,8 @@ a data schema will effectively be <em>created</em> for the actions <code>on</cod
             "forms": [...]
         }
     },
-    ...
+    // ...
+}
 </pre>
 </aside>
  
@@ -4197,7 +4241,8 @@ a data schema will effectively be <em>created</em> for the actions <code>on</cod
 
 <aside class="example" id="event-serialization-sample" title="Sample of an Event serialization">
 <pre>
-    ...
+{
+    // ...
     "events": {
         "overheated": {
             "data": {
@@ -4206,7 +4251,8 @@ a data schema will effectively be <em>created</em> for the actions <code>on</cod
             "forms": [...]
         }
     },
-    ...
+    // ...
+}
 </pre>
 </aside>
 
@@ -4241,34 +4287,39 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
 <aside class="example" id="link-serialization-sample" title="Sample of a Link serialization">
 <pre>
-    ...
+{
+    // ...
     "links": [{
         "rel": "controlledBy",
         "href": "https://servient.example.com/things/lampController",
         "type": "application/td+json"
     }]
-    ...
+    // ...
+}
 </pre>
 </aside>
 
 <p>To point to a developer documentation of a <a>Thing</a> the value <code>service-doc</code> can be used:</p>
 
     <pre class="example" title="Link to developer documentation">
-        ...
+	{
+        // ...
         "links": [{
             "rel": "service-doc",
             "href": "https://example.com/howTo",
             "type": "application/pdf",
-            "hreflang" : "en"
+            "hreflang": "en"
         }]
-        ...
+        // ...
+	}
     </pre>
 
     <p>A superordinate Thing can collect a group of Things and refer to them by using the <code>item</code> value:</p>
 
     <pre class="example" title="An electric drive includes two motors.">
-        "title" : "Electric Drive",
-        ...
+	{
+        "title": "Electric Drive",
+        // ...
         "links": [{
             "rel": "item",
             "href": "coaps://motor1.example.com",
@@ -4278,23 +4329,25 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
             "rel": "item",
             "href": "coaps://motor2.example.com",
             "type": " application/td+json"
-        }
-        ]
-        ...
+        }]
+        // ...
+	}
     </pre>
 
     <p>A Thing refers to a group in which it is collected with the <code>collection</code> value:</p>
 
     <pre class="example" title="An electric motor is member of the electric drive collection.">
-        "title" : "Electric Motor 1",
+	{
+        "title": "Electric Motor 1",
         "base": "coaps://motor1.example.com",
-        ...
+        // ...
         "links": [{
             "rel": "collection",
             "href": "coaps://drive.example.com",
             "type": " application/td+json"
         }]
-        ...
+        // ...
+	}
     </pre>
 
 
@@ -4328,14 +4381,16 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
 <aside class="example" id="form-serialization-sample" title="Sample of a Form serialization">
 <pre>
-    ...
+{
+    // ...
     "forms": [{
         "op": "writeproperty",
         "href": "http://mytemp.example.com:5683/temp",
         "contentType": "application/json",
         "htv:methodName": "POST"
     }]
-    ...
+    // ...
+}
 </pre>
 </aside>
 
@@ -4368,10 +4423,10 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 <pre class="example">
 {
     "@context": "https://www.w3.org/2022/wot/td/v1.1",
-    ...
+    // ...
     "properties": {
         "weather": {
-            ...
+            // ...
             "uriVariables": {
                 "lat": { 
                     "type": "number", 
@@ -4389,9 +4444,9 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
               "htv:methodName": "GET"
             }]
         },
-        ...
+        // ...
     },
-    ...
+    // ...
 }
 </pre>
 
@@ -4402,10 +4457,10 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
     <pre class="example">
         {
             "@context": "http://www.w3.org/ns/td",
-            ...
+            // ...
             "properties": {
                 "weather": {
-                    ...
+                    // ...
                     "uriVariables": {
                         "city": {
                             "type": "string",
@@ -4417,9 +4472,9 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
                         "htv:methodName": "GET"
                     }]
                 },
-            ...
+                // ...
             },
-            ...
+            // ...
         }
     </pre>
 </p>
@@ -4430,10 +4485,10 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
     <pre class="example">
         {
             "@context": "http://www.w3.org/ns/td",
-            ...
+            // ...
             "properties": {
                 "weather": {
-                    ...
+                    // ...
                     "uriVariables": {
                         "city": {
                             "type": "string",
@@ -4441,7 +4496,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
                         },
                         "unit": {
                             "type": "string",
-                            "enum":["fahrenheit_value","celsius_value"],
+                            "enum": ["fahrenheit_value","celsius_value"],
                             "description": "Desired unit for the temperature value"
                         }
                     },
@@ -4450,9 +4505,9 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
                         "htv:methodName": "GET"
                     }]
                 },
-            ...
+                // ...
             },
-            ...
+            // ...
         }
     </pre>
 </p>
@@ -4473,9 +4528,11 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
   </p>
 
 <pre class="example">
-    ...
+{
+    // ...
     "contentType": "text/plain; charset=utf-8",
-    ...
+    // ...
+}
 </pre>
 </section>
 <section id="form-response">
@@ -4513,10 +4570,10 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
 <pre class="example">
 {
-    ...
+    // ...
     "actions": {
         "takePhoto": {
-            ...
+            // ...
             "forms": [{
                 "op": "invokeaction",
                 "href": "http://camera.example.com/api/snapshot",
@@ -4527,7 +4584,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
             }]
         }
     },
-    ...
+    // ...
 }
 </pre>
 </section>
@@ -4554,27 +4611,27 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
 <pre class="example">
 {
-    ...
-    "schemaDefinitions":{
-      "actionErrorPayload":{
-        "type":"object",
-        "properties":{
-          "reason":{
-            "type":"string",
-            "enum":["cold","hot","maintenance"]
+    // ...
+    "schemaDefinitions": {
+      "actionErrorPayload": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": ["cold","hot","maintenance"]
           },
-          "timeStamp":{
-            "description":"UNIX time in numbers indicating when the error happened",
-            "type":"number"
+          "timeStamp": {
+            "description": "UNIX time in numbers indicating when the error happened",
+            "type": "number"
           }
         }
       }
     },
-    ...
+    // ...
     "actions": {
         "startEngine": {
-            "output":{
-              "type":"string"
+            "output": {
+              "type": "string"
             },
             "forms": [{
                 "op": "invokeaction",
@@ -4583,12 +4640,12 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
                 "additionalResponses": [{
                     "success":false,
                     "contentType": "application/json",
-                    "schema":"actionErrorPayload"
+                    "schema": "actionErrorPayload"
                 }]
             }]
         }
     },
-    ...
+    // ...
 }
 </pre>
 
@@ -4610,7 +4667,7 @@ is shown below:
 
 <pre class="example">
 {
-    ...
+    // ...
     "properties": {
         "image": { 
 	        "description": "Provides latest image", 
@@ -4625,7 +4682,7 @@ is shown below:
 		    }] 
         }
     },
-    ...
+    // ...
 }
 </pre>
 </section>
@@ -4646,7 +4703,7 @@ is shown below:
 
 <pre class="example" id="td-forms-readall-example">
 {
-    ...
+    // ...
     "properties": {
         "on": {
             "type": "boolean",
@@ -4661,7 +4718,7 @@ is shown below:
             "forms": [...]
         }
     },
-    ...
+    // ...
     "forms": [{
         "op": "readallproperties",
         "href": "https://mylamp.example.com/properties",
@@ -4686,7 +4743,7 @@ can be set:
 
 <pre class="example" id="td-forms-urivariables-thing-example">
     {
-        ...
+        // ...
         "properties": {
             "temperature": {
                 "type": "number",
@@ -4701,15 +4758,15 @@ can be set:
                 "forms": [...]
             }
         },
-        "uriVariables":{
-            "propertyNames":{
+        "uriVariables": {
+            "propertyNames": {
                 "type": "string",
                 "description": "Comma separated list of property names to select."
             },
-            "unitSystem":{
+            "unitSystem": {
                 "type": "string",
-                "enum":["metric_value","imperial_value","uscustomary_value"],
-                "description":"System of Measurement that will be used for the values"
+                "enum": ["metric_value","imperial_value","uscustomary_value"],
+                "description": "System of Measurement that will be used for the values"
             }
         }
         "forms": [{
@@ -4798,7 +4855,8 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
 
 <aside class="example" id="dataschema-serialization-sample" title="Sample of a DataSchema serialization">
 <pre>
-    ...
+{
+    // ...
     "type": "object",
     "properties": {
         "status": {
@@ -4824,7 +4882,8 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
             "maxItems": 3
         }
     },
-    ...
+    // ...
+}
 </pre>
 </aside>
 
@@ -4840,7 +4899,8 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   <p>A TD snippet with the usage of <code>readOnly</code> and <code>writeOnly</code> is given below:</p>
 
 <pre class="example">
-    ...
+{
+    // ...
     "properties": {
         "status": {
             "description": "Read or write On/Off status.",
@@ -4860,7 +4920,8 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
             forms: [...]
         }
     }
-    ...
+    // ...
+}
 </pre>
 
   <p>
@@ -4895,19 +4956,6 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
 
 <section id="validation-serialization-json">
 <h2>Validation</h2>
-  <p class="ednote" title="No Tag Yet">
-  This section refers to
-  tagging of assertions into different categories for the purposes of 
-  validation.  This has not yet been done but will be done prior to CR
-  transition.
-  </p>
-  <!--
-  <p class="ednote" title="Extensions">
-  Validation of extensions is difficult for various reasons 
-  so we may extend this with variants
-  that support extensions or not e.g. "Basic Validation with/without Extensions".
-  </p>
-  -->
 
   <p>
   In several contexts automatic validation of a JSON-based serialization 
@@ -4923,6 +4971,11 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   </p>
   <section id="minimal-validation-serialization-json">
   <h3>Minimal Validation</h3>
+  <p> 
+  This level of validation includes all assertions implied by 
+  normative tables in this document, and those that can be checked
+  by looking only at the TD itself.
+  </p>
   <p>Minimal Validation is appropriate where validation needs to be 
   self-contained (e.g. devices on isolated networks).
   It does not attempt to validate context extensions and vocabularies.
@@ -4931,29 +4984,28 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   in combination with a few spot checks, for example to check that 
   security schema names have matching definitions.
   </p>
-  <p> 
-  This level of validation includes all assertions implied by 
-  normative tables in this document.
-  </p>
   </section>
   <section id="basic-validation-serialization-json">
   <h3>Basic Validation</h3>
+  </p><p> 
+  This level of validation includes all those covered by 
+  <a href="#minimal-validation-serialization-json"></a> as well as basic validation
+  of semantic definitions.
+  </p>
   <p>Basic validation is appropriate in situations where
   network access is possible and does not pose a privacy risk, and
   for relatively unconstrained computing requirements.  It is suitable
   for gateways, for example, but not for endpoints, since semantic
-  processing is required.  It can validate extensions.
-  </p><p>
+  processing is required.  It can do basic validation of extensions,
+  specfically that the vocabulary used is defined.
+  </p>
+  <p>
   In this case, context definition files and 
   SHACL definitions can be used to validate additional
   assertions and check TDs for semantic consistency.  In addition, if
   context definitions and SHACL constraints for extension vocabularies 
   can be fetched, then these
   can be used to validate extensions.
-  </p><p> 
-  This level of validation includes all those covered by 
-  <a href="#minimal-validation-serialization-json"></a>.
-  </p>
   </section>
   <section id="full-validation-serialization-json">
   <h3>Full Validation</h3>
@@ -4961,6 +5013,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   are satisfied, 
   including the assertions given in <a href="#behavior"></a> that
   confirm the TD is consistent with the Thing it describes.
+  </p><p>
   This level of validation is appropriate during development, before
   release, and possibly after installation.
   Validation during development would have to be on test Things.
@@ -5014,7 +5067,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
         },
         "https://schema.org/"
     ],
-    ...
+    // ...
 }
 </pre>
 
@@ -5077,11 +5130,11 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
     ],
     "version": {
         "instance": "1.2.1",
-        "schema:softwareVersion" : "1.0.1"
+        "schema:softwareVersion": "1.0.1"
     },
     "schema:serialNumber": "4CE0460D0G",
     "schema:manufacturer": {"name": "CompanyName"},
-    ...
+    // ...
     "@type": "saref:TemperatureSensor",
     "properties": {
         "temperature": {
@@ -5092,9 +5145,9 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
             "unit": "om:degree_Celsius",
             "forms": [...]
         },
-        ...
+        // ...
     },
-    ...
+    // ...
 }
 </pre>
 
@@ -5134,7 +5187,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
         "@id": "urn:uuid:67c9122b-2680-4e1a-b41c-5af07edba1f4/state",
         "@type": "saref:OnOffState"
     },
-    ...
+    // ...
     "properties": {
         "status": {
             "ssn:forProperty": "urn:uuid:67c9122b-2680-4e1a-b41c-5af07edba1f4/state",
@@ -5151,9 +5204,9 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
             },
             "forms": [{"href": "https://mylamp.example.com/status?full=true"}]
         },
-        ...
+        // ...
     },
-    ...
+    // ...
 }
 </pre>
 
@@ -5196,10 +5249,10 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
     "@type": "Thing",
     "geo:lat": "26.58",
     "geo:long": "297.83",
-    ...
+    // ...
     "properties": {
-        ...
-    
+        // ...
+    }
 }
 </pre>
 
@@ -5218,7 +5271,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
             "schema": "http://schema.org#"
         }
     ],
-    ...
+    // ...
     "properties": {
         "position": {
             "type": "object",
@@ -5230,9 +5283,9 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
             },
             "forms": [{"href": "https://robot.example.com/position"}]
         },
-        ...
+        // ...
     },
-    ...
+    // ...
 }
 </pre>
 
@@ -5250,7 +5303,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
             "schema": "http://schema.org#"
         }
     ],
-    ...
+    // ...
     "properties": {
         "position": {
         "jsonld:context": {
@@ -5266,8 +5319,8 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
             "height": { "type": "number" }
         }
         }
-  },
-    ...
+    },
+    // ...
 }
 </pre>
 
@@ -5281,51 +5334,10 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
   With the <a>TD Context Extensions</a> in a Thing Description,
   the communication metadata can be supplemented or new <a>Protocol Bindings</a> added
   through additional <a>Vocabulary Terms</a> serialized into JSON objects representing a <code>Form</code> instance.
-  (see also <a href="#protocol-bindings"></a>).
+  Please see <a href="#protocol-bindings"></a> for additional details.
   </p>
     
-  <p>
-  The following TD example uses a fictional CoAP <a>Protocol Binding</a>,
-  as no such <a>Protocol Binding</a> is available at the time of writing this specification.
-  This <a>TD Context Extension</a> assumes that there is a <em>CoAP in RDF vocabulary</em> similar to <em>HTTP Vocabulary in RDF 1.0</em> [[?HTTP-in-RDF10]]
-  that is accessible via an example namespace <code>http://www.example.org/coap-binding#</code>.
-  The supplemented <code>cov:methodName</code> member instructs the <a>Consumer</a>
-  which CoAP method has to be applied
-  (e.g., <code>GET</code> for the CoAP Method Code 0.01,
-  <code>POST</code> for the CoAP Method Code 0.02,
-  or <code>iPATCH</code> for CoAP Method Code 0.07).
-  </p>
-    
-<aside class="example" id="context-extension-for-forms" title="Specialization of forms through TD Context Extension">
-<pre>
-{
-    "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
-        { "cov": "http://www.example.org/coap-binding#" }
-    ],
-    ...
-    "properties": {
-        "brightness": {
-            "description": "The current brightness setting",
-            "type": "integer",
-            "minimum": -64,
-            "maximum": 64,
-            "forms": [{
-                "op": "readproperty",
-                "href": "coap://example.org:61616/api/brightness",
-                "cov:methodName": "GET"
-            }, {
-                "op": "writeproperty",
-                "href": "coap://example.org:61616/api/brightness",
-                "cov:methodName": "POST"
-            }]
-        },
-        ...
-    },
-    ...
-}
-</pre>
-</aside>
+
     
 </section>
     
@@ -5347,18 +5359,18 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
     
 <pre class="example">
 {
-    @context: [
+    "@context": [
         "https://www.w3.org/2022/wot/td/v1.1",
         {
             "cov": "http://www.example.org/coap-binding#",
             "ace": "http://www.example.org/ace-security#"
         }
     ],
-    ...
+    // ...
     "securityDefinitions": {
         "ace_sc": {
             "scheme": "ace:ACESecurityScheme",
-            ...
+            // ...
             "ace:as": "coaps://as.example.com/token",
             "ace:audience": "coaps://rs.example.com",
             "ace:scopes": ["limited", "special"],
@@ -5368,7 +5380,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
     "security": ["ace_sc"],
     "properties": {
         "status": {
-            ...
+            // ...
             "forms": [{
                 "op": "readproperty",
                 "href": "coaps://rs.example.com/status",
@@ -5380,7 +5392,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
     },
     "actions": {
         "configure": {
-            ...
+            // ...
             "forms": [{
                 "op": "invokeaction",
                 "href": "coaps://rs.example.com/configure",
@@ -5390,7 +5402,7 @@ On the <a>Thing</a> side, <a>Thing</a> is expected to return readable (non <code
             }]
         }
     },
-    ...
+    // ...
 }
 </pre>
 
@@ -5456,7 +5468,7 @@ interacting with <a>Things</a>.
 <li>
 <span class="rfc2119-assertion" 
       id="client-data-schema">
-A <a>Thing</a> acting as a <a>Consumer</a> when interacting with another target <a>Thing</a>
+A <a>Consumer</a> when interacting with another target <a>Thing</a>
 described in a WoT Thing Description MUST generate data  
 organized according to the data schemas given in the corresponding
 interactions.
@@ -5483,7 +5495,7 @@ This applies to <code>ObjectSchema</code> and <code>ArraySchema</code> (when <co
 <li>
 <span class="rfc2119-assertion" 
       id="client-data-schema-accept-extras">
-A <a>Thing</a> acting as a <a>Consumer</a> when interacting with another <a>Thing</a> MUST accept without
+A <a>Consumer</a> when interacting with another <a>Thing</a> MUST accept without
 error any additional data  
 not described in the data schemas given in the Thing Description of the target <a>Thing</a>.
 </span>
@@ -5494,14 +5506,14 @@ This applies to <code>ObjectSchema</code> and <code>ArraySchema</code> (when <co
 <li>
 <span class="rfc2119-assertion" 
       id="client-data-schema-no-extras">
-A <a>Thing</a> acting as a <a>Consumer</a> when interacting with another <a>Thing</a> MUST NOT generate data
+A <a>Consumer</a> when interacting with another <a>Thing</a> MUST NOT generate data
 not described in the data schemas given in the Thing Description of that <a>Thing</a>.
 </span>
 </li>
 <li>
 <span class="rfc2119-assertion" 
       id="client-uri-template">
-A <a>Thing</a> acting as a <a>Consumer</a> when interacting with another <a>Thing</a> MUST generate URIs
+A <a>Consumer</a> when interacting with another <a>Thing</a> MUST generate URIs
 according to the URI Templates, base URIs, and form href parameters
 given in the Thing Description of the target <a>Thing</a>.
 </span>
@@ -5528,7 +5540,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 
   <p>
     Every form in a WoT Thing Description needs to have a submission target, given by the <code>href</code> member, as indicated in <a href="#form">Form</a>. 
-    The URI scheme [[!RFC3986]] of this submission target indicates what <a>Protocol Binding</a> the <a>Thing</a> implements [[?WOT-ARCHITECTURE]].
+    The URI scheme [[!RFC3986]] of this submission target indicates what <a>Protocol Binding</a> the <a>Thing</a> implements [[wot-architecture11]].
     For instance, if the target starts with <code>http</code> or
     <code>https</code>, a <a>Consumer</a> can then infer the <a>Thing</a> implements the
     <a>Protocol Binding</a> based on HTTP and it should expect HTTP-specific terms in the
@@ -5536,10 +5548,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <ul>
         <li>
             <span class="rfc2119-assertion" id="bindings-requirements-scheme">
-                Every form in a WoT Thing Description MUST follow the requirements
-                of the <a>Protocol Binding</a> Template indicated by the URI scheme [[!RFC3986]] of its
-                <code>href</code> member as indicated by the Binding Templates specification at <a href="https://w3c.github.io/wot-binding-templates/#creating-a-new-protocol-binding">Creating a New Protocol Binding</a>.
-
+                Every form in a WoT Thing Description MUST follow the requirements of the <a>Protocol Binding</a> indicated by the URI scheme [[!RFC3986]] of its <code>href</code> member.
             </span>
         </li>
         <li>
@@ -5637,7 +5646,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                 <input type="checkbox">
                 <span><i>with default values for Protocol Binding based on HTTP</i></span>
             </div>
-            <pre>{
+            <pre class="json">{
     "@context": "https://www.w3.org/2022/wot/td/v1.1",
     "id": "urn:uuid:3a559b69-cbec-4e7b-b543-bd8e6e41fd8b",
     "title": "MyLampThing",
@@ -5685,7 +5694,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         }
     }
 }</pre>
-        <pre>{
+        <pre class="json">{
     "@context": "https://www.w3.org/2022/wot/td/v1.1",
     "id": "urn:uuid:3deca264-4f90-4321-a5ea-f197e6a1c7cf",
     "title": "MyLampThing",
@@ -5751,7 +5760,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                 <input type="checkbox">
                 <span><i>extended <code>forms</code> in case of multiple values in <code>op</code></i></span>
             </div>
-            <pre>{
+            <pre class="json">{
     "@context": "https://www.w3.org/2022/wot/td/v1.1",
     "id": "urn:uuid:43e2081d-3fd9-41bf-803d-baaefb79c70f",
     "title": "MyLampThing",
@@ -5776,7 +5785,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         }
     }
 }</pre>
-        <pre>{
+        <pre class="json">{
     "@context": "https://www.w3.org/2022/wot/td/v1.1",
     "id": "urn:uuid:9cd44eef-0b3f-4566-94b0-1358af3d86bd",
     "title": "MyLampThing",
@@ -5918,7 +5927,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
         <h3>Versioning</h3>
     
     <p>
-        <span class="rfc2119-assertion" id="tm-versioning">
+        <span class="rfc2119-assertion" id="tm-versioning-1">
             When the <a>Thing Model</a> definitions change over time, this SHOULD be reflected in the version container.
             </span>
         The string-based term <code>model</code> is used within the <code>version</code> container to 
@@ -5928,17 +5937,17 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
 
     <pre class="example" title="Thing Model versioning">
         {
-            ...
-            "@type" : "tm:ThingModel",
+            // ...
+            "@type": "tm:ThingModel",
             "title": "Lamp Thing Model",
             "description": "Lamp Thing Description Model",
-            "version" : {"model" : "1.0.0" },
-            ...
+            "version" : {"model": "1.0.0"},
+            // ...
         }
         </pre>
 
         <p>
-            <span class="rfc2119-assertion" id="tm-versioning">
+            <span class="rfc2119-assertion" id="tm-versioning-2">
                 Due to the definition of <a>Thing Model</a> the term <code>instance</code> MUST be omitted within the <code>version</code> container. 
             <span>
         </p>
@@ -5958,7 +5967,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <p>
         A <a>Thing Model</a> can extend an existing <a>Thing Model</a> by using the <code>tm:extends</code> mechanism announced in the <code>links</code> definition: 
      <span class="rfc2119-assertion" id="tm-extend">
-        When a Thing Model extends another Thing Model, at least one <code>links</code> entry with <code>"rel":"tm:extends"</code> 
+        When a Thing Model extends another Thing Model, at least one <code>links</code> entry with <code>"rel": "tm:extends"</code> 
         that targets a <a>Thing Model</a> that is be extended MUST be used.
     </span>
     The <a>Thing Model</a> will inherit all definitions from the extended <a>Thing Model</a>. There is the opportunity 
@@ -5989,7 +5998,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="example" title="Basic On/Off Thing Model Definition" id="td-model-example-basic-on-off">
         {
             "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-            "@type" : "tm:ThingModel",
+            "@type": "tm:ThingModel",
             "title": "Basic On/Off Thing Model",
             "properties": {
                 "onOff": {
@@ -6007,7 +6016,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="example" title="Smart Lamp Control Thing Model Definition" id="td-model-example-smart-lamp-control">
         {
             "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-            "@type" : "tm:ThingModel",
+            "@type": "tm:ThingModel",
             "title": "Smart Lamp Control with Dimming",
             "links" : [{
                 "rel": "tm:extends",
@@ -6065,11 +6074,11 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="example" title="Smart Lamp Control imports existing definition" id="td-model-example-tmRef">
         {
             "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-            "@type" : "tm:ThingModel",
+            "@type": "tm:ThingModel",
             "title": "Smart Lamp Control",
             "properties" : {
                 "switch" : {
-                    "tm:ref" :"http://example.com/BasicOnOffTM.tm.jsonld#/properties/onOff"
+                    "tm:ref": "http://example.com/BasicOnOffTM.tm.jsonld#/properties/onOff"
                 }
            }
         }
@@ -6086,7 +6095,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="example" title="Multi Sensor Thing Model re-using definitions with relative imports" id="td-model-example-relative-tmRef">
         {
             "@context": "https://www.w3.org/2022/wot/td/v1.1", 
-            "@type" : "tm:ThingModel",
+            "@type": "tm:ThingModel",
             "title": "Multi Sensor",
             "properties": {
                 "genericTemperature": {
@@ -6105,9 +6114,8 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
                     "unit": "K"
                 }
             },
-            "tm:required": [
-                "/properties/innerTemperature",
-                "/properties/outerTemperature"
+            "tm:optional": [
+                "/properties/genericTemperature"
             ]
         }
     </pre>
@@ -6142,21 +6150,21 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="example" title="Smart Lamp Control extend and overwrite existing definitions" id="td-model-example-tmRef2">
         {
             "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-            "@type" : "tm:ThingModel",
+            "@type": "tm:ThingModel",
             "title": "Smart Lamp Control",
             "properties" : {
                 "dimming" : {
-                    "tm:ref" :"http://example.com/SmartLampControlwithDimming.tm.jsonld#/properties/dim",
+                    "tm:ref": "http://example.com/SmartLampControlwithDimming.tm.jsonld#/properties/dim",
                     "title": null,
                     "maximum": 80,
-                    "unit" : "%"
+                    "unit": "%"
                 }
            }
         }
     </pre>
 
     <p>
-        Based on the JSON Merge Patch algorithm the <code>{"title": null,"maximum": 80,"unit" : "%"}</code> would act as a patch for the referenced origin content <code>{"title": "Dimming level",  "type": "integer", "minimum": 0, "maximum": 100}</code>.
+        Based on the JSON Merge Patch algorithm the <code>{"title": null,"maximum": 80,"unit": "%"}</code> would act as a patch for the referenced origin content <code>{"title": "Dimming level",  "type": "integer", "minimum": 0, "maximum": 100}</code>.
     </p>
  
     <p>
@@ -6169,7 +6177,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
     <pre class="example" title="Smart Lamp Control Thing Model with extend and import mechanism" id="td-model-example-smart-lamp-control-extend-import">
         {
             "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-            "@type" : "tm:ThingModel",
+            "@type": "tm:ThingModel",
             "title": "Smart Lamp Control",
             "links" : [{
                 "rel": "extends",
@@ -6178,10 +6186,10 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
              }],
             "properties" : {
                 "status" : {
-                    "tm:ref" :"http://example.com/LampTM.tm.jsonld#/properties/status"
+                    "tm:ref": "http://example.com/LampTM.tm.jsonld#/properties/status"
                 },
                 "dimming" : {
-                    "tm:ref" :"http://example.com/LampWithDimmingTM.tm.jsonld#/properties/dim"
+                    "tm:ref": "http://example.com/LampWithDimmingTM.tm.jsonld#/properties/dim"
                 }
            }
         }
@@ -6236,12 +6244,12 @@ provides <code>dimmable</code> and <code>RGB</code> capabilities.
          <button class="exampleTab1 Ventilation"         onclick="openTab('exampleTab1', 'Ventilation')">Ventilation TM</button>
          <button class="exampleTab1 LED"    onclick="openTab('exampleTab1', 'LED')">LED TM</button>
        </div>
-       <pre class="SmartVentilator exampleTab1 selected ">
+       <pre class="SmartVentilator exampleTab1 selected json">
         {
             "@context": "https://www.w3.org/2022/wot/td/v1.1",
             "@type": "tm:ThingModel",
             "title": "Smart Ventilator Thing Model",
-            "version" : { "model" : "1.0.0" },
+            "version" : { "model": "1.0.0" },
             "links": [
               {
                 "rel": "tm:submodel",
@@ -6261,7 +6269,7 @@ provides <code>dimmable</code> and <code>RGB</code> capabilities.
             }
           }
        </pre>
-       <pre class="Ventilation exampleTab1">
+       <pre class="Ventilation exampleTab1 json">
         {
             "@context": "https://www.w3.org/2022/wot/td/v1.1",
             "@type": "tm:ThingModel",
@@ -6282,7 +6290,7 @@ provides <code>dimmable</code> and <code>RGB</code> capabilities.
             }
         }
        </pre>
-       <pre class="LED exampleTab1">
+       <pre class="LED exampleTab1 json">
         {
             "@context": "https://www.w3.org/2022/wot/td/v1.1",
             "@type": "tm:ThingModel",
@@ -6328,7 +6336,7 @@ provides <code>dimmable</code> and <code>RGB</code> capabilities.
 <p>
     Such composition can be introduced by the usage of the <code>links</code> container. 
     <span class="rfc2119-assertion" id="tm-compose-submodel">
-        If it is desired to provide information that a <a>Thing Model</a> consists of one or more (sub-)<a>Thing Models</a>, the <code>links</code> entries MUST use the <code>"rel":"tm:submodel"</code> 
+        If it is desired to provide information that a <a>Thing Model</a> consists of one or more (sub-)<a>Thing Models</a>, the <code>links</code> entries MUST use the <code>"rel": "tm:submodel"</code> 
         that targets to the (sub-) <a>Thing Models</a>.
     </span>
     <span class="rfc2119-assertion" id="tm-compose-instanceName">
@@ -6354,7 +6362,7 @@ provides <code>dimmable</code> and <code>RGB</code> capabilities.
          <button class="exampleTab1 Ventilation"         onclick="openTab('exampleTab1', 'Ventilation')">Ventilation TD</button>
          <button class="exampleTab1 LED"    onclick="openTab('exampleTab1', 'LED')">LED TD</button>
        </div>
-       <pre class="SmartVentilator exampleTab1 selected ">
+       <pre class="SmartVentilator exampleTab1 selected json">
         {
             "@context": "https://www.w3.org/2022/wot/td/v1.1",
             "title": "Smart Ventilator",
@@ -6399,7 +6407,7 @@ provides <code>dimmable</code> and <code>RGB</code> capabilities.
             }
         }
        </pre>
-       <pre class="Ventilation exampleTab1">
+       <pre class="Ventilation exampleTab1 json">
         {
             "@context": "https://www.w3.org/2022/wot/td/v1.1",
             "title": "Ventilator",
@@ -6446,7 +6454,7 @@ provides <code>dimmable</code> and <code>RGB</code> capabilities.
             }
         }
        </pre>
-       <pre class="LED exampleTab1">
+       <pre class="LED exampleTab1 json">
         {
             "@context": "https://www.w3.org/2022/wot/td/v1.1",
             "title": "LED Thing Model",
@@ -6649,7 +6657,7 @@ provides <code>dimmable</code> and <code>RGB</code> capabilities.
 
 </section>
 
-  <section id="thing-model-td-required" class="normative">
+  <section id="thing-model-td-optional" class="normative">
     <h2>tm:optional</h2>
 
 
@@ -6657,7 +6665,7 @@ provides <code>dimmable</code> and <code>RGB</code> capabilities.
     In some cases it is desirable to not enforce which interaction affordances are mandatory and do not necessarily need to be implemented in a <a>Thing Description</a> instance. 
 
     <span class="rfc2119-assertion" id="tm-tmOptional">
-        If interaction models are not manditory to be implemented in a <a>Thing Description</a> instance, <a>Thing Model</a> definitions MUST use 
+        If interaction models are not mandatory to be implemented in a <a>Thing Description</a> instance, <a>Thing Model</a> definitions MUST use 
         the JSON member name <code>tm:optional</code>. 
     </span>
     <span class="rfc2119-assertion" id="tm-tmOptional-array">
@@ -6680,7 +6688,7 @@ The following sample shows the usage of <code>tm:optional</code> for the <a>Even
 <pre class="example" title="Thing Model with the tm:optional term for interaction affordances.">
 {
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-    "@type" : "tm:ThingModel",
+    "@type": "tm:ThingModel",
     "title": "Lamp Thing Model",
     "description": "Lamp Thing Model Description",
     "tm:optional": [
@@ -6718,19 +6726,19 @@ instance.
   <pre class="example" title="Thing Model overwrites tm:optional of the previous Thing Model example.">
     {
         "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "@type": "tm:ThingModel",
         "title": "Lamp Thing Model (All Mandatory)",
         "description": "Lamp Thing Model description expects all interaction affordances (status, toggle, and overheating)",
-        "links":[
+        "links": [
            {
-              "rel":"tm:extends",
-              "href":"./lampThingModel.tm.jsonld",
-              "type":"application/tm+json"
+              "rel": "tm:extends",
+              "href": "./lampThingModel.tm.jsonld",
+              "type": "application/tm+json"
            }
         ],
         "events": {
             "overheating": {
-                "tm:ref" :"./lampThingModel.tm.jsonld#/events/overheating" 
+                "tm:ref": "./lampThingModel.tm.jsonld#/events/overheating" 
             }
         }
     }
@@ -6779,10 +6787,10 @@ instance.
       <button class="exampleTab1 placeholder"         onclick="openTab('exampleTab1', 'placeholder')">Placeholder Map</button>
       <button class="exampleTab1 thingdescription"    onclick="openTab('exampleTab1', 'thingdescription')">Thing Description</button>
     </div>
-    <pre class="thingmodel exampleTab1 selected ">
+    <pre class="thingmodel exampleTab1 selected json">
 {
 	"@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-	"@type" : "tm:ThingModel",
+	"@type": "tm:ThingModel",
 	"title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
 	"version": "{{VERSION_INFO}}",
 	"base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
@@ -6792,25 +6800,25 @@ instance.
 			"type": "number",
 			"minimum": -20,
 			"maximum": "{{THERMOSTATE_TEMPERATURE_MAXIMUM}}",
-			"observable" : "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}"
+			"observable": "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}"
 		}
 	}
 	...
 }
 	</pre>
-    <pre class="placeholder exampleTab1">
+    <pre class="placeholder exampleTab1 json">
 {
 	"THERMOSTATE_NUMBER": 4, 
-	"MQTT_BROKER_ADDRESS" : "192.168.178.72:1883",
+	"MQTT_BROKER_ADDRESS": "192.168.178.72:1883",
 	"THERMOSTATE_TEMPERATURE_MAXIMUM": 47.7, 
 	"THERMOSTATE_TEMPERATURE_OBSERVABLE" : true,
 	"VERSION_INFO": {"instance": "1.0.1", "model": "2.0.0"}
 }
 	</pre>
-    <pre class="thingdescription exampleTab1">
+    <pre class="thingdescription exampleTab1 json">
 {
 	"@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-	"@type" : "Thing",
+	"@type": "Thing",
 	"title": "Thermostate No. 4",
 	"version": {"instance": "1.0.1", "model": "2.0.0"},
 	"base": "mqtt://192.168.178.72:1883",
@@ -6849,26 +6857,26 @@ instance.
             A TM-to-TD generator to derive a <a>Thing Description</a> instance from a <a>Thing Model</a> transforms it to a <a>Partial TD</a> using the
             following steps:
          <ul>
-            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-imports">Copy all definitions from the input <a>Thing Model</a> to the resulting <a>Partial TD</a> instance. If used, the extension and imports
-            feature MUST be resolved and represented in the <a>Partial TD</a> instance according to <a href="#thing-model-extension-import"></a>.</li>
-            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-extends"> If used, <code>links</code> element entry with <code>"rel":"tm:extends"</code> MUST be removed from the current <a>Partial TD</a></li>
-            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-type">The <code>tm:ThingModel</code> value of the top-level <code>@type</code> MUST be removed in the <a>Partial TD</a> instance.</li>
-            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-required">All required interactions (not listed in <code>tm:optional</code>) MUST be taken over to the <a>Partial TD</a> instance. </li>
-            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-optional">All optional interactions (listed in <code>tm:optional</code>) MAY be taken over to the <a>Partial TD</a> instance. </li>
-            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-placeholder">If used, all placeholders (see Section <a href="#thing-model-td-placeholder"></a>) in the <a>Thing Model</a> MUST be replaced with a valid corresponding value in the <a>Partial TD</a>.</li>
+            <li> <span class="rfc2119-assertion" id="thing-model-td-generation-processor-imports"> Copy all definitions from the input <a>Thing Model</a> to the resulting <a>Partial TD</a> instance. If used, the extension and imports
+            feature MUST be resolved and represented in the <a>Partial TD</a> instance according to <a href="#thing-model-extension-import"></a>.</span></li>
+            <li> <span class="rfc2119-assertion" id="thing-model-td-generation-processor-extends"> If used, <code>links</code> element entry with <code>"rel":"tm:extends"</code> MUST be removed from the current <a>Partial TD</a></span></li>
+            <li> <span class="rfc2119-assertion" id="thing-model-td-generation-processor-type">The <code>tm:ThingModel</code> value of the top-level <code>@type</code> MUST be removed in the <a>Partial TD</a> instance.</span></li>
+            <li> <span class="rfc2119-assertion" id="thing-model-td-generation-processor-required">All required interactions (not listed in <code>tm:optional</code>) MUST be taken over to the <a>Partial TD</a> instance.</span> </li>
+            <li> <span class="rfc2119-assertion" id="thing-model-td-generation-processor-optional"> All optional interactions (listed in <code>tm:optional</code>) MAY be taken over to the <a>Partial TD</a> instance. </span></li>
+            <li> <span class="rfc2119-assertion" id="thing-model-td-generation-processor-placeholder">If used, all placeholders (see Section <a href="#thing-model-td-placeholder"></a>) in the <a>Thing Model</a> MUST be replaced with a valid corresponding value in the <a>Partial TD</a>.</span></li>
         </ul>
         Finally, a TM-to-TD generator will take the resulting <a>Partial TD</a> and transform it into a <a>Thing Description</a> with this last step
         <ul>
-            <li class="rfc2119-assertion" id="thing-model-td-generation-processor-forms">Missing communication and/or security metadata details MUST be completed in the <a>Thing Description</a> instance based on Section <a href="#security-serialization-json"></a> and/or <a href="#form-serialization-json"></a>.</li>
+            <li> <span class="rfc2119-assertion" id="thing-model-td-generation-processor-forms">Missing communication and/or security metadata details MUST be completed in the <a>Thing Description</a> instance based on Section <a href="#security-serialization-json"></a> and/or <a href="#form-serialization-json"></a>.</span></li>
 
         </ul>
     </p>
   
-    <p>It is recommended that the <code>id</code> value of a <a>Thing Model</a> provides a placeholder such as <code>"id":"urn:example:</code></code><code>{{</code><code>RANDOM_ID_PATTERN</code><code>}}</code><code>"</code> for the TD generation process.
+    <p>It is recommended that the <code>id</code> value of a <a>Thing Model</a> provides a placeholder such as <code>"id": "urn:example:</code></code><code>{{</code><code>RANDOM_ID_PATTERN</code><code>}}</code><code>"</code> for the TD generation process.
     Please avoid including metadata in the <code>id</code> pattern.
     </p>
       
-    <p><a>Thing Description</a> instances that follow a <a>Thing Model</a> can carry the information regarding which type of <a>Thing Model</a> is derived. In this context, the linking concept can be used with <code>"rel" : "type"</code> (also see
+    <p><a>Thing Description</a> instances that follow a <a>Thing Model</a> can carry the information regarding which type of <a>Thing Model</a> is derived. In this context, the linking concept can be used with <code>"rel": "type"</code> (also see
           Section <a href="#link"></a>), as shown in the following example: 
       </p>
 
@@ -6879,31 +6887,31 @@ instance.
              <button class="selected exampleTab2 thingmodel" onclick="openTab('exampleTab2', 'thingmodel')">Thing Model</button>
              <button class="exampleTab2 thingdescription"    onclick="openTab('exampleTab2', 'thingdescription')">Thing Description</button>
            </div>
-           <pre class="selected exampleTab2 thingmodel">
+           <pre class="selected exampleTab2 thingmodel json">
 {
-	...
+	// ...
 	"@type": "tm:ThingModel",
 	"title": "Smart Pump",
-	"id" : "urn:example:{{RANDOM_ID_PATTERN}}",
+	"id": "urn:example:{{RANDOM_ID_PATTERN}}",
 	"description": "Smart Pump live plant and simulator",
 	"version" : {"model" : "1.0.0" },
-	...
+	// ...
 }
 		</pre>
-        <pre class="exampleTab2 thingdescription">
+        <pre class="exampleTab2 thingdescription json">
 {
-	...
+	// ...
 	"@type": "Thing",
 	"title": "Smart Pump",
-	"id" : "urn:example:123-321-123-321",
+	"id": "urn:example:123-321-123-321",
 	"description": "Smart Pump live plant and simulator",
-	"version" : {"instance": "1.0.0", "model" : "1.0.0" },
+	"version" : {"instance": "1.0.0", "model": "1.0.0" },
 	"links" : [{
-		"rel" : "type",
-		"href" : "http://example.com/ThingModelPool/Pump",
+		"rel": "type",
+		"href": "http://example.com/ThingModelPool/Pump",
 		"type": "application/tm+json"
 	}],
-	...
+	// ...
 }
 		</pre>
         </aside>
@@ -6911,7 +6919,7 @@ instance.
          <p>Please note that a TD can only be an instance of one TM at a time. 
              That means for Thing Descriptions:
          <span class="rfc2119-assertion" id="tm-rel-type-maximum">
-            The <code>links</code> array MUST use the entry with <code>"rel" : "type"</code> a maximum of once.</span> 
+            The <code>links</code> array MUST use the entry with <code>"rel": "type"</code> a maximum of once.</span> 
         If it is desired to reflect all relationships to other Things in a Thing Description, the composition mechanism in TMs can be considered (see Section <a href="#thing-model-composition"></a>). 
     </p>
 
@@ -6931,7 +6939,7 @@ instance.
     <pre class="example" title="Extending Smart Control Lamp with a modified dim constrained">
     {
         "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "@type": "tm:ThingModel",
         "links" : [{
             "rel": "tm:extends",
             "href": "http://example.com/SmartControlLampTM",
@@ -6950,7 +6958,7 @@ instance.
     <pre class="example" title="Thing Description">
         {
             "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-            "@type" : "Thing",
+            "@type": "Thing",
             "title": "Smart Lamp Control",
             "securityDefinitions": {
                 "basic_sc": {"scheme": "basic", "in": "header"}
@@ -6963,8 +6971,8 @@ instance.
              }
            ],
            "properties" : {
-                "onOff : {
-                    "type: "boolean",
+                "onOff": {
+                    "type": "boolean",
                     "forms": [{"href": "https://smartlamp.example.com/onoff"}]
                 },
                 "dim" : {
@@ -6981,6 +6989,12 @@ instance.
 
 <section id="sec-security-consideration">
   <h4>Security Considerations</h4>
+        <p class="at-risk">Several assertions in the following are at risk, as indicated
+        by yellow highlighting.  These represent best practices but at the
+        time of CR transition have insufficient implementation experience.
+        These will be converted to informative statements if sufficient
+        implementation experience is not obtained by time of PR transition.
+        </p>
   <p>
   In general the security measures taken to protect a WoT 
   system will depend on the threats and attackers that system
@@ -7218,6 +7232,12 @@ instance.
 </section>
 <section id="sec-privacy-consideration">
   <h4>Privacy Considerations</h4>
+        <p class="at-risk">Several assertions in the following are at risk, as indicated
+        by yellow highlighting.  These represent best practices but at the
+        time of CR transition have insufficient implementation experience.
+        These will be converted to informative statements if sufficient
+        implementation experience is not obtained by time of PR transition.
+        </p>
   <p>
   Privacy risks will depend on the association of 
   Things with identifiable people and both the direct information and 
@@ -7507,9 +7527,8 @@ instance.
       <dt>Fragment identifier considerations:</dt>
       <dd>See <a href="https://tools.ietf.org/html/rfc6839#section-3.1">RFC&nbsp;6839, section 3.1</a>.
       <p class="ednote" title="Other Fragment Identifier Considerations">
-      We may 
-      want to explictly allow use of JSON Pointer as a fragment identifier [[RFC6901]].
-      There is in fact an assertion requiring them in TMs for <code>tm:required</code>.
+      We may want to explictly allow use of JSON Pointer as a fragment identifier [[RFC6901]].
+      There is in fact an assertion requiring them in TMs for <code>tm:optional</code>.
       These are internal references, however, so we <em>might</em> not have to allow
       them for external references.
       By default
@@ -7657,7 +7676,7 @@ instance.
             <dt>Encoding:</dt>
             <dd>-</dd>
             <dt>ID:</dt>
-            <dd>tbd</dd>
+            <dd>433</dd>
             <dt>Reference:</dt>
             <dd>[<a href="https://w3c.github.io/wot-thing-description/">"Web of Things (WoT) Thing Description 1.1", April 2022</a>]</dd>
         </dl>
@@ -7694,7 +7713,7 @@ instance.
       "id": "urn:uuid:bd472149-0b41-4dc9-80c0-977f39dc7e77",
       "title": "MyLampThing",
       "description": "MyLampThing uses JSON serialization",
-      "securityDefinitions": {"psk_sc":{"scheme": "psk"}},
+      "securityDefinitions": {"psk_sc": {"scheme": "psk"}},
       "security": ["psk_sc"],
       "properties": {
           "status": {
@@ -7755,7 +7774,7 @@ instance.
               "security": ["nosec_sc"],
               "events": {
                   "illuminance": {
-                      "data":{"type": "integer"},
+                      "data": {"type": "integer"},
                       "forms": [
                           {
                               "href": "mqtt://192.168.1.187:1883/illuminance",
@@ -7804,7 +7823,7 @@ instance.
          <button class="selected exampleTab1 without" onclick="openTab('exampleTab1', 'without')">Without uriVariables</button>
          <button class="exampleTab1 with"         onclick="openTab('exampleTab1', 'with')">With uriVariables</button>
        </div>
-       <pre class="without exampleTab1 selected ">
+       <pre class="without exampleTab1 selected json">
         {
             "@context": "http://www.w3.org/ns/td",
             "id": "urn:uuid:4778f80a-4c78-4cbb-a0e4-fa37b7d748df",
@@ -7862,7 +7881,7 @@ instance.
             }
         }
        </pre>
-       <pre class="with exampleTab1">
+       <pre class="with exampleTab1 json">
         {
             "@context": "http://www.w3.org/ns/td",
             "id": "urn:uuid:3c1b4716-247f-4cda-ba53-d3307ac6feb0",
@@ -8059,6 +8078,23 @@ instance.
 <section id="changes" class="appendix">
   <h1>Recent Specification Changes</h1>
   <section>
+  <h2 id="changes-from-august-2022">Changes from Fourth Public Working Draft 3 August 2022</h2>
+	  <ul>
+		<li>
+			In section <a href="#securityscheme"></a> <code>auto</code> has been added.
+		</li>
+		<li>
+			Section <a href="#form-additionalResponses"></a> has been newly added.
+		</li>
+		<li>
+			Chapter <a href="#thing-model"></a> moved before <a href="#sec-security-consideration"></a> and <a href="#sec-privacy-consideration"></a>.
+		</li>
+		<li>
+			The term <code>tm:required</code> changed to <a href="#thing-model-td-optional"></a>.
+		</li>
+	  </ul>
+  </section>
+  <section>
   <h2 id="changes-from-march-2022">Changes from Third Public Working Draft 11 March 2022</h2>
 	  <ul>
 		<li>
@@ -8248,7 +8284,7 @@ section <a href="#stringschema"></a>.
           </li>
           <!-- section 10.3.3 Composition -->
           <li>Section <a href="#thing-model-composition"></a> was added.</li>
-          <li>Section <a href="#thing-model-td-placeholder"></a> is now after section <a href="#thing-model-td-required"></a>. (order reversed)</li>
+          <li>Section <a href="#thing-model-td-placeholder"></a> is now after section <a href="#thing-model-td-optional"></a>. (order reversed)</li>
         </ul>
       </li>
       <!-- appendix A.3 Webhook Event Example -->
