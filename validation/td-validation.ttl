@@ -1055,28 +1055,47 @@
           </p>
           <p>
             The different cases on the variation of request and response are explained above.
-            The table below summarize these cases in a concise manner. 
-            Input means messages sent from Consumer to the Thing and output means messages sent from Thing
-            to the Consumer.
+            The tables below summarize these cases in a concise manner.
+            The tables start from simpler cases, such as single <code>contentType</code>, and go for more complex cases,
+            such as multiple <code>contentType</code>s.
+            In all the tables, the messages are seen from the Thing point of view, where input means messages sent from 
+            Consumer to the Thing (e.g., request) and output means messages sent from Thing to the Consumer (e.g., response).
           </p>
           <table class="def">
+            <caption>Single <code>contentType</code></caption>
             <thead>
                 <tr>
                     <th>Case</th>                
                     <th>Needed Terms</th>
                     <th>Explanation</th>
+                    <th>Consumer Behavior</th>
+                    <th>Thing Behavior</th>
+
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>
-                        Input present, output not  present
+                        Input present, output not present
                     </td>
                     <td>
                         <code>contentType</code> inside the form
                     </td>
                     <td>
                         <code>contentType</code> refers only to the input
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Encode input payload in the corresponding <code>contentType</code> available in the form. </li>
+                            <li>If possible in the used protocol, add the value of <code>contentType</code> to the input header.</li>
+                    </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Decode the payload in the corresponding <code>contentType</code> available in the form.</li>
+                            <li>If possible in the used protocol, verify match of the input header <code>contentType</code>
+                            with <code>contentType</code> available in the form.</li>
+                        </ul>
                     </td>
                 </tr>
                 <tr>
@@ -1089,6 +1108,21 @@
                     <td>
                         <code>contentType</code> refers only to the output.
                     </td>
+                    <td>
+                        <ul>
+                            <li>Decode the payload in the corresponding <code>contentType</code> available in the form.</li>
+                            <li>If possible in the used protocol, verify match of the output header <code>contentType</code>
+                                with <code>contentType</code> available in the form.</li>
+                            <li>If possible in the used protocol, add preference for the <code>contentType</code> 
+                                available in the form to the input header.</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Encode output payload in the corresponding <code>contentType</code> available in the form.</li> 
+                            <li>If possible in the used protocol, add the value of <code>contentType</code> to the input header.</li>
+                        </ul>
+                    </td>
                 </tr>
                 <tr>
                     <td>
@@ -1100,7 +1134,32 @@
                     <td>
                         <code>contentType</code> refers both to input and output.
                     </td>
+                    <td>
+                        <ul>
+                            <li>Encode input payload in the corresponding <code>contentType</code> available in the form. </li>
+                            <li>If possible in the used protocol, add the value of <code>contentType</code> to the input header.</li>
+                            <li>If possible in the used protocol, add preference for the <code>contentType</code> 
+                                available in the form to the input header.</li>
+                            <li>Decode the output payload in the corresponding <code>contentType</code> available in the form.</li>
+                            <li>If possible in the used protocol, verify match of the output header <code>contentType</code>
+                                with <code>contentType</code> available in the form.</li>
+                        </ul>
+                    </td>
+                    <td>
+                    </td>
                 </tr>
+            </tbody>
+        </table>
+        <table class="def">
+            <caption>Multiple <code>contentType</code>s</caption>
+            <thead>
+                <tr>
+                    <th>Case</th>                
+                    <th>Needed Terms</th>
+                    <th>Explanation</th>
+                </tr>
+            </thead>
+            <tbody>
                 <tr>
                     <td>
                         Input and output present, different <code>contentType</code> for messages.
@@ -1113,6 +1172,7 @@
                         <code>contentType</code> refers to the input and <code>response</code> refers to the output
                     </td>
                 </tr>
+
                 <tr>
                     <td>
                         Input and multiple possible outputs present, same <code>contentType</code> for messages
