@@ -1,8 +1,8 @@
 {
   "title": "Thing Description",
-  "version": "1.1-10-June-2022",
+  "version": "1.1-05-September-2022",
   "description": "JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values",
-  "$schema ": "http://json-schema.org/draft-07/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "$id":"https://raw.githubusercontent.com/w3c/wot-thing-description/main/validation/td-json-schema-validation.json",
   "definitions": {
     "anyUri": {
@@ -32,7 +32,8 @@
           "type": "array",
           "items": {
             "type": "string"
-          }
+          },
+          "minItems":1
         },
         {
           "type": "string"
@@ -151,6 +152,10 @@
           "$ref": "#/definitions/thing-context-td-uri-v1"
         }
       ]
+    },
+    "bcp47_string":{
+      "type":"string",
+      "pattern": "^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))$"
     },
     "type_declaration": {
       "oneOf": [
@@ -500,7 +505,8 @@
           ]
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "required":["op"]
     },
     "form" : {
       "$comment":"This is NOT for validation purposes but for automatic generation of TS types. For more info, please see: https://github.com/w3c/wot-thing-description/pull/1319#issuecomment-994950057",
@@ -749,6 +755,17 @@
         },
         "anchor": {
           "$ref": "#/definitions/anyUri"
+        },
+        "hreflang": {
+            "anyOf":[
+              {"$ref": "#/definitions/bcp47_string"},
+              {
+                "type":"array",
+                "items":{
+                  "$ref": "#/definitions/bcp47_string"
+                }
+              }
+            ]
         }
       },
       "required": [
@@ -845,7 +862,8 @@
       },
       "required": [
         "scheme"
-      ]
+      ],
+      "additionalProperties": true
     },
     "noSecurityScheme": {
       "type": "object",
@@ -871,7 +889,8 @@
       },
       "required": [
         "scheme"
-      ]
+      ],
+      "additionalProperties": true
     },
     "autoSecurityScheme": {
       "type": "object",
@@ -895,9 +914,13 @@
           ]
         }
       },
+      "not":{
+        "required":["name"]
+      },
       "required": [
         "scheme"
-      ]
+      ],
+      "additionalProperties": true
     },
     "comboSecurityScheme": {
       "oneOf": [
@@ -933,7 +956,8 @@
           "required": [
             "scheme",
             "oneOf"
-          ]
+          ],
+          "additionalProperties": true
         },
         {
           "type": "object",
@@ -967,7 +991,8 @@
           "required": [
             "scheme",
             "allOf"
-          ]
+          ],
+          "additionalProperties": true
         }
       ]
     },
@@ -1008,7 +1033,8 @@
       },
       "required": [
         "scheme"
-      ]
+      ],
+      "additionalProperties": true
     },
     "digestSecurityScheme": {
       "type": "object",
@@ -1054,7 +1080,8 @@
       },
       "required": [
         "scheme"
-      ]
+      ],
+      "additionalProperties": true
     },
     "apiKeySecurityScheme": {
       "type": "object",
@@ -1083,7 +1110,9 @@
             "header",
             "query",
             "body",
-            "cookie"
+            "cookie",
+            "uri",
+            "auto"
           ]
         },
         "name": {
@@ -1092,7 +1121,8 @@
       },
       "required": [
         "scheme"
-      ]
+      ],
+      "additionalProperties": true
     },
     "bearerSecurityScheme": {
       "type": "object",
@@ -1140,7 +1170,8 @@
       },
       "required": [
         "scheme"
-      ]
+      ],
+      "additionalProperties": true
     },
     "pskSecurityScheme": {
       "type": "object",
@@ -1169,7 +1200,8 @@
       },
       "required": [
         "scheme"
-      ]
+      ],
+      "additionalProperties": true
     },
     "oAuth2SecurityScheme": {
       "type": "object",
@@ -1232,7 +1264,8 @@
       },
       "required": [
         "scheme"
-      ]
+      ],
+      "additionalProperties": true
     },
     "securityScheme": {
       "oneOf": [

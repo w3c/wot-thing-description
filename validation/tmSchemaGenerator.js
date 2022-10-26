@@ -74,6 +74,7 @@ tmSchema = removeFormat(tmSchema)
 tmSchema = manualConvertString(tmSchema)
 tmSchema = addTmTerms(tmSchema)
 tmSchema = replaceSecurityOneOf(tmSchema)
+tmSchema = postProcess(tmSchema)
 
 // write a new file for the schema. Overwrites the existing one
 // 2 spaces for easier reading
@@ -307,7 +308,8 @@ function manualConvertString(argObject){
         "definitions.property_element.properties.writeOnly",
         "definitions.action_element.properties.safe",
         "definitions.action_element.properties.idempotent",
-        "definitions.action_element.properties.synchronous"
+        "definitions.action_element.properties.synchronous",
+        "properties.version"
     ]
     
     //iterate over this array and replace for each
@@ -345,24 +347,38 @@ function changeToAnyOf(argObject){
 }
 
 /** 
- * This function adds tm:required and tm:ref definitions
+ * This function adds tm:optional, tm:ref and instanceName definitions
  * Then these are referenced from the related locations, i.e.
- * tm:required is used only in the root level and tm:ref can be used anywhere
+ * tm:optional is used only in the root level and tm:ref can be used anywhere
+ * It also add model into the version container and prohibits the use of instance
  * @param {object} argObject
  * @return {object}
 **/
 function addTmTerms(argObject){
     
-    argObject.definitions["tm_required"] = {
-        "type":"array",
-        "items":{
-            "type":"string",
-            "format": "json-pointer"
+    argObject.definitions["tm_optional"] = {
+        "type": "array",
+        "items": {
+          "$comment": "this first checks for the general structure of /properties/myProp and then prohibits using / 3 times",
+          "allOf": [
+            {
+              "type": "string",
+              "pattern": "^((/properties/)|(/actions/)|(/events/))(([^/]))",
+              "$comment": "regex tests available at https://regex101.com/r/UgOzrJ/1"
+            },
+            {
+              "not": {
+                "type": "string",
+                "pattern": "(/)(.*\\1){2}",
+                "$comment": "regex tests available at https://regex101.com/r/Ytzd72/1"
+              }
+            }
+          ]
         }
     }
 
-    argObject.properties["tm:required"] = {
-        "$ref": "#/definitions/tm_required"
+    argObject.properties["tm:optional"] = {
+        "$ref": "#/definitions/tm_optional"
     }
 
     argObject.definitions["tm_ref"] = {
@@ -374,8 +390,27 @@ function addTmTerms(argObject){
         "$ref": "#/definitions/tm_ref"
     }
 
+    argObject.definitions["base_link_element"].properties["instanceName"] = {
+        "type":"string"
+    }
+
+    argObject.properties.version.anyOf[0].properties = {
+        "model": {
+          "type": "string"
+        }
+    }
+    argObject.properties.version.anyOf[0].not = {
+        "type": "object",
+        "properties": {
+          "instance": {
+            "type": "string"
+          }
+        },
+        "required":["instance"]
+    }
+
     // Note: this paths are statically defined
-    // please update the list if rector the td schema
+    // please update the list if refactor the td schema
     let paths = [
         "definitions.dataSchema.properties",
         "definitions.property_element.properties",
@@ -398,7 +433,7 @@ function addTmTerms(argObject){
 
     //iterate over this array and replace for each
     paths.forEach(element => {
-        let curSchema = resolvePath(argObject,element,"hey");
+        let curSchema = resolvePath(argObject,element,"hey"); // this hey is just to have some argument for this copypaste function
 
         if (curSchema == undefined) {
             console.log("The element " + element + " could not be found in the paths array");
@@ -427,4 +462,29 @@ function replaceSecurityOneOf(argObject){
     argObject.definitions.securityScheme.anyOf = argObject.definitions.securityScheme.oneOf;
     delete argObject.definitions.securityScheme.oneOf;
     return argObject;
+}
+
+
+/** 
+ * Some custom logic to apply at the end to make the schema conform
+ * similar to staticReplace
+ * @param {object} argObject
+ * @return {object}
+**/
+function postProcess(argObject){
+    argObject.definitions.security = {
+        "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "string"
+            }
+          ]
+    }
+    argObject.definitions.autoSecurityScheme.not = {"required":["name"]}
+    return argObject
 }
