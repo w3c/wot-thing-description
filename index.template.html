@@ -6699,7 +6699,221 @@ instance.
 
   </section>
 
+<section id="contentType-usage" class="appendix informative">
+    <h1>contentType usage in Thing Descriptions</h1>
+    <p>
+        The different cases on the variation of request and response are explained at <a href="#sec-response-usage"></a>.
+        The tables below summarize these cases in a concise manner.
+        The tables start from simpler cases, such as single <code>contentType</code>, and go for more complex cases,
+        such as multiple <code>contentType</code>s.
+        In all the tables, the messages are seen from the Thing point of view, where input means messages sent from 
+        Consumer to the Thing (e.g., request) and output means messages sent from Thing to the Consumer (e.g., response).
+      </p>
+      <table class="def">
+        <caption>Single contentType case, where both input and output use the same contentType</caption>
+        <thead>
+            <tr>
+                <th>Case</th>                
+                <th>Needed Terms</th>
+                <th>Explanation</th>
+                <th>Consumer Behavior</th>
+                <th>Thing Behavior</th>
 
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    Input present, output not present
+                </td>
+                <td>
+                    <code>contentType</code> inside the form
+                </td>
+                <td>
+                    <code>contentType</code> refers only to the input
+                </td>
+                <td>
+                    <ul>
+                        <li>Encode input payload according to the <code>contentType</code> available in the form. </li>
+                        <li>If possible in the used protocol, add the value of <code>contentType</code> to the input header.</li>
+                </ul>
+                </td>
+                <td>
+                    <ul>
+                        <li>If possible in the used protocol, decode the input payload in the using the input header <code>contentType</code>.</li>
+                        <li>If not possible in the used protocol or not available, decode the output payload in the corresponding 
+                            <code>contentType</code> available in the form.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Input not present, output present.
+                </td>
+                <td>
+                    <code>contentType</code> inside the form.
+                </td>
+                <td>
+                    <code>contentType</code> refers only to the output.
+                </td>
+                <td>
+                    <ul>
+                        <li>If possible in the used protocol, add preference for the <code>contentType</code> 
+                            available in the form to the input header.</li>
+                        <li>If possible in the used protocol, decode the output payload in the using the input output <code>contentType</code>.</li>
+                        <li>If not possible in the used protocol or not available, decode the output payload in the corresponding 
+                            <code>contentType</code> available in the form.</li>
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                        <li>Encode output payload in the corresponding <code>contentType</code> available in the form.</li> 
+                        <li>If possible in the used protocol, add the value of <code>contentType</code> to the output header.</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Input and output present, same <code>contentType</code> for messages.
+                </td>
+                <td>
+                    <code>contentType</code> inside the form.
+                </td>
+                <td>
+                    <code>contentType</code> refers both to input and output.
+                </td>
+                <td>
+                    <ul>
+                        <li>Encode input payload according to the <code>contentType</code> available in the form. </li>
+                        <li>If possible in the used protocol, add the value of <code>contentType</code> to the input header.</li>
+                        <li>If possible in the used protocol, add preference for the <code>contentType</code> 
+                            available in the form to the input header.</li>
+                        <li>If possible in the used protocol, decode the output payload in the using the input output <code>contentType</code>.</li>
+                        <li>If not possible in the used protocol or not available, decode the output payload in the corresponding 
+                            <code>contentType</code> available in the form.</li>
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                        <li>If possible in the used protocol, decode the input payload in the using the input header <code>contentType</code>.</li>
+                        <li>If not possible in the used protocol or not available, decode the output payload in the corresponding 
+                            <code>contentType</code> available in the form.</li>
+                        <li>Encode output payload in the corresponding <code>contentType</code> available in the form.</li> 
+                        <li>If possible in the used protocol, add the value of <code>contentType</code> to the output header.</li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+      </table>
+
+      The following table takes into account further variations that are relevant for cases where an operation input can
+      accept different <code>contentType</code>s or the output can return different <code>contentType</code>s.
+
+      <table class="def">
+        <caption>Multiple contentType case, where input and output can use different contentTypes and there can be multiple 
+          forms</caption>
+        <thead>
+            <tr>
+                <th>Case</th>                
+                <th>Needed Terms</th>
+                <th>Explanation</th>
+                <th>Consumer Behavior</th>
+                <th>Thing Behavior</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    Input and output present, different <code>contentType</code> for messages.
+                </td>
+                <td>
+                    <code>contentType</code> and <code>response</code> inside the form. 
+                    <code>response</code> also has a <code>contentType</code> with a different value.
+                </td>
+                <td>
+                    <code>contentType</code> refers to the input and <code>response</code> refers to the output
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Input and multiple possible outputs present, same <code>contentType</code> for messages
+                </td>
+                <td>
+                    <code>contentType</code> and <code>additionalResponses</code> inside the form.
+                </td>
+                <td>
+                    <code>contentType</code> in the form level refers to the input and the normal output. 
+                    <code>additionalResponses</code> does not need <code>contentType</code> since the default value rule applies.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Input and multiple possible outputs present, different <code>contentType</code> for output messages
+                </td>
+                <td>
+                    <code>contentType</code>, <code>response</code> and <code>additionalResponses</code> inside the form.
+                    <code>additionalResponses</code> needs <code>contentType</code> for output the messages with different <code>contentType</code>s.
+                </td>
+                <td>
+                    <code>contentType</code> in the form level refers to the input.
+                    <code>contentType</code> inside <code>response</code> refers to the normal output.
+                    <code>contentType</code> inside <code>additionalResponses</code> refers to other possible outputs.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Input not present and multiple possible outputs present, different <code>contentType</code> for output messages
+                </td>
+                <td>
+                    <code>contentType</code> and <code>additionalResponses</code> inside the form.
+                    <code>additionalResponses</code> needs <code>contentType</code> for the output messages with different <code>contentType</code>s.
+                </td>
+                <td>
+                    <code>contentType</code> in the form level refers to the normal output. <code>contentType</code> inside <code>additionalResponses</code> refers to other possible outputs.
+                </td>
+            </tr>
+        </tbody>
+      </table>
+
+      <table class="def">
+        <thead>
+          <tr>
+            <th colspan="2" rowspan="2"></th>
+            <th colspan="3">Inputs</th>
+          </tr>
+          <tr>
+            <th>0</th>
+            <th>1</th>
+            <th>1+</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="3" style="writing-mode:sideways-lr; text-orientation:sideways">Outputs</td>
+            <td>0</td>
+            <td><b>Needed Terms:</b> No need for <code>contentType</code> anywhere</td>
+            <td><b>Needed Terms:</b> <code>contentType</code> inside the form <br> 
+            <b>Explanation:</b> <code>contentType</code> refers only to the input</td>
+            <td><b>Needed Terms:</b> Multiple form elements <br> 
+            <b>Explanation:</b> Each form refers to a possible input <code>contentType</code></td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td><b>Needed Terms:</b> <code>contentType</code> inside the form. <br> 
+            <b>Explanation:</b> <code>contentType</code> refers only to the output.</td>
+            <td><b>Needed Terms:</b></td>
+            <td><b>Needed Terms:</b></td>
+          </tr>
+          <tr>
+            <td>1+</td>
+            <td><b>Needed Terms:</b></td>
+            <td><b>Needed Terms:</b></td>
+            <td><b>Needed Terms:</b></td>
+          </tr>
+        </tbody>
+      </table>
+</section>
 
 <section id="json-ld-ctx-usage" class="appendix informative">
     <h1>JSON-LD Context Usage</h1>
