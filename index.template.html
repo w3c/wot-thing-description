@@ -6886,30 +6886,41 @@ instance.
               </tr>
               <tr>
                 <td>
-                    Case 2C: Input not present, multiple possible outputs present, different <code>contentType</code> for output messages
+                  Case 2C: Input and multiple possible outputs present, different <code>contentType</code> for output messages
                 </td>
                 <td>
-                    <code>contentType</code> and <code>additionalResponses</code> inside the form.
-                    <code>additionalResponses</code> needs <code>contentType</code> for the output messages with different <code>contentType</code>s.
+                  <code>contentType</code>, <code>additionalResponses</code> and possibly <code>response</code> inside the form.
+                  <code>additionalResponses</code> needs <code>contentType</code> for output the messages with different <code>contentType</code>s.
                 </td>
                 <td>
-                    <code>contentType</code> in the form level refers to the normal output. <code>contentType</code> inside 
-                    <code>additionalResponses</code> refers to other possible outputs.
+                  This the most complicated case that can have different ways to be described in a TD.
+                  <code>contentType</code> in the form level refers to the input and to the expected output if the output is 
+                  of the same <code>contentType</code> (like in case 1C).
+                  <code>contentType</code> inside <code>response</code> refers to the expected output if the output is 
+                  of a different <code>contentType</code> (like in case 2A).
+                  <code>contentType</code> inside <code>additionalResponses</code> refers to other possible outputs.
                 </td>
-            </tr>
-              <tr>
-                  <td>
-                      Case 2D: Input and multiple possible outputs present, different <code>contentType</code> for output messages
-                  </td>
-                  <td>
-                      <code>contentType</code>, <code>response</code> and <code>additionalResponses</code> inside the form.
-                      <code>additionalResponses</code> needs <code>contentType</code> for output the messages with different <code>contentType</code>s.
-                  </td>
-                  <td>
-                      <code>contentType</code> in the form level refers to the input.
-                      <code>contentType</code> inside <code>response</code> refers to the normal output.
-                      <code>contentType</code> inside <code>additionalResponses</code> refers to other possible outputs.
-                  </td>
+                <td>
+                  <ul>
+                    <li>Encode input payload according to the <code>contentType</code> available in the form level. </li>
+                    <li>If possible in the used protocol, add the value of form-level <code>contentType</code> to the input header.</li>
+                    <li>If possible in the used protocol, decode the output payload using the output header <code>contentType</code>.</li>
+                    <li>If not possible in the used protocol or not available, decode the output payload in the corresponding 
+                        <code>contentType</code> available in the response level or one of the <code>contentType</code>s 
+                        in <code>additionalResponses</code>.</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul>
+                    <li>If possible in the used protocol, decode the input payload in the using the input header.</li>
+                    <li>If not possible in the used protocol or not available, decode the input payload in the corresponding 
+                        <code>contentType</code> available in the form level.</li>
+                    <li>Encode output payload in the corresponding <code>contentType</code> available in the response level or
+                      one of the <code>contentType</code>s in <code>additionalResponses</code>. If the output is associated with an error case, use the <code>contentType</code>
+                    in a form with <code>"success":false</code></li>
+                    <li>If possible in the used protocol, add the value of the used <code>contentType</code> to the output header.</li>
+                  </ul>
+                </td>
               </tr>
           </tbody>
       </table>
