@@ -491,6 +491,15 @@ a[href].internalDFN {
     that represent best-practice recommendations will be converted into
     informative statements.</p>
     <p class="at-risk">At-risk assertions are marked with yellow highlighting.</span></p>
+    <p>The Web of Things Working Group intends to submit this document
+        for consideration as a <abbr title=
+        "World Wide Web Consortium">W3C</abbr> Proposed Recommendation
+        after at least the minimum CR review period has passed. However,
+        before PR transition is requested, any features or assertions
+        currently marked as at-risk that did not appear in the TD 1.0
+        specification and do not have at least two implementations at that
+        time will either be removed or converted into informative
+        statements, as appropriate.</p>
   </section>
 
   <section id="introduction" class="informative">
@@ -2553,11 +2562,12 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           the value of the content type of the form is
           <code>application/xml</code> the assumed value of the
           content type of the response will be also
-          <code>application/xml</code>.
+          <code>application/xml</code>.</p>
+          <p>
           In some cases additional responses might be possible.
           One example of this is error responses but in some cases
           there might also be additional successful responses.
-          In this case the <code>response</code> name-value pair
+          In this case, the <code>response</code> name-value pair
           is still used for the primary response but 
           <code>additionalResponses</code> may also be provided,
           whose value is an array of <code>AdditionalExpectedResponse</code>
@@ -2588,7 +2598,8 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           name-value pair has to be used to provide response
           content type (<code>image/jpeg</code>) information to the
           <a href="#dfn-consumer" class="internalDFN"
-          data-link-type="dfn">Consumer</a>.
+          data-link-type="dfn">Consumer</a>.</p>
+          <p>
           Similar considerations apply to additional responses,
           although in this case the <code>contentType</code> is optional
           if it is the same as the input content Type (e.g. JSON).
@@ -2606,6 +2617,10 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           "rfc2119" title="MUST">MUST</em> include an entry in the array
           associated with the name <code>additionalResponses</code> that
           includes a value for the name <code>schema</code>.</span> 
+          </p>
+          <p>
+            The different cases on the variation of request and response are explained above.
+            The tables at <a href="#contentType-usage"></a> summarize these cases in a concise manner.
           </p>
           </section>
           </section>
@@ -6035,7 +6050,7 @@ in a WoT Thing Description MUST accurately describe the <a>WoT Interface</a> of 
              }],
             "properties" : {
                 "dim" : {
-                    "title": "Dimming level"
+                    "title": "Dimming level",
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 100
@@ -7979,7 +7994,232 @@ instance.
 
   </section>
 
+  <section id="contentType-usage" class="appendix informative">
+      <h1>contentType usage in Thing Descriptions</h1>
+      <p>
+        The different cases on the variation of request and response are explained at <a href="#sec-response-usage"></a>.
+        The tables below summarize these cases in a concise manner.
+        The tables start from simpler cases, such as single <code>contentType</code>, and go for more complex cases,
+        such as multiple <code>contentType</code>s.
+        In all the tables, the messages are seen from the Thing point of view, where input means messages sent from 
+        Consumer to the Thing (e.g., request) and output means messages sent from Thing to the Consumer (e.g., response).
+      </p>
+      <p>
+        The cases are numbered, which can be used to associate them with examples after the tables.
+      </p>
+      <table class="def">
+          <caption>Single contentType case, where both input and output use the same contentType</caption>
+          <thead>
+              <tr>
+                  <th>Case</th>                
+                  <th>Needed Terms</th>
+                  <th>Explanation</th>
+                  <th>Consumer Behavior</th>
+                  <th>Thing Behavior</th>
 
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>
+                    Case 1A: Input present, output not present
+                  </td>
+                  <td>
+                      <code>contentType</code> inside the form
+                  </td>
+                  <td>
+                      <code>contentType</code> refers only to the input
+                  </td>
+                  <td>
+                      <ul>
+                          <li>Encode input payload according to the <code>contentType</code> available in the form. </li>
+                          <li>If possible in the used protocol, add the value of <code>contentType</code> to the input header.</li>
+                  </ul>
+                  </td>
+                  <td>
+                      <ul>
+                          <li>If possible in the used protocol, decode the input payload in the using the input header <code>contentType</code>.</li>
+                          <li>If not possible in the used protocol or not available, decode the output payload in the corresponding 
+                              <code>contentType</code> available in the form.</li>
+                      </ul>
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                    Case 1B: Input not present, output present.
+                  </td>
+                  <td>
+                      <code>contentType</code> inside the form.
+                  </td>
+                  <td>
+                      <code>contentType</code> refers only to the output.
+                  </td>
+                  <td>
+                      <ul>
+                          <li>If possible in the used protocol, add preference for the <code>contentType</code> 
+                              available in the form to the input header.</li>
+                          <li>If possible in the used protocol, decode the output payload using the output header <code>contentType</code>.</li>
+                          <li>If not possible in the used protocol or not available, decode the output payload in the corresponding 
+                              <code>contentType</code> available in the form.</li>
+                      </ul>
+                  </td>
+                  <td>
+                      <ul>
+                          <li>Encode output payload in the corresponding <code>contentType</code> available in the form.</li> 
+                          <li>If possible in the used protocol, add the value of <code>contentType</code> to the output header.</li>
+                      </ul>
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                    Case 1C: Input and output present, same <code>contentType</code> for messages.
+                  </td>
+                  <td>
+                      <code>contentType</code> inside the form.
+                  </td>
+                  <td>
+                      <code>contentType</code> refers both to input and output.
+                  </td>
+                  <td>
+                      <ul>
+                          <li>Encode input payload according to the <code>contentType</code> available in the form. </li>
+                          <li>If possible in the used protocol, add the value of <code>contentType</code> to the input header.</li>
+                          <li>If possible in the used protocol, add preference for the <code>contentType</code> of the output payload
+                            to the input header using value in the <code>contentType</code>.
+                          <li>If possible in the used protocol, decode the output payload using the output header <code>contentType</code>.</li>
+                          <li>If not possible in the used protocol or not available, decode the output payload in the corresponding 
+                              <code>contentType</code> available in the form.</li>
+                      </ul>
+                  </td>
+                  <td>
+                      <ul>
+                          <li>If possible in the used protocol, decode the input payload in the using the input header <code>contentType</code>.</li>
+                          <li>If not possible in the used protocol or not available, decode the input payload in the corresponding 
+                              <code>contentType</code> available in the form.</li>
+                          <li>Encode output payload in the corresponding <code>contentType</code> available in the form.</li> 
+                          <li>If possible in the used protocol, add the value of <code>contentType</code> to the output header.</li>
+                      </ul>
+                  </td>
+              </tr>
+          </tbody>
+      </table>
+
+      <p>
+        The following table takes into account further variations that are relevant for cases where an operation input can
+        accept different <code>contentType</code>s or the output can return different <code>contentType</code>s.
+        There can be cases where an Interaction Affordance has multiple forms.
+        Such cases with multiple forms should be treated as a combination of the cases in the table above and below.
+      </p>
+
+      <table class="def">
+          <caption>Multiple contentType case, where input and output can use different contentTypes and there can be multiple 
+          forms</caption>
+          <thead>
+              <tr>
+                  <th>Case</th>                
+                  <th>Needed Terms</th>
+                  <th>Explanation</th>
+                  <th>Consumer Behavior</th>
+                  <th>Thing Behavior</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>
+                    Case 2A: Single input and single output present, different <code>contentType</code> for messages.
+                  </td>
+                  <td>
+                      <code>contentType</code> and <code>response</code> inside the form. 
+                      <code>response</code> has <code>contentType</code> with a different value.
+                  </td>
+                  <td>
+                      <code>contentType</code> in the form level refers to the input and <code>contentType</code>
+                      in the <code>response</code> (response-level) refers to the output
+                  </td>
+                  <td>
+                    <ul>
+                        <li>Encode input payload according to the <code>contentType</code> available in the form level. </li>
+                        <li>If possible in the used protocol, add the value of form-level <code>contentType</code> to the input header.</li>
+                        <li>If possible in the used protocol, add preference for the <code>contentType</code> of the output payload
+                            to the input header using the response-level <code>contentType</code>.</li>
+                        <li>If possible in the used protocol, decode the output payload using the output header <code>contentType</code>.</li>
+                        <li>If not possible in the used protocol or not available, decode the output payload in the corresponding 
+                            <code>contentType</code> available in the response level.</li>
+                    </ul>
+                  </td>
+                  <td>
+                      <ul>
+                          <li>If possible in the used protocol, decode the input payload in the using the input header.</li>
+                          <li>If not possible in the used protocol or not available, decode the input payload in the corresponding 
+                              <code>contentType</code> available in the form level.</li>
+                          <li>Encode output payload in the corresponding <code>contentType</code> available in the response level.</li> 
+                          <li>If possible in the used protocol, add the value of response-level <code>contentType</code> to the output header.</li>
+                      </ul>
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                      Case 2B: Input and multiple possible outputs present, same <code>contentType</code> for messages
+                  </td>
+                  <td>
+                      <code>contentType</code> and <code>additionalResponses</code> inside the form.
+                      <code>schema</code> in the <code>additionalResponses</code> array items can be needed.
+                  </td>
+                  <td>
+                      <code>contentType</code> in the form level refers to the input and the normal output. 
+                      <code>additionalResponses</code> does not need <code>contentType</code> since the default value rule applies.
+                      This is the same case (Case 1C) as there is actually a single <code>contentType</code>.
+                      However, there can be different Data Schemas delivered in the output, requiring the <code>additionalResponses</code>
+                      and <code>schema</code> terms in the form.
+                  </td>
+                  <td>
+                    See Case 1C
+                  </td>
+                  <td>
+                    See Case 1C
+                  </td>
+              </tr>
+              <tr>
+                <td>
+                  Case 2C: Input and multiple possible outputs present, different <code>contentType</code> for output messages
+                </td>
+                <td>
+                  <code>contentType</code>, <code>additionalResponses</code> and possibly <code>response</code> inside the form.
+                  <code>additionalResponses</code> needs <code>contentType</code> for output the messages with different <code>contentType</code>s.
+                </td>
+                <td>
+                  This the most complicated case that can have different ways to be described in a TD.
+                  <code>contentType</code> in the form level refers to the input and to the expected output if the output is 
+                  of the same <code>contentType</code> (like in case 1C).
+                  <code>contentType</code> inside <code>response</code> refers to the expected output if the output is 
+                  of a different <code>contentType</code> (like in case 2A).
+                  <code>contentType</code> inside <code>additionalResponses</code> refers to other possible outputs.
+                </td>
+                <td>
+                  <ul>
+                    <li>Encode input payload according to the <code>contentType</code> available in the form level. </li>
+                    <li>If possible in the used protocol, add the value of form-level <code>contentType</code> to the input header.</li>
+                    <li>If possible in the used protocol, decode the output payload using the output header <code>contentType</code>.</li>
+                    <li>If not possible in the used protocol or not available, decode the output payload in the corresponding 
+                        <code>contentType</code> available in the response level or one of the <code>contentType</code>s 
+                        in <code>additionalResponses</code>.</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul>
+                    <li>If possible in the used protocol, decode the input payload in the using the input header.</li>
+                    <li>If not possible in the used protocol or not available, decode the input payload in the corresponding 
+                        <code>contentType</code> available in the form level.</li>
+                    <li>Encode output payload in the corresponding <code>contentType</code> available in the response level or
+                      one of the <code>contentType</code>s in <code>additionalResponses</code>. If the output is associated with an error case, use the <code>contentType</code>
+                    in a form with <code>"success":false</code></li>
+                    <li>If possible in the used protocol, add the value of the used <code>contentType</code> to the output header.</li>
+                  </ul>
+                </td>
+              </tr>
+          </tbody>
+      </table>
+  </section>
 
 <section id="json-ld-ctx-usage" class="appendix informative">
     <h1>JSON-LD Context Usage</h1>
