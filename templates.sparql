@@ -212,7 +212,10 @@ template :type(?class ?prop ?ns) {
     format {
         "<a href=\"%s\"><code>%s</code></a>"
         st:call-template(:href, ?type, ?ns)
-        st:call-template(:label, ?type, ?ns)
+        # Workaround: do not show if a string is actually a language string (a string that can have a language tag)
+        if(strstarts(str(?type), "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"),
+        "string",
+        st:call-template(:label, ?type, ?ns))
     }
 } where {
     ?shape a sh:NodeShape ;
@@ -295,7 +298,7 @@ template :href(?term ?ns) {
     if(strstarts(str(?term), "http://www.w3.org/2001/XMLSchema#"),
         st:call-template(:href-xsd, ?term, ?ns),
         if(strstarts(str(?term), "http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
-            st:call-template(:href-rdf, ?term, ?ns),
+            st:call-template(:href-langString, ?term, ?ns),
             st:call-template(:href-fragment, ?term, ?ns))
         )
 } where {}
@@ -307,10 +310,11 @@ template :href-xsd(?term ?ns) {
     }
 } where {}
 
-template :href-rdf(?term ?ns) {
+ # Workaround: do not show if a string is actually a language string (a string that can have a language tag)
+template :href-langString(?term ?ns) {
     format {
-        "https://www.w3.org/TR/rdf-schema/#ch_%s"
-        st:call-template(:label, lcase(?term), ?ns)
+        "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"
+        "string"
     }
 } where {}
 
