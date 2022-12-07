@@ -78,6 +78,32 @@ describe('Thing Description validation', () => {
         }
     });
 
+    describe("Additional checks", () => {
+        it("should use the global language", async () => {
+            const ttl = await jsonld.toRDF(validTDs[2], { format: 'application/n-quads' }) 
+            assert.ok(ttl.includes('"Stato corrente del dispositivo"@it'), "The global language is not used for description")
+            assert.ok(ttl.includes('"stato"@it'), "The global language is not used for property names")
+            assert.ok(ttl.includes('"Stato"@it'), "The global language is not used for property title")
+            assert.ok(ttl.includes('"nosec_sc" .'), "Security string contains a forbidden character")
+        });
+    })
+
+    describe('Round tripping', () => {
+        const context = JSON.parse(fs.readFileSync('context/td-context-1.1.jsonld', 'utf-8'));
+        for (const [id, td] of validTDs.entries()) {
+            it(`should transform TD to RDF and back n° ${id}`, async () => {
+                context["@id"] = td.id;
+                const ttl = await jsonld.toRDF(td, { format: 'application/n-quads' })
+                const doc = await jsonld.fromRDF(ttl, { format: 'application/n-quads' });
+                const transformedTD = await jsonld.frame(doc, context);
+                delete transformedTD["@context"];
+                delete td["@context"];
+                assert.deepEqual(td, transformedTD);
+            });
+        } 
+        
+    });
+
 });
 
 function configureCustomLoader() {

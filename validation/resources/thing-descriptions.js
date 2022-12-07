@@ -54,6 +54,35 @@ const validTDs = [
         "@context": [
             "https://www.w3.org/2019/wot/td/v1",
             "https://www.w3.org/2022/wot/td/v1.1",
+            {
+                "@language": "it"
+            }
+        ],
+        "title": "Descrittore semplice con lingua di default",
+        "@type": "Thing",
+        "security": [
+            "nosec_sc"
+        ],
+        "id": "urn:uuid:55f01138-5c96-4b3d-a5d0-81319a2db677",
+        "securityDefinitions": {
+            "nosec_sc": {
+                "scheme": "nosec"
+            }
+        },
+        "properties": {
+            "stato": {
+                "title": "Stato",
+                "description": "Stato corrente del dispositivo",
+                "forms": [
+                    {"href": "https://mydevice.example.com/status"}
+                ]
+            }
+        }
+    },
+    {
+        "@context": [
+            "https://www.w3.org/2019/wot/td/v1",
+            "https://www.w3.org/2022/wot/td/v1.1",
         ],
         "title": "Minimal TD with link",
         "@type": "Thing",
