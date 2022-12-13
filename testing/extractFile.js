@@ -18,6 +18,15 @@ const dataIndex = fs.readFileSync(indexFileName, 'utf8');
 // Load and parse HTML
 const indexHTML = cheerio.load(dataIndex);
 
+function cleanAssertionText(text) {
+  return text.replace(/<\/?[a-zA-Z]+>/gi,' ')  // convert markup to spaces
+             .replace(/[\r\n]/gm,' ')          // convert newlines and carriage returns to spaces
+             .trim()                           // remove white space at beginning and end
+             .replace(/[ \t]+/gm,' ')          // convert multiple spaces/tabs to one space           
+             .replace(/"/gm,'""');             // escape quotes (for CSV) by doubling them
+}
+
+
 // Extract assertion and put them into an array of objects
 var arr_data = [];
 indexHTML('.rfc2119-assertion').each(function (i) {
@@ -74,7 +83,7 @@ for (j = 0; j < arr_data.length; j++) {
     let text = element.html.text();
     let assertionTxt = "";
     if (addAssertionTxt) {
-        assertionTxt = ',"' + text.trim().replace(/\r?\n/g, '').replace(/\s+/g, ' ').replace(/"/g, '""') + '"';
+        assertionTxt = ',"' + cleanAssertionText(text.trim()) + '"';
     }
     console.log(`"${id}","null"${assertionTxt}`);
 }
