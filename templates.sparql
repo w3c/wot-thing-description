@@ -211,8 +211,21 @@ template :field(?class ?ns) {
 template :type(?class ?prop ?ns) {
     format {
         "<a href=\"%s\"><code>%s</code></a>"
-        st:call-template(:href, ?type, ?ns)
-        st:call-template(:label, ?type, ?ns)
+        # Workaround: Use string as type for operationType
+        if(strstarts(str(?type), "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString") 
+            || ?prop = <https://www.w3.org/2019/wot/hypermedia#hasOperationType>
+            || (?prop = <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> && ?class = <https://www.w3.org/2019/wot/security#SecurityScheme>), 
+                "http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string" ,
+                st:call-template(:href, ?type, ?ns)
+        )
+        # Workaround 1: do not show if a string is actually a language string (a string that can have a language tag)
+        # Workaround 2: Use string as type for operationType
+        if(strstarts(str(?type), "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString") 
+            || ?prop = <https://www.w3.org/2019/wot/hypermedia#hasOperationType>
+            || (?prop = <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> && ?class = <https://www.w3.org/2019/wot/security#SecurityScheme>),
+                "string",
+                st:call-template(:label, ?type, ?ns)
+        )
     }
 } where {
     ?shape a sh:NodeShape ;

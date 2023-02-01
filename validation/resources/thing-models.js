@@ -1,15 +1,8 @@
-const assert = require('assert');
-const fs = require('fs');
-const Ajv = require("ajv")
-
-const tmSchema = fs.readFileSync("validation/tm-json-schema-validation.json")
-const ajv = new Ajv({"strict":false, "addUsedSchema":false})
-
 const validTMs = [
     {
-        "$comment":"security allowing placeholders in scheme",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "$comment": "security allowing placeholders in scheme",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
         "title": "Valid model 1",
         "securityDefinitions": {
             "example_sc": {
@@ -19,26 +12,26 @@ const validTMs = [
         "security": ["example_sc"]
     },
     {
-        "$comment":"placeholder with underscore",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "$comment": "placeholder with underscore",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
         "title": "Valid model 2",
         "forms": [
-          {
-            "href": "https://example.com",
-            "op": "{{MY_PLACEHOLDER}}"
-          }
+            {
+                "href": "https://example.com",
+                "op": "{{MY_PLACEHOLDER}}"
+            }
         ]
     },
     {
-        "$comment":"missing title",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel"
+        "$comment": "missing title",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel"
     },
     {
-        "$comment":"example 3 of the spec",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "$comment": "example 3 of the spec",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
         "title": "Valid Model 4",
         "properties": {
             "status": {
@@ -55,14 +48,14 @@ const validTMs = [
         "events": {
             "overheating": {
                 "description": "Lamp reaches a critical temperature (overheating)",
-                "data": {"type": "string"}
+                "data": { "type": "string" }
             }
         }
     },
     {
-        "$comment":"example 51 of the spec",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "$comment": "example 51 of the spec",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
         "title": "Valid Model 5",
         "properties": {
             "onOff": {
@@ -71,70 +64,70 @@ const validTMs = [
         }
     },
     {
-        "$comment":"example 52",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "$comment": "example 52",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
         "title": "Valid Model 6",
-        "links" : [{
+        "links": [{
             "rel": "tm:extends",
             "href": "http://example.com/BasicOnOffTM",
             "type": "application/td+json"
-         }],
-        "properties" : {
-            "dim" : {
+        }],
+        "properties": {
+            "dim": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 100
             }
-       }
+        }
     },
     {
-        "$comment":"example 53 of the spec",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "$comment": "example 53 of the spec",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
         "title": "Valid Model 7",
-        "properties" : {
-            "switch" : {
-                "tm:ref" :"http://example.com/BasicOnOffTM.tm.jsonld#/properties/onOff"
+        "properties": {
+            "switch": {
+                "tm:ref": "http://example.com/BasicOnOffTM.tm.jsonld#/properties/onOff"
             }
-       }
+        }
     },
     {
-        "$comment":"example 54 of the spec",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "$comment": "example 54 of the spec",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
         "title": "Valid Model 8",
-        "properties" : {
-            "dimming" : {
-                "tm:ref" :"http://example.com/SmartLampControlwithDimming.tm.jsonld#/properties/dim",
+        "properties": {
+            "dimming": {
+                "tm:ref": "http://example.com/SmartLampControlwithDimming.tm.jsonld#/properties/dim",
                 "maximum": 80,
-                "unit" : "%"
+                "unit": "%"
             }
-       }
+        }
     },
     {
-        "$comment":"example 55 of the spec",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "$comment": "example 55 of the spec",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
         "title": "Valid Model 9",
-        "links" : [{
+        "links": [{
             "rel": "extends",
             "href": "http://example.com/BasicOnOffTM",
             "type": "application/td+json"
-         }],
-        "properties" : {
-            "status" : {
-                "tm:ref" :"http://example.com/LampTM.tm.jsonld#/properties/status"
+        }],
+        "properties": {
+            "status": {
+                "tm:ref": "http://example.com/LampTM.tm.jsonld#/properties/status"
             },
-            "dimming" : {
-                "tm:ref" :"http://example.com/LampWithDimmingTM.tm.jsonld#/properties/dim"
+            "dimming": {
+                "tm:ref": "http://example.com/LampWithDimmingTM.tm.jsonld#/properties/dim"
             }
-       }
+        }
     },
     {
-        "$comment":"example 56 of the spec. Valid Model 10",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "$comment": "example 56 of the spec. Valid Model 10",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
         "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
         "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
         "properties": {
@@ -143,14 +136,14 @@ const validTMs = [
                 "type": "number",
                 "minimum": -20,
                 "maximum": "{{THERMOSTATE_TEMPERATURE_MAXIMUM}}",
-                "observable" : "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}"
+                "observable": "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}"
             }
         }
     },
     {
-        "$comment":"example 57 of the spec",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "$comment": "example 57 of the spec",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
         "title": "Valid Model 11",
         "description": "Lamp Thing Description Model",
         "tm:optional": [
@@ -172,24 +165,24 @@ const validTMs = [
         "events": {
             "overheating": {
                 "description": "Lamp reaches a critical temperature (overheating)",
-                "data": {"type": "string"}
+                "data": { "type": "string" }
             }
         }
     },
     {
-        "$comment":"example 59 of the spec",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
-        "links" : [{
+        "$comment": "example 59 of the spec",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
+        "links": [{
             "rel": "tm:extends",
             "href": "http://example.com/SmartControlLampTM",
             "type": "application/td+json"
-         }],
-        "properties" : {
-            "dim" : {
+        }],
+        "properties": {
+            "dim": {
                 "maximum": 200
             }
-       }
+        }
     },
     {
         "$comment": "Enum with placeholder",
@@ -203,26 +196,26 @@ const validTMs = [
         "properties": {
             "dim": {
                 "type": "string",
-                "enum":"{{MY_ENUMS}}"
+                "enum": "{{MY_ENUMS}}"
             }
         }
     }
 ];
-const invalidTMs = [    
+const invalidTMs = [
     {
-        "$comment":"absence of @type",
+        "$comment": "absence of @type",
         "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
         "title": "Invalid model 1"
     },
     {
-        "$comment":"absence of @context",
-        "@type" : "tm:ThingModel",
+        "$comment": "absence of @context",
+        "@type": "tm:ThingModel",
         "title": "Invalid model 2"
     },
     {
-        "$comment":"single curly bracket",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "$comment": "single curly bracket",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
         "title": "Invalid model 3",
         "securityDefinitions": {
             "example_sc": {
@@ -232,9 +225,9 @@ const invalidTMs = [
         "security": ["example_sc"]
     },
     {
-        "$comment":"no curly bracket",
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "$comment": "no curly bracket",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
         "title": "Invalid model 4",
         "securityDefinitions": {
             "example_sc": {
@@ -244,8 +237,8 @@ const invalidTMs = [
         "security": ["example_sc"]
     },
     {
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"], 
-        "@type" : "tm:ThingModel",
+        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@type": "tm:ThingModel",
         "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
         "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
         "properties": {
@@ -254,8 +247,8 @@ const invalidTMs = [
                 "type": "number",
                 "minimum": -20,
                 "maximum": "{{THERMOSTATE_TEMPERATURE_MAXIMUM}}",
-                "observable" : "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}",
-                "{{myvar}}":true
+                "observable": "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}",
+                "{{myvar}}": true
             }
         }
     },
@@ -293,20 +286,7 @@ const invalidTMs = [
     }
 ];
 
-validTMs.forEach(element => {
-    const valid = ajv.validate(JSON.parse(tmSchema),element)
-    if (!valid) {
-        console.log(element)
-        console.log(ajv.errors)
-    }
-    assert.strictEqual(valid,true)
-});
-
-invalidTMs.forEach(element => {
-    const valid = ajv.validate(JSON.parse(tmSchema),element)
-    if (valid) {
-        console.log(element)
-        console.log(ajv.errors)
-    }
-    assert.strictEqual(valid,false)
-});
+module.exports = {
+    validTMs,
+    invalidTMs
+};
