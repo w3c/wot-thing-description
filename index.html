@@ -861,6 +861,18 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
         The default representation format for <a>Thing Descriptions</a> is JSON-based as defined by
         this specification.
     </dd>
+    <dt>
+        <dfn id="dfn-td-level" class="lint-ignore">Levels of a TD</dfn> (including
+        <dfn id="dfn-td-thing-level">Thing Level</dfn>, <dfn id="dfn-td-affordance-level" class="lint-ignore">Affordance Level</dfn>,
+        <dfn id="dfn-td-data-schema-level" class="lint-ignore">Data Schema Level</dfn>, <dfn id="dfn-td-forms-level" class="lint-ignore">Forms Level</dfn>)
+    </dt>
+    <dd>
+        The scope of a TD or TM instance at the given hierarchy level. For example, the root of a TD, where terms such
+        as <code>@context</code> are defined is the Thing level, <code>forms</code> are defined within the Affordance level,
+        <code>type</code>, <code>maximum</code> are defined within the Data Schema level and <code>href</code> is defined
+        within the Forms level.
+        Even if not defined, other levels can be used such as Links level.
+    </dd>
   </dl>
 
   <p>
@@ -1295,7 +1307,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 relate to the specified Thing Description.</td><td>optional</td><td><a>Array</a> of <a href="#link"><code>Link</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-forms--Thing"><td><code>forms</code></td><td>Set of form hypermedia controls that describe how 
                   an operation can be performed. Forms are
-                  serializations of Protocol Bindings. Thing-level forms are used to describe endpoints for a group of interaction affordances.</td><td>optional</td><td><a>Array</a> of <a href="#form"><code>Form</code></a></td></tr>
+                  serializations of Protocol Bindings. <a>Thing level</a> forms are used to describe endpoints for a group of interaction affordances.</td><td>optional</td><td><a>Array</a> of <a href="#form"><code>Form</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-security--Thing"><td><code>security</code></td><td>Set of security definition names, chosen from
                 those defined in <code>securityDefinitions</code>.
                 These must all be satisfied for access to resources.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
@@ -1309,11 +1321,11 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 name-value pair inside an 
                 <code>AdditionalExpectedResponse</code> object.</td><td>optional</td><td><a>Map</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-uriVariables--Thing"><td><code>uriVariables</code></td><td>Define URI template variables according to [[RFC6570]]  as collection
-                based on DataSchema declarations. The Thing level <code>uriVariables</code> can be used in Thing-level 
+                based on DataSchema declarations. The <a>Thing level</a> <code>uriVariables</code> can be used in <a>Thing level</a> 
                 <code>forms</code> or in Interaction Affordances.
                 The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema since each variable needs
                 to be serialized to a string inside the <code>href</code> upon the execution of the operation.
-                If the same variable is both declared in Thing-level <code>uriVariables</code> and in Interaction Affordance level,
+                If the same variable is both declared in <a>Thing level</a> <code>uriVariables</code> and in Interaction Affordance level,
                  the Interaction Affordance level variable takes precedence.</td><td>optional</td><td><a>Map</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><p>
               For <code>@context</code> the following rules are defined for <a>Thing Description</a> instances:
               </p>
@@ -1500,7 +1512,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
 <tr class="rfc2119-table-assertion" id="td-vocab-uriVariables--InteractionAffordance"><td><code>uriVariables</code></td><td>Define URI template variables according to [[RFC6570]]  as collection
                 based on DataSchema declarations. The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema since each variable needs
                 to be serialized to a string inside the <code>href</code> upon the execution of the operation. 
-                If the same variable is both declared in Thing-level <code>uriVariables</code>and in Interaction Affordance level, 
+                If the same variable is both declared in <a>Thing level</a> <code>uriVariables</code>and in Interaction Affordance level, 
                 the Interaction Affordance level variable takes precedence.</td><td>optional</td><td><a>Map</a> of <a href="#dataschema"><code>DataSchema</code></a></td></tr></tbody></table><p>The class <code>InteractionAffordance</code> has the following subclasses:</p><ul><li><a href="#propertyaffordance"><code>PropertyAffordance</code></a></li>
 <li><a href="#actionaffordance"><code>ActionAffordance</code></a></li>
 <li><a href="#eventaffordance"><code>EventAffordance</code></a></li></ul></section>
@@ -1934,7 +1946,7 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
           "nosec"</code>), indicating there is no authentication or
           other mechanism required to access the resource.</p></section>
 <section><h3><code>AutoSecurityScheme</code></h3><p>An automatic authentication security configuration identified by the term <code>auto</code> (i.e., <code>"scheme": "auto"</code>). This scheme indicates that the security parameters are going to be negotiated by the underlying protocols at runtime, subject to the respective specifications for the protocol (e.g. [[!RFC8288]] for Basic Authentication when using HTTP).</p></section>
-<section><h3><code>ComboSecurityScheme</code></h3><p><span class="at-risk">This section is at risk.</span></p><p>A combination of other security schemes identified by the <a>Vocabulary Term</a> <code>combo</code> (i.e., <code>"scheme": "combo"</code>).  Elements of this scheme define various ways in which other named schemes defined in <code>securityDefinitions</code>, including other <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> definitions, are to be combined to create a new scheme definition.  <span class="rfc2119-assertion" id="td-security-combo-exclusive-oneof-or-allof">Exactly one of either <code>oneOf</code> or <code>allOf</code> MUST be included.</span> <!-- Redundant, table states "two or more" already <scan class="rfc2119-assertion">The array given as a value associated with either <code>oneOf</code> or <code>allOf</code> MUST have at least two elements.</scan> --> Only security scheme definitions which can be used together can be combined with <code>allOf</code>.  For example, it is not possible in general to combine different OAuth 2.0 flows together using <code>allOf</code> unless one applies to a proxy and one to the endpoint.  Note that when multiple named security scheme definitions are listed in a <code>security</code> field the same semantics apply as in an <code>allOf</code> combination (and the same limitations on allowable combinations).  The <code>oneOf</code> combination is equivalent to using different security schemes on forms that are otherwise identical.  In this sense a <code>oneOf</code> scheme is not an essential feature but it does avoid redundancy in such cases.</p><table class="def numbered"><caption>Vocabulary Terms in ComboSecurityScheme Level</caption><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-oneOf--ComboSecurityScheme"><td><code>oneOf</code></td><td>Array of two or more strings identifying other named security scheme definitions, any one of which, when satisfied, will allow access.  Only one may be chosen for use.</td><td>mandatory</td><td><a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
+<section><h3><code>ComboSecurityScheme</code></h3><p><span class="at-risk">This section is at risk.</span></p><p>A combination of other security schemes identified by the <a>Vocabulary Term</a> <code>combo</code> (i.e., <code>"scheme": "combo"</code>).  Elements of this scheme define various ways in which other named schemes defined in <code>securityDefinitions</code>, including other <a href="#combosecurityscheme"><code>ComboSecurityScheme</code></a> definitions, are to be combined to create a new scheme definition.  <span class="rfc2119-assertion" id="td-security-combo-exclusive-oneof-or-allof">Exactly one of either <code>oneOf</code> or <code>allOf</code> <i>vocabulary terms</i> MUST be included.</span> <!-- Redundant, table states "two or more" already <scan class="rfc2119-assertion">The array given as a value associated with either <code>oneOf</code> or <code>allOf</code> MUST have at least two elements.</scan> --> Only security scheme definitions which can be used together can be combined with <code>allOf</code>.  For example, it is not possible in general to combine different OAuth 2.0 flows together using <code>allOf</code> unless one applies to a proxy and one to the endpoint.  Note that when multiple named security scheme definitions are listed in a <code>security</code> field the same semantics apply as in an <code>allOf</code> combination (and the same limitations on allowable combinations).  The <code>oneOf</code> combination is equivalent to using different security schemes on forms that are otherwise identical.  In this sense a <code>oneOf</code> scheme is not an essential feature but it does avoid redundancy in such cases.</p><table class="def numbered"><caption>Vocabulary Terms in ComboSecurityScheme Level</caption><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-oneOf--ComboSecurityScheme"><td><code>oneOf</code></td><td>Array of two or more strings identifying other named security scheme definitions, any one of which, when satisfied, will allow access.  Only one may be chosen for use.</td><td>mandatory</td><td><a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-allOf--ComboSecurityScheme"><td><code>allOf</code></td><td>Array of two or more strings identifying other named security scheme definitions, all of which must be satisfied for access.</td><td>mandatory</td><td><a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table><!-- <p class="ednote" title="Recursive Use">The 
 <a href="#combosecurityscheme">ComboSecurityScheme</a> may be applied recursively to generate Boolean expressions for combinations of security schemes. One use case for this is when multiple security schemes are needed for a proxy in combination with multiple security schemes for an endpoint.  Suppose for example a proxy accepts either schemes A or B, and then the endpoint accepts either C or D.  Then the possible combinations are AC, AD, BC, and BD.  These could be expressed directly at the <code>Form</code> level but would require four-fold redundancy.  Instead, three <code>combo</code> nodes can be used to combine the four leaf schemes in the correct way into a single scheme.  It is not clear however if other use cases exist for deeper expression trees and if not, we may consider limiting the recursion depth to two.</p>--></section>
 <section><h3><code>BasicSecurityScheme</code></h3><p>Basic Authentication [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc7617" title="The 'Basic' HTTP Authentication Scheme">RFC7617</a></cite>]
@@ -2015,15 +2027,15 @@ is provided in Appendix <a href="#json-schema-for-validation"></a>.
                 <code>OAuth2SecurityScheme</code> active on that
                 form.</td><td>optional</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
 <tr class="rfc2119-table-assertion" id="td-vocab-flow--OAuth2SecurityScheme"><td><code>flow</code></td><td>Authorization flow.</td><td>mandatory</td><td><a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> (e.g., <code>code</code>, <code>client</code>, or <code>device</code>)</td></tr></tbody></table><p><span class="rfc2119-assertion" id="td-security-oauth2-code-flow">For
-            the <code>code</code> flow both <code>authorization</code> and <code>token</code>
+            the <code>code</code> flow both <code>authorization</code> and <code>token</code> <a>vocabulary terms</a>
             MUST be included.</span> <span class="rfc2119-assertion" id="td-security-oauth2-client-flow">For
-            the <code>client</code> flow <code>token</code> MUST be included.</span>
+            the <code>client</code> flow <code>token</code> <a>vocabulary term</a> MUST be included.</span>
             <span class="rfc2119-assertion" id="td-security-oauth2-client-flow-no-auth">For the
-            <code>client</code> flow <code>authorization</code> MUST NOT be included.</span>
+            <code>client</code> flow <code>authorization</code> <a>vocabulary term</a> MUST NOT be included.</span>
             <span class="rfc2119-assertion" id="td-security-oauth2-device-flow">For the
-            <code>device</code> flow both <code>authorization</code> and <code>token</code>
+            <code>device</code> flow both <code>authorization</code> and <code>token</code> <a>vocabulary terms</a>
             MUST be included.</span> In the case of the <code>device</code> flow the value
-            provided for <code>authorization</code> refers to the device authorization endpoint
+            provided for <code>authorization</code> <a>vocabulary terms</a> refers to the device authorization endpoint
             defined in [[!RFC8628]]. The mandatory elements for each flow are summarized in the
             following table:
             </p>
@@ -2946,11 +2958,11 @@ In summary, this requires the following:
         ordered by the numeric name of the pair.
   </span></li>
   <li><span class="rfc2119-assertion" id="td-map-type">
-        A value of type <a>Map</a> MUST be serialized as JSON object,
+        A value of type <a>Map</a> MUST be serialized as a JSON object,
         with each name-value pair as member of the JSON object.
   </span></li>
   <li><span class="rfc2119-assertion" id="td-class-type">
-        A <a>Class</a> instance MUST be serialized as JSON object,
+        A <a>Class</a> instance MUST be serialized as a JSON object,
         following the detailed rules given individually in <a href="#td-class-serialization"></a>.
   </span></li>
   </ul>
@@ -3537,13 +3549,13 @@ In summary, this requires the following:
     Security configuration in the TD is mandatory.
     <span class="rfc2119-assertion" id="td-security-mandatory">
     At least one security definition MUST be activated through the
-    <code>security</code> member at the Thing level (i.e., in the TD root object).
+    <code>security</code> member at the <a>Thing level</a> (i.e., in the TD root object).
     </span>
     This configuration can be seen as the default security mechanism required to interact with the <a>Thing</a>.
     <span class="rfc2119-assertion" id="td-security-overrides">
-    Security definitions MAY also be activated at the form level by including a
+    Security definitions MAY also be activated at the level of the <i>form elements</i> by including a
     <code>security</code> member in form objects,
-    which overrides (i.e., completely replace) all definitions activated at the Thing level.
+    which overrides (i.e., completely replace) all definitions activated at the <a>Thing level</a>.
     </span>
     </p>
   
@@ -3552,7 +3564,7 @@ In summary, this requires the following:
     no security is needed.
     The minimal security configuration for a <a>Thing</a> is activation
     of the <code>nosec</code> security scheme 
-    at the Thing level, as shown in the following example:
+    at the <a>Thing level</a>, as shown in the following example:
     </p>
   
   <pre class="example">
@@ -3580,7 +3592,7 @@ In summary, this requires the following:
     require basic authentication except for one, for which
     no authentication is required.
     For the <code>status</code> Property and the <code>toggle</code> Action,
-    <code>basic</code> authentication is required and defined at the Thing level.
+    <code>basic</code> authentication is required and defined at the <a>Thing level</a>.
     For the <code>overheating</code> Event, however,
     no authentication is required, and hence the security configuration is
     overridden at the form level.
@@ -3707,7 +3719,7 @@ In summary, this requires the following:
   In contrast, putting multiple security configurations in the same
   <code>security</code> member combines them in an "AND" fashion, 
   since in that case they would all need to be satisfied to allow activation of the <a>Interaction Affordance</a>.
-  Note that activating one (default) configuration at the Thing level is still mandatory.
+  Note that activating one (default) configuration at the <a>Thing level</a> is still mandatory.
   </p>
 
 <pre class="example">
@@ -4437,7 +4449,7 @@ Example <a href="#webhook-example-serialization"></a> illustrates how Events can
 
   <p><span class="rfc2119-assertion" id="td-uriVariables-names">
   In such a case, the URI Template variables MUST be collected
-  in the JSON-object based <code>uriVariables</code> member either in the Thing level or in 
+  in the JSON-object based <code>uriVariables</code> member either in the <a>Thing level</a> or in 
   Interaction Affordance level with the associated (unique) variable names as JSON names.
   </span></p>
 
