@@ -2979,6 +2979,9 @@ In summary, this requires the following:
   </p>
 
   <aside class="example with-default">
+    <div class="marker">
+      <span class="example-title">TD with Default Values that can be omitted</span>
+    </div>
     <div class="with-default-control">
       <input type="checkbox"/>
       <span><i>with Default Values</i></span>
@@ -3076,7 +3079,7 @@ In summary, this requires the following:
     }
 }
 </pre>
-    </aside>
+  </aside>
 
     <p>
     Please note that, depending on the <a>Protocol Binding</a> used,
@@ -7738,6 +7741,106 @@ instance.
         <li>Comment: Also see <a href="#adding-protocol-bindings"></a>.</li>
     </ul>
   
+    <aside class="example with-default">
+      <div class="with-default-control">
+        <input type="checkbox" />
+        <span><i>with Default Values</i></span>
+      </div>
+      <pre class="json">{
+        "@context": "https://www.w3.org/2022/wot/td/v1.1",
+        "id": "urn:uuid:645ab619-19ba-4b37-9933-8f0594398245",
+        "title": "MyLampThing",
+        "securityDefinitions": {
+            "basic_sc": {
+                "scheme": "basic"
+            }
+        },
+        "security": "basic_sc",
+        "properties": {
+            "status": {
+                "type": "string",
+                "forms": [{
+                    "href": "https://mylamp.example.com/status"
+                }]
+            }
+        },
+        "actions": {
+            "toggle": {
+                "forms": [{
+                    "href": "https://mylamp.example.com/toggle"
+                }]
+            }
+        },
+        "events": {
+            "overheating": {
+                "data": {
+                    "type": "string"
+                },
+                "forms": [{
+                    "href": "https://mylamp.example.com/oh",
+                    "subprotocol": "longpoll"
+                }]
+            }
+        }
+    }
+    </pre>
+      <pre class="json">{
+        "@context": "https://www.w3.org/2022/wot/td/v1.1",
+        "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
+        "title": "MyLampThing",
+        "securityDefinitions": {
+            "basic_sc": {
+                "scheme": "basic",
+                "in": "header"
+            }
+        },
+        "security": "basic_sc",
+        "properties": {
+            "status": {
+                "type": "string",
+                "readOnly": false,
+                "writeOnly": false,
+                "observable": false,
+                "forms": [{
+                    "op": [
+                        "readproperty",
+                        "writeproperty"
+                    ],
+                    "href": "https://mylamp.example.com/status",
+                    "contentType": "application/json"
+                }]
+            }
+        },
+        "actions": {
+            "toggle": {
+                "safe": false,
+                "idempotent": false,
+                "forms": [{
+                    "op": "invokeaction",
+                    "href": "https://mylamp.example.com/toggle",
+                    "contentType": "application/json"
+                }]
+            }
+        },
+        "events": {
+            "overheating": {
+                "data": {
+                    "type": "string",
+                    "readOnly": false,
+                    "writeOnly": false
+                },
+                "forms": [{
+                    "op": "subscribeevent",
+                    "href": "https://mylamp.example.com/oh",
+                    "contentType": "application/json",
+                    "subprotocol": "longpoll"
+                }]
+            }
+        }
+    }
+    </pre>
+    </aside>
+
   <pre class="example" title="MyLampThing with CoAP Protocol Binding">
   {
      "@context": [
@@ -7852,123 +7955,124 @@ instance.
 
 
 
-<aside class="example ds-selector-tabs" ><div class="marker">
+<aside class="example ds-selector-tabs" >
+  <div class="marker">
     <span class="example-title">Temperature Event with subscription and cancellation</span>
-     </div>
-       <div class="selectors">
+  </div>
+  <div class="selectors">
          <button class="selected exampleTab1 without" onclick="openTab('exampleTab1', 'without')">Without uriVariables</button>
          <button class="exampleTab1 with"         onclick="openTab('exampleTab1', 'with')">With uriVariables</button>
-       </div>
-       <pre class="selected without exampleTab1 json">
-        {
-            "@context": "http://www.w3.org/2022/wot/td/v1.1",
-            "id": "urn:uuid:4778f80a-4c78-4cbb-a0e4-fa37b7d748df",
-            "title": "WebhookThing",
-            "description": "Webhook-based Event with subscription and unsubscribe form.",
-            "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
-            "security": ["nosec_sc"],
-            "events": {
-                "temperature": {
-                    "description": "Provides periodic temperature value updates.",
-                    "subscription": {
-                        "type": "object",
-                        "properties": {
-                            "callbackURL": {
-                                "type": "string",
-                                "format": "uri",
-                                "description": "Callback URL provided by subscriber for Webhook notifications.",
-                                "writeOnly": true
-                            },
-                            "subscriptionID": {
-                                "type": "string",
-                                "description": "Unique subscription ID for cancellation provided by WebhookThing.",
-                                "readOnly": true
-                            }
-                        }
-                    },
-                    "data": {
-                        "type": "number",
-                        "description": "Latest temperature value that is sent to the callback URL."
-                    },
-                    "cancellation": {
-                        "type": "object",
-                        "properties": {
-                            "subscriptionID": {
-                                "type": "integer",
-                                "description": "Required subscription ID to cancel subscription.",
-                                "writeOnly": true
-                            }
-                        }
-                    },
-                    "forms": [
-                        {
-                            "op": "subscribeevent",
-                            "href": "http://192.168.0.124:8080/events/temp/subscribe",
-                            "contentType": "application/json",
-                            "htv:methodName": "POST"
+  </div>
+  <pre class="selected without exampleTab1 json">
+    {
+        "@context": "http://www.w3.org/2022/wot/td/v1.1",
+        "id": "urn:uuid:4778f80a-4c78-4cbb-a0e4-fa37b7d748df",
+        "title": "WebhookThing",
+        "description": "Webhook-based Event with subscription and unsubscribe form.",
+        "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+        "security": ["nosec_sc"],
+        "events": {
+            "temperature": {
+                "description": "Provides periodic temperature value updates.",
+                "subscription": {
+                    "type": "object",
+                    "properties": {
+                        "callbackURL": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Callback URL provided by subscriber for Webhook notifications.",
+                            "writeOnly": true
                         },
-                        {
-                            "op": "unsubscribeevent",
-                            "href": "http://192.168.0.124:8080/events/temp/cancel",
-                            "htv:methodName": "POST"
+                        "subscriptionID": {
+                            "type": "string",
+                            "description": "Unique subscription ID for cancellation provided by WebhookThing.",
+                            "readOnly": true
                         }
-                    ]
-                }
+                    }
+                },
+                "data": {
+                    "type": "number",
+                    "description": "Latest temperature value that is sent to the callback URL."
+                },
+                "cancellation": {
+                    "type": "object",
+                    "properties": {
+                        "subscriptionID": {
+                            "type": "integer",
+                            "description": "Required subscription ID to cancel subscription.",
+                            "writeOnly": true
+                        }
+                    }
+                },
+                "forms": [
+                    {
+                        "op": "subscribeevent",
+                        "href": "http://192.168.0.124:8080/events/temp/subscribe",
+                        "contentType": "application/json",
+                        "htv:methodName": "POST"
+                    },
+                    {
+                        "op": "unsubscribeevent",
+                        "href": "http://192.168.0.124:8080/events/temp/cancel",
+                        "htv:methodName": "POST"
+                    }
+                ]
             }
         }
-       </pre>
-       <pre class="with exampleTab1 json">
-        {
-            "@context": "http://www.w3.org/2022/wot/td/v1.1",
-            "id": "urn:uuid:3c1b4716-247f-4cda-ba53-d3307ac6feb0",
-            "title": "WebhookThing",
-            "description": "Webhook-based Event with subscription and unsubscribe form.",
-            "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
-            "security": ["nosec_sc"],
-            "events": {
-                "temperature": {
-                    "description": "Provides periodic temperature value updates.",
-                    "subscription": {
-                        "type": "object",
-                        "properties": {
-                            "callbackURL": {
-                                "type": "string",
-                                "format": "uri",
-                                "description": "Callback URL provided by subscriber for Webhook notifications.",
-                                "writeOnly": true
-                            },
-                            "subscriptionID": {
-                                "type": "string",
-                                "description": "Unique subscription ID for cancellation provided by WebhookThing.",
-                                "readOnly": true
-                            }
-                        }
-                    },
-                    "data": {
-                        "type": "number",
-                        "description": "Latest temperature value that is sent to the callback URL."
-                    },
-                    "uriVariables": {
-                        "subscriptionID": { "type": "string" }
-                    },
-                    "forms": [
-                        {
-                            "op": "subscribeevent",
-                            "href": "http://192.168.0.124:8080/events/temp/subscribe",
-                            "contentType": "application/json",
-                            "htv:methodName": "POST"
+    }
+  </pre>
+  <pre class="with exampleTab1 json">
+    {
+        "@context": "http://www.w3.org/2022/wot/td/v1.1",
+        "id": "urn:uuid:3c1b4716-247f-4cda-ba53-d3307ac6feb0",
+        "title": "WebhookThing",
+        "description": "Webhook-based Event with subscription and unsubscribe form.",
+        "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+        "security": ["nosec_sc"],
+        "events": {
+            "temperature": {
+                "description": "Provides periodic temperature value updates.",
+                "subscription": {
+                    "type": "object",
+                    "properties": {
+                        "callbackURL": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Callback URL provided by subscriber for Webhook notifications.",
+                            "writeOnly": true
                         },
-                        {
-                            "op": "unsubscribeevent",
-                            "href": "http://192.168.0.124:8080/events/temp/{subscriptionID}",
-                            "htv:methodName": "DELETE"
+                        "subscriptionID": {
+                            "type": "string",
+                            "description": "Unique subscription ID for cancellation provided by WebhookThing.",
+                            "readOnly": true
                         }
-                    ]
-                }
+                    }
+                },
+                "data": {
+                    "type": "number",
+                    "description": "Latest temperature value that is sent to the callback URL."
+                },
+                "uriVariables": {
+                    "subscriptionID": { "type": "string" }
+                },
+                "forms": [
+                    {
+                        "op": "subscribeevent",
+                        "href": "http://192.168.0.124:8080/events/temp/subscribe",
+                        "contentType": "application/json",
+                        "htv:methodName": "POST"
+                    },
+                    {
+                        "op": "unsubscribeevent",
+                        "href": "http://192.168.0.124:8080/events/temp/{subscriptionID}",
+                        "htv:methodName": "DELETE"
+                    }
+                ]
             }
         }
-       </pre>
-     </aside>
+    }
+  </pre>
+</aside>
 
     <p class="note">
         Instead of a periodic POST request to the Thing, the <a>Consumer</a> may provide response data with information when the next POST request should be 
