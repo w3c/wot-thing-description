@@ -26,15 +26,16 @@ In this and subsequent phase, only editorial changes (e.g., adding examples, add
 ## Thing Description Family
 This repository covers the W3C Web of Things Thing Description family of specifications.
 
-### Thing Description (Maintenance)
-* [Working Draft](http://w3c.github.io/wot-thing-description/) - Latest draft of the Thing Description Maintenance version 
+### Thing Description 1.1 (Maintenance)
+* [Editor's Draft](http://w3c.github.io/wot-thing-description/) - Latest editor's draft of the Thing Description Maintenance version 
+* [Working Draft](https://www.w3.org/TR/wot-thing-description11/) - Latest working draft of the Thing Description Maintenance version 
 * [branch](https://github.com/w3c/wot-thing-description/) - Points to the master branch of this repo
 * [issues](https://github.com/w3c/wot-thing-description/issues) - Points to the issues related to the Thing Description Maintenance version
 * [feature log](https://github.com/w3c/wot-thing-description/blob/master/NEW_FEATURES.md) - Log of the new features of the Thing Description Maintenance version compared to Thing Description 1.0
 
 
 ### Thing Description 1.0
-* [REC](https://www.w3.org/TR/wot-thing-description/) - Official recommendation version of the Thing Description 1.0
+* [REC](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/) - Official recommendation version of the Thing Description 1.0
 * [branch](https://github.com/w3c/wot-thing-description/tree/wot-td-1.0) - Branch that correspond to the Thing Description 1.0 files
 * [errata](https://w3c.github.io/wot-thing-description/errata.html) -  Errata for version 1.0 
 
