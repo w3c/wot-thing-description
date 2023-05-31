@@ -2988,7 +2988,7 @@ In summary, this requires the following:
     </div>
 <pre class="json">{
     "@context": "https://www.w3.org/2022/wot/td/v1.1",
-    "id": "urn:uuid:645ab619-19ba-4b37-9933-8f0594398245",
+    "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
     "title": "MyLampThing",
     "securityDefinitions": {
         "basic_sc": {
@@ -7741,155 +7741,148 @@ instance.
         <li>Comment: Also see <a href="#adding-protocol-bindings"></a>.</li>
     </ul>
   
-    <aside class="example with-default">
-      <div class="with-default-control">
-        <input type="checkbox" />
-        <span><i>with Default Values</i></span>
-      </div>
-      <pre class="json">{
-        "@context": "https://www.w3.org/2022/wot/td/v1.1",
-        "id": "urn:uuid:645ab619-19ba-4b37-9933-8f0594398245",
-        "title": "MyLampThing",
-        "securityDefinitions": {
-            "basic_sc": {
-                "scheme": "basic"
-            }
-        },
-        "security": "basic_sc",
-        "properties": {
-            "status": {
-                "type": "string",
-                "forms": [{
-                    "href": "https://mylamp.example.com/status"
-                }]
-            }
-        },
-        "actions": {
-            "toggle": {
-                "forms": [{
-                    "href": "https://mylamp.example.com/toggle"
-                }]
-            }
-        },
-        "events": {
-            "overheating": {
-                "data": {
-                    "type": "string"
-                },
-                "forms": [{
-                    "href": "https://mylamp.example.com/oh",
-                    "subprotocol": "longpoll"
-                }]
-            }
-        }
-    }
-    </pre>
-      <pre class="json">{
-        "@context": "https://www.w3.org/2022/wot/td/v1.1",
-        "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
-        "title": "MyLampThing",
-        "securityDefinitions": {
-            "basic_sc": {
-                "scheme": "basic",
-                "in": "header"
-            }
-        },
-        "security": "basic_sc",
-        "properties": {
-            "status": {
-                "type": "string",
-                "readOnly": false,
-                "writeOnly": false,
-                "observable": false,
-                "forms": [{
-                    "op": [
-                        "readproperty",
-                        "writeproperty"
-                    ],
-                    "href": "https://mylamp.example.com/status",
-                    "contentType": "application/json"
-                }]
-            }
-        },
-        "actions": {
-            "toggle": {
-                "safe": false,
-                "idempotent": false,
-                "forms": [{
-                    "op": "invokeaction",
-                    "href": "https://mylamp.example.com/toggle",
-                    "contentType": "application/json"
-                }]
-            }
-        },
-        "events": {
-            "overheating": {
-                "data": {
-                    "type": "string",
-                    "readOnly": false,
-                    "writeOnly": false
-                },
-                "forms": [{
-                    "op": "subscribeevent",
-                    "href": "https://mylamp.example.com/oh",
-                    "contentType": "application/json",
-                    "subprotocol": "longpoll"
-                }]
-            }
-        }
-    }
-    </pre>
-    </aside>
-
-  <pre class="example" title="MyLampThing with CoAP Protocol Binding">
-  {
-     "@context": [
+  <aside class="example with-default">
+    <div class="marker">
+      <span class="example-title">MyLampThing with CoAP Protocol Binding</span>
+    </div>
+    <div class="with-default-control">
+      <input type="checkbox" />
+      <span><i>with Default Values</i></span>
+    </div>
+    <pre class="json">
+{
+    "@context": [
         "https://www.w3.org/2022/wot/td/v1.1",
         {
-        "cov": "http://www.example.org/coap-binding#"
+            "cov": "http://www.example.org/coap-binding#"
         }
-      ],
-      "id": "urn:uuid:bd472149-0b41-4dc9-80c0-977f39dc7e77",
-      "title": "MyLampThing",
-      "description": "MyLampThing uses JSON serialization",
-      "securityDefinitions": {"psk_sc": {"scheme": "psk"}},
-      "security": ["psk_sc"],
-      "properties": {
-          "status": {
-              "description": "Shows the current status of the lamp",
-              "type": "string",
-              "forms": [{
-                  "op": "readproperty",
-                  "href": "coaps://mylamp.example.com/status",
-                  "cov:methodName": "GET" 
-              }]
-          }
-      },
-      "actions": {
-          "toggle": {
-              "description": "Turn on or off the lamp",
-              "forms": [{
-                  "href": "coaps://mylamp.example.com/toggle",
-                  "cov:methodName": "POST" 
-              }]
-          }
-      },
-      "events": {
-          "overheating": {
-              "description": "Lamp reaches a critical temperature (overheating)",
-              "data": {"type": "string"},
-              "forms": [{
-                  "href": "coaps://mylamp.example.com/oh",
-                  "cov:methodName": "GET",
-                  "subprotocol": "cov:observe" 
-              }]
-          }
-      }
-  }
+    ],
+    "id": "urn:uuid:bd472149-0b41-4dc9-80c0-977f39dc7e77",
+    "title": "MyLampThing",
+    "description": "MyLampThing uses JSON serialization",
+    "securityDefinitions": {
+        "psk_sc": {
+            "scheme": "psk"
+        }
+    },
+    "security": [
+        "psk_sc"
+    ],
+    "properties": {
+        "status": {
+            "description": "Shows the current status of the lamp",
+            "type": "string",
+            "readOnly":true,
+            "forms": [
+                {
+                    "href": "coaps://mylamp.example.com/status"
+                }
+            ]
+        }
+    },
+    "actions": {
+        "toggle": {
+            "description": "Turn on or off the lamp",
+            "forms": [
+                {
+                    "href": "coaps://mylamp.example.com/toggle"
+                }
+            ]
+        }
+    },
+    "events": {
+        "overheating": {
+            "description": "Lamp reaches a critical temperature (overheating)",
+            "data": {
+                "type": "string"
+            },
+            "forms": [
+                {
+                    "href": "coaps://mylamp.example.com/oh",
+                    "cov:methodName": "GET",
+                    "subprotocol": "cov:observe"
+                }
+            ]
+        }
+    }
+}
   </pre>
+    <pre class="json">
+{
+    "@context": [
+        "https://www.w3.org/2022/wot/td/v1.1",
+        {
+            "cov": "http://www.example.org/coap-binding#"
+        }
+    ],
+    "id": "urn:uuid:bd472149-0b41-4dc9-80c0-977f39dc7e77",
+    "title": "MyLampThing",
+    "description": "MyLampThing uses JSON serialization",
+    "securityDefinitions": {
+        "psk_sc": {
+            "scheme": "psk"
+        }
+    },
+    "security": [
+        "psk_sc"
+    ],
+    "properties": {
+        "status": {
+            "description": "Shows the current status of the lamp",
+            "type": "string",
+            "forms": [
+                {
+                    "op": "readproperty",
+                    "href": "coaps://mylamp.example.com/status",
+                    "cov:methodName": "GET",
+                    "contentType": "application/json"
+                }
+            ],
+            "observable": false,
+            "readOnly": true
+        }
+    },
+    "actions": {
+        "toggle": {
+            "description": "Turn on or off the lamp",
+            "forms": [
+                {
+                    "href": "coaps://mylamp.example.com/toggle",
+                    "cov:methodName": "POST",
+                    "op": "invokeaction",
+                    "contentType": "application/json"
+                }
+            ],
+            "safe": false,
+            "idempotent": false
+        }
+    },
+    "events": {
+        "overheating": {
+            "description": "Lamp reaches a critical temperature (overheating)",
+            "data": {
+                "type": "string"
+            },
+            "forms": [
+                {
+                    "href": "coaps://mylamp.example.com/oh",
+                    "subprotocol": "cov:observe",
+                    "op": [
+                        "subscribeevent",
+                        "unsubscribeevent"
+                    ],
+                    "contentType": "application/json"
+                }
+            ]
+        }
+    }
+}
+  </pre>
+  </aside>
+
   </section>
   
-    <section id="myLightSensor-example-serialization">
+  <section id="myLightSensor-example-serialization">
     <h3>MyIlluminanceSensor Example with MQTT Protocol Binding</h3>
   
     <p>Feature list of the <a>Thing</a>:</p>
@@ -7901,31 +7894,75 @@ instance.
         <li>Security: none</li>
         <li>Protocol Binding: MQTT [[?MQTT]]</li>
         <li>Comment: An MQTT client frequently publishes the illuminance data (number is serialized in text format) to 
-            the topic <code>/illuminance</code> by the MQTT broker running behind the address 192.168.1.187:1883.</li>
+            the topic <code>/illuminance</code> by the MQTT broker running behind the address <code>192.168.1.187:1883</code>.</li>
     </ul>
-  
-  <pre class="example" title="MyIlluminanceSensor with MQTT Protocol Binding">
-          {   
-              "@context": "https://www.w3.org/2022/wot/td/v1.1",
-              "title": "MyIlluminanceSensor",
-              "id": "urn:uuid:9489991a-7622-45b6-8437-f858b59835d4",
-              "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
-              "security": ["nosec_sc"],
-              "events": {
-                  "illuminance": {
-                      "data": {"type": "integer"},
-                      "forms": [
-                          {
-                              "href": "mqtt://192.168.1.187:1883/illuminance",
-                              "contentType": "text/plain",
-                              "op": "subscribeevent"
-                          }
-                      ]
-                  }
-              } 
-          }
+  <aside class="example with-default">
+    <div class="marker">
+      <span class="example-title">MyIlluminanceSensor with MQTT Protocol Binding</span>
+    </div>
+    <div class="with-default-control">
+      <input type="checkbox" />
+      <span><i>with Default Values</i></span>
+    </div>
+    <pre class="json">
+{
+    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+    "title": "MyIlluminanceSensor",
+    "id": "urn:uuid:9489991a-7622-45b6-8437-f858b59835d4",
+    "securityDefinitions": {
+        "nosec_sc": {
+            "scheme": "nosec"
+        }
+    },
+    "security": [
+        "nosec_sc"
+    ],
+    "events": {
+        "illuminance": {
+            "data": {
+                "type": "integer"
+            },
+            "forms": [
+                {
+                    "href": "mqtt://192.168.1.187:1883/illuminance",
+                    "contentType": "text/plain"
+                }
+            ]
+        }
+    }
+}
   </pre>
-    </section>
+    <pre class="json">
+{
+    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+    "title": "MyIlluminanceSensor",
+    "id": "urn:uuid:9489991a-7622-45b6-8437-f858b59835d4",
+    "securityDefinitions": {
+        "nosec_sc": {
+            "scheme": "nosec"
+        }
+    },
+    "security": [
+        "nosec_sc"
+    ],
+    "events": {
+        "illuminance": {
+            "data": {
+                "type": "integer"
+            },
+            "forms": [
+                {
+                    "href": "mqtt://192.168.1.187:1883/illuminance",
+                    "contentType": "text/plain",
+                    "op":["subscribeevent","unsubscribeevent"]
+                }
+            ]
+        }
+    }
+}
+  </pre>
+  </aside>
+  </section>
   
   
     <section id="webhook-example-serialization">
