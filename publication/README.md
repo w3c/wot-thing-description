@@ -32,3 +32,6 @@ at <https://w3c.github.io/wot-thing-description/> later.
 2. Generate static.html by ReSpec from the index.html (click "ReSpec" top right and choose "Export" then export as "HTML",
 3. copy static.html to Overview.html and tidy it up,
 4. If there are any remaining errors/warnings with the Pubrules checker results, repeat the edit by going back to #1.
+
+Note: You cannot use a tool like <https://htmlpreview.github.io> since they do not have static html as a resource that the pubrule
+checkers can use.
