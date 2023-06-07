@@ -8,7 +8,16 @@
 
 ## Summary 
 
+### Technical
+
+### Organizational
 
 ## TD.next presentation
 
 To be extended
+
+## Backlog
+
+- Validation of TDs should be better, including extensions (protocols, security extensions)
+- A validation process for external bindings is needed
+- Governance of specific binding submissions, how to review, special meetings or not etc.
