@@ -3,6 +3,11 @@
 In each sub directory, you can find the relevant files for the publication process.
 In general, you should always consult the W3C Guide page at <https://www.w3.org/Guide>.
 
+## Checklist
+
+* Make sure that you update the recent specification changes
+* For Proposed Recommendation Transition, create an issue at X.
+
 ## Files
 
 * Overview.html - static HTML for publication
