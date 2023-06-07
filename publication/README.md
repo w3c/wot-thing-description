@@ -20,7 +20,7 @@ Overview.html is generated as follows:
 2. Change `specStatus` to `"NOTE"` from `"ED"`.
 3. Generate static.html by ReSpec from <https://w3c.github.io/wot-thing-description/> (click "ReSpec" top right and choose "Export" then export as "HTML"). Make sure that you disable browser extensions or open in private window.
 4. Output Overview.html as a result of [HTML Tidy](https://www.html-tidy.org/). Use the following command (`tidy -ashtml -i static.html > Overview.html`). The `-ashtml` option is needed until [this issue](https://github.com/htacg/tidy-html5/issues/660) is resolved at HTML Tidy.
-5. TODO: How to generate the diff.html 
+
 
 ## How to Add your Edits based on the Pubrules Errors and Warnings
 
@@ -32,6 +32,7 @@ at <https://w3c.github.io/wot-thing-description/> later.
 2. Generate static.html by ReSpec from the index.html (click "ReSpec" top right and choose "Export" then export as "HTML",
 3. copy static.html to Overview.html and tidy it up,
 4. If there are any remaining errors/warnings with the Pubrules checker results, repeat the edit by going back to #1.
+5. Generate diff.html via <http://services.w3.org/htmldiff>
 
 Note: You cannot use a tool like <https://htmlpreview.github.io> since they do not have static html as a resource that the pubrule
 checkers can use.
