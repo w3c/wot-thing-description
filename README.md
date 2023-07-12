@@ -39,39 +39,38 @@ This repository covers the W3C Web of Things Thing Description family of specifi
 * [branch](https://github.com/w3c/wot-thing-description/tree/wot-td-1.0) - Branch that correspond to the Thing Description 1.0 files
 * [errata](https://w3c.github.io/wot-thing-description/errata.html) -  Errata for version 1.0 
 
-
-
 ## Specification Rendering
 
 Part of the document is automatically rendered using the [STTL.js](https://github.com/vcharpenay/STTL.js/) RDF template engine and Node.js.
 _Any change to the document must be performed on the main HTML template [`index.template.html`](index.template.html)_, and not on `index.html`.
 To render `index.html`, along with SVG figures, run: 
 
-```sh
-npm run render
-```
+- `npm install` to install all the dependencies
+- `npm run render` to render all the files
 
 You can also invoke the rendering script directly:
+
 ```sh
 ./render.sh
 ```
 
-Requirements: Java 8, Node.js 6, [GraphViz](https://graphviz.org/).
+Requirements: Node.js 16, [GraphViz](https://graphviz.org/).
 
 The script will first download and install some dependencies (triple store, Node.js dependencies) and then execute the JS script `render.js`.
-The latter should always be execute within `render.sh` since it requires some env variables to be set first.
+The latter should always be executed within `render.sh` since it requires some env variables to be set first.
 
 For Windows users, the script should be run in a [Cygwin shell](http://cygwin.com/). Git package from Cygwin distribution had better not be used. Alternative Git client distribution such as [Git for Windows](https://gitforwindows.org/) works better when you encounter an issue building the document using Cygwin.
 
 ### Automatic rendering
-The repository is equipped with git hooks that automate the rendering process. To enable them, run `npm install` at the root folder. The hooks will render the documents automatically at every commit.
-if you run the rending process manually or you do not want to execute the automatic process add `--no-verify` option to your commit command. 
+The repository is equipped with git hooks that automate the rendering process. To enable them, run `npm install` in the root folder. The hooks will render the documents automatically at every commit.
+If you run the rending process manually or you do not want to execute the automatic process add `--no-verify` option to your commit command. 
 
 ## Implementation Report
 
 To generate the implementation report,
 including a list of normative assertions,
 issue the following command:
+
 ```sh
 npm run assertions
 ```
