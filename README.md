@@ -20,7 +20,7 @@ information on how to create a pull request.
 
 __Note (August 2022):__
 
-__Please notice that Thing Description 1.1 is in the review phase for the Candidate Recommendation (CR) transition. 
+__Please notice that Thing Description 1.1 is in the review phase for the Proposed Recommendation (PR) transition. 
 In this and subsequent phase, only editorial changes (e.g., adding examples, additional explanations) and bug fixes can be applied to the [editorial draft](http://w3c.github.io/wot-thing-description/). Editorial changes should be labeled with 'Editorial' in the issue and corresponding PRs. New feature requests can not be considered and will be postponed to the next version of the Thing Description.__  
 
 ## Thing Description Family
