@@ -109,8 +109,8 @@ It is strongly recommended to make assertions independent of context.
 In particular, avoid using pronouns or relational expressions
 referring to previous statements not included in the assertion.
 Such references can always be replaced with their
-antecendent ("dereferenced") without changing the meaning,
-and this is less ambigious anyway.
+antecedent ("dereferenced") without changing the meaning,
+and this is less ambiguous anyway.
 For example, instead of using "this serialization", use
 "a JSON-TD serialization".
 
