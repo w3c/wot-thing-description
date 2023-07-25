@@ -17,7 +17,13 @@ For choosing new namespaces, please refer to <https://www.w3.org/2005/07/13-nsur
 | `https://www.w3.org/2019/wot/security` | `http://w3c.github.io/wot-thing-description/ontology/wot-security.ttl` | `text/turtle` |
 | `https://www.w3.org/2019/wot/security` (same as above) | `http://w3c.github.io/wot-thing-description/ontology/wotsec.html` | `text/html`|
 | `https://www.w3.org/2019/wot/hypermedia` | `http://w3c.github.io/wot-thing-description/ontology/hypermedia.ttl` | `text/turtle`
-| `https://www.w3.org/2019/wot/hypermedia` (same as above)| `http://w3c.github.io/wot-thing-description/ontology/hyperm.html` | `text/html`
+| `https://www.w3.org/2019/wot/hypermedia` (same as above)| `http://w3c.github.io/wot-thing-description/ontology/hyperm.html` | `text/html` |
 | `https://www.w3.org/2022/wot/td/v1.1` | TBD | `application/ld+json`|
 
 ## JSON Schemas
+
+| W3C URL | GitHub URL | Content Type |
+| ------- | ---------- | ------------ |
+| `https://www.w3.org/2019/wot/td-schema/v1` | `https://raw.githubusercontent.com/w3c/wot-thing-description/REC1.0/validation/td-json-schema-validation.json` | `application/json` |
+| `https://www.w3.org/2022/wot/td-schema/v1.1` | `https://raw.githubusercontent.com/w3c/wot-thing-description/TD11-PR/validation/td-json-schema-validation.json` | `application/json` |
+| `https://www.w3.org/2022/wot/tm-schema/v1.1` | `https://raw.githubusercontent.com/w3c/wot-thing-description/TD11-PR/validation/tm-json-schema-validation.json` | `application/json` |
