@@ -18,7 +18,8 @@ For choosing new namespaces, please refer to <https://www.w3.org/2005/07/13-nsur
 | `https://www.w3.org/2019/wot/security` (same as above) | `http://w3c.github.io/wot-thing-description/ontology/wotsec.html` | `text/html`|
 | `https://www.w3.org/2019/wot/hypermedia` | `http://w3c.github.io/wot-thing-description/ontology/hypermedia.ttl` | `text/turtle`
 | `https://www.w3.org/2019/wot/hypermedia` (same as above)| `http://w3c.github.io/wot-thing-description/ontology/hyperm.html` | `text/html` |
-| `https://www.w3.org/2022/wot/td/v1.1` | TBD | `application/ld+json`|
+| `https://www.w3.org/2022/wot/td/v1.1` | `https://w3c.github.io/wot-thing-description/context/td-context-1.1.jsonld` | `application/ld+json`|
+| `https://www.w3.org/2022/wot/tm` | `w3c.github.io/wot-thing-description/ontology/tm.ttl` | `text/turtle`|
 
 ## JSON Schemas
 
