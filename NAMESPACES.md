@@ -37,16 +37,16 @@ For choosing new namespaces, please refer to <https://www.w3.org/2005/07/13-nsur
 | `https://www.w3.org/2019/wot/security` (same as above) | `http://w3c.github.io/wot-thing-description/ontology/wotsec.html` | `text/html`|
 | `https://www.w3.org/2019/wot/hypermedia` | `http://w3c.github.io/wot-thing-description/ontology/hypermedia.ttl` | `text/turtle`
 | `https://www.w3.org/2019/wot/hypermedia` (same as above)| `http://w3c.github.io/wot-thing-description/ontology/hyperm.html` | `text/html` |
-| `https://www.w3.org/2022/wot/td/v1.1` | `https://w3c.github.io/wot-thing-description/publication/rec11/context/td-context-1.1.jsonld` | `application/ld+json`|
-| `https://www.w3.org/2022/wot/tm` (NEW) | `https://w3c.github.io/wot-thing-description/publication/rec11/ontology/tm.ttl` | `text/turtle`|
+| `https://www.w3.org/2022/wot/td/v1.1` | `https://w3c.github.io/wot-thing-description/publication/ver11/7-rec/context/td-context-1.1.jsonld` | `application/ld+json`|
+| `https://www.w3.org/2022/wot/tm` (NEW) | `https://w3c.github.io/wot-thing-description/publication/ver11/7-rec/ontology/tm.ttl` | `text/turtle`|
 
 ### JSON Schemas
 
 | W3C URL | GitHub URL | Content Type |
 | ------- | ---------- | ------------ |
 | `https://www.w3.org/2019/wot/td-schema/v1` (NEW) | `https://w3c.github.io/wot-thing-description/publication/rec/validation/td-json-schema-validation.json` | `application/json` |
-| `https://www.w3.org/2022/wot/td-schema/v1.1` (NEW) | `https://w3c.github.io/wot-thing-description/publication/rec11/validation/td-json-schema-validation.json` | `application/json` |
-| `https://www.w3.org/2022/wot/tm-schema/v1.1` (NEW)  | `https://w3c.github.io/wot-thing-description/publication/rec11/validation/tm-json-schema-validation.json` | `application/json` |
+| `https://www.w3.org/2022/wot/td-schema/v1.1` (NEW) | `https://w3c.github.io/wot-thing-description/publication/ver11/7-rec/validation/td-json-schema-validation.json` | `application/json` |
+| `https://www.w3.org/2022/wot/tm-schema/v1.1` (NEW)  | `https://w3c.github.io/wot-thing-description/publication/ver11/7-rec/validation/tm-json-schema-validation.json` | `application/json` |
 
 ## Discussion so far
 
