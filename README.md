@@ -132,3 +132,10 @@ that highlights at-risk items in the generated `index.html`.  The at-risk
 items are listed in `testing/inputs/atrisk.csv`.  If at-risk items are
 updated, to update the at-risk highlighting the implementation report
 needs to be generated first, and then the rendering.
+
+
+## Resources used together with the TD Specification
+
+- Ontology files
+- Context files
+- JSON Schemas
