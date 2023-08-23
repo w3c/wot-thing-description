@@ -151,7 +151,7 @@ The working documents are found under the [ontology](./ontology) folder.
 ### Context files
 
 In order to have reference to the TD ontology within JSON-LD documents, including TDs, we provide a JSON-LD context file.
-The working document can be found at [context/td-context-1.1.jsonld](./context/td-context-1.1.jsonld) and the version-specific context file can be retrieved from the `@context` value of a TD 1.0 or TD 1.1 instance.
+The working document can be found at [context/td-context-1.1.jsonld](./context/td-context-1.1.jsonld) and the version-specific context file can be retrieved from the `@context` value of a TD 1.0 or TD 1.1 instance. **Note** that  [context/td-context-1.1.jsonld](./context/td-context-1.1.jsonld) is the result of the rendering process and it should not be edited manually. In practice, the rendering process merges [context/td-context.jsonld](./context/td-context.jsonld), [context/json-schema-context.jsonld](./context/json-schema-context.jsonld), [context/wot-security-context.jsonld](./context/wot-security-context.jsonld), [context/hypermedia-context.jsonld](./context/hypermedia-context.jsonld).  
 
 You can find more information on how to use the context at [the Appendix of the TD specification](https://w3c.github.io/wot-thing-description/#json-ld-ctx-usage).
 
