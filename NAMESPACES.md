@@ -1,4 +1,4 @@
-# Namespaces and Resources
+# [Draft] Namespaces and Resources
 
 The W3C WoT WG maintains a list of namespaces and the resources behind them in addition to the standardization documents.
 This file lists them together.
