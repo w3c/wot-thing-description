@@ -130,3 +130,34 @@ that highlights at-risk items in the generated `index.html`.  The at-risk
 items are listed in `testing/inputs/atrisk.csv`.  If at-risk items are
 updated, to update the at-risk highlighting the implementation report
 needs to be generated first, and then the rendering.
+
+## Resources used together with the TD Specification
+
+In addition to the TD specification, the Working Group maintains additional resources that are relevant for implementers.
+These are categorized below and their use cases explained.
+
+### Vocabularies and Ontologies
+
+The present specification introduces the TD Information Model as a set of constraints over different vocabularies.
+The current list of vocabularies are found under [the namespaces section](https://w3c.github.io/wot-thing-description/#namespaces).
+
+By default, if a user agent does not perform any content negotiation, a human-readable HTML documentation is returned instead of the RDF document. 
+To negotiate content, clients must include the HTTP header `Accept: text/turtle` in their request.
+
+The working documents are found under the [ontology](./ontology) folder.
+
+### Context files
+
+In order to have reference to the TD ontology within JSON-LD documents, including TDs, we provide a JSON-LD context file.
+The working document can be found at [context/td-context-1.1.jsonld](./context/td-context-1.1.jsonld) and the version-specific context file can be retrieved from the `@context` value of a TD 1.0 or TD 1.1 instance. **Note** that  [context/td-context-1.1.jsonld](./context/td-context-1.1.jsonld) is the result of the rendering process and it should not be edited manually. In practice, the rendering process merges [context/td-context.jsonld](./context/td-context.jsonld), [context/json-schema-context.jsonld](./context/json-schema-context.jsonld), [context/wot-security-context.jsonld](./context/wot-security-context.jsonld), [context/hypermedia-context.jsonld](./context/hypermedia-context.jsonld).  
+
+You can find more information on how to use the context at [the Appendix of the TD specification](https://w3c.github.io/wot-thing-description/#json-ld-ctx-usage).
+
+### JSON Schemas
+
+We provide JSON Schema for TD and TM instances.
+The working documents are found under the [validation](./validation/) folder and specific versions are linked from the Thing Description specification.
+These can be used for the purposes below among others:
+
+* TD and TM validation
+* Type generation for programming languages
