@@ -51,11 +51,18 @@ template :axioms(?prefix) {
         "</section>"
         "<section>"
             "<h3>Object Properties</h3>"
+            st:call-template(:properties-intro, ?ns, ?prefix, owl:ObjectProperty)
             st:call-template(:properties, ?ns, ?prefix, owl:ObjectProperty)
         "</section>"
         "<section>"
             "<h3>Datatype Properties</h3>"
+            st:call-template(:properties-intro, ?ns, ?prefix, owl:DatatypeProperty)
             st:call-template(:properties, ?ns, ?prefix, owl:DatatypeProperty)
+        "</section>"
+        "<section>"
+            "<h3>Annotation Properties</h3>"
+            st:call-template(:properties-intro, ?ns, ?prefix, owl:AnnotationProperty)
+            st:call-template(:properties, ?ns, ?prefix, owl:AnnotationProperty)
         "</section>"
         st:call-template(:individuals-section, ?ns, ?prefix)
     "</section>"
@@ -200,6 +207,17 @@ template :properties(?ns ?prefix ?type) {
        rdfs:comment ?desc .
     filter (strstarts(str(?p), str(?ns)))
     bind (strafter(str(?p), "#") as ?label)
+} order by ?p
+
+template :properties-intro(?ns ?prefix ?type) {
+    format { "%s" if(?found, "", concat("<p>No ", strafter(str(?type), "#"), " found in the ontology.</p>")) }
+} where {
+    optional {
+        ?p a ?type .
+        filter (strstarts(str(?p), str(?ns)))
+        bind (strafter(str(?p), "#") as ?label)
+    }
+    bind(bound(?p) as ?found)
 } order by ?p
 
 template :property-domain-all(?p ?prefix) {
