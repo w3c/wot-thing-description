@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>Thing Description (TD) Ontology</title>
+    <script src='https://www.w3.org/Tools/respec/respec-w3c' class='remove'></script>
+    <script class='remove'>
+        var respecConfig = {
+            specStatus: "ED",
+            latestVersion: null,
+            editors: [{
+                name: "Victor Charpenay"
+                , company:    "Siemens AG"
+                , companyURL: "https://www.siemens.com/"
+            }, {
+                name: "Maxime Lefrançois"
+                , company:    "École des Mines de Saint-Étienne"
+                , companyURL: "https://www.mines-stetienne.fr/"
+            }, {
+                name: "María Poveda Villalón"
+                , company:    "Universidad Politécnica de Madrid"
+                , companyURL: "http://www.upm.es/"
+            }, {
+                name: "Sebastian Käbisch"
+                , company:    "Siemens AG"
+                , companyURL: "http://www.siemens.com/"
+            }],
+            edDraftURI: "https://www.w3.org/2019/wot/td",
+            shortName: "wot-td-ontology"
+        };
+    </script>
+    <style>
+        span.indent {
+            margin-left: 2em;
+        }
+    </style>
+</head>
+
+<body>
+    <section id='abstract'>
+        <p>
+            The Thing Description (TD) ontology is an RDF axiomatization of the TD information model,
+            one of the building blocks of the Web of Things (WoT). Besides providing an alternative
+            to the standard JSON representation format for TD documents, the TD ontology can also
+            be used to process contextual information on Things and for alignments with other
+            WoT-related ontologies. 
+        </p>
+    </section>
+    <section id='sotd'>
+        <p>
+            Validation of the document by the Working Group is expected by the end of June 2019.
+        </p>
+    </section>
+    <section>
+        <h2>Introduction</h2>
+
+        <p>
+            The TD ontology is an idiomatic RDF axiomatization of the TD information model [[WOT-THING-DESCRIPTION]],
+            which can be used to describe WoT things and their interaction affordances. The TD ontology imports
+            the <a href="https://www.w3.org/2019/wot/hypermedia">hypermedia controls</a> ontology.
+            However, although the TD information model also includes terms for data schemas and security
+            configurations, the TD ontology does not force the use of the corresponding
+            <a href="https://www.w3.org/2019/wot/json-schema">JSON schema</a> and
+            <a href="https://www.w3.org/2019/wot/security">WoT security</a> vocabularies. Other schema languages
+            like SHACL [[shacl]] can thus be leveraged to describe WoT Things.
+        </p>
+    </section>
+
+    <section id="terminology"> 
+        <h2>Terminology</h2>
+        
+          <p>The fundamental WoT terminology such as
+          <dfn>Thing</dfn>,
+          <dfn>Consumer</dfn>,
+          <dfn>Thing Description</dfn> (<dfn>TD</dfn>),
+          <dfn>Interaction Model</dfn>,
+          <dfn>Interaction Affordance</dfn>,
+          <dfn>Property</dfn>,
+          <dfn>Action</dfn>,
+          <dfn>Event</dfn>,
+          <dfn>Protocol Binding</dfn>,
+          <dfn>Servient</dfn>,
+          etc. is defined in <a href="https://www.w3.org/TR/wot-architecture/#terminology">Section 3</a>
+          of the WoT Architecture specification [[WOT-ARCHITECTURE]].
+          </p>
+
+          <p>
+            The Thing Description terminology such as
+            <dfn>TD Information Model</dfn>,
+            <dfn>TD Document</dfn>,
+            <dfn>Term</dfn> (<dfn>Vocabulary Term</dfn>),
+            etc. is defined in <a href="https://www.w3.org/TR/wot-thing-description/#terminology">Section 3</a>
+            of the WoT Thing Description specification [[WOT-THING-DESCRIPTION]].
+            
+          </p>
+
+    </section>
+
+    <!-- axioms rendered from RDF definitions -->
+    <section><h2>Axiomatization</h2><section><h3>Classes</h3><section id="ActionAffordance"><h4>ActionAffordance</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#ActionAffordance</code></p><span>An Interaction Affordance that allows to invoke a function of the Thing, which manipulates state (e.g., toggling a lamp on or off) or triggers a process on the Thing (e.g., dim a lamp over time).</span><table class="def numbered"><tbody><tr><td>Sub-class of</td><td><code><a href="#InteractionAffordance">td:InteractionAffordance</a></code></td></tr><tr><td>In the domain of</td><td><code><a href="#hasInputSchema">td:hasInputSchema</a></code><br><code><a href="#hasOutputSchema">td:hasOutputSchema</a></code><br><code><a href="#isIdempotent">td:isIdempotent</a></code><br><code><a href="#isSafe">td:isSafe</a></code><br><code><a href="#isSynchronous">td:isSynchronous</a></code></td></tr><tr><td>In the range of</td><td><code><a href="#hasActionAffordance">td:hasActionAffordance</a></code></td></tr></tbody></table></section>
+<section id="EventAffordance"><h4>EventAffordance</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#EventAffordance</code></p><span>An Interaction Affordance that describes an event source, which asynchronously pushes event data to Consumers (e.g., overheating alerts).</span><table class="def numbered"><tbody><tr><td>Sub-class of</td><td><code><a href="#InteractionAffordance">td:InteractionAffordance</a></code></td></tr><tr><td>In the domain of</td><td><code><a href="#hasCancellationSchema">td:hasCancellationSchema</a></code><br><code><a href="#hasNotificationResponseSchema">td:hasNotificationResponseSchema</a></code><br><code><a href="#hasNotificationSchema">td:hasNotificationSchema</a></code><br><code><a href="#hasSubscriptionSchema">td:hasSubscriptionSchema</a></code></td></tr><tr><td>In the range of</td><td><code><a href="#hasEventAffordance">td:hasEventAffordance</a></code></td></tr></tbody></table></section>
+<section id="InteractionAffordance"><h4>InteractionAffordance</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#InteractionAffordance</code></p><span>Metadata of a Thing that shows the possible choices to Consumers, thereby suggesting how Consumers may interact with the Thing. There are many types of potential affordances, but W3C WoT defines three types of Interaction Affordances: Properties, Actions, and Events.</span><table class="def numbered"><tbody><tr><td>Super-class of</td><td><code><a href="#ActionAffordance">td:ActionAffordance</a></code><br><code><a href="#EventAffordance">td:EventAffordance</a></code><br><code><a href="#PropertyAffordance">td:PropertyAffordance</a></code></td></tr><tr><td>In the domain of</td><td><code><a href="#description">td:description</a></code><br><code><a href="#descriptionInLanguage">td:descriptionInLanguage</a></code><br><code><a href="#hasForm">td:hasForm</a></code><br><code><a href="#hasUriTemplateSchema">td:hasUriTemplateSchema</a></code><br><code><a href="#name">td:name</a></code><br><code><a href="#title">td:title</a></code><br><code><a href="#titleInLanguage">td:titleInLanguage</a></code></td></tr><tr><td>In the range of</td><td><code><a href="#hasInteractionAffordance">td:hasInteractionAffordance</a></code></td></tr></tbody></table></section>
+<section id="OperationType"><h4>OperationType</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#OperationType</code></p><span>Enumeration of well-known operation types necessary to implement the WoT interaction model</span><table class="def numbered"><tbody><tr><td>Enumeration members</td><td><code><a href="#cancelAction">td:cancelAction</a></code><br><code><a href="#invokeAction">td:invokeAction</a></code><br><code><a href="#observeAllProperties">td:observeAllProperties</a></code><br><code><a href="#observeProperty">td:observeProperty</a></code><br><code><a href="#queryAction">td:queryAction</a></code><br><code><a href="#queryAllActions">td:queryAllActions</a></code><br><code><a href="#readAllProperties">td:readAllProperties</a></code><br><code><a href="#readMultipleProperties">td:readMultipleProperties</a></code><br><code><a href="#readProperty">td:readProperty</a></code><br><code><a href="#subscribeAllEvents">td:subscribeAllEvents</a></code><br><code><a href="#subscribeEvent">td:subscribeEvent</a></code><br><code><a href="#unobserveAllProperties">td:unobserveAllProperties</a></code><br><code><a href="#unobserveProperty">td:unobserveProperty</a></code><br><code><a href="#unsubscribeAllEvents">td:unsubscribeAllEvents</a></code><br><code><a href="#unsubscribeEvent">td:unsubscribeEvent</a></code><br><code><a href="#writeAllProperties">td:writeAllProperties</a></code><br><code><a href="#writeMultipleProperties">td:writeMultipleProperties</a></code><br><code><a href="#writeProperty">td:writeProperty</a></code></td></tr></tbody></table></section>
+<section id="PropertyAffordance"><h4>PropertyAffordance</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#PropertyAffordance</code></p><span>An Interaction Affordance that exposes state of the Thing. This state can then be retrieved (read) and/or updated (write). Things can also choose to make Properties observable by pushing the new state after a change.</span><table class="def numbered"><tbody><tr><td>Sub-class of</td><td><code><a href="#InteractionAffordance">td:InteractionAffordance</a></code></td></tr><tr><td>In the domain of</td><td><code><a href="#isObservable">td:isObservable</a></code></td></tr><tr><td>In the range of</td><td><code><a href="#hasPropertyAffordance">td:hasPropertyAffordance</a></code></td></tr></tbody></table></section>
+<section id="Thing"><h4>Thing</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#Thing</code></p><span>An abstraction of a physical or a virtual entity whose metadata and interfaces are described by a WoT Thing Description, whereas a virtual entity is the composition of one or more Things.</span><table class="def numbered"><tbody><tr><td>In the domain of</td><td><code><a href="#baseURI">td:baseURI</a></code><br><code><a href="#definesSecurityScheme">td:definesSecurityScheme</a></code><br><code><a href="#description">td:description</a></code><br><code><a href="#descriptionInLanguage">td:descriptionInLanguage</a></code><br><code><a href="#followsProfile">td:followsProfile</a></code><br><code><a href="#hasForm">td:hasForm</a></code><br><code><a href="#hasInteractionAffordance">td:hasInteractionAffordance</a></code><br><code><a href="#hasSecurityConfiguration">td:hasSecurityConfiguration</a></code><br><code><a href="#instance">td:instance</a></code><br><code><a href="#model">td:model</a></code><br><code><a href="#title">td:title</a></code><br><code><a href="#titleInLanguage">td:titleInLanguage</a></code></td></tr></tbody></table></section></section><section><h3>Object Properties</h3><section id="definesSecurityScheme"><h4>definesSecurityScheme</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#definesSecurityScheme</code></p><span>A Thing may define abstract security schemes, used to configure the secure access of (a set of) affordance(s).</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#Thing">td:Thing</a></code></td></tr></tbody></table></section>
+<section id="hasActionAffordance"><h4>hasActionAffordance</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasActionAffordance</code></p><span>All Action-based interaction affordance of the Thing.</span><table class="def numbered"><tbody><tr><td>Range includes</td><td><code><a href="#ActionAffordance">td:ActionAffordance</a></code></td></tr></tbody></table></section>
+<section id="hasCancellationSchema"><h4>hasCancellationSchema</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasCancellationSchema</code></p><span>Defines any data that needs to be passed to cancel a subscription, e.g., a specific message to remove a Webhook</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#EventAffordance">td:EventAffordance</a></code></td></tr></tbody></table></section>
+<section id="hasConfigurationInstance"><h4>hasConfigurationInstance</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasConfigurationInstance</code></p><span>Instantiation, as used here, is a form of non-symmetric equivalence between a scheme and a configuration: whatever statement on the scheme is also true of the configuration but not vice-versa.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="https://www.w3.org/2019/wot/security#SecurityScheme">wotsec:SecurityScheme</a></code></td></tr></tbody></table></section>
+<section id="hasEventAffordance"><h4>hasEventAffordance</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasEventAffordance</code></p><span>All Event-based interaction affordance of the Thing.</span><table class="def numbered"><tbody><tr><td>Range includes</td><td><code><a href="#EventAffordance">td:EventAffordance</a></code></td></tr></tbody></table></section>
+<section id="hasForm"><h4>hasForm</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasForm</code></p><span>Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings. The array cannot be empty</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#InteractionAffordance">td:InteractionAffordance</a></code><br><code><a href="#Thing">td:Thing</a></code></td></tr><tr><td>Range includes</td><td><code><a href="https://www.w3.org/2019/wot/hypermedia#Form">hctl:Form</a></code></td></tr></tbody></table></section>
+<section id="hasInputSchema"><h4>hasInputSchema</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasInputSchema</code></p><span>Used to define the input data schema of the action.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#ActionAffordance">td:ActionAffordance</a></code></td></tr></tbody></table></section>
+<section id="hasInteractionAffordance"><h4>hasInteractionAffordance</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasInteractionAffordance</code></p><span>Offers an affordance to interact with the Thing</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#Thing">td:Thing</a></code></td></tr><tr><td>Range includes</td><td><code><a href="#InteractionAffordance">td:InteractionAffordance</a></code></td></tr></tbody></table></section>
+<section id="hasLink"><h4>hasLink</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasLink</code></p><span>Provides Web links to arbitrary resources that relate to the specified Thing Description.</span><table class="def numbered"><tbody><tr><td>Range includes</td><td><code><a href="https://www.w3.org/2019/wot/hypermedia#Link">hctl:Link</a></code></td></tr></tbody></table></section>
+<section id="hasNotificationResponseSchema"><h4>hasNotificationResponseSchema</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasNotificationResponseSchema</code></p><span>Defines the data schema of the Event response messages sent by the consumer in a response to a data message.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#EventAffordance">td:EventAffordance</a></code></td></tr></tbody></table></section>
+<section id="hasNotificationSchema"><h4>hasNotificationSchema</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasNotificationSchema</code></p><span>Defines the data schema of the Event instance messages pushed by the Thing.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#EventAffordance">td:EventAffordance</a></code></td></tr></tbody></table></section>
+<section id="hasOutputSchema"><h4>hasOutputSchema</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasOutputSchema</code></p><span>Used to define the output data schema of the action.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#ActionAffordance">td:ActionAffordance</a></code></td></tr></tbody></table></section>
+<section id="hasPropertyAffordance"><h4>hasPropertyAffordance</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasPropertyAffordance</code></p><span>All Property-based interaction affordance of the Thing.</span><table class="def numbered"><tbody><tr><td>Range includes</td><td><code><a href="#PropertyAffordance">td:PropertyAffordance</a></code></td></tr></tbody></table></section>
+<section id="hasSecurityConfiguration"><h4>hasSecurityConfiguration</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasSecurityConfiguration</code></p><span>A security configuration is a a security scheme applied to a (set of) affordance(s).</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="https://www.w3.org/2019/wot/hypermedia#Form">hctl:Form</a></code><br><code><a href="#Thing">td:Thing</a></code></td></tr></tbody></table></section>
+<section id="hasSubscriptionSchema"><h4>hasSubscriptionSchema</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasSubscriptionSchema</code></p><span>Defines data that needs to be passed upon subscription, e.g., filters or message format for setting up Webhooks.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#EventAffordance">td:EventAffordance</a></code></td></tr></tbody></table></section>
+<section id="hasUriTemplateSchema"><h4>hasUriTemplateSchema</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#hasUriTemplateSchema</code></p><span>Define URI template variables  according to [[RFC6570]] as collection based on schema specifications. The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#InteractionAffordance">td:InteractionAffordance</a></code></td></tr></tbody></table></section></section><section><h3>Datatype Properties</h3><section id="baseURI"><h4>baseURI</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#baseURI</code></p><span>Define the base URI that is used for all relative URI references throughout a TD document. In TD instances, all relative URIs are resolved relative to the base URI using the algorithm defined in [RFC3986]. base does not affect the URIs used in @context and the IRIs used within Linked Data [LINKED-DATA] graphs that are relevant when semantic processing is applied to TD instances.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#Thing">td:Thing</a></code></td></tr><tr><td>Range includes</td><td><code><a href="http://schema.org/URL">schema:URL</a></code></td></tr></tbody></table></section>
+<section id="description"><h4>description</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#description</code></p><span>description of the TD element (Thing, interaction affordance, security scheme or data schema)</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="https://www.w3.org/2019/wot/json-schema#DataSchema">jsonschema:DataSchema</a></code><br><code><a href="https://www.w3.org/2019/wot/security#SecurityScheme">wotsec:SecurityScheme</a></code><br><code><a href="#InteractionAffordance">td:InteractionAffordance</a></code><br><code><a href="#Thing">td:Thing</a></code></td></tr><tr><td>Range includes</td><td><code><a href="http://schema.org/Text">schema:Text</a></code></td></tr></tbody></table></section>
+<section id="descriptionInLanguage"><h4>descriptionInLanguage</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#descriptionInLanguage</code></p><span>description of the TD element (Thing, interaction affordance, security scheme or data schema) with language tag. By convention, a language tag must be added to the object of 'descriptionInLanguage' triples. Otherwise, use 'description'.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="https://www.w3.org/2019/wot/json-schema#DataSchema">jsonschema:DataSchema</a></code><br><code><a href="https://www.w3.org/2019/wot/security#SecurityScheme">wotsec:SecurityScheme</a></code><br><code><a href="#InteractionAffordance">td:InteractionAffordance</a></code><br><code><a href="#Thing">td:Thing</a></code></td></tr><tr><td>Range includes</td><td><code><a href="http://schema.org/Text">schema:Text</a></code></td></tr></tbody></table></section>
+<section id="followsProfile"><h4>followsProfile</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#followsProfile</code></p><span>Indicates the WoT Profile mechanisms followed by this Thing Description and the corresponding Thing implementation.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#Thing">td:Thing</a></code></td></tr></tbody></table></section>
+<section id="instance"><h4>instance</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#instance</code></p><span>Provides a version identicator of this TD instance.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#Thing">td:Thing</a></code></td></tr></tbody></table></section>
+<section id="isIdempotent"><h4>isIdempotent</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#isIdempotent</code></p><span>Indicates whether the action is idempotent (=true) or not. Informs whether the action can be called repeatedly with the same result, if present, based on the same input.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#ActionAffordance">td:ActionAffordance</a></code></td></tr><tr><td>Range includes</td><td><code><a href="http://schema.org/Boolean">schema:Boolean</a></code></td></tr></tbody></table></section>
+<section id="isObservable"><h4>isObservable</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#isObservable</code></p><span>A hint that indicates whether Servients hosting the Thing and Intermediaries should provide a Protocol Binding that supports the <code>observeproperty</code> and <code>unobserveproperty</code> operations for this Property.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#PropertyAffordance">td:PropertyAffordance</a></code></td></tr><tr><td>Range includes</td><td><code><a href="http://schema.org/Boolean">schema:Boolean</a></code></td></tr></tbody></table></section>
+<section id="isSafe"><h4>isSafe</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#isSafe</code></p><span>Signals if the action is safe (=true) or not. Used to signal if there is no internal state (cf. resource state) is changed when invoking an Action. In that case responses can be cached as example.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#ActionAffordance">td:ActionAffordance</a></code></td></tr><tr><td>Range includes</td><td><code><a href="http://schema.org/Boolean">schema:Boolean</a></code></td></tr></tbody></table></section>
+<section id="isSynchronous"><h4>isSynchronous</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#isSynchronous</code></p><span>Indicates whether the action is synchronous (=true) or not. A synchronous action means that the response of action contains all the information about the result of the action and no further querying about the status of the action is needed. Lack of this keyword means that no claim on the synchronicity of the action can be made.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#ActionAffordance">td:ActionAffordance</a></code></td></tr><tr><td>Range includes</td><td><code><a href="http://schema.org/Boolean">schema:Boolean</a></code></td></tr></tbody></table></section>
+<section id="model"><h4>model</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#model</code></p><span>Provides a version indicator of the underlying TM.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#Thing">td:Thing</a></code></td></tr></tbody></table></section>
+<section id="name"><h4>name</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#name</code></p><span>Indexing property to store entity names when serializing them in a JSON-LD @index container.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="#InteractionAffordance">td:InteractionAffordance</a></code></td></tr><tr><td>Range includes</td><td><code><a href="http://schema.org/Text">schema:Text</a></code></td></tr></tbody></table></section>
+<section id="title"><h4>title</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#title</code></p><span>title of the TD element (Thing, interaction affordance or data schema)</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="https://www.w3.org/2019/wot/json-schema#DataSchema">jsonschema:DataSchema</a></code><br><code><a href="#InteractionAffordance">td:InteractionAffordance</a></code><br><code><a href="#Thing">td:Thing</a></code></td></tr><tr><td>Range includes</td><td><code><a href="http://schema.org/Text">schema:Text</a></code></td></tr></tbody></table></section>
+<section id="titleInLanguage"><h4>titleInLanguage</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#titleInLanguage</code></p><span>title of the TD element (Thing, interaction affordance or data schema) with language tag. By convention, a language tag must be added to the object of 'titleInLanguage' triples. Otherwise, use 'title'.</span><table class="def numbered"><tbody><tr><td>Domain includes</td><td><code><a href="https://www.w3.org/2019/wot/json-schema#DataSchema">jsonschema:DataSchema</a></code><br><code><a href="#InteractionAffordance">td:InteractionAffordance</a></code><br><code><a href="#Thing">td:Thing</a></code></td></tr><tr><td>Range includes</td><td><code><a href="http://schema.org/Text">schema:Text</a></code></td></tr></tbody></table></section></section><section><h3>Annotation Properties</h3><section id="supportContact"><h4>supportContact</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#supportContact</code></p><span>Provides information about the TD maintainer as URI scheme (e.g., mailto [[RFC6068]], tel [[RFC3966]], https[[RFC9112]]).</span><table class="def numbered"><tbody></tbody></table></section>
+<section id="versionInfo"><h4>versionInfo</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#versionInfo</code></p><span>Provides version information.</span><table class="def numbered"><tbody></tbody></table></section></section><section><h3>Named Individuals</h3><section id="cancelAction"><h4>cancelAction</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#cancelAction</code></p><span>Operation type of forms used to cancel an action</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="invokeAction"><h4>invokeAction</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#invokeAction</code></p><span>Operation type of forms used to read a property value</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="observeAllProperties"><h4>observeAllProperties</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#observeAllProperties</code></p><span>Operation type of forms used to observe all property values</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="observeProperty"><h4>observeProperty</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#observeProperty</code></p><span>Operation type of forms used to observe a property value</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="queryAction"><h4>queryAction</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#queryAction</code></p><span>Operation type of forms used to query the status of an action</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="queryAllActions"><h4>queryAllActions</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#queryAllActions</code></p><span>Operation type of forms used to query the status of all actions</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="readAllProperties"><h4>readAllProperties</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#readAllProperties</code></p><span>Operation type of forms used to read all property values</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="readMultipleProperties"><h4>readMultipleProperties</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#readMultipleProperties</code></p><span>Operation type of forms used to read a property value</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="readProperty"><h4>readProperty</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#readProperty</code></p><span>Operation type of forms used to read a property value</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="subscribeAllEvents"><h4>subscribeAllEvents</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#subscribeAllEvents</code></p><span>Operation type of forms used to subscribe to all event types</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="subscribeEvent"><h4>subscribeEvent</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#subscribeEvent</code></p><span>Operation type of forms used to read a property value</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="unobserveAllProperties"><h4>unobserveAllProperties</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#unobserveAllProperties</code></p><span>Operation type of forms used to unobserve all property value</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="unobserveProperty"><h4>unobserveProperty</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#unobserveProperty</code></p><span>Operation type of forms used to unobserve a property value</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="unsubscribeAllEvents"><h4>unsubscribeAllEvents</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#unsubscribeAllEvents</code></p><span>Operation type of forms used to unsubscribe from all event types</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="unsubscribeEvent"><h4>unsubscribeEvent</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#unsubscribeEvent</code></p><span>Operation type of forms used to read a property value</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="writeAllProperties"><h4>writeAllProperties</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#writeAllProperties</code></p><span>Operation type of forms used to read a property value</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="writeMultipleProperties"><h4>writeMultipleProperties</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#writeMultipleProperties</code></p><span>Operation type of forms used to write a property value</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section>
+<section id="writeProperty"><h4>writeProperty</h4><p>IRI: <code>https://www.w3.org/2019/wot/td#writeProperty</code></p><span>Operation type of forms used to write a property value</span><table class="def numbered"><tbody><tr><td>Instance of</td><td><code><a href="#OperationType">td:OperationType</a></code></td></tr></tbody></table></section></section></section>
+
+    <section>
+        <h2>Alignments</h2>
+
+        <p>
+            The TD ontology shares commonalities with other WoT-related vocabularies, in particular
+            with SOSA [[vocab-ssn]] and <a href="http://schema.org">schema.org</a>.
+            Alignments between these vocabularies are provided in a human-readable way in the following.
+        </p>
+
+        <section>
+            <h3>SOSA</h3>
+
+            <p>
+                All alignments with SOSA are also available here in OWL:
+                <a href="td-sosa.ttl">td-sosa.ttl</a>.
+            </p>
+
+            <p>
+                Alignment of <code>td:Thing</code> with SOSA:
+            </p>
+
+            <table class="def">
+                <thead>
+                    <tr>
+                        <th>Sub-Class</th>
+                        <th>Super-Class</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <code>td:Thing</code>
+                        </td>
+                        <td>
+                            <code>sosa:Sensor</code> or<br>
+                            <code>sosa:Actuator</code> or<br>
+                            <code>sosa:Platform</code> or<br>
+                            <code>sosa:FeatureOfInterest</code>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:Thing</code> and<br>
+                            <code>sosa:FeatureOfInterest</code>
+                        </td>
+                        <td>
+                            <code>ssn:hasProperty</code> some (<br>
+                                <span class="indent">(<code>sosa:isObservedBy</code> some <code>sosa:Sensor</code>) or</span><br>
+                                <span class="indent">(<code>sosa:isActedOnBy</code> some <code>sosa:Actuator</code>)</span><br>
+                            )
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:Thing</code> and<br>
+                            <code>sosa:Sensor</code>
+                        </td>
+                        <td>
+                            <code>sosa:observes</code> some<br>
+                                <span class="indent"><code>sosa:ObservableProperty</code></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:Thing</code> and<br>
+                            <code>sosa:Actuator</code>
+                        </td>
+                        <td>
+                            <code>sosa:actsOnProperty</code> some<br>
+                                <span class="indent"><code>sosa:ActuatableProperty</code></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:Thing</code> and<br>
+                            <code>sosa:Platform</code>
+                        </td>
+                        <td>
+                            <code>sosa:hosts</code> some (<br>
+                                <span class="indent">(</span><br>
+                                    <span class="indent"><span class="indent"><code>sosa:Sensor</code> and</span></span><br>
+                                    <span class="indent"></span><span class="indent"><code>sosa:observes</code> some</span></span><br>
+                                        <span class="indent"><span class="indent"></span><span class="indent"><code>sosa:ObservableProperty</code></span></span></span><br>
+                                <span class="indent">) or (</span><br>
+                                    <span class="indent"><span class="indent"><code>sosa:Actuator</code> and</span></span><br>
+                                    <span class="indent"></span><span class="indent"><code>sosa:actsOnProperty</code> some</span></span><br>
+                                        <span class="indent"><span class="indent"><span class="indent"><code>sosa:ActuatableProperty</code></span></span></span><br>
+                                <span class="indent">)</span><br>
+                            )
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Alignment of <code>td:InteractionAffordance</code> with SOSA:</p>
+
+            <table class="def">
+                <thead>
+                    <tr>
+                        <th>Sub-Class</th>
+                        <th>Super-Class</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <code>td:PropertyAffordance</code> and<br>
+                            <code>td:hasForm</code> some<br>
+                                <span class="indent"><code>hctl:hasOperationType</code> value</span><br>
+                                    <span class="indent"><span class="indent"><code>td:readProperty</code></span></span>
+                        </td>
+                        <td>
+                            <code>ssn:forProperty</code> some <code>sosa:ObservableProperty</code>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:PropertyAffordance</code> and<br>
+                            <code>td:hasForm</code> some<br>
+                                <span class="indent"><code>hctl:hasOperationType</code> value</span><br>
+                                    <span class="indent"><span class="indent"><code>td:writeProperty</code></span></span>
+                        </td>
+                        <td>
+                            <code>ssn:forProperty</code> some <code>sosa:ActuatableProperty</code>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:ActionAffordance</code>
+                        </td>
+                        <td>
+                            <code>ssn:forProperty</code> some<br>
+                                <span class="indent"><code>sosa:ActuatableProperty</code></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <code>td:EventAffordance</code>
+                        </td>
+                        <td>
+                            <code>ssn:forProperty</code> some<br>
+                                <span class="indent"><code>sosa:ObservableProperty</code></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h3>Schema.org</h3>
+
+            <p>
+                The alignments with schema.org's actions are also available here in OWL:
+                <a href="td-sdo.ttl">td-sdo.ttl</a>.
+            </p>
+
+            <table class="def">
+                <thead>
+                    <tr>
+                        <th>Sub-Class</th>
+                        <th>Super-Class</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <code>td:InteractionAffordance</code>
+                        </td>
+                        <td>
+                            <code>schema:Action</code> and<br>
+                            <code>schema:actionStatus</code> value
+                                <span class="indent"><code>schema:PotentialActionStatus</code></span><br>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="def">
+                <thead>
+                    <tr>
+                        <th>Sub-Property</th>
+                        <th>Super-Property</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <code>td:hasInteractionAffordance</code>
+                        </td>
+                        <td>
+                            <code>schema:potentialAction</code>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </section>
+    
+    <section>
+        <h2>Usage Examples</h2>
+
+        <section>
+            <h3>Thing Description JSON-LD 1.1 Instance to RDF Dataset</h3>
+
+        <p>
+            The following example shows a TD instance from <a href="https://www.w3.org/TR/wot-thing-description/#simple-thing-description-sample">Example 1</a> Thing Description 
+            specification [[WOT-THING-DESCRIPTION]] in JSON-LD 1.1 (JSON-LD 1.1 tab) and in a RDF dataset (RDF tab).
+        </p>
+
+
+        <aside class="example ds-selector-tabs changed" id="simple-thing-description-sample" title="Thing Description Sample">
+            <div class="selectors">
+              <button class="selected" data-selects="ex-original">JSON-LD 1.1</button>
+              <button data-selects="ex-rdf">RDF</button>
+            </div>
+            <pre class="ex-original selected">{
+                "@context": {
+                    "https://www.w3.org/2019/wot/td/v1",
+                    {"@base": "http://example.org/MyLampThing/"}
+                },
+                "id": "urn:dev:ops:32473-WoTLamp-1234",
+                "title": "MyLampThing",
+                "securityDefinitions": {
+                    "basic_sc": {"scheme": "basic", "in":"header"}
+                },
+                "security": ["basic_sc"],
+                "properties": {
+                    "status" : {
+                        "type": "string",
+                        "forms": [{"href": "https://mylamp.example.com/status"}]
+                    }
+                },
+                "actions": {
+                    "toggle" : {
+                        "forms": [{"href": "https://mylamp.example.com/toggle"}]
+                    }
+                },
+                "events":{
+                    "overheating":{
+                        "data": {"type": "string"},
+                        "forms": [{
+                            "href": "https://mylamp.example.com/oh",
+                            "subprotocol": "longpoll"
+                        }]
+                    }
+                }
+            }</pre>
+        <pre class="ex-rdf">&lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasActionAffordance&gt; _:b0 .
+            &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasEventAffordance&gt; _:b2 .
+            &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasPropertyAffordance&gt; _:b5 .
+            &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#hasSecurityConfiguration&gt; &lt;http://example.org/MyLampThing/basic_sc&gt; .
+            &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#definesSecurityScheme&gt; _:b7 .
+            &lt;urn:dev:ops:32473-WoTLamp-1234&gt; &lt;https://www.w3.org/2019/wot/td#title&gt; &quot;MyLampThing&quot; .
+            _:b0 &lt;https://www.w3.org/2019/wot/td#name&gt; "toggle" .
+            _:b0 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b1 .
+            _:b1 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/toggle&quot; .
+            _:b2 &lt;https://www.w3.org/2019/wot/td#name&gt; "overheating" .
+            _:b2 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b3 .
+            _:b2 &lt;https://www.w3.org/2019/wot/td#hasNotificationSchema&gt; _:b4 .
+            _:b3 &lt;https://www.w3.org/2019/wot/hypermedia#forSubProtocol&gt; &quot;longpoll&quot; .
+            _:b3 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/oh&quot; .
+            _:b4 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/json-schema#StringSchema&gt; .
+            _:b5 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/json-schema#StringSchema&gt; .
+            _:b5 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; "status" .
+            _:b5 &lt;https://www.w3.org/2019/wot/td#hasForm&gt; _:b6 .
+            _:b6 &lt;https://www.w3.org/2019/wot/hypermedia#hasTarget&gt; &quot;https://mylamp.example.com/status&quot; .
+            _:b7 &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;https://www.w3.org/2019/wot/security#BasicSecurityScheme&gt; .
+            _:b7 &lt;https://www.w3.org/2019/wot/security#in&gt; "header" .
+            _:b7 &lt;https://www.w3.org/2019/wot/td#hasConfigurationInstance&gt; &lt;http://example.org/MyLampThing/basic_sc&gt; .
+        </pre>
+        </aside>
+        
+        
+        <p>
+            The RDF dataset contains the corresponding Thing Description IRIs as defined in this document. This IRI mapping is provided by the Thing Description 
+            context file <code>https://www.w3.org/2019/wot/td/v1</code>. For instance, the field <code>actions</code> is transformed to <code>&lt;https://www.w3.org/2019/wot/td#hasActionAffordance&gt;</code>.
+
+        </p>
+
+
+        </section>
+
+        <section>
+            <h3>Merging Thing Descriptions</h3>
+
+            <p>
+                The following example includes two TD documents in the standard TD JSON
+                representation format [[WOT-THING-DESCRIPTION]], identified by a unique
+                electronic product code [[RFC5134]].
+            </p>
+
+            <p>
+                If these two documents are being merged together with contextual information
+                in the form of an RDF graph that uses the same identifiers, it is possible
+                to retrieve form metadata of these TDs depending on the relations that
+                exist between Things. Here, the two Things share information on room 101
+                of some example building.
+            </p>
+
+<aside class="example" title="Merging of two TD documents and a logical map of a building">
+<pre class="split-example">
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:epc:id:sgtin:900100.0003456.1234567",
+    "title" : "HVAC System",
+    "@type": "https://w3id.org/saref#HVAC",
+    ...
+    "properties": {
+        "status": {
+            "type": "boolean",
+            "forms": [...]
+        }
+    }
+}
+</pre>
+<pre class="split-example">
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:epc:id:sgtin:900200.1234000.9876543",
+    "title" : "TemperatureSensor",
+    "@type": "https://w3id.org/saref#TemperatureSensor",
+    ...
+    "properties": {
+        "temperature": {
+            "type": "number",
+            "forms": [...]
+        }
+    }
+}
+</pre>
+<pre class="split-example">
+{
+    "@context": {
+        "bot": "https://w3id.org/bot#",
+        "brick": "https://brickschema.org/schema/1.0.3/BrickFrame#"
+    },
+    "@graph": [
+        {
+            "@id": "tag:room_101",
+            "@type": "bot:Space",
+            "bot:containsElement": {
+                "@id": "urn:epc:id:sgtin:900200.1234000.9876543"
+            }
+        },
+        {
+            "@id": "urn:epc:id:sgtin:900100.0003456.1234567",
+            "brick:feeds": {
+                "@id": "tag:room_101"
+            }
+        }
+    ]
+}
+</pre>
+</aside>
+        </section>
+
+        <section>
+            <h3>Internal State of a Thing</h3>
+
+            <p>
+                It is possible for affordances of different kinds to have the same effect.
+                For instance, an affordance to a writable property may be equivalent to
+                an affordance to invoke an action that changes the property value.
+                Similarly, for every observable property, there may be an equivalent
+                affordance to subscribe to an event that occurs at every property value change.
+            </p>
+
+            <p>
+                WoT clients can avoid having to deal with these discrepancies by
+                using the generic <code>td:hasInteractionAffordance</code> predicate.
+                They can then decide to perform an action based solely on the operation type
+                of the form embedded in the affordance object.
+            </p>
+
+<aside class="example" title="Alternative affordances to read/write a property value">
+<pre class="split-example">
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "id": "urn:epc:id:sgtin:900300.1234000.9876543",
+    "title" : "LED Lamp",
+    ...
+    "properties": {
+        "status": {
+            "ssn:forProperty": { "@type": "saref:OnOffState" },
+            "type": "boolean",
+            "forms": [
+                {
+                    "href": "http://example.org/status",
+                    "op": "writeproperty"
+                },
+                {
+                    "href": "http://example.org/status",
+                    "op": "observeproperty"
+                }
+            ]
+        }
+    }
+}
+</pre>
+<pre class="split-example">
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "actions": {
+        "change": {
+            "ssn:forProperty": { "@type": "saref:OnOffState" },
+            "input": { "type": "boolean" },
+            "forms": [
+                {
+                    "href": "http://example.org/status/change",
+                    "op": "invokeaction"
+                }
+            ]
+        }
+    }
+}
+</pre>
+<pre class="split-example">
+{
+    "@context": "https://www.w3.org/2019/wot/td/v1",
+    "events": {
+        "changed": {
+            "ssn:forProperty": { "@type": "saref:OnOffState" },
+            "data": { "type": "boolean" },
+            "forms": [
+                {
+                    "href": "http://example.org/status/changed",
+                    "op": "subscribeevent"
+                }
+            ]
+        }
+    }
+}
+</pre>
+</aside>
+        </section>
+
+        <section>
+            <h3>Specifying Affordances by Device Classes</h3>
+
+            <p>
+                It is possible to use the TD ontology to extend the definition of
+                well-known subclasses of <code>Thing</code> by defining expected
+                affordances that Things of such types should present. The
+                following example specifies that every temperature sensor presents
+                an affordance to a temperature property (expressed in the SAREF
+                vocabulary [[smartM2M]]).
+            </p>
+
+<aside class="example" title="OWL axiom for affordances provided by a temperature sensor">
+<pre>
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
+@prefix owl: &lt;http://www.w3.org/2002/07/owl#&gt; .
+@prefix saref: &lt;https://w3id.org/saref#&gt; .
+@prefix td: &lt;https://www.w3.org/2019/wot/td#&gt; .
+@prefix ex: &lt;http://example.org/&gt; .
+@prefix ssn: &lt;http://www.w3.org/ns/ssn/&gt; .
+
+saref:TemperatureSensor rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty td:hasPropertyAffordance ;
+        owl:someValuesFrom ex:TemperatureAffordance
+    ] .
+
+ex:TemperatureAffordance rdfs:subClassOf [
+        a owl:Restriction ;
+        owl:onProperty ssn:forProperty ;
+        owl:someValuesFrom saref:Temperature
+    ] .
+</pre>
+</aside>
+        </section>
+    </section>
+</body>
+
+</html>
