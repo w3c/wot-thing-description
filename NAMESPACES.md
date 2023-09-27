@@ -22,6 +22,8 @@ For choosing new namespaces, please refer to <https://www.w3.org/2005/07/13-nsur
 | `https://www.w3.org/2019/wot/hypermedia` (same as above)| `http://w3c.github.io/wot-thing-description/ontology/hyperm.html` | `text/html` |
 | `https://www.w3.org/2022/wot/td/v1.1` | `https://w3c.github.io/wot-thing-description/context/td-context-1.1.jsonld` | `application/ld+json`|
 
+**Note:** The group had decided in the TD 1.1 work that the ontologies behind `https://www.w3.org/2019/wot/td`, `https://www.w3.org/2019/wot/json-schema`, `https://www.w3.org/2019/wot/security` and `https://www.w3.org/2019/wot/hypermedia` change to the 1.1 version. Thus, the same files are used for 1.0 and 1.1 ontologies.
+
 ## Desired State DRAFT
 
 ### JSON-LD Context Files and Ontologies
