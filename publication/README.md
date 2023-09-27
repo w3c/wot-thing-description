@@ -22,7 +22,7 @@ In general, you should always consult the W3C Guide page at <https://www.w3.org/
 Overview.html is generated as follows:
 
 1. Copy index.html from [the root of the repository](../index.html).
-2. Change `specStatus` to `"NOTE"` from `"ED"`.
+2. Change `specStatus` to `"NOTE"` from `"ED"` (or `"REC"`, `"PR"`, etc.).
 3. Generate static.html by ReSpec from <https://w3c.github.io/wot-thing-description/> (click "ReSpec" top right and choose "Export" then export as "HTML"). Make sure that you disable browser extensions or open in private window.
 4. Output Overview.html as a result of [HTML Tidy](https://www.html-tidy.org/). Use the following command (`tidy -ashtml -i static.html > Overview.html`). The `-ashtml` option is needed until [this issue](https://github.com/htacg/tidy-html5/issues/660) is resolved at HTML Tidy.
 
