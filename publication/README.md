@@ -26,7 +26,6 @@ Overview.html is generated as follows:
 3. Generate static.html by ReSpec from <https://w3c.github.io/wot-thing-description/> (click "ReSpec" top right and choose "Export" then export as "HTML"). Make sure that you disable browser extensions or open in private window.
 4. Output Overview.html as a result of [HTML Tidy](https://www.html-tidy.org/). Use the following command (`tidy -ashtml -i static.html > Overview.html`). The `-ashtml` option is needed until [this issue](https://github.com/htacg/tidy-html5/issues/660) is resolved at HTML Tidy.
 
-
 ## How to Add your Edits based on the Pubrules Errors and Warnings
 
 After checking Overview.html using the [Pubrules checker](https://www.w3.org/pubrules/), we have to edit index.html and then
