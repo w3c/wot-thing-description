@@ -40,3 +40,7 @@ at <https://w3c.github.io/wot-thing-description/> later.
 
 Note: You cannot use a tool like <https://htmlpreview.github.io> since they do not have static html as a resource that the pubrule
 checkers can use.
+
+## Manual Link Corrections
+
+-  http://www.etsi.org/deliver/etsi_ts/103200_103299/103264/02.01.01_60/ts_103264v020101p.pdf should be changed to https://www.etsi.org/deliver/etsi_ts/103200_103299/103264/02.01.01_60/ts_103264v020101p.pdf  (making it https. It is wrong in specref but will be changed hopefully by https://github.com/tobie/specref/pull/757)
