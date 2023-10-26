@@ -52,3 +52,6 @@ Some redirects come from [specref](https://www.specref.org/) not being up to dat
 All SVG files under [visualization](../visualization) are generated automatically when running the `npm run render` command.
 Before publication, PNGs version of the figures should be generated.
 A tool like [Inkscape](https://inkscape.org/) can be used to do that.
+
+- You should not add or remove any element, or change types of vocabulary terms
+- You can adjust the overall organization of the elements by moving them around. This should be done to have a better layout, e.g. split a very long horizontal picture in to two levels.
