@@ -43,4 +43,15 @@ checkers can use.
 
 ## Manual Link Corrections
 
--  http://www.etsi.org/deliver/etsi_ts/103200_103299/103264/02.01.01_60/ts_103264v020101p.pdf should be changed to https://www.etsi.org/deliver/etsi_ts/103200_103299/103264/02.01.01_60/ts_103264v020101p.pdf  (making it https. It is wrong in specref but will be changed hopefully by https://github.com/tobie/specref/pull/757)
+Some redirects come from [specref](https://www.specref.org/) not being up to date. In those cases, you need to manually update the final Overview.html.
+
+-  None
+
+## Converting Automatically Generated SVGs to PNGs
+
+All SVG files under [visualization](../visualization) are generated automatically when running the `npm run render` command.
+Before publication, PNGs version of the figures should be generated.
+A tool like [Inkscape](https://inkscape.org/) can be used to do that.
+
+- You should not add or remove any element, or change types of vocabulary terms unless the automatic figures have a bug due to toolchain
+- You can adjust the overall organization of the elements by moving them around. This should be done to have a better layout, e.g. split a very long horizontal picture into two levels.
