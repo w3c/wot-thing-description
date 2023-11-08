@@ -369,8 +369,8 @@ function addTmTerms(argObject){
             {
               "not": {
                 "type": "string",
-                "pattern": "(/)(.*\\1){2}",
-                "$comment": "regex tests available at https://regex101.com/r/Ytzd72/1"
+                "pattern": "(/)(.*/){2}",
+                "$comment": "regex tests available at https://regex101.com/r/r7vB0r/2"
               }
             }
           ]
