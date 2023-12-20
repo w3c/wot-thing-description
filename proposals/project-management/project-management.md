@@ -16,10 +16,28 @@ The main question is "How do we organize the work?".
 - Jan Romann: Splitting issues definitely helps. We should limit the workload of an issue in the beginning or use checkboxes per small item and open a "spinoff" issue.
 - Kazuyuki Ashimura: We should think of what we have been doing so far.
 
-## Proposal
+## Proposals
+
+**Preliminary goal from meetings:**
 
 - An MVP is one place to look at the list of "work" to do in a short period. We can make sure to limit the load of a person per 1-2 week timeframe and thus prioritize certain issues/topics.
 - A prioritization should happen and should be aligned with use cases and requirements, i.e. how do we choose the small list of work to do
+
+### Proposal from Ege Korkan
+
+- Create three tables in a GitHub project: Extraction, Sorting and Assigning
+- Use the sorting table to categorize issues into topics we agree on via work item categories, i.e. `bindings`, `data mapping`, where each category is a column. The granularity of categories is to be discussed. The backlog of this table is uncategorized issues. This table is edited primarily outside of the calls, i.e. as issue or use case shows up.
+- Use Assignment table to track who is most suited for the issue and whether that is being worked on. Based on people's availabilities, move issues to "in progress". The backlog of this table is categorized issues. This table is edited primarily during calls.
+- Use extraction table for dealing with use cases. After a process (to be defined) there should be concrete issues created. The backlog of this table is use cases, the product is uncategorized issues for the sorting table. They can be categorized already in this stage and moved to the correct column in the sorting table.
+
+This proposal is illustrated in the figure below:
+
+![kanbanidea](./kanbanidea.drawio.png)
+
+Here we see that no issue that is not categorized is in the assignment table, i.e. issues 1, 2 and 3.
+Also, we see that a person can get assigned to issue since they are the best fit (more expertise, more motivation etc.) but is not necessarily doing it right now.
+Since Person2 has less availability, they are working only on Issue 10 while having Issue 7 and 9 assigned to them.
+Person1 has more time and is working Issue 5 and 6, while having assigned Issue 4 as well.
 
 ## Procedure
 
