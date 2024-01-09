@@ -1,2 +1,0 @@
-# Coverage Test Documents
-
