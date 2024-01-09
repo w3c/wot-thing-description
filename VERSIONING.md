@@ -10,7 +10,14 @@ The points below present a summary, but you can scroll to the bottom of the page
   -  JSON-LD Context file
   -  JSON Schemas for TD and TM
 -  We do not publish different versions of these files until we see the need (e.g. a bug that also has breaking changes to current implementations).
--  
+-  Initial thoughts on versioning
+  - When a user wants to get a resource and does not specify the version, they get the latest version.
+  - We prefer semantic versioning with following rules (also see https://github.com/json-schema-org/website/issues/197#issuecomment-1883270213):
+    - Patch: English typos etc.
+    - Minor: Relaxing a constraint (longer strings, more oneof) so that more TDs can pass the schema.
+    - Major: Adding or restricting constraints
+  - ( @egekorkan ) The versioning rules do not apply to different versions of a specification, e.g. TD 1.1 schema should be treated like a new release, not a next iteration of the 1.0 schema
+  - We do not version anything until a REC release
 
 ## Original Input
 
