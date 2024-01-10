@@ -64,3 +64,5 @@ When publishing the REC version, you need to do additional steps:
   * Check for respec errors in the HTML version of the ontologies
   * Set static publication date for ontology HTML versions
   * Check for the date or version within JSON Schema files
+  * Generate static versions of the ontology HTML files
+
