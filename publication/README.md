@@ -65,4 +65,3 @@ When publishing the REC version, you need to do additional steps:
   * Set static publication date for ontology HTML versions
   * Check for the date or version within JSON Schema files
   * Generate static versions of the ontology HTML files
-
