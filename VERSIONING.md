@@ -12,13 +12,18 @@ The points below present a summary, but you can scroll to the bottom of the page
 -  We do not publish different versions of these files until we see the need (e.g. a bug that also has breaking changes to current implementations).
 -  Initial thoughts on versioning
   - When a user wants to get a resource and does not specify the version, they get the latest version.
-  - We prefer semantic versioning with following rules (also see https://github.com/json-schema-org/website/issues/197#issuecomment-1883270213):
+  - We prefer semantic versioning with the following rules (also see https://github.com/json-schema-org/website/issues/197#issuecomment-1883270213):
     - Patch: English typos etc.
     - Minor: Relaxing a constraint (longer strings, more oneof) so that more TDs can pass the schema.
     - Major: Adding or restricting constraints
   - ( @egekorkan ) The versioning rules do not apply to different versions of a specification, e.g. TD 1.1 schema should be treated like a new release, not a next iteration of the 1.0 schema
-  - We do not version anything until a REC release
-
+  - Do we version anything until a REC release
+    - ( @relu91 ) An unofficial version increment for WG members (not for outside): E.g. an alpha prefix and then a number. Beta etc. can be used when going into CR. Or we just tag/prefix/suffix with CR, PR or nightly
+    - ( @lu-zero ) A date afterward would be good "enough" for implementers. A release every month (in addition to semver) would be also good. We can also pipeline it and tag each resource exposed to github.io.
+    - ( @mjkoster ) Short commit hash would be fine. Monthly release may not make sense (unless there is a need)
+  - We need a policy (when to change a version for example.
+  - We need to be careful since each artifact has its own version, which will complicate CD pipeline.
+    
 ## Original Input
 
 Text copied from <https://www.w3.org/WoT/IG/wiki/WG_WoT_Thing_Description_WebConf>
