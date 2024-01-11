@@ -161,3 +161,10 @@ These can be used for the purposes below among others:
 
 * TD and TM validation
 * Type generation for programming languages
+
+## Obsolete Documents
+
+Some documents of this repository are not required to be kept in the upstream branch (main branch).
+They are deleted but are recorded below with a link pointing to a tagged branch:
+
+* Review of the main document for TAG: <https://github.com/w3c/wot-thing-description/blob/CR-request/tag-review.html>
