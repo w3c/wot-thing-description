@@ -1,39 +1,138 @@
 @prefix : <https://www.w3.org/2019/wot/tm#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix td: <https://www.w3.org/2019/wot/td#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix hctl: <https://www.w3.org/2019/wot/hypermedia#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vann: <http://purl.org/vocab/vann/> .
-@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix schema: <http://schema.org/> .
-@prefix hctl: <https://www.w3.org/2019/wot/hypermedia#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix tm: <https://www.w3.org/2019/wot/tm#> .
+@base <https://www.w3.org/2019/wot/tm#> .
 
-: rdf:type owl:Ontology ;
+
+<https://www.w3.org/2019/wot/tm> rdf:type owl:Ontology ;
+    dc:title "Thing Model Ontology"@en ;
     vann:preferredNamespacePrefix "tm" ;
     vann:preferredNamespaceUri "https://www.w3.org/2019/wot/tm#" ;
-    owl:versionInfo "0.1.0" ;
-    dc:title "Thing Model Ontology"@en ;
-    rdfs:comment "This ontology aims to model the Web of Things domain according to the W3C Working Group (https://www.w3.org/WoT/)"@en ;
+    owl:versionInfo "1.1.0" ;
+    rdfs:comment "This ontology aims to model the Web of Things Thing Model according to the W3C Working Group (https://www.w3.org/wot/)"@en ;
     dcterms:license <http://purl.org/NET/rdflicense/cc-by4.0> ;
     dcterms:contributor <https://vcharpenay.link/#me> ;
+    dcterms:author "Mahda Noura (Siemens)" ;
     dcterms:author "Sebastian Kaebisch (Siemens)" ;
-    dc:publisher [ a schema:Organization ; schema:name "W3C Web of Things Working Group" ; schema:url <https://www.w3.org/WoT/> ] .
+    dcterms:description "This ontology describes Thing Model concepts"@en ;
+    dc:publisher [ a schema:Organization ; schema:name "W3C Web of Things Working Group"@en ; 
+    schema:url <https://www.w3.org/WoT/WG/> ] .
 
-:ThingModel rdf:type rdfs:Class, owl:Class ;
-    rdfs:label "ThingModel"@en ;
-    rdfs:comment "A Thing Model is a description for a class of Things that have the same capabilities. It describes the Properties, Actions, and Events and common metadata that are shared for an entire group of Things. Compared to a Thing Description, a Thing Model does not contain enough information to identify or interact with a Thing instance."@en ;
-    rdfs:isDefinedBy : .
 
-:ref rdf:type owl:AnnotationProperty ;
-    rdfs:label "ref" ;
-    rdfs:comment "Provides a reference to an existing (external or local) definition that is copied into a newly defined definition. The reference value is based on three parts: an (optional) URI-reference (used for external reference), '#' sign, and JSON Pointer [RFC6901] value."@en ;
-    rdfs:seeAlso schema:contactPoint ;
-    rdfs:isDefinedBy : .
+dc:title rdf:type owl:AnnotationProperty .
+vann:preferredNamespacePrefix rdf:type owl:AnnotationProperty .
+vann:preferredNamespaceUri rdf:type owl:AnnotationProperty .
+dcterms:description rdf:type owl:AnnotationProperty .
+dcterms:license rdf:type owl:AnnotationProperty .
+dcterms:contributor rdf:type owl:AnnotationProperty .
+dcterms:author rdf:type owl:AnnotationProperty .
+dcterms:license rdf:type owl:AnnotationProperty .
+dc:publisher rdf:type owl:AnnotationProperty .
+schema:name rdf:type owl:AnnotationProperty .
+schema:url rdf:type owl:AnnotationProperty .
 
-:required rdf:type owl:AnnotationProperty ;
-    rdfs:label "required" ;
-    rdfs:comment "Constraint that provides references to declarations in the Thing Model that are mandatory and must be present when Thing Description instances are derived from this Thing Model. The reference value is a JSON Pointer [RFC6901]."@en ;
-    rdfs:isDefinedBy : .
+
+:versionInfo rdf:type owl:AnnotationProperty ;
+               rdfs:comment "Provides version information of the TM ontology."@en ;
+               rdfs:isDefinedBy tm: ;
+               rdfs:label "versionInfo"@en ;
+               rdfs:seeAlso schema:version .
+
+
+td:hasInteractionAffordance rdf:type owl:ObjectProperty ;
+                          rdfs:domain :ThingModel ;
+                          rdfs:range td:InteractionAffordance ;
+                          rdfs:comment "Offers an affordance to interact with the Thing"@en ;
+                          rdfs:isDefinedBy td: ;
+                          rdfs:label "hasInteractionAffordance"@en .
+
+
+td:hasLink rdf:type owl:ObjectProperty ;
+         schema:domainIncludes :ThingModel ;
+         schema:rangeIncludes hctl:Link ;
+         rdfs:comment "Provides links to existing resources specified in a Thing Model to extend another Thing Model ."@en ;
+         rdfs:isDefinedBy td: ;
+         rdfs:label "hasLink"@en .
+
+
+:hasVersion rdf:type owl:ObjectProperty ;
+            schema:domainIncludes :ThingModel ;
+            schema:rangeIncludes :Version ;
+            rdfs:comment "Provides the relation between a Thing Model and its version."@en ;
+            rdfs:isDefinedBy tm: ;
+            rdfs:label "hasVersion"@en .
+
+
+
+td:description rdf:type owl:DatatypeProperty ;
+             rdfs:comment "Provides description of the Thing Model element."@en ;
+             rdfs:label "description"@en ;
+             schema:domainIncludes :ThingModel ;
+             schema:rangeIncludes schema:Text ;
+             rdfs:isDefinedBy td: .
+
+
+:model rdf:type owl:DatatypeProperty ;
+       rdfs:label "model"@en ;
+       schema:domainIncludes :Version ;
+       schema:rangeIncludes schema:Text ;
+       rdfs:comment "Provides a version indicator of the underlying TM."@en ;
+       rdfs:isDefinedBy tm: .
+
+
+:optional rdf:type owl:DatatypeProperty ;
+          schema:domainIncludes :ThingModel ;
+          schema:rangeIncludes schema:Text ;
+          rdfs:comment "Constraint that provides references to declarations in the Thing Model that are optional and do not necessarily need to be implemented when Thing Description instances are derived from this Thing Model. The value of tm:optional MUST provide JSON Pointer [RFC6901] references to the required interaction model definitions."@en ;
+          rdfs:label "optional"@en ;
+          rdfs:isDefinedBy tm: .
+
+
+:ref rdf:type owl:DatatypeProperty ;
+     schema:domainIncludes td:InteractionAffordance ;
+     schema:rangeIncludes schema:Text ;
+     rdfs:comment "Provides a reference to an existing (external or local) definition that is copied into a newly defined definition. The reference value is based on three parts: an (optional) URI-reference (used for external reference), '#' sign, and JSON Pointer [RFC6901] value."@en ;
+     rdfs:label "ref"@en ;
+     rdfs:seeAlso schema:contactPoint ;
+     rdfs:isDefinedBy tm: .
+
+
+:required rdf:type owl:DatatypeProperty ;
+          schema:domainIncludes :ThingModel ;
+          schema:rangeIncludes schema:Text ;
+          rdfs:comment "Constraint that provides references to declarations in the Thing Model that are mandatory and must be present when Thing Description instances are derived from this Thing Model. The reference value is a JSON Pointer [RFC6901]."@en ;
+          rdfs:label "required"@en ;
+          rdfs:isDefinedBy tm: .
+
+
+td:title rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf dcterms:title ;
+       schema:domainIncludes :ThingModel ;
+       schema:rangeIncludes schema:Text ;
+       rdfs:comment "Provide the title of the Thing Model"@en ;
+       rdfs:isDefinedBy td: ;
+       rdfs:label "title"@en .
+
+
+:ThingModel rdf:type owl:Class ;
+            rdfs:comment "A Thing Model is a description for a class of Things that have the same capabilities. It describes the Properties, Actions, and Events and common metadata that are shared for an entire group of Things. Compared to a Thing Description, a Thing Model does not contain enough information to identify or interact with a Thing instance."@en ;
+            rdfs:isDefinedBy tm: ;
+            rdfs:label "ThingModel"@en .
+
+
+:Version rdf:type owl:Class ;
+         rdfs:comment "The Version is a container that provides versioning information for the Thing Model definition."@en ;
+         rdfs:isDefinedBy tm: ;
+         rdfs:label "Version"@en .
+

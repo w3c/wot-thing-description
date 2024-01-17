@@ -45,7 +45,7 @@ checkers can use.
 
 Some redirects come from [specref](https://www.specref.org/) not being up to date. In those cases, you need to manually update the final Overview.html.
 
--  None
+*s None
 
 ## Converting Automatically Generated SVGs to PNGs
 
@@ -53,5 +53,16 @@ All SVG files under [visualization](../visualization) are generated automaticall
 Before publication, PNGs version of the figures should be generated.
 A tool like [Inkscape](https://inkscape.org/) can be used to do that.
 
-- You should not add or remove any element, or change types of vocabulary terms unless the automatic figures have a bug due to toolchain
-- You can adjust the overall organization of the elements by moving them around. This should be done to have a better layout, e.g. split a very long horizontal picture into two levels.
+* You should not add or remove any element, or change types of vocabulary terms unless the automatic figures have a bug due to toolchain
+* You can adjust the overall organization of the elements by moving them around. This should be done to have a better layout, e.g. split a very long horizontal picture into two levels.
+
+## REC Version Extras
+
+When publishing the REC version, you need to do additional steps:
+
+* Move a static version of all ontology files, the context file, and schemas to [wot-resources](https://github.com/w3c/wot-resources) repository following the rules there. Before you do that make sure to:
+  * Check for respec errors in the HTML version of the ontologies
+  * Set static publication date for ontology HTML versions
+  * Check for the date or version within JSON Schema files
+  * Generate static versions of the ontology HTML files
+  * Generate tidied versions of the ontology HTML files
