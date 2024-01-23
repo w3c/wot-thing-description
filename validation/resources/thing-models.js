@@ -1,295 +1,295 @@
 const validTMs = [
   {
-    $comment: "security allowing placeholders in scheme",
+    "$comment": "security allowing placeholders in scheme",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Valid model 1",
-    securityDefinitions: {
+    "title": "Valid model 1",
+    "securityDefinitions": {
       example_sc: {
-        scheme: "{{PLACEHOLDER}}",
-      },
+        scheme: "{{PLACEHOLDER}}"
+      }
     },
-    security: ["example_sc"],
+    "security": ["example_sc"]
   },
   {
-    $comment: "placeholder with underscore",
+    "$comment": "placeholder with underscore",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Valid model 2",
-    forms: [
+    "title": "Valid model 2",
+    "forms": [
       {
         href: "https://example.com",
-        op: "{{MY_PLACEHOLDER}}",
-      },
-    ],
+        op: "{{MY_PLACEHOLDER}}"
+      }
+    ]
   },
   {
-    $comment: "missing title",
+    "$comment": "missing title",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
-    "@type": "tm:ThingModel",
+    "@type": "tm:ThingModel"
   },
   {
-    $comment: "example 3 of the spec",
+    "$comment": "example 3 of the spec",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Valid Model 4",
-    properties: {
+    "title": "Valid Model 4",
+    "properties": {
       status: {
         description: "current status of the lamp (on|off)",
         type: "string",
-        readOnly: true,
-      },
+        readOnly: true
+      }
     },
-    actions: {
+    "actions": {
       toggle: {
-        description: "Turn the lamp on or off",
-      },
+        description: "Turn the lamp on or off"
+      }
     },
-    events: {
+    "events": {
       overheating: {
         description: "Lamp reaches a critical temperature (overheating)",
-        data: { type: "string" },
-      },
-    },
+        data: { type: "string" }
+      }
+    }
   },
   {
-    $comment: "example 51 of the spec",
+    "$comment": "example 51 of the spec",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Valid Model 5",
-    properties: {
+    "title": "Valid Model 5",
+    "properties": {
       onOff: {
-        type: "boolean",
-      },
-    },
+        type: "boolean"
+      }
+    }
   },
   {
-    $comment: "example 52",
+    "$comment": "example 52",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Valid Model 6",
-    links: [
+    "title": "Valid Model 6",
+    "links": [
       {
         rel: "tm:extends",
         href: "http://example.com/BasicOnOffTM",
-        type: "application/td+json",
-      },
+        type: "application/td+json"
+      }
     ],
-    properties: {
+    "properties": {
       dim: {
         type: "integer",
         minimum: 0,
-        maximum: 100,
-      },
-    },
+        maximum: 100
+      }
+    }
   },
   {
-    $comment: "example 53 of the spec",
+    "$comment": "example 53 of the spec",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Valid Model 7",
-    properties: {
+    "title": "Valid Model 7",
+    "properties": {
       switch: {
-        "tm:ref": "http://example.com/BasicOnOffTM.tm.jsonld#/properties/onOff",
-      },
-    },
+        "tm:ref": "http://example.com/BasicOnOffTM.tm.jsonld#/properties/onOff"
+      }
+    }
   },
   {
-    $comment: "example 54 of the spec",
+    "$comment": "example 54 of the spec",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Valid Model 8",
-    properties: {
+    "title": "Valid Model 8",
+    "properties": {
       dimming: {
         "tm:ref": "http://example.com/SmartLampControlwithDimming.tm.jsonld#/properties/dim",
-        maximum: 80,
-        unit: "%",
-      },
-    },
+        "maximum": 80,
+        "unit": "%"
+      }
+    }
   },
   {
-    $comment: "example 55 of the spec",
+    "$comment": "example 55 of the spec",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Valid Model 9",
-    links: [
+    "title": "Valid Model 9",
+    "links": [
       {
         rel: "extends",
         href: "http://example.com/BasicOnOffTM",
-        type: "application/td+json",
-      },
+        type: "application/td+json"
+      }
     ],
-    properties: {
+    "properties": {
       status: {
-        "tm:ref": "http://example.com/LampTM.tm.jsonld#/properties/status",
+        "tm:ref": "http://example.com/LampTM.tm.jsonld#/properties/status"
       },
       dimming: {
-        "tm:ref": "http://example.com/LampWithDimmingTM.tm.jsonld#/properties/dim",
-      },
-    },
+        "tm:ref": "http://example.com/LampWithDimmingTM.tm.jsonld#/properties/dim"
+      }
+    }
   },
   {
-    $comment: "example 56 of the spec. Valid Model 10",
+    "$comment": "example 56 of the spec. Valid Model 10",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Thermostate No. {{THERMOSTATE_NUMBER}}",
-    base: "mqtt://{{MQTT_BROKER_ADDRESS}}",
-    properties: {
+    "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
+    "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
+    "properties": {
       temperature: {
         description: "Shows the current temperature value",
         type: "number",
         minimum: -20,
         maximum: "{{THERMOSTATE_TEMPERATURE_MAXIMUM}}",
-        observable: "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}",
-      },
-    },
+        observable: "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}"
+      }
+    }
   },
   {
-    $comment: "example 57 of the spec",
+    "$comment": "example 57 of the spec",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Valid Model 11",
-    description: "Lamp Thing Description Model",
+    "title": "Valid Model 11",
+    "description": "Lamp Thing Description Model",
     "tm:optional": ["/events/overheating", "/actions/toggle"],
-    properties: {
+    "properties": {
       status: {
         description: "current status of the lamp (on|off)",
         type: "string",
-        readOnly: true,
-      },
+        readOnly: true
+      }
     },
-    actions: {
+    "actions": {
       toggle: {
-        description: "Turn the lamp on or off",
-      },
+        description: "Turn the lamp on or off"
+      }
     },
-    events: {
+    "events": {
       overheating: {
         description: "Lamp reaches a critical temperature (overheating)",
-        data: { type: "string" },
-      },
-    },
+        data: { type: "string" }
+      }
+    }
   },
   {
-    $comment: "example 59 of the spec",
+    "$comment": "example 59 of the spec",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    links: [
+    "links": [
       {
         rel: "tm:extends",
         href: "http://example.com/SmartControlLampTM",
-        type: "application/td+json",
-      },
+        type: "application/td+json"
+      }
     ],
-    properties: {
+    "properties": {
       dim: {
-        maximum: 200,
-      },
-    },
+        maximum: 200
+      }
+    }
   },
   {
-    $comment: "Enum with placeholder",
+    "$comment": "Enum with placeholder",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    links: [
+    "links": [
       {
         rel: "tm:extends",
         href: "http://example.com/SmartControlLampTM",
-        type: "application/td+json",
-      },
+        type: "application/td+json"
+      }
     ],
-    properties: {
+    "properties": {
       dim: {
         type: "string",
-        enum: "{{MY_ENUMS}}",
-      },
-    },
-  },
+        enum: "{{MY_ENUMS}}"
+      }
+    }
+  }
 ];
 const invalidTMs = [
   {
-    $comment: "absence of @type",
+    "$comment": "absence of @type",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
-    title: "Invalid model 1",
+    "title": "Invalid model 1"
   },
   {
-    $comment: "absence of @context",
+    "$comment": "absence of @context",
     "@type": "tm:ThingModel",
-    title: "Invalid model 2",
+    "title": "Invalid model 2"
   },
   {
-    $comment: "single curly bracket",
+    "$comment": "single curly bracket",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Invalid model 3",
-    securityDefinitions: {
+    "title": "Invalid model 3",
+    "securityDefinitions": {
       example_sc: {
-        scheme: "{PLACEHOLDER}",
-      },
+        scheme: "{PLACEHOLDER}"
+      }
     },
-    security: ["example_sc"],
+    "security": ["example_sc"]
   },
   {
-    $comment: "no curly bracket",
+    "$comment": "no curly bracket",
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Invalid model 4",
-    securityDefinitions: {
+    "title": "Invalid model 4",
+    "securityDefinitions": {
       example_sc: {
-        scheme: "PLACEHOLDER",
-      },
+        scheme: "PLACEHOLDER"
+      }
     },
-    security: ["example_sc"],
+    "security": ["example_sc"]
   },
   {
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Thermostate No. {{THERMOSTATE_NUMBER}}",
-    base: "mqtt://{{MQTT_BROKER_ADDRESS}}",
-    properties: {
+    "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
+    "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
+    "properties": {
       temperature: {
-        description: "Shows the current temperature value",
-        type: "number",
-        minimum: -20,
-        maximum: "{{THERMOSTATE_TEMPERATURE_MAXIMUM}}",
-        observable: "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}",
-        "{{myvar}}": true,
-      },
-    },
+        "description": "Shows the current temperature value",
+        "type": "number",
+        "minimum": -20,
+        "maximum": "{{THERMOSTATE_TEMPERATURE_MAXIMUM}}",
+        "observable": "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}",
+        "{{myvar}}": true
+      }
+    }
   },
   {
     "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
     "@type": "tm:ThingModel",
-    title: "Lamp Thing Model",
-    description: "Lamp Thing Description Model",
-    version: { instance: "1.0.0" },
+    "title": "Lamp Thing Model",
+    "description": "Lamp Thing Description Model",
+    "version": { instance: "1.0.0" }
   },
   {
     "@context": "https://www.w3.org/2022/wot/td/v1.1",
     "@type": "tm:ThingModel",
-    title: "Invalid tm optional syntax",
-    properties: {
+    "title": "Invalid tm optional syntax",
+    "properties": {
       genericTemperature: {
         type: "number",
-        unit: "C",
+        unit: "C"
       },
       innerTemperature: {
         "tm:ref": "#/properties/genericTemperature",
-        title: "The inner temperature",
-        minimum: 10,
+        "title": "The inner temperature",
+        "minimum": 10
       },
       outerTemperature: {
         "tm:ref": "#/properties/genericTemperature",
-        title: "The outer temperature",
-        description: "The outer temperature is measured in Kelvin",
-        unit: "K",
-      },
+        "title": "The outer temperature",
+        "description": "The outer temperature is measured in Kelvin",
+        "unit": "K"
+      }
     },
-    "tm:optional": ["/properties/"],
-  },
+    "tm:optional": ["/properties/"]
+  }
 ];
 
 module.exports = {
   validTMs,
-  invalidTMs,
+  invalidTMs
 };

@@ -11,8 +11,8 @@ const ajv = new Ajv({
     // Do not validate the following formats.
     // In the future we could provide a custom checking function for these formats
     "uri-reference": true,
-    "json-pointer": true,
-  },
+    "json-pointer": true
+  }
 });
 
 describe("Thing Model validation", () => {

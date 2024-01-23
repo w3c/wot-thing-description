@@ -272,7 +272,7 @@ report_template_raw = report_template_raw.replace("{{LastModified}}", lastModifi
 if (show_test_specs) {
   report_template_raw = report_template_raw.replace(
     "{{TestSpecTOC}}",
-    '<li class="tocline"><a href="testing/report.html#testspecsB">Test specifications</a></li>',
+    '<li class="tocline"><a href="testing/report.html#testspecsB">Test specifications</a></li>'
   );
   report_template_raw = report_template_raw.replace("{{TestSpec}}", testspec_template_raw);
 } else {
@@ -283,7 +283,7 @@ if (show_test_specs) {
 if (show_interop_results) {
   report_template_raw = report_template_raw.replace(
     "{{InteropTOC}}",
-    '<li class="tocline">8.3 <a href="testing/report.html#test_interop">Interoperability results</a></li>',
+    '<li class="tocline">8.3 <a href="testing/report.html#test_interop">Interoperability results</a></li>'
   );
   report_template_raw = report_template_raw.replace("{{Interop}}", interop_template_raw);
 } else {
@@ -445,7 +445,7 @@ src_dom(".rfc2119-assertion, .rfc2119-table-assertion, .rfc2119-default-assertio
       }
       depends.set(id, {
         parents: "td-serialization-default-values",
-        contexts: contexts,
+        contexts: contexts
       });
       if (chatty_v) console.log("default assertion", id, "added");
       if (debug_v) console.log("  text:", assertion);
@@ -621,7 +621,7 @@ function get_depends(done_callback) {
         if (undefined !== id) {
           depends.set(id, {
             parents: item["Parents"],
-            contexts: item["Contexts"],
+            contexts: item["Contexts"]
           });
         }
         if (debug_v) console.log(id, " depends ", depends.get(id));
@@ -724,7 +724,7 @@ function get_impls(done_callback) {
           impls.set(id, {
             org: org,
             name: name,
-            roles: roles,
+            roles: roles
           });
           if (chatty_v) console.log("add impl record for id", id + ":", impls.get(id));
         } else {
@@ -783,7 +783,7 @@ function get_interop_file(interop_csvfile, done_callback) {
           interop.add({
             producer: producer,
             consumer: consumer,
-            security: security,
+            security: security
           });
           interop_producers.add(producer);
           interop_consumers.add(consumer);
@@ -883,7 +883,7 @@ function merge_interops(done_callback) {
           impl_org +
           "</span><br/><span>" +
           impl_name +
-          "</span></div></th>\n",
+          "</span></div></th>\n"
       );
     });
     interop_producers.forEach(function (producer) {
@@ -985,7 +985,7 @@ function process_children(done_callback) {
             merged_results.set(p, {
               pass: Math.min(rp_pass, rc_pass),
               fail: Math.max(rp_fail, rc_fail),
-              notimpl: Math.max(rp_notimpl, rc_notimpl),
+              notimpl: Math.max(rp_notimpl, rc_notimpl)
             });
           }
         }
@@ -1106,7 +1106,7 @@ function format_assertions(done_callback) {
           fIx(ix) +
           ": " +
           a +
-          "</a></td>",
+          "</a></td>"
       );
 
       // Category

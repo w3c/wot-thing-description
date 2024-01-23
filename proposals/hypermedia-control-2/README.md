@@ -97,40 +97,40 @@ Thus, we can have the following TD that is consumed by the Consumer:
     "fade": {
       "input": {
         "type": "number",
-        "description": "duration in ms",
+        "description": "duration in ms"
       },
       "output": {
         "type": "number",
-        "description": "brightness value after fade operation",
+        "description": "brightness value after fade operation"
       },
       "forms": [
         {
           "href": "/fade",
           "op": "invokeaction",
           "htv:methodName": "POST",
-          "contentType": "application/json",
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}", //OR /fade/ongoing
           "op": "queryaction",
           "htv:methodName": "GET",
-          "contentType": "application/json",
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}", // OR /fade/ongoing
           "op": "updateaction",
           "htv:methodName": "PUT",
-          "contentType": "application/json",
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}", // OR /fade/ongoing
           "op": "cancelaction",
           "htv:methodName": "DELETE",
-          "contentType": "application/json",
-        },
-      ],
-    },
-  },
+          "contentType": "application/json"
+        }
+      ]
+    }
+  }
 }
 ```
 
@@ -186,7 +186,7 @@ Thus, an example TD would now look like the following. Note that the output in t
     "fade": {
       "input": {
         "type": "number",
-        "description": "duration in ms",
+        "description": "duration in ms"
       },
       "query": {
         "output": {
@@ -194,50 +194,50 @@ Thus, an example TD would now look like the following. Note that the output in t
           "properties": {
             "brightness": {
               "type": "number",
-              "description": "current brightness",
+              "description": "current brightness"
             },
             "status": {
               "type": "string",
               "enum": ["ongoing", "finished", "pending"],
-              "description": "status of the invoked action",
-            },
-          },
-        },
+              "description": "status of the invoked action"
+            }
+          }
+        }
       },
       "update": {
         "input": {
           "type": "number",
-          "description": "ADDED duration in ms",
-        },
+          "description": "ADDED duration in ms"
+        }
       },
       "forms": [
         {
           "href": "/fade",
           "op": "invokeaction",
           "htv:methodName": "POST",
-          "contentType": "application/json",
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}", //OR /fade/ongoing
           "op": "queryaction",
           "htv:methodName": "GET",
-          "contentType": "application/json",
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}", // OR /fade/ongoing
           "op": "updateaction",
           "htv:methodName": "PUT",
-          "contentType": "application/json",
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}", // OR /fade/ongoing
           "op": "cancelaction",
           "htv:methodName": "DELETE",
-          "contentType": "application/json",
-        },
-      ],
-    },
-  },
+          "contentType": "application/json"
+        }
+      ]
+    }
+  }
 }
 ```
 
@@ -272,50 +272,50 @@ If it is in the body of the response, we can have a TD like the following:
     "fade": {
       "input": {
         "type": "number",
-        "description": "duration in ms",
+        "description": "duration in ms"
       },
       "output": {
         "type": "object",
         "properties": {
           "href": {
             "const": "{id}",
-            "description": "URI to query, update or cancel the invoked action",
+            "description": "URI to query, update or cancel the invoked action"
           },
           "status": {
             "type": "string",
             "enum": ["ongoing", "finished", "pending"],
-            "description": "status of the invoked action",
-          },
-        },
+            "description": "status of the invoked action"
+          }
+        }
       },
       "forms": [
         {
           "href": "/fade",
           "op": "invokeaction",
           "htv:methodName": "POST",
-          "contentType": "application/json",
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}",
           "op": "queryaction",
           "htv:methodName": "GET",
-          "contentType": "application/json",
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}",
           "op": "updateaction",
           "htv:methodName": "PUT",
-          "contentType": "application/json",
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}",
           "op": "cancelaction",
           "htv:methodName": "DELETE",
-          "contentType": "application/json",
-        },
-      ],
-    },
-  },
+          "contentType": "application/json"
+        }
+      ]
+    }
+  }
 }
 ```
 

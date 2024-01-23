@@ -32,21 +32,21 @@ var arr_data = [];
 indexHTML(".rfc2119-assertion").each(function (i) {
   arr_data.push({
     html: indexHTML(this),
-    index: i,
+    index: i
   });
 });
 
 indexHTML(".rfc2119-default-assertion").each(function (i) {
   arr_data.push({
     html: indexHTML(this),
-    index: i,
+    index: i
   });
 });
 
 indexHTML(".rfc2119-table-assertion").each(function (i) {
   arr_data.push({
     html: indexHTML(this),
-    index: i,
+    index: i
   });
   // console.log({
   //     "html": indexHTML(this),
@@ -59,7 +59,7 @@ extraAsserts = cheerio.load(data2);
 extraAsserts(".rfc2119-assertion").each(function (i) {
   arr_data.push({
     html: extraAsserts(this),
-    index: i,
+    index: i
   });
 });
 

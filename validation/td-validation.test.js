@@ -24,9 +24,9 @@ const ajv = new Ajv({
     // In the future we could provide a custom checking function for these formats
     "uri-reference": true,
     "json-pointer": true,
-    uri: true,
-    "date-time": true,
-  },
+    "uri": true,
+    "date-time": true
+  }
 });
 
 describe("Thing Description validation", () => {
@@ -107,7 +107,7 @@ function configureCustomLoader() {
   const ctx = JSON.parse(fs.readFileSync("context/td-context-1.1.jsonld", "utf-8"));
   // define a mapping of context URL => context doc
   const CONTEXTS = {
-    "https://www.w3.org/2022/wot/td/v1.1": ctx,
+    "https://www.w3.org/2022/wot/td/v1.1": ctx
   };
 
   // grab the built-in Node.js doc loader
@@ -119,7 +119,7 @@ function configureCustomLoader() {
       return {
         contextUrl: null, // this is for a context via a link header
         document: CONTEXTS[url], // this is the actual document that was loaded
-        documentUrl: url, // this is the actual context URL after redirects
+        documentUrl: url // this is the actual context URL after redirects
       };
     }
     // call the default documentLoader

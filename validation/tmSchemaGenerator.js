@@ -67,7 +67,7 @@ tmSchema = replaceEnum(tmSchema);
 
 tmSchema.definitions["placeholder-pattern"] = {
   type: "string",
-  pattern: placeholderPattern,
+  pattern: placeholderPattern
 };
 tmSchema = removeFormat(tmSchema);
 tmSchema = manualConvertString(tmSchema);
@@ -92,32 +92,32 @@ function staticReplace(argObject) {
   argObject.definitions.type_declaration = {
     oneOf: [
       {
-        type: "string",
+        type: "string"
       },
       {
         type: "array",
         items: {
-          type: "string",
-        },
-      },
-    ],
+          type: "string"
+        }
+      }
+    ]
   };
   argObject.definitions.tm_type_declaration = {
     oneOf: [
       {
         type: "string",
-        const: "tm:ThingModel",
+        const: "tm:ThingModel"
       },
       {
         type: "array",
         items: {
-          type: "string",
+          type: "string"
         },
         contains: {
-          const: "tm:ThingModel",
-        },
-      },
-    ],
+          const: "tm:ThingModel"
+        }
+      }
+    ]
   };
   argObject["$id"] =
     "https://raw.githubusercontent.com/w3c/wot-thing-description/main/validation/tm-json-schema-validation.json";
@@ -170,8 +170,8 @@ function removeRequired(argObject) {
 function addPlaceholderRestrictionObjectNames(argObject) {
   argObject["propertyNames"] = {
     not: {
-      $ref: "#/definitions/placeholder-pattern",
-    },
+      $ref: "#/definitions/placeholder-pattern"
+    }
   };
   for (var key in argObject) {
     let curObject = argObject[key];
@@ -214,8 +214,8 @@ function replaceEnum(argObject) {
     argObject.anyOf = [
       { enum: newEnum },
       {
-        $ref: "#/definitions/placeholder-pattern",
-      },
+        $ref: "#/definitions/placeholder-pattern"
+      }
     ];
   }
 
@@ -302,7 +302,7 @@ function manualConvertString(argObject) {
     "definitions.action_element.properties.safe",
     "definitions.action_element.properties.idempotent",
     "definitions.action_element.properties.synchronous",
-    "properties.version",
+    "properties.version"
   ];
 
   //iterate over this array and replace for each
@@ -331,8 +331,8 @@ function changeToAnyOf(argObject) {
     argObject.anyOf = [
       curSchema,
       {
-        $ref: "#/definitions/placeholder-pattern",
-      },
+        $ref: "#/definitions/placeholder-pattern"
+      }
     ];
     return argObject;
   } else {
@@ -357,49 +357,49 @@ function addTmTerms(argObject) {
         {
           type: "string",
           pattern: "^((/properties/)|(/actions/)|(/events/))(([^/]))",
-          $comment: "regex tests available at https://regex101.com/r/UgOzrJ/1",
+          $comment: "regex tests available at https://regex101.com/r/UgOzrJ/1"
         },
         {
           not: {
             type: "string",
             pattern: "(/)(.*/){2}",
-            $comment: "regex tests available at https://regex101.com/r/r7vB0r/2",
-          },
-        },
-      ],
-    },
+            $comment: "regex tests available at https://regex101.com/r/r7vB0r/2"
+          }
+        }
+      ]
+    }
   };
 
   argObject.properties["tm:optional"] = {
-    $ref: "#/definitions/tm_optional",
+    $ref: "#/definitions/tm_optional"
   };
 
   argObject.definitions["tm_ref"] = {
     type: "string",
-    format: "uri-reference",
+    format: "uri-reference"
   };
 
   let tmRefRef = {
-    $ref: "#/definitions/tm_ref",
+    $ref: "#/definitions/tm_ref"
   };
 
   argObject.definitions["base_link_element"].properties["instanceName"] = {
-    type: "string",
+    type: "string"
   };
 
   argObject.properties.version.anyOf[0].properties = {
     model: {
-      type: "string",
-    },
+      type: "string"
+    }
   };
   argObject.properties.version.anyOf[0].not = {
     type: "object",
     properties: {
       instance: {
-        type: "string",
-      },
+        type: "string"
+      }
     },
-    required: ["instance"],
+    required: ["instance"]
   };
 
   // Note: this paths are statically defined
@@ -421,7 +421,7 @@ function addTmTerms(argObject) {
     "definitions.apiKeySecurityScheme.properties",
     "definitions.bearerSecurityScheme.properties",
     "definitions.pskSecurityScheme.properties",
-    "definitions.oAuth2SecurityScheme.properties",
+    "definitions.oAuth2SecurityScheme.properties"
   ];
 
   //iterate over this array and replace for each
@@ -468,13 +468,13 @@ function postProcess(argObject) {
       {
         type: "array",
         items: {
-          type: "string",
-        },
+          type: "string"
+        }
       },
       {
-        type: "string",
-      },
-    ],
+        type: "string"
+      }
+    ]
   };
   argObject.definitions.autoSecurityScheme.not = { required: ["name"] };
   return argObject;
