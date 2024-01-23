@@ -2,7 +2,7 @@
 
 The text below is copied from <https://www.w3.org/WoT/IG/wiki/index.php?title=WG_WoT_Thing_Description_WebConf>.
 
-The main question is "How do we organize the work?". 
+The main question is "How do we organize the work?".
 
 ## Opinions
 
