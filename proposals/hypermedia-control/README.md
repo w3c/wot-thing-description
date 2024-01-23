@@ -3,10 +3,11 @@
 This proposal introduces a generic hypermedia control framework for the Web of Things (WoT).
 
 TL;DR:
- - introduce new operation types `readaction`, `updateaction`, `cancelaction`,  `readsubscription`, `updatesubscription`
- - introduce new fields `cancellation`, `update` to action affordances and `update` to event affordances
- - allow a TD document to include new forms as Consumers interact with the Thing
- - specify a protocol or conventions to only send pieces of TD documents (e.g. newly included forms)
+
+- introduce new operation types `readaction`, `updateaction`, `cancelaction`, `readsubscription`, `updatesubscription`
+- introduce new fields `cancellation`, `update` to action affordances and `update` to event affordances
+- allow a TD document to include new forms as Consumers interact with the Thing
+- specify a protocol or conventions to only send pieces of TD documents (e.g. newly included forms)
 
 ## Use Case Example
 
@@ -30,7 +31,7 @@ With the current TD specification, a standard-compliant Consumer would be able t
   "@context": "https://www.w3.org/2019/wot/td/v1",
   "id": "urn:ex:thing",
   "actions": {
-    "fade": {
+    "fade": {
       "input": {
         "type": "number",
         "description": "duration in ms"
@@ -50,7 +51,7 @@ With the current TD specification, a standard-compliant Consumer would be able t
 
 Hypermedia control implies that the response a Thing sends to a Consumer may include indications of what operation the Consumer can perform next. This is what happen when it answers `201 Created /fade/1`, indicating a new resource can be operated on (`/fade/1`). What is missing though is the list of methods that this resource allows (`GET`, `PUT`, `DELETE`) and what effects they would have (update and cancellation of the invoked action).
 
-A full description of what some operation does is what is called an **affordance** in the TD model. It guides a Consumer by specifying what happens if it performs this operation. Given that messages a Thing sends can embed affordances, a TD as the one above only includes *initial* affordances to interact with the Thing while more affordances may be exposed later by the Thing.
+A full description of what some operation does is what is called an **affordance** in the TD model. It guides a Consumer by specifying what happens if it performs this operation. Given that messages a Thing sends can embed affordances, a TD as the one above only includes _initial_ affordances to interact with the Thing while more affordances may be exposed later by the Thing.
 
 In other words, the Consumer first learns about the following operation
 
@@ -115,7 +116,7 @@ These be able to provide (semantically annotated) schema for all these new opera
   "@context": "https://www.w3.org/2019/wot/td/v1",
   "id": "urn:ex:thing",
   "actions": {
-    "fade": {
+    "fade": {
       "input": {
         "type": "number",
         "description": "duration (in ms)"
@@ -152,13 +153,13 @@ These be able to provide (semantically annotated) schema for all these new opera
 }
 ```
 
-In this example, the output of the action is not the control data sent in the response to `POST /fade`. It is a representation of the action result in the physical world (see next section). It therefore corresponds to what is returned by `GET /fade/1`. *(TODO to clarify)*
+In this example, the output of the action is not the control data sent in the response to `POST /fade`. It is a representation of the action result in the physical world (see next section). It therefore corresponds to what is returned by `GET /fade/1`. _(TODO to clarify)_
 
 To keep the different affordance types consistent with each other, one could also create `updatesubscription` as an operation type and add `update` to event affordances.
 
 ## Is Everything a Thing?
 
-Another proposal to the general problem of hypermedia control on WoT was to return TDs as the result of invoking an action. The main drawback of this approach is that it would make any semantic concept a Thing, not only physical objects. Property, action and event affordances may also not refer to physical world entity anymore. The current proposal aims at keeping the necessary changes as small as possible while keeping the semantics of TDs clear. *(TODO to expand)*
+Another proposal to the general problem of hypermedia control on WoT was to return TDs as the result of invoking an action. The main drawback of this approach is that it would make any semantic concept a Thing, not only physical objects. Property, action and event affordances may also not refer to physical world entity anymore. The current proposal aims at keeping the necessary changes as small as possible while keeping the semantics of TDs clear. _(TODO to expand)_
 
 ## Extending to Event Histories
 
