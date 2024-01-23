@@ -1,5 +1,6 @@
 # Web of Things (WoT) Thing Description
 
+[![Follow on Mastodon](https://img.shields.io/mastodon/follow/111609289932468076?domain=https%3A%2F%2Fw3c.social)](https://w3c.social/@wot)
 [![Follow on Twitter](https://img.shields.io/twitter/follow/W3C_WoT.svg?label=follow+W3C_WoT)](https://twitter.com/W3C_WoT)
 [![Stack Exchange questions](https://img.shields.io/stackexchange/stackoverflow/t/web-of-things?style=plastic)](https://stackoverflow.com/questions/tagged/web-of-things)
 
