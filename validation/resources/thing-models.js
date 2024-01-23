@@ -5,8 +5,8 @@ const validTMs = [
     "@type": "tm:ThingModel",
     "title": "Valid model 1",
     "securityDefinitions": {
-      example_sc: {
-        scheme: "{{PLACEHOLDER}}"
+      "example_sc": {
+        "scheme": "{{PLACEHOLDER}}"
       }
     },
     "security": ["example_sc"]
@@ -18,8 +18,8 @@ const validTMs = [
     "title": "Valid model 2",
     "forms": [
       {
-        href: "https://example.com",
-        op: "{{MY_PLACEHOLDER}}"
+        "href": "https://example.com",
+        "op": "{{MY_PLACEHOLDER}}"
       }
     ]
   },
@@ -34,21 +34,21 @@ const validTMs = [
     "@type": "tm:ThingModel",
     "title": "Valid Model 4",
     "properties": {
-      status: {
-        description: "current status of the lamp (on|off)",
-        type: "string",
-        readOnly: true
+      "status": {
+        "description": "current status of the lamp (on|off)",
+        "type": "string",
+        "readOnly": true
       }
     },
     "actions": {
-      toggle: {
-        description: "Turn the lamp on or off"
+      "toggle": {
+        "description": "Turn the lamp on or off"
       }
     },
     "events": {
-      overheating: {
-        description: "Lamp reaches a critical temperature (overheating)",
-        data: { type: "string" }
+      "overheating": {
+        "description": "Lamp reaches a critical temperature (overheating)",
+        "data": { "type": "string" }
       }
     }
   },
@@ -58,8 +58,8 @@ const validTMs = [
     "@type": "tm:ThingModel",
     "title": "Valid Model 5",
     "properties": {
-      onOff: {
-        type: "boolean"
+      "onOff": {
+        "type": "boolean"
       }
     }
   },
@@ -70,16 +70,16 @@ const validTMs = [
     "title": "Valid Model 6",
     "links": [
       {
-        rel: "tm:extends",
-        href: "http://example.com/BasicOnOffTM",
-        type: "application/td+json"
+        "rel": "tm:extends",
+        "href": "http://example.com/BasicOnOffTM",
+        "type": "application/td+json"
       }
     ],
     "properties": {
-      dim: {
-        type: "integer",
-        minimum: 0,
-        maximum: 100
+      "dim": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100
       }
     }
   },
@@ -89,7 +89,7 @@ const validTMs = [
     "@type": "tm:ThingModel",
     "title": "Valid Model 7",
     "properties": {
-      switch: {
+      "switch": {
         "tm:ref": "http://example.com/BasicOnOffTM.tm.jsonld#/properties/onOff"
       }
     }
@@ -100,7 +100,7 @@ const validTMs = [
     "@type": "tm:ThingModel",
     "title": "Valid Model 8",
     "properties": {
-      dimming: {
+      "dimming": {
         "tm:ref": "http://example.com/SmartLampControlwithDimming.tm.jsonld#/properties/dim",
         "maximum": 80,
         "unit": "%"
@@ -114,16 +114,16 @@ const validTMs = [
     "title": "Valid Model 9",
     "links": [
       {
-        rel: "extends",
-        href: "http://example.com/BasicOnOffTM",
-        type: "application/td+json"
+        "rel": "extends",
+        "href": "http://example.com/BasicOnOffTM",
+        "type": "application/td+json"
       }
     ],
     "properties": {
-      status: {
+      "status": {
         "tm:ref": "http://example.com/LampTM.tm.jsonld#/properties/status"
       },
-      dimming: {
+      "dimming": {
         "tm:ref": "http://example.com/LampWithDimmingTM.tm.jsonld#/properties/dim"
       }
     }
@@ -135,12 +135,12 @@ const validTMs = [
     "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
     "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
     "properties": {
-      temperature: {
-        description: "Shows the current temperature value",
-        type: "number",
-        minimum: -20,
-        maximum: "{{THERMOSTATE_TEMPERATURE_MAXIMUM}}",
-        observable: "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}"
+      "temperature": {
+        "description": "Shows the current temperature value",
+        "type": "number",
+        "minimum": -20,
+        "maximum": "{{THERMOSTATE_TEMPERATURE_MAXIMUM}}",
+        "observable": "{{THERMOSTATE_TEMPERATURE_OBSERVABLE}}"
       }
     }
   },
@@ -152,21 +152,21 @@ const validTMs = [
     "description": "Lamp Thing Description Model",
     "tm:optional": ["/events/overheating", "/actions/toggle"],
     "properties": {
-      status: {
-        description: "current status of the lamp (on|off)",
-        type: "string",
-        readOnly: true
+      "status": {
+        "description": "current status of the lamp (on|off)",
+        "type": "string",
+        "readOnly": true
       }
     },
     "actions": {
-      toggle: {
-        description: "Turn the lamp on or off"
+      "toggle": {
+        "description": "Turn the lamp on or off"
       }
     },
     "events": {
-      overheating: {
-        description: "Lamp reaches a critical temperature (overheating)",
-        data: { type: "string" }
+      "overheating": {
+        "description": "Lamp reaches a critical temperature (overheating)",
+        "data": { "type": "string" }
       }
     }
   },
@@ -176,14 +176,14 @@ const validTMs = [
     "@type": "tm:ThingModel",
     "links": [
       {
-        rel: "tm:extends",
-        href: "http://example.com/SmartControlLampTM",
-        type: "application/td+json"
+        "rel": "tm:extends",
+        "href": "http://example.com/SmartControlLampTM",
+        "type": "application/td+json"
       }
     ],
     "properties": {
-      dim: {
-        maximum: 200
+      "dim": {
+        "maximum": 200
       }
     }
   },
@@ -193,15 +193,15 @@ const validTMs = [
     "@type": "tm:ThingModel",
     "links": [
       {
-        rel: "tm:extends",
-        href: "http://example.com/SmartControlLampTM",
-        type: "application/td+json"
+        "rel": "tm:extends",
+        "href": "http://example.com/SmartControlLampTM",
+        "type": "application/td+json"
       }
     ],
     "properties": {
-      dim: {
-        type: "string",
-        enum: "{{MY_ENUMS}}"
+      "dim": {
+        "type": "string",
+        "enum": "{{MY_ENUMS}}"
       }
     }
   }
@@ -223,8 +223,8 @@ const invalidTMs = [
     "@type": "tm:ThingModel",
     "title": "Invalid model 3",
     "securityDefinitions": {
-      example_sc: {
-        scheme: "{PLACEHOLDER}"
+      "example_sc": {
+        "scheme": "{PLACEHOLDER}"
       }
     },
     "security": ["example_sc"]
@@ -235,8 +235,8 @@ const invalidTMs = [
     "@type": "tm:ThingModel",
     "title": "Invalid model 4",
     "securityDefinitions": {
-      example_sc: {
-        scheme: "PLACEHOLDER"
+      "example_sc": {
+        "scheme": "PLACEHOLDER"
       }
     },
     "security": ["example_sc"]
@@ -247,7 +247,7 @@ const invalidTMs = [
     "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
     "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
     "properties": {
-      temperature: {
+      "temperature": {
         "description": "Shows the current temperature value",
         "type": "number",
         "minimum": -20,
@@ -262,23 +262,23 @@ const invalidTMs = [
     "@type": "tm:ThingModel",
     "title": "Lamp Thing Model",
     "description": "Lamp Thing Description Model",
-    "version": { instance: "1.0.0" }
+    "version": { "instance": "1.0.0" }
   },
   {
     "@context": "https://www.w3.org/2022/wot/td/v1.1",
     "@type": "tm:ThingModel",
     "title": "Invalid tm optional syntax",
     "properties": {
-      genericTemperature: {
-        type: "number",
-        unit: "C"
+      "genericTemperature": {
+        "type": "number",
+        "unit": "C"
       },
-      innerTemperature: {
+      "innerTemperature": {
         "tm:ref": "#/properties/genericTemperature",
         "title": "The inner temperature",
         "minimum": 10
       },
-      outerTemperature: {
+      "outerTemperature": {
         "tm:ref": "#/properties/genericTemperature",
         "title": "The outer temperature",
         "description": "The outer temperature is measured in Kelvin",
