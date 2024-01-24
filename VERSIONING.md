@@ -40,6 +40,6 @@ Text copied from <https://www.w3.org/WoT/IG/wiki/WG_WoT_Thing_Description_WebCon
     - TTL
     - HTML
 - How much time to invest in maintaining 1.1 resources?
-– Maintaining multiple files or not: xxx.v1.1.0.ttl xxx.v1.1.1.ttl
+  – Maintaining multiple files or not: xxx.v1.1.0.ttl xxx.v1.1.1.ttl
 - Decision so far: Do not dig into 1.1 versioning until we have the need.
 - TM resources (tm.ttl and tm.html) will not be versioned for the first changes since HTML doesn't exist and TTL is not usable.

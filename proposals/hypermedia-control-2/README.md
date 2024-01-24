@@ -1,6 +1,6 @@
 # Hypermedia Control on the Web of Things
 
-This proposal introduces a generic hypermedia control framework for the Web of Things (WoT) that is similar to that of @vcharpenay but uses static TDs and focuses on action affordances. 
+This proposal introduces a generic hypermedia control framework for the Web of Things (WoT) that is similar to that of @vcharpenay but uses static TDs and focuses on action affordances.
 The ideas were introduced also [at this comment](https://github.com/w3c/wot-thing-description/issues/302#issuecomment-627500213)
 
 TL;DR:
@@ -11,29 +11,29 @@ TL;DR:
 
 ## Simple Action Example According to the Current Standard
 
-The following interface allows Consumers to invoke a `fade` action of a Lamp where the Lamp's brightness fades to a certain value with constant speed that is based on its current brightness and the provided duration by the Consumer. 
+The following interface allows Consumers to invoke a `fade` action of a Lamp where the Lamp's brightness fades to a certain value with constant speed that is based on its current brightness and the provided duration by the Consumer.
 For the remainder, we assume the current brightness to be 1000 Lumens and that the brightness fades with 100 Lumens per second.
 
 ```
 POST /fade
 ```
+
 Here is a sequence diagram for the interaction:
 
 ![Fade simple sequence diagram](fade-simple.png)
-
 
 ```json
 {
   "@context": "https://www.w3.org/2019/wot/td/v1",
   "id": "urn:ex:thing",
   "actions": {
-    "fade": {
+    "fade": {
       "input": {
         "type": "number",
         "description": "duration in ms"
       },
-      "output":{
-        "type":"number",
+      "output": {
+        "type": "number",
         "description": "brightness value after fade operation"
       },
       "forms": [
@@ -41,7 +41,7 @@ Here is a sequence diagram for the interaction:
           "href": "/fade",
           "op": "invokeaction",
           "htv:methodName": "POST",
-          "contentType":"application/json"
+          "contentType": "application/json"
         }
       ]
     }
@@ -83,7 +83,7 @@ Here is a sequence diagram summarizing possible interactions **that does not sho
 
 ![Fade sequence diagram](fade-noResp.png)
 
-With the current TD specification, a standard-compliant Consumer would be able to perform the first request but no subsequent request on the created resource (i.e. `/fade/1` OR  `/fade/ongoing`).
+With the current TD specification, a standard-compliant Consumer would be able to perform the first request but no subsequent request on the created resource (i.e. `/fade/1` OR `/fade/ongoing`).
 
 First, we want to **start** by describing that such requests can be sent to the Thing by adding new WoT operation keywords.
 
@@ -94,13 +94,13 @@ Thus, we can have the following TD that is consumed by the Consumer:
   "@context": "https://www.w3.org/2019/wot/td/v1",
   "id": "urn:ex:thing",
   "actions": {
-    "fade": {
+    "fade": {
       "input": {
         "type": "number",
         "description": "duration in ms"
       },
-      "output":{
-        "type":"number",
+      "output": {
+        "type": "number",
         "description": "brightness value after fade operation"
       },
       "forms": [
@@ -108,25 +108,25 @@ Thus, we can have the following TD that is consumed by the Consumer:
           "href": "/fade",
           "op": "invokeaction",
           "htv:methodName": "POST",
-          "contentType":"application/json"
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}", //OR /fade/ongoing
           "op": "queryaction",
           "htv:methodName": "GET",
-          "contentType":"application/json"
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}", // OR /fade/ongoing
           "op": "updateaction",
           "htv:methodName": "PUT",
-          "contentType":"application/json"
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}", // OR /fade/ongoing
           "op": "cancelaction",
           "htv:methodName": "DELETE",
-          "contentType":"application/json"
+          "contentType": "application/json"
         }
       ]
     }
@@ -183,28 +183,28 @@ Thus, an example TD would now look like the following. Note that the output in t
   "@context": "https://www.w3.org/2019/wot/td/v1",
   "id": "urn:ex:thing",
   "actions": {
-    "fade": {
+    "fade": {
       "input": {
         "type": "number",
         "description": "duration in ms"
       },
-      "query":{
-        "output":{
-          "type":"object",
-          "properties":{
-            "brightness":{
-              "type":"number",
+      "query": {
+        "output": {
+          "type": "object",
+          "properties": {
+            "brightness": {
+              "type": "number",
               "description": "current brightness"
             },
-            "status":{
-              "type":"string",
-              "enum":["ongoing","finished","pending"],
+            "status": {
+              "type": "string",
+              "enum": ["ongoing", "finished", "pending"],
               "description": "status of the invoked action"
             }
           }
         }
       },
-      "update":{
+      "update": {
         "input": {
           "type": "number",
           "description": "ADDED duration in ms"
@@ -215,25 +215,25 @@ Thus, an example TD would now look like the following. Note that the output in t
           "href": "/fade",
           "op": "invokeaction",
           "htv:methodName": "POST",
-          "contentType":"application/json"
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}", //OR /fade/ongoing
           "op": "queryaction",
           "htv:methodName": "GET",
-          "contentType":"application/json"
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}", // OR /fade/ongoing
           "op": "updateaction",
           "htv:methodName": "PUT",
-          "contentType":"application/json"
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}", // OR /fade/ongoing
           "op": "cancelaction",
           "htv:methodName": "DELETE",
-          "contentType":"application/json"
+          "contentType": "application/json"
         }
       ]
     }
@@ -269,49 +269,49 @@ If it is in the body of the response, we can have a TD like the following:
 ```jsonc
 {
   "actions": {
-    "fade": {
+    "fade": {
       "input": {
         "type": "number",
         "description": "duration in ms"
       },
-      "output":{
-        "type":"object",
-        "properties":{
-          "href":{
-            "const":"{id}",
+      "output": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "const": "{id}",
             "description": "URI to query, update or cancel the invoked action"
           },
-          "status":{
-              "type":"string",
-              "enum":["ongoing","finished","pending"],
-              "description": "status of the invoked action"
-            }
-         }
+          "status": {
+            "type": "string",
+            "enum": ["ongoing", "finished", "pending"],
+            "description": "status of the invoked action"
+          }
+        }
       },
       "forms": [
         {
           "href": "/fade",
           "op": "invokeaction",
           "htv:methodName": "POST",
-          "contentType":"application/json"
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}",
           "op": "queryaction",
           "htv:methodName": "GET",
-          "contentType":"application/json"
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}",
           "op": "updateaction",
           "htv:methodName": "PUT",
-          "contentType":"application/json"
+          "contentType": "application/json"
         },
         {
           "href": "/fade/{id}",
           "op": "cancelaction",
           "htv:methodName": "DELETE",
-          "contentType":"application/json"
+          "contentType": "application/json"
         }
       ]
     }
@@ -325,7 +325,7 @@ Thus, in both cases, if the Consumer sees a variable in an `href`, i.e. `"href":
 
 Once I think of Scripting API on the Consumer side, everything gets quite complicated regarding whether it is the script or the implementation that is going to manage the dynamic href related information. If the information is in the header, the implementation needs to manage that, the script does not have access to protocol relevant information. If it is in the body/payload, the script needs to manage that but it cannot fully manage it since it cannot supply a custom `href` to a function like `myThing.queryAction("myaction","fade/1")`. So the implementation would need to interfere with the payloads.
 
-A Consumer script would need to have 
+A Consumer script would need to have
 
 ## Example Existing Thing with Static href
 
@@ -336,53 +336,53 @@ A distilled version of its TD is below:
 
 ```json
 {
-  "title":"PanTilt",
-  "description":"A Pan and Tilt platform on top of a Raspberry Pi",
-  "properties":{
-    "panPosition":{
-      "readOnly":true,
-      "description":"The current position of the pan platform in degrees",
-      "unit":"degrees",
-      "type":"number",
-      "minimum":-90,
-      "maximum":90,
-      "forms":[
+  "title": "PanTilt",
+  "description": "A Pan and Tilt platform on top of a Raspberry Pi",
+  "properties": {
+    "panPosition": {
+      "readOnly": true,
+      "description": "The current position of the pan platform in degrees",
+      "unit": "degrees",
+      "type": "number",
+      "minimum": -90,
+      "maximum": 90,
+      "forms": [
         {
-          "href":"http://example.org/PanTilt/properties/panPosition",
-          "contentType":"application/json",
-          "op":"readproperty",
-          "htv:methodName":"GET"
+          "href": "http://example.org/PanTilt/properties/panPosition",
+          "contentType": "application/json",
+          "op": "readproperty",
+          "htv:methodName": "GET"
         }
       ]
     }
   },
-  "actions":{
-    "panContinuously":{
-      "description":"Moves the pan platform with speed given in input until a stop action is invoked or limits are reached",
-      "input":{
-        "description":"The speed at which the platform moves. Negative values for right and positive values for left",
-        "unit":"degree/sec",
-        "type":"number",
-        "minimum":-15,
-        "maximum":15
+  "actions": {
+    "panContinuously": {
+      "description": "Moves the pan platform with speed given in input until a stop action is invoked or limits are reached",
+      "input": {
+        "description": "The speed at which the platform moves. Negative values for right and positive values for left",
+        "unit": "degree/sec",
+        "type": "number",
+        "minimum": -15,
+        "maximum": 15
       },
-      "forms":[
+      "forms": [
         {
-          "href":"http://example.org/PanTilt/actions/panContinuously",
-          "contentType":"application/json",
-          "op":"invokeaction",
-          "htv:methodName":"POST"
+          "href": "http://example.org/PanTilt/actions/panContinuously",
+          "contentType": "application/json",
+          "op": "invokeaction",
+          "htv:methodName": "POST"
         }
       ]
     },
-    "stopMovement":{
-      "description":"Stops any movement that was created with continuous movement calls",
-      "forms":[
+    "stopMovement": {
+      "description": "Stops any movement that was created with continuous movement calls",
+      "forms": [
         {
-          "href":"http://example.org/PanTilt/actions/stopMovement",
-          "contentType":"application/json",
-          "op":"invokeaction",
-          "htv:methodName":"POST"
+          "href": "http://example.org/PanTilt/actions/stopMovement",
+          "contentType": "application/json",
+          "op": "invokeaction",
+          "htv:methodName": "POST"
         }
       ]
     }
@@ -394,45 +394,45 @@ We can reduce this TD to a single action when we think of hypermedia control.
 
 ```json
 {
-  "title":"PanTilt",
-  "description":"A Pan and Tilt platform on top of a Raspberry Pi",
-  "actions":{
-    "panContinuously":{
-      "description":"Moves the pan platform with speed given in input until a stop action is invoked or limits are reached",
-      "input":{
-        "description":"The speed at which the platform moves. Negative values for right and positive values for left",
-        "unit":"degree/sec",
-        "type":"number",
-        "minimum":-15,
-        "maximum":15
+  "title": "PanTilt",
+  "description": "A Pan and Tilt platform on top of a Raspberry Pi",
+  "actions": {
+    "panContinuously": {
+      "description": "Moves the pan platform with speed given in input until a stop action is invoked or limits are reached",
+      "input": {
+        "description": "The speed at which the platform moves. Negative values for right and positive values for left",
+        "unit": "degree/sec",
+        "type": "number",
+        "minimum": -15,
+        "maximum": 15
       },
-      "query":{
-        "output":{
-          "description":"The current position of the pan platform in degrees",
-          "unit":"degrees",
-          "type":"number",
-          "minimum":-90,
-          "maximum":90
+      "query": {
+        "output": {
+          "description": "The current position of the pan platform in degrees",
+          "unit": "degrees",
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
         }
       },
-      "forms":[
+      "forms": [
         {
-          "href":"http://example.org/PanTilt/actions/panContinuously",
-          "contentType":"application/json",
-          "op":"invokeaction",
-          "htv:methodName":"POST"
+          "href": "http://example.org/PanTilt/actions/panContinuously",
+          "contentType": "application/json",
+          "op": "invokeaction",
+          "htv:methodName": "POST"
         },
         {
-          "href":"http://example.org/PanTilt/properties/panPosition",
-          "contentType":"application/json",
-          "op":"queryaction",
-          "htv:methodName":"GET"
+          "href": "http://example.org/PanTilt/properties/panPosition",
+          "contentType": "application/json",
+          "op": "queryaction",
+          "htv:methodName": "GET"
         },
         {
-          "href":"http://example.org/PanTilt/actions/stopMovement",
-          "contentType":"application/json",
-          "op":"cancelaction",
-          "htv:methodName":"POST"
+          "href": "http://example.org/PanTilt/actions/stopMovement",
+          "contentType": "application/json",
+          "op": "cancelaction",
+          "htv:methodName": "POST"
         }
       ]
     }
