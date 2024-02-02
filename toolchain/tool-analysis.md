@@ -1,9 +1,10 @@
-W3C WoT Toolchain Analysis
+# W3C WoT Toolchain Analysis
 
-The current W3C WoT specification generation tool requires as input different WoT artifacts (e.g., JSON Schema, ontologies, SHACL shapes, etc.,) that are produced by the different task forces. However, once there is an extension to the Thing description information model, these artifacts also need to be updated based on their own schema. However, in most cases this causes alot of manual effort and sometimes inconsistencies between the different artifacts.
-Therefore, the aim is to identify a set of potential tools that can simplify the generation of the WoT artifacts.
+The current W3C WoT specification generation tool relies on various WoT artifacts such as JSON Schema, ontologies, SHACL shapes, which are produced by the different task forces. However, when there is an extension to the Thing description information model, these artifacts must also be updated according to their respective schemas. This process often requires significant manual effort and can result in inconsistencies between the different artifacts. 
 
-A set of existing tools have been analyzed based on different requirements. The requirements are identified based on the modeling features important for the TD information model and include: array support, one of, Type/Type array, Inheritance, Unknown object keys, pattern matching, JSON Schema conversion, JSON-LD Context file generation, SHACL shapes generation, term documentation, and diagram generation. 
+Therefore, the aim is to identify a set of potential tools that can simplify the generation of the WoT artifacts. An analysis of existing tools has been conducted based on different requirements, which are determined by the modeling features crucial for the TD information model.
+The table below provides a summary of the analyzed tools according to the defined requirements.
+
 
 | Tool                    | LinkML   | TreeLDR  | ESMF     | A.ML     | Schema Salad | SOML     | WIDOCO   |
 |-------------------------|----------|----------|----------|----------|--------------|----------|----------|
