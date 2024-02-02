@@ -5,16 +5,16 @@ Therefore, the aim is to identify a set of potential tools that can simplify the
 
 A set of existing tools have been analyzed based on different requirements. The requirements are identified based on the modeling features important for the TD information model and include: array support, one of, Type/Type array, Inheritance, Unknown object keys, pattern matching, JSON Schema conversion, JSON-LD Context file generation, SHACL shapes generation, term documentation, and diagram generation. 
 
-| Tool                    | LinkML | TreeLDR | ESMF | A.ML | Schema Salad | SOML | WIDOCO |
-|-------------------------|--------|---------|------|------|--------------|------|--------|
-| Language                |        |         |      |      |              |      |        |
-| Array Support           |        |         |      |      |              |      |        |
-| One of                  |        |         |      |      |              |      |        |
-| Type/Type[]             |        |         |      |      |              |      |        |
-| Inheritance             |        |         |      |      |              |      |        |
-| Unknown object keys     |        |         |      |      |              |      |        |
-| Pattern Matching        |        |         |      |      |              |      |        |
-| JSON Schema Generation  |        |         |      |      |              |      |        |
-| SHACL Shapes Generation |        |         |      |      |              |      |        |
-| Term Documentation      |        |         |      |      |              |      |        |
-| Diagram Generation      |        |         |      |      |              |      |        |
+| Tool                    | LinkML   | TreeLDR  | ESMF     | A.ML     | Schema Salad | SOML     | WIDOCO   |
+|-------------------------|----------|----------|----------|----------|--------------|----------|----------|
+| Language                | Python   | Rust     | Java     | Scala    | Python       | NG       | Java     |
+| Array Support           | &#x2611; | &#x2611; | &#x2611; | &#x2611; | &#x2611;     | &#x2611; | &#x2612; |
+| One of                  | &#x2611; | &#x2611; | &#x2612; | &#x2611; | &#x2611;     | &#x2612; | &#x2612; |
+| Type/Type[]             | &#x2612; | &#x2612; | &#x2612; | &#x2612; | &#x2612;     | &#x2612; | &#x2612; |
+| Inheritance             | &#x2611; | &#x2611; | &#x2611; | &#x2611; | &#x2611;     | &#x2611; | &#x2612; |
+| Unknown object keys     | &#x2611; | &#x2612; | &#x2612; | &#x2611; | &#x2612;     | &#x2612; | &#x2612; |
+| Pattern Matching        | &#x2611; | &#x2611; | &#x2611; | &#x2611; | &#x2612;     | &#x2611; | &#x2612; |
+| JSON Schema Generation  | &#x2611; | &#x2611; | &#x2611; | &#x2612; | &#x2612;     | &#x2612; | &#x2612; |
+| SHACL Shapes Generation | &#x2611; | &#x2612; | &#x2612; | &#x2612; | &#x2612;     | &#x2612; | &#x2612; |
+| Term Documentation      | &#x2611; | &#x2612; | &#x2612; | &#x2612; | &#x2611;     | &#x2612; | &#x2611; |
+| Diagram Generation      | &#x2611; | &#x2612; | &#x2611; | &#x2612; | &#x2611;     | &#x2612; | &#x2611; |
