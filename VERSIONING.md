@@ -50,12 +50,14 @@ How do we reflect a patch change on the artifacts. Do we use semantic versioning
 - ( @lu-zero ) A date afterward would be good "enough" for implementers. A release every month (in addition to semver) would be also good. We can also pipeline it and tag each resource exposed to github.io. 
 - ( @mjkoster ) Short commit hash would be fine. Monthly release may not make sense (unless there is a need)
 - ( @mmccool ) To make things easy we should map our directories to the url structure. We should make all URLs are versioned
+- @mahdanoura : According to OWL2 specification, for every ontology we can define an Ontology IRI (generic reference, should stay the same through versions) and a Ontology Version IRI. The difference is during dereferencing of the IRIs, the ontology IRI should redirect to the most recent version and the version IRI to the specific version.
 
 #### Synchronisation of Changes
 
 Relevant to points above, we need to decide whether we version each artifact separately or together.
 
 Notes:
+
 - We need to be careful since if each artifact has its own version, the CD pipeline will get complicated.
 - @egekorkan : Matching the versions of files would mean that breaking changes in one file would increment the version in the other ones.
 - @mmccool : we can version the folder and let git show what file has changed between versions
@@ -81,5 +83,11 @@ Note: We should write a user story per persona about this aspect of the discussi
 - @relu91 : commit messages to drive the changelog. There are tools for that but may not work for "documents". We need to define guidelines as well, e.g. using "chore" when doing a small fix.
 - @mjkoster : docstrings in commit messages can be used to automate changelog
 
+### Metadata
 
+Different resources need different types of metadata within them.
 
+#### Ontologies
+
+- @mahdanoura: There needs to be also some supplementary metadata that needs to be provided in versioned ontologies like `dct:created`, `dct:modified`, `dct:valid`, `vann:changes`, and the relation between the ontology versions. [Section 7.4](https://www.w3.org/TR/owl-ref/#VersionInformation) details ontology versioning. It states that the `owl:versionInfo` is an annotation property, `owl:priorVersion`, `owl:backwardCompatibleWith` and `owl:incompatibleWith` are ontology properties, where `owl:Ontology` is considered as the `domain `and `range`. Therefore, this shows that OWL requires different versions of an ontology to have different URIs.
+  - There is also a proposed standard, [MOD2.0](https://github.com/FAIR-IMPACT/MOD) specification for describing ontology metada and semantic artifacts. It has some metadata we could reuse for our versioned ontologies. 
