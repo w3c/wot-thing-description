@@ -21,6 +21,15 @@ Do we version anything until a REC release, i.e. for TD.next, do we want to publ
   - ( @egekorkan ) The versioning rules do not apply to different versions of a specification, e.g. TD 1.1 schema should be treated like a new release, not a next iteration of the 1.0 schema
   - @mmccool : We need specific snapshots for testing and plugfest purposes where we ask implementors to use a certain (pre-release) version of the resources. Better to name these versions with a word that reflects this (e.g. plugfest september 2025 version)
 
+---
+
+**Decision Making Discussion:**
+
+- McCool : I agree with versioning until development but with another namespace (e.g. unstable, development etc.) (+1 from Luca for the idea)
+- Luca: Semver can support "unstable" tags. Developers know that. McCool: the generic unstable iri should return the latest unstable though. Stable iri should return the stable version. Luca: the part after version number is up to us, we can use year-month-date for example.
+
+- Preliminary Decision: Do versioning until REC release
+
 ### Meaning of Changes
 
 Which changes are bugfixes, which are new features etc. For each type of artifact, we need to agree on the meaning. Then, these meanings can be reflected on the version information.
@@ -64,10 +73,21 @@ Notes:
 - @mmccool : we can version the folder and let git show what file has changed between versions
 - @danielpeintner : If all resources are synced, we will be talking about a certain spec version (pre-release)
 
+--- 
+
+Ege: From user's perspective, it would be better to not change the version if a file doesn't change.
+Luca: It is also a tooling problem. The tooling can replace a version tag. A warning can be displayed if we don't bump the version. Changing the tooling, readme etc. doesn't generate the warning.
+Luca: Artifacts from a release having different versions will confuse the users. Until a stable release, there is no meaning provided in semver anyways, you have to check the changes manually.
+Ege: after the talk, I tend to agree that we should sync all resources all the time (pre-release and release)
+
 ### Tooling
 
 - @egekorkan : Maybe there are options other than manually updating specific files and redirection.
 - The changelog point below is related to this
+
+---
+
+
 
 ### User Point of View
 
@@ -78,6 +98,10 @@ Who is targeted by each change and how are they affected?
 - @relu91 : There are Developers who try out the specs so there is no version "just for us".
 
 Note: We should write a user story per persona about this aspect of the discussion.
+
+---
+
+Luca: 
 
 #### Changelog
 
