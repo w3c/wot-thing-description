@@ -87,7 +87,23 @@ Ege: after the talk, I tend to agree that we should sync all resources all the t
 
 ---
 
+- @ektrah has tooling for TTL files that leverages npm that we can use. https://github.com/ektrah/rdf-toolkit and its publication at https://github.com/ektrah/rdf-library
+  - In general, we should be able to package all types of resources in an npm release which solves the distribution problem. npm packages can contain anything (e.g. dotnet requires dotnet files)
+  - The URI of the unstable packages need to be resolved. We can say something like "unstable package can be obtained from npm with the usual npm mechanism". This doesn't imply node.js knowledge, just npm usage. We can test using github.io links with file ending which avoids the content negotiation problem.
+  - The tooling doesn't address JSON Schemas and JSON-LD context files (current tooling can be maybe used, to test) (and examples files in the future) but they can be still just packaged together. For JSON Schema, there can be tools from JSON Schema community that we can leverage for fetching correct versions of our dependencies (we don't have that atm).
+  - `files` attribute in package.json can allow us to filter which files should be considered for the npm package.
+  - We should involve more people into this (Ege to contact Pierre Antoine for pointers to people)
+  - GitHub also supports npm packages so no need to publish on npmjs.org
+- npmjs.org has different people trying to publish ontologies as packages (search for ontologies).
+- Protege has an XML file that can do local redirection. Similar to npm linking in local environment but it does for URLs. See example at https://github.com/geneontology/protege-tutorial/blob/master/advanced-metabolism/catalog-v001.xml
+- We can also evaluate GitHub releases (with gh actions)
+- We still need to have tooling for updating the version-relevant field within the files
+- We currently rely on ontologies that do not change a lot (plus our own ontologies) so we do not have a problem with our dependencies.
 
+Problems to solve:
+- Distribution
+- URIs of resources
+- Packaging
 
 ### User Point of View
 
