@@ -26,7 +26,7 @@ The main question is "How do we organize the work?".
 ### Proposal from Ege Korkan
 
 - Create three tables in a GitHub project: Extraction, Sorting and Assigning
-- Use the sorting table to categorize issues into topics we agree on via work item categories, i.e. `bindings`, `data mapping`, where each category is a column. The granularity of categories is to be discussed. The backlog of this table is uncategorized issues. This table is edited primarily outside of the calls, i.e. as issue or use case shows up.
+- Use the sorting table to categorize issues into topics we agree on via work item categories, i.e. `bindings`, `data mapping`, `tooling`, `editorial`, `bug`, where each category is a column. The granularity of categories is to be discussed. The backlog of this table is uncategorized issues. This table is edited primarily outside of the calls, i.e. as issue or use case shows up.
   - First an issue comes from the use case pipeline (extraction table). This issue is a short feature proposal that needs to satisfy a set of requirements. It is possible that the work to satisfy the requirement is a lot. The TF should work on planning the work to fit the TF structure and the spec generation pipeline. Ideally, it should be split into multiple issues that are easy to manage, assignable as tasks and that do not result in very big PRs.
   - Also see <https://github.com/w3c/wot-usecases/blob/main/Process.md>. The result of the gap analysis and feature definition is the input to this point.
 - Use Assignment table to track who is most suited for the issue and whether that is being worked on. Based on people's availabilities, move issues to "in progress". The backlog of this table is categorized issues. This table is edited primarily during calls.
