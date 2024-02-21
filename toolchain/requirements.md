@@ -6,6 +6,7 @@ by listing what kind of inputs we want to work on and what kind of outputs we wa
 ## Output Resources
 
 Always synced:
+
 - Editor's Draft index.html -> Should be provided with each PR. Used for PR Preview.
   - Users: Read by spec writes and early adopters of features.
 - UML Class Diagrams -> Integrated into index.html. 
@@ -17,6 +18,7 @@ Always synced:
 - Test cases: Each feature has its own test cases. Currently in Eclipse Thingweb but will be moved here
 
 Done once:
+
 - Publication index.html (Overview.html) -> Done with each publication
   - Users: Adopters of the standard
 - UML Class Diagrams: Beautified versions of the "always synced" diagrams
@@ -26,12 +28,21 @@ Done once:
 
 Always updated:
 
-- Single source of truth in form of one file (can be split into multiple for maintainability)
+- Single source of truth in the form of one file (can be split into multiple for maintainability)
 
 Done once:
 
-- Any kind of template
+- Any template
+
+To clarify:
+
+- File type and structure of each resource.
 
 ## Overall Requirements
 
-Someone without expertise in our tooling should be able to make contributions.
+1. Someone without expertise in our tooling should be able to make contributions.
+  1. Relying on well-known tools would make it easier. Templating engines like [Handlebars](https://handlebarsjs.com/) are well-known. STTL is not well-known and doesn't support all the features we need.
+  2. More documentation about the entire repository configuration and tooling (Actions, hooks, npm scripts to run at some point etc.)
+3. It should be easy to debug/observe the process.
+4. Smaller but chained tools would be nicer to have more control and less dependency. This needs the inputs and outputs matching. An example would be if the generated JSON Schema is badly structured, it would result in cryptic TS definitions.
+5. Not mixing up multiple languages in one resource file (currently, we have HTML snippets in SHACL shapes).
