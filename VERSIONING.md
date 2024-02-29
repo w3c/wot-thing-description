@@ -42,6 +42,7 @@ File types in question:
       - Patch: English typos etc.
       - Minor: Relaxing a constraint (longer strings, more oneof) so that more TDs can pass the schema.
       - Major: Adding or restricting constraints
+      - Also see: https://gitlab.openretailing.org/public-standards/api-design-guidelines/-/blob/main/Open%20Retailing%20API%20Design%20Rules%20for%20JSON.pdf
   - JSON-LD Context
   - Ontology files
     - TTL
