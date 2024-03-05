@@ -14,6 +14,16 @@ Once there is an agreement, the rules will be moved to [wot-resources](https://g
 
 ## Versioning for next Release
 
+Requirements:
+
+- Support all users of WoT resources (schemas, ontologies, type definitions, etc.), which can be of different versions. Users can be split into two:
+  - Early adopters (implementers before REC publication), which include specification developers, editors etc.
+    - provide concrete guidelines and rules on how implementations should be made in the editor's draft
+    - support quick changes while maintaining the versioning rules
+  - REC publication users
+    - provide concrete guidelines and rules on how implementations should be made in the REC
+    - W3.org URLs can be used and we can do manual work
+
 ### Big Picture Versioning Timeline
 
 Do we version anything until a REC release, i.e. for TD.next, do we want to publish resources with each publication (WD, CR, PR etc, even each PR merged) or not?
