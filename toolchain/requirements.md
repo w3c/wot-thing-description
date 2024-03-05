@@ -3,13 +3,17 @@
 Before working on the restructuring of the toolchain to make it simpler, we can write the requirements of the toolchain 
 by listing what kind of inputs we want to work on and what kind of outputs we want to provide to the users (reader, implementer, spec writers).
 
+**Overall Goal:** Change a small number of files (source of truth) but generate as many resources as needed by users.
+
+**Compromise:** Reduce the amount of cross-checking between files by a human expert. In this case, everything is not automatically generated.
+
 ## Output Resources
 
 Always synced:
 
 - Editor's Draft index.html -> Should be provided with each PR. Used for PR Preview.
   - Users: Read by spec writes and early adopters of features.
-- UML Class Diagrams -> Integrated into index.html. 
+- UML Class Diagrams -> Integrated into index.html
 - Ontologies: HTML and TTL format
 - JSON-LD Context
 - JSON Schemas: For TD and TM
