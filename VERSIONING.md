@@ -21,8 +21,14 @@ Requirements:
   2. REC publication users. Naturally, all early adopters are in this category as well.
 - To both users, provide concrete guidelines and rules on how implementations should be made that take the versioning into account. The lack of this is the reason why we do not have versioned resources for 1.0 and 1.1 specifications.
 - Prioritize stability for post REC users
-- Make sure that quick changes are well-communicated to early adopters.
+- Make sure that quick changes are well-communicated to early adopters in the form of a changelog or similar
 - Publicly serve all versions of all resources all the time
+- Ideally, each change to any resource should "bump" the version inside the resource as well as the way the resource is obtained (e.g. URL, package manager, etc.)
+
+---
+
+> [!WARNING]  
+> Parts below are still under discussion until further notice.
 
 ### Big Picture Versioning Timeline
 
