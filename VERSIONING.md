@@ -12,17 +12,17 @@ Once there is an agreement, the rules will be moved to [wot-resources](https://g
   - JSON Schemas for TD and TM
 - DECISION: We do not publish different versions of these files until we see the need (e.g. a bug that also has breaking changes to current implementations).
 
-## Versioning for next Release
+## Versioning for Next Release
 
 Requirements:
 
 - Support all users of WoT resources (schemas, ontologies, type definitions, etc.), which can be of different versions. Users can be split into two:
-  - Early adopters (implementers before REC publication), which include specification developers, editors etc.
-    - provide concrete guidelines and rules on how implementations should be made in the editor's draft
-    - support quick changes while maintaining the versioning rules
-  - REC publication users
-    - provide concrete guidelines and rules on how implementations should be made in the REC
-    - W3.org URLs can be used and we can do manual work
+  1. Early adopters (implementers before REC publication), which include specification developers, editors, other TFs etc.
+  2. REC publication users. Naturally, all early adopters are in this category as well.
+- To both users, provide concrete guidelines and rules on how implementations should be made that take the versioning into account. The lack of this is the reason why we do not have versioned resources for 1.0 and 1.1 specifications.
+- Prioritize stability for post REC users
+- Make sure that quick changes are well-communicated to early adopters.
+- Publicly serve all versions of all resources all the time
 
 ### Big Picture Versioning Timeline
 
