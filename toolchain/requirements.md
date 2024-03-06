@@ -44,7 +44,7 @@ To clarify:
 
 ## Overall Requirements
 
-1. Someone without expertise in our tooling should be able to make contributions.
+1. Someone without expertise in our tooling should be able to make contributions. This is especially relevant for binding contributions from experts of the protocol who are not expert of semantic web or the type of tooling we have. Thus, the learning curve should be not steep at all.
   1. Relying on well-known tools would make it easier. Templating engines like [Handlebars](https://handlebarsjs.com/) are well-known. STTL is not well-known and doesn't support all the features we need.
   2. More documentation about the entire repository configuration and tooling (Actions, hooks, npm scripts to run at some point etc.)
 3. It should be easy to debug/observe the process.
