@@ -70,7 +70,7 @@ Notes:
 - @mahdanoura : Also, the deprecation of terms needs to be considered, i.e. not removing but marking as deprecated.
 - Best practices for RDF versioning should be studied. See https://www.w3.org/TR/prov-primer/
 
-#### Reflecting Meaning on Version Information
+#### Reflecting Meaning of Version Information
 
 How do we reflect a patch change on the artifacts? Do we use semantic versioning, use date, and ignore semantic versioning, do we use alpha, beta etc.
 
@@ -78,6 +78,34 @@ How do we reflect a patch change on the artifacts? Do we use semantic versioning
 - ( @mjkoster ) Short commit hash would be fine. Monthly release may not make sense (unless there is a need)
 - ( @mmccool ) To make things easy we should map our directories to the url structure. We should make all URLs are versioned
 - @mahdanoura : According to OWL2 specification, for every ontology we can define an Ontology IRI (generic reference, should stay the same through versions) and a Ontology Version IRI. The difference is during dereferencing of the IRIs, the ontology IRI should redirect to the most recent version and the version IRI to the specific version.
+- @egekorkan: we can do scoped versioning : td-version:resource-version -> 2.0.0.pre1+1.0.0.pre1 but this can be complicated. -> Not in favor of it anymore after talking
+  - others: Something like a changelog in the discovery can convey the meaning of change. Using one version would be simpler.
+- @egekorkan: We cannot do semantic versioning in the usual sense since TD 2.0 has set the expectation already. Or we decouple the spec version from resource version, e.g. TD 2.0 can have resources in version 25.2.1
+- Cris: CSS simply increases the major version -> TD 2 has TD 2 resources. Until we get there, we can have TD 2.pre1 TD 2.a1.
+- Luca: We can embed resource/format specific version inside the resource itself.
+- Luca: We assume the TD 2.0 will not change but the resources can have big changes since they are moving targets. E.g. JSON Schema Draft 7 becomes obsolete and we decide to update to JSON Schema 2026-09 with totally new terms etc. In this case, JSON Schema resource gets a major version bump.
+  - In this case, the resource needs its own semantic versioning lifecycle but refer to which spec version it refers to. Example for JSON Schema version: 4.0.0+2.0 becomes 5.0.0+2.0 following the example above. Next TD version, we will get 4.0.0+2.0 -> 5.0.0+3.0 
+
+Discussion between Ege and Luca:
+
+- Pre REC release
+  - resourcename-(semver for resource)-pre(some unique number or string)+(spec version)-pre(some unique number or string)
+  - json-schema-td-2.0.0-pre1+td-2.0.0-pre1 OR json-schema-td-2.0.0-pre20240301+td-2.0.0-pre20240301 -> The unique number gets updated and remains in sync between two
+  - json-schema-td-2.0.0-pre2+td-2.0.0-pre2 OR json-schema-td-2.0.0-pre20240401+td-2.0.0-pre20240401 -> Next small release during working mode
+- Post REC release
+  - resourcename-(semver for resource)+(spec version)
+  - json-schema-td-2.0.0+td-2.0.0 -> First publication after REC
+  - json-schema-td-2.0.1+td-2.0.0 -> Fixed a typo in JSON Schema
+  - json-schema-td-2.1.0+td-2.0.0 -> Added a new feature to JSON Schema
+  - json-schema-td-2.0.2+td-2.0.1 -> Published an errata in TD spec
+  - json-schema-td-3.0.1+td-2.0.1 -> We decided to move to a different version of JSON Schema itself (example above)
+  - json-schema-td-4.0.1+td-2.0.1 -> We restrict JSON Schema in one way (e.g. reducing the number of enums)
+- In this case, all resources have the same part after the + sign but each resource has its own version before the + sign.
+
+Decisions:
+- Until REC release:
+  - We publish snapshots that have no guarantees on the meaning of changes. E.g. snapshot 2 is published after snapshot 1 and it can break all your tooling. A changelog becomes necessary in this case.
+  - Naming scheme: 
 
 #### Synchronisation of Changes
 
@@ -96,6 +124,7 @@ Ege: From user's perspective, it would be better to not change the version if a 
 Luca: It is also a tooling problem. The tooling can replace a version tag. A warning can be displayed if we don't bump the version. Changing the tooling, readme etc. doesn't generate the warning.
 Luca: Artifacts from a release having different versions will confuse the users. Until a stable release, there is no meaning provided in semver anyways, you have to check the changes manually.
 Ege: after the talk, I tend to agree that we should sync all resources all the time (pre-release and release)
+ScAPI: Which Scripting API version uses which TD version and which version of Scripting API implementations (e.g. node-wot) use which version of Scripting API and TD. So this kind of (external) synchronization is also relevant.
 
 ### Tooling
 
