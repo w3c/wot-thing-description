@@ -19,7 +19,9 @@ by listing what kind of inputs we want to work on and what kind of outputs we wa
 
 ## Output Resources
 
-Always synced:
+Output resources are given to the users of the specification for various usages.
+
+The following resources are updated each time the "source of truth" in the input resources is updated:
 
 - Editor's Draft index.html -> Should be provided with each PR. Used for PR Preview.
   - Users: Read by spec writes and early adopters of features.
@@ -28,10 +30,12 @@ Always synced:
 - JSON-LD Context
 - JSON Schemas: For TD and TM
 - SHACL Shapes
-- TypeScript definitions (possibly other languages): Currently done via Scripting API TF
+- Abstraction or Interfaces for Programming Languages: 
+  - TypeScript definitions: Currently done via Scripting API TF
+  - We need to clarify it for other languages
 - Test cases: Each feature has its test case(s). Currently in Eclipse Thingweb but will be moved here
 
-Done once:
+The following resources are updated less frequently, generally in publication phases:
 
 - Publication index.html (Overview.html) -> Done with each publication
   - Users: Adopters of the standard
@@ -40,13 +44,15 @@ Done once:
 
 ## Input Resources
 
-Always updated:
+Input resources, referred to as source of truth, are what the TD Task Force writes and maintains to generate the output resources for the users.
+
+The following resources are updated for each change:
 
 - Single source of truth in the form of one file (can be split into multiple for maintainability)
 
-Done once:
+The following resources are written mostly at the beginning of work:
 
-- Any template
+- Any template file
 
 To clarify:
 
