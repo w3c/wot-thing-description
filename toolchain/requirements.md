@@ -13,8 +13,9 @@ by listing what kind of inputs we want to work on and what kind of outputs we wa
   1. Relying on well-known tools would make it easier. Templating engines like [Handlebars](https://handlebarsjs.com/) are well-known. STTL is not well-known and doesn't support all the features we need.
   2. More documentation about the entire repository configuration and tooling (Actions, hooks, npm scripts to run at some point etc.)
 2. It should be easy to debug/observe the process.
-3. If multiple tools are "chained together, " we should ensure that the inputs and outputs match. An example would be if the generated JSON Schema is badly structured, it would result in cryptic TS definitions.
+3. If multiple tools are "chained together", we should ensure that the inputs and outputs match. An example would be if the generated JSON Schema is badly structured, it would result in cryptic TS definitions.
 4. Not mixing up multiple languages in one resource file (currently, we have HTML snippets in SHACL shapes).
+5. (Optional) The tooling should be easy to install and understand the inner workings.
 
 ## Output Resources
 
