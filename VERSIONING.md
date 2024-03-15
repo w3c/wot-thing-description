@@ -30,6 +30,23 @@ Requirements:
 > [!WARNING]  
 > Parts below are still under discussion until further notice.
 
+### Decisions
+
+- Until and After REC release:
+  - Version is contained at all times inside the resource. E.g. JSON Schema version field reflects the version of the schema.
+  - Changelog is created in each change. Until REC release, it is the only source of information about the changes.
+- Until REC release:
+  - We publish snapshots that have no guarantees on the meaning of changes. E.g. snapshot 2 is published after snapshot 1 and it can break all your tooling. A changelog becomes necessary in this case.
+  - Naming scheme: (semver for resource)-pre(some unique number or string)+(spec version)-pre(some unique number or string)
+  - Synchronization: All resources have the same version name
+- After REC release:
+  - Each resource gets versioned separately based on the need of that resource respecting semver rules of that resource.
+  - Naming scheme: resourcename-(semver for resource)+(spec version)
+  - Synchronization: None. Syncing the part after the `+` sign is desirable.
+- Open points:
+  - Agreeing on the meaning of changes
+  - Tooling
+
 ### Big Picture Versioning Timeline
 
 Do we version anything until a REC release, i.e. for TD.next, do we want to publish resources with each publication (WD, CR, PR etc, even each PR merged) or not?
@@ -59,12 +76,13 @@ File types in question:
       - Minor: Relaxing a constraint (longer strings, more oneof) so that more TDs can pass the schema.
       - Major: Adding or restricting constraints
       - Also see: https://gitlab.openretailing.org/public-standards/api-design-guidelines/-/blob/main/Open%20Retailing%20API%20Design%20Rules%20for%20JSON.pdf
-  - JSON-LD Context
+      - 
+  - JSON-LD Context: How a JSON-LD context is versioned needs further input. No input from Ege, Daniel or Luca so far
   - Ontology files
     - TTL
     - HTML
-  - TypeScript types
-  - UML Diagrams
+  - TypeScript types: Needs input from Scripting API TF what major, minor, patch means for type versions.
+  - UML Diagrams: How a UML diagram is versioned needs further input. No input from Ege, Daniel or Luca so far
 
 Notes: 
 - @mahdanoura : Also, the deprecation of terms needs to be considered, i.e. not removing but marking as deprecated.
@@ -99,13 +117,17 @@ Discussion between Ege and Luca:
   - json-schema-td-2.1.0+td-2.0.0 -> Added a new feature to JSON Schema
   - json-schema-td-2.0.2+td-2.0.1 -> Published an errata in TD spec
   - json-schema-td-3.0.1+td-2.0.1 -> We decided to move to a different version of JSON Schema itself (example above)
-  - json-schema-td-4.0.1+td-2.0.1 -> We restrict JSON Schema in one way (e.g. reducing the number of enums)
-- In this case, all resources have the same part after the + sign but each resource has its own version before the + sign.
+  - json-schema-td-4.0.1+td-2.0.1 -> We restrict JSON Schema in one way (e.g. reducing the number of enums). This should ideally never happen since it means we did not review the schema enough in REC publication.
+- In this case, all resources have the same part after the + sign but each resource has its own version before the + sign. At the same time, each resource has its own versioning rules on what is major, minor, patch.
+- The part after + sign is informative, called [build metadata](https://semver.org/#spec-item-10) in semver. [A real-life example for curl in crates.io](https://crates.io/crates/curl-sys/versions)
+- `-` in pre rec versions comply with [pre-release version notation](https://semver.org/#spec-item-9) in semver.
 
-Decisions:
-- Until REC release:
-  - We publish snapshots that have no guarantees on the meaning of changes. E.g. snapshot 2 is published after snapshot 1 and it can break all your tooling. A changelog becomes necessary in this case.
-  - Naming scheme: 
+Discussion between Luca, Daniel, Ege:
+- Scripting API's type definition versioning is currently based on JSON Schema version. Current thinking is to use `type-definition-1.2.0+json-schema-td-2.0.0+td-2.0.0` where everything is added after the + sign as informative text.
+- There are cases like Scripting API HTML spec and the type definitions, TD Ontology in HTML and TTL. We need to decide if the versions of those are always the same. In the case of Scripting API, the spec can change but the type definitions don't (1) and vice versa (2).
+  1. Informative text, explanation on the usage of a function in the TD spec (like not having `queryaction` in the spec but having it in the TD and JSON schema since 4 versions), WebIDL changes.
+  2. Automatically, the type definition gets updated but the spec hasn't caught up.
+
 
 #### Synchronisation of Changes
 
@@ -125,6 +147,7 @@ Luca: It is also a tooling problem. The tooling can replace a version tag. A war
 Luca: Artifacts from a release having different versions will confuse the users. Until a stable release, there is no meaning provided in semver anyways, you have to check the changes manually.
 Ege: after the talk, I tend to agree that we should sync all resources all the time (pre-release and release)
 ScAPI: Which Scripting API version uses which TD version and which version of Scripting API implementations (e.g. node-wot) use which version of Scripting API and TD. So this kind of (external) synchronization is also relevant.
+
 
 ### Tooling
 
@@ -171,7 +194,7 @@ Luca:
 - @relu91 : commit messages to drive the changelog. There are tools for that but may not work for "documents". We need to define guidelines as well, e.g. using "chore" when doing a small fix.
 - @mjkoster : docstrings in commit messages can be used to automate changelog
 
-### Metadata
+#### Metadata
 
 Different resources need different types of metadata within them.
 
