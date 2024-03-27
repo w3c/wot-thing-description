@@ -1,6 +1,20 @@
 # W3C Web of Things Specification Generation Process
 
-The W3C WoT specification generation process toolchain is depicted as a Business Process Modeling Notation diagram. There are 4 actors involved:
+## High-level Approach
+
+Looking at a higher level, the specification generation process is about changing a small number of files and generating different resources such as the specification text, vocabularies, and schemas as detailed in our requirements document's [output resources section](https://github.com/w3c/wot-thing-description/blob/main/toolchain/requirements.md#output-resources).
+
+The diagram below provides this high-level vision.
+
+![High-level Toolchain](./toolchain-highlevel.png)
+
+## Detailed Current Process
+
+The current W3C WoT specification generation process toolchain is depicted as a Business Process Modeling Notation (BPMN) diagram in the figure below. This is a result of years of work that have resulted in different tools that require high manual effort to keep everything synced. The future goal is to switch to an easier-to-maintain toolchain that is usable by people without a deep understanding of the technologies involved.
+
+![Toolchain BPMN](./wot-toolchain-bpmn.png)
+
+There are 4 actors involved:
 
 1. **_Semantic Web Expert_**
 2. **_WoT Toolchain_**
