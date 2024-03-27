@@ -6,9 +6,10 @@ Therefore, the aim is to identify a set of potential tools that can simplify the
 The table below provides a summary of the analyzed tools according to the defined requirements.
 
 
-| Tool                    | LinkML   | TreeLDR  | ESMF     | A.ML     | Schema Salad | SOML     | WIDOCO   |
+| Requirement  \| Tool    | LinkML   | TreeLDR  | ESMF     | A.ML     | Schema Salad | SOML     | WIDOCO   |
 |-------------------------|----------|----------|----------|----------|--------------|----------|----------|
 | Language                | Python   | Rust     | Java     | Scala    | Python       | NG       | Java     |
+| Object/Dict Support     | | |  |  |  |  |  |
 | Array Support           | &#x2611; | &#x2611; | &#x2611; | &#x2611; | &#x2611;     | &#x2611; | &#x2612; |
 | One of                  | &#x2611; | &#x2611; | &#x2612; | &#x2611; | &#x2611;     | &#x2612; | &#x2612; |
 | Type/Type[]             | &#x2612; | &#x2612; | &#x2612; | &#x2612; | &#x2612;     | &#x2612; | &#x2612; |
