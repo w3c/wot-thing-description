@@ -1,4 +1,4 @@
-# Versioning of TD Specification Resources
+# Versioning of Specification Resources
 
 In addition to the specifications, there are other resources that are managed in this repository.
 This file documents the discussion on how the versioning should be.
