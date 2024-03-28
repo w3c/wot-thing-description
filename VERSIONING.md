@@ -23,7 +23,7 @@ Once there is an agreement, the rules will be moved to [wot-resources](https://g
 - Prioritize stability for post REC users
 - Make sure that quick changes are well-communicated to early adopters in the form of a changelog or similar
 - Publicly serve all versions of all resources all the time
-- Ideally, each change to any resource should "bump" the version inside the resource as well as the way the resource is obtained (e.g. URL, package manager, etc.)
+- Any change to any resource should bump the version inside the resource as well as the way the resource is obtained (e.g. URL, package manager, etc.)
 
 ---
 
