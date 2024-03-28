@@ -30,7 +30,7 @@ Once there is an agreement, the rules will be moved to [wot-resources](https://g
 > [!WARNING]  
 > Parts below are still under discussion until further notice.
 
-### Decisions
+### Summary on Basic Policy
 
 - We assume that each resource belongs to a specification. If not, we can "invent" a virtual specification like wot that is hosting multiple resources and use that string to identify multiple resources.
 - Until AND after REC release:
