@@ -2,12 +2,12 @@
 
 In addition to the specifications, there are other resources that are managed in this repository.
 This file documents the discussion on how the versioning should be.
-Once there is an agreement, the rules will be moved to [wot-resources](https://github.com/w3c/wot-resources) repository with a corresponding policy.
+Once there is an agreement, the rules will be moved to a corresponding policy and linked to in [wot-resources](https://github.com/w3c/wot-resources) repository.
 
 ## Versioning for 1.0 and 1.1 Specifications
 
 - With each REC, we publish the following files:
-  - Ontology files in form of TTL and HTML. These are TD, Security, hypermedia controls, JSON Schema, and soon the TM
+  - Ontology files in the form of TTL and HTML. These are TD, Security, hypermedia controls, JSON Schema, and soon the TM
   - JSON-LD Context file
   - JSON Schemas for TD and TM
 - DECISION: We do not publish different versions of these files until we see the need (e.g. a bug that also has breaking changes to current implementations).
@@ -20,7 +20,7 @@ Once there is an agreement, the rules will be moved to [wot-resources](https://g
   1. Early adopters (implementers before REC publication), which include specification developers, editors, testers, other TFs etc.
   2. REC publication users. Naturally, all early adopters are in this category as well.
 - To both users, provide concrete guidelines and rules on how implementations should be made that take the versioning into account. The lack of this is the reason why we do not have versioned resources for 1.0 and 1.1 specifications.
-- Prioritize stability for post REC users
+- Prioritize stability for post-REC users
 - Make sure that quick changes are well-communicated to early adopters in the form of a changelog or similar
 - Publicly serve all versions of all resources all the time
 - Any change to any resource should bump the version inside the resource as well as the way the resource is obtained (e.g. URL, package manager, etc.)
@@ -30,31 +30,32 @@ Once there is an agreement, the rules will be moved to [wot-resources](https://g
 > [!WARNING]  
 > Parts below are still under discussion until further notice.
 
-### Summary on Basic Policy
+### Summary of Basic Policy
 
 - We assume that each resource belongs to a specification. If not, we can "invent" a virtual specification like wot that is hosting multiple resources and use that string to identify multiple resources.
-- Until AND after REC release:
+- Until AND after REC release (rules that are common to both phases):
   - Version is contained at all times inside the resource. E.g. JSON Schema version field reflects the version of the schema.
   - A changelog is created in each change. Until the REC release, it is the only source of information about the changes.
   - The part after the `+` sign is informative, called [build metadata](https://semver.org/#spec-item-10) in semver. [A real-life example for curl in crates.io](https://crates.io/crates/curl-sys/versions)
-- Until REC release:
+- Until REC release (rules that apply only until REC release):
   - We publish snapshots that have no guarantees on the meaning of changes. E.g. snapshot 2 is published after snapshot 1 and it can break all your tooling. A changelog becomes necessary in this case.
   - Naming scheme: (semver for resource)-pre(some unique number or string)+(spec version)-pre(some unique number or string)
   - Synchronization: All resources have the same version (before and after `+`)
   - `-` complies with [pre-release version notation](https://semver.org/#spec-item-9) in semver.
   - **Open Point 1:** Decide whether we want a simple integer or a date after the `pre`.
-    - McCool: date is better for being less error-prone. it is my preference. number is shorter. We should use day granularity. In cases like Testfest, we may want to do publish quick fixes.
-    - Luca: if we release whenever needed, the date makes more sense. If we do monthly, the number is like the date.
+    - McCool: date is better for being less error-prone. it is my preference. The number approach is shorter. We should use day granularity. In cases like Testfest, we may want to publish quick fixes.
+    - Luca: if we release whenever needed, the date makes more sense. If we do monthly, the number is like the date. We can add more granularity when needed or trim when not needed. This will depend on or influence tooling.
+    - Kaz: The possibility of doing multiple releases per day should be discussed later.
   - **Open Point 2:** Whenever needed or monthly.
-- After REC release:
+- After REC release  (rules that are common to both phases):
   - Each resource gets versioned separately based on the need of that resource respecting the semver rules of that resource.
   - Naming scheme: resourcename-(semver for resource)+(spec version)
   - Synchronization: Syncing the part after the `+` sign but part before is per resource. At the same time, each resource has its own versioning rules on what is a major, minor, patch (see the meaning of changes).
   - Meaning of changes: Each type of resource has its own versioning timeline and meaning of changes
     - JSON Schemas:
       - Patch: Language typos etc.
-      - Minor: Relaxing a constraint (longer strings, more oneof) so that more TDs can pass the schema. Adding new property keys
-      - Major: Adding or restricting constraints
+      - Minor: Relaxing a constraint (longer strings, more oneof) so that more TDs can pass the schema. Adding new optional property keys. These can still "surprise" a receiver. 
+      - Major: Adding or restricting constraints that will break or surprise the receiver.
       - Further reading: <https://github.com/json-schema-org/website/issues/197#issuecomment-1883270213> and <https://gitlab.openretailing.org/public-standards/api-design-guidelines/-/blob/main/Open%20Retailing%20API%20Design%20Rules%20for%20JSON.pdf>
     - JSON-LD Context: No input yet.
     - Ontology files: No input yet. Further reading: https://www.w3.org/TR/prov-primer/
@@ -78,6 +79,7 @@ Once there is an agreement, the rules will be moved to [wot-resources](https://g
   - 2.0.2+td-2.0.1 -> Published an errata in TD spec
   - 3.0.1+td-2.0.1 -> We decided to move to a different version of JSON Schema itself
   - 4.0.1+td-2.0.1 -> We restrict JSON Schema in one way (e.g. reducing the number of enums). This should ideally never happen since it means we did not review the schema enough before the REC publication.
+  - 5.0.0-pre1+td-3.0.0-pre1 -> We start a new TD REC version work
 
 ### Open Points
 
@@ -90,10 +92,10 @@ Problems to solve:
 
 - @ektrah has tooling for TTL files that leverages npm that we can use. https://github.com/ektrah/rdf-toolkit and its publication at https://github.com/ektrah/rdf-library
   - In general, we should be able to package all types of resources in an npm release which solves the distribution problem. npm packages can contain anything (e.g. dotnet requires dotnet files)
-  - The URI of the unstable packages need to be resolved. We can say something like "unstable package can be obtained from npm with the usual npm mechanism". This doesn't imply node.js knowledge, just npm usage. We can test using github.io links with file ending which avoids the content negotiation problem.
-  - The tooling doesn't address JSON Schemas and JSON-LD context files (current tooling can be maybe used, to test) (and examples files in the future) but they can be still just packaged together. For JSON Schema, there can be tools from JSON Schema community that we can leverage for fetching correct versions of our dependencies (we don't have that atm).
+  - The URI of the unstable packages needs to be resolved. We can say something like "unstable package can be obtained from npm with the usual npm mechanism". This doesn't imply node.js knowledge, just npm usage. We can test using github.io links with file ending which avoids the content negotiation problem.
+  - The tooling doesn't address JSON Schemas and JSON-LD context files (current tooling can be maybe used, to test) (and examples files in the future) but they can be still just packaged together. For JSON Schema, there can be tools from the JSON Schema community that we can leverage for fetching correct versions of our dependencies (we don't have that atm).
   - `files` attribute in package.json can allow us to filter which files should be considered for the npm package.
-  - We should involve more people into this (Ege to contact Pierre Antoine for pointers to people)
+  - We should involve more people in this (Ege to contact Pierre Antoine for pointers to people)
   - GitHub also supports npm packages so no need to publish on npmjs.org
 - npmjs.org has different people trying to publish ontologies as packages (search for ontologies).
 - Protege has an XML file that can do local redirection. Similar to npm linking in local environment but it does for URLs. See example at https://github.com/geneontology/protege-tutorial/blob/master/advanced-metabolism/catalog-v001.xml
