@@ -32,7 +32,7 @@ Once there is an agreement, the rules will be moved to [wot-resources](https://g
 
 ### Decisions
 
-- We assume that each resource belongs to a specification. If not, we can "invent" a spec like wot that is hosting multiple specs.
+- We assume that each resource belongs to a specification. If not, we can "invent" a virtual specification like wot that is hosting multiple resources and use that string to identify multiple resources.
 - Until AND after REC release:
   - Version is contained at all times inside the resource. E.g. JSON Schema version field reflects the version of the schema.
   - A changelog is created in each change. Until the REC release, it is the only source of information about the changes.
