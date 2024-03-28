@@ -32,6 +32,7 @@ Once there is an agreement, the rules will be moved to [wot-resources](https://g
 
 ### Decisions
 
+- We assume that each resource belongs to a specification. If not, we can "invent" a spec like wot that is hosting multiple specs.
 - Until AND after REC release:
   - Version is contained at all times inside the resource. E.g. JSON Schema version field reflects the version of the schema.
   - A changelog is created in each change. Until the REC release, it is the only source of information about the changes.
@@ -41,7 +42,10 @@ Once there is an agreement, the rules will be moved to [wot-resources](https://g
   - Naming scheme: (semver for resource)-pre(some unique number or string)+(spec version)-pre(some unique number or string)
   - Synchronization: All resources have the same version (before and after `+`)
   - `-` complies with [pre-release version notation](https://semver.org/#spec-item-9) in semver.
-  - **Small Open Point:** Decide whether we want a simple integer or a date after the `pre`.
+  - **Open Point 1:** Decide whether we want a simple integer or a date after the `pre`.
+    - McCool: date is better for being less error-prone. it is my preference. number is shorter. We should use day granularity. In cases like Testfest, we may want to do publish quick fixes.
+    - Luca: if we release whenever needed, the date makes more sense. If we do monthly, the number is like the date.
+  - **Open Point 2:** Whenever needed or monthly.
 - After REC release:
   - Each resource gets versioned separately based on the need of that resource respecting the semver rules of that resource.
   - Naming scheme: resourcename-(semver for resource)+(spec version)
