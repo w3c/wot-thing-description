@@ -30,9 +30,9 @@ This repository covers the W3C Web of Things Thing Description family of specifi
 
 ### Thing Description 1.1 (Maintenance)
 
-- [Editor's Draft](http://w3c.github.io/wot-thing-description/) - Latest editor's draft of the Thing Description Maintenance version
-- [Working Draft](https://www.w3.org/TR/wot-thing-description11/) - Latest working draft of the Thing Description Maintenance version
+- [REC](https://www.w3.org/TR/wot-thing-description11/) - Official recommendation version of the Thing Description 1.1
 - [branch](https://github.com/w3c/wot-thing-description/tree/main) - Points to the main branch of this repository
+- [errata](https://w3c.github.io/wot-thing-description/errata11.html) - Errata for version 1.1 (empty at the moment)
 
 ### Thing Description 1.0
 
@@ -66,6 +66,10 @@ For Windows users, the script should be run in a [Cygwin shell](http://cygwin.co
 
 The repository is equipped with git hooks that automate the rendering process. To enable them, run `npm install` in the root folder. The hooks will render the documents automatically at every commit.
 If you run the rending process manually or you do not want to execute the automatic process add the `--no-verify` option to your commit command.
+
+### Formatting
+
+We use Prettier for automatically formatting the files such that we have small git diffs in Pull Requests. Make sure to run `npm run format` before committing your files. If not, a GitHub action will format them by overwriting your last commit.
 
 ## Implementation Report
 
