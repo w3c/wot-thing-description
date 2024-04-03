@@ -31,7 +31,7 @@ This repository covers the W3C Web of Things Thing Description family of specifi
 ### Thing Description 1.1 (Maintenance)
 
 - [REC](https://www.w3.org/TR/wot-thing-description11/) - Official recommendation version of the Thing Description 1.1
-- [branch](https://github.com/w3c/wot-thing-description/tree/main) - Points to the main branch of this repository
+- [branch](https://github.com/w3c/wot-thing-description/tree/REC1.1) - Points to the 1.1 REC tagged branch of this repository
 - [errata](https://w3c.github.io/wot-thing-description/errata11.html) - Errata for version 1.1 (empty at the moment)
 
 ### Thing Description 1.0
