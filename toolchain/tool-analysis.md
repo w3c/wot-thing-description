@@ -1,6 +1,6 @@
 # W3C WoT Toolchain Analysis
 
-The current W3C WoT specification generation tool relies on various artifacts such as a JSON Schema, ontologies, SHACL shapes, which can be produced by separately. However, when there is an extension to the Thing Description information model, these artifacts must also be updated according to their respective schemas. This process often requires significant manual effort and can result in inconsistencies between the different artifacts. 
+The current W3C WoT specification generation tool relies on various artifacts such as a JSON Schema, ontologies, and SHACL shapes, which can be produced separately. However, when there is an extension to the Thing Description information model, these artifacts must also be updated according to their respective schemas. This process often requires significant manual effort and can result in inconsistencies between the different artifacts. 
 
 Therefore, the aim is to identify a set of potential tools that can simplify the generation of the WoT artifacts. An analysis of existing tools has been conducted based on different requirements, which are determined by the modeling features crucial for the TD information model.
 The table below provides a summary of the analyzed tools according to the defined requirements.
@@ -13,7 +13,7 @@ The table below provides a summary of the analyzed tools according to the define
 | Condition Check         | | |  |  |  |  |  |
 | Array Support           | O | O | O | O | O | O | X |
 | One of                  | O | O | X | O | O | X | X |
-| Type/Type[]             | O | X | X | X | X | X | X |
+| Type/Type[]             | X | X | X | X | X | X | X |
 | Inheritance             | O | O | O | O | O | O | X |
 | Unknown object keys     | O | X | X | O | X | X | X |
 | Pattern Matching        | O | O | O | O | X | O | X |
@@ -21,14 +21,22 @@ The table below provides a summary of the analyzed tools according to the define
 | SHACL Shapes Generation | O | X | X | X | X | X | X |
 | Term Documentation      | O | X | X | X | O | X | O |
 | Diagram Generation      | O | X | O | X | O | X | O |
+| Prog. Lang. Gen.        | | |  |  |  |  |  |
+| Extensibility           | | |  |  |  |  |  |
 
 Explanations:
 
-- Object/Dict Support: Modelling a JSON Object structure. E.g. TD having properties, actions, events keys or a single form element
-- Relationship Check: Asserting conditions on values based on other values. E.g. security values should be in securityDefinitions first, titles and descriptions having same language
+- Object/Dict Support: Modelling a JSON Object structure. E.g. TD having properties, actions, events keys, or a single form element
+- Condition Check: Asserting conditions on values based on other values. E.g. security values should be in securityDefinitions first, titles and descriptions having the same language
 - Array Support: Modelling a JSON Array structure. E.g. links and forms array
 - One of: Enum and similar structs where values are restricted. E.g. security schemes, op values
-- Type/Type[]: A value which can be a type or a type of that array. E.g. `@type`, security, op
+- Type/Type[]: A value that can be a type or a type of that array. E.g. `@type`, security, op. This should be possible via `One of` modeling and we should check.
 - Inheritance: A class inheriting another one and thus copying all its properties. E.g. property affordance inheriting data schema
 - Unknown object keys: An object whose property keys are not defined by the model. E.g. all affordance names, securityDefinition keys.
 - Pattern Matching: A string value with a regex pattern. E.g. `tm:optional` being restricted to affordance names only.
+- JSON Schema Generation:
+- SHACL Shapes Generation:
+- Term Documentation:
+- Diagram Generation:
+- Prog. Lang. Gen.:
+- Extensibility:
