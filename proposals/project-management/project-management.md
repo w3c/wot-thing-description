@@ -32,7 +32,7 @@ The lifecycle is also reflected in two tables. Steps 0 to 7 are contained in the
 ![kanbanidea](./kanbanidea.drawio.png)
 
 - Here we see that no issue that is not categorized is in the assignment table, i.e. issues 1, 2 and 3.
-- We see that a person can get assigned to issue since they are the best fit (more expertise, more motivation etc.) but is not necessarily doing it right now. Since Person2 has less availability, they are working only on Issue 10 while  Issue 7 and 9 is on hold.
+- We see that a person can get assigned to issue since they are the best fit (more expertise, more motivation etc.) but is not necessarily doing it right now. Since Person2 has less availability, they are working only on Issue 10 while Issue 7 and 9 is on hold.
 - Person1 has more time and is working Issue 5 and 6, while having assigned Issue 4 as well.
 - Issues 13 and 14 are done and are visible in both tables.
 
