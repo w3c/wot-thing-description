@@ -39,16 +39,10 @@ Once there is an agreement, the rules will be moved to a corresponding policy an
   - The part after the `+` sign is informative, called [build metadata](https://semver.org/#spec-item-10) in semver. [A real-life example for curl in crates.io](https://crates.io/crates/curl-sys/versions)
 - Until REC release (rules that apply only until REC release):
   - We publish snapshots that have no guarantees on the meaning of changes. E.g. snapshot 2 is published after snapshot 1 and it can break all your tooling. A changelog becomes necessary in this case.
-  - Naming scheme: (semver for resource)-pre(some unique number or string)+(spec version)-pre(some unique number or string)
+  - Naming scheme: (semver for resource)-pre(date with day).(sequence number)+(spec version)-pre(date with day).(sequence number)
   - Synchronization: All resources have the same version (before and after `+`)
   - `-` complies with [pre-release version notation](https://semver.org/#spec-item-9) in semver.
-  - **Open Point 1:** Decide whether we want a simple integer or a date after the `pre`.
-    - McCool: date is better for being less error-prone. it is my preference. The number approach is shorter. We should use day granularity. In cases like Testfest, we may want to publish quick fixes.
-    - Luca: if we release whenever needed, the date makes more sense. If we do monthly, the number is like the date. We can add more granularity when needed or trim when not needed. This will depend on or influence tooling.
-    - Kaz: The possibility of doing multiple releases per day should be discussed later.
-    - Ege: I prefer the simple number to be flexible. If not, we will really need adjustable granularity in the date format which can confuse users but not a deal breaker. It is also easier to communicate in human language, e.g. "I have used pre23 in this implementation" "ah but you should have tried with pre22 since broke something in pre23"
-  - **Open Point 2:** Whenever needed or monthly.
-    - Ege: I propose to do monthly as a basis and then as needed, e.g. every PR during testfest.
+  - Frequency: We should consider a release after a resource-targeting PR but we can skip some if we see the need.
 - After REC release  (rules that apply only after REC release):
   - Each resource gets versioned separately based on the need of that resource respecting the semver rules of that resource.
   - Naming scheme: resourcename-(semver for resource)+(spec version)
@@ -108,12 +102,19 @@ Problems to solve:
 #### Changelog
 
 - McCool : Discovery TF did a changelog "test". We should let git/GitHub do the work for us, if possible. Tagging etc.
-- Cris : commit messages to drive the changelog. There are tools for that but may not work for "documents". We need to define guidelines as well, e.g. using "chore" when doing a small fix.
+- Cris : commit messages to drive the changelog. There are tools for that but may not work for "documents". We need to define guidelines as well, e.g. using "chore" when doing a small fix. It is not easy to define what is a "fix" for the resources we are dealing with, thus we need guidelines.
 - Koster : docstrings in commit messages can be used to automate changelog
 - Ege:
     - The changelog should reside outside of the resource itself. An exception can be made for HTML resources like the HTML of the ontology. I think that we can use a template md file with a section per resource that is in the root of the folder of the release bundle. If we use automatic tooling via commits, I am not sure if it can be separated based on section/resource.
-    - Should the changelog be a relative difference, i.e. diff to previous release? I think so but at least we should link back to the previous changelog so that someone who missed two releases can follow back. This would be very relevant in the pre REC phase.
-    - Changelog should be ideally driven by commits but I am not sure if we can be that well-organized but I am willing to give it a try. 
+        - Cris: the commit scope would fix this if you write the resources you are changing
+    - Should the changelog be a relative difference, i.e. diff to previous release? I think so but at least we should link back to the previous changelog so that someone who missed two releases can follow back. This would be very relevant in the pre-REC phase.
+    - Changelog should be ideally driven by commits but I am not sure if we can be that well-organized but I am willing to give it a try.
+ 
+Open points:
+
+3. Guideline for commit messages
+4. Should there be one changelog file or per resource?
+5. Clarify the goal of the changelog. For now, it is 
 
 #### Version Information within Resources
 
@@ -121,6 +122,27 @@ Problems to solve:
   - There is also a proposed standard, [MOD2.0](https://github.com/FAIR-IMPACT/MOD) specification for describing ontology metada and semantic artifacts. It has some metadata we could reuse for our versioned ontologies. 
 
 ## Archive
+
+This section contains discussions during the TD calls and will be removed in the final version of this document.
+
+### Version String
+
+- Decide whether we want a simple integer or a date after the `pre`.
+    - McCool: date is better for being less error-prone. it is my preference. The number approach is shorter. We should use day granularity. In cases like Testfest, we may want to publish quick fixes.
+      - We can also do both: date,`.`,number, i.e. `2.0.0-pre20240301.1+td-2.0.0-pre20240301.1`
+    - Luca: if we release whenever needed, the date makes more sense. If we do monthly, the number is like the date. We can add more granularity when needed or trim when not needed. This will depend on or influence tooling.
+    - Kaz: The possibility of doing multiple releases per day should be discussed later.
+    - Ege: I prefer the simple number to be flexible. If not, we will really need adjustable granularity in the date format which can confuse users but not a deal breaker. It is also easier to communicate in human language, e.g. "I have used pre23 in this implementation" "ah but you should have tried with pre22 since broke something in pre23"
+    - Cris: Prefering the date.
+    - Daniel: Not changing granularity would make it easier
+ 
+### Release Frequency
+
+- Whenever needed or monthly.
+    - Ege: I propose to do monthly as a basis and then as needed, e.g. every PR during testfest.
+    - McCool: Whenever needed. There could be micro PRs and micro commits. We should consider a release after a resource-targeting PR but we can skip some if we see the need. +1 from Ege and Daniel.
+    - Luca: Doesn't matter if we automate and run it whenever we want.
+    - Kaz: all changes should be recorded, i.e. via commit/branch names/number
 
 ### Big Picture Versioning Timeline
 
