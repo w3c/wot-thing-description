@@ -46,8 +46,10 @@ Once there is an agreement, the rules will be moved to a corresponding policy an
     - McCool: date is better for being less error-prone. it is my preference. The number approach is shorter. We should use day granularity. In cases like Testfest, we may want to publish quick fixes.
     - Luca: if we release whenever needed, the date makes more sense. If we do monthly, the number is like the date. We can add more granularity when needed or trim when not needed. This will depend on or influence tooling.
     - Kaz: The possibility of doing multiple releases per day should be discussed later.
+    - Ege: I prefer the simple number to be flexible. If not, we will really need adjustable granularity in the date format which can confuse users but not a deal breaker. It is also easier to communicate in human language, e.g. "I have used pre23 in this implementation" "ah but you should have tried with pre22 since broke something in pre23"
   - **Open Point 2:** Whenever needed or monthly.
-- After REC release  (rules that are common to both phases):
+    - Ege: I propose to do monthly as a basis and then as needed, e.g. every PR during testfest.
+- After REC release  (rules that apply only after REC release):
   - Each resource gets versioned separately based on the need of that resource respecting the semver rules of that resource.
   - Naming scheme: resourcename-(semver for resource)+(spec version)
   - Synchronization: Syncing the part after the `+` sign but part before is per resource. At the same time, each resource has its own versioning rules on what is a major, minor, patch (see the meaning of changes).
@@ -105,9 +107,13 @@ Problems to solve:
 
 #### Changelog
 
-- @mmccool : Discovery TF did a changelog "test". We should let git/GitHub do the work for us, if possible. Tagging etc.
-- @relu91 : commit messages to drive the changelog. There are tools for that but may not work for "documents". We need to define guidelines as well, e.g. using "chore" when doing a small fix.
-- @mjkoster : docstrings in commit messages can be used to automate changelog
+- McCool : Discovery TF did a changelog "test". We should let git/GitHub do the work for us, if possible. Tagging etc.
+- Cris : commit messages to drive the changelog. There are tools for that but may not work for "documents". We need to define guidelines as well, e.g. using "chore" when doing a small fix.
+- Koster : docstrings in commit messages can be used to automate changelog
+- Ege:
+    - The changelog should reside outside of the resource itself. An exception can be made for HTML resources like the HTML of the ontology. I think that we can use a template md file with a section per resource that is in the root of the folder of the release bundle. If we use automatic tooling via commits, I am not sure if it can be separated based on section/resource.
+    - Should the changelog be a relative difference, i.e. diff to previous release? I think so but at least we should link back to the previous changelog so that someone who missed two releases can follow back. This would be very relevant in the pre REC phase.
+    - Changelog should be ideally driven by commits but I am not sure if we can be that well-organized but I am willing to give it a try. 
 
 #### Version Information within Resources
 
