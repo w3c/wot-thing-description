@@ -5,11 +5,10 @@ We want to have one place to look for the list of "work" to do in a short period
 To do that, a prioritization should happen and should be aligned with use cases and requirements.
 This allows us to limit the load of a person per 1-2 week time frame and thus prioritize certain issues/topics.
 
-## Proposal from Ege Korkan
+## Current Process
 
-- We have two tables in a GitHub project managed by the TD TF: Sorting and Assigning
-  - Note: There can be other tables in other TFs, such as the UC TF.
-- Once the TF is comfortable with the approach, no other information is needed. Until then, a lifecycle diagram represents how the work goes through over time.
+- We have a table in a GitHub project managed by the TD TF
+- Once the TF is comfortable with the approach, no other information is needed. Until then, the lifecycle diagram below represents how the work goes through over time.
 
 ![lifecycle](./lifecycle.drawio.png)
 
