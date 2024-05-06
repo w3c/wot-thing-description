@@ -63,16 +63,12 @@
         ],
         xref: ["i18n-glossary"],
         localBiblio: {
-          "LINKSET-MEDIA-TYPES": {
-            title: "Linkset: Media Types and a Link Relation Type for Link Sets",
-            href: "https://datatracker.ietf.org/doc/draft-ietf-httpapi-linkset/",
-            publisher: "IETF",
-            authors: ["Erik Wilde", "Herbert Van de Sompel"]
-          },
-          "OWASP-Top-10": {
-            title: "OWASP Top Ten",
-            href: "https://owasp.org/www-project-top-ten/",
-            publisher: "OWASP"
+          "iana-web-socket-registry": {
+            href: "https://www.iana.org/assignments/websocket/websocket.xml#subprotocol-name",
+            title: "IANA Registry for Websocket Subprotocols",
+            status: "",
+            publisher: "IANA",
+            date: "24 May 2019"
           },
           "JSON-SCHEMA": {
             title: "JSON Schema Validation: A Vocabulary for Structural Validation of JSON",
@@ -81,6 +77,24 @@
             status: "Internet-Draft",
             date: "19 March 2018",
             publisher: "IETF"
+          },
+          "LINKSET-MEDIA-TYPES": {
+            title: "Linkset: Media Types and a Link Relation Type for Link Sets",
+            href: "https://datatracker.ietf.org/doc/draft-ietf-httpapi-linkset/",
+            publisher: "IETF",
+            authors: ["Erik Wilde", "Herbert Van de Sompel"]
+          },
+          "LWM2M": {
+            href: "https://www.omaspecworks.org/what-is-oma-specworks/iot/lightweight-m2m-lwm2m/",
+            title: "Lightweight M2M",
+            status: "",
+            publisher: "Open Mobility Alliance"
+          },
+          "OCF": {
+            href: "https://openconnectivity.org/developer/specifications/",
+            title: "OCF Specification",
+            publisher: "Open Connectivity Foundation",
+            date: "Last accessed: February 2020"
           },
           "OPENAPI": {
             title: "OpenAPI Specification: Version 3.0.1",
@@ -95,6 +109,11 @@
             ],
             publisher: "OpenAPI Initiative, Linux Foundation",
             date: "6 December 2017"
+          },
+          "OWASP-Top-10": {
+            title: "OWASP Top Ten",
+            href: "https://owasp.org/www-project-top-ten/",
+            publisher: "OWASP"
           },
           "SEMVER": {
             title: "Semantic Versioning 2.0.0",
@@ -762,14 +781,7 @@
         <dd>
           A binding template document that is published separately from this document that specifies a binding template
           for a protocol, payload format or platform. All binding template subspecifications respect the rules set in
-          the <a>Binding Templates</a> section.
-        </dd>
-        <dt>
-          <dfn id="dfn-corespecification">Binding Template Core Specification</dfn>, <dfn>Core Specification</dfn>
-        </dt>
-        <dd>
-          This document's section <a>Binding Templates</a>. All binding template subspecifications respect the rules set
-          in the Core Specification.
+          the <a href="binding-templates">Binding Templates</a> section.
         </dd>
       </dl>
 
@@ -5331,7 +5343,7 @@
         </p>
       </section>
       <section id="binding-introduction">
-        <h4>Introduction to Binding Template</h4>
+        <h4>Introduction to Binding Templates</h4>
         <p>
           IoT addresses multiple use cases from different application domains, while requiring different deployment
           patterns for devices. This results in different protocols and media types, creating the central challenge for
@@ -5425,9 +5437,7 @@
 
         <p>
           Each <a>Binding Template Subspecification</a> is an independent document that has a separate list of authors
-          and publication date. This document, called the <a>Binding Template Core Specification</a>, explains the
-          binding mechanism by giving requirements per respective binding category and links to the respective
-          subspecification. These can be found in sections [[[#protocol-bindings]]], [[[#payload-bindings]]] and
+          and publication date. This section explains the binding mechanism by giving requirements per respective binding category and links to the respective subspecification. These can be found in sections [[[#protocol-bindings]]], [[[#payload-bindings]]] and
           [[[#platform-bindings]]].
         </p>
 
@@ -9583,6 +9593,248 @@
         <code>Accept: text/turtle</code> in their request.
       </p>
     </section>
+
+    <section id="sec-payload-examples" class="appendix informative">
+    <h2>Examples of Payloads and Data Schemas from IoT Platforms and Standards</h2>
+
+    <p>
+        As an extension of [[[#payload-bindings-dataschema]]], this section collects examples of different payloads
+        and their corresponding <code>DataSchema</code>.
+        These are from well-known IoT Platforms and Standards and aim to illustrate the various ways a payload can
+        look like and how one can describe it with a Data Schema.
+    </p>
+
+    <p>
+        SenML [[RFC8428]] might use the following construct:
+    </p>
+
+    <table>
+        <tbody>
+            <tr>
+                <td style="vertical-align: top; width: 50%">
+                    <pre class="example" title="SenML Payload Example">
+                    [
+                        {
+                            "bn": "/example/light/"
+                        },
+                        {
+                            "n": "level",
+                            "v": 50
+                        },
+                        {
+                            "n": "time",
+                            "v": 10
+                        }
+                    ]
+                    </pre>
+                </td>
+                <td style="vertical-align: top; width: 50%">
+                    <pre class="example" title="Data Schema for SenML Payload Example">
+                    {
+                        "type": "array",
+                        "items": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "bn": {
+                                    "type": "string",
+                                    "const": "example/light"
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "n": {
+                                    "type": "string",
+                                    "const": "level"
+                                },
+                                "v": {
+                                    "@type": ["iot:LevelData"],
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 255
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "n": {
+                                    "type": "string",
+                                    "const": "time"
+                                },
+                                "v": {
+                                    "@type": ["iot:TransitionTimeData"],
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 65535
+                                }
+                            }
+                        }
+                        ]
+                    }
+                    </pre>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        A Batch Collection according to OCF[[OCF]] may be structured like this:
+    </p>
+
+    <table>
+        <tbody>
+            <tr>
+                <td style="vertical-align: top; width: 50%">
+                    <pre class="example" title="OCF Batch Example">
+                    [
+                    {
+                        "href": "/example/light/level",
+                        "rep": {
+                        "dimmingSetting": 50
+                        }
+                    },
+                    {
+                        "href": "/example/light/time",
+                        "rep": {
+                        "rampTime": 10
+                        }
+                    }
+                    ]
+                    </pre>
+                </td>
+                <td style="vertical-align: top; width: 50%">
+                    <pre class="example" title="Data Schema for OCF Batch Payload Example">
+                    {
+                    "type": "array",
+                    "items": [
+                        {
+                        "type": "object",
+                        "properties": {
+                            "href": {
+                            "type": "string",
+                            "const": "/example/light/level"
+                            },
+                            "rep": {
+                            "type": "object",
+                            "properties": {
+                                "dimmingSetting": {
+                                "@type": ["iot:LevelData"],
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 255
+                                }
+                            }
+                            }
+                        }
+                        },
+                        {
+                        "type": "object",
+                        "properties": {
+                            "href": {
+                            "type": "string",
+                            "const": "/example/light/time"
+                            },
+                            "rep": {
+                            "type": "object",
+                            "properties": {
+                                "rampTime": {
+                                "@type": ["iot:TransitionTimeData"],
+                                "type":"integer",
+                                "minimum": 0,
+                                "maximum": 65535
+                                }
+                            }
+                            }
+                        }
+                        }
+                    ]
+                    }
+                    </pre>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        And an IPSO Smart Object on LWM2M [[LWM2M]] might look like the following:
+    </p>
+
+    <table>
+        <tbody>
+            <tr>
+                <td style="vertical-align: top; width: 50%">
+                    <pre class="example" title="IPSO/LWM2M Payload Example">
+                    {
+                    "bn": "/3001/0/",
+                    "e": [
+                        {
+                        "n": "5044",
+                        "v": 0.5
+                        },
+                        {
+                        "n": "5002",
+                        "v": 10.0
+                        }
+                    ]
+                    }
+                    </pre>
+                </td>
+                <td style="vertical-align: top; width: 50%">
+                    <pre class="example" title="Data Schema for IPSO/LWM2M Payload Example">
+                    {
+                    "type": "object",
+                    "properties": {
+                        "bn": {
+                        "type": "string",
+                        "const": "/3001/0/"
+                        },
+                        "e": {
+                        "type": "array",
+                        "items": [
+                            {
+                            "type": "object",
+                            "properties": {
+                                "n": {
+                                "type": "string",
+                                "const": "5044"
+                                },
+                                "v": {
+                                "@type": ["iot:LevelData"],
+                                "type": "number",
+                                "minimum": 0.0,
+                                "maximum": 1.0
+                                }
+                            }
+                            },
+                            {
+                            "type": "object",
+                            "Properties": {
+                                "n": {
+                                "type": "string",
+                                "const": "5002"
+                                },
+                                "v": {
+                                "@type": ["iot:TransitionTimeData"],
+                                "type": "number",
+                                "minimum": 0.0,
+                                "maximum": 6553.5
+                                }
+                            }
+                            }
+                        ]
+                        }
+                    }
+                    }
+                    </pre>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</section>
 
     <section id="changes" class="appendix">
       <h1>Recent Specification Changes</h1>
