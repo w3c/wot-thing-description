@@ -1,17 +1,108 @@
+<p align="center">
+  <a href="https://w3.org/wot">
+    <img alt="Web of Things Homepage" src="https://www.w3.org/WoT/IG/wiki/images/8/8f/WOT-hz.svg" width="300" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://w3c.social/@wot">
+    <img alt="Follow on Mastodon" src="https://img.shields.io/mastodon/follow/111609289932468076?domain=https%3A%2F%2Fw3c.social"></a>
+  <a href="https://twitter.com/W3C_WoT">
+    <img alt="X (formerly Twitter) Follow" src="https://img.shields.io/twitter/follow/W3C_WoT"></a>
+  <a href="https://stackoverflow.com/questions/tagged/web-of-things">
+    <img alt="Stack Exchange questions" src="https://img.shields.io/stackexchange/stackoverflow/t/web-of-things?style=plastic"></a>
+</p>
+
+<p align="center">
+  <a href="https://www.w3.org/TR/2023/REC-wot-thing-description11-20231205/">
+    <img alt="Latest REC" src="https://img.shields.io/badge/W3C_REC-Latest-005a9c"></a>
+  <a href="https://w3c.github.io/wot-thing-description">
+    <img alt="Latest Editor's Draft" src="https://img.shields.io/badge/Editor's_Draft-Latest-fe914a"></a>
+</p>
+
 # Web of Things (WoT) Thing Description
 
-[![Follow on Mastodon](https://img.shields.io/mastodon/follow/111609289932468076?domain=https%3A%2F%2Fw3c.social)](https://w3c.social/@wot)
-[![Follow on Twitter](https://img.shields.io/twitter/follow/W3C_WoT.svg?label=follow+W3C_WoT)](https://twitter.com/W3C_WoT)
-[![Stack Exchange questions](https://img.shields.io/stackexchange/stackoverflow/t/web-of-things?style=plastic)](https://stackoverflow.com/questions/tagged/web-of-things)
-
-General information about the Web of Things can be found on https://www.w3.org/WoT/.
+General information about the Web of Things can be found at https://www.w3.org/WoT/.
 
 ---
 
+A Thing Description describes the metadata and interfaces of Things, where a Thing is an abstraction of a physical or virtual entity that provides interactions to and participates in the Web of Things. 
+Thing Descriptions provide a set of interactions based on a small vocabulary that makes it possible both to integrate diverse devices and to allow diverse applications to interoperate. 
+Thing Descriptions, by default, are encoded in a JSON format that also allows JSON-LD processing.
+
+## Logistics
+
+- Call information: We use the W3C Calendar. You can find the next WoT TD/Binding Templates calls at https://www.w3.org/groups/wg/wot/calendar.
+- Wiki (contains agenda): <https://www.w3.org/WoT/IG/wiki/WG_WoT_Thing_Description_WebConf>
+- [Contribution rules](./CONTRIBUTING.md)
+
+## Publications
+
+- [Latest Editor's Draft](https://w3c.github.io/wot-thing-description) (syncs to this repository's main branch)
+<!-- - [Latest Working Draft](w3.org link goes here) (This is relevant for notes and REC-track until publication) -->
+- Recommendations:
+  - [Version 1.1](https://www.w3.org/TR/2023/REC-wot-thing-description11-20231205/) - [Repository Snapshot](https://github.com/w3c/wot-thing-description/tree/REC1.1)
+  - [Version 1.0](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/) - [Repository Snapshot](https://github.com/w3c/wot-thing-description/tree/REC1.0)
+- Other deliverables: 
+  - [Implementation Report Version 1.1](https://w3c.github.io/wot-thing-description/testing/report11.html)
+  - [Implementation Report Version 1.0](https://w3c.github.io/wot-thing-description/testing/report.html)
+  - [Resources such as JSON-LD Context, Ontologies, JSON Schemas for validation](https://github.com/w3c/wot-resources/tree/main/td). Also see [below](https://github.com/w3c/wot-thing-description/?tab=readme-ov-file#resources-used-together-with-the-td-specification).
+
+---
+
+## Instructions for Editors and Contributors
+
+If you have followed the [Contribution rules](./CONTRIBUTING.md) and want to contribute, please follow the instructions below.
+
+TBC
+
+### Formatting
+
+We use Prettier for automatically formatting the files such that we have small git diffs in Pull Requests. Make sure to run `npm run format` before committing your files. 
+If not, a GitHub action will format them by overwriting your last commit.
+
+## Known Implementations
+
+The W3C WoT collects known implementations at <https://www.w3.org/WoT/developers/>. Implementations of REPO NAME are found under categories X, Y and Z.
+
+## Labeling Conventions
+
+We use the following labels for the purpose written next to them:
+
+- Label A: Purpose TBD
+
+## Resources used together with the TD Specification
+
+In addition to the TD specification, the Working Group maintains additional resources that are relevant for implementers.
+These are categorized below and their use cases explained.
+
+### Vocabularies and Ontologies
+
+The present specification introduces the TD Information Model as a set of constraints over different vocabularies.
+The current list of vocabularies are found under [the namespaces section](https://w3c.github.io/wot-thing-description/#namespaces).
+
+By default, if a user agent does not perform any content negotiation, a human-readable HTML documentation is returned instead of the RDF document.
+To negotiate content, clients must include the HTTP header `Accept: text/turtle` in their request.
+
+The working documents are found under the [ontology](./ontology) folder.
+
+### Context files
+
+In order to have reference to the TD ontology within JSON-LD documents, including TDs, we provide a JSON-LD context file.
+The working document can be found at [context/td-context-1.1.jsonld](./context/td-context-1.1.jsonld) and the version-specific context file can be retrieved from the `@context` value of a TD 1.0 or TD 1.1 instance. **Note** that [context/td-context-1.1.jsonld](./context/td-context-1.1.jsonld) is the result of the rendering process and it should not be edited manually. In practice, the rendering process merges [context/td-context.jsonld](./context/td-context.jsonld), [context/json-schema-context.jsonld](./context/json-schema-context.jsonld), [context/wot-security-context.jsonld](./context/wot-security-context.jsonld), [context/hypermedia-context.jsonld](./context/hypermedia-context.jsonld).
+
+You can find more information on how to use the context at [the Appendix of the TD specification](https://w3c.github.io/wot-thing-description/#json-ld-ctx-usage).
+
+### JSON Schemas
+
+We provide JSON Schema for TD and TM instances.
+The working documents are found under the [validation](./validation/) folder and specific versions are linked from the Thing Description specification.
+These can be used for the purposes below among others:
+
+- TD and TM validation
+- Type generation for programming languages
+
 Each commit here will sync to the master, which will expose the content to http://w3c.github.io/wot-thing-description/.
-
-For the draft TD specification for TAG review, please access this [URL](https://cdn.staticaly.com/gh/w3c/wot-thing-description/TD-TAG-review/index.html?env=dev).
-
 To make contributions, please provide pull requests to the appropriate files,
 keeping in mind that some files, most notably `index.html` and `testing/report.html`,
 as well as most files under `visualization`, are
@@ -19,28 +110,6 @@ autogenerated and should not be modified directly.
 See GitHub[help](https://help.github.com/articles/using-pull-requests/) for
 information on how to create a pull request.
 
-**Note (July 2023):**
-
-**Please notice that Thing Description 1.1 is in the review phase for the Recommendation transition.
-In this phase, only editorial changes (e.g., adding examples and additional explanations) and bug fixes can be applied to the [editorial draft](http://w3c.github.io/wot-thing-description/) if the whole Working Group agrees on it. Editorial changes should be labeled with 'Editorial' in the issue and corresponding PRs. New feature requests can not be considered and will be postponed to the next version of the Thing Description.**
-
-## Thing Description Family
-
-This repository covers the W3C Web of Things Thing Description family of specifications.
-
-### Thing Description 1.1 (Maintenance)
-
-- [REC](https://www.w3.org/TR/wot-thing-description11/) - Official recommendation version of the Thing Description 1.1
-- [GitHub branch for the 1.1 REC](https://github.com/w3c/wot-thing-description/tree/REC1.1) - Points to the 1.1 REC tagged branch of this repository
-- [errata](https://w3c.github.io/wot-thing-description/errata11.html) - Errata for version 1.1 (empty at the moment)
-- [Implementation Report](https://w3c.github.io/wot-thing-description/testing/report11.html) - Implementation report of the TD 1.1 features
-
-### Thing Description 1.0
-
-- [REC](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/) - Official recommendation version of the Thing Description 1.0
-- [GitHub branch for the 1.0 REC](https://github.com/w3c/wot-thing-description/tree/wot-td-1.0) - Branch that corresponds to the Thing Description 1.0 files
-- [errata](https://w3c.github.io/wot-thing-description/errata.html) - Errata for version 1.0
-- [Implementation Report](https://w3c.github.io/wot-thing-description/testing/report.html) - Implementation report of the TD 1.0 features
 
 ## Specification Rendering
 
@@ -69,9 +138,7 @@ For Windows users, the script should be run in a [Cygwin shell](http://cygwin.co
 The repository is equipped with git hooks that automate the rendering process. To enable them, run `npm install` in the root folder. The hooks will render the documents automatically at every commit.
 If you run the rending process manually or you do not want to execute the automatic process add the `--no-verify` option to your commit command.
 
-### Formatting
 
-We use Prettier for automatically formatting the files such that we have small git diffs in Pull Requests. Make sure to run `npm run format` before committing your files. If not, a GitHub action will format them by overwriting your last commit.
 
 ## Implementation Report
 
@@ -142,36 +209,7 @@ items are listed in `testing/inputs/atrisk.csv`. If at-risk items are
 updated, to update the at-risk highlighting the implementation report
 needs to be generated first, and then the rendering.
 
-## Resources used together with the TD Specification
 
-In addition to the TD specification, the Working Group maintains additional resources that are relevant for implementers.
-These are categorized below and their use cases explained.
-
-### Vocabularies and Ontologies
-
-The present specification introduces the TD Information Model as a set of constraints over different vocabularies.
-The current list of vocabularies are found under [the namespaces section](https://w3c.github.io/wot-thing-description/#namespaces).
-
-By default, if a user agent does not perform any content negotiation, a human-readable HTML documentation is returned instead of the RDF document.
-To negotiate content, clients must include the HTTP header `Accept: text/turtle` in their request.
-
-The working documents are found under the [ontology](./ontology) folder.
-
-### Context files
-
-In order to have reference to the TD ontology within JSON-LD documents, including TDs, we provide a JSON-LD context file.
-The working document can be found at [context/td-context-1.1.jsonld](./context/td-context-1.1.jsonld) and the version-specific context file can be retrieved from the `@context` value of a TD 1.0 or TD 1.1 instance. **Note** that [context/td-context-1.1.jsonld](./context/td-context-1.1.jsonld) is the result of the rendering process and it should not be edited manually. In practice, the rendering process merges [context/td-context.jsonld](./context/td-context.jsonld), [context/json-schema-context.jsonld](./context/json-schema-context.jsonld), [context/wot-security-context.jsonld](./context/wot-security-context.jsonld), [context/hypermedia-context.jsonld](./context/hypermedia-context.jsonld).
-
-You can find more information on how to use the context at [the Appendix of the TD specification](https://w3c.github.io/wot-thing-description/#json-ld-ctx-usage).
-
-### JSON Schemas
-
-We provide JSON Schema for TD and TM instances.
-The working documents are found under the [validation](./validation/) folder and specific versions are linked from the Thing Description specification.
-These can be used for the purposes below among others:
-
-- TD and TM validation
-- Type generation for programming languages
 
 ## Obsolete Documents
 
