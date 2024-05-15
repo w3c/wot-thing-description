@@ -162,9 +162,7 @@ The W3C WoT collects known implementations at <https://www.w3.org/WoT/developers
 
 ## Labeling Conventions
 
-We use the following labels for the purpose written next to them:
-
-- Label A: Purpose TBD
+We use the GitHub labels found at <https://github.com/w3c/wot-thing-description/labels>. Please try to reuse the labels before creating new ones.
 
 ## Resources used together with the TD Specification
 
