@@ -158,7 +158,7 @@ needs to be generated first, and then the rendering.
 
 ## Known Implementations
 
-The W3C WoT collects known implementations at <https://www.w3.org/WoT/developers/>. Implementations of REPO NAME are found under categories X, Y and Z.
+The W3C WoT collects known implementations at <https://www.w3.org/WoT/developers/>. Implementations of the Thing Description are found under all categories
 
 ## Labeling Conventions
 
