@@ -21,23 +21,25 @@ This allows us to limit the load of a person per 1-2 week time frame and thus pr
 - **Step 4:** The issue is assigned to one or more persons based on who is most suited, has more motivation etc. but not based on their availability.
 - **Step 5:** Based on people's availabilities and priorities set by the TF and WG as a whole, the issue is moved to "in progress". This indicates that this issue is being addressed by one or more persons and is part of the agenda until resolved.
   - Note: We need further discussion on how we prioritize items.
-- **Step 6:** The result of the work happens in a Pull Request to the Editor's Draft. It can be merged asynchronously based on the agreement in the [WG Policy](https://github.com/w3c/wot/blob/main/policies/async-decision.md). Once it is merged, it is part of the Editor's Draft.
+- **Step 6:** The result of the work happens in a Pull Request to the Editor's Draft. In that stage, the issue is moved to "In Review". The Pull Request can be merged asynchronously based on the agreement in the [WG Policy](https://github.com/w3c/wot/blob/main/policies/async-decision.md). Once it is merged, it is part of the Editor's Draft and the issue is closed and removed from the board.
 - **Step 7:** Based on the nature of the change , it can require implementations to demonstrate implementability.
   - **Step 8:** If the change is an RFC assertion, we need to show its implementability before it can be in the final REC.
   - **Step 9:** If not, it can be in the REC without any further effort. Note that in both cases the WG needs to reach consensus or in the case of REC-track documents, the entire W3C needs to support it as part of the deliverable.
 
-The lifecycle is also reflected in two tables. Steps 1 and 3 are contained in the sorting table whereas step 4 to 6 are contained in the assignment table. The example below can be considered a snapshot of the project management process.
+The lifecycle is also reflected in a table below. The example below can be considered a snapshot of the project management process.
 
 ![kanbanidea](./kanbanidea.drawio.png)
 
-- Here we see that no issue that is not categorized is in the assignment table, i.e. issues 1, 2 and 3.
-- We see that a person can get assigned to issue since they are the best fit (more expertise, more motivation etc.) but is not necessarily doing it right now. Since Person2 has less availability, they are working only on Issue 10 while Issue 7 and 9 is on hold.
-- Person1 has more time and is working Issue 5 and 6, while having assigned Issue 4 as well.
-- Issues 13 and 14 are done and are visible in both tables.
+- New issues come on the "Unsorted" column. Here we see Issue 21.
+- After categorization, an issue can get corresponding labels and placed in "Categorized - Not assigned" column. This means that someone from the TF had a look at the issue and put the corresponding labels.
+- We see that a person can get assigned to an issue since they are the best fit (more expertise, more motivation etc.) but is not necessarily doing it right now, shown in column "Assigned". Since Person2 has less availability, they are working only on Issue 10 while Issues 7 and 9 are on hold.
+- Person1 has more time and is working on Issues 5 and 6 as indicated in column "In Progress", while having assigned Issue 4 as well.
+- Issues 11 and 13 are currently under review and have an associated Pull Request.
+- Issue 1 is in the parking lot since it is not being actively discussed after some initial discussions.
+- Once an issue is closed, it is moved to "Done" column which is hidden from view.
 
 ## To Do
 
-- We should analyze https://github.com/w3c/strategy/projects/2 and https://github.com/orgs/w3c/projects/13
 - Create issue templates for necessary items
 
 ## Archive
