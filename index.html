@@ -5891,7 +5891,7 @@
             [[websub]]) or customer-oriented event mechanisms (e.g., Webhooks). For this reason,
             <code>subscription</code> and <code>cancellation</code> can be defined according to the desired mechanism.
             Please find further details in [[?WOT-BINDING-TEMPLATES]]. Example
-            <a href="#webhook-example-serialization"></a> illustrates how Events can use <code>subscription</code> and
+            <a href="#sensor-example-webhook"></a> illustrates how Events can use <code>subscription</code> and
             <code>cancellation</code> to describe Webhooks.
           </p>
         </section>
@@ -7973,267 +7973,6 @@
             </ul>
           </section>
         </section>
-      </section>
-
-      <section id="binding-examples" class="informative">
-        <h4>Examples of Thing Descriptions with Protocol Binding Templates</h4>
-
-        <p>
-          The following TD examples uses HTTP, CoAP and MQTT Protocol Binding Templates. These TDs have Context
-          Extensions which assume that there is a CoAP and MQTT in RDF vocabulary similar to [[?HTTP-in-RDF10]] that is
-          accessible via the namespaces <code>http://www.example.org/coap-binding#</code> and
-          <code>http://www.example.org/mqtt-binding#</code>, respectively. Please note that the TD context at
-          <code>"https://www.w3.org/2019/wot/td/v1"</code> already includes the [[?HTTP-in-RDF10]], so HTTP context
-          extensions can be directly used and make sure to look at the Binding Template <a>subspecifications</a> to find
-          the most up-to-date vocabulary terms and examples.
-        </p>
-        <p>The context extensions we see below have the following instructions to the TD Consumer:</p>
-        <ul>
-          <li>
-            <code>"htv:methodName"</code> member instructs the Consumer which HTTP method has to be applied (e.g.,
-            <code>"GET"</code> for retrieving a resource or <code>"POST"</code> for sending data to a resource).
-          </li>
-          <li>
-            <code>"cov:method"</code> member instructs the Consumer which CoAP method has to be applied (e.g.,
-            <code>"GET"</code> for the CoAP Method Code 0.01, <code>"POST"</code> for the CoAP Method Code 0.02, or
-            <code>iPATCH</code> for CoAP Method Code 0.07).
-          </li>
-          <li>
-            <code>"mqv:controlPacket"</code> member instructs the Consumer which MQTT command has to be applied (e.g.,
-            <code>"subscribe"</code> for the subscribing to a topic and <code>"unsubscribe"</code> for unsubscribing).
-          </li>
-        </ul>
-
-        <p>
-          First, a TD with multiple protocols is introduced where each interaction affordance has one form with one
-          protocol.
-        </p>
-
-        <pre class="example" title="TD with one protocol per form">
-              {
-                  "@context": [
-                      "https://www.w3.org/2022/wot/td/v1.1",
-                      {
-                          "cov": "http://www.example.org/coap-binding#",
-                          "mqv": "http://www.example.org/mqtt-binding#"
-                      }
-                  ],
-                  "title": "Lamp",
-                  "id": "urn:dev:ops:32473-WoTLamp-1234",
-                  "securityDefinitions": {
-                      "nosec_sc": {
-                          "scheme": "nosec"
-                      }
-                  },
-                  "security": ["nosec_sc"],
-                  "properties": {
-                      "switchState": {
-                          "type": "boolean",
-                          "readOnly": true,
-                          "observable": false,
-                          "forms": [
-                              {
-                                  "href": "http://example.com/light/switchstate",
-                                  "op": "readproperty",
-                                  "contentType": "application/json",
-                                  "htv:methodName":"GET"
-                              }
-                          ]
-                      },
-                      "brightness": {
-                          "type": "number",
-                          "readOnly": true,
-                          "observable": false,
-                          "forms": [
-                              {
-                                  "href": "coap://example.com/light/brightness",
-                                  "op": "readproperty",
-                                  "contentType": "application/json",
-                                  "cov:method": "GET"
-                              }
-                          ]
-                      }
-                  },
-                  "actions": {
-                      "switchLight": {
-                          "input":  {
-                              "type": "boolean"
-                          },
-                          "forms": [
-                              {
-                                  "href": "http://example.com/switch/state",
-                                  "op": "invokeaction",
-                                  "contentType": "application/json",
-                                  "htv:methodName":"POST"
-                              }
-                          ]
-                      },
-                      "setBrightness": {
-                          "input":  {
-                              "type": "number",
-                              "maximum":255
-                          },
-                          "forms": [
-                              {
-                                  "href": "coap://example.com/light/brightness",
-                                  "op": "invokeaction",
-                                  "contentType": "application/json",
-                                  "cov:method": "POST"
-                              }
-                          ]
-                      }
-                  },
-                  "events":{
-                      "concentration": {
-                          "title": "Gas Concentration Event Stream",
-                          "data":{
-                              "type": "integer",
-                              "minimum": -1,
-                              "maximum": 65535
-                          },
-                          "forms": [
-                              {
-                                  "href": "mqtt://broker.com",
-                                  "contentType": "application/json",
-                                  "op": "subscribeevent",
-                                  "mqv:filter": "application/deviceid/sensor/concentration",
-                                  "mqv:controlPacket": "subscribe"
-                              }
-                          ]
-                      }
-                  }
-              }
-              </pre
-        >
-
-        <p>
-          Another version of the previous TD with multiple protocol options per form is shown below. Notably, the
-          <code>brightness</code> property can be read via HTTP and CoAP, and observed via MQTT;
-          <code>concentration</code> event can be subscribed to via CoAP and MQTT. In this case, the Consumer would pick
-          the form it can support based on its internal implementation, e.g. whether it has CoAP protocol stack or not.
-        </p>
-
-        <pre class="example" title="TD with protocol options and complex payload">
-              {
-                  "@context": [
-                      "https://www.w3.org/2022/wot/td/v1.1",
-                      {
-                          "cov": "http://www.example.org/coap-binding#",
-                          "mqv": "http://www.example.org/mqtt-binding#"
-                      }
-                  ],
-                  "title": "Lamp",
-                  "id": "urn:dev:ops:32473-WoTLamp-5678",
-                  "securityDefinitions": {
-                      "nosec_sc": {
-                          "scheme": "nosec"
-                      }
-                  },
-                  "security": ["nosec_sc"],
-                  "properties": {
-                      "switchState": {
-                          "type": "boolean",
-                          "readOnly": true,
-                          "observable": false,
-                          "forms": [
-                              {
-                                  "href": "http://example.com/light/switchstate",
-                                  "op": "readproperty",
-                                  "contentType": "application/json",
-                                  "htv:methodName":"GET"
-                              },
-                              {
-                                  "href": "coap://example.com/light/switchstate",
-                                  "op": "readproperty",
-                                  "contentType": "application/json",
-                                  "cov:method": "GET"
-                              }
-                          ]
-                      },
-                      "brightness": {
-                          "type": "number",
-                          "readOnly": true,
-                          "observable": true,
-                          "forms": [
-                              {
-                                  "href": "http://example.com/light/switchstate",
-                                  "op": "readproperty",
-                                  "contentType": "application/json",
-                                  "htv:methodName":"GET"
-                              },
-                              {
-                                  "href": "coap://example.com/light/switchstate",
-                                  "op": "readproperty",
-                                  "contentType": "application/json",
-                                  "cov:method": "GET"
-                              },
-                              {
-                                  "href": "mqtt://broker.com",
-                                  "mqv:filter": "application/deviceid/sensor/brightness",
-                                  "op": "observeproperty",
-                                  "mqv:controlPacket": "subscribe"
-                              }
-                          ]
-                      }
-                  },
-                  "actions": {
-                      "switchLight": {
-                          "input":  {
-                              "type": "boolean"
-                          },
-                          "forms": [
-                              {
-                                  "href": "http://example.com/switch/state",
-                                  "op": "invokeaction",
-                                  "contentType": "application/json",
-                                  "htv:methodName":"POST"
-                              }
-                          ]
-                      },
-                      "setBrightness": {
-                          "input":  {
-                              "type": "number",
-                              "maximum":255
-                          },
-                          "forms": [
-                              {
-                                  "href": "coap://example.com/light/brightness",
-                                  "op": "invokeaction",
-                                  "contentType": "application/json",
-                                  "cov:method": "POST"
-                              }
-                          ]
-                      }
-                  },
-                  "events":{
-                      "concentration": {
-                          "title": "Gas Concentration Event Stream",
-                          "data":{
-                              "type": "integer",
-                              "minimum": -1,
-                              "maximum": 65535
-                          },
-                          "forms": [
-                              {
-                                  "href": "mqtt://broker.com",
-                                  "contentType": "application/json",
-                                  "op": "subscribeevent",
-                                  "mqv:filter": "application/deviceid/sensor/concentration",
-                                  "mqv:controlPacket": "subscribe"
-                              },
-                              {
-                                  "cov:method": "GET",
-                                  "href": "coap://example.com/sensor/gasconcentration",
-                                  "contentType": "application/json",
-                                  "op": "subscribeevent",
-                                  "subprotocol": "cov:observe"
-                              }
-                          ]
-                      }
-                  }
-              }
-              </pre
-        >
       </section>
     </section>
 
@@ -10535,21 +10274,58 @@
       </section>
     </section>
 
-    <section id="example-serialization" class="appendix informative">
-      <h2>Example Thing Description Instances</h2>
+    <section id="example-tds-bindings" class="appendix informative">
+      <h2>Example Thing Description Instances with Protocol Bindings</h2>
 
-      <section id="myLampThing-example-serialization">
+      <p>
+        The following TD examples uses HTTP, CoAP and MQTT Protocol Binding Templates. These TDs have Context Extensions
+        which assume that there is a CoAP and MQTT in RDF vocabulary similar to [[?HTTP-in-RDF10]] that is accessible
+        via the namespaces <code>http://www.example.org/coap-binding#</code> and
+        <code>http://www.example.org/mqtt-binding#</code>, respectively. Please note that the TD context at
+        <code>"https://www.w3.org/2022/wot/td/v1.1"</code> already includes the [[?HTTP-in-RDF10]], so HTTP context
+        extensions can be directly used. Note that, each Binding Template <a>subspecification</a> contains the most
+        up-to-date vocabulary terms and examples.
+      </p>
+
+      <p>The context extensions we see below have the following instructions to the TD Consumer:</p>
+      <ul>
+        <li>
+          <code>"htv:methodName"</code> member instructs the Consumer which HTTP method has to be applied (e.g.,
+          <code>"GET"</code> for retrieving a resource or <code>"POST"</code> for sending data to a resource).
+        </li>
+        <li>
+          <code>"cov:method"</code> member instructs the Consumer which CoAP method has to be applied (e.g.,
+          <code>"GET"</code> for the CoAP Method Code 0.01, <code>"POST"</code> for the CoAP Method Code 0.02, or
+          <code>iPATCH</code> for CoAP Method Code 0.07).
+        </li>
+        <li>
+          <code>"mqv:controlPacket"</code> member instructs the Consumer which MQTT command has to be applied (e.g.,
+          <code>"subscribe"</code> for the subscribing to a topic and <code>"unsubscribe"</code> for unsubscribing).
+        </li>
+      </ul>
+
+      <p>
+        First, TDs with a single protocol are shown. Then, TDs with multiple protocols are introduced where each
+        interaction affordance has one form with one protocol.
+      </p>
+
+      <section id="myLampThing-example-coap">
         <h3>MyLampThing Example with CoAP Protocol Binding</h3>
 
         <p>Feature list of the <a>Thing</a>:</p>
 
         <ul>
           <li>Title: MyLampThing</li>
-          <li>Context Extensions: none</li>
-          <li>Offered affordances: 1 Property, 1 Action, 1 Event</li>
+          <li>Context Extensions: CoAP Binding</li>
+          <li>Interaction Affordances: 1 Property, 1 Action, 1 Event</li>
           <li>Security: PSKSecurityScheme</li>
           <li>Protocol Binding: CoAP [[?RFC7252]] over TLS</li>
-          <li>Comment: Also see <a href="#adding-protocol-bindings"></a>.</li>
+          <li>
+            Comment: Also see
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/coap/index.html"
+              >CoAP Binding Template</a
+            >.
+          </li>
         </ul>
 
         <aside class="example with-default">
@@ -10694,21 +10470,24 @@
         </aside>
       </section>
 
-      <section id="myLightSensor-example-serialization">
+      <section id="myLightSensor-example-mqtt">
         <h3>MyIlluminanceSensor Example with MQTT Protocol Binding</h3>
 
         <p>Feature list of the <a>Thing</a>:</p>
 
         <ul>
           <li>Title: MyIlluminanceSensor</li>
-          <li>Context Extensions: none</li>
-          <li>Offered affordances: 1 Event</li>
+          <li>Context Extensions: MQTT Binding</li>
+          <li>Interaction Affordances: 1 Event</li>
           <li>Security: none</li>
           <li>Protocol Binding: MQTT [[?MQTT]]</li>
           <li>
-            Comment: An MQTT client frequently publishes the illuminance data (number is serialized in text format) to
-            the topic <code>/illuminance</code> by the MQTT broker running behind the address
-            <code>192.168.1.187:1883</code>.
+            Comment: An MQTT client (Thing) frequently publishes the illuminance data (number is serialized in text
+            format) to the topic <code>/illuminance</code> by the MQTT broker running behind the address
+            <code>192.168.1.187:1883</code>. Also see
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/mqtt/index.html"
+              >MQTT Binding Template</a
+            >
           </li>
         </ul>
         <aside class="example with-default">
@@ -10721,87 +10500,96 @@
           </div>
           <pre class="json">
 {
-    "@context": "https://www.w3.org/2022/wot/td/v1.1",
-    "title": "MyIlluminanceSensor",
-    "id": "urn:uuid:9489991a-7622-45b6-8437-f858b59835d4",
-    "securityDefinitions": {
-        "nosec_sc": {
-            "scheme": "nosec"
-        }
-    },
-    "security": [
-        "nosec_sc"
-    ],
-    "events": {
-        "illuminance": {
-            "data": {
-                "type": "integer"
-            },
-            "forms": [
-                {
-                    "href": "mqtt://192.168.1.187:1883/illuminance",
-                    "contentType": "text/plain"
-                }
-            ]
-        }
+  "@context": [
+    "https://www.w3.org/2022/wot/td/v1.1",
+    {
+    "mqv": "http://www.example.org/mqtt-binding#"
     }
+  ],
+  "title": "MyIlluminanceSensor",
+  "id": "urn:uuid:9489991a-7622-45b6-8437-f858b59835d4",
+  "securityDefinitions": {
+      "nosec_sc": {
+          "scheme": "nosec"
+      }
+  },
+  "security": [
+      "nosec_sc"
+  ],
+  "events": {
+      "illuminance": {
+          "data": {
+              "type": "integer"
+          },
+          "forms": [
+              {
+                  "href": "mqtt://broker.com:1883/",
+                  "contentType": "text/plain",
+                  "mqv:filter": "mySensor/illuminance"
+              }
+          ]
+      }
+  }
 }
-  </pre
-          >
+          </pre>
           <pre class="json">
 {
-    "@context": "https://www.w3.org/2022/wot/td/v1.1",
-    "title": "MyIlluminanceSensor",
-    "id": "urn:uuid:9489991a-7622-45b6-8437-f858b59835d4",
-    "securityDefinitions": {
-        "nosec_sc": {
-            "scheme": "nosec"
-        }
-    },
-    "security": [
-        "nosec_sc"
-    ],
-    "events": {
-        "illuminance": {
-            "data": {
-                "type": "integer"
-            },
-            "forms": [
-                {
-                    "href": "mqtt://192.168.1.187:1883/illuminance",
-                    "contentType": "text/plain",
-                    "op":["subscribeevent","unsubscribeevent"]
-                }
-            ]
-        }
+  "@context": [
+    "https://www.w3.org/2022/wot/td/v1.1",
+    {
+      "mqv": "http://www.example.org/mqtt-binding#"
     }
+  ],
+  "title": "MyIlluminanceSensor",
+  "id": "urn:uuid:9489991a-7622-45b6-8437-f858b59835d4",
+  "securityDefinitions": {
+      "nosec_sc": {
+          "scheme": "nosec"
+      }
+  },
+  "security": [
+      "nosec_sc"
+  ],
+  "events": {
+      "illuminance": {
+          "data": {
+              "type": "integer"
+          },
+          "forms": [
+              {
+                  "href": "mqtt://broker.com:1883/",
+                  "contentType": "text/plain",
+                  "op":["subscribeevent","unsubscribeevent"],
+                  "mqv:controlPacket": "subscribe",
+                  "mqv:filter": "mySensor/illuminance"
+              }
+          ]
+      }
+  }
 }
-  </pre
-          >
+          </pre>
         </aside>
       </section>
 
-      <section id="webhook-example-serialization">
+      <section id="sensor-example-webhook">
         <h3>Webhook Event Example</h3>
 
         <p>Feature list of the <a>Thing</a>:</p>
 
         <ul>
-          <li>Title: WebhookThing</li>
-          <li>
-            Context Extensions: use HTTP <a>Protocol Binding</a> supplements (htv prefix already included in TD context)
-          </li>
+          <li>Title: TemperatureSensor</li>
+          <li>Context Extensions: HTTP <a>Protocol Binding</a> (htv prefix already included in TD context)</li>
           <li>Offered affordances: 1 Event</li>
           <li>Security: none</li>
           <li>Protocol Binding: HTTP</li>
           <li>
-            Comment: <i>WebhookThing</i> provides an Event affordance <code>temperature</code> which periodically pushes
-            the latest temperature value to the <a>Consumer</a> using a Webhook mechanism, where the <a>Thing</a> sends
-            POST requests to a callback URI provided by the <a>Consumer</a>. To describe this, the
+            Comment: <i>TemperatureSensor</i> provides an Event affordance <code>temperature</code> which periodically
+            pushes the latest temperature value to the <a>Consumer</a> using a Webhook mechanism, where the
+            <a>Thing</a> sends POST requests to a callback URI provided by the <a>Consumer</a>. To describe this, the
             <code>subscription</code> member defines a write-only parameter <code>callbackURL</code>, which must be
             submitted through the <code>subscribeevent</code> form. The read-only parameter
-            <code>subscriptionID</code> is returned by the subscription. The <i>WebhookThing</i> will then periodically
-            POST to this callback URI with a payload defined by <code>data</code>. To unsubscribe, the
+            <code>subscriptionID</code> is returned by the subscription. The <i>TemperatureSensor</i> will then
+            periodically POST to this callback URI with a payload defined by <code>data</code>. To unsubscribe, the
             <a>Consumer</a> has to submit the <code>unsubscribeevent</code> form with the <code>subscriptionID</code> as
             described in <code>cancellation</code>. Alternatively, <code>uriVariables</code> approache can be used that
             informs the <a>Consumer</a> to include the <code>subscriptionID</code> string into the URI that have to be
@@ -10813,7 +10601,9 @@
 
         <aside class="example ds-selector-tabs">
           <div class="marker">
-            <span class="example-title">Temperature Event with subscription and cancellation</span>
+            <span class="example-title"
+              >Temperature Sensor with a Temperature Event with subscription and cancellation</span
+            >
           </div>
           <div class="selectors">
             <button class="selected exampleTab1 without" onclick="openTab('exampleTab1', 'without')">
@@ -10822,116 +10612,114 @@
             <button class="exampleTab1 with" onclick="openTab('exampleTab1', 'with')">With uriVariables</button>
           </div>
           <pre class="selected without exampleTab1 json">
-    {
-        "@context": "https://www.w3.org/2022/wot/td/v1.1",
-        "id": "urn:uuid:4778f80a-4c78-4cbb-a0e4-fa37b7d748df",
-        "title": "WebhookThing",
-        "description": "Webhook-based Event with subscription and unsubscribe form.",
-        "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
-        "security": ["nosec_sc"],
-        "events": {
-            "temperature": {
-                "description": "Provides periodic temperature value updates.",
-                "subscription": {
-                    "type": "object",
-                    "properties": {
-                        "callbackURL": {
-                            "type": "string",
-                            "format": "uri",
-                            "description": "Callback URL provided by subscriber for Webhook notifications.",
-                            "writeOnly": true
-                        },
-                        "subscriptionID": {
-                            "type": "string",
-                            "description": "Unique subscription ID for cancellation provided by WebhookThing.",
-                            "readOnly": true
-                        }
-                    }
-                },
-                "data": {
-                    "type": "number",
-                    "description": "Latest temperature value that is sent to the callback URL."
-                },
-                "cancellation": {
-                    "type": "object",
-                    "properties": {
-                        "subscriptionID": {
-                            "type": "integer",
-                            "description": "Required subscription ID to cancel subscription.",
-                            "writeOnly": true
-                        }
-                    }
-                },
-                "forms": [
-                    {
-                        "op": "subscribeevent",
-                        "href": "http://192.168.0.124:8080/events/temp/subscribe",
-                        "contentType": "application/json",
-                        "htv:methodName": "POST"
-                    },
-                    {
-                        "op": "unsubscribeevent",
-                        "href": "http://192.168.0.124:8080/events/temp/cancel",
-                        "htv:methodName": "POST"
-                    }
-                ]
-            }
-        }
-    }
-  </pre
-          >
+{
+  "@context": "https://www.w3.org/2022/wot/td/v1.1",
+  "id": "urn:uuid:4778f80a-4c78-4cbb-a0e4-fa37b7d748df",
+  "title": "TemperatureSensor",
+  "description": "Webhook-based Event with subscription and unsubscribe form.",
+  "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+  "security": ["nosec_sc"],
+  "events": {
+      "temperature": {
+          "description": "Provides periodic temperature value updates.",
+          "subscription": {
+              "type": "object",
+              "properties": {
+                  "callbackURL": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "Callback URL provided by subscriber for Webhook notifications.",
+                      "writeOnly": true
+                  },
+                  "subscriptionID": {
+                      "type": "string",
+                      "description": "Unique subscription ID for cancellation provided by WebhookThing.",
+                      "readOnly": true
+                  }
+              }
+          },
+          "data": {
+              "type": "number",
+              "description": "Latest temperature value that is sent to the callback URL."
+          },
+          "cancellation": {
+              "type": "object",
+              "properties": {
+                  "subscriptionID": {
+                      "type": "integer",
+                      "description": "Required subscription ID to cancel subscription.",
+                      "writeOnly": true
+                  }
+              }
+          },
+          "forms": [
+              {
+                  "op": "subscribeevent",
+                  "href": "http://192.168.0.124:8080/events/temp/subscribe",
+                  "contentType": "application/json",
+                  "htv:methodName": "POST"
+              },
+              {
+                  "op": "unsubscribeevent",
+                  "href": "http://192.168.0.124:8080/events/temp/cancel",
+                  "htv:methodName": "POST"
+              }
+          ]
+      }
+  }
+}
+          </pre>
           <pre class="with exampleTab1 json">
-    {
-        "@context": "https://www.w3.org/2022/wot/td/v1.1",
-        "id": "urn:uuid:3c1b4716-247f-4cda-ba53-d3307ac6feb0",
-        "title": "WebhookThing",
-        "description": "Webhook-based Event with subscription and unsubscribe form.",
-        "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
-        "security": ["nosec_sc"],
-        "events": {
-            "temperature": {
-                "description": "Provides periodic temperature value updates.",
-                "subscription": {
-                    "type": "object",
-                    "properties": {
-                        "callbackURL": {
-                            "type": "string",
-                            "format": "uri",
-                            "description": "Callback URL provided by subscriber for Webhook notifications.",
-                            "writeOnly": true
-                        },
-                        "subscriptionID": {
-                            "type": "string",
-                            "description": "Unique subscription ID for cancellation provided by WebhookThing.",
-                            "readOnly": true
-                        }
-                    }
-                },
-                "data": {
-                    "type": "number",
-                    "description": "Latest temperature value that is sent to the callback URL."
-                },
-                "uriVariables": {
-                    "subscriptionID": { "type": "string" }
-                },
-                "forms": [
-                    {
-                        "op": "subscribeevent",
-                        "href": "http://192.168.0.124:8080/events/temp/subscribe",
-                        "contentType": "application/json",
-                        "htv:methodName": "POST"
-                    },
-                    {
-                        "op": "unsubscribeevent",
-                        "href": "http://192.168.0.124:8080/events/temp/{subscriptionID}",
-                        "htv:methodName": "DELETE"
-                    }
-                ]
-            }
-        }
-    }
-  </pre
-          >
+{
+  "@context": "https://www.w3.org/2022/wot/td/v1.1",
+  "id": "urn:uuid:3c1b4716-247f-4cda-ba53-d3307ac6feb0",
+  "title": "WebhookThing",
+  "description": "Webhook-based Event with subscription and unsubscribe form.",
+  "securityDefinitions": {"nosec_sc": {"scheme": "nosec"}},
+  "security": ["nosec_sc"],
+  "events": {
+      "temperature": {
+          "description": "Provides periodic temperature value updates.",
+          "subscription": {
+              "type": "object",
+              "properties": {
+                  "callbackURL": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "Callback URL provided by subscriber for Webhook notifications.",
+                      "writeOnly": true
+                  },
+                  "subscriptionID": {
+                      "type": "string",
+                      "description": "Unique subscription ID for cancellation provided by WebhookThing.",
+                      "readOnly": true
+                  }
+              }
+          },
+          "data": {
+              "type": "number",
+              "description": "Latest temperature value that is sent to the callback URL."
+          },
+          "uriVariables": {
+              "subscriptionID": { "type": "string" }
+          },
+          "forms": [
+              {
+                  "op": "subscribeevent",
+                  "href": "http://192.168.0.124:8080/events/temp/subscribe",
+                  "contentType": "application/json",
+                  "htv:methodName": "POST"
+              },
+              {
+                  "op": "unsubscribeevent",
+                  "href": "http://192.168.0.124:8080/events/temp/{subscriptionID}",
+                  "htv:methodName": "DELETE"
+              }
+          ]
+      }
+  }
+}
+          </pre>
         </aside>
 
         <p class="note">
@@ -10940,10 +10728,285 @@
           <code>dataResponse</code> field.
         </p>
       </section>
+
+      <section id="lamp-example-multiprotocol-simple">
+        <h3>Lamp Thing with HTTP, CoAP, and MQTT Protocol Bindings</h3>
+
+        <p>Feature list of the <a>Thing</a>:</p>
+
+        <ul>
+          <li>Title: LampThing</li>
+          <li>Context Extensions: HTTP (htv prefix already included in TD context), CoAP, MQTT Bindings</li>
+          <li>Interaction Affordances: 2 Properties, 2 Actions, 1 Event</li>
+          <li>Security: none</li>
+          <li>Protocol Binding: HTTP, CoAP [[?RFC7252]], and MQTT [[?MQTT]]</li>
+          <li>
+            Comment: Each interaction affordance has one form with one protocol. Also see
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/http/index.html"
+              >HTTP Binding Template</a
+            >,
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/coap/index.html"
+              >CoAP Binding Template</a
+            >, and
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/mqtt/index.html"
+              >MQTT Binding Template</a
+            >.
+          </li>
+        </ul>
+
+        <pre class="example json" title="Multiprotocol TD of a Lamp with one Protocol per Form">
+{
+    "@context": [
+        "https://www.w3.org/2022/wot/td/v1.1",
+        {
+            "cov": "http://www.example.org/coap-binding#",
+            "mqv": "http://www.example.org/mqtt-binding#"
+        }
+    ],
+    "title": "LampThing",
+    "id": "urn:dev:ops:32473-WoTLamp-1234",
+    "securityDefinitions": {
+        "nosec_sc": {
+            "scheme": "nosec"
+        }
+    },
+    "security": ["nosec_sc"],
+    "properties": {
+        "switchState": {
+            "type": "boolean",
+            "readOnly": true,
+            "observable": false,
+            "forms": [
+                {
+                    "href": "http://example.com/light/switchstate",
+                    "op": "readproperty",
+                    "contentType": "application/json",
+                    "htv:methodName":"GET"
+                }
+            ]
+        },
+        "brightness": {
+            "type": "number",
+            "readOnly": true,
+            "observable": false,
+            "forms": [
+                {
+                    "href": "coap://example.com/light/brightness",
+                    "op": "readproperty",
+                    "contentType": "application/json",
+                    "cov:method": "GET"
+                }
+            ]
+        }
+    },
+    "actions": {
+        "switchLight": {
+            "input":  {
+                "type": "boolean"
+            },
+            "forms": [
+                {
+                    "href": "http://example.com/switch/state",
+                    "op": "invokeaction",
+                    "contentType": "application/json",
+                    "htv:methodName":"POST"
+                }
+            ]
+        },
+        "setBrightness": {
+            "input":  {
+                "type": "number",
+                "maximum":255
+            },
+            "forms": [
+                {
+                    "href": "coap://example.com/light/brightness",
+                    "op": "invokeaction",
+                    "contentType": "application/json",
+                    "cov:method": "POST"
+                }
+            ]
+        }
+    },
+    "events":{
+        "concentration": {
+            "title": "Gas Concentration Event Stream",
+            "data":{
+                "type": "integer",
+                "minimum": -1,
+                "maximum": 65535
+            },
+            "forms": [
+                {
+                    "href": "mqtt://broker.com",
+                    "contentType": "application/json",
+                    "op": "subscribeevent",
+                    "mqv:filter": "application/deviceid/sensor/concentration",
+                    "mqv:controlPacket": "subscribe"
+                }
+            ]
+        }
+    }
+}
+        </pre>
+      </section>
+
+      <section id="lamp-example-multiprotocol-complex">
+        <h3>Lamp Thing with mixture of HTTP, CoAP, and MQTT Protocol Bindings</h3>
+
+        <p>Feature list of the <a>Thing</a>:</p>
+
+        <ul>
+          <li>Title: LampThing</li>
+          <li>Context Extensions: HTTP (htv prefix already included in TD context), CoAP, MQTT Bindings</li>
+          <li>Interaction Affordances: 2 Properties, 2 Actions, 1 Event</li>
+          <li>Security: none</li>
+          <li>Protocol Binding: HTTP, CoAP [[?RFC7252]], and MQTT [[?MQTT]]</li>
+          <li>
+            Comment: Another version of the previous TD with multiple protocol options per form is shown below. Notably,
+            the
+            <code>brightness</code> property can be read via HTTP and CoAP, and observed via MQTT;
+            <code>concentration</code> event can be subscribed to via CoAP and MQTT. In this case, the Consumer would
+            pick the form it can support based on its internal implementation, e.g. whether it has CoAP protocol stack
+            or not. Also see
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/http/index.html"
+              >HTTP Binding Template</a
+            >,
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/coap/index.html"
+              >CoAP Binding Template</a
+            >, and
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/mqtt/index.html"
+              >MQTT Binding Template</a
+            >.
+          </li>
+        </ul>
+
+        <pre class="example json" title="Multiprotocol TD of a Lamp with Multiple Protocols per Form">
+{
+    "@context": [
+        "https://www.w3.org/2022/wot/td/v1.1",
+        {
+            "cov": "http://www.example.org/coap-binding#",
+            "mqv": "http://www.example.org/mqtt-binding#"
+        }
+    ],
+    "title": "Lamp",
+    "id": "urn:dev:ops:32473-WoTLamp-5678",
+    "securityDefinitions": {
+        "nosec_sc": {
+            "scheme": "nosec"
+        }
+    },
+    "security": ["nosec_sc"],
+    "properties": {
+        "switchState": {
+            "type": "boolean",
+            "readOnly": true,
+            "observable": false,
+            "forms": [
+                {
+                    "href": "http://example.com/light/switchstate",
+                    "op": "readproperty",
+                    "contentType": "application/json",
+                    "htv:methodName":"GET"
+                },
+                {
+                    "href": "coap://example.com/light/switchstate",
+                    "op": "readproperty",
+                    "contentType": "application/json",
+                    "cov:method": "GET"
+                }
+            ]
+        },
+        "brightness": {
+            "type": "number",
+            "readOnly": true,
+            "observable": true,
+            "forms": [
+                {
+                    "href": "http://example.com/light/switchstate",
+                    "op": "readproperty",
+                    "contentType": "application/json",
+                    "htv:methodName":"GET"
+                },
+                {
+                    "href": "coap://example.com/light/switchstate",
+                    "op": "readproperty",
+                    "contentType": "application/json",
+                    "cov:method": "GET"
+                },
+                {
+                    "href": "mqtt://broker.com",
+                    "mqv:filter": "application/deviceid/sensor/brightness",
+                    "op": "observeproperty",
+                    "mqv:controlPacket": "subscribe"
+                }
+            ]
+        }
+    },
+    "actions": {
+        "switchLight": {
+            "input":  {
+                "type": "boolean"
+            },
+            "forms": [
+                {
+                    "href": "http://example.com/switch/state",
+                    "op": "invokeaction",
+                    "contentType": "application/json",
+                    "htv:methodName":"POST"
+                }
+            ]
+        },
+        "setBrightness": {
+            "input":  {
+                "type": "number",
+                "maximum":255
+            },
+            "forms": [
+                {
+                    "href": "coap://example.com/light/brightness",
+                    "op": "invokeaction",
+                    "contentType": "application/json",
+                    "cov:method": "POST"
+                }
+            ]
+        }
+    },
+    "events":{
+        "concentration": {
+            "title": "Gas Concentration Event Stream",
+            "data":{
+                "type": "integer",
+                "minimum": -1,
+                "maximum": 65535
+            },
+            "forms": [
+                {
+                    "href": "mqtt://broker.com",
+                    "contentType": "application/json",
+                    "op": "subscribeevent",
+                    "mqv:filter": "application/deviceid/sensor/concentration",
+                    "mqv:controlPacket": "subscribe"
+                },
+                {
+                    "cov:method": "GET",
+                    "href": "coap://example.com/sensor/gasconcentration",
+                    "contentType": "application/json",
+                    "op": "subscribeevent",
+                    "subprotocol": "cov:observe"
+                }
+            ]
+        }
+    }
+}
+              </pre
+        >
+      </section>
     </section>
 
     <section id="json-schema-for-validation" class="appendix informative">
-      <h1>JSON Schema for TD Instance Validation</h1>
+      <h2>JSON Schema for TD Instance Validation</h2>
       <p>
         A JSON Schema [[?JSON-SCHEMA]] document for syntactically validating Thing Description instances serialized in
         JSON based format is available at
@@ -10964,7 +11027,7 @@
     </section>
 
     <section id="contentType-usage" class="appendix informative">
-      <h1>contentType usage in Thing Descriptions</h1>
+      <h2>contentType usage in Thing Descriptions</h2>
       <p>
         The different cases on the variation of request and response are explained at
         <a href="#sec-response-usage"></a>. The tables below summarize these cases in a concise manner. The tables start
@@ -11233,7 +11296,7 @@
     </section>
 
     <section id="json-ld-ctx-usage" class="appendix informative">
-      <h1>JSON-LD Context Usage</h1>
+      <h2>JSON-LD Context Usage</h2>
 
       <p>
         The present specification introduces the <a>TD Information Model</a> as a set of constraints over different
@@ -11567,7 +11630,7 @@
     </section>
 
     <section id="changes" class="appendix">
-      <h1>Recent Specification Changes</h1>
+      <h2>Recent Specification Changes</h2>
       <section>
         <h2 id="changes-from-pr-2023">Changes from the Proposed Recommendation 11 July 2023</h2>
         <ul>
@@ -11868,9 +11931,7 @@
             </ul>
           </li>
           <!-- appendix A.3 Webhook Event Example -->
-          <li>
-            In appendix <a href="#webhook-example-serialization"></a>, the example and its description were updated.
-          </li>
+          <li>In appendix <a href="#sensor-example-webhook"></a>, the example and its description were updated.</li>
           <!-- appendix B. JSON Schema for TD Instance Validation -->
           <li>
             In appendix <a href="#json-schema-for-validation"></a>, the text of the second note was updated for
@@ -11888,7 +11949,7 @@
     </section>
 
     <section id="acknowledgements" class="appendix normative">
-      <h1>Acknowledgements</h1>
+      <h2>Acknowledgements</h2>
       <p>
         The editors would like to specially thank Cristiano Aguzzi, Thomas Jäckle, Jan Romann, Elodie Thiéblin, Michael
         Koster, Michael Lagally, Kazuyuki Ashimura, Daniel Peintner, Toru Kawaguchi, María Poveda, Dave Raggett,
