@@ -2,6 +2,7 @@
 
 ## Description of Changes
 
+<!-- Free-text summary of the changes made by the pull request -->
 ## Related Issue
 
 <!-- Put the issue number after # -->
