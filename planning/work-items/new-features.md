@@ -6,6 +6,7 @@ Instead, the TF will analyze current solutions, gather existing use cases and di
 These are contained in this folder with the `analysis-` prefix.
 
 ## Historical Data
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/historical%20data)
 
 Also known as time series.
@@ -13,11 +14,12 @@ Also known as time series.
 Please refer to [Analysis Document](./../analysis-historical-data-work-item.md)
 
 ## Manageable Affordances
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/manageable%20affordances)
 
 Note: This should be moved to an analysis document.
 
-Various use cases require the implementation of more complex actions that span multiple protocol transactions. Such actions are not simply invoked but need to managed over time by the Thing and the Consumer. 
+Various use cases require the implementation of more complex actions that span multiple protocol transactions. Such actions are not simply invoked but need to managed over time by the Thing and the Consumer.
 These are covered in the WoT Thing Description 1.1 via the initiation (invokeaction), monitoring (`queryaction`), and cancellation (`cancelaction`) of ongoing actions.
 However, the following points are not supported:
 
@@ -40,11 +42,12 @@ Related Issues:
 - <https://github.com/w3c/wot-thing-description#1223>
 
 ## Streaming
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/streaming)
 
 Note: This should be moved to an analysis document.
 
-A streaming protocol establishes an ongoing connection supporting delivery of time-sensitive information such as audio or video. 
+A streaming protocol establishes an ongoing connection supporting delivery of time-sensitive information such as audio or video.
 Note that this connection in general may be over either reliable (TCP) or unreliable (UDP) transports, or over a combination, and may also support encryption or content management.
 Streaming may also be used to support other kinds of ongoing time-sensitive data delivery.
 
@@ -58,6 +61,7 @@ In order to clearly define what infrastructure is actually needed, if any, one o
 Note: This should be moved to an analysis document.
 
 ### Signing
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/signing)
 
 Mechanisms for signing TDs documents were under discussion in the last charter but were not mature enough to include.
@@ -66,6 +70,7 @@ Verifying a signature requires identity management, i.e. the verifier needs to k
 Directories need to be extended to verify signatures and generate new chained signatures as needed.
 
 ### Canonicalization
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/canonicaliziation)
 
 Thing Descriptions can contain the same information but serialized differently even in the same serialization format, due to structures such as maps which do not impose an order.
@@ -85,6 +90,7 @@ Some work has been done in the previous charter but has been postponed due to la
 - <https://github.com/w3c/wot-thing-description/pull/1086>
 
 ### TD Versioning
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/versioning)
 
 Note: This should be moved to an analysis document.

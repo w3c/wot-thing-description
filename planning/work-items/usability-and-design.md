@@ -8,6 +8,7 @@ These have more priority since they can impact how new features look like in a T
 We should start a TD (re)design document that explains the idea behind the design of different features. See [issue 1889](https://github.com/w3c/wot-thing-description/issues/1889).
 
 ## Document reorganization
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/document%20reorganization)
 
 Changes that should be done while keeping the current content
@@ -30,6 +31,7 @@ There were questions about how much a TM is related to the TD.
 Some discussion might be needed.
 
 ## Synchronization with Other Documents
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/document%20synchronisation)
 
 ### Discovery Sync
@@ -41,9 +43,11 @@ Moving discovery-related text from TD to Discovery
 Checking overlaps with architecture.
 
 ## Reusable TD Elements
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/reusable+elements)
 
 ### Reusable Connections
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/reusable%20connections)
 
 **Problem:**
@@ -158,7 +162,6 @@ The lifecycle of a WebSocket connection in the Web of Things typically includes 
 2. **Data Transmission**: Once connected, the client and server can exchange data bi-directionally in real-time, with messages sent as frames. This may include ping/pong frames to keep understand connection "liveness" between the parties.
 3. **Connection Closure**: Either party can initiate the closing handshake by sending a close frame, after which the connection is terminated, and resources are released.
 
-
 ###### Message Sequence
 
 ![Message Sequence](./images/initial-connection-Websocket-sequence.svg)
@@ -214,12 +217,14 @@ Also known as: Mapping TD elements to messages
 - Some `contentType` may be more expressive than our DataSchema, e.g. CBOR [Maps with integer keys](https://www.rfc-editor.org/rfc/rfc8949.html#map-keys).
 
 #### Open questions
+
 - How can we describe how the logical information (state for property, input/output messages for actions, messages for event) is mapped to each channel?
 - Do we need to reconsider how we express `contentType` and `contentCoding` in the case more than a channel allows flexible data formats?
 - Do we want to provide a way to express a serialization scheme for protocols that have only inflexible (e.g. binary-only) channels, without going through the route of declaring a `contentType`?
 - Do we want to provide a way to express a serialization scheme between our DataSchema and richer contentTypes (e.g XML, CBOR)?
 
 #### Related Issues:
+
 - [BACnet URI Variables discussion](https://github.com/w3c/wot-binding-templates/issues/302)
 - [Complex data types in simple protocols](https://github.com/w3c/wot-thing-description/issues/1936)
 - [jsonrpc-over-websocket](https://github.com/w3c/wot-binding-templates/issues/125)
@@ -230,6 +235,7 @@ Also known as: Mapping TD elements to messages
 - [HTTP Headers in directory exploration (Problem 2)](https://github.com/eclipse-thingweb/node-wot/issues/1221)
 
 ### Security Schemes Refactoring
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/Security) ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/Binding)
 
 The need to be refactored and use the same pattern as other reusable elements
@@ -239,6 +245,7 @@ Relevant discussions:
 - https://github.com/w3c/wot-thing-description/issues/1394
 
 ### Inline Security
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/Security) ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/reusable%20elements)
 
 Simplifying the way to describe security when there is only one mechanism needed to be described (in contrast to needing two terms at the moment)
@@ -248,6 +255,7 @@ Relevant discussions:
 - https://github.com/w3c/wot-thing-description/pull/945
 
 ### Reusable Element Design
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/Security)
 
 Scenarios, requirements, and use the same pattern for all reusable elements.
@@ -258,6 +266,7 @@ Related discussions:
 - https://github.com/w3c/wot-thing-description/pull/1341 (but many are linked here as well)
 
 ## Affordance Uniformity
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/affordance%20uniformity)
 
 Uniform pattern/state machines between Actions, Events, and Properties.
@@ -267,6 +276,7 @@ Uniform pattern/state machines between Actions, Events, and Properties.
 - Property vs. Action (also URI Variables redesign question)
 
 ## Normative Parsing, Validation, Consumption
+
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/Validation)
 
 Currently, the TD specification defines an abstract information model and a default JSON serialization for TDs.
