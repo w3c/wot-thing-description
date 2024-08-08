@@ -278,6 +278,101 @@ In this case, the Thing has enough resources and contains its own HTTP server.
 }
 ```
 
+- The following two are the same TD
+
+```js
+{
+    "connections": {
+        "basichttp" : { 
+            "href": "https://example.com",
+            "contentType": "application/cbor",
+            "security":"basic_sc",
+            "htv:methodName":"POST",
+            "reusable": false
+        }
+    },
+    "title": "test",
+    "securityDefinitions": {
+        "basic_sc":{
+            "scheme": "basic"
+        }
+    },
+    "connection": "basichttp", // can be ignored if there is only one connection?
+    "properties": {
+      "prop1": {
+           "type":"string",
+            "forms": [
+                {
+                   "op": "readproperty",
+                   "href": "myDevice/properties/prop1"
+                   // reading with POST in this case
+                }
+            ]
+        },
+        "prop2": {
+            "type":"string",
+            "forms": [
+                {
+                    "op":["readproperty"],
+                    "href": "myDevice/properties/prop2",
+                    "htv:methodName":"GET"
+                },
+                {
+                    "op":"writeproperty",
+                    "href": "myDevice/properties/prop2"
+                    // default is POST
+                }
+            ]
+        }
+    }
+}
+```
+
+```js
+{
+    "base": "https://example.com",
+    "security":"basic_sc"
+    "title": "test",
+    "securityDefinitions": {
+        "basic_sc":{
+            "scheme": "basic"
+        }
+    },
+    "properties": {
+      "prop1": {
+           "type":"string",
+            "forms": [
+                {
+                   "op": "readproperty",
+                   "contentType":"application/cbor",
+                   "href": "myDevice/properties/prop1",
+                   "htv:methodName":"POST"
+                }
+            ]
+        },
+        "prop2": {
+            "type":"string",
+            "forms": [
+                {
+                    "op":["readproperty"],
+                    "contentType":"application/cbor",
+                    "href": "myDevice/properties/prop2",
+                    "htv:methodName":"GET"
+                },
+                {
+                    "op":"writeproperty",
+                    "contentType":"application/cbor",
+                    "href": "myDevice/properties/prop2"
+                    "htv:methodName":"POST"
+                }
+            ]
+        }
+    }
+}
+```
+
+With the second TD (v1.1), we can see that it got longer due to not using the defaults of the binding. This effect would be amplified the affordances and forms the TD has.
+
 ### Data Schema Mapping
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/data%20mapping)
