@@ -393,7 +393,7 @@ With the second TD (v1.1), we can see that it got longer due to not using the de
         },
         "basichttp2" : {
             "connection":"basichttp1",
-            "htv:methodName":"PUT", 
+            "htv:methodName":"PUT",
             "op":"readproperty"
         },
        "broker" : {
