@@ -205,6 +205,79 @@ In this case, the Thing has enough resources and contains its own HTTP server.
 
 ![Message Sequence](./images/initial-connection-Proxy-sequence.svg)
 
+#### New Proposals
+
+##### Common Connection Information is placed in a top-level element
+
+- An object like `securityDefinitions`, where keys can be chosen by the TD designer.
+- Inside each key, we have all elements of a form except the op keyword and an additional `reusable` keyword with a boolean. It would be false for HTTP, true for broker-based connections or WebSockets.
+- Any form that redefines the values of the connection, replaces them.
+- If a value is not defined in the connection, the value in forms are taken
+- If a value is not defined in the connection nor form, the defaults of the binding or TD spec are taken
+
+```js
+{
+    "connections": { // Should this be named to something more generic? e.g. `defaults`, `components` (like OpenAPI), `commonDefinitions`, `definitions`, `commonConnectionInformation`
+        "basichttp" : { //trying to put EVERYTHING possible
+            "href": "https://example.com", // usual base URI
+            "contentType": "application/cbor", // This is the default for this Thing's forms
+            "security":["basic_sc"], // must be defined in securityDefinitions first
+            "htv:methodName":"POST", // This is the default for this Thing. Even a property read would be with POST unless otherwise specified
+            "reusable": false, // to be discussed. Can be deduced from binding
+        },
+       "broker" : {
+            "href": "mqtt://www.w3.org/2019/wot/broker",
+            "contentType": "text/plain",
+            "security":"no_sc",
+            "reusable": true,
+            // for how long can the connection be reused?
+        }
+    },
+    "title": "test",
+    "securityDefinitions": { // should these be also embedded into connections?
+        "no_sec": {
+            "scheme": "nosec"
+        },
+        "basic_sc":{
+            "scheme": "basic"
+        }
+    },
+    "security": "no_sec", // it is probably not needed anymore -> Should we say that if there is connections element, security and base are not allowed?
+    "connection": "basichttp", // like security, this is the default connection to be used throughout
+    "properties": {
+      "prop1": {
+           "type":"string",
+            "forms": [
+                {
+                   "connection": "broker",
+                   "op": "readproperty",
+                   "href": "",
+                   "base":"application/devices/" // kind of weird, let's discuss :)
+                   "mqv:topic": "application/devices/thing1/program/commands/reset""mqv:"
+                }
+            ]
+        },
+        "prop2": {
+            "type":"string",
+            "forms": [
+                {
+                    "connection": "basichttp",
+                    "op":["readproperty"],
+                    "href": "myDevice/properties/prop2",
+                    "htv:methodName":"GET"
+                },
+                {
+                    "connection": "basichttp",
+                    "op":"writeproperty",
+                    "href": "myDevice/properties/prop2"
+                    // default is POST
+                }
+            ]
+        }
+    }
+}
+```
+
 ### Data Schema Mapping
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/data%20mapping)
