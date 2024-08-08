@@ -283,7 +283,7 @@ In this case, the Thing has enough resources and contains its own HTTP server.
 ```js
 {
     "connections": {
-        "basichttp" : { 
+        "basichttp" : {
             "href": "https://example.com",
             "contentType": "application/cbor",
             "security":"basic_sc",
