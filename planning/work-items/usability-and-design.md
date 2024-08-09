@@ -379,6 +379,7 @@ With the second TD (v1.1), we can see that it got longer due to not using the de
 ##### Luca - Form-reuse + Connection descriptors
 
 Design ideas for Form-reuse:
+
 - `Form` gains two additional fields `reusable` and `base`.
 - `Thing` gains an additional field `bases` (`connections` in Ege's proposal).
 - `Thing::bases` is a container of `Form defaults`, a dictionary of Forms.
@@ -414,10 +415,11 @@ Design ideas for Connection descriptors
 - `Form::connection` contains a string matching a key in `Thing::connections`
 
 Open questions:
+
 - Can we move the security machinery to connection?
 - Shall we add connection to Link as well?
 - Shall we add another dictionary `key - {protocol, connection}` ?
-  - Should the key be a scheme and shall we use it to set thing-wide defaults?  e.g.:
+  - Should the key be a scheme and shall we use it to set thing-wide defaults? e.g.:
     - `https` implies `{"protocol": "htv", "connection": "tls"}`
 
 ```js
