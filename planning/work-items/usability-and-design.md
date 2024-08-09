@@ -376,13 +376,53 @@ Title: Common Connection Information is placed in a top-level element
 
 With the second TD (v1.1), we can see that it got longer due to not using the defaults of the binding. This effect would be amplified with the number of the affordances and forms the TD has.
 
-##### Luca
+##### Luca - Form-reuse + Connection descriptors
 
-- Same as Ege's proposal but operation can be defined in the connection and each connection can use another one
+Design ideas for Form-reuse:
+- `Form` gains two additional fields `reusable` and `base`.
+- `Thing` gains an additional field `bases` (`connections` in Ege's proposal).
+- `Thing::bases` is a container of `Form defaults`, a dictionary of Forms.
+- The `base` field is a string matching one of the keys of `Thing::bases`.
+- There is a single-inheritance pattern given by `Form::base`
+  - you can use the fields in the `Form` referred in `Form::base` as default for all the fields not present in the current `Form`
+  - `href` is additive, if present must be added to the `href` provided by the `base` (see normal approach to adding URIs)
+  - if `base` is set in the Form referred by the current Form `base`, the base form has to be resolved first.
+    - Implementation-wise, all the Forms in `Thing::bases`, can be resolved first once and the result cached.
+  - All the other fields simply replace the default if they exist in the current Form
+- The `reusable` field is a boolean
+- A Consumer MAY decide to keep a connection alive and reuse it if `Form::reusable` is true, the exact behaviour is protocol-dependent
+  - if `Form::reusable` is set to false, the Consumer MUST tear down the connection and start anew.
+
+This make simpler to reuse Forms and provides the minimum amount of information to tell if a Consumer can reuse a connection.
+
+Design ideas for Connection descriptors
+
+- `Form` loses `subprotocol`
+- `Form` gains `protocol`
+- `Thing` gains `protocols` and `connections`
+- `Thing::connections` is a dictionary
+  - The key is a string
+  - The value is an Object with the following fields
+    - `href` providing the connection path if applies
+    - Any protocol-specific fields to be use to describe the connection
+- `Thing::protocols` is a dictionary
+  - The key is a string
+  - The value is a protocol identifier or an Object with the following fields
+    - A mandatory `protocol` containing a protocol identifier
+    - Additional protocol-specific fields
+- `Form::protocol` contains a string matching a key in `Thing::protocols`
+- `Form::connection` contains a string matching a key in `Thing::connections`
+
+Open questions:
+- Can we move the security machinery to connection?
+- Shall we add connection to Link as well?
+- Shall we add another dictionary `key - {protocol, connection}` ?
+  - Should the key be a scheme and shall we use it to set thing-wide defaults?  e.g.:
+    - `https` implies `{"protocol": "htv", "connection": "tls"}`
 
 ```js
 {
-    "connections": { // Should this be named to something more generic? e.g. `defaults`, `components` (like OpenAPI), `commonDefinitions`, `definitions`, `commonConnectionInformation`
+    "bases": { // Should this be named to something more generic? e.g. `defaults`, `components` (like OpenAPI), `commonDefinitions`, `definitions`, `commonConnectionInformation`
         "basichttp1" : { //trying to put EVERYTHING possible
             "href": "https://example.com", // usual base URI
             "contentType": "application/cbor", // This is the default for this Thing's forms
@@ -392,11 +432,11 @@ With the second TD (v1.1), we can see that it got longer due to not using the de
             "reusable": false // to be discussed. Can be deduced from binding
         },
         "basichttp2" : {
-            "connection":"basichttp1",
+            "base":"basichttp1",
             "htv:methodName":"PUT",
             "op":"readproperty"
         },
-       "broker" : {
+        "broker" : {
             "href": "mqtt://www.w3.org/2019/wot/broker",
             "contentType": "text/plain",
             "security":"no_sc"
@@ -413,7 +453,6 @@ With the second TD (v1.1), we can see that it got longer due to not using the de
         }
     },
     "security": "no_sec", // it is probably not needed anymore -> Should we say that if there is connections element, security and base are not allowed?
-    "connection": "basichttp", // like security, this is the default connection to be used throughout
     "properties": {
       "prop1": {
            "type":"string",
@@ -421,9 +460,7 @@ With the second TD (v1.1), we can see that it got longer due to not using the de
                 {
                    "connection": "broker",
                    "op": "readproperty",
-                   "href": "",
-                   "base":"application/devices/" // kind of weird, let's discuss :)
-                   "mqv:topic": "application/devices/thing1/program/commands/reset""mqv:",
+                   "mqv:topic": "application/devices/thing1/program/commands/reset",
                    "reusable": true,
                 }
             ]
@@ -432,12 +469,12 @@ With the second TD (v1.1), we can see that it got longer due to not using the de
             "type":"string",
             "forms": [
                 {
-                    "connection": "basichttp2",
+                    "base": "basichttp2",
                     "href": "myDevice/properties/prop2",
                     "htv:methodName":"GET"
                 },
                 {
-                    "connection": "basichttp1",
+                    "base": "basichttp1",
                     "href": "myDevice/properties/prop2"
                     // default is POST
                 }
