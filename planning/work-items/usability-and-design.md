@@ -380,21 +380,21 @@ With the second TD (v1.1), we can see that it got longer due to not using the de
 
 Design ideas for Form-reuse:
 
-- `Form` gains two additional fields `reusable` and `base`.
-- `Thing` gains an additional field `bases` (`connections` in Ege's proposal).
+- `Form` gains two additional fields: `reusable` and `base`.
+- `Thing` gains an additional field: `bases` (`connections` in Ege's proposal).
 - `Thing::bases` is a container of `Form defaults`, a dictionary of Forms.
 - The `base` field is a string matching one of the keys of `Thing::bases`.
 - There is a single-inheritance pattern given by `Form::base`
   - you can use the fields in the `Form` referred in `Form::base` as default for all the fields not present in the current `Form`
-  - `href` is additive, if present must be added to the `href` provided by the `base` (see normal approach to adding URIs)
-  - if `base` is set in the Form referred by the current Form `base`, the base form has to be resolved first.
-    - Implementation-wise, all the Forms in `Thing::bases`, can be resolved first once and the result cached.
+  - `href` is additive; if present, it must be added to the `href` provided by the `base` (see normal approach to adding URIs)
+  - if `base` is set in the Form referred to by the current Form `base`, the base form has to be resolved first.
+    - Implementation-wise, all the Forms in `Thing::bases` can be resolved once and the result cached.
   - All the other fields simply replace the default if they exist in the current Form
 - The `reusable` field is a boolean
-- A Consumer MAY decide to keep a connection alive and reuse it if `Form::reusable` is true, the exact behaviour is protocol-dependent
+- A Consumer MAY decide to keep a connection alive and reuse it if `Form::reusable` is true; the exact behaviour is protocol-dependent
   - if `Form::reusable` is set to false, the Consumer MUST tear down the connection and start anew.
 
-This make simpler to reuse Forms and provides the minimum amount of information to tell if a Consumer can reuse a connection.
+This make it simpler to reuse Forms, and provides the minimum amount of information to tell if a Consumer can reuse a connection.
 
 Design ideas for Connection descriptors
 
@@ -405,7 +405,7 @@ Design ideas for Connection descriptors
   - The key is a string
   - The value is an Object with the following fields
     - `href` providing the connection path if applies
-    - Any protocol-specific fields to be use to describe the connection
+    - Any protocol-specific fields to be used to describe the connection
 - `Thing::protocols` is a dictionary
   - The key is a string
   - The value is a protocol identifier or an Object with the following fields
@@ -424,7 +424,7 @@ Open questions:
 
 ```js
 {
-    "bases": { // Should this be named to something more generic? e.g. `defaults`, `components` (like OpenAPI), `commonDefinitions`, `definitions`, `commonConnectionInformation`
+    "bases": { // Should this be named to something more generic? e.g., `defaults`, `components` (like OpenAPI), `commonDefinitions`, `definitions`, `commonConnectionInformation`
         "basichttp1" : { //trying to put EVERYTHING possible
             "href": "https://example.com", // usual base URI
             "contentType": "application/cbor", // This is the default for this Thing's forms
