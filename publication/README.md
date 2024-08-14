@@ -38,8 +38,9 @@ at <https://w3c.github.io/wot-thing-description/> later.
 4. If there are any remaining errors/warnings with the Pubrules checker results, repeat the edit by going back to #1.
 5. Generate diff.html via <http://services.w3.org/htmldiff>
 
-Note: You cannot use a tool like <https://htmlpreview.github.io> since they do not have static html as a resource that the pubrule
+* Note1: You cannot use a tool like <https://htmlpreview.github.io> since they do not have static html as a resource that the pubrule
 checkers can use.
+* Note2: You can use the validator in a CLI environment. See <https://validator.github.io/validator/#usage>
 
 ## Manual Link Corrections
 
