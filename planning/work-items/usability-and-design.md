@@ -486,6 +486,79 @@ Open questions:
 }
 ```
 
+##### Ege: Putting Containers Together
+
+```js
+{
+    "commonDefinitions":{ // Name to be decided
+      "connectionDefinitions": {  // Name to be decided
+          "basichttp1" : {
+              "href": "https://example.com", // usual base URI
+              "contentType": "application/cbor", // This is the default for this Thing's forms
+              "security":["basic_sc"], // must be defined in securityDefinitions first
+              "htv:methodName":"POST", // This is the default for this Thing. Even a property read would be with POST unless otherwise specified
+              "op":"writeproperty"
+          },
+          "basichttp2" : {
+              "connection":"basichttp1", //
+              "htv:methodName":"PUT",
+              "op":"readproperty"
+          },
+          "broker" : {
+              "href": "mqtt://www.w3.org/2019/wot/broker",
+              "contentType": "text/plain",
+              "security":"no_sc"
+          }
+      },
+      "securityDefinitions": { // should these be also embedded into connections?
+          "no_sec": {
+              "scheme": "nosec"
+          },
+          "basic_sc":{
+              "scheme": "basic"
+          }
+      },
+      "schemaDefinitions": {
+        "schema1":{"type":"string"}
+      }
+    }
+    "title": "test",
+    "security": "no_sec", // is this needed with the connection containing the security term?
+    "connection":"basichttp1",
+    "properties": {
+      "prop1": {
+           "type":"string",
+            "forms": [
+                {
+                   "connection": "broker",
+                   "op": "readproperty",
+                   "mqv:topic": "application/devices/thing1/program/commands/reset",
+                   "reusable": true,
+                   "additionalResponses":{
+                     "schema":"schema1",
+                   }
+                }
+            ]
+        },
+        "prop2": {
+            "type":"string",
+            "forms": [
+                {
+                    "base": "basichttp2",
+                    "href": "myDevice/properties/prop2",
+                    "htv:methodName":"GET"
+                },
+                {
+                    "base": "basichttp1",
+                    "href": "myDevice/properties/prop2"
+                    // default is POST
+                }
+            ]
+        }
+    }
+}
+```
+
 ### Data Schema Mapping
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/data%20mapping)
