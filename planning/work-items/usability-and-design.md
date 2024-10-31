@@ -53,15 +53,19 @@ Checking overlaps with architecture.
 **User Stories:**
 
 1. Connection Oriented Protocols
-  - Who: As a deployer of devices with connection oriented protocols
-  - What: Reusable Connection descriptions in a TD
-  - Why: better describe connection oriented protocols such as MQTT and WebSockets (Problem nb. 4 below)
-2. Reusable Defaults per TD
-  - Who: Designer/Developer of TDs
-  - What: Reusable Connection descriptions in a TD
-  - Why: simplify TDs in cases without usage of default terms or to avoid redundancy (Problem nb. 1, 2 and 3 below)
 
-TODOs: 
+- Who: As a deployer of devices with connection oriented protocols
+- What: Reusable Connection descriptions in a TD
+- Why: better describe connection oriented protocols such as MQTT and WebSockets (Problem nb. 4 below)
+
+2. Reusable Defaults per TD
+
+- Who: Designer/Developer of TDs
+- What: Reusable Connection descriptions in a TD
+- Why: simplify TDs in cases without usage of default terms or to avoid redundancy (Problem nb. 1, 2 and 3 below)
+
+TODOs:
+
 - These can be turned into single sentences to "force" submitters to be concise.
 - The use case should be linked to the user stories above.
 
