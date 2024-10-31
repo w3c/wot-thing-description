@@ -50,14 +50,29 @@ Checking overlaps with architecture.
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/reusable%20connections)
 
+**User Stories:**
+
+1. Connection Oriented Protocols
+  - Who: As a deployer of devices with connection oriented protocols
+  - What: Reusable Connection descriptions in a TD
+  - Why: better describe connection oriented protocols such as MQTT and WebSockets (Problem nb. 4 below)
+2. Reusable Defaults per TD
+  - Who: Designer/Developer of TDs
+  - What: Reusable Connection descriptions in a TD
+  - Why: simplify TDs in cases without usage of default terms or to avoid redundancy (Problem nb. 1, 2 and 3 below)
+
+TODOs: 
+- These can be turned into single sentences to "force" submitters to be concise.
+- The use case should be linked to the user stories above.
+
 **Problem:**
 Currently, each form of an affordance has information on the endpoint, media type and other protocol related information.
 It is possible to use the base term for simplifying the endpoint but it has limitations such as:
 
-- If the media type is common across forms but is not `application/json`, it is repeated in each form.
-- If there are common protocol stack configurations such as different default verbs, baud rates, and endianness, they are repeated in each form
-- Multiple bases are not possible. Thus, each form repeats multiple bases. This is relevant when a TD has local and public IP addresses
-- For protocols that are based on an initial connection and then subsequent messages, the semantics are not clear. Thus, a Consumer can establish multiple connections instead of reusing the initial connection. See the Example of the Message Flow section below
+1. If the media type is common across forms but is not `application/json`, it is repeated in each form.
+2. If there are common protocol stack configurations such as different default verbs, baud rates, and endianness, they are repeated in each form
+3. Multiple bases are not possible. Thus, each form repeats multiple bases. This is relevant when a TD has local and public IP addresses
+4. For protocols that are based on an initial connection and then subsequent messages, the semantics are not clear. Thus, a Consumer can establish multiple connections instead of reusing the initial connection. See the Example of the Message Flow section below
 
 Related Issues:
 
