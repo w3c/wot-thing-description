@@ -53,7 +53,7 @@ Checking overlaps with architecture.
 TODOs:
 
 - The use case should be linked to the user stories above.
-- Bring the text from the issues comments such as https://github.com/w3c/wot-thing-description/issues/1248#issuecomment-2247656558 and 
+- Bring the text from the issues comments such as https://github.com/w3c/wot-thing-description/issues/1248#issuecomment-2247656558 and
 
 **User Stories:**
 
