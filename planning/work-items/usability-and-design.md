@@ -50,26 +50,31 @@ Checking overlaps with architecture.
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/reusable%20connections)
 
+TODOs:
+
+- The use case should be linked to the user stories above.
+- Bring the text from the issues comments such as https://github.com/w3c/wot-thing-description/issues/1248#issuecomment-2247656558 and 
+
 **User Stories:**
 
 1. Connection Oriented Protocols
 
-- Who: As a deployer of devices with connection oriented protocols
-- What: Reusable Connection descriptions in a TD
-- Why: better describe connection oriented protocols such as MQTT and WebSockets (Problem nb. 4 below)
+- **Who:** Deployer of devices with connection oriented protocols
+- **What:** Reusable Connection descriptions in a TD
+- **Why:** Better describe connection oriented protocols such as MQTT and WebSockets (Problem nb. 4 below)
+
+- Sentence: **As a** deployer of devices with connection oriented protocols, **I need** reusable Connection descriptions in a TD, **so that I can** better describe connection oriented protocols such as MQTT and WebSockets (Problem nb. 4 below)
 
 2. Reusable Defaults per TD
 
-- Who: Designer/Developer of TDs
-- What: Reusable Connection descriptions in a TD
-- Why: simplify TDs in cases without usage of default terms or to avoid redundancy (Problem nb. 1, 2 and 3 below)
+- **Who:** Designer/Developer of TDs
+- **What:** Reusable Connection descriptions in a TD
+- **Why:** Simplify TDs in cases without usage of default terms or to avoid redundancy (Problem nb. 1, 2 and 3 below)
 
-TODOs:
-
-- These can be turned into single sentences to "force" submitters to be concise.
-- The use case should be linked to the user stories above.
+- Sentence: **As a** designer/developer of TDs, **I need** reusable connection descriptions in a TD, **so that I can** simplify TDs in cases without usage of default terms or to avoid redundancy (Problem nb. 1, 2 and 3 below).
 
 **Problem:**
+
 Currently, each form of an affordance has information on the endpoint, media type and other protocol related information.
 It is possible to use the base term for simplifying the endpoint but it has limitations such as:
 
@@ -94,8 +99,10 @@ Related Issues:
 
 - Basic Requirement: A mechanism to describe connection and protocol information that other forms can use is needed. In protocols with initial connection, this can also be used to indicate what needs to be done by the Consumer before executing any operation.
 - Detailed Requirements:
-  - Each connection needs to be identifiable, but we need to make sure not to include privacy or security risks
+  - Each connection needs to be identifiable
+  - Each connection needs to be linkable from affordances or forms
   - The initial connection must not be mandatory to establish upon TD consumption and should left to the implementation when to establish and close it.
+- Requirements are available at <https://github.com/w3c/wot-thing-description/issues/1248#issuecomment-2247656558>
 
 **Notes:**
 
