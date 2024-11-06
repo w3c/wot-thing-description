@@ -54,7 +54,7 @@ TODOs:
 
 - The use case should be linked to the user stories above.
 - Bring the text from the issues comments such as https://github.com/w3c/wot-thing-description/issues/1248#issuecomment-2247656558 and
-- Collect Stakeholders: People who submitted issues/UCs (who wants it first), spec writers (people from the TF who want to help writing the spec on this feature), people who want to implement the feature in their implementation, people who will be impacted by the change (this is probably the whole community). These stakeholders each need a clear definition and example. The kind of impact (implementation, security, privacy, etc.) needs to be defined as well.
+- Collect Stakeholders: People who submitted issues/UCs (people who want it first), spec writers (people from the TF who want to help write the spec on this feature), people who want to implement the feature in their implementation, people who will be impacted by the change (this is probably the whole community). These stakeholders each need a clear definition and example. The kind of impact (implementation, security, privacy, etc.) needs to be defined as well.
 
 **User Stories:**
 
