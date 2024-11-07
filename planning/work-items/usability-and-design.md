@@ -88,7 +88,7 @@ TODOs:
   - Implementation Volunteers: Ege Korkan
   - Impacted: TD Designers and Consumers. Type: Implementation Overhead
 
-**Problem:**
+**Summarized Problem:**
 
 Currently, each form of an affordance has information on the endpoint, media type and other protocol related information.
 It is possible to use the base term for simplifying the endpoint but it has limitations such as:
@@ -112,12 +112,32 @@ Related Issues:
 
 **Requirements**
 
-- Basic Requirement: A mechanism to describe connection and protocol information that other forms can use is needed. In protocols with initial connection, this can also be used to indicate what needs to be done by the Consumer before executing any operation.
-- Detailed Requirements:
-  - Each connection needs to be identifiable
-  - Each connection needs to be linkable from affordances or forms
-  - The initial connection must not be mandatory to establish upon TD consumption and should left to the implementation when to establish and close it.
-- Requirements are available at <https://github.com/w3c/wot-thing-description/issues/1248#issuecomment-2247656558>
+- There are 3 main points. Point 2 is about a keyword (more or less), whereas point 3 is more about the underlying mechanism. 
+  1. Having a place to put common connection information
+  2. Linking to a common connection information.
+  3. Signaling that a form in an affordance can reuse the connection established before so that the Consumer does not open a new connection per operation execution
+- We want a global media type that behaves the same way as `security` in the root level, i.e. each form that does not have a `contentType` key, uses the one defined globally, somewhere in the root level of the TD. Relevant issues: https://github.com/w3c/wot-thing-description/issues/204 , https://github.com/w3c/wot-binding-templates/issues/357 . Points to pay attention:
+  - In case of affordances that are incompatible with the global media type, overriding must be mandated. An unstructured data at root level, e.g. jpeg, must be overridden by an affordance that has data schema.
+  - Negative: Message serialization from TD consumption will be more complex as a preprocessing of the TD is now needed. If there are multiple global media types, referring to them and resolving those will increase the complexity of the preprocessing step. 
+  - Positive: It is easier check for the Consumer, which media types (their decoder/encoder) are needed to be supported to talk to the Thing. Furthermore, as can be understood in the BACnet issue, it is currently not clear that a form requires a media type. This addition can help with this.
+  - These negative and positive aspects will be visible in other points and can be named "tradeoffs". As mentioned in https://github.com/w3c/wot-thing-description/issues/803#issuecomment-526386771, any optimization of TD instances create more processing need while making them easier to understand and write by humans, at least in simpler cases.
+  - Linking aspect is common to single connection and single base points
+
+- We want to support multiple base URIs that behaves the same way as `securityDefinitions` in the root level, where each form can contain a relative URI and refer to a base, like we do now with `security`. Relevant issues: https://github.com/w3c/wot-thing-description/issues/803, https://github.com/w3c/wot-thing-description/issues/878 (starting at https://github.com/w3c/wot-thing-description/issues/878#issuecomment-598714052)
+  - Proposals are available in #878: on the container structure called `connections`, `endpoints`: https://github.com/w3c/wot-thing-description/issues/878#issuecomment-924158987
+  - Proposal about the container at https://github.com/w3c/wot-thing-description/issues/1070#issuecomment-815095825
+  - Mention that canonical TDs can contain the expanded forms with everything doubled. This is applicable to global media type mentioned above.
+
+- An initial connection to the Thing should be expressed somehow. This avoids misinterpretation of reopening a connection twice, when there is no need and gives correct semantics for some protocols. Relevant Issues: #878, #977, #1070, #1242, #1664
+  - Proposals are available in #878 to:
+    - have an `op` value called `open` or a signifier to establish a connection. Consensus from Sept15, 2021 is to not have an op. https://github.com/w3c/wot-thing-description/issues/878#issuecomment-920148181
+    - `dependsOn` keyword in non-base forms
+  - A proposal in #977 shows URL templating to refer to the base connection: https://github.com/w3c/wot-thing-description/issues/977#issuecomment-702397973
+  - Proposal in https://github.com/w3c/wot-thing-description/issues/1070#issuecomment-815095825 for linking via pointers and has two proposals
+  - The Consumer should be smart to not open new connections, even without this. This only makes it clearer for humans and simpler implementations.
+  - There needs to be a way to signal a connection shared for multiple Things. See #1664.
+
+- Wrapper Schemas comes into question if all communication over that initial connection follows the same message structure. Related issues https://github.com/w3c/wot-thing-description/issues/878#issuecomment-888433789. This is relevant to global media type and security in a way. Also relates to data mapping.
 
 **Notes:**
 
