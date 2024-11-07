@@ -52,7 +52,6 @@ Checking overlaps with architecture.
 
 TODOs:
 
-- The use case should be linked to the user stories above.
 - Move the "Process Stakeholder" definitions somewhere:
   - Submitter: People who have submitted the user story, is interested in it and thus wants this story to be succesful.
   - Specification Writers: People from the TF who want to (or can) work on writing the specification text and corresponding resources.
