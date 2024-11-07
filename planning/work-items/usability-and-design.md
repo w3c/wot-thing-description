@@ -54,7 +54,11 @@ TODOs:
 
 - The use case should be linked to the user stories above.
 - Bring the text from the issues comments such as https://github.com/w3c/wot-thing-description/issues/1248#issuecomment-2247656558 and
-- Collect Stakeholders: People who submitted issues/UCs (people who want it first), spec writers (people from the TF who want to help write the spec on this feature), people who want to implement the feature in their implementation, people who will be impacted by the change (this is probably the whole community). These stakeholders each need a clear definition and example. The kind of impact (implementation, security, privacy, etc.) needs to be defined as well.
+- Move these definitions somewhere:
+  - Submitter: People who have submitted the user story and thus wants this story to be succesful.
+  - Specification Writers: People from the TF who want to (or can) work on writing the specification text and corresponding resources.
+  - Implementation Volunteers: People who want to implement this and contribute the results to the implementation report. The submitter is strongly encouraged to provide an implementation result.
+  - Impacted: Entities that will be impacted by this. Impact type can be "implementation overhead", "security", "privacy", "accesibility" etc.
 
 **User Stories:**
 
@@ -65,6 +69,11 @@ TODOs:
 - **Why:** Better describe connection oriented protocols such as MQTT and WebSockets (Problem nb. 4 below)
 
 - Sentence: **As a** deployer of devices with connection oriented protocols, **I need** reusable Connection descriptions in a TD, **so that I can** better describe connection oriented protocols such as MQTT and WebSockets (Problem nb. 4 below)
+- Stakeholders:
+  - Submitter: Multiple
+  - Specification Writers: Ege Korkan
+  - Implementation Volunteers: Ege Korkan
+  - Impacted: TD Designers and Consumers. Type: Implementation Overhead
 
 2. Reusable Defaults per TD
 
@@ -73,6 +82,11 @@ TODOs:
 - **Why:** Simplify TDs in cases without usage of default terms or to avoid redundancy (Problem nb. 1, 2 and 3 below)
 
 - Sentence: **As a** designer/developer of TDs, **I need** reusable connection descriptions in a TD, **so that I can** simplify TDs in cases without usage of default terms or to avoid redundancy (Problem nb. 1, 2 and 3 below).
+- Stakeholders:
+  - Submitter: Multiple
+  - Specification Writers: Ege Korkan
+  - Implementation Volunteers: Ege Korkan
+  - Impacted: TD Designers and Consumers. Type: Implementation Overhead
 
 **Problem:**
 
