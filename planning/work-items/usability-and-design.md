@@ -270,6 +270,360 @@ In this case, the Thing has enough resources and contains its own HTTP server.
 
 ![Message Sequence](./images/initial-connection-Proxy-sequence.svg)
 
+#### New Proposals
+
+##### Ege
+
+Title: Common Connection Information is placed in a top-level element
+
+- An object like `securityDefinitions`, where keys can be chosen by the TD designer.
+- Inside each key, we have all elements of a form except the op keyword and an additional `reusable` keyword with a boolean. It would be false for HTTP, true for broker-based connections or WebSockets.
+- If not otherwise defined in a form, the value of `connection` in the root level is used as a default in that form
+- Any form that redefines the values of the connection, replaces them.
+- If a value is not defined in the connection, the value in forms are taken
+- If a value is not defined in the connection nor form, the defaults of the binding or TD spec are taken
+
+```js
+{
+    "connections": { // Should this be named to something more generic? e.g. `defaults`, `components` (like OpenAPI), `commonDefinitions`, `definitions`, `commonConnectionInformation`
+        "basichttp" : { //trying to put EVERYTHING possible
+            "href": "https://example.com", // usual base URI
+            "contentType": "application/cbor", // This is the default for this Thing's forms
+            "security":["basic_sc"], // must be defined in securityDefinitions first
+            "htv:methodName":"POST", // This is the default for this Thing. Even a property read would be with POST unless otherwise specified
+            "reusable": false, // to be discussed. Can be deduced from binding
+        },
+       "broker" : {
+            "href": "mqtt://www.w3.org/2019/wot/broker",
+            "contentType": "text/plain",
+            "security":"no_sc",
+            "reusable": true,
+            // for how long can the connection be reused?
+        }
+    },
+    "title": "test",
+    "securityDefinitions": { // should these be also embedded into connections?
+        "no_sec": {
+            "scheme": "nosec"
+        },
+        "basic_sc":{
+            "scheme": "basic"
+        }
+    },
+    "security": "no_sec", // it is probably not needed anymore -> Should we say that if there is connections element, security and base are not allowed?
+    "connection": "basichttp", // like security, this is the default connection to be used throughout
+    "properties": {
+      "prop1": {
+           "type":"string",
+            "forms": [
+                {
+                   "connection": "broker",
+                   "op": "readproperty",
+                   "href": "",
+                   "base":"application/devices/" // kind of weird, let's discuss :)
+                   "mqv:topic": "application/devices/thing1/program/commands/reset""mqv:"
+                }
+            ]
+        },
+        "prop2": {
+            "type":"string",
+            "forms": [
+                {
+                    "connection": "basichttp",
+                    "op":["readproperty"],
+                    "href": "myDevice/properties/prop2",
+                    "htv:methodName":"GET"
+                },
+                {
+                    "connection": "basichttp",
+                    "op":"writeproperty",
+                    "href": "myDevice/properties/prop2"
+                    // default is POST
+                }
+            ]
+        }
+    }
+}
+```
+
+- The following two are the same TD
+
+```js
+{
+    "connections": {
+        "basichttp" : {
+            "href": "https://example.com",
+            "contentType": "application/cbor",
+            "security":"basic_sc",
+            "htv:methodName":"POST",
+            "reusable": false
+        }
+    },
+    "title": "test",
+    "securityDefinitions": {
+        "basic_sc":{
+            "scheme": "basic"
+        }
+    },
+    "connection": "basichttp", // can be ignored if there is only one connection?
+    "properties": {
+      "prop1": {
+           "type":"string",
+            "forms": [
+                {
+                   "op": "readproperty",
+                   "href": "myDevice/properties/prop1"
+                   // reading with POST in this case
+                }
+            ]
+        },
+        "prop2": {
+            "type":"string",
+            "forms": [
+                {
+                    "op":["readproperty"],
+                    "href": "myDevice/properties/prop2",
+                    "htv:methodName":"GET"
+                },
+                {
+                    "op":"writeproperty",
+                    "href": "myDevice/properties/prop2"
+                    // default is POST
+                }
+            ]
+        }
+    }
+}
+```
+
+```js
+{
+    "base": "https://example.com",
+    "security":"basic_sc"
+    "title": "test",
+    "securityDefinitions": {
+        "basic_sc":{
+            "scheme": "basic"
+        }
+    },
+    "properties": {
+      "prop1": {
+           "type":"string",
+            "forms": [
+                {
+                   "op": "readproperty",
+                   "contentType":"application/cbor",
+                   "href": "myDevice/properties/prop1",
+                   "htv:methodName":"POST"
+                }
+            ]
+        },
+        "prop2": {
+            "type":"string",
+            "forms": [
+                {
+                    "op":["readproperty"],
+                    "contentType":"application/cbor",
+                    "href": "myDevice/properties/prop2",
+                    "htv:methodName":"GET"
+                },
+                {
+                    "op":"writeproperty",
+                    "contentType":"application/cbor",
+                    "href": "myDevice/properties/prop2"
+                    "htv:methodName":"POST"
+                }
+            ]
+        }
+    }
+}
+```
+
+With the second TD (v1.1), we can see that it got longer due to not using the defaults of the binding. This effect would be amplified with the number of the affordances and forms the TD has.
+
+##### Luca - Form-reuse + Connection descriptors
+
+Design ideas for Form-reuse:
+
+- `Form` gains two additional fields: `reusable` and `base`.
+- `Thing` gains an additional field: `bases` (`connections` in Ege's proposal).
+- `Thing::bases` is a container of `Form defaults`, a dictionary of Forms.
+- The `base` field is a string matching one of the keys of `Thing::bases`.
+- There is a single-inheritance pattern given by `Form::base`
+  - you can use the fields in the `Form` referred in `Form::base` as default for all the fields not present in the current `Form`
+  - `href` is additive; if present, it must be added to the `href` provided by the `base` (see normal approach to adding URIs)
+  - if `base` is set in the Form referred to by the current Form `base`, the base form has to be resolved first.
+    - Implementation-wise, all the Forms in `Thing::bases` can be resolved once and the result cached.
+  - All the other fields simply replace the default if they exist in the current Form
+- The `reusable` field is a boolean
+- A Consumer MAY decide to keep a connection alive and reuse it if `Form::reusable` is true; the exact behaviour is protocol-dependent
+  - if `Form::reusable` is set to false, the Consumer MUST tear down the connection and start anew.
+
+This make it simpler to reuse Forms, and provides the minimum amount of information to tell if a Consumer can reuse a connection.
+
+Design ideas for Connection descriptors
+
+- `Form` loses `subprotocol`
+- `Form` gains `protocol`
+- `Thing` gains `protocols` and `connections`
+- `Thing::connections` is a dictionary
+  - The key is a string
+  - The value is an Object with the following fields
+    - `href` providing the connection path if applies
+    - Any protocol-specific fields to be used to describe the connection
+- `Thing::protocols` is a dictionary
+  - The key is a string
+  - The value is a protocol identifier or an Object with the following fields
+    - A mandatory `protocol` containing a protocol identifier
+    - Additional protocol-specific fields
+- `Form::protocol` contains a string matching a key in `Thing::protocols`
+- `Form::connection` contains a string matching a key in `Thing::connections`
+
+Open questions:
+
+- Can we move the security machinery to connection?
+- Shall we add connection to Link as well?
+- Shall we add another dictionary `key - {protocol, connection}` ?
+  - Should the key be a scheme and shall we use it to set thing-wide defaults? e.g.:
+    - `https` implies `{"protocol": "htv", "connection": "tls"}`
+
+```js
+{
+    "bases": { // Should this be named to something more generic? e.g., `defaults`, `components` (like OpenAPI), `commonDefinitions`, `definitions`, `commonConnectionInformation`
+        "basichttp1" : { //trying to put EVERYTHING possible
+            "href": "https://example.com", // usual base URI
+            "contentType": "application/cbor", // This is the default for this Thing's forms
+            "security":["basic_sc"], // must be defined in securityDefinitions first
+            "htv:methodName":"POST", // This is the default for this Thing. Even a property read would be with POST unless otherwise specified
+            "op":"writeproperty",
+            "reusable": false // to be discussed. Can be deduced from binding
+        },
+        "basichttp2" : {
+            "base":"basichttp1",
+            "htv:methodName":"PUT",
+            "op":"readproperty"
+        },
+        "broker" : {
+            "href": "mqtt://www.w3.org/2019/wot/broker",
+            "contentType": "text/plain",
+            "security":"no_sc"
+            // for how long can the connection be reused?
+        }
+    },
+    "title": "test",
+    "securityDefinitions": { // should these be also embedded into connections?
+        "no_sec": {
+            "scheme": "nosec"
+        },
+        "basic_sc":{
+            "scheme": "basic"
+        }
+    },
+    "security": "no_sec", // it is probably not needed anymore -> Should we say that if there is connections element, security and base are not allowed?
+    "properties": {
+      "prop1": {
+           "type":"string",
+            "forms": [
+                {
+                   "connection": "broker",
+                   "op": "readproperty",
+                   "mqv:topic": "application/devices/thing1/program/commands/reset",
+                   "reusable": true,
+                }
+            ]
+        },
+        "prop2": {
+            "type":"string",
+            "forms": [
+                {
+                    "base": "basichttp2",
+                    "href": "myDevice/properties/prop2",
+                    "htv:methodName":"GET"
+                },
+                {
+                    "base": "basichttp1",
+                    "href": "myDevice/properties/prop2"
+                    // default is POST
+                }
+            ]
+        }
+    }
+}
+```
+
+##### Ege: Putting Containers Together
+
+```js
+{
+    "commonDefinitions":{ // Name to be decided
+      "connectionDefinitions": {  // Name to be decided
+          "basichttp1" : {
+              "href": "https://example.com", // usual base URI
+              "contentType": "application/cbor", // This is the default for this Thing's forms
+              "security":["basic_sc"], // must be defined in securityDefinitions first
+              "htv:methodName":"POST", // This is the default for this Thing. Even a property read would be with POST unless otherwise specified
+              "op":"writeproperty"
+          },
+          "basichttp2" : {
+              "connection":"basichttp1", //
+              "htv:methodName":"PUT",
+              "op":"readproperty"
+          },
+          "broker" : {
+              "href": "mqtt://www.w3.org/2019/wot/broker",
+              "contentType": "text/plain",
+              "security":"no_sc"
+          }
+      },
+      "securityDefinitions": { // should these be also embedded into connections?
+          "no_sec": {
+              "scheme": "nosec"
+          },
+          "basic_sc":{
+              "scheme": "basic"
+          }
+      },
+      "schemaDefinitions": {
+        "schema1":{"type":"string"}
+      }
+    }
+    "title": "test",
+    "security": "no_sec", // is this needed with the connection containing the security term?
+    "connection":"basichttp1",
+    "properties": {
+      "prop1": {
+           "type":"string",
+            "forms": [
+                {
+                   "connection": "broker",
+                   "op": "readproperty",
+                   "mqv:topic": "application/devices/thing1/program/commands/reset",
+                   "reusable": true,
+                   "additionalResponses":{
+                     "schema":"schema1",
+                   }
+                }
+            ]
+        },
+        "prop2": {
+            "type":"string",
+            "forms": [
+                {
+                    "base": "basichttp2",
+                    "href": "myDevice/properties/prop2",
+                    "htv:methodName":"GET"
+                },
+                {
+                    "base": "basichttp1",
+                    "href": "myDevice/properties/prop2"
+                    // default is POST
+                }
+            ]
+        }
+    }
+}
+```
+
 ### Data Schema Mapping
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/data%20mapping)
