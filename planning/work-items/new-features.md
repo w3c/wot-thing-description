@@ -41,6 +41,11 @@ Related Issues:
 - <https://github.com/w3c/wot-thing-description#1644>
 - <https://github.com/w3c/wot-thing-description#1223>
 
+Related Real World Implementations:
+
+- BACnet Alarms: See the full discussion at <https://github.com/w3c/wot-binding-templates/pull/379>
+- OpenFlexure Microscope: Multiple long-running affordances. See [TD](https://github.com/w3c/wot-testing/tree/main/events/2024.11.Munich/TDs/openflexure) and [presentation](https://www.youtube.com/watch?v=TI6HUOw6lhU)
+
 ## Streaming
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/streaming)
