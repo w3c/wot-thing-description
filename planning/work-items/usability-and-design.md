@@ -270,6 +270,482 @@ In this case, the Thing has enough resources and contains its own HTTP server.
 
 ![Message Sequence](./images/initial-connection-Proxy-sequence.svg)
 
+#### Basic mechanism
+
+##### Defaultable elements
+
+An element that is defaultable has a container `{element}Def` at the root of the Thing that is a map of element of that kind.
+
+Every element as a term `inherit` that points to a single element in `{element}Def`, if inherit is populated all the fields in the pointed element are used as default for the current element. 
+
+##### Inlineable fields
+
+A field may contain either a string pointing to an element in `{element}Def` or may contain the element of that kind itself.
+
+##### Thing-wide default
+
+Fields that override the starting default for all the elements of that kind.
+
+##### Usage in the TD
+
+`Form`, `Connection`, `DataSchema` and `Security` are **Defaultable Elements**. All the fields that can take one are **Inlineable fields**.
+
+#### Keywords and Types
+
+##### Thing Level
+
+###### Thing-wide defaults
+
+These set a default for the whole Thing
+
+- **connection**: 
+  - *type*: String pointing to the `connectionDefinitions` map or Object with type `Connection`.
+  - *Mandatory*: Optional.
+  - *Description*: A reference to or an in-place definition of a connection definition, if missing a protocol binding default is in place.
+  - *Remarks*: If string, it MUST refer to a first-level key in `connectionDefinitions`.
+- **security**:
+  - *type*: String pointing to the `securityDefinitions` map or Object with type `Security` (currently called SecurityScheme)
+  - *Mandatory*: Optional
+  - *Description*: 
+  - *Remarks*: The array of strings of the current spec can be dropped
+- **schema**: This will be done later to express default data schemas (e.g. lwm2m object wrapper)
+- **form**: 
+  - *type*: String pointing to the `formDefinitions` map or Object with type`Form`.
+  - *Mandatory*: Optional
+  - *Description*: A reference to or an in-place definition of a Form, if missing the affordance/operation-specific defaults apply.
+  - *Remarks*: If string, it MUST refer to a first-level key in `formDefinitions`.
+
+###### Definitions/Defaults container
+
+- **connectionDefinitions**:
+  - *type*: Map of Object with of type `Connection`.
+  - *Mandatory*: Optional
+  - *Description*: A set of connections that can be reused in forms to group common connection information such as a base URI or security
+  - *Remarks*: The first-level keys are free to choose by the TD producer.
+- **formDefinitions**:
+  - *type*: Map of Object with of type `Form`.
+  - *Mandatory*: Optional
+  - *Description*: A set of form information that can be referenced in a forms to group common form information such as `contentType`.
+  - *Remarks*: The first-level keys are free to choose by the TD producer. 
+- **schemaDefinitions**:
+  - *type*: Map of Object with of type `DataSchema`.
+  - *Mandatory*: Optional
+  - *Description*: 
+  - *Remarks*: The first-level keys are free to choose by the TD producer. Same as now 
+- **securityDefinitions**:
+  - *type*: Map of Object with of type ~~`SecurityScheme`~~ `Security`.
+  - *Mandatory*: Optional
+  - *Description*: 
+  - *Remarks*: The first-level keys are free to choose by the TD producer. Same as now
+
+Note: Even if a single form of an affordance is not complete, a defaultable element should exist.
+
+
+##### Elements
+
+###### Overall Rules
+
+- All of them contain `inherit`, which has type `String`
+- Form can refer to a connection via `Form::connection`
+- Connection can refer to a security `Connection::security`
+- Form can refer to a schema via `Form::additionalResponse` (no change)
+- Security can be overridden in a form using an inline definition for connection. No `security` term in the form level.
+- Thing can refer to some forms in `Thing::forms`
+- Security cannot refer to a connection, form or schema
+- Connection cannot refer to a form or schema
+- Schema cannot refer to anything beside itself, i.e. inheriting or `oneOf` etc.
+
+###### Connection
+
+- **base**:
+  - *type*: String of URI
+  - *Mandatory*: Optional
+  - *Description*: The base URI that is used for building an absolute URI together with relative URIs in forms
+  - *Remarks*: None
+- **security**:
+  - *type*: SecurityDefinition (no change)
+  - *Mandatory*: Mandatory
+  - *Description*: 
+  - *Remarks*: 
+Note: When the security definition moves to the bindings, these terms can be moved a layer up to `connection`
+
+###### Form
+
+- **connection**: 
+  - *type*: String or Object with type `Connection`.
+  - *Mandatory*: Optional.
+  - *Description*: A reference to or an in-place definition of a connection definition
+  - *Remarks*: If string, it MUST refer to a first-level key in `connectionDefinitions`.
+- **op**:
+  - *type*: String or Array of String (no change)
+  - *Mandatory*: with default
+  - *Description*: 
+  - *Remarks*: 
+- **contentType**:
+  - *type*: String (no change)
+  - *Mandatory*: with default
+  - *Description*: 
+  - *Remarks*: 
+
+###### Schema
+
+Same as now
+
+###### Security
+
+Same as now
+
+#### Guidelines
+
+hints for designing TDs. When to use this or not.
+
+1. If you have one mechanism (security, connection, form, schema), just inline it.
+
+
+- Security term at the top level is optional
+    - McCool not mandatory -> Reducing verbosity, make TDs simpler and shorter. People say it is annoying and does not improve security. Defining a "useless" security at the top and always overwriting it is not clear.
+- No resolution: Having no security field at all (none in the forms, none in the top level) -> reverting to defaults
+- No resolution: Security defaults: 
+  - McCool auto -> Assuming nosec is wrong assumption
+
+TODO: Documenting why we have multi sec for one Thing. Some properties being public, some not. Reading being public, writing not.
+
+##### Validation Rules
+
+- Reference for an object that doesn't exist: What happens in TD 1.1 is same here.
+
+#### Algorithm
+
+TODO: Discuss flattening, normalization and canonicalization algorithm should take the connection
+
+Each TD form MUST be expanded before using its information in a protocol driver. It does repeat until the there is no populated `inherit`. (single inheritance)
+
+To expand the form in an affordance:
+- Check if there is a `connection` or a `form` available. If neither is present, check if there is a top-level `connection` or a `form` available. If neither is present, this form is complete and can be used in a binding driver.
+
+#### Examples
+
+##### TD Examples
+
+1. One Connection, one Form, one security no definitions
+
+1.a Defaults separate
+
+```js
+{
+  "title": "test",
+  "connection":{
+      "base": "https://example.com"
+  },
+  "form":{
+      "contentType":"application/json"
+  },
+  "security":{
+      "scheme":"nosec"
+  },
+  "properties": {
+    "prop1": {
+     "type":"string",
+     "forms": [
+      {
+       "href": "/props/prop1"
+      }
+     ]
+   },
+   "prop2": {
+    "type":"string",
+    "forms": [
+      {
+       "href": "/props/prop2"
+      }
+    ]
+   }
+  }
+}
+```
+
+1.b Only with form
+
+```js
+{
+  "title": "test",
+  "form":{
+      "contentType":"application/json",
+      "connection":{
+          "base": "https://example.com",
+          "security":{
+            "scheme":"nosec"
+          }
+      }
+  },
+  "properties": {
+    "prop1": {
+     "type":"string",
+     "forms": [
+      {
+       "href": "/props/prop1"
+      }
+     ]
+   },
+   "prop2": {
+    "type":"string",
+    "forms": [
+      {
+       "href": "/props/prop2"
+      }
+    ]
+   }
+  }
+}
+```
+
+2. Equivalent Example to above, just more verbose
+
+```js
+{
+  "title": "test",
+  "connectionDefinitions": {
+    "conn1" : {
+      "base": "https://example.com"
+      // "security":"sec1" can be added here instead. We should recommend since there is only one.
+    }
+  },
+  "formDefinitions":{
+      "form1": {
+        "contentType":"application/json",
+        // "connection":"conn1" can be added here instead. We should recommend since there is only one.
+      }
+  },
+  "securityDefinitions":{
+      "sec1":{
+          "scheme":"nosec"
+      }
+  },
+  "connection": "conn1",
+  "form":"form1",
+  "security":"sec1", // This applies to all connections
+  "properties": {
+    "prop1": {
+     "type":"string",
+     "forms": [
+      {
+       "href": "/props/prop1"
+      }
+     ]
+   },
+   "prop2": {
+    "type":"string",
+    "forms": [
+      {
+       "href": "/props/prop2"
+      }
+    ]
+   }
+  }
+}
+```
+
+3. Equivalent Example to above without reuse (same as TD 1.0 but with security in form)
+
+```js
+{
+  "title": "test",
+  "properties": {
+    "prop1": {
+     "type":"string",
+     "forms": [
+      {
+       "href": "https://example.com/props/prop1",
+       "connection":{
+           "security":{"scheme":"nosec"}
+       }, // this is possible but we want to flatten
+       "contentType":"application/json"
+      }
+     ]
+   },
+   "prop2": {
+    "type":"string",
+    "forms": [
+      {
+       "href": "https://example.com/props/prop2",
+       // applying flattening, we would get this
+       "security":{"scheme":"basic"},
+       "contentType":"application/json"
+      }
+    ]
+   }
+  }
+}
+```
+
+4. Equivalent Example to above without defaults
+
+4.a Completely flat
+
+```js
+{
+  "title": "test",
+  "securityDefinitions":{
+    "sec1":{
+      "scheme":"nosec"
+    }
+  },
+  "connectionDefinitions": {
+    "conn1" : {
+      "base": "https://example.com"
+    }
+  },
+  "formDefinitions":{
+      "form1": {
+        "contentType":"application/json"
+      }
+  },
+  "properties": {
+    "prop1": {
+     "type":"string",
+     "forms": [
+      {
+       "connection":"conn1",
+       "form":"form1",
+       "security":"sec1",
+       "href": "/props/prop1"
+      }
+     ]
+   },
+   "prop2": {
+    "type":"string",
+    "forms": [
+      {
+       "connection":"conn1",
+       "form":"form1",
+       "security":"sec1",
+       "href": "/props/prop2"
+      }
+    ]
+   }
+  }
+}
+```
+4.b Definition-level reusage
+
+```js
+{
+  "title": "test",
+  "securityDefinitions":{
+      "sec1":{
+          "scheme":"nosec"
+      }
+  },
+  "connectionDefinitions": {
+    "conn1" : {
+      "security":"sec1",
+      "base": "https://example.com"
+    }
+  },
+  "formDefinitions":{
+      "form1": {
+        "connection":"conn1",
+        "contentType":"application/json"
+      }
+  },
+  "properties": {
+    "prop1": {
+     "type":"string",
+     "forms": [
+      {
+       "form":"form1",
+       "href": "/props/prop1"
+      }
+     ]
+   },
+   "prop2": {
+    "type":"string",
+    "forms": [
+      {
+       "form":"form1",
+       "href": "/props/prop2"
+      }
+    ]
+   }
+  }
+}
+```
+
+5. Requiring more security for writing
+
+```js
+{
+  "title": "test",
+  "connectionDefinitions": {
+    "conn1" : {
+      "base": "https://example.com"
+    }
+  },
+  "formDefinitions":{
+      "form1": {
+        "contentType":"application/json"
+      }
+  },
+  "securityDefinitions":{
+      "sec1":{
+          "scheme":"nosec"
+      },
+      "sec2":{
+          "scheme":"basic"
+      }
+  },
+  "connection": "conn1",
+  "form":"form1",
+  "security":"sec1",
+  "properties": {
+    "prop1": {
+     "type":"string",
+     "forms": [
+      {
+       "href": "/props/prop1",
+       "op":"readproperty"
+      },
+      {
+       "href": "/props/prop1",
+       "op":"writeproperty",
+       "connection":{
+          "inherit":"conn1",
+          "security":"sec2"
+       }
+      }
+     ]
+   },
+   "prop2": {
+    "type":"string",
+    "forms": [
+      {
+       "href": "/props/prop2"
+      }
+    ]
+   }
+  }
+}
+```
+
+```
+{
+  connection: "something",
+  op: "readproperty"
+},
+{
+  connection: "something-strict",
+  op: "writeproperty"
+}
+```
+
+##### TD Examples with State Machines for MQTT and WS
+
+TODO
+
+#### How to combine with TMs
+
+TODO
+
 ### Data Schema Mapping
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/data%20mapping)
