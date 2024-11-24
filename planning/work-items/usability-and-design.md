@@ -276,7 +276,7 @@ In this case, the Thing has enough resources and contains its own HTTP server.
 
 An element that is defaultable has a container `{element}Def` at the root of the Thing that is a map of element of that kind.
 
-Every element as a term `inherit` that points to a single element in `{element}Def`, if inherit is populated all the fields in the pointed element are used as default for the current element. 
+Every element as a term `inherit` that points to a single element in `{element}Def`, if inherit is populated all the fields in the pointed element are used as default for the current element.
 
 ##### Inlineable fields
 
@@ -298,48 +298,47 @@ Fields that override the starting default for all the elements of that kind.
 
 These set a default for the whole Thing
 
-- **connection**: 
-  - *type*: String pointing to the `connectionDefinitions` map or Object with type `Connection`.
-  - *Mandatory*: Optional.
-  - *Description*: A reference to or an in-place definition of a connection definition, if missing a protocol binding default is in place.
-  - *Remarks*: If string, it MUST refer to a first-level key in `connectionDefinitions`.
+- **connection**:
+  - _type_: String pointing to the `connectionDefinitions` map or Object with type `Connection`.
+  - _Mandatory_: Optional.
+  - _Description_: A reference to or an in-place definition of a connection definition, if missing a protocol binding default is in place.
+  - _Remarks_: If string, it MUST refer to a first-level key in `connectionDefinitions`.
 - **security**:
-  - *type*: String pointing to the `securityDefinitions` map or Object with type `Security` (currently called SecurityScheme)
-  - *Mandatory*: Optional
-  - *Description*: 
-  - *Remarks*: The array of strings of the current spec can be dropped
+  - _type_: String pointing to the `securityDefinitions` map or Object with type `Security` (currently called SecurityScheme)
+  - _Mandatory_: Optional
+  - _Description_:
+  - _Remarks_: The array of strings of the current spec can be dropped
 - **schema**: This will be done later to express default data schemas (e.g. lwm2m object wrapper)
-- **form**: 
-  - *type*: String pointing to the `formDefinitions` map or Object with type`Form`.
-  - *Mandatory*: Optional
-  - *Description*: A reference to or an in-place definition of a Form, if missing the affordance/operation-specific defaults apply.
-  - *Remarks*: If string, it MUST refer to a first-level key in `formDefinitions`.
+- **form**:
+  - _type_: String pointing to the `formDefinitions` map or Object with type`Form`.
+  - _Mandatory_: Optional
+  - _Description_: A reference to or an in-place definition of a Form, if missing the affordance/operation-specific defaults apply.
+  - _Remarks_: If string, it MUST refer to a first-level key in `formDefinitions`.
 
 ###### Definitions/Defaults container
 
 - **connectionDefinitions**:
-  - *type*: Map of Object with of type `Connection`.
-  - *Mandatory*: Optional
-  - *Description*: A set of connections that can be reused in forms to group common connection information such as a base URI or security
-  - *Remarks*: The first-level keys are free to choose by the TD producer.
+  - _type_: Map of Object with of type `Connection`.
+  - _Mandatory_: Optional
+  - _Description_: A set of connections that can be reused in forms to group common connection information such as a base URI or security
+  - _Remarks_: The first-level keys are free to choose by the TD producer.
 - **formDefinitions**:
-  - *type*: Map of Object with of type `Form`.
-  - *Mandatory*: Optional
-  - *Description*: A set of form information that can be referenced in a forms to group common form information such as `contentType`.
-  - *Remarks*: The first-level keys are free to choose by the TD producer. 
+  - _type_: Map of Object with of type `Form`.
+  - _Mandatory_: Optional
+  - _Description_: A set of form information that can be referenced in a forms to group common form information such as `contentType`.
+  - _Remarks_: The first-level keys are free to choose by the TD producer.
 - **schemaDefinitions**:
-  - *type*: Map of Object with of type `DataSchema`.
-  - *Mandatory*: Optional
-  - *Description*: 
-  - *Remarks*: The first-level keys are free to choose by the TD producer. Same as now 
+  - _type_: Map of Object with of type `DataSchema`.
+  - _Mandatory_: Optional
+  - _Description_:
+  - _Remarks_: The first-level keys are free to choose by the TD producer. Same as now
 - **securityDefinitions**:
-  - *type*: Map of Object with of type ~~`SecurityScheme`~~ `Security`.
-  - *Mandatory*: Optional
-  - *Description*: 
-  - *Remarks*: The first-level keys are free to choose by the TD producer. Same as now
+  - _type_: Map of Object with of type ~~`SecurityScheme`~~ `Security`.
+  - _Mandatory_: Optional
+  - _Description_:
+  - _Remarks_: The first-level keys are free to choose by the TD producer. Same as now
 
 Note: Even if a single form of an affordance is not complete, a defaultable element should exist.
-
 
 ##### Elements
 
@@ -358,34 +357,34 @@ Note: Even if a single form of an affordance is not complete, a defaultable elem
 ###### Connection
 
 - **base**:
-  - *type*: String of URI
-  - *Mandatory*: Optional
-  - *Description*: The base URI that is used for building an absolute URI together with relative URIs in forms
-  - *Remarks*: None
+  - _type_: String of URI
+  - _Mandatory_: Optional
+  - _Description_: The base URI that is used for building an absolute URI together with relative URIs in forms
+  - _Remarks_: None
 - **security**:
-  - *type*: SecurityDefinition (no change)
-  - *Mandatory*: Mandatory
-  - *Description*: 
-  - *Remarks*: 
-Note: When the security definition moves to the bindings, these terms can be moved a layer up to `connection`
+  - _type_: SecurityDefinition (no change)
+  - _Mandatory_: Mandatory
+  - _Description_:
+  - _Remarks_:
+    Note: When the security definition moves to the bindings, these terms can be moved a layer up to `connection`
 
 ###### Form
 
-- **connection**: 
-  - *type*: String or Object with type `Connection`.
-  - *Mandatory*: Optional.
-  - *Description*: A reference to or an in-place definition of a connection definition
-  - *Remarks*: If string, it MUST refer to a first-level key in `connectionDefinitions`.
+- **connection**:
+  - _type_: String or Object with type `Connection`.
+  - _Mandatory_: Optional.
+  - _Description_: A reference to or an in-place definition of a connection definition
+  - _Remarks_: If string, it MUST refer to a first-level key in `connectionDefinitions`.
 - **op**:
-  - *type*: String or Array of String (no change)
-  - *Mandatory*: with default
-  - *Description*: 
-  - *Remarks*: 
+  - _type_: String or Array of String (no change)
+  - _Mandatory_: with default
+  - _Description_:
+  - _Remarks_:
 - **contentType**:
-  - *type*: String (no change)
-  - *Mandatory*: with default
-  - *Description*: 
-  - *Remarks*: 
+  - _type_: String (no change)
+  - _Mandatory_: with default
+  - _Description_:
+  - _Remarks_:
 
 ###### Schema
 
@@ -401,11 +400,10 @@ hints for designing TDs. When to use this or not.
 
 1. If you have one mechanism (security, connection, form, schema), just inline it.
 
-
 - Security term at the top level is optional
-    - McCool not mandatory -> Reducing verbosity, make TDs simpler and shorter. People say it is annoying and does not improve security. Defining a "useless" security at the top and always overwriting it is not clear.
+  - McCool not mandatory -> Reducing verbosity, make TDs simpler and shorter. People say it is annoying and does not improve security. Defining a "useless" security at the top and always overwriting it is not clear.
 - No resolution: Having no security field at all (none in the forms, none in the top level) -> reverting to defaults
-- No resolution: Security defaults: 
+- No resolution: Security defaults:
   - McCool auto -> Assuming nosec is wrong assumption
 
 TODO: Documenting why we have multi sec for one Thing. Some properties being public, some not. Reading being public, writing not.
@@ -421,6 +419,7 @@ TODO: Discuss flattening, normalization and canonicalization algorithm should ta
 Each TD form MUST be expanded before using its information in a protocol driver. It does repeat until the there is no populated `inherit`. (single inheritance)
 
 To expand the form in an affordance:
+
 - Check if there is a `connection` or a `form` available. If neither is present, check if there is a top-level `connection` or a `form` available. If neither is present, this form is complete and can be used in a binding driver.
 
 #### Examples
@@ -626,6 +625,7 @@ To expand the form in an affordance:
   }
 }
 ```
+
 4.b Definition-level reusage
 
 ```js
