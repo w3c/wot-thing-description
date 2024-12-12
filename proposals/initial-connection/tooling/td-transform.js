@@ -5,9 +5,8 @@ let tdOutput = {};
 
 // Find if there is a default in the root level
 
-if (Object.hasOwn(tdInput,"form")){
-    const defaultForm = tdInput.form;
-    
+if (Object.hasOwn(tdInput, "form")) {
+  const defaultForm = tdInput.form;
 }
 
 // Go into the forms and try to find each reference or inline

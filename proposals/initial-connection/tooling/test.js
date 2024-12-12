@@ -13,17 +13,16 @@ const ajv = new Ajv({
     "uri-reference": true,
     "json-pointer": true,
     uri: true,
-    "date-time": true,
-  },
+    "date-time": true
+  }
 });
 
 describe("Thing Description Confirmation", () => {
-
   for (const [id, td] of validTDs.entries()) {
-      it(`should validate n° ${id}`, () => {
-        const valid = ajv.validate(JSON.parse(tdSchema), td);
-        assert.equal(valid, true, ajv.errorsText());
-      });
+    it(`should validate n° ${id}`, () => {
+      const valid = ajv.validate(JSON.parse(tdSchema), td);
+      assert.equal(valid, true, ajv.errorsText());
+    });
   }
 });
 
