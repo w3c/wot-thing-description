@@ -50,7 +50,7 @@ The lifecycle is also reflected in a table below. The example below can be consi
   - Ideally, we should discuss our requirements and what people want to see. Mandating a mechanism that the moderators like but is disliked by everyone else should be avoided.
   - The goal is to make it more systematic than "copy-pasting the agenda, look into issues and PRs"
   - The process for generating features from use cases should be taken into account
-  - We can use a tool like GitHub Projects. A premature example is available at https://github.com/orgs/w3c/projects/31
+  - We can use a tool like GitHub Projects. A premature example is available at <https://github.com/orgs/w3c/projects/31> (this project is now deleted and an up to date one is available at <https://github.com/orgs/w3c/projects/80>)
 - Mahda Noura: Only assigning an issue is not enough, because the number can increase and we can lose oversight/prioritization.
 - Cristiano Aguzzi: Assigning should happen when you know that person can do it in 1-2 weeks.
 - Jan Romann: Splitting issues definitely helps. We should limit the workload of an issue in the beginning or use checkboxes per small item and open a "spinoff" issue.
