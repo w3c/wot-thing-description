@@ -1,5 +1,8 @@
 # WoT Project Management Process
 
+> [!NOTE]  
+> Proposal Status: Accepted
+
 The main question to answer is "How do we organize the work?".
 We want to have one place to look for the list of "work" to do in a short period.
 To do that, a prioritization should happen and should be aligned with use cases and requirements.

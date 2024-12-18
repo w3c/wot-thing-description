@@ -1,5 +1,8 @@
 # Hypermedia Control on the Web of Things
 
+> [!NOTE]  
+> Proposal Status: Paused
+
 This proposal introduces a generic hypermedia control framework for the Web of Things (WoT).
 
 TL;DR:

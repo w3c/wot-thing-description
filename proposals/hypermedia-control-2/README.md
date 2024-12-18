@@ -1,5 +1,8 @@
 # Hypermedia Control on the Web of Things
 
+> [!NOTE]  
+> Proposal Status: Paused
+
 This proposal introduces a generic hypermedia control framework for the Web of Things (WoT) that is similar to that of @vcharpenay but uses static TDs and focuses on action affordances.
 The ideas were introduced also [at this comment](https://github.com/w3c/wot-thing-description/issues/302#issuecomment-627500213)
 
