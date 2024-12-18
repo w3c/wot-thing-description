@@ -1,5 +1,8 @@
 # Yet another Action Model
 
+> [!NOTE]  
+> Proposal Status: Paused
+
 This proposal wants to overcame problems around the other proposals of a new hypermedia action model. In particular, it
 should address the following concerns:
 
