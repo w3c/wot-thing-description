@@ -26,6 +26,7 @@ However, the following points are not supported:
 - Sent and received payloads associated to the operations
 - Management of dynamically generated identification
 - Describing queues of actions
+- Describing alarms that involve multiple affordances (see BACnet Binding Alarms)
 
 These limitations are also influencing the Profiles.
 
@@ -40,6 +41,7 @@ Related Issues:
 - <https://github.com/w3c/wot-thing-description#1692>
 - <https://github.com/w3c/wot-thing-description#1644>
 - <https://github.com/w3c/wot-thing-description#1223>
+- <https://github.com/w3c/wot-binding-templates/pull/379>
 
 Related Real World Implementations:
 
