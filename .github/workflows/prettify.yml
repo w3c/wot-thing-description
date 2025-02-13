@@ -13,8 +13,12 @@ on:
       - "visualization/*.png"
       - "visualization/*.svg"
 
+permissions:
+    contents: write
+
 jobs:
   prettier:
+
     runs-on: ubuntu-latest
 
     steps:
@@ -26,9 +30,20 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           # This is important to fetch the changes to the previous commit
           fetch-depth: 0
+      
+      - name: Check if PR is from a fork
+        id: check_fork
+        run: echo "::set-output name=is_fork::${{ github.event.pull_request.head.repo.fork }}"
 
       - name: Prettify code
+        id: prettify
         uses: creyD/prettier_action@v4.3
         with:
-          prettier_options: --write .
-          only_changed: True
+          dry: true
+          prettier_options: --write 
+          commit_message: "chore: prettier"
+        continue-on-error: true
+
+      - name: Handle commit failure
+        if: ${{ steps.prettify.outcome == 'failure' && steps.check_fork.outputs.is_fork == 'true' }}
+        run: echo "Please run prettier locally"
