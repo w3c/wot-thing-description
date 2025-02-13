@@ -7,7 +7,6 @@
       "properties": {
         "scheme": {
           "type": "string",
-          "pattern": ".+:.*",
           "$comment": "same as now but will be probably made binding-specific"
         },
         "@type": {
@@ -29,19 +28,53 @@
       "properties": {
         "base": {
           "type": "string"
+        },
+        "security": {
+          "$ref": "#/definitions/singleSecurityDefinition"
         }
       }
     },
     "singleFormDefinition": {
-      "type": "object",
-      "properties": {
-        "contentType": {
-          "type": "string"
+      "anyOf": [
+        {
+          "$comment": "Not flattened",
+          "type": "object",
+          "properties": {
+            "contentType": {
+              "type": "string"
+            },
+            "connection": {
+              "$ref": "#/definitions/singleConnectionDefinition"
+            }
+          },
+          "not": {
+            "required": [
+              "base"
+            ]
+          }
         },
-        "connection": {
-          "$ref": "#/definitions/singleConnectionDefinition"
+        {
+          "$comment": "Flattened",
+          "type": "object",
+          "properties": {
+            "contentType": {
+              "type": "string"
+            },
+            "base": {
+              "type": "string"
+            },
+            "security": {
+              "$ref": "#/definitions/singleSecurityDefinition"
+            }
+          },
+          "not": {
+            "required": [
+              "connection"
+            ]
+          }
         }
-      }
+      ]
+
     },
     "singleSchemaDefinition": {
       "type": "object",
