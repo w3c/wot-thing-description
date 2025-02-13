@@ -18,6 +18,7 @@ permissions:
 
 jobs:
   prettier:
+
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +30,10 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           # This is important to fetch the changes to the previous commit
           fetch-depth: 0
+      
+      - name: Check if PR is from a fork
+        id: check_fork
+        run: echo "::set-output name=is_fork::${{ github.event.pull_request.head.repo.fork }}"
 
       - name: Check if PR is from a fork
         id: check_fork
@@ -39,7 +44,7 @@ jobs:
         uses: creyD/prettier_action@v4.3
         with:
           dry: true
-          prettier_options: --write
+          prettier_options: --write 
           commit_message: "chore: prettier"
         continue-on-error: true
 
