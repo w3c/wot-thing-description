@@ -93,16 +93,222 @@ const validTDs = [
         ]
       }
     }
+  },
+  // All definitions are present and referenced in the root
+  {
+    "title": "valid-test3",
+    "connectionDefinitions": {
+      "conn1": {
+        "base": "https://example.com"
+      }
+    },
+    "formDefinitions": {
+      "form1": {
+        "contentType": "application/json"
+      }
+    },
+    "securityDefinitions": {
+      "sec1": {
+        "scheme": "nosec"
+      }
+    },
+    "connection": "conn1",
+    "form": "form1",
+    "security": "sec1",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "/props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "/props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // only defined and used within the forms
+  {
+    "title": "valid-test4",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://example.com/props/prop1",
+            "connection": {
+              "security": { "scheme": "nosec" }
+            },
+            "contentType": "application/json"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://example.com/props/prop2",
+            // applying flattening to the form above, removing connection
+            "security": { "scheme": "basic" },
+            "contentType": "application/json"
+          }
+        ]
+      }
+    }
+  },
+  // Definitions in the root but usage only in forms
+  {
+    "title": "valid-test5",
+    "securityDefinitions": {
+      "sec1": {
+        "scheme": "nosec"
+      }
+    },
+    "connectionDefinitions": {
+      "conn1": {
+        "base": "https://example.com"
+      }
+    },
+    "formDefinitions": {
+      "form1": {
+        "contentType": "application/json"
+      }
+    },
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "connection": "conn1",
+            "form": "form1",
+            "security": "sec1",
+            "href": "/props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "connection": "conn1",
+            "form": "form1",
+            "security": "sec1",
+            "href": "/props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // Root definitions using other definitions but no root usage
+  {
+    "title": "valid-test6",
+    "securityDefinitions": {
+      "sec1": {
+        "scheme": "nosec"
+      }
+    },
+    "connectionDefinitions": {
+      "conn1": {
+        "security": "sec1",
+        "base": "https://example.com"
+      }
+    },
+    "formDefinitions": {
+      "form1": {
+        "connection": "conn1",
+        "contentType": "application/json"
+      }
+    },
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "form": "form1",
+            "href": "/props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "form": "form1",
+            "href": "/props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // one writeproperty requiring basic auth
+  {
+    "title": "valid-test7",
+    "connectionDefinitions": {
+      "conn1": {
+        "base": "https://example.com"
+      }
+    },
+    "formDefinitions": {
+      "form1": {
+        "contentType": "application/json"
+      }
+    },
+    "securityDefinitions": {
+      "sec1": {
+        "scheme": "nosec"
+      },
+      "sec2": {
+        "scheme": "basic"
+      }
+    },
+    "connection": "conn1",
+    "form": "form1",
+    "security": "sec1",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "/props/prop1",
+            "op": "readproperty"
+          },
+          {
+            "href": "/props/prop1",
+            "op": "writeproperty",
+            "connection": {
+              "inherit": "conn1",
+              "security": "sec2"
+            }
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "/props/prop2"
+          }
+        ]
+      }
+    }
   }
 ];
 
 const invalidTDs = [
   // Inline (no definitions objects)
   // Missing Connection
+  // TODO: This cannot be invalid since there is no way to say that connection is required if it is not inlined in the form
   {
     "title": "invalid-test0",
     "form": {
-      "contentType": 123 // FIXME: Put correct string value here
+      "contentType": "application/json"
     },
     "security": {
       "scheme": "nosec"
