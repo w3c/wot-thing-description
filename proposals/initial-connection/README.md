@@ -2,7 +2,12 @@
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/reusable%20connections)
 
-TODOs:
+## Purpose of this folder
+
+This folder contains a sandbox-like environment to work on the feature before it is integrated into the editor's draft.
+Some tooling, tests with examples, proposal text are found here.
+
+## TODOs
 
 - Move the "Process Stakeholder" definitions somewhere:
   - Submitter: People who have submitted the user story, is interested in it and thus wants this story to be succesful.
@@ -10,7 +15,7 @@ TODOs:
   - Implementation Volunteers: People who want to implement this and contribute the results to the implementation report. The submitter is strongly encouraged to provide an implementation result.
   - Impacted: Entities that will be impacted by this. Impact type can be "implementation overhead", "security", "privacy", "accesibility" etc. and should be prefixed with `-` if it is a negative change, e.g. there is less implementation overhead but privacy issues arise. Some lists to look at: https://w3c.github.io/wot-usecases/#stakeholders , https://w3c.github.io/wot-security/#wot-threat-model-stakeholders
 
-**User Stories:**
+## User Stories
 
 1. Connection Oriented Protocols
 
@@ -41,7 +46,7 @@ TODOs:
   - Impacted: TD Designers and Consumers. Type: Implementation Overhead
 - Linked Use Cases or Categories: Category "Ease of TD writing" to be created
 
-**Summarized Problem:**
+## Summarized Problem
 
 Currently, each form of an affordance has information on the endpoint, media type and other protocol related information.
 It is possible to use the base term for simplifying the endpoint but it has limitations such as:
@@ -63,7 +68,7 @@ Related Issues:
 - Reused Connection in WS 2: <https://github.com/w3c/wot-thing-description/issues/1664>: Similar issue to 878 abd 1070
 - Linking to Initial Connection 2: <https://github.com/w3c/wot-thing-description/issues/1834>: Similar issue to 803 and 1242
 
-**Requirements**
+## Requirements
 
 - There are 3 main points. Point 2 is about a keyword (more or less), whereas point 3 is more about the underlying mechanism.
   1. Having a place to put common connection information
@@ -100,17 +105,17 @@ Related Issues:
 - When to close the connection needs to be discussed.
 - Complex security mechanisms exchange should be handled at the same time
 
-#### Examples of Message Sequences
+## Examples of Message Sequences
 
-##### Simple HTTP Connection
+### Simple HTTP Connection
 
-###### Participating Entities
+#### Participating Entities
 
 ![Participating Entities](./images/initial-connection-HTTP-entities.svg)
 
 In this case, the Thing has enough resources and contains its own HTTP server.
 
-###### Lifecycle of a Connection
+#### Lifecycle of a Connection
 
 ![Lifecycle of a Connection](./images/initial-connection-HTTP-lifecycle.svg)
 
@@ -122,22 +127,22 @@ In this case, the Thing has enough resources and contains its own HTTP server.
 6. If a certain amount of requests have been sent, the connection will be closed.
 7. If a certain time is reached, the connection will be closed.
 
-###### Message Sequence
+#### Message Sequence
 
 ![Message Sequence](./images/initial-connection-HTTP-sequence.svg)
 
 We note that even with Keep Alive option set, the interaction pattern do not change in the application level.
 Thus, keep alive can be seen as an optimization and not a different way to interact.
 
-##### Broker Connections without Security
+### Broker Connections without Security
 
-###### Participating Entities
+#### Participating Entities
 
 ![Participating Entities](./images/initial-connection-Broker-entities.svg)
 
 Typically, the broker is a separate entity than the Thing.
 
-###### Lifecycle of a Connection
+#### Lifecycle of a Connection
 
 ![Lifecycle of a Connection](./images/initial-connection-Broker-lifecycle-connection.svg)
 
@@ -146,7 +151,7 @@ Typically, the broker is a separate entity than the Thing.
 3. Client can disconnect from the broker and close the connection.
 4. If the device turns off or has an error, the connection can be closed.
 
-###### Lifecycle of a Subscription
+#### Lifecycle of a Subscription
 
 ![Lifecycle of a Subscription](./images/initial-connection-Broker-lifecycle-subscription.svg)
 
@@ -154,22 +159,22 @@ Typically, the broker is a separate entity than the Thing.
 2. Multiple messages can be received while the subscription is active.
 3. Once the client unsubscribes from the topic, the subscription becomes inactive.
 
-###### Message Sequence
+#### Message Sequence
 
 ![Message Sequence](./images/initial-connection-Broker-sequence.svg)
 
 We note that, even after a time has passed, the connection stays open and the subscription stays active.
 The client id is used in a connection but is typically not exposed to the application layer.
 
-##### Basic WebSocket Connections
+### Basic WebSocket Connections
 
-###### Participating Entities
+#### Participating Entities
 
 ![Participating Entities](./images/initial-connection-Websocket-entities.svg)
 
 In this case, the Thing has enough resources and contains its own WebSocket server.
 
-###### Lifecycle of a Connection
+#### Lifecycle of a Connection
 
 ![Lifecycle of a Websocket connection](./images/initial-connection-Websocket-lifecycle.svg)
 
@@ -179,19 +184,19 @@ The lifecycle of a WebSocket connection in the Web of Things typically includes 
 2. **Data Transmission**: Once connected, the client and server can exchange data bi-directionally in real-time, with messages sent as frames. This may include ping/pong frames to keep understand connection "liveness" between the parties.
 3. **Connection Closure**: Either party can initiate the closing handshake by sending a close frame, after which the connection is terminated, and resources are released.
 
-###### Message Sequence
+#### Message Sequence
 
 ![Message Sequence](./images/initial-connection-Websocket-sequence.svg)
 
-##### OAuth2-based Interaction
+### OAuth2-based Interaction
 
-###### Participating Entities
+#### Participating Entities
 
 ![Participating Entities](./images/initial-connection-OAuth2-entities.svg)
 
 In this case, the Thing has enough resources and contains its own HTTP server.
 
-###### Lifecycle of a Session
+#### Lifecycle of a Session
 
 ![Lifecycle of a Oauth Session](./images/initial-connection-OAuth2-lifecycle.svg)
 
@@ -202,51 +207,51 @@ The lifecycle of an OAuth token in a session involves the following stages:
 3. **Logout**: The client or authorization server can revoke tokens to terminate the session, preventing further access.
 4. **Token Expiry and Refresh**: Access tokens are time-limited. If a refresh token is available, the client can request a new access token without user reauthorization.
 
-###### Message Sequence
+#### Message Sequence
 
 ![Message Sequence](./images/initial-connection-OAuth2-sequence.svg)
 
-##### Proxy-based Communication
+### Proxy-based Communication
 
-###### Participating Entities
+#### Participating Entities
 
 ![Participating Entities](./images/initial-connection-Proxy-entities.svg)
 
 In this case, the Thing has enough resources and contains its own HTTP server.
 
-###### Lifecycle of a Connection
+#### Lifecycle of a Connection
 
 ![Lifecycle of a Proxy](./images/initial-connection-Proxy-lifecycle.svg)
 
-###### Message Sequence
+#### Message Sequence
 
 ![Message Sequence](./images/initial-connection-Proxy-sequence.svg)
 
-#### Basic mechanism
+## Basic mechanism
 
-##### Defaultable elements
+### Defaultable elements
 
 An element that is defaultable has a container `{element}Def` at the root of the Thing that is a map of element of that kind.
 
 Every element as a term `inherit` that points to a single element in `{element}Def`, if inherit is populated all the fields in the pointed element are used as default for the current element.
 
-##### Inlineable fields
+### Inlineable fields
 
 A field may contain either a string pointing to an element in `{element}Def` or may contain the element of that kind itself.
 
-##### Thing-wide default
+### Thing-wide default
 
 Fields that override the starting default for all the elements of that kind.
 
-##### Usage in the TD
+### Usage in the TD
 
 `Form`, `Connection`, `DataSchema` and `Security` are **Defaultable Elements**. All the fields that can take one are **Inlineable fields**.
 
-#### Keywords and Types
+## Keywords and Types
 
-##### Thing Level
+### Thing Level
 
-###### Thing-wide defaults
+#### Thing-wide defaults
 
 These set a default for the whole Thing
 
@@ -267,7 +272,7 @@ These set a default for the whole Thing
   - _Description_: A reference to or an in-place definition of a Form, if missing the affordance/operation-specific defaults apply.
   - _Remarks_: If string, it MUST refer to a first-level key in `formDefinitions`.
 
-###### Definitions/Defaults container
+#### Definitions/Defaults container
 
 - **connectionDefinitions**:
   - _type_: Map of Object with of type `Connection`.
@@ -292,9 +297,9 @@ These set a default for the whole Thing
 
 Note: Even if a single form of an affordance is not complete, a defaultable element should exist.
 
-##### Elements
+### Elements
 
-###### Overall Rules
+#### Overall Rules
 
 - All of them contain `inherit`, which has type `String`
 - Form can refer to a connection via `Form::connection`
@@ -306,7 +311,7 @@ Note: Even if a single form of an affordance is not complete, a defaultable elem
 - Connection cannot refer to a form or schema
 - Schema cannot refer to anything beside itself, i.e. inheriting or `oneOf` etc.
 
-###### Connection
+#### Connection
 
 - **base**:
   - _type_: String of URI
@@ -320,7 +325,7 @@ Note: Even if a single form of an affordance is not complete, a defaultable elem
   - _Remarks_:
     Note: When the security definition moves to the bindings, these terms can be moved a layer up to `connection`
 
-###### Form
+#### Form
 
 - **connection**:
   - _type_: String or Object with type `Connection`.
@@ -338,15 +343,15 @@ Note: Even if a single form of an affordance is not complete, a defaultable elem
   - _Description_:
   - _Remarks_:
 
-###### Schema
+#### Schema
 
 Same as now
 
-###### Security
+#### Security
 
 Same as now
 
-#### Guidelines
+## Guidelines
 
 hints for designing TDs. When to use this or not.
 
@@ -360,11 +365,11 @@ hints for designing TDs. When to use this or not.
 
 TODO: Documenting why we have multi sec for one Thing. Some properties being public, some not. Reading being public, writing not.
 
-##### Validation Rules
+### Validation Rules
 
 - Reference for an object that doesn't exist: What happens in TD 1.1 is same here.
 
-#### Algorithm
+## Algorithm
 
 TODO: Discuss flattening, normalization and canonicalization algorithm should take the connection
 
@@ -374,9 +379,9 @@ To expand the form in an affordance:
 
 - Check if there is a `connection` or a `form` available. If neither is present, check if there is a top-level `connection` or a `form` available. If neither is present, this form is complete and can be used in a binding driver.
 
-#### Examples
+## Examples
 
-##### TD Examples
+### TD Examples
 
 1. One Connection, one Form, one security no definitions
 
@@ -690,10 +695,10 @@ To expand the form in an affordance:
 }
 ```
 
-##### TD Examples with State Machines for MQTT and WS
+### TD Examples with State Machines for MQTT and WS
 
 TODO
 
-#### How to combine with TMs
+## How to combine with TMs
 
 TODO
