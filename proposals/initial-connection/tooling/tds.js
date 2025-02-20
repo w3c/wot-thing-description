@@ -363,6 +363,30 @@ const invalidTDs = [
         ]
       }
     }
+  },
+  // no security defined anywhere
+  {
+    "title": "invalid-test2",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://example.com/props/prop1",
+            "contentType": "application/json"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://example.com/props/prop2",
+            "contentType": "application/json"
+          }
+        ]
+      }
+    }
   }
 ];
 
