@@ -315,7 +315,7 @@ const invalidCompactTDs = [
   // TODO: This cannot be invalid since there is no way to say that connection is required if it is not inlined in the form
   {
     "@context": "http://www.w3.org/ns/td",
-    "title": "invalid-test0",
+    "title": "invalid-test-compacted-0",
     "form": {
       "contentType": "application/json"
     },
@@ -344,7 +344,7 @@ const invalidCompactTDs = [
   // a flattened form but it still has connection
   {
     "@context": "http://www.w3.org/ns/td",
-    "title": "invalid-test1",
+    "title": "invalid-test-compacted-1",
     "form": {
       "contentType": "application/json",
       "base": "https://example.com",
@@ -380,7 +380,7 @@ const validExpandedTDs = [
   // Simple TD
   {
     "@context": "http://www.w3.org/ns/td",
-    "title": "test",
+    "title": "valid-test-expanded-0",
     "properties": {
       "prop1": {
         "type": "string",
