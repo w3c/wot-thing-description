@@ -1,9 +1,10 @@
 const fs = require("fs");
 const assert = require("assert");
-const { validTDs, invalidTDs } = require("./tds");
+const { validCompactTDs, invalidCompactTDs, validExpandedTDs, invalidExpandedTDs } = require("./tds");
 const Ajv = require("ajv");
 
-const tdSchema = fs.readFileSync("schema-new.schema.json");
+const tdSchemaCompacted = fs.readFileSync("schema-new.schema.json");
+const tdSchemaExpanded = fs.readFileSync("schema-full.schema.json");
 const ajv = new Ajv({
   strict: false,
   addUsedSchema: false,
@@ -17,19 +18,47 @@ const ajv = new Ajv({
   }
 });
 
-describe("Thing Description Confirmation", () => {
-  for (const [id, td] of validTDs.entries()) {
+describe("Non-expanded TD Confirmation", () => {
+  for (const [id, td] of validCompactTDs.entries()) {
     it(`should validate n° ${id}`, () => {
-      const valid = ajv.validate(JSON.parse(tdSchema), td);
+      const valid = ajv.validate(JSON.parse(tdSchemaCompacted), td);
       assert.equal(valid, true, ajv.errorsText());
     });
   }
 });
 
-describe("Thing Description Rejection", () => {
-  for (const [id, td] of invalidTDs.entries()) {
+describe("Non-expanded TD Rejection", () => {
+  for (const [id, td] of invalidCompactTDs.entries()) {
     it(`should NOT validate n° ${id}`, () => {
-      const valid = ajv.validate(JSON.parse(tdSchema), td);
+      const valid = ajv.validate(JSON.parse(tdSchemaCompacted), td);
+      assert.equal(valid, false, ajv.errorsText());
+    });
+  }
+});
+
+// These tests are for fully expanded TDs, i.e. no use of definitions, absolute URLs etc
+describe("Expanded TD Confirmation", () => {
+  for (const [id, td] of validExpandedTDs.entries()) {
+    it(`should validate n° ${id}`, () => {
+      const valid = ajv.validate(JSON.parse(tdSchemaExpanded), td);
+      assert.equal(valid, true, ajv.errorsText());
+    });
+  }
+});
+
+describe("Expanded TD Rejection", () => {
+  for (const [id, td] of invalidExpandedTDs.entries()) {
+    it(`should NOT validate n° ${id}`, () => {
+      const valid = ajv.validate(JSON.parse(tdSchemaExpanded), td);
+      assert.equal(valid, false, ajv.errorsText());
+    });
+  }
+});
+
+describe("Compact TD Rejection when Expanded is expected", () => {
+  for (const [id, td] of validCompactTDs.entries()) {
+    it(`should NOT validate n° ${id}`, () => {
+      const valid = ajv.validate(JSON.parse(tdSchemaExpanded), td);
       assert.equal(valid, false, ajv.errorsText());
     });
   }

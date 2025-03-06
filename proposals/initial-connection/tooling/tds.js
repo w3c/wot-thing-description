@@ -1,11 +1,12 @@
 // TDs are provided as js so that we can put comments
 // However, please do not remove JSON serialization so that they can be copy pasted easily
 
-const validTDs = [
+const validCompactTDs = [
   // Inline (no definitions objects)
   // Separate Defaults
   {
-    "title": "valid-test0",
+    "@context": "http://www.w3.org/ns/td",
+    "title": "valid-test-compact-0",
     "connection": {
       "base": "https://example.com"
     },
@@ -36,7 +37,8 @@ const validTDs = [
   },
   // All Defaults in a Form but still with connection
   {
-    "title": "valid-test1",
+    "@context": "http://www.w3.org/ns/td",
+    "title": "valid-test-compact-1",
     "form": {
       "contentType": "application/json",
       "connection": {
@@ -67,7 +69,8 @@ const validTDs = [
   },
   // All defaults in a form and flattened without connection
   {
-    "title": "valid-test2",
+    "@context": "http://www.w3.org/ns/td",
+    "title": "valid-test-compact-2",
     "form": {
       "contentType": "application/json",
       "base": "https://example.com",
@@ -96,7 +99,8 @@ const validTDs = [
   },
   // All definitions are present and referenced in the root
   {
-    "title": "valid-test3",
+    "@context": "http://www.w3.org/ns/td",
+    "title": "valid-test-compact-3",
     "connectionDefinitions": {
       "conn1": {
         "base": "https://example.com"
@@ -136,7 +140,8 @@ const validTDs = [
   },
   // only defined and used within the forms
   {
-    "title": "valid-test4",
+    "@context": "http://www.w3.org/ns/td",
+    "title": "valid-test-compact-4",
     "properties": {
       "prop1": {
         "type": "string",
@@ -165,7 +170,8 @@ const validTDs = [
   },
   // Definitions in the root but usage only in forms
   {
-    "title": "valid-test5",
+    "@context": "http://www.w3.org/ns/td",
+    "title": "valid-test-compact-5",
     "securityDefinitions": {
       "sec1": {
         "scheme": "nosec"
@@ -208,7 +214,8 @@ const validTDs = [
   },
   // Root definitions using other definitions but no root usage
   {
-    "title": "valid-test6",
+    "@context": "http://www.w3.org/ns/td",
+    "title": "valid-test-compact-6",
     "securityDefinitions": {
       "sec1": {
         "scheme": "nosec"
@@ -249,7 +256,8 @@ const validTDs = [
   },
   // one writeproperty requiring basic auth
   {
-    "title": "valid-test7",
+    "@context": "http://www.w3.org/ns/td",
+    "title": "valid-test-compact-7",
     "connectionDefinitions": {
       "conn1": {
         "base": "https://example.com"
@@ -301,11 +309,12 @@ const validTDs = [
   }
 ];
 
-const invalidTDs = [
+const invalidCompactTDs = [
   // Inline (no definitions objects)
   // Missing Connection
   // TODO: This cannot be invalid since there is no way to say that connection is required if it is not inlined in the form
   {
+    "@context": "http://www.w3.org/ns/td",
     "title": "invalid-test0",
     "form": {
       "contentType": "application/json"
@@ -334,6 +343,7 @@ const invalidTDs = [
   },
   // a flattened form but it still has connection
   {
+    "@context": "http://www.w3.org/ns/td",
     "title": "invalid-test1",
     "form": {
       "contentType": "application/json",
@@ -363,17 +373,63 @@ const invalidTDs = [
         ]
       }
     }
-  },
-  // no security defined anywhere
+  }
+];
+
+const validExpandedTDs = [
+  // Simple TD
   {
-    "title": "invalid-test2",
+    "@context": "http://www.w3.org/ns/td",
+    "title": "test",
     "properties": {
       "prop1": {
         "type": "string",
         "forms": [
           {
             "href": "https://example.com/props/prop1",
-            "contentType": "application/json"
+            "security": { "scheme": "basic" },
+            "contentType": "application/json",
+            "op": "readproperty"
+          }
+        ]
+      }
+    }
+  }
+];
+
+const invalidExpandedTDs = [
+  // connection is not expanded
+  {
+    "@context": "http://www.w3.org/ns/td",
+    "title": "invalid-test-expanded-0",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://example.com/props/prop1",
+            "connection": {
+              "security": { "scheme": "nosec" }
+            },
+            "contentType": "application/json",
+            "op": "readproperty"
+          }
+        ]
+      }
+    }
+  },
+  // no security defined anywhere
+  {
+    "@context": "http://www.w3.org/ns/td",
+    "title": "invalid-test-expanded-1",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://example.com/props/prop1",
+            "contentType": "application/json",
+            "op": "readproperty"
           }
         ]
       },
@@ -389,8 +445,9 @@ const invalidTDs = [
     }
   }
 ];
-
 module.exports = {
-  validTDs,
-  invalidTDs
+  validCompactTDs,
+  invalidCompactTDs,
+  validExpandedTDs,
+  invalidExpandedTDs
 };

@@ -26,6 +26,27 @@
         "type": "string"
       }
     },
+    "singleSecurityDefinition": {
+      "type": "object",
+      "properties": {
+        "scheme": {
+          "type": "string",
+          "$comment": "same as now but will be probably made binding-specific"
+        },
+        "@type": {
+          "$ref": "#/definitions/type_declaration"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "descriptions": {
+          "$ref": "#/definitions/descriptions"
+        },
+        "proxy": {
+          "$ref": "#/definitions/anyUri"
+        }
+      }
+    },
     "security": {
       "oneOf": [
         {
@@ -72,11 +93,11 @@
     "thing-context": {
       "anyOf": [
         {
-          "$comment": "New context URI with other vocabularies after it but not the old one",
+          "$comment": "Temp context URI with other vocabularies after it ",
           "type": "array",
           "items": [
             {
-              "$ref": "#/definitions/thing-context-td-uri-v1.1"
+              "$ref": "#/definitions/thing-context-td-uri-temp"
             }
           ],
           "additionalItems": {
@@ -87,68 +108,12 @@
               {
                 "type": "object"
               }
-            ],
-            "not": {
-              "$ref": "#/definitions/thing-context-td-uri-v1"
-            }
+            ]
           }
         },
         {
           "$comment": "Only the new context URI",
-          "$ref": "#/definitions/thing-context-td-uri-v1.1"
-        },
-        {
-          "$comment": "Old context URI, followed by the new one and possibly other vocabularies. minItems and contains are required since prefixItems does not say all items should be provided",
-          "type": "array",
-          "prefixItems": [
-            {
-              "$ref": "#/definitions/thing-context-td-uri-v1"
-            },
-            {
-              "$ref": "#/definitions/thing-context-td-uri-v1.1"
-            }
-          ],
-          "minItems": 2,
-          "contains": {
-            "$ref": "#/definitions/thing-context-td-uri-v1.1"
-          },
-          "additionalItems": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/anyUri"
-              },
-              {
-                "type": "object"
-              }
-            ]
-          }
-        },
-        {
-          "$comment": "Old context URI, followed by possibly other vocabularies. minItems and contains are required since prefixItems does not say all items should be provided",
-          "type": "array",
-          "prefixItems": [
-            {
-              "$ref": "#/definitions/thing-context-td-uri-v1"
-            }
-          ],
-          "minItems": 1,
-          "contains": {
-            "$ref": "#/definitions/thing-context-td-uri-v1"
-          },
-          "additionalItems": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/anyUri"
-              },
-              {
-                "type": "object"
-              }
-            ]
-          }
-        },
-        {
-          "$comment": "Only the old context URI",
-          "$ref": "#/definitions/thing-context-td-uri-v1"
+          "$ref": "#/definitions/thing-context-td-uri-temp"
         }
       ]
     },
@@ -335,7 +300,8 @@
           ]
         },
         "href": {
-          "$ref": "#/definitions/anyUri"
+          "$ref": "#/definitions/anyUri",
+          "$comment": "should be an absolute URI"
         },
         "contentType": {
           "type": "string"
@@ -347,7 +313,7 @@
           "$ref": "#/definitions/subprotocol"
         },
         "security": {
-          "$ref": "#/definitions/security"
+          "$ref": "#/definitions/singleSecurityDefinition"
         },
         "scopes": {
           "$ref": "#/definitions/scopes"
@@ -360,7 +326,14 @@
         }
       },
       "required": ["href", "security", "op"],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "not": {
+        "required": [
+          "schema",
+          "connection",
+          "form"
+        ]
+      }
     },
     "form_element_property": {
       "allOf": [{ "$ref": "#/definitions/form_element_base" }],
@@ -1241,23 +1214,6 @@
         "$ref": "#/definitions/form_element_root"
       }
     },
-    "base": {
-      "$ref": "#/definitions/anyUri"
-    },
-    "securityDefinitions": {
-      "type": "object",
-      "minProperties": 1,
-      "additionalProperties": {
-        "$ref": "#/definitions/securityScheme"
-      }
-    },
-    "schemaDefinitions": {
-      "type": "object",
-      "minProperties": 1,
-      "additionalProperties": {
-        "$ref": "#/definitions/dataSchema"
-      }
-    },
     "support": {
       "$ref": "#/definitions/anyUri"
     },
@@ -1268,34 +1224,6 @@
     "modified": {
       "type": "string",
       "format": "date-time"
-    },
-    "profile": {
-      "oneOf": [
-        {
-          "$ref": "#/definitions/anyUri"
-        },
-        {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "$ref": "#/definitions/anyUri"
-          }
-        }
-      ]
-    },
-    "security": {
-      "oneOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "type": "string"
-          }
-        }
-      ]
     },
     "uriVariables": {
       "type": "object",
@@ -1310,6 +1238,18 @@
       "$ref": "#/definitions/thing-context"
     }
   },
-  "required": ["title", "security", "securityDefinitions", "@context"],
-  "additionalProperties": true
+  "required": ["title", "@context"],
+  "additionalProperties": true,
+  "not":{
+    "required": [
+      "security",
+      "securityDefinitions",
+      "schema",
+      "schemaDefinitions",
+      "connection",
+      "connectionDefinitions",
+      "form",
+      "formDefinitions"
+    ]
+  }
 }
