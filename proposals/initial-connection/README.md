@@ -255,6 +255,13 @@ Fields that override the starting default for all the elements of that kind.
 
 These set a default for the whole Thing
 
+| Vocabulary Term | Description | Assignment | Type | Remarks |
+|---|---|---|---|---|
+| connection | A reference to or an in-place definition of a connection definition, if missing a protocol binding default is in place. | optional | String pointing to the `connectionDefinitions` map or Object with type `Connection`. | If string, it MUST refer to a first-level key in `connectionDefinitions`. |
+| security |  |  | String pointing to the `securityDefinitions` map or Object with type `Security` (currently called SecurityScheme) | If string, it MUST refer to a first-level key in `securityDefinitions`. |
+| form |  |  |  |  |
+| schema |  |  |  |  |
+
 - **connection**:
   - _type_: String pointing to the `connectionDefinitions` map or Object with type `Connection`.
   - _Mandatory_: Optional.
