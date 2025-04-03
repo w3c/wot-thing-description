@@ -253,54 +253,23 @@ Fields that override the starting default for all the elements of that kind.
 
 #### Thing-wide defaults
 
-These set a default for the whole Thing
+These set a default for the whole Thing. The mechanism is the same for all the terms, i.e. if the term has a string value, it is a reference and if it has an object value, it is an in-place definition.
 
-| Vocabulary Term | Description | Assignment | Type | Remarks |
-|---|---|---|---|---|
-| connection | A reference to or an in-place definition of a connection definition, if missing a protocol binding default is in place. | optional | String pointing to the `connectionDefinitions` map or Object with type `Connection`. | If string, it MUST refer to a first-level key in `connectionDefinitions`. |
-| security |  |  | String pointing to the `securityDefinitions` map or Object with type `Security` (currently called SecurityScheme) | If string, it MUST refer to a first-level key in `securityDefinitions`. |
-| form |  |  |  |  |
-| schema |  |  |  |  |
-
-- **connection**:
-  - _type_: String pointing to the `connectionDefinitions` map or Object with type `Connection`.
-  - _Mandatory_: Optional.
-  - _Description_: A reference to or an in-place definition of a connection definition, if missing a protocol binding default is in place.
-  - _Remarks_: If string, it MUST refer to a first-level key in `connectionDefinitions`.
-- **security**:
-  - _type_: String pointing to the `securityDefinitions` map or Object with type `Security` (currently called SecurityScheme)
-  - _Mandatory_: Optional
-  - _Description_:
-  - _Remarks_: The array of strings of the current spec can be dropped
-- **schema**: This will be done later to express default data schemas (e.g. lwm2m object wrapper)
-- **form**:
-  - _type_: String pointing to the `formDefinitions` map or Object with type`Form`.
-  - _Mandatory_: Optional
-  - _Description_: A reference to or an in-place definition of a Form, if missing the affordance/operation-specific defaults apply.
-  - _Remarks_: If string, it MUST refer to a first-level key in `formDefinitions`.
+| Vocabulary Term | Description                                                                                                      | Assignment | Type                                                                                                              | Remarks                                                                                                                         |
+| --------------- | ---------------------------------------------------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| security        | A reference to or an in-place definition of a Security                                                           | optional   | String pointing to the `securityDefinitions` map or Object with type `Security` (currently called SecurityScheme) | If string, it MUST refer to a first-level key in `securityDefinitions`. The array of strings of the TD 1.1 is not valid anymore |
+| connection      | A reference to or an in-place definition of a Connection, if missing a protocol binding default is in place.     | optional   | String pointing to the `connectionDefinitions` map or Object with type `Connection`.                              | If string, it MUST refer to a first-level key in `connectionDefinitions`.                                                       |
+| form            | A reference to or an in-place definition of a Form, if missing the affordance/operation-specific defaults apply. | optional   |                                                                                                                   | String pointing to the `formDefinitions` map or Object with type`Form`.                                                         |
+| schema          | A reference to or an in-place definition of a Data Schema                                                        | optional   | String pointing to the `schemaDefinitions` map or Object with type `DataSchema`.                                  | If string, it MUST refer to a first-level key in `schemaDefinitions`.                                                           |
 
 #### Definitions/Defaults container
 
-- **connectionDefinitions**:
-  - _type_: Map of Object with of type `Connection`.
-  - _Mandatory_: Optional
-  - _Description_: A set of connections that can be reused in forms to group common connection information such as a base URI or security
-  - _Remarks_: The first-level keys are free to choose by the TD producer.
-- **formDefinitions**:
-  - _type_: Map of Object with of type `Form`.
-  - _Mandatory_: Optional
-  - _Description_: A set of form information that can be referenced in a forms to group common form information such as `contentType`.
-  - _Remarks_: The first-level keys are free to choose by the TD producer.
-- **schemaDefinitions**:
-  - _type_: Map of Object with of type `DataSchema`.
-  - _Mandatory_: Optional
-  - _Description_:
-  - _Remarks_: The first-level keys are free to choose by the TD producer. Same as now
-- **securityDefinitions**:
-  - _type_: Map of Object with of type ~~`SecurityScheme`~~ `Security`.
-  - _Mandatory_: Optional
-  - _Description_:
-  - _Remarks_: The first-level keys are free to choose by the TD producer. Same as now
+| Vocabulary Term       | Description                                                                                                            | Assignment | Type                                    | Remarks                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------- | --------------------------------------- | -------------------------------------------------------------------------- |
+| securityDefinitions   | Set of named security configurations to be applied based on the presence of the `security` term                        | optional   | Map of Object with of type `Security`   | The first-level keys are free to choose by the TD producer. Same as TD 1.1 |
+| connectionDefinitions | A set of connections that can be reused in forms to group common connection information such as a base URI or security | optional   | Map of Object with of type `Connection` | The first-level keys are free to choose by the TD producer. Same as TD 1.1 |
+| formDefinitions       | A set of form information that can be referenced in a forms to group common form information such as `contentType`.    | optional   | Map of Object with of type `Form`       | The first-level keys are free to choose by the TD producer. Same as TD 1.1 |
+| schemaDefinitions     | A set of Data Schemas to group common payload structures                                                               | optional   | Map of Object with of type `DataSchema` | The first-level keys are free to choose by the TD producer. Same as TD 1.1 |
 
 Note: Even if a single form of an affordance is not complete, a defaultable element should exist.
 
@@ -387,6 +356,8 @@ To expand the form in an affordance:
 - Check if there is a `connection` or a `form` available. If neither is present, check if there is a top-level `connection` or a `form` available. If neither is present, this form is complete and can be used in a binding driver.
 
 ## Examples
+
+You can find example TDs at [tooling/td.js](./tooling/tds.js)
 
 ### TD Examples
 
