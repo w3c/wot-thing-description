@@ -302,9 +302,9 @@ Same as now
 
 | Vocabulary Term | Description                                                                                                                      | Assignment   | Type                                  | Remarks                                                                   |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------------------------------------- | ------------------------------------------------------------------------- |
-| connection      | A reference to or an in-place definition of a connection definition                                                              | optional     |                                       | If string, it MUST refer to a first-level key in `connectionDefinitions`. |
-| op              | Indicates the semantic intention of performing the operation(s) described by the form.                                           | with default | String or Array of String (no change) |                                                                           |
-| contentType     | Assign a content type based on a media type (e.g., text/plain) and potential parameters (e.g., charset=utf-8) for the media type | with default | String (no change)                    |                                                                           |
+| connection      | A reference to or an in-place definition of a connection definition                                                              | optional     |                                       | If a string, it MUST refer to a first-level key in `connectionDefinitions`. |
+| op              | Indicates the semantic intention of performing the operation(s) described by the form.                                           | with default | String or Array of Strings (no change) |                                                                           |
+| contentType     | Assign a content type based on a media type (e.g., `text/plain`) and potential parameters (e.g., `charset=utf-8`) for the media type | with default | String (no change)                    |                                                                           |
 
 #### Schema
 
