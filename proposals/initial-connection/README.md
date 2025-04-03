@@ -287,43 +287,26 @@ Note: Even if a single form of an affordance is not complete, a defaultable elem
 - Connection cannot refer to a form or schema
 - Schema cannot refer to anything beside itself, i.e. inheriting or `oneOf` etc.
 
-#### Connection
-
-- **base**:
-  - _type_: String of URI
-  - _Mandatory_: Optional
-  - _Description_: The base URI that is used for building an absolute URI together with relative URIs in forms
-  - _Remarks_: None
-- **security**:
-  - _type_: SecurityDefinition (no change)
-  - _Mandatory_: Mandatory
-  - _Description_:
-  - _Remarks_:
-    Note: When the security definition moves to the bindings, these terms can be moved a layer up to `connection`
-
-#### Form
-
-- **connection**:
-  - _type_: String or Object with type `Connection`.
-  - _Mandatory_: Optional.
-  - _Description_: A reference to or an in-place definition of a connection definition
-  - _Remarks_: If string, it MUST refer to a first-level key in `connectionDefinitions`.
-- **op**:
-  - _type_: String or Array of String (no change)
-  - _Mandatory_: with default
-  - _Description_:
-  - _Remarks_:
-- **contentType**:
-  - _type_: String (no change)
-  - _Mandatory_: with default
-  - _Description_:
-  - _Remarks_:
-
-#### Schema
+#### Security
 
 Same as now
 
-#### Security
+#### Connection
+
+| Vocabulary Term | Description                                                                                 | Assignment                     | Type                     | Remarks                                                                                                 |
+| --------------- | ------------------------------------------------------------------------------------------- | ------------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------- |
+| base            | The base URI that is used for building an absolute URI together with relative URIs in forms | optional                       | String of URI            | None                                                                                                    |
+| security        | String pointing to the `securityDefinitions` map or Object with type `Security`             | SecurityDefinition (no change) | mandatory (TODO: Is it?) | When the security definition moves to the bindings, these terms can be moved a layer up to `connection` |
+
+#### Form
+
+| Vocabulary Term | Description                                                                                                                      | Assignment   | Type                                  | Remarks                                                                   |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------------------------------------- | ------------------------------------------------------------------------- |
+| connection      | A reference to or an in-place definition of a connection definition                                                              | optional     |                                       | If string, it MUST refer to a first-level key in `connectionDefinitions`. |
+| op              | Indicates the semantic intention of performing the operation(s) described by the form.                                           | with default | String or Array of String (no change) |                                                                           |
+| contentType     | Assign a content type based on a media type (e.g., text/plain) and potential parameters (e.g., charset=utf-8) for the media type | with default | String (no change)                    |                                                                           |
+
+#### Schema
 
 Same as now
 
