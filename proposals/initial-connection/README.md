@@ -10,10 +10,10 @@ Some tooling, tests with examples, proposal text are found here.
 ## TODOs
 
 - Move the "Process Stakeholder" definitions somewhere:
-  - Submitter: People who have submitted the user story, is interested in it and thus wants this story to be succesful.
+  - Submitter: People who have submitted the user story, is interested in it and thus wants this story to be successful.
   - Specification Writers: People from the TF who want to (or can) work on writing the specification text and corresponding resources.
   - Implementation Volunteers: People who want to implement this and contribute the results to the implementation report. The submitter is strongly encouraged to provide an implementation result.
-  - Impacted: Entities that will be impacted by this. Impact type can be "implementation overhead", "security", "privacy", "accesibility" etc. and should be prefixed with `-` if it is a negative change, e.g. there is less implementation overhead but privacy issues arise. Some lists to look at: https://w3c.github.io/wot-usecases/#stakeholders , https://w3c.github.io/wot-security/#wot-threat-model-stakeholders
+  - Impacted: Entities that will be impacted by this. Impact type can be "implementation overhead", "security", "privacy", "accessibility" etc. and should be prefixed with `-` if it is a negative change, e.g. there is less implementation overhead but privacy issues arise. Some lists to look at: https://w3c.github.io/wot-usecases/#stakeholders , https://w3c.github.io/wot-security/#wot-threat-model-stakeholders
 
 ## User Stories
 
