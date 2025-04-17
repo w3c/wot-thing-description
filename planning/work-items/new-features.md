@@ -11,7 +11,7 @@ These are contained in this folder with the `analysis-` prefix.
 
 Also known as time series.
 
-Please refer to [Analysis Document](./../analysis-historical-data-work-item.md)
+Please refer to [Analysis Document](./analysis/analysis-historical-data-work-item.md)
 
 ## Manageable Affordances
 
