@@ -54,7 +54,7 @@ It is possible to use the base term for simplifying the endpoint but it has limi
 1. If the media type is common across forms but is not `application/json`, it is repeated in each form.
 2. If there are common protocol stack configurations such as different default verbs, baud rates, and endianness, they are repeated in each form
 3. Multiple bases are not possible. Thus, each form repeats multiple bases. This is relevant when a TD has local and public IP addresses
-4. For protocols that are based on an initial connection and then subsequent messages, the semantics are not clear. Thus, a Consumer can establish multiple connections instead of reusing the initial connection. See the Example of the Message Flow section below
+4. For protocols that are based on an initial connection and then subsequent messages, the semantics are not clear. Thus, a Consumer can establish multiple connections instead of reusing the initial connection. See the [Example of the Message Flow section](#examples-of-message-sequences) at the end of the document.
 
 Related Issues:
 
@@ -105,129 +105,9 @@ Related Issues:
 - When to close the connection needs to be discussed.
 - Complex security mechanisms exchange should be handled at the same time
 
-## Examples of Message Sequences
-
-### Simple HTTP Connection
-
-#### Participating Entities
-
-![Participating Entities](./images/initial-connection-HTTP-entities.svg)
-
-In this case, the Thing has enough resources and contains its own HTTP server.
-
-#### Lifecycle of a Connection
-
-![Lifecycle of a Connection](./images/initial-connection-HTTP-lifecycle.svg)
-
-1. A request from the client opens the connection to the server.
-2. A response from the server back to the client closes the connection.
-3. If the server provides no response in a given time interval, a timeout occurs and the connection is closed.
-4. Alternatively, a request can be sent with Keep Alive parameters (timeout and max requests parameters).
-5. In this case, the responses back to the client will not close the connection.
-6. If a certain amount of requests have been sent, the connection will be closed.
-7. If a certain time is reached, the connection will be closed.
-
-#### Message Sequence
-
-![Message Sequence](./images/initial-connection-HTTP-sequence.svg)
-
-We note that even with Keep Alive option set, the interaction pattern do not change in the application level.
-Thus, keep alive can be seen as an optimization and not a different way to interact.
-
-### Broker Connections without Security
-
-#### Participating Entities
-
-![Participating Entities](./images/initial-connection-Broker-entities.svg)
-
-Typically, the broker is a separate entity than the Thing.
-
-#### Lifecycle of a Connection
-
-![Lifecycle of a Connection](./images/initial-connection-Broker-lifecycle-connection.svg)
-
-1. A client connects to the broker and opens a consistent connection.
-2. Client can subscribe or publish to topics as long as the connection is active.
-3. Client can disconnect from the broker and close the connection.
-4. If the device turns off or has an error, the connection can be closed.
-
-#### Lifecycle of a Subscription
-
-![Lifecycle of a Subscription](./images/initial-connection-Broker-lifecycle-subscription.svg)
-
-1. A Client already connected to the broker (open connection), can subscribe to a topic where that subscription becomes active.
-2. Multiple messages can be received while the subscription is active.
-3. Once the client unsubscribes from the topic, the subscription becomes inactive.
-
-#### Message Sequence
-
-![Message Sequence](./images/initial-connection-Broker-sequence.svg)
-
-We note that, even after a time has passed, the connection stays open and the subscription stays active.
-The client id is used in a connection but is typically not exposed to the application layer.
-
-### Basic WebSocket Connections
-
-#### Participating Entities
-
-![Participating Entities](./images/initial-connection-Websocket-entities.svg)
-
-In this case, the Thing has enough resources and contains its own WebSocket server.
-
-#### Lifecycle of a Connection
-
-![Lifecycle of a Websocket connection](./images/initial-connection-Websocket-lifecycle.svg)
-
-The lifecycle of a WebSocket connection in the Web of Things typically includes the following stages:
-
-1. **Connection Establishment**: The client initiates a handshake request to the server, which responds with a handshake response, establishing a persistent connection.
-2. **Data Transmission**: Once connected, the client and server can exchange data bi-directionally in real-time, with messages sent as frames. This may include ping/pong frames to keep understand connection "liveness" between the parties.
-3. **Connection Closure**: Either party can initiate the closing handshake by sending a close frame, after which the connection is terminated, and resources are released.
-
-#### Message Sequence
-
-![Message Sequence](./images/initial-connection-Websocket-sequence.svg)
-
-### OAuth2-based Interaction
-
-#### Participating Entities
-
-![Participating Entities](./images/initial-connection-OAuth2-entities.svg)
-
-In this case, the Thing has enough resources and contains its own HTTP server.
-
-#### Lifecycle of a Session
-
-![Lifecycle of a Oauth Session](./images/initial-connection-OAuth2-lifecycle.svg)
-
-The lifecycle of an OAuth token in a session involves the following stages:
-
-1. **Token Request and authorization**: The client requests an access token from the authorization server, typically after authenticating and obtaining user consent.
-2. **Token Use**: The client uses the access token to access protected resources on the resource server by including it in API requests.
-3. **Logout**: The client or authorization server can revoke tokens to terminate the session, preventing further access.
-4. **Token Expiry and Refresh**: Access tokens are time-limited. If a refresh token is available, the client can request a new access token without user reauthorization.
-
-#### Message Sequence
-
-![Message Sequence](./images/initial-connection-OAuth2-sequence.svg)
-
-### Proxy-based Communication
-
-#### Participating Entities
-
-![Participating Entities](./images/initial-connection-Proxy-entities.svg)
-
-In this case, the Thing has enough resources and contains its own HTTP server.
-
-#### Lifecycle of a Connection
-
-![Lifecycle of a Proxy](./images/initial-connection-Proxy-lifecycle.svg)
-
-#### Message Sequence
-
-![Message Sequence](./images/initial-connection-Proxy-sequence.svg)
-
 ## Basic mechanism
+
+
 
 ### Defaultable elements
 
@@ -663,3 +543,125 @@ TODO
 ## How to combine with TMs
 
 TODO
+
+## Examples of Message Sequences
+
+### Simple HTTP Connection
+
+#### Participating Entities
+
+![Participating Entities](./images/initial-connection-HTTP-entities.svg)
+
+In this case, the Thing has enough resources and contains its own HTTP server.
+
+#### Lifecycle of a Connection
+
+![Lifecycle of a Connection](./images/initial-connection-HTTP-lifecycle.svg)
+
+1. A request from the client opens the connection to the server.
+2. A response from the server back to the client closes the connection.
+3. If the server provides no response in a given time interval, a timeout occurs and the connection is closed.
+4. Alternatively, a request can be sent with Keep Alive parameters (timeout and max requests parameters).
+5. In this case, the responses back to the client will not close the connection.
+6. If a certain amount of requests have been sent, the connection will be closed.
+7. If a certain time is reached, the connection will be closed.
+
+#### Message Sequence
+
+![Message Sequence](./images/initial-connection-HTTP-sequence.svg)
+
+We note that even with Keep Alive option set, the interaction pattern do not change in the application level.
+Thus, keep alive can be seen as an optimization and not a different way to interact.
+
+### Broker Connections without Security
+
+#### Participating Entities
+
+![Participating Entities](./images/initial-connection-Broker-entities.svg)
+
+Typically, the broker is a separate entity than the Thing.
+
+#### Lifecycle of a Connection
+
+![Lifecycle of a Connection](./images/initial-connection-Broker-lifecycle-connection.svg)
+
+1. A client connects to the broker and opens a consistent connection.
+2. Client can subscribe or publish to topics as long as the connection is active.
+3. Client can disconnect from the broker and close the connection.
+4. If the device turns off or has an error, the connection can be closed.
+
+#### Lifecycle of a Subscription
+
+![Lifecycle of a Subscription](./images/initial-connection-Broker-lifecycle-subscription.svg)
+
+1. A Client already connected to the broker (open connection), can subscribe to a topic where that subscription becomes active.
+2. Multiple messages can be received while the subscription is active.
+3. Once the client unsubscribes from the topic, the subscription becomes inactive.
+
+#### Message Sequence
+
+![Message Sequence](./images/initial-connection-Broker-sequence.svg)
+
+We note that, even after a time has passed, the connection stays open and the subscription stays active.
+The client id is used in a connection but is typically not exposed to the application layer.
+
+### Basic WebSocket Connections
+
+#### Participating Entities
+
+![Participating Entities](./images/initial-connection-Websocket-entities.svg)
+
+In this case, the Thing has enough resources and contains its own WebSocket server.
+
+#### Lifecycle of a Connection
+
+![Lifecycle of a Websocket connection](./images/initial-connection-Websocket-lifecycle.svg)
+
+The lifecycle of a WebSocket connection in the Web of Things typically includes the following stages:
+
+1. **Connection Establishment**: The client initiates a handshake request to the server, which responds with a handshake response, establishing a persistent connection.
+2. **Data Transmission**: Once connected, the client and server can exchange data bi-directionally in real-time, with messages sent as frames. This may include ping/pong frames to keep understand connection "liveness" between the parties.
+3. **Connection Closure**: Either party can initiate the closing handshake by sending a close frame, after which the connection is terminated, and resources are released.
+
+#### Message Sequence
+
+![Message Sequence](./images/initial-connection-Websocket-sequence.svg)
+
+### OAuth2-based Interaction
+
+#### Participating Entities
+
+![Participating Entities](./images/initial-connection-OAuth2-entities.svg)
+
+In this case, the Thing has enough resources and contains its own HTTP server.
+
+#### Lifecycle of a Session
+
+![Lifecycle of a Oauth Session](./images/initial-connection-OAuth2-lifecycle.svg)
+
+The lifecycle of an OAuth token in a session involves the following stages:
+
+1. **Token Request and authorization**: The client requests an access token from the authorization server, typically after authenticating and obtaining user consent.
+2. **Token Use**: The client uses the access token to access protected resources on the resource server by including it in API requests.
+3. **Logout**: The client or authorization server can revoke tokens to terminate the session, preventing further access.
+4. **Token Expiry and Refresh**: Access tokens are time-limited. If a refresh token is available, the client can request a new access token without user reauthorization.
+
+#### Message Sequence
+
+![Message Sequence](./images/initial-connection-OAuth2-sequence.svg)
+
+### Proxy-based Communication
+
+#### Participating Entities
+
+![Participating Entities](./images/initial-connection-Proxy-entities.svg)
+
+In this case, the Thing has enough resources and contains its own HTTP server.
+
+#### Lifecycle of a Connection
+
+![Lifecycle of a Proxy](./images/initial-connection-Proxy-lifecycle.svg)
+
+#### Message Sequence
+
+![Message Sequence](./images/initial-connection-Proxy-sequence.svg)
