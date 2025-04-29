@@ -3,7 +3,7 @@
 <!-- Please provide the label to be used to track similar discussions. -->
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/MYTOPIC)
 
-<!-- Please refer to the following examples when filling this document:
+<!-- Please refer to the following examples when filling in this document:
 
 - <https://github.com/w3c/wot-thing-description/blob/main/planning/work-items/analysis/analysis-data-mapping.md>
 - <https://github.com/w3c/wot-thing-description/blob/main/proposals/initial-connection/README.md>
