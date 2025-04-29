@@ -1,6 +1,6 @@
 # MYTOPIC Analysis
 
-<!-- Please provide the label that be used to track similar discussions. -->
+<!-- Please provide the label to be used to track similar discussions. -->
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/MYTOPIC)
 
 <!-- Please refer to the following examples when filling this document:
