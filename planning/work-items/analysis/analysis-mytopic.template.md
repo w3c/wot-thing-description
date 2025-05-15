@@ -12,11 +12,11 @@
 
 ## Related Issues
 
-Please provide the related issues from the WoT repositories 
+Please provide the related issues from the WoT repositories.
 
 ## User Stories
 
-You can leave it as TBD or provide the details. It should contain a copy of the user stories or links to them
+You can leave it as TBD or provide the details. You should include a copy of the user stories or links to them.
 
 ## Existing Solutions
 
@@ -24,7 +24,7 @@ You can leave it as TBD or provide the details.
 
 ## Summarized Problem
 
-Will be done after collecting the user stories and all related issues
+Will be done after collecting the user stories and all related issues.
 
 ## Requirements
 
