@@ -107,8 +107,6 @@ Related Issues:
 
 ## Basic mechanism
 
-
-
 ### Defaultable elements
 
 An element that is defaultable has a container `{element}Def` at the root of the Thing that is a map of element of that kind.
@@ -180,11 +178,11 @@ Same as now
 
 #### Form
 
-| Vocabulary Term | Description                                                                                                                      | Assignment   | Type                                  | Remarks                                                                   |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------ | ------------------------------------- | ------------------------------------------------------------------------- |
-| connection      | A reference to or an in-place definition of a connection definition                                                              | optional     |                                       | If a string, it MUST refer to a first-level key in `connectionDefinitions`. |
-| op              | Indicates the semantic intention of performing the operation(s) described by the form.                                           | with default | String or Array of Strings (no change) |                                                                           |
-| contentType     | Assign a content type based on a media type (e.g., `text/plain`) and potential parameters (e.g., `charset=utf-8`) for the media type | with default | String (no change)                    |                                                                           |
+| Vocabulary Term | Description                                                                                                                          | Assignment   | Type                                   | Remarks                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------ | -------------------------------------- | --------------------------------------------------------------------------- |
+| connection      | A reference to or an in-place definition of a connection definition                                                                  | optional     |                                        | If a string, it MUST refer to a first-level key in `connectionDefinitions`. |
+| op              | Indicates the semantic intention of performing the operation(s) described by the form.                                               | with default | String or Array of Strings (no change) |                                                                             |
+| contentType     | Assign a content type based on a media type (e.g., `text/plain`) and potential parameters (e.g., `charset=utf-8`) for the media type | with default | String (no change)                     |                                                                             |
 
 #### Schema
 

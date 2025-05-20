@@ -2,7 +2,6 @@
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/manageable%20affordances)
 
-
 Various use cases require the implementation of more complex actions that span multiple protocol transactions. Such actions are not simply invoked but need to managed over time by the Thing and the Consumer.
 These are covered in the WoT Thing Description 1.1 via the initiation (invokeaction), monitoring (`queryaction`), and cancellation (`cancelaction`) of ongoing actions.
 However, the following points are not supported:
