@@ -1,30 +1,30 @@
 # WoT Project Management Process
 
-> [!NOTE]  
+> [!NOTE]
 > Proposal Status: Accepted
 
 The main question to answer is "How do we organize the work?".
 We want to have one place to look for the list of "work" to do in a short period.
-To do that, a prioritization should happen and should be aligned with use cases and requirements.
+To do that, a prioritization should happen and should be aligned with user stories, use cases and requirements.
 This allows us to limit the load of a person per 1-2 week time frame and thus prioritize certain issues/topics.
 
 ## Current Process
 
-- We have a table in a GitHub project managed by the TD TF
+- We have a table in a GitHub project managed by the TD TF. See <https://github.com/orgs/w3c/projects/80>
 - Once the TF is comfortable with the approach, no other information is needed. Until then, the lifecycle diagram below represents how the work goes through over time.
 
 ![lifecycle](./lifecycle.drawio.png)
 
-- **Step 0:** An issue shows up.
-- **Step 1:** The TF acts fast to categorize and refine it. The steps are detailed below and reflected also in the sorting table example towards the end. Step 2, 3 or 4 is picked based on categorization in this step. The initial categorization can happen outside of the calls but issues that need thorough analysis and refinement would typically in a meeting.
-  1. **Left Path:** The issue is identified to have Use Case relevant content where a deeper understanding is needed. In **Step 2** It is moved to the Use Cases repository.
-  2. **Right Path:** The issue is created by the Use Cases TF. In **Step 3** the TD TF analyzes it, which can result in smaller issues, more description etc. This is also reflected in the sorting table. Note that this is closely related with the [Use Cases Process](https://github.com/w3c/wot-usecases/blob/main/Process.md) where the result of the gap analysis and feature definition are the inputs to this point.
-  3. **Middle Path:** The issue is identified to be handled by the TF alone. These are issues about tooling, editorial fixes, etc. The TF labels it and moves it to the relevant column in the sorting table.
-- Note: During the refinement of an issue (understanding, labeling) in step 3 or step 4, it is placed in a column in the sorting table based on the category. Categories such as `bindings`, `data mapping`, `tooling`, which are [work items](https://github.com/w3c/wot/blob/main/planning/ThingDescription/work-items.md) (big topics), are separate a columns. Categories such as `editorial`, `bug` are grouped in one column called `other`.
+- **Step 0:** An issue shows up. It can be using the user story template or the blank template.
+- **Step 1:** Depending if the issue is a user story or not, a different path is taken.
+  1. **Right Path:** If the issue is a user story, it needs to be checked if it is a complex one that requires thorough analysis or not.
+  2. **Middle Path:** If the issue is about TF tasks or simple fixes, it will be handled by the TF participants based on the category.
+- **Step 2:** If the user story is complex to realize, it needs a thorough analysis. There can be other related issues, user stories or previous discussions, which make it difficult to specify the feature with a single Pull Request. These are typically significant features.
+- **Step 3:** An analysis document is created following [the template](../../planning/work-items/analysis/analysis-mytopic.template.md).
 - **Step 4:** The issue is assigned to one or more persons based on who is most suited, has more motivation etc. but not based on their availability.
 - **Step 5:** Based on people's availabilities and priorities set by the TF and WG as a whole, the issue is moved to "in progress". This indicates that this issue is being addressed by one or more persons and is part of the agenda until resolved.
   - Note: We need further discussion on how we prioritize items.
-- **Step 6:** The result of the work happens in a Pull Request to the Editor's Draft. In that stage, the issue is moved to "In Review". The Pull Request can be merged asynchronously based on the agreement in the [WG Policy](https://github.com/w3c/wot/blob/main/policies/async-decision.md). Once it is merged, it is part of the Editor's Draft and the issue is closed and removed from the board.
+- **Step 6:** The result of the work happens in a Pull Request (or multiple) to the Editor's Draft. In that stage, the issue is moved to "In Review". The Pull Request can be merged asynchronously based on the agreement in the [WG Policy](https://github.com/w3c/wot/blob/main/policies/async-decision.md). Once it is merged, it is part of the Editor's Draft and the issue is closed and removed from the board.
 - **Step 7:** Based on the nature of the change , it can require implementations to demonstrate implementability.
   - **Step 8:** If the change is an RFC assertion, we need to show its implementability before it can be in the final REC.
   - **Step 9:** If not, it can be in the REC without any further effort. Note that in both cases the WG needs to reach consensus or in the case of REC-track documents, the entire W3C needs to support it as part of the deliverable.
@@ -44,17 +44,3 @@ The lifecycle is also reflected in a table below. The example below can be consi
 ## To Do
 
 - Create issue templates for necessary items
-
-## Archive
-
-### Opinions
-
-- Ege Korkan:
-  - Ideally, we should discuss our requirements and what people want to see. Mandating a mechanism that the moderators like but is disliked by everyone else should be avoided.
-  - The goal is to make it more systematic than "copy-pasting the agenda, look into issues and PRs"
-  - The process for generating features from use cases should be taken into account
-  - We can use a tool like GitHub Projects. A premature example is available at <https://github.com/orgs/w3c/projects/31> (this project is now deleted and an up to date one is available at <https://github.com/orgs/w3c/projects/80>)
-- Mahda Noura: Only assigning an issue is not enough, because the number can increase and we can lose oversight/prioritization.
-- Cristiano Aguzzi: Assigning should happen when you know that person can do it in 1-2 weeks.
-- Jan Romann: Splitting issues definitely helps. We should limit the workload of an issue in the beginning or use checkboxes per small item and open a "spinoff" issue.
-- Kazuyuki Ashimura: We should think of what we have been doing so far.
