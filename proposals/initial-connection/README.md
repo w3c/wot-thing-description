@@ -214,7 +214,12 @@ TODO: Documenting why we have multi sec for one Thing. Some properties being pub
    6. `"connectionDefinitions"`
    7. `"form"`
    8. `"formDefinitions"`
-3. When a field, such as `"security"`, `"schema"`, `"connection"`, `"form"`, references a definition, that definition MUST exist in the root level in the respective category. E.g., the value of `"security"` (when not an object) must be in the `"securityDefinitions"` in the root level.
+3. In an expanded TD, the following terms MUST NOT be used in the form level:
+   1. `"security"`
+   2. `"schema"`
+   3. `"connection"`
+   4. `"form"`
+4. When a field, such as `"security"`, `"schema"`, `"connection"`, `"form"`, references a definition, that definition MUST exist in the root level in the respective category. E.g., the value of `"security"` (when not an object) must be in the `"securityDefinitions"` in the root level.
 
 ## Algorithm
 
