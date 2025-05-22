@@ -190,7 +190,7 @@ Same as now
 
 ## Guidelines
 
-hints for designing TDs. When to use this or not.
+Best practices for designing TDs. When to use this or not.
 
 1. If you have one mechanism (security, connection, form, schema), just inline it.
 
@@ -202,341 +202,35 @@ hints for designing TDs. When to use this or not.
 
 TODO: Documenting why we have multi sec for one Thing. Some properties being public, some not. Reading being public, writing not.
 
-### Validation Rules
+## Validation Rules
 
-- Reference for an object that doesn't exist: What happens in TD 1.1 is same here.
+1. In an expanded TD, each form MUST contain the required information to construct the request, meaning an absolute `href`, `security`, `op` and protocol related information defined by the binding specification. If a term has a default value, it MUST be also provided.
+2. In an expanded TD, the following terms MUST NOT be used in the root level:
+   1. `"security"`
+   2. `"securityDefinitions"`
+   3. `"schema"`
+   4. `"schemaDefinitions"`
+   5. `"connection"`
+   6. `"connectionDefinitions"`
+   7. `"form"`
+   8. `"formDefinitions"`
+3. When a field, such as `"security"`, `"schema"`, `"connection"`, `"form"`, references a definition, that definition MUST exist in the root level in the respective category. E.g., the value of `"security"` (when not an object) must be in the `"securityDefinitions"` in the root level.
 
 ## Algorithm
 
 TODO: Discuss flattening, normalization and canonicalization algorithm should take the connection
 
-Each TD form MUST be expanded before using its information in a protocol driver. It does repeat until the there is no populated `inherit`. (single inheritance)
+1. Each TD form MUST be expanded before using its information in a protocol driver. In other words, it is not required to expand TD upon receiving it.
+2. If a term is available in a form and is also available in a definition, the value in the form MUST be used. In other words, local definitions have priority over global definitions, making it possible to overwrite when needed.
+3. Even if all necessary terms are defined in a form, if there is a link to a reference, the TD MUST be expanded. This is required to guarantee that all protocol related terms are available in a form.
 
 To expand the form in an affordance:
 
-- Check if there is a `connection` or a `form` available. If neither is present, check if there is a top-level `connection` or a `form` available. If neither is present, this form is complete and can be used in a binding driver.
+- Check if there is a `connection` or a `form` available. If neither is present, check if there is a top-level `connection` or a `form` available. If neither is present, this form  SHOULD be complete and can be used in a binding driver.
 
 ## Examples
 
-You can find example TDs at [tooling/td.js](./tooling/tds.js)
-
-### TD Examples
-
-1. One Connection, one Form, one security no definitions
-
-1.a Defaults separate
-
-```js
-{
-  "title": "test",
-  "connection":{
-      "base": "https://example.com"
-  },
-  "form":{
-      "contentType":"application/json"
-  },
-  "security":{
-      "scheme":"nosec"
-  },
-  "properties": {
-    "prop1": {
-     "type":"string",
-     "forms": [
-      {
-       "href": "/props/prop1"
-      }
-     ]
-   },
-   "prop2": {
-    "type":"string",
-    "forms": [
-      {
-       "href": "/props/prop2"
-      }
-    ]
-   }
-  }
-}
-```
-
-1.b Only with form
-
-```js
-{
-  "title": "test",
-  "form":{
-      "contentType":"application/json",
-      "connection":{
-          "base": "https://example.com",
-          "security":{
-            "scheme":"nosec"
-          }
-      }
-  },
-  "properties": {
-    "prop1": {
-     "type":"string",
-     "forms": [
-      {
-       "href": "/props/prop1"
-      }
-     ]
-   },
-   "prop2": {
-    "type":"string",
-    "forms": [
-      {
-       "href": "/props/prop2"
-      }
-    ]
-   }
-  }
-}
-```
-
-2. Equivalent Example to above, just more verbose
-
-```js
-{
-  "title": "test",
-  "connectionDefinitions": {
-    "conn1" : {
-      "base": "https://example.com"
-      // "security":"sec1" can be added here instead. We should recommend since there is only one.
-    }
-  },
-  "formDefinitions":{
-      "form1": {
-        "contentType":"application/json",
-        // "connection":"conn1" can be added here instead. We should recommend since there is only one.
-      }
-  },
-  "securityDefinitions":{
-      "sec1":{
-          "scheme":"nosec"
-      }
-  },
-  "connection": "conn1",
-  "form":"form1",
-  "security":"sec1", // This applies to all connections
-  "properties": {
-    "prop1": {
-     "type":"string",
-     "forms": [
-      {
-       "href": "/props/prop1"
-      }
-     ]
-   },
-   "prop2": {
-    "type":"string",
-    "forms": [
-      {
-       "href": "/props/prop2"
-      }
-    ]
-   }
-  }
-}
-```
-
-3. Equivalent Example to above without reuse (same as TD 1.0 but with security in form)
-
-```js
-{
-  "title": "test",
-  "properties": {
-    "prop1": {
-     "type":"string",
-     "forms": [
-      {
-       "href": "https://example.com/props/prop1",
-       "connection":{
-           "security":{"scheme":"nosec"}
-       }, // this is possible but we want to flatten
-       "contentType":"application/json"
-      }
-     ]
-   },
-   "prop2": {
-    "type":"string",
-    "forms": [
-      {
-       "href": "https://example.com/props/prop2",
-       // applying flattening, we would get this
-       "security":{"scheme":"basic"},
-       "contentType":"application/json"
-      }
-    ]
-   }
-  }
-}
-```
-
-4. Equivalent Example to above without defaults
-
-4.a Completely flat
-
-```js
-{
-  "title": "test",
-  "securityDefinitions":{
-    "sec1":{
-      "scheme":"nosec"
-    }
-  },
-  "connectionDefinitions": {
-    "conn1" : {
-      "base": "https://example.com"
-    }
-  },
-  "formDefinitions":{
-      "form1": {
-        "contentType":"application/json"
-      }
-  },
-  "properties": {
-    "prop1": {
-     "type":"string",
-     "forms": [
-      {
-       "connection":"conn1",
-       "form":"form1",
-       "security":"sec1",
-       "href": "/props/prop1"
-      }
-     ]
-   },
-   "prop2": {
-    "type":"string",
-    "forms": [
-      {
-       "connection":"conn1",
-       "form":"form1",
-       "security":"sec1",
-       "href": "/props/prop2"
-      }
-    ]
-   }
-  }
-}
-```
-
-4.b Definition-level reusage
-
-```js
-{
-  "title": "test",
-  "securityDefinitions":{
-      "sec1":{
-          "scheme":"nosec"
-      }
-  },
-  "connectionDefinitions": {
-    "conn1" : {
-      "security":"sec1",
-      "base": "https://example.com"
-    }
-  },
-  "formDefinitions":{
-      "form1": {
-        "connection":"conn1",
-        "contentType":"application/json"
-      }
-  },
-  "properties": {
-    "prop1": {
-     "type":"string",
-     "forms": [
-      {
-       "form":"form1",
-       "href": "/props/prop1"
-      }
-     ]
-   },
-   "prop2": {
-    "type":"string",
-    "forms": [
-      {
-       "form":"form1",
-       "href": "/props/prop2"
-      }
-    ]
-   }
-  }
-}
-```
-
-5. Requiring more security for writing
-
-```js
-{
-  "title": "test",
-  "connectionDefinitions": {
-    "conn1" : {
-      "base": "https://example.com"
-    }
-  },
-  "formDefinitions":{
-      "form1": {
-        "contentType":"application/json"
-      }
-  },
-  "securityDefinitions":{
-      "sec1":{
-          "scheme":"nosec"
-      },
-      "sec2":{
-          "scheme":"basic"
-      }
-  },
-  "connection": "conn1",
-  "form":"form1",
-  "security":"sec1",
-  "properties": {
-    "prop1": {
-     "type":"string",
-     "forms": [
-      {
-       "href": "/props/prop1",
-       "op":"readproperty"
-      },
-      {
-       "href": "/props/prop1",
-       "op":"writeproperty",
-       "connection":{
-          "inherit":"conn1",
-          "security":"sec2"
-       }
-      }
-     ]
-   },
-   "prop2": {
-    "type":"string",
-    "forms": [
-      {
-       "href": "/props/prop2"
-      }
-    ]
-   }
-  }
-}
-```
-
-```
-{
-  connection: "something",
-  op: "readproperty"
-},
-{
-  connection: "something-strict",
-  op: "writeproperty"
-}
-```
-
-### TD Examples with State Machines for MQTT and WS
-
-TODO
+You can find example TDs at [tooling/td.js](./tooling/tds.js).
 
 ## How to combine with TMs
 
