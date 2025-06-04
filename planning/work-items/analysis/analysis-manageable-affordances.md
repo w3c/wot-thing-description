@@ -28,6 +28,9 @@ Related Issues:
 - https://github.com/w3c/wot-thing-description/issues/1779
 - https://github.com/w3c/wot-thing-description/issues/899
 - https://github.com/w3c/wot-thing-description/issues/887 (sort of related, but we can move it to data binding)
+- https://github.com/w3c/wot-thing-description/issues/1605
+- https://github.com/w3c/wot-thing-description/issues/1408
+- https://github.com/w3c/wot-thing-description/issues/1070
 
 Related Real World Implementations:
 
