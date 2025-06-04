@@ -39,7 +39,40 @@ Related Real World Implementations:
 
 ## User Stories
 
-TBD
+### Monitorable and Cancelable Actions
+
+* **Who:** Thing Description designer / Device Manufacturer / System integrator
+* **What:** Describe actions that can be monitored and canceled
+* **Why:** I can describe the lifecycle of actions in automation systems
+* **Sentence:** As a Thing Description designer, I need to describe actions that can be monitored and canceled so that I can correctly describe the lifecycle of actions in automation systems.
+* **Process Stakeholders**:
+  - Submitter: Multiple
+  - Specification Writers: 
+  - Implementation Volunteers: 
+  - Impacted People: TD Designers and Consumer application developers.
+  - Impact Type: Increase complexity of the WoT interaction model. This implies an increase in implementation complexity of both Consumer and Exposer applications. Finally, the Thing Description design process might result
+    more complex too. 
+* **Linked Use Cases or Categories:**
+    * https://github.com/w3c-cg/webagents/issues/26
+    * https://github.com/w3c-cg/webagents/issues/27
+    * https://github.com/w3c-cg/webagents/issues/29
+    * https://github.com/w3c-cg/webagents/issues/31
+
+### Queue of Actions
+
+* **Who:** Thing Description designer
+* **What:** Describe a queue of actions as a resource, including its contents and state
+* **Why:** I can fully describe the current status of a device capable of running persistent actions
+* **Sentence:** As a Thing Description designer, I need to describe a queue of actions as a resource so that I can fully describe the current status of a device capable of running monitorable and cancelable actions.
+* **Process Stakeholders**:
+    * Submitter: Multiple
+    * Specification Writers:
+    * Implementation Volunteers:
+    * Impacted People: TD Designers, Consumer application developers.
+    * Impact Type: Increase complexity of the WoT interaction model. This implies an increase in implementation complexity of both Consumer and Exposer applications. 
+* **Linked Use Cases or Categories:**
+   * https://github.com/w3c/wot-thing-description/issues/1070
+   * https://github.com/w3c/wot-thing-description/issues/1779
 
 ### Use Cases From Autonomous Agents on the Web CG
 
