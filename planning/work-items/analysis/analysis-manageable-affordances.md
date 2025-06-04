@@ -21,10 +21,13 @@ Additionally, there have been proposals by the WG members that need to taken int
 
 Related Issues:
 
-- <https://github.com/w3c/wot-thing-description#1692>
-- <https://github.com/w3c/wot-thing-description#1644>
-- <https://github.com/w3c/wot-thing-description#1223>
-- <https://github.com/w3c/wot-binding-templates/pull/379>
+- https://github.com/w3c/wot-thing-description/issues/1692
+- https://github.com/w3c/wot-thing-description/issues/1644
+- https://github.com/w3c/wot-thing-description/issues/1223
+- https://github.com/w3c/wot-binding-templates/pull/379
+- https://github.com/w3c/wot-thing-description/issues/1779
+- https://github.com/w3c/wot-thing-description/issues/899
+- https://github.com/w3c/wot-thing-description/issues/887 (sort of related, but we can move it to data binding)
 
 Related Real World Implementations:
 
