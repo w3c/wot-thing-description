@@ -29,7 +29,22 @@ Also known as: Mapping TD elements to messages
 
 ## User Stories
 
-TBD
+1. HTTP side channels
+
+- **Who:** Developer of a Consumer
+- **What:** How to lay out affordances to deliver some of the DataSchemas described when it does not fit the [Content](https://www.rfc-editor.org/rfc/rfc9110.html#name-content)
+  - HTTP [header fields](https://www.rfc-editor.org/rfc/rfc9110.html#name-header-fields)
+  - [URL](https://www.rfc-editor.org/rfc/rfc3986) Query and Path
+- **Why:** Sometimes the request body does not contain all the information to deliver, HTTP offers a specific way to extend the information provided and URL can be used to encode further information.
+
+- Sentence: **As a** developer, **I need** support an implementation that encodes part of the DataSchema either in the URL itself or in the HTTP Headers, **so that I can** interoperate with services expecting such patterns.
+- Process Stakeholders:
+  - Submitter: Multiple
+  - Specification Writers: Luca Barbato, the WoT TD TF for TD 1.1 urlVariables support
+  - Implementation Volunteers: Luca Barbato
+  - Impacted People: TD Designers and Consumer application developers.
+  - Impact Type: Have a clear way to support services that are hard or impossible to describe nowadays
+- Linked Use Cases or Categories: TBD
 
 ## Existing Solutions
 
