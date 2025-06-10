@@ -204,7 +204,7 @@ TODO: Documenting why we have multi sec for one Thing. Some properties being pub
 
 ## Validation Rules
 
-1. In an expanded TD, each form MUST contain the required information to construct the request, meaning an absolute `href`, `security`, `op` and protocol related information defined by the binding specification. If a term has a default value, it MUST be also provided.
+1. In an expanded TD, each form MUST contain the information required to construct the request, meaning an absolute `href`, `security`, `op`, and protocol-related information defined by the binding specification. If a term has a default value, it MUST also be provided.
 2. In an expanded TD, the following terms MUST NOT be used in the root level:
    1. `"security"`
    2. `"securityDefinitions"`
@@ -219,19 +219,19 @@ TODO: Documenting why we have multi sec for one Thing. Some properties being pub
    2. `"schema"`
    3. `"connection"`
    4. `"form"`
-4. When a field, such as `"security"`, `"schema"`, `"connection"`, `"form"`, references a definition, that definition MUST exist in the root level in the respective category. E.g., the value of `"security"` (when not an object) must be in the `"securityDefinitions"` in the root level.
+4. When a field — such as `"security"`, `"schema"`, `"connection"`, or `"form"` — references a definition, that definition MUST exist in the root level in the respective category; e.g., the value of `"security"` (when not an object) must be in the `"securityDefinitions"` in the root level.
 
 ## Algorithm
 
 TODO: Discuss flattening, normalization and canonicalization algorithm should take the connection
 
-1. Each TD form MUST be expanded before using its information in a protocol driver. In other words, it is not required to expand TD upon receiving it.
+1. Each TD form MUST be expanded before using its information in a protocol driver. However, it is not required that TDs be expanded upon receipt.
 2. If a term is available in a form and is also available in a definition, the value in the form MUST be used. In other words, local definitions have priority over global definitions, making it possible to overwrite when needed.
-3. Even if all necessary terms are defined in a form, if there is a link to a reference, the TD MUST be expanded. This is required to guarantee that all protocol related terms are available in a form.
+3. Even if all necessary terms are defined in a form, if there is a link to a reference, the TD MUST be expanded. This is required to guarantee that all protocol-related terms are available in a form.
 
 To expand the form in an affordance:
 
-- Check if there is a `connection` or a `form` available. If neither is present, check if there is a top-level `connection` or a `form` available. If neither is present, this form  SHOULD be complete and can be used in a binding driver.
+- Check whether there is a `connection` or `form` available. If neither is present, check whether there is a top-level `connection` or `form` available. If neither is present, this form SHOULD be complete and can be used in a binding driver.
 
 ## Examples
 
