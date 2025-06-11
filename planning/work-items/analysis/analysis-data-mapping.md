@@ -46,6 +46,24 @@ Also known as: Mapping TD elements to messages
   - Impact Type: Have a clear way to support services that are hard or impossible to describe nowadays
 - Linked Use Cases or Categories: TBD
 
+2. XML data exchange
+
+- **Who:** Developer with XML data exchange (instead of JSON). In general any other data format which differs from JSON.
+- **What:** How to describe the XML format with DataSchemas (TD uses JSON schema means to describe data)
+  - Impossible to describe XML data accurately (i.e., there is no 1:1 mapping between JSON schema and XML schema)
+  - XML and/or JSON in memory while data on the wire (mapping between JSON and XML)
+  - See discussions in https://github.com/w3c/wot-binding-templates/issues/139
+- **Why:** Sometimes the request/response (also of existing solutions) is done in XML. Nevertheless, one wants to describe the data properly in a TD. Moreover, validation should be possible.
+
+- Sentence: **As a** developer, **I need** to support data exchange other than JSON (e.g., XML).
+- Process Stakeholders:
+  - Submitter: Multiple
+  - Specification Writers: Daniel Peintner
+  - Implementation Volunteers: Daniel Peintner
+  - Impacted People: TD Designers and Consumer application developers.
+  - Impact Type: Have a **standardized** way to describe XML data in TDs
+- Linked Use Cases or Categories: TBD
+
 ## Existing Solutions
 
 TBD
