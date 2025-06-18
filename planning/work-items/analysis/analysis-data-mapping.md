@@ -48,7 +48,7 @@ Also known as: Mapping TD elements to messages
 
 2. XML data exchange
 
-- **Who:** Developer with XML data exchange (instead of JSON). In general, any other data format which differs from JSON.
+- **Who:** TD designer of a Thing with XML data exchange.
 - **What:** Want to describe XML payloads in TDs (TD uses JSON Schema to describe payload data) and automatically validate XML payloads (WoT implementations use JSON Schema to validate payload data)
   - Impossible to describe XML data accurately (i.e., there is no 1:1 mapping between JSON schema and XML schema)
   - XML and/or JSON in memory while data on the wire (mapping between JSON and XML)
