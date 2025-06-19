@@ -53,7 +53,7 @@ Also known as: Mapping TD elements to messages
   - Impossible to describe XML data accurately (i.e., there is no 1:1 mapping between JSON schema and XML schema)
   - XML and/or JSON in memory while data on the wire (mapping between JSON and XML)
   - See discussions in https://github.com/w3c/wot-binding-templates/issues/139
-- **Why:** Include Things (including in existing solutions) that use XML as payload content type in the WoT
+- **Why:** So I can include Things (including in existing solutions) that use XML as payload content type in the WoT
 
 - Sentence: **As a** developer, **I need** to support data exchange other than JSON (e.g., XML).
 - Process Stakeholders:
