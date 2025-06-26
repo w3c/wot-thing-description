@@ -21,10 +21,16 @@ Additionally, there have been proposals by the WG members that need to taken int
 
 Related Issues:
 
-- <https://github.com/w3c/wot-thing-description#1692>
-- <https://github.com/w3c/wot-thing-description#1644>
-- <https://github.com/w3c/wot-thing-description#1223>
-- <https://github.com/w3c/wot-binding-templates/pull/379>
+- https://github.com/w3c/wot-thing-description/issues/1692
+- https://github.com/w3c/wot-thing-description/issues/1644
+- https://github.com/w3c/wot-thing-description/issues/1223
+- https://github.com/w3c/wot-binding-templates/pull/379
+- https://github.com/w3c/wot-thing-description/issues/1779
+- https://github.com/w3c/wot-thing-description/issues/899
+- https://github.com/w3c/wot-thing-description/issues/887 (sort of related, but we can move it to data binding)
+- https://github.com/w3c/wot-thing-description/issues/1605
+- https://github.com/w3c/wot-thing-description/issues/1408
+- https://github.com/w3c/wot-thing-description/issues/1070
 
 Related Real World Implementations:
 
@@ -33,7 +39,40 @@ Related Real World Implementations:
 
 ## User Stories
 
-TBD
+### Monitorable and Cancelable Actions
+
+* **Who:** Thing Description designer / Device Manufacturer / System integrator
+* **What:** Describe actions that can be monitored and canceled
+* **Why:** So that I can monitor and/or cancel a long running action without waiting indefinitely for its completion
+* **Sentence:** As a Thing Description designer, I need to describe actions that can be monitored and canceled so that I can correctly describe the lifecycle of actions in automation systems.
+* **Process Stakeholders**:
+  - Submitter: Multiple
+  - Specification Writers: 
+  - Implementation Volunteers: 
+  - Impacted People: TD Designers and Consumer application developers.
+  - Impact Type: Increase complexity of the WoT interaction model. This implies an increase in implementation complexity of both Consumer and Exposer applications. Finally, the Thing Description design process might result
+    more complex too. 
+* **Linked Use Cases or Categories:**
+    * https://github.com/w3c-cg/webagents/issues/26
+    * https://github.com/w3c-cg/webagents/issues/27
+    * https://github.com/w3c-cg/webagents/issues/29
+    * https://github.com/w3c-cg/webagents/issues/31
+
+### Queue of Actions
+
+* **Who:** Thing Description designer
+* **What:** Describe a queue of actions as a resource, including its contents and state
+* **Why:** So that I can fully describe the current status of a device capable of running persistent actions
+* **Sentence:** As a Thing Description designer, I need to describe a queue of actions as a resource so that I can fully describe the current status of a device capable of running monitorable and cancelable actions.
+* **Process Stakeholders**:
+    * Submitter: Multiple
+    * Specification Writers:
+    * Implementation Volunteers:
+    * Impacted People: TD Designers, Consumer application developers.
+    * Impact Type: Increase complexity of the WoT interaction model. This implies an increase in implementation complexity of both Consumer and Exposer applications. 
+* **Linked Use Cases or Categories:**
+   * https://github.com/w3c/wot-thing-description/issues/1070
+   * https://github.com/w3c/wot-thing-description/issues/1779
 
 ### Use Cases From Autonomous Agents on the Web CG
 
