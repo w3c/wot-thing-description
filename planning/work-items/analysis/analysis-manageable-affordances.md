@@ -43,7 +43,7 @@ Related Real World Implementations:
 
 * **Who:** Thing Description designer / Device Manufacturer / System integrator
 * **What:** Describe actions that can be monitored and canceled
-* **Why:** I can describe the lifecycle of actions in automation systems
+* **Why:** So that I can monitor and/or cancel a long running action without waiting indefinitely for its completion
 * **Sentence:** As a Thing Description designer, I need to describe actions that can be monitored and canceled so that I can correctly describe the lifecycle of actions in automation systems.
 * **Process Stakeholders**:
   - Submitter: Multiple
@@ -62,7 +62,7 @@ Related Real World Implementations:
 
 * **Who:** Thing Description designer
 * **What:** Describe a queue of actions as a resource, including its contents and state
-* **Why:** I can fully describe the current status of a device capable of running persistent actions
+* **Why:** So that I can fully describe the current status of a device capable of running persistent actions
 * **Sentence:** As a Thing Description designer, I need to describe a queue of actions as a resource so that I can fully describe the current status of a device capable of running monitorable and cancelable actions.
 * **Process Stakeholders**:
     * Submitter: Multiple
