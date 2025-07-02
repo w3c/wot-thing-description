@@ -2,6 +2,9 @@
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/manageable%20affordances)
 
+>  Traditional "interaction affordances" in WoT (Properties, Actions, Events) describe what a Thing can do or expose. Manageable Affordances, on the other hand, address scenarios where 
+These interactions are not just one-off calls but require ongoing management, monitoring, or have dependencies on other interactions.
+
 Various use cases require the implementation of more complex actions that span multiple protocol transactions. Such actions are not simply invoked but need to managed over time by the Thing and the Consumer.
 These are covered in the WoT Thing Description 1.1 via the initiation (invokeaction), monitoring (`queryaction`), and cancellation (`cancelaction`) of ongoing actions.
 However, the following points are not supported:
@@ -89,6 +92,48 @@ The CG has collected some use cases on the topic not limited to WoT. The ones be
 ## Existing Solutions
 
 TBD
+
+## Other technologies (WIP)
+This section analyzes the examples of implementation of the same user stories in other "well-known" or production technologies/frameworks. 
+
+### AWS IoT 
+
+- **Support for Asynchronous Actions**: Yes
+- **Description**: AWS IoT provides the concept of Commands, which can be used to execute custom actions on devices. Since its beginning, AWS IoT was more focused on data gathering on top of MQTT, but with commands they wanted to add the ability to execute remote operations on devices. Commands are basically a small interaction "protocol" on top of MQTT. They define a set of topics to simulate request/response semantics, but also enable the ability to listen for status updates. It seems that you can't cancel commands. There is also the concept of "Jobs", by they are more about provisionng and managing devices (or a fleet of devices) and it is more like a script that should be executed on the device, rather than a single action that can be monitored or cancelled. Another pattern of implementing an asychronous action is to use a Shadow Device, which is a virtual representation of a device that can be used to manage the device's state. Basically, a shared JSON document that represent the state with two field `desired` and `reported`. The `desired` state is the state that the device should be in, while the `reported` state is the state that the device is currently in. To implement an asynchronous action, you can update the `desired` state and then listen for changes in the `reported` state. This is a more complex pattern, but it is supported by AWS IoT and the application should know the semantics of the state changes.
+- **Support for queue**: Implicitly supported through MQTT topics. But the device might reject execution of multiple commands if it is busy.
+- **Reference**: [AWS IoT Commands](https://docs.aws.amazon.com/iot/latest/developerguide/iot-remote-command-concepts.html)
+
+### Particle IoT
+- **Support for Asynchronous Actions**: No
+- **Description**: Particle IoT does not have a built-in concept for asynchronous actions but only supports synchronous action invocations. Developers can deploy workarounds to achive similar functionality, such as using a combination of events and and functions to simulate asynchronous behavior.
+- **Support for queue**: No
+- **Reference**: [Particle Functions](https://docs.particle.io/reference/cloud-apis/api/#call-a-function)
+
+### Azure IoT Hub 
+- **Support for Asynchronous Actions**: No
+- **Description**: Azure IoT Hub does not have a built-in concept for asynchronous actions. It supports direct methods, which are synchronous and do not allow for monitoring or cancelling. However, it does support device twins, which can be used to manage the state of devices, but this is more about state management rather than executing actions.
+- **Support for queue**: No
+- **Reference**: [Azure IoT Hub Direct Methods](https://learn.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods)
+
+### ECHONET (TODO)
+
+### Goolg IoT Cloud (TODO)
+
+### Arduino IoT Cloud (TODO)
+
+### Home Assistant (TODO)
+
+### Tasmota Firmware (TODO)
+
+### Philips Hue Smart Lighting (TODO)
+
+### Shelly Devices (TODO)
+
+### Sonoff Devices (TODO)
+
+### SmartThings Devices (TODO)
+ 
+### Tuya IoT (TODO)
 
 ## Summarized Problem
 
