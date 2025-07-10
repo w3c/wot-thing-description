@@ -68,7 +68,7 @@ Related Real World Implementations:
 * **Why:** So that I can fully describe the current status of a device capable of running persistent actions
 * **Sentence:** As a Thing Description designer, I need to describe a queue of actions as a resource so that I can fully describe the current status of a device capable of running monitorable and cancelable actions.
 * **Process Stakeholders**:
-    * Submitter: Multiple
+    * Submitter: Cristiano Aguzzi
     * Specification Writers:
     * Implementation Volunteers:
     * Impacted People: TD Designers, Consumer application developers.
