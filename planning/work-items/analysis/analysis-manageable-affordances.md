@@ -49,7 +49,7 @@ Related Real World Implementations:
 * **Why:** So that I can monitor and/or cancel a long running action without waiting indefinitely for its completion
 * **Sentence:** As a Thing Description designer, I need to describe actions that can be monitored and canceled so that I can correctly describe the lifecycle of actions in automation systems.
 * **Process Stakeholders**:
-  - Submitter: Multiple
+  - Submitter: Cristiano Aguzzi
   - Specification Writers: 
   - Implementation Volunteers: 
   - Impacted People: TD Designers and Consumer application developers.
