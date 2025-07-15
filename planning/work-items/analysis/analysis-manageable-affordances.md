@@ -117,15 +117,33 @@ This section analyzes implementation examples of the same user stories in other 
 
 ### ECHONET (TODO)
 
-### Goolg IoT Cloud (TODO)
+### Goolg IoT Cloud 
+Discontinued.
 
-### Arduino IoT Cloud (TODO)
+### Arduino IoT Cloud 
+- **Support for Asynchronous Actions**: No
+- **Description**: Arduino IoT Cloud is a platform for connecting and managing Arduino devices online. It supports defining device "properties" (variables that represent device state), "events" (notifications triggered by changes or conditions), "timeseries" (historical data logging), and "triggers" (rules that execute actions based on property changes or events). Actions are typically synchronous and are executed as soon as a trigger condition is met. There is no built-in mechanism for monitoring, cancelling, or queuing actions. The platform is designed for simplicity and rapid prototyping, focusing on state synchronization and event-driven automation rather than complex asynchronous workflows.
+- **Support for queue**: No
+- **Reference**: [Arduino Cloud Documentation](https://docs.arduino.cc/cloud/)
 
-### Home Assistant (TODO)
+### Home Assistant
+- **Support for Asynchronous Actions**: No
+- **Description**: Home Assistant is an open-source platform for smart home automation that models devices as entities with states and attributes. Actions are performed via "services" that interact with these entities, typically resulting in synchronous changes. While Home Assistant supports automations, scripts, and scenes to orchestrate complex behaviors, there is no built-in mechanism for asynchronous action execution or monitoring/cancellation of actions. State changes can be tracked, but commands are not queued or managed asynchronously. Advanced workflows can be implemented using automations, but these go beyond the single device management and are mostly higher level abstractions.
+- **Support for queue**: No
+- **Reference**: [Home Assistant Entities](https://www.home-assistant.io/docs/configuration/entities_domains/)
 
-### Tasmota Firmware (TODO)
 
-### Philips Hue Smart Lighting (TODO)
+### Tasmota Firmware
+
+- **Support for Asynchronous Actions**: Yes, sort of. 
+- **Description**: Tasmota is a command-centric framework where nearly every interaction, including reading the device's state, is performed by sending a command. Since its main transport protocol is MQTT, most results of these commands can be read asynchronously. While the execution of a single command on the device is synchronous, Tasmota publishes the result or the new state to predefined stat/ and tele/ MQTT topics. This decouples the command invocation from the result, allowing any client to subscribe to these topics and asynchronously monitor the device's status. There is no native concept of "canceling" a command once it has been issued.Furthermore, the Backlog command provides a mechanism to send a batch of commands asynchronously; the device queues this sequence and executes it without further interaction from the client.
+- **Support for queue**: Yes, sort of (again). Supported through the `Backlog` command. The `Backlog` command allows you to send a single string containing multiple commands separated by semicolons. Tasmota will place these commands into a queue and execute them sequentially. This is a single queue, and as Tasmota is single-threaded, it will process the backlog before handling new incoming commands. You can clear the backlog (effectly similar to cancelling the queued commands) and you can listen to its progression by subscribing to the relevant command result topics.
+- **Reference**: [Tasmota Commands Documentation](https://tasmota.github.io/docs/Commands/)
+
+### Philips Hue Smart Lighting
+
+Sadly, it seems I can't disclose any information about Philips Hue Smart API as explained in the [terms and conditions](https://developers.meethue.com/terms-of-use-and-conditions/) of the API documentation:
+> Confidentiality: You shall not disclose to any person the Developer Content or any other information of a confidential nature provided to you by Signify, including Feedback (“Confidential Information”), except that you may disclose the Confidential Information: (i) to employees, officers, representatives or advisers of the company you work for and who need to know such information for the purposes of carrying out your obligations under these Terms (“Representatives”), provided that the Representatives comply with the confidentiality obligations under this clause; and (ii) as may be required by law, court order or any governmental or regulatory authority. You shall not use the Confidential Information for any purpose other than to perform your obligations under these Terms.
 
 ### Shelly Devices (TODO)
 
