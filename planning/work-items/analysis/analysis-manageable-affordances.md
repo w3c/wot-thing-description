@@ -111,7 +111,7 @@ This section analyzes the examples of implementation of the same user stories in
 
 ### Azure IoT Hub 
 - **Support for Asynchronous Actions**: No
-- **Description**: Azure IoT Hub does not have a built-in concept for asynchronous actions. It supports direct methods, which are synchronous and do not allow for monitoring or cancelling. However, it does support device twins, which can be used to manage the state of devices, but this is more about state management rather than executing actions.
+- **Description**: Azure IoT Hub does not have a built-in concept for asynchronous actions. It supports direct methods, which are synchronous and do not allow for monitoring or cancelling. However, it does support device twins, which can be used to manage the state of devices, but this is more about state management than execution of actions.
 - **Support for queue**: No
 - **Reference**: [Azure IoT Hub Direct Methods](https://learn.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods)
 
