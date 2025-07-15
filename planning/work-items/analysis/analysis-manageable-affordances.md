@@ -3,7 +3,7 @@
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/manageable%20affordances)
 
 >  Traditional "interaction affordances" in WoT (Properties, Actions, Events) describe what a Thing can do or expose. Manageable Affordances, on the other hand, address scenarios where 
-These interactions are not just one-off calls but require ongoing management, monitoring, or have dependencies on other interactions.
+These interactions are not just one-off calls but require ongoing management and/or monitoring, and/or have dependencies on other interactions.
 
 Various use cases require the implementation of more complex actions that span multiple protocol transactions. Such actions are not simply invoked but need to managed over time by the Thing and the Consumer.
 These are covered in the WoT Thing Description 1.1 via the initiation (invokeaction), monitoring (`queryaction`), and cancellation (`cancelaction`) of ongoing actions.
