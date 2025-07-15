@@ -57,7 +57,7 @@ Also known as: Mapping TD elements to messages
 
 - Sentence: **As a** developer, **I need** to support data exchange other than JSON (e.g., XML).
 - Process Stakeholders:
-  - Submitter: Multiple
+  - Submitter: Daniel Peintner
   - Specification Writers: Daniel Peintner
   - Implementation Volunteers: Daniel Peintner
   - Impacted People: TD Designers and Consumer application developers.
