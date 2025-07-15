@@ -94,7 +94,7 @@ The CG has collected some use cases on the topic not limited to WoT. The ones be
 TBD
 
 ## Other technologies (WIP)
-This section analyzes the examples of implementation of the same user stories in other "well-known" or production technologies/frameworks. 
+This section analyzes implementation examples of the same user stories in other "well-known" or production technologies/frameworks. 
 
 ### AWS IoT 
 
