@@ -105,7 +105,7 @@ This section analyzes the examples of implementation of the same user stories in
 
 ### Particle IoT
 - **Support for Asynchronous Actions**: No
-- **Description**: Particle IoT does not have a built-in concept for asynchronous actions but only supports synchronous action invocations. Developers can deploy workarounds to achive similar functionality, such as using a combination of events and and functions to simulate asynchronous behavior.
+- **Description**: Particle IoT does not have a built-in concept for asynchronous actions but only supports synchronous action invocations. Developers can deploy workarounds to achieve similar functionality, such as using a combination of events and functions to simulate asynchronous behavior.
 - **Support for queue**: No
 - **Reference**: [Particle Functions](https://docs.particle.io/reference/cloud-apis/api/#call-a-function)
 
