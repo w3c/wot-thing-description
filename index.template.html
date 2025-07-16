@@ -150,6 +150,14 @@
             publisher: "W3C",
             date: "July 2021"
           },
+          "WOT-BINDINGS-REGISTRY": {
+            title: "Web of Things (WoT) Bindings Registry",
+            //, href: "https://www.w3.org/TR/wot-bindings-registry/"
+            href: "https://w3c.github.io/wot-bindings-registry/",
+            authors: ["TODO"], //TODO: sync authors
+            publisher: "W3C",
+            date: "TODO" //TODO: Add publication date
+          },
           "MQTT": {
             title: "MQTT Version 3.1.1",
             href: "http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html",
@@ -778,11 +786,10 @@
           <code>href</code> is defined within the Forms level. Even if not defined, other levels can be used such as
           Links level.
         </dd>
-        <dt><dfn id="dfn-subspecification">Binding Template Subspecification</dfn>, <dfn>subspecification</dfn></dt>
+        <dt><dfn id="dfn-binding-specification">Binding Specification</dfn></dt>
         <dd>
-          A binding template document that is published separately from this document that specifies a binding template
-          for a protocol, payload format or platform. All binding template subspecifications respect the rules set in
-          the <a href="binding-templates">Binding Templates</a> section.
+          A binding specification is a document that specifies a binding
+          for a protocol or payload format or both. All bindings follow the rules of the WoT Bindings Registry [[WOT-BINDINGS-REGISTRY]].
         </dd>
       </dl>
 
@@ -3970,9 +3977,9 @@
 
         <p>
           With the <a>TD Context Extensions</a> in a Thing Description, the communication metadata can be supplemented
-          or new <a>Bindings</a> added through additional <a>Vocabulary Terms</a> serialized into JSON objects
-          representing a <code>Form</code> instance. Please see <a href="#binding-templates"></a> for further
-          information.
+          via <a>Bindings</a> from the WoT Bindings Registry [[WOT-BINDINGS-REGISTRY]], which are added through
+          additional <a>Vocabulary Terms</a> serialized into JSON objects representing a <code>Form</code> instance.
+          Please see <a href="#bindings"></a> for further information.
         </p>
       </section>
 
@@ -4048,15 +4055,19 @@
       </section>
     </section>
 
-    <section id="binding-templates">
-      <h2>Binding Templates</h2>
-      <section id="bindings-old-abstract">
-        <h3>Old Abstract</h3>
+    <section id="bindings">
+      <h2>Bindings</h2>
         <p>
-          W3C Web of Things enables applications to interact with and orchestrate connected Things at the Web scale. The
-          standardized abstract interaction model exposed by the WoT Thing Description enables applications to scale and
-          evolve independently of the individual Things.
-        </p>
+          Every message sent from a Consumer to the Thing and back needs to follow a network protocol, despite the Property, Action, Event abstraction provided by WoT.
+          The operations in the form level need to be bound to how the message needs to look like over the network.
+          Thus, every form in a WoT Thing Description needs to have a submission target, given by the <code>href</code> member, as indicated in <a href="#form">Form</a>.
+          For instance, if the target starts with <code>http</code> or <code>https</code>, a <a>Consumer</a> can then
+          infer the <a>Thing</a> implements the <a>Protocol Binding</a> based on HTTP and it should expect HTTP-specific
+          terms in the form instance.
+          Furthermore, the payloads described by the <a>Data Schema</a> in the affordance level need to be serialized to the correct payload format.
+          Similar to how operations are bound to protocol messages, the
+       </p>
+
         <p>
           Many network-level protocols, standards and platforms for connected Things have already been developed, and
           have millions of devices deployed in the field today. These standards are converging on a common set of
