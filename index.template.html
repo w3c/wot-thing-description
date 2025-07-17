@@ -4079,49 +4079,51 @@
 
     <section id="bindings">
       <h2>Bindings</h2>
-        <p>
-<<<<<<< HEAD
-          Every message sent from a Consumer to the Thing and back needs to
-          travel over a network protocol, despite the
-          Property&ndash;Action&ndash;Event abstraction provided by WoT.
-          The operations in the Forms level need to be bound to how the message is meant to look, over the network.
-          Thus, every form in a WoT Thing Description needs to have a submission target, given by the <code>href</code> member, as indicated in <a href="#form">Form</a>.
-          For instance, if the target starts with <code>http</code> or <code>https</code>, a <a>Consumer</a> can
-          infer that the <a>Thing</a> implements the <a>Protocol Binding</a> based on HTTP, and it should expect HTTP-specific
-          terms in an instance of this form.
-=======
-          Every message sent from a Consumer to the Thing and back needs to follow a network protocol, despite the Property, Action, Event abstraction provided by WoT.
-          The operations in the form level need to be bound to how the message needs to look like over the network.
-          Thus, every form in a WoT Thing Description needs to have a submission target, given by the <code>href</code> member, as indicated in <a href="#form">Form</a>.
-          For instance, if the target starts with <code>http</code> or <code>https</code>, a <a>Consumer</a> can then
-          infer the <a>Thing</a> implements the <a>Protocol Binding</a> based on HTTP and it should expect HTTP-specific
-          terms in the form instance.
->>>>>>> e3a9fb83 (start reorganizing the intro for bindings)
-          Furthermore, the payloads described by the <a>Data Schema</a> in the affordance level need to be serialized to the correct payload format.
-          Similar to how operations are bound to protocol messages, the
-       </p>
+      <p>
+        Every message sent from a Consumer to the Thing and back needs to travel over a network protocol, despite the
+        Property&ndash;Action&ndash;Event abstraction provided by WoT. The operations in the Forms level need to be
+        bound to how the message is meant to look, over the network. Thus, every form in a WoT Thing Description needs
+        to have a submission target, given by the <code>href</code> member, as indicated in <a>Form</a>. For instance,
+        if the target starts with <code>http</code> or <code>https</code>, a <a>Consumer</a> can infer that the
+        <a>Thing</a> implements the <a>Protocol Binding</a> based on HTTP, and it should expect HTTP-specific terms in
+        an instance of this form.
+      </p>
 
-        <p>
-          Many network-level protocols, standards and platforms for connected Things have already been developed, and
-          have millions of devices deployed in the field today. These standards are converging on a common set of
-          transport protocols and transfer layers, but each has peculiar content formats, payload schemas, and data
-          types.
-        </p>
-        <p>
-          Despite using unique formats and data models, the high-level interactions exposed by most connected things can
-          be modeled using the Property, Action, and Event interaction affordances of the WoT Thing Description.
-        </p>
-        <p>
-          Binding Templates enable a Thing Description to be adapted to a specific protocol, data payload formats or
-          platforms that combine both in specific ways. This is done through additional descriptive vocabularies, Thing
-          Models and examples that aim to guide the implementors of Things and Consumers alike.
-        </p>
-        <p>
-          This section acts as a base and explains how other binding templates should be designed. Concrete binding
-          templates are then provided in their respective documents, referred to as subspecifications, that are linked
-          to from this document.
-        </p>
-      </section>
+      <p>
+        Furthermore, the payloads described by the <a>Data Schema</a> in the Affordance Level need to be serialized to a
+        data format and sent on the network protocol. Similar to how operations are bound to protocol messages, the
+        <a>Data Schema</a> is bound to a data format indicated by the <code>contentType</code> or protocol-specific
+        terms provided in the <a>Form</a>. From these terms, a <a>Consumer</a> can infer the required serialization
+        method and transform the application-level data to the data to be sent on the network protocol. Similarly, for
+        messages coming from the <a>Thing</a>, the <a>Consumer</a> can deserialize the data and present it to the
+        application level. For example, a <a>Consumer</a> implemented in Python can read
+        <code>application/json</code> as the value of <code>contentType</code> and serialize a Python dictionary data
+        structure into a JSON object.
+      </p>
+
+      <p>
+        The mechanism above are called Bindings in the Web of Things and a specific example is illustrated in
+        [[[#fig-mechanism]]]. Bindings enable a Thing Description to be adapted to a specific protocol, data payload
+        formats or both in specific ways. This is done through URI Schemes, additional descriptive vocabularies, Thing
+        Models and examples that aim to guide the implementors of Things and Consumers alike.
+      </p>
+
+      <figure id="fig-mechanism">
+        <img
+          src="visualization/binding-mechanism.drawio.svg"
+          alt="Binding Templates mechanism with a TD, Thing and Consumer"
+        />
+        <figcaption>
+          Binding Templates Mechanism inside a TD excerpt with messages of its Thing and a Consumer.
+        </figcaption>
+      </figure>
+
+      <p>
+        This section explains the overall mechanism and gives basic guidance on creating new Bindings. The
+        [[WOT-BINDING-REGISTRY]] contains the a registry (list) of existing Bindings as well the requirements to follow
+        to register new entries to the registry.
+      </p>
+
       <section id="binding-introduction">
         <h4>Introduction to Binding Templates</h4>
         <p>
@@ -4168,16 +4170,6 @@
           message that corresponds to its TD. Other protocols, payload formats or their combination are possible and are
           explained in [[[#binding-overview]]].
         </p>
-
-        <figure id="fig-mechanism">
-          <img
-            src="visualization/binding-mechanism.drawio.svg"
-            alt="Binding Templates mechanism with a TD, Thing and Consumer"
-          />
-          <figcaption>
-            Binding Templates Mechanism inside a TD excerpt with messages of its Thing and a Consumer.
-          </figcaption>
-        </figure>
 
         <p class="ednote">
           The editors also recommend reading the related chapters in [[WOT-ARCHITECTURE]], such as
