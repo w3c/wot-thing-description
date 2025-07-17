@@ -791,6 +791,12 @@
           A binding specification is a document that specifies a binding for a protocol, a payload format, or both. All
           bindings follow the rules of the WoT Bindings Registry [[WOT-BINDINGS-REGISTRY]].
         </dd>
+        <dt><dfn id="dfn-binding-instance">Binding Instance</dfn></dt>
+        <dd>
+          A binding instance is a form instance in a Thing Description containing a specific binding. For example, an
+          HTTP Binding instance is a <a>Form</a> which has <code>href</code> starting with <code>http://</code> or
+          <code>https://</code>.
+        </dd>
       </dl>
 
       <p>These definitions are further developed in <a href="#preliminary-definitions"></a>.</p>
@@ -4064,7 +4070,7 @@
         to have a submission target, given by the <code>href</code> member, as indicated in <a>Form</a>. For instance,
         if the target starts with <code>http</code> or <code>https</code>, a <a>Consumer</a> can infer that the
         <a>Thing</a> implements the <a>Protocol Binding</a> based on HTTP, and it should expect HTTP-specific terms in
-        an instance of this form.
+        an instance of this form. See [[[#protocol-bindings]]] for more explanation and examples.
       </p>
 
       <p>
@@ -4076,14 +4082,17 @@
         messages coming from the <a>Thing</a>, the <a>Consumer</a> can deserialize the data and present it to the
         application level. For example, a <a>Consumer</a> implemented in Python can read
         <code>application/json</code> as the value of <code>contentType</code> and serialize a Python dictionary data
-        structure into a JSON object.
+        structure into a JSON object. See [[[#payload-bindings]]] for more explanation and examples.
       </p>
 
       <p>
         The mechanism above are called Bindings in the Web of Things and a specific example is illustrated in
-        [[[#fig-mechanism]]]. Bindings enable a Thing Description to be adapted to a specific protocol, data payload
-        formats or both in specific ways. This is done through URI Schemes, additional descriptive vocabularies, Thing
-        Models and examples that aim to guide the implementors of Things and Consumers alike.
+        [[[#fig-mechanism]]] with an excerpt of a TD of a robot arm with of HTTP and JSON Bindings. Here, the Consumer
+        intends to invoke an action of the robot arm (<code>goTo</code>) in order to move it to the position x equals 12
+        and y equals 100. In order to do so, it creates the correct payload, serializes it and sends it using the
+        correct protocol options. The Thing gets the message over the network and responds with a message that
+        corresponds to its TD. Other protocols, payload formats or their combination are possible and are explained in
+        [[[#binding-overview]]].
       </p>
 
       <figure id="fig-mechanism">
@@ -4092,119 +4101,44 @@
       </figure>
 
       <p>
-        This section explains the overall mechanism and gives basic guidance on creating new Bindings. The
-        [[WOT-BINDINGS-REGISTRY]] contains the a registry (list) of existing Bindings as well the requirements to follow
-        to register new entries to the registry.
+        In summary, Bindings enable a Thing Description to be adapted to a specific protocol, data payload formats or
+        both in specific ways. This is done through URI Schemes, additional descriptive vocabularies, Thing Models and
+        examples that aim to guide the implementors of Things and Consumers alike. This section explains the overall
+        mechanism and gives basic guidance on creating new Bindings. The [[WOT-BINDINGS-REGISTRY]] contains the a
+        registry (list) of existing Bindings as well the requirements to follow to register new entries to the registry.
       </p>
 
-      <section id="binding-introduction">
-        <h4>Introduction to Binding Templates</h4>
-        <p>
-          IoT addresses multiple use cases from different application domains, while requiring different deployment
-          patterns for devices. This results in different protocols and media types, creating the central challenge for
-          the Web of Things: enabling interactions with the plethora of different <a>IoT platforms</a> and devices that
-          do not follow any particular standard, but provide an eligible interface over a suitable network protocol. WoT
-          is addressing this challenge through Binding Templates.
-        </p>
+      <p>
+        When producting a TD for a particular IoT device, the corresponding Binding can be used to look up the
+        communication metadata that is to be provided in the <a>Thing Description</a>. [[[#fig-building-block]]] shows
+        how Bindings are used. Based on the protocol or media type, a TD is created. The Consumer that is processing a
+        TD implements the required Bindings that are present in the TD by including a corresponding protocol stack and
+        media type encoder/decoder by configuring the stack (or its messages) according to the information given in the
+        TD such as serialization format of the messages and header options.
+      </p>
 
-        <p>
-          Binding Templates consist of multiple specifications, referred to as a <a>subspecification</a> in this
-          document, that enable an application client (a WoT <a>Consumer</a>) to interact, using WoT Thing
-          Description[[WOT-THING-DESCRIPTION]] (TD), with Things that exhibit diverse protocols, payload formats and a
-          combination of these in platforms and frameworks. The mechanism that allows Consumers to interact with a
-          variety of Things is called the Binding Mechanism, without which TDs could not build Hypermedia Controls as
-          explained in the [[WOT-ARCHITECTURE]].
-        </p>
+      <figure id="fig-building-block">
+        <img
+          src="visualization/binding-templates.svg"
+          alt="Platforms, Protocols and Media Types as building blocks for binding templates and TD"
+        />
+        <figcaption>Platforms, Protocols and Media Types as building blocks for binding templates and TD</figcaption>
+      </figure>
 
-        <p>
-          When describing a particular IoT device or platform, the corresponding Binding Template can be used to look up
-          the communication metadata that is to be provided in the <a>Thing Description</a> to support that platform.
-          [[[#fig-building-block]]] shows how Binding Templates are used. Based on the protocol, media type or platform
-          binding template, a TD is created. The Consumer that is processing a TD implements the required Binding
-          Template that is present in the TD by including a corresponding protocol stack, media type encoder/decoder or
-          platform stack and by configuring the stack (or its messages) according to the information given in the TD
-          such as serialization format of the messages and header options.
-        </p>
+      <p class="note">
+        The editors of this specification also recommend reading the related chapters in [[WOT-ARCHITECTURE]], such as
+        <a href="https://www.w3.org/TR/wot-architecture11/#sec-binding-templates"
+          >WoT Binding Templates Building Block</a
+        >, <a href="https://www.w3.org/TR/wot-architecture11/#sec-hypermedia-controls">Hypermedia Controls</a>,
+        <a href="https://www.w3.org/TR/wot-architecture11/#sec-protocol-bindings">Protocol Bindings</a> and
+        <a href="https://www.w3.org/TR/wot-architecture11/#media-types">Media Types</a>.
+      </p>
 
-        <figure id="fig-building-block">
-          <img
-            src="visualization/binding-templates.svg"
-            alt="Platforms, Protocols and Media Types as building blocks for binding templates and TD"
-          />
-          <figcaption>Platforms, Protocols and Media Types as building blocks for binding templates and TD</figcaption>
-        </figure>
-
-        <p>
-          Each Interaction Affordance in a TD needs to have a binding to a protocol and to a payload format.
-          [[[#fig-mechanism]]] below illustrates an excerpt of a TD of a robot arm with of HTTP and JSON bindings. Here,
-          the Consumer intends to invoke an action of the robot arm (<code>goTo</code>) in order to move it to the
-          position x equals 12 and y equals 100. In order to do so, it creates the correct payload, serializes it and
-          sends it using the correct protocol options. The Thing gets the message over the network and responds with a
-          message that corresponds to its TD. Other protocols, payload formats or their combination are possible and are
-          explained in [[[#binding-overview]]].
-        </p>
-
-        <p class="ednote">
-          The editors also recommend reading the related chapters in [[WOT-ARCHITECTURE]], such as
-          <a href="https://www.w3.org/TR/wot-architecture11/#sec-binding-templates"
-            >WoT Binding Templates Building Block</a
-          >, <a href="https://www.w3.org/TR/wot-architecture11/#sec-hypermedia-controls">Hypermedia Controls</a>,
-          <a href="https://www.w3.org/TR/wot-architecture11/#sec-protocol-bindings">Protocol Bindings</a> and
-          <a href="https://www.w3.org/TR/wot-architecture11/#media-types">Media Types</a>.
-        </p>
-      </section>
-
-      <section id="binding-overview">
-        <h4>Binding Template Mechanisms</h4>
-
-        <p>
-          TDs can be bound to specific protocols, payload formats and platforms. This is possible through the three core
-          mechanisms that allow WoT to be used in various domains and scenarios. This section explains how these binding
-          mechanism types are structured, should be specified, and links to corresponding binding documents
-          (subspecifications). These 3 types of mechanisms are:
-        </p>
-        <ul>
-          <li>
-            <b>Protocols</b>: Application layer protocols (e.g., HTTP[[?RFC7231]], CoAP[[?RFC7252]], MQTT[[?MQTT]],
-            etc.) whose different message types are mapped to the WoT Thing Description[[WOT-THING-DESCRIPTION]] forms
-            via reusable vocabulary and extensions.
-          </li>
-          <li>
-            <b>Payloads</b>: Different payload formats and media types [[IANA-MEDIA-TYPES]] which can be represented in
-            a TD via Data Schemas or forms.
-          </li>
-          <li>
-            <b>Platforms</b>: Platforms and frameworks who combine the use of protocols and payloads in a certain way,
-            which can be represented via entire Thing Models described by the [[WOT-THING-DESCRIPTION]] or examples of
-            TDs.
-          </li>
-        </ul>
-
-        <p>
-          Each <a>Binding Template Subspecification</a> is an independent document that has a separate list of authors
-          and publication date. This section explains the binding mechanism by giving requirements per respective
-          binding category and links to the respective subspecification. These can be found in sections
-          [[[#protocol-bindings]]], [[[#payload-bindings]]] and [[[#platform-bindings]]].
-        </p>
-
-        <figure id="fig-overview">
-          <img
-            src="visualization/binding-templates-overview.drawio.svg"
-            alt="Binding Templates Overview and the relationships between each document type"
-          />
-          <figcaption>Binding Templates Overview and the Relationships between each Document Type</figcaption>
-        </figure>
-
-        <p>
-          Each Protocol and Payload Binding Template is specified in a way that they stay independent from each other.
-          This means that each document can be read independently from the other and can be also developed
-          independently. However, Platform Binding Templates are dependent on the Protocol and Payload Binding
-          Templates, since a given platform uses different protocols and payload formats that need to be specified first
-          in their respective binding templates and referred to within a Platform Binding Template.
-        </p>
+      <section id="binding-mechanisms">
+        <h4>Binding Mechanisms</h4>
 
         <section id="protocol-bindings">
-          <h5>Protocol Binding Templates</h5>
+          <h5>Protocol Bindings</h5>
           <p>
             [[WOT-THING-DESCRIPTION]] defines abstract operations such as <code>readproperty</code>,
             <code>invokeaction</code>
@@ -4225,22 +4159,22 @@
           </p>
           <p>
             Common methods found in REST and PubSub protocols are GET, PUT, POST, DELETE, PUBLISH, and SUBSCRIBE.
-            Binding Templates describe how these existing methods and associated vocabularies can be used in a
+            Binding specifications describe how these existing methods and associated vocabularies can be used in a
             <a>Thing Description</a> to bind to the WoT operations. This is done by defining the URI scheme of the
             protocol and mapping the protocol methods to the abstract WoT operations such as <code>readproperty</code>,
             <code>invokeaction</code> and <code>subscribeevent</code>. In some cases, additional instructions are
             provided to explain how the vocabulary terms should be used in different cases of protocol usage.
           </p>
           <p>
-            The examples below show the binding of the <code>readproperty</code> operation for the HTTP and Modbus
-            protocols. Please note that these are examples and please always refer to the corresponding binding to learn
-            about the relevant vocabulary terms and their values.
+            The examples below show binding instances of the <code>readproperty</code> operation for the HTTP and Modbus
+            protocols. Please note that these are examples and please always refer to the corresponding binding
+            specification to learn about the relevant vocabulary terms and their values.
           </p>
           <table>
             <tbody>
               <tr>
                 <td style="vertical-align: top; width: 50%">
-                  <pre class="example" title="Binding example of a readproperty operation to HTTP">
+                  <pre class="example" title="Binding instance of a readproperty operation to HTTP">
                                       {
                                           "href": "http://example.com/props/temperature",
                                           "op": "readproperty",
@@ -4250,12 +4184,11 @@
                   >
                 </td>
                 <td style="vertical-align: top; width: 50%">
-                  <pre class="example" title="Binding example of a readproperty operation to Modbus">
+                  <pre class="example" title="Binding instance of a readproperty operation to Modbus">
                                       {
-                                          "href": "modbus+tcp://127.0.0.1:60000/1",
+                                          "href": "modbus+tcp://127.0.0.1:60000/1/4",
                                           "op": "readproperty",
-                                          "modv:function": "readCoil",
-                                          "modv:address": 1
+                                          "modv:function": "readCoil"
                                       }
                                   </pre
                   >
@@ -4273,20 +4206,20 @@
             </li>
             <li>
               Right Example: To do a <code>readproperty</code> of the subject Property Affordance using the
-              <code>readCoil</code> function of Modbus at coil <code>1</code> of the device with the
-              <code>127.0.0.1</code> address at its port <code>60000</code>
+              <code>readCoil</code> function of Modbus at coil <code>4</code> of the device with the
+              <code>127.0.0.1</code> IP address and unitID <code>1</code> at its port <code>60000</code>
             </li>
           </ul>
           <p>
-            These bindings and their statements are possible for other operations and protocols as well. Below are
-            examples for <code>invokeaction</code> and <code>subscribeevent</code>:
+            These binding instances and their statements are possible for other operations and protocols as well. Below
+            are examples for <code>invokeaction</code> and <code>subscribeevent</code>:
           </p>
 
           <table>
             <tbody>
               <tr>
                 <td style="vertical-align: top; width: 50%">
-                  <pre class="example" title="Binding example of an invokeaction operation to HTTP">
+                  <pre class="example" title="Binding instance of an invokeaction operation to HTTP">
                                       {
                                           "op": "invokeaction",
                                           "href": "http://192.168.1.32:8081/example/levelaction",
@@ -4296,7 +4229,7 @@
                   >
                 </td>
                 <td style="vertical-align: top; width: 50%">
-                  <pre class="example" title="Binding example of a subscribeevent operation to MQTT">
+                  <pre class="example" title="Binding instance of a subscribeevent operation to MQTT">
                                       {
                                           "op": "subscribeevent",
                                           "href": "mqtt://iot.platform.com:8088",
@@ -4326,11 +4259,10 @@
 
           <p>
             In some cases, header options or other parameters of the protocols need to be included. Given that these are
-            highly protocol dependent, please refer to the bindings listed in [[[#protocol-bindings-table]]].
-            Additionally, protocols may have defined Subprotocols that can be used for some interaction types. For
-            example, to receive asynchronous notifications using HTTP, some servers may support long polling
-            (<code>longpoll</code>), WebSub [[WebSub]] (<code>websub</code>) and Server-Sent Events [[eventsource]]
-            (<code>sse</code>).
+            highly protocol dependent, please refer to the bindings listed in [[[WOT-BINDINGS-REGISTRY]]]. Additionally,
+            protocols may have defined Subprotocols that can be used for some interaction types. For example, to receive
+            asynchronous notifications using HTTP, some servers may support long polling (<code>longpoll</code>), WebSub
+            [[WebSub]] (<code>websub</code>) and Server-Sent Events [[eventsource]] (<code>sse</code>).
           </p>
 
           <section>
@@ -4367,173 +4299,14 @@
           </section>
 
           <section>
-            <h6>Terms Specified by Protocol Binding Templates</h6>
-            <p>
-              Overall, a protocol binding template specifies the values and structure of certain vocabulary terms in a
-              TD. The table below lists the vocabulary term, the class it belongs to and whether the subspecification is
-              required to specify the values the term can take. In addition to these, additional terms for describing
-              protocol options are typically added.
-            </p>
-
-            <table class="def numbered" id="table-protocol-terms">
-              <caption>
-                Terms specified by Protocol Binding Templates
-              </caption>
-              <thead>
-                <tr>
-                  <th>Vocabulary Term</th>
-                  <th>Class</th>
-                  <th>Specification Requirement</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>@context</td>
-                  <td>Thing</td>
-                  <td>mandatory</td>
-                </tr>
-                <tr>
-                  <td>href</td>
-                  <td>Form</td>
-                  <td>mandatory</td>
-                </tr>
-                <tr>
-                  <td>subprotocol</td>
-                  <td>Form</td>
-                  <td>optional</td>
-                </tr>
-                <tr>
-                  <td>contentType</td>
-                  <td>Form</td>
-                  <td>optional</td>
-                </tr>
-                <tr>
-                  <td>contentType</td>
-                  <td>ExpectedResponse</td>
-                  <td>optional</td>
-                </tr>
-                <tr>
-                  <td>contentType</td>
-                  <td>AdditionalExpectedResponse</td>
-                  <td>optional</td>
-                </tr>
-                <tr>
-                  <td>contentCoding</td>
-                  <td>Form</td>
-                  <td>optional</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-
-          <section id="protocol-bindings-table">
-            <h6>Existing Protocol Binding Templates</h6>
-            <p>
-              The table below summarizes the currently specified protocols in their respective
-              <a>Binding Template Subspecification</a>.
-            </p>
-            <table class="def numbered">
-              <caption>
-                Existing Protocol Binding Templates
-              </caption>
-              <thead>
-                <tr>
-                  <th>Abbreviation</th>
-                  <th>Name</th>
-                  <th>Link to Binding Template</th>
-                  <th>Link to Ontology</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>HTTP</td>
-                  <td>Hypertext Transfer Protocol</td>
-                  <td>
-                    <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/http/index.html"
-                      >Binding Template</a
-                    >
-                  </td>
-                  <td><a href="https://www.w3.org/TR/HTTP-in-RDF10/">Ontology</a></td>
-                </tr>
-                <tr>
-                  <td>CoAP</td>
-                  <td>Constrained Application Protocol</td>
-                  <td>
-                    <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/coap/index.html"
-                      >Binding Template</a
-                    >
-                  </td>
-                  <td>
-                    <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/coap/ontology.html"
-                      >Ontology</a
-                    >
-                  </td>
-                </tr>
-                <tr>
-                  <td>MQTT</td>
-                  <td>Message Queuing Telemetry Transport</td>
-                  <td>
-                    <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/mqtt/index.html"
-                      >Binding Template</a
-                    >
-                  </td>
-                  <td>
-                    <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/mqtt/ontology.html"
-                      >Ontology</a
-                    >
-                  </td>
-                </tr>
-                <tr>
-                  <td>Modbus</td>
-                  <td>Modbus</td>
-                  <td>
-                    <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/modbus/index.html"
-                      >Binding Template</a
-                    >
-                  </td>
-                  <td>
-                    <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/modbus/ontology.html"
-                      >Ontology</a
-                    >
-                  </td>
-                </tr>
-                <tr>
-                  <td>BACnet</td>
-                  <td>Building Automation and Control Networks</td>
-                  <td>
-                    <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/index.html"
-                      >Binding Template</a
-                    >
-                  </td>
-                  <td>
-                    <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/bacnet-model.ttl"
-                      >Ontology</a
-                    >
-                  </td>
-                </tr>
-                <tr>
-                  <td>PROFINET</td>
-                  <td>Process Field Network</td>
-                  <td>
-                    <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/profinet/index.html"
-                      >Binding Template</a
-                    >
-                  </td>
-                  <td>Not available</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-
-          <section>
-            <h6>Using a Thing Description with a Protocol Binding Template Subspecification</h6>
+            <h6>Using a Thing Description with a Protocol Binding</h6>
 
             <p>
-              Protocol Binding Templates contain vocabularies that extend the vocabulary found in the
+              Protocol Binding Specifications contain vocabularies that extend the vocabulary found in the
               [[WOT-THING-DESCRIPTION]]. This means that the way a TD is consumed and how the interactions happen with
               the Thing are adapted to such vocabularies. The steps below explain how this process typically looks like.
-              <!-- this text should be extended after the PR 262 is merged -->
             </p>
+            <!-- TODO: Add assertions and sync with other binding assertions -->
             <ol>
               <li>
                 <b>Detect the protocol:</b> Upon the activation of a form to execute the operation, the
@@ -4546,8 +4319,8 @@
               </li>
               <li>
                 <b>Validate the forms part of the TD</b>: Using the JSON Schema instances provided in the respective
-                subspecification or through programmatically checking key value pairs, the <a>Consumer</a> MAY validate
-                the respective form terms in order to verify they are correctly specified in the TD instance.
+                binding specification or through programmatically checking key value pairs, the <a>Consumer</a> MAY
+                validate the respective form terms in order to verify they are correctly specified in the TD instance.
               </li>
               <li>
                 <b>Start communication:</b> The <a>Consumer</a> SHOULD send requests for the chosen operation as
@@ -4560,71 +4333,10 @@
               </li>
             </ol>
           </section>
-
-          <section>
-            <h6>Creating a new Protocol Binding Template Subspecification</h6>
-
-            <p>
-              When creating a new protocol binding template <a>subspecification</a>, e.g. based on a new communication
-              protocol, the proposed document should enable implementations of this binding in an interoperable way for
-              Consumer and Producer implementations. More specifically, each
-              <a>Binding Template Subspecification</a> MUST specify the following:
-            </p>
-            <ul>
-              <li>
-                <b>URI Scheme:</b> For identification of the used protocol, a standardized URI scheme [[RFC3986]] value
-                MUST be declared in the form of a string. This URI Scheme is used in TDs at top level
-                <code>base</code> or in the <code>href</code> term of the <code>forms</code>
-                container. These can be officially registered ones at IANA [[iana-uri-schemes]] (e.g.
-                <code>"https://"</code>, <code>"coap://"</code>) or they can be declared in the protocol
-                subspecification (e.g. <code>"mqtt://"</code>, <code>"modbus+tcp://"</code>). How the full URI can be
-                constructed for different affordances (or resources) MUST be specified as well.
-              </li>
-              <li>
-                <b><code>@context</code> Usage and Ontology:</b> A vocabulary that allows adding protocol options to a
-                Thing Description forms SHOULD be provided to allow semantic annotations of the operations with protocol
-                specific information. The prefix and IRI to be used in the <code>@context</code> in order to link to the
-                vocabulary of the protocol SHOULD be also provided. The prefix SHOULD use the <code>v</code> suffix
-                notation in order to avoid confusion with the URI scheme of the protocol (e.g. <code>htv</code> for HTTP
-                and <code>mqv</code> for MQTT). For instructions on how to create a vocabulary, please refer to our
-                <a href="./VOCABULARY-CREATION-GUIDE.md"> Vocabulary Creation Guide</a>.
-              </li>
-              <li>
-                <b>Mapping to WoT Operations:</b> Most protocols have a set of methods or verbs that adds a meaning to
-                the messages of the protocol. A protocol binding template MUST be able to map WoT operation types
-                (<code>readproperty</code>, <code>invokeaction</code>, etc.) to concrete protocol message types or
-                methods. When specifying the mapping, the mapping SHOULD be bidirectional, i.e. it should be clear how
-                to do a <code>readproperty</code> operation with the given protocol and how an existing implementation's
-                endpoints can be mapped to a WoT operation should be also clear.
-              </li>
-              <li>
-                <b>JSON Schema:</b> A JSON Schema to validate the forms of a TD using the Protocol Binding SHOULD be
-                provided. This allows validation of the URI scheme and the vocabulary terms. The JSON Schema instance
-                SHOULD follow the template provided in
-                <a href="https://github.com/w3c/wot-binding-templates/blob/main/bindings/protocols/template.schema.json"
-                  >the Binding Templates GitHub Repository.</a
-                >
-              </li>
-              <li>
-                <b>Specification:</b> The official specification document of the protocol SHOULD be provided. This
-                SHOULD be a static version, i.e. the exact document used during the writing of the binding that is
-                guaranteed to not change. If this is not possible, the specification should be marked with a date of
-                access. When the specification is not publicly available and cannot be linked with a static version, an
-                editor's note should be provided in the introduction, explaining how to get access to the specification.
-              </li>
-            </ul>
-
-            <p>
-              A template is also provided for new protocol binding template specifications at
-              <a href="https://github.com/w3c/wot-binding-templates/blob/main/bindings/index.template.html"
-                >the GitHub Repository.</a
-              >
-            </p>
-          </section>
         </section>
 
         <section id="payload-bindings">
-          <h5>Payload Binding Templates</h5>
+          <h5>Payload Bindings</h5>
           <p>
             [[WOT-THING-DESCRIPTION]] defines two mechanisms to describe how a payload of a message over any protocol
             can look like. Firstly, media types [[IANA-MEDIA-TYPES]] describe the serialization used for sending and
@@ -4637,9 +4349,7 @@
 
           <p>
             In the rest of this section at [[[#payload-bindings-contentType]]] and [[[#payload-bindings-dataschema]]],
-            you can find examples of how payload bindings can look like. At [[[#payload-bindings-table]]] you can find
-            the current payload binding templates and [[[#payload-bindings-creating]]] explains how new payload binding
-            templates can be created.
+            you can find examples of how payload bindings can look like.
           </p>
           <section id="payload-bindings-contentType">
             <h6>Content Types</h6>
@@ -4663,10 +4373,8 @@
               additional parameters. In this specific case, the forms describe that reading this property with
               <code>http</code> or <code>coap</code> result in different content types. For structured media types, a
               Data Schema is generally provided in the affordance level as explained in
-              [[[#payload-bindings-dataschema]]] and
-              <a data-cite="WOT-THING-DESCRIPTION#sec-data-schema-vocabulary-definition">
-                in the Data Schema section of the TD specification</a
-              >. However, for unstructured data such as images and videos, a Data Schema is typically not available.
+              [[[#payload-bindings-dataschema]]] and [[#sec-data-schema-vocabulary-definition"]]. However, for
+              unstructured data such as images and videos, a Data Schema is typically not available.
             </p>
 
             <pre class="example" title="JSON and CBOR media types in forms" id="example-payload-binding">
@@ -4724,16 +4432,17 @@
             <h6>Data Schemas</h6>
 
             <p>
-              Data Schema, as explained in [[WOT-THING-DESCRIPTION]], describes the structure of the messages, which are
-              used together with media types. Even though it is largely inspired by JSON Schema [[json-schema]], it can
-              be used for describing other payload types such as [[XML]], string-encoded images, bit representations of
-              integers, etc. Data Schema SHOULD be used in addition to the media types.
+              Data Schema, as explained in [[#sec-data-schema-vocabulary-definition"]], describes the structure of the
+              messages, which are used together with media types. Even though it is largely inspired by JSON Schema
+              [[json-schema]], it can be used for describing other payload types such as [[XML]], string-encoded images,
+              bit representations of integers, etc. Data Schema SHOULD be used in addition to the media types.
             </p>
             <p>
               Depending on the case, the structure of the messages can be anything from a simple number to arrays or
               objects with multiple levels of nesting. Existing IoT Platforms and Standards have certain payload formats
-              with variations on how the data is structured. As explained in [[WOT-THING-DESCRIPTION]], Data Schema can
-              be used in a TD in one of the following places:
+              with variations on how the data is structured. As explained in
+              [[#sec-data-schema-vocabulary-definition"]], Data Schema can be used in a TD in one of the following
+              places:
             </p>
             <ul>
               <li>
@@ -4797,122 +4506,9 @@
               </tbody>
             </table>
           </section>
-          <section>
-            <h6>Terms Specified by Payload Binding Templates</h6>
-            <p>
-              Overall, a payload binding template specifies the values and structure of certain vocabulary terms in a
-              TD. The table below lists the vocabulary term, the class it belongs to and whether the subspecification is
-              required to specify the values the term can take. In addition to these, additional vocabulary terms can be
-              added and restrictions to Data Schema terms can be placed.
-            </p>
-
-            <table class="def numbered" id="table-payload-terms">
-              <caption>
-                Terms specified by Payload Binding Templates
-              </caption>
-              <thead>
-                <tr>
-                  <th>Term</th>
-                  <th>Class</th>
-                  <th>Specification Requirement</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>contentType</td>
-                  <td>Form</td>
-                  <td>mandatory</td>
-                </tr>
-                <tr>
-                  <td>contentType</td>
-                  <td>ExpectedResponse</td>
-                  <td>optional</td>
-                </tr>
-                <tr>
-                  <td>contentType</td>
-                  <td>AdditionalExpectedResponse</td>
-                  <td>optional</td>
-                </tr>
-                <tr>
-                  <td>contentCoding</td>
-                  <td>Form</td>
-                  <td>optional</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-
-          <section id="payload-bindings-table">
-            <h6>Existing Payload Binding Templates</h6>
-            The table below summarizes the currently specified payload binding templates.
-
-            <table class="def numbered">
-              <caption>
-                Existing Platform Binding Templates
-              </caption>
-              <thead>
-                <tr>
-                  <th>Abbreviation</th>
-                  <th>Name</th>
-                  <th>Media Type</th>
-                  <th>Link</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>JSON</td>
-                  <td>JavaScript Object Notation</td>
-                  <td><code>application/json</code></td>
-                  <td>Planned</td>
-                </tr>
-                <tr>
-                  <td>XML</td>
-                  <td>eXtensible Markup Language</td>
-                  <td><code>application/xml</code></td>
-                  <td>
-                    <a href="https://w3c.github.io/wot-binding-templates/bindings/payloads/xml/index.html">Link</a>
-                    (Work in Progress)
-                  </td>
-                </tr>
-                <tr>
-                  <td>text</td>
-                  <td>text</td>
-                  <td><code>text/plain</code></td>
-                  <td>Planned</td>
-                </tr>
-                <tr>
-                  <td>Unstructured Data</td>
-                  <td>Unstructured Data</td>
-                  <td>various</td>
-                  <td>Planned</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-
-          <section id="payload-bindings-creating">
-            <h6>Creating a new Payload Binding Template Subspecification</h6>
-
-            <p>
-              Each payload binding template <a>subspecification</a>, SHOULD contain the respective media type. Ideally
-              this media type has been registered at the IANA registry [[IANA-MEDIA-TYPES]] with a corresponding mime
-              type (e.g. <code>application/json</code>). If it is not registered, the binding document can propose a
-              mime type. Additionally, how that media type is represented in a Data Schema SHOULD be demonstrated with
-              examples. In all cases, the following information SHOULD be provided:
-            </p>
-
-            <ul>
-              <li>
-                <b>Specification:</b> The official specification document of the payload format SHOULD be provided. This
-                SHOULD be a static version, i.e. the exact document used during the writing of the binding that is
-                guaranteed to not change. If this is not possible, the specification should be marked with a date of
-                access. When the specification is not publicly available and cannot be linked with a static version, an
-                editor's note should be provided in the introduction, explaining how to get access to the specification.
-              </li>
-            </ul>
-          </section>
         </section>
 
+        <!-- TODO: Change to combining bindings -->
         <section id="platform-bindings">
           <h5>Platform Binding Templates</h5>
           <p>
@@ -4938,64 +4534,6 @@
             the usage of protocol or media type, corresponding protocol or payload binding templates MUST be created
             first.
           </p>
-
-          <section id="platform-bindings-table">
-            <h6>Existing Platform Binding Templates</h6>
-            <p>
-              The table below summarizes the currently specified platform binding template <a>subspecification</a>s.
-            </p>
-
-            <table class="def">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Link</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Philips Hue</td>
-                  <td>Planned</td>
-                </tr>
-                <tr>
-                  <td>ECHONET</td>
-                  <td>Planned</td>
-                </tr>
-                <tr>
-                  <td>OPC-UA</td>
-                  <td>Planned</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
-
-          <section>
-            <h6>Creating a new Platform Binding Template Subspecification</h6>
-
-            <p>
-              Depending on the platform and the variety of devices it proposes, each platform binding template
-              <a>subspecification</a> will be structured differently. When the platforms offer a <i>reasonable</i> set
-              of device types, a Thing Model for each device type SHOULD be provided. In other cases, possible devices
-              SHOULD be generalized by providing a set of example Thing Models or TDs. In all cases, the following
-              information SHOULD be provided:
-            </p>
-            <ul>
-              <li>
-                <b>Protocol:</b> The protocol used by the platform SHOULD be specified and linked to a protocol binding
-                template <a>subspecification</a> when a corresponding one exists.
-              </li>
-              <li>
-                <b>Media Type:</b> The media type used by the platform SHOULD be specified and linked to a payload
-                binding template <a>subspecification</a> when a corresponding one exists.
-              </li>
-              <li>
-                <b>API Documentation:</b> A static link pointing to the used API Documentation or Specification of the
-                platform SHOULD be provided. When the documentation is not publicly available and cannot be included in
-                a static version in the respective folder, an editor's note should be provided in the introduction,
-                explaining how to get access to the documentation.
-              </li>
-            </ul>
-          </section>
         </section>
       </section>
     </section>
