@@ -66,7 +66,7 @@ Also known as: Mapping TD elements to messages
 
 ## Existing Solutions
 
-TBD
+- OpenAPI 3.2 with XML Payload Description: https://github.com/OAI/OpenAPI-Specification/pull/4592
 
 ## Summarized Problem
 
