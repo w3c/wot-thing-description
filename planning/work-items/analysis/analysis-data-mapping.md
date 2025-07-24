@@ -61,7 +61,7 @@ Also known as: Mapping TD elements to messages
   - Specification Writers: Daniel Peintner
   - Implementation Volunteers: Daniel Peintner
   - Impacted People: TD Designers and Consumer application developers.
-  - Impact Type: Have a **standardized** way to describe XML data in TDs
+  - Impact Type: Have a **standardized** way to describe XML data in TDs which increases addressable Things without impacting existing implementations
 - Linked Use Cases or Categories: TBD
 
 ## Existing Solutions
