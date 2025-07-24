@@ -46,9 +46,27 @@ Also known as: Mapping TD elements to messages
   - Impact Type: Have a clear way to support services that are hard or impossible to describe nowadays
 - Linked Use Cases or Categories: TBD
 
+2. XML data exchange
+
+- **Who:** TD designer of a Thing with XML data exchange.
+- **What:** Want to describe XML payloads in TDs (TD uses JSON Schema to describe payload data) and automatically validate XML payloads (WoT implementations use JSON Schema to validate payload data)
+  - Impossible to describe XML data accurately (i.e., there is no 1:1 mapping between JSON schema and XML schema)
+  - XML and/or JSON in memory while data on the wire (mapping between JSON and XML)
+  - See discussions in https://github.com/w3c/wot-binding-templates/issues/139
+- **Why:** So I can include Things (including in existing solutions) that use XML as payload content type in the WoT
+
+- Sentence: **As a** developer, **I need** to support data exchange other than JSON (e.g., XML).
+- Process Stakeholders:
+  - Submitter: Daniel Peintner
+  - Specification Writers: Daniel Peintner
+  - Implementation Volunteers: Daniel Peintner
+  - Impacted People: TD Designers and Consumer application developers.
+  - Impact Type: Have a **standardized** way to describe XML data in TDs which increases addressable Things without impacting existing implementations
+- Linked Use Cases or Categories: TBD
+
 ## Existing Solutions
 
-TBD
+- OpenAPI 3.2 with XML Payload Description: https://github.com/OAI/OpenAPI-Specification/pull/4592
 
 ## Summarized Problem
 
