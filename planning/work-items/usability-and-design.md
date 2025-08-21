@@ -42,6 +42,8 @@ Moving discovery-related text from TD to Discovery
 
 Checking overlaps with architecture.
 
+See https://github.com/w3c/wot-thing-description/blob/main/planning/work-items/other-documents-sync/arch.md
+
 ## Reusable TD Elements
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/reusable+elements)
