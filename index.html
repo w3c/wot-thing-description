@@ -7631,7 +7631,7 @@
       </section>
       <!-- end of id="behavior-data"-->
 
-      <section id="protocol-bindings">
+      <section id="protocol-bindings-normative">
         <h3>Protocol Bindings</h3>
 
         <p>
@@ -7662,6 +7662,28 @@
               present) accepted by the <a>Thing</a> in an interaction.
             </span>
           </li>
+          <li>
+            <span class="rfc2119-assertion" id="td-default-binding-method">
+              When no method (or similar) is indicated in a form,
+              <a>Default Value</a> MUST be assumed from the identified <a>Protocol Binding</a> from the form.
+            </span>
+            Please see
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/http/#example-1">the example</a> in
+            the HTTP Binding.
+          </li>
+          <!-- TODO: This is not a behavior assertion. Where should the normative binding content go? -->
+          <li>
+            <span class="rfc2119-assertion" id="td-binding-multiple-ops">
+              In the case of a <code>forms</code> entry that has multiple <code>op</code> values, the form MUST NOT
+              restrict the messages that can be sent by the Consumer to only one operation. </span
+            >. For example, the form cannot contain <code>htv:methodName</code> in the case of the HTTP Binding.
+            Typically, a <a>TD Processor</a> will internally extend the multiple <code>op</code> values to separate
+            <code>forms</code> entries and associate each operation to the concrete protocol request using the default
+            assumption. The address information (e.g., <code>href</code>) and other metadata are taken over in the
+            extended version. Please see
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/http/#example-2">the example</a> in
+            the HTTP Binding.
+          </li>
         </ul>
 
         <p class="note">
@@ -7675,187 +7697,6 @@
 
         <section id="http-binding-assertions">
           <h4>Protocol Binding based on HTTP</h4>
-
-          <p>
-            Per default the Thing Description supports the <a>Protocol Binding</a> based on HTTP by including the HTTP
-            RDF vocabulary definitions from <em>HTTP Vocabulary in RDF 1.0</em> [[?HTTP-in-RDF10]]. This vocabulary can
-            be directly used within TD instances by the use of the prefix <code>htv</code>, which points to
-            <code>http://www.w3.org/2011/http#</code>. Further details of <a>Protocol Binding</a> based on HTTP can be
-            found in [[?WOT-BINDING-TEMPLATES]].
-          </p>
-          <p>
-            To interact with a <a>Thing</a> that implements the <a>Protocol Binding</a> based on HTTP, a <a>Consumer</a>
-            needs to know what HTTP method to use when submitting a form. In the general case, a Thing Description can
-            explicitly include a term indicating the method, i.e.,
-            <code>htv:methodName</code>. For the sake of conciseness, the <a>Protocol Binding</a> based on HTTP defines
-            <a>Default Values</a> for the operation types listed below, which also aims at convergence of the methods
-            expected by <a>Things</a> (e.g., GET to read, PUT to write).
-            <span class="rfc2119-assertion" id="td-default-http-method">
-              When no method is indicated in a form representing an <a>Protocol Binding</a> based on HTTP, a
-              <a>Default Value</a> MUST be assumed as shown in the following table.
-            </span>
-          </p>
-
-          <table class="def numbered">
-            <caption>
-              Default values of vocabulary terms for HTTP that are used when the terms are not present in a form of a
-              TD, containing an HTTP URI Scheme
-            </caption>
-            <thead>
-              <tr>
-                <th><a>Vocabulary term</a></th>
-                <th>Default value</th>
-                <th>Context</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="rfc2119-default-assertion" id="td-default-http-method_get">
-                <td>
-                  <code>htv:methodName</code>
-                </td>
-                <td><code>GET</code></td>
-                <td>
-                  <code>Form</code> with operation type <code>readproperty</code>, <code>readallproperties</code>,
-                  <code>readmultipleproperties</code>
-                </td>
-              </tr>
-              <tr class="rfc2119-default-assertion" id="td-default-http-method_put">
-                <td>
-                  <code>htv:methodName</code>
-                </td>
-                <td><code>PUT</code></td>
-                <td>
-                  <code>Form</code> with operation type <code>writeproperty</code>, <code>writeallproperties</code>,
-                  <code>writemultipleproperties</code>
-                </td>
-              </tr>
-              <tr class="rfc2119-default-assertion" id="td-default-http-method_post">
-                <td>
-                  <code>htv:methodName</code>
-                </td>
-                <td><code>POST</code></td>
-                <td><code>Form</code> with operation type <code>invokeaction</code></td>
-              </tr>
-            </tbody>
-          </table>
-
-          <p>
-            For example, the <a href="#simple-thing-description-sample">Example 1</a> in
-            <a href="#introduction"></a> does not contain operation types and HTTP methods in the forms. The following
-            <a>Default Values</a> should be assumed for the forms in the
-            <a href="#simple-thing-description-sample">Example 1</a>:
-          </p>
-
-          <aside class="example with-default">
-            <div class="with-default-control">
-              <input type="checkbox" />
-              <span><i>with default values for Protocol Binding based on HTTP</i></span>
-            </div>
-            <pre class="json">
-{
-    "@context": "https://www.w3.org/2022/wot/td/v1.1",
-    "id": "urn:uuid:3a559b69-cbec-4e7b-b543-bd8e6e41fd8b",
-    "title": "MyLampThing",
-    "securityDefinitions": {
-        "basic_sc": {
-            "scheme": "basic",
-            "in": "header"
-        }
-    },
-    "security": [
-        "basic_sc"
-    ],
-    "properties": {
-        "status": {
-            "type": "string",
-            "readOnly": true,
-            "forms": [
-                {
-                    "op": "readproperty",
-                    "href": "https://mylamp.example.com/status"
-                }
-            ]
-        }
-    },
-    "actions": {
-        "toggle": {
-            "forms": [
-                {
-                    "href": "https://mylamp.example.com/toggle"
-                }
-            ]
-        }
-    },
-    "events": {
-        "overheating": {
-            "data": {
-                "type": "string"
-            },
-            "forms": [
-                {
-                    "href": "https://mylamp.example.com/oh",
-                    "subprotocol": "longpoll"
-                }
-            ]
-        }
-    }
-}</pre
-            >
-            <pre class="json">
-{
-    "@context": "https://www.w3.org/2022/wot/td/v1.1",
-    "id": "urn:uuid:3deca264-4f90-4321-a5ea-f197e6a1c7cf",
-    "title": "MyLampThing",
-    "securityDefinitions": {
-        "basic_sc": {
-            "scheme": "basic",
-            "in": "header"
-        }
-    },
-    "security": [
-        "basic_sc"
-    ],
-    "properties": {
-        "status": {
-            "type": "string",
-            "readOnly": true,
-            "forms": [
-                {
-                    "op": "readproperty",
-                    "href": "https://mylamp.example.com/status",
-                    "htv:methodName": "GET"
-                }
-            ]
-        }
-    },
-    "actions": {
-        "toggle": {
-            "forms": [
-                {
-                    "op": "invokeaction",
-                    "href": "https://mylamp.example.com/toggle",
-                    "htv:methodName": "POST"
-                }
-            ]
-        }
-    },
-    "events": {
-        "overheating": {
-            "data": {
-                "type": "string"
-            },
-            "forms": [
-                {
-                    "op": "subscribeevent",
-                    "href": "https://mylamp.example.com/oh",
-                    "subprotocol": "longpoll"
-                }
-            ]
-        }
-    }
-}</pre
-            >
-          </aside>
 
           <p>
             In the case of a <code>forms</code> entry that has multiple <code>op</code> values the usage of the
