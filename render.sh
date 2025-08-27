@@ -98,6 +98,9 @@ $STTL_CMD -i validation/td-validation.ttl context/td-context.ttl $FILES \
 		  -o $FILE_INDEX
 echo "> $FILE_INDEX"
 
+# The list of assertions needs to be updated as well.
+node testing/extractFile.js > testing/assertions.csv
+
 # The TD specification includes diagrams that can be automatically generated
 # from the same SHACL source. The diagrams are first generated in textual form
 # with STTL and then turned into graphics using Graphviz:
