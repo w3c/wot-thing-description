@@ -1323,12 +1323,6 @@
               <td><code>false</code></td>
               <td></td>
             </tr>
-            <tr class="rfc2119-default-assertion" id="td-default-AdditionalResponseContentType">
-              <td><code>AdditionalExpectedResponse</code></td>
-              <td><code>contentType</code></td>
-              <td>value of the <code>contentType</code> of the <code>Form</code> element it belongs to.</td>
-              <td></td>
-            </tr>
             <tr class="rfc2119-default-assertion" id="td-default-contentType">
               <td><code>Form</code></td>
               <td><code>contentType</code></td>
@@ -3213,18 +3207,6 @@
             </p>
 
             <p>
-              <span class="rfc2119-assertion" id="td-form-response-object">
-                If present, the value assigned to <code>response</code> in an instance of <code>Form</code> MUST be a
-                JSON object.
-              </span>
-              <span class="rfc2119-assertion" id="td-forms-response">
-                If present, the response object MUST contain a <code>contentType</code> member as defined in the
-                <a>Class</a> definition of <a href="#expectedresponse" class="sec-ref"><code>ExpectedResponse</code></a
-                >.
-              </span>
-            </p>
-
-            <p>
               A <code>form</code> snippet with the <code>response</code> member is shown below based on the
               <code>takePhoto</code> Action described above:
             </p>
@@ -3249,6 +3231,49 @@
 }
 </pre
             >
+
+            <p>
+              In cases where responses are not expected to contain a payload and therefore no `contentType` either, an
+              empty `response` object can be used to convey this information.
+            </p>
+            <pre class="example">
+{
+    // ...
+    "actions": {
+        "brewCoffee": {
+            "description": "Invoking this action does not return a payload.",           
+            "input": {
+              "type": "object",
+              "properties": {
+                "coffeeType": {
+                  "enum": [
+                    "espresso",
+                    "americano",
+                    "cappuccino",
+                    "latte"
+                  ]
+                },
+                "useOatMilk": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "required": [
+                "coffeeType"
+              ]
+            },
+            "forms": [{
+                "op": "invokeaction",
+                "href": "http://coffee-maker.example.com/brew-coffee",
+                "contentType": "application/json",
+                "response": {}
+            }]
+        }
+    },
+    // ...
+}
+</pre
+            >
           </section>
           <section id="form-additionalResponses">
             <h3><code>additionalResponses</code></h3>
@@ -3265,10 +3290,12 @@
             </p>
             <p>
               A <code>TD</code> snippet with the <code>additionalResponses</code> member in an Action Affordance is
-              shown below. It describes the case mentioned above when an error response can be sent with another payload
-              than what is described in the <code>output</code>. The <code>success</code> with the value
+              shown below. Its first element ilustrates the case mentioned above when an error response can be sent with
+              another payload than what is described in the <code>output</code>. The <code>success</code> with the value
               <code>false</code> refers to the fact that this payload refers to an error case and
-              <code>schema</code> allows linking to the payload description used at <code>schemaDefinitions</code>:
+              <code>schema</code> allows linking to the payload description used at <code>schemaDefinitions</code>. The
+              second element within `additionalResponses` also describes an error response, but this time the response
+              does not have a payload.
             </p>
 
             <pre class="example">
@@ -3299,11 +3326,16 @@
                 "op": "invokeaction",
                 "href": "http://mycar.example.com/api/engine",
                 "contentType": "application/json",
-                "additionalResponses": [{
+                "additionalResponses": [
+                  {
                     "success": false,
                     "contentType": "application/json",
                     "schema": "actionErrorPayload"
-                }]
+                  },
+                  {
+                    "success": false
+                  },
+                ]
             }]
         }
     },

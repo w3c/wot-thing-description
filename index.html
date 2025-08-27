@@ -3698,7 +3698,7 @@
                       ></cite
                     >].
                   </td>
-                  <td><a href="#sec-default-values">with default</a></td>
+                  <td>optional</td>
                   <td>
                     <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a>
                   </td>
@@ -4081,7 +4081,7 @@
 
               <p>
                 The optional <code>response</code> name-value pair can be used to provide metadata for the expected
-                response message. With the core vocabulary, it only includes content type information, but TD Context
+                response message. With the core vocabulary, it can include only content type information, but TD Context
                 Extensions could be applied.
                 <span class="rfc2119-assertion" id="td-expectedResponse-default-contentType"
                   >If no <code>response</code> name-value pair is provided, it MUST be assumed that the content type of
@@ -4090,9 +4090,7 @@
                 Note that <code>contentType</code> within an
                 <code>ExpectedResponse</code>
                 <a href="#dfn-class" class="internalDFN" data-link-type="dfn">Class</a> does not have a
-                <a href="#dfn-default-value" class="internalDFN" data-link-type="dfn">Default Value</a>. For instance,
-                if the value of the content type of the form is <code>application/xml</code> the assumed value of the
-                content type of the response will be also <code>application/xml</code>.
+                <a href="#dfn-default-value" class="internalDFN" data-link-type="dfn">Default Value</a>.
               </p>
               <p>
                 In some cases additional responses might be possible. One example of this is error responses but in some
@@ -4106,36 +4104,53 @@
               </p>
               <p>
                 In some use cases, input and output data might be represented in a different form, for instance an
-                Action that accepts JSON, but returns an image. In such a case, the optional
-                <code>response</code> name-value pair can describe the content type of the expected response.
-                <span class="rfc2119-assertion" id="td-expectedResponse-contentType"
-                  >If the content type of the expected response differs from the content type of the form, the
-                  <code>Form</code> instance <em class="rfc2119" title="MUST">MUST</em> include a name-value pair with
-                  the name <code>response</code>.</span
-                >
-                For instance, an <code>ActionAffordance</code> could only accept <code>application/json</code> for its
-                input data, while it will respond with an <code>image/jpeg</code> content type for its output data. In
-                that case the content types differ and the <code>response</code>
-                name-value pair has to be used to provide response content type (<code>image/jpeg</code>) information to
-                the
-                <a href="#dfn-consumer" class="internalDFN" data-link-type="dfn">Consumer</a>.
+                Action that accepts JSON, but returns an image. In such a case, the optional `response` key-value pair
+                can describe the content type of the expected response. As there is no default value defined, the
+                following assertions apply:
               </p>
-              <p>
-                Similar considerations apply to additional responses, although in this case the
-                <code>contentType</code> is optional if it is the same as the input content Type (e.g. JSON).
-                <span class="rfc2119-assertion" id="td-additionalExpectedResponse-contentType"
-                  >If the content type of an additional expected response differs from the content type of the form, the
-                  <code>Form</code> instance <em class="rfc2119" title="MUST">MUST</em> include an entry in the array
-                  associated with the name <code>additionalResponses</code> that includes a value for the name
-                  <code>contentType</code>.</span
-                >
-                <span class="rfc2119-assertion" id="td-additionalExpectedResponse-schema"
-                  >If the data schema of an additional expected response differs from the output data schema of the
-                  interaction, the <code>Form</code> instance <em class="rfc2119" title="MUST">MUST</em> include an
-                  entry in the array associated with the name <code>additionalResponses</code> that includes a value for
-                  the name <code>schema</code>.</span
-                >
-              </p>
+              <ul>
+                <li>
+                  <span class="rfc2119-assertion" id="td-expectedResponse-missing-contentType">
+                    If there is no `contentType` value defined in a `response` object within a form, a
+                    <a>Consumer</a> MUST expect that the respective response does not contain any payload.
+                  </span>
+                </li>
+                <li>
+                  <span class="rfc2119-assertion" id="td-expectedResponse-defined-contentType">
+                    If a content type is defined in the `response` object within a form, a <a>Consumer</a> MUST expect a
+                    response containing a payload in the respective format, e.g., an image in the case of `image/jpeg`.
+                  </span>
+                </li>
+              </ul>
+              <p>Similar considerations apply to additional responses:</p>
+              <ul>
+                <li>
+                  <span class="rfc2119-assertion" id="td-additionalExpectedResponse-contentType">
+                    If the content type of an additional expected response differs from the content type of the form,
+                    the `Form` instance MUST include an entry in the array associated with the name
+                    `additionalResponses`.
+                  </span>
+                </li>
+                <li>
+                  <span class="rfc2119-assertion" id="td-additionalExpectedResponse-missing-contentType">
+                    If there is no `contentType` value defined in an additional expected response object, a
+                    <a>Consumer</a> MUST expect that the respective response does not contain any payload.
+                  </span>
+                </li>
+                <li>
+                  <span class="rfc2119-assertion" id="td-additionalExpectedResponse-schema">
+                    If the data schema of an additional expected response differs from the output data schema of the
+                    interaction, the `Form` MUST include an entry in the array associated with the name
+                    `additionalResponses` that includes a value for the name `schema`.
+                  </span>
+                </li>
+                <li>
+                  <span class="rfc2119-assertion" id="td-additionalExpectedResponse-noSchemaWithoutPayload">
+                    The `schema` of an additional expected response object MUST NOT be defined when there is no
+                    `contentType` present.
+                  </span>
+                </li>
+              </ul>
               <p>
                 The different cases on the variation of request and response are explained above. The tables at
                 <a href="#contentType-usage"></a> summarize these cases in a concise manner.
@@ -4172,7 +4187,7 @@
                       ></cite
                     >].
                   </td>
-                  <td>mandatory</td>
+                  <td>optional</td>
                   <td>
                     <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a>
                   </td>
@@ -4204,6 +4219,18 @@
                     <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#boolean"><code>boolean</code></a>
                   </td>
                 </tr>
+                <tr class="rfc2119-table-assertion" id="td-vocab-schema--AdditionalExpectedResponse">
+                  <td><code>schema</code></td>
+                  <td>
+                    Used to define the output data schema for an additional response if it differs from the default
+                    output data schema. Rather than a <code>DataSchema</code> object, the name of a previous definition
+                    given in a <code>schemaDefinitions</code> map must be used.
+                  </td>
+                  <td>optional</td>
+                  <td>
+                    <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a>
+                  </td>
+                </tr>
                 <tr class="rfc2119-table-assertion" id="td-vocab-contentType--AdditionalExpectedResponse">
                   <td><code>contentType</code></td>
                   <td>
@@ -4217,18 +4244,6 @@
                         >RFC2046</a
                       ></cite
                     >].
-                  </td>
-                  <td><a href="#sec-default-values">with default</a></td>
-                  <td>
-                    <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a>
-                  </td>
-                </tr>
-                <tr class="rfc2119-table-assertion" id="td-vocab-schema--AdditionalExpectedResponse">
-                  <td><code>schema</code></td>
-                  <td>
-                    Used to define the output data schema for an additional response if it differs from the default
-                    output data schema. Rather than a <code>DataSchema</code> object, the name of a previous definition
-                    given in a <code>schemaDefinitions</code> map must be used.
                   </td>
                   <td>optional</td>
                   <td>
@@ -4316,12 +4331,6 @@
               <td><code>AdditionalExpectedResponse</code></td>
               <td><code>success</code></td>
               <td><code>false</code></td>
-              <td></td>
-            </tr>
-            <tr class="rfc2119-default-assertion" id="td-default-AdditionalResponseContentType">
-              <td><code>AdditionalExpectedResponse</code></td>
-              <td><code>contentType</code></td>
-              <td>value of the <code>contentType</code> of the <code>Form</code> element it belongs to.</td>
               <td></td>
             </tr>
             <tr class="rfc2119-default-assertion" id="td-default-contentType">
@@ -6208,18 +6217,6 @@
             </p>
 
             <p>
-              <span class="rfc2119-assertion" id="td-form-response-object">
-                If present, the value assigned to <code>response</code> in an instance of <code>Form</code> MUST be a
-                JSON object.
-              </span>
-              <span class="rfc2119-assertion" id="td-forms-response">
-                If present, the response object MUST contain a <code>contentType</code> member as defined in the
-                <a>Class</a> definition of <a href="#expectedresponse" class="sec-ref"><code>ExpectedResponse</code></a
-                >.
-              </span>
-            </p>
-
-            <p>
               A <code>form</code> snippet with the <code>response</code> member is shown below based on the
               <code>takePhoto</code> Action described above:
             </p>
@@ -6244,6 +6241,49 @@
 }
 </pre
             >
+
+            <p>
+              In cases where responses are not expected to contain a payload and therefore no `contentType` either, an
+              empty `response` object can be used to convey this information.
+            </p>
+            <pre class="example">
+{
+    // ...
+    "actions": {
+        "brewCoffee": {
+            "description": "Invoking this action does not return a payload.",           
+            "input": {
+              "type": "object",
+              "properties": {
+                "coffeeType": {
+                  "enum": [
+                    "espresso",
+                    "americano",
+                    "cappuccino",
+                    "latte"
+                  ]
+                },
+                "useOatMilk": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "required": [
+                "coffeeType"
+              ]
+            },
+            "forms": [{
+                "op": "invokeaction",
+                "href": "http://coffee-maker.example.com/brew-coffee",
+                "contentType": "application/json",
+                "response": {}
+            }]
+        }
+    },
+    // ...
+}
+</pre
+            >
           </section>
           <section id="form-additionalResponses">
             <h3><code>additionalResponses</code></h3>
@@ -6260,10 +6300,12 @@
             </p>
             <p>
               A <code>TD</code> snippet with the <code>additionalResponses</code> member in an Action Affordance is
-              shown below. It describes the case mentioned above when an error response can be sent with another payload
-              than what is described in the <code>output</code>. The <code>success</code> with the value
+              shown below. Its first element ilustrates the case mentioned above when an error response can be sent with
+              another payload than what is described in the <code>output</code>. The <code>success</code> with the value
               <code>false</code> refers to the fact that this payload refers to an error case and
-              <code>schema</code> allows linking to the payload description used at <code>schemaDefinitions</code>:
+              <code>schema</code> allows linking to the payload description used at <code>schemaDefinitions</code>. The
+              second element within `additionalResponses` also describes an error response, but this time the response
+              does not have a payload.
             </p>
 
             <pre class="example">
@@ -6294,11 +6336,16 @@
                 "op": "invokeaction",
                 "href": "http://mycar.example.com/api/engine",
                 "contentType": "application/json",
-                "additionalResponses": [{
+                "additionalResponses": [
+                  {
                     "success": false,
                     "contentType": "application/json",
                     "schema": "actionErrorPayload"
-                }]
+                  },
+                  {
+                    "success": false
+                  },
+                ]
             }]
         }
     },
