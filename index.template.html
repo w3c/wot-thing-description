@@ -1409,6 +1409,35 @@
             </tr>
           </tbody>
         </table>
+
+        <p>Additionally, following considerations apply to the use of default values:</p>
+
+        <ul>
+          <li>
+            <span class="rfc2119-assertion" id="td-default-binding-method">
+              When no method (or similar) is indicated in a form,
+              <a>Default Value</a> MUST be assumed from the <a>Protocol Binding</a> identified in the form.
+            </span>
+            Please see
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/http/#example-1">the example</a> in
+            the HTTP Binding.
+          </li>
+          <li>
+            <span class="rfc2119-assertion" id="td-binding-multiple-ops">
+              In the case of a <code>forms</code> entry that has multiple <code>op</code> values, the form MUST NOT
+              restrict the messages that can be sent by the Consumer to only one operation.
+            </span>
+            For example, a form with <code>"op":["readproperty", "writeproperty"]</code>cannot contain
+            <code>htv:methodName</code>. Typically, a <a>TD Processor</a> will internally extend the multiple
+            <code>op</code> values to separate <code>forms</code> entries and associate each operation with the concrete
+            protocol request using the default assumption. The address information (e.g., <code>href</code>) and other
+            metadata are taken over in the extended version. Please see
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/http/#example-http-multiform-op"
+              >the example</a
+            >
+            in the HTTP Binding.
+          </li>
+        </ul>
       </section>
     </section>
 
@@ -4328,10 +4357,24 @@
                 form terms such as <code>subprotocol</code> or other vocabulary terms introduced by the protocol
                 binding. The interaction affordance data exchanged with the Thing SHOULD be according to the
                 <a>Data Schema</a> and <a>Content Type</a> present in the TD. The corresponding Data Schema to the
-                operation can be found in the [[WOT-THING-DESCRIPTION]], table called
-                <i>Mapping op Values to Data Schemas</i>.
+                operation can be found in the Table [[[#table-mapping-op-values-to-data-schemas]]].
               </li>
             </ol>
+            <p>Consequently, the following requirements apply to Things and Consumers:</p>
+            <ul>
+              <li>
+                <span class="rfc2119-assertion" id="td-bindings-requirements-scheme">
+                  Every form in a WoT Thing Description MUST follow the requirements of the
+                  <a>Protocol Binding</a> indicated by the URI scheme [[!RFC3986]] of its <code>href</code> member.
+                </span>
+              </li>
+              <li>
+                <span class="rfc2119-assertion" id="td-bindings-server-accept">
+                  Every form in a WoT Thing Description MUST accurately describe requests (including request headers, if
+                  present) accepted by the <a>Thing</a> in an interaction.
+                </span>
+              </li>
+            </ul>
           </section>
         </section>
 
@@ -4635,73 +4678,6 @@
         </ul>
       </section>
       <!-- end of id="behavior-data"-->
-
-      <section id="protocol-bindings-normative">
-        <h3>Protocol Bindings</h3>
-
-        <p>
-          A <a>Protocol Binding</a> is the mapping from an <a>Interaction Affordance</a> to concrete messages of a
-          specific protocol such as HTTP [[?RFC7231]], CoAP [[?RFC7252]], or MQTT [[?MQTT]]. <a>Protocol Bindings</a> of
-          <a>Interaction Affordances</a> are serialized as <code>forms</code> as defined in
-          <a href="#form-serialization-json"></a>.
-        </p>
-
-        <p>
-          Every form in a WoT Thing Description needs to have a submission target, given by the
-          <code>href</code> member, as indicated in <a href="#form">Form</a>. The URI scheme [[!RFC3986]] of this
-          submission target indicates what <a>Protocol Binding</a> the <a>Thing</a> implements [[wot-architecture11]].
-          For instance, if the target starts with <code>http</code> or <code>https</code>, a <a>Consumer</a> can then
-          infer the <a>Thing</a> implements the <a>Protocol Binding</a> based on HTTP and it should expect HTTP-specific
-          terms in the form instance (see next section, <a href="#http-binding-assertions"></a>).
-        </p>
-        <ul>
-          <li>
-            <span class="rfc2119-assertion" id="td-bindings-requirements-scheme">
-              Every form in a WoT Thing Description MUST follow the requirements of the
-              <a>Protocol Binding</a> indicated by the URI scheme [[!RFC3986]] of its <code>href</code> member.
-            </span>
-          </li>
-          <li>
-            <span class="rfc2119-assertion" id="td-bindings-server-accept">
-              Every form in a WoT Thing Description MUST accurately describe requests (including request headers, if
-              present) accepted by the <a>Thing</a> in an interaction.
-            </span>
-          </li>
-          <li>
-            <span class="rfc2119-assertion" id="td-default-binding-method">
-              When no method (or similar) is indicated in a form,
-              <a>Default Value</a> MUST be assumed from the <a>Protocol Binding</a> identified in the form.
-            </span>
-            Please see
-            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/http/#example-1">the example</a> in
-            the HTTP Binding.
-          </li>
-          <!-- TODO: This is not a behavior assertion. Where should the normative binding content go? -->
-          <li>
-            <span class="rfc2119-assertion" id="td-binding-multiple-ops">
-              In the case of a <code>forms</code> entry that has multiple <code>op</code> values, the form MUST NOT
-              restrict the messages that can be sent by the Consumer to only one operation.
-            </span>
-            For example, a form with <code>"op":["readproperty", "writeproperty"]</code>cannot contain
-            <code>htv:methodName</code>. Typically, a <a>TD Processor</a> will internally extend the multiple
-            <code>op</code> values to separate <code>forms</code> entries and associate each operation with the concrete
-            protocol request using the default assumption. The address information (e.g., <code>href</code>) and other
-            metadata are taken over in the extended version. Please see
-            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/http/#example-http-multiform-op"
-              >the example</a
-            >
-            in the HTTP Binding.
-          </li>
-        </ul>
-
-        <p class="note">
-          Optimally, the protocols used are listed as a scheme in the IANA registry [[?IANA-URI-SCHEMES]]). This
-          guarantees a unique <a>Protocol Binding</a> assignment. In case the desired protocol is not yet registered
-          with IANA, it is recommended to follow the scheme value of the protocol specifications, if available. In
-          principle, to avoid ambiguity in the identification of the protocol via the scheme, the
-          <a>Protocol Binding</a> document will provide a recommended scheme value to enable unique protocol
-          identification in the context of WoT.
-        </p>
       </section>
     </section>
     <!-- end of id="behavior"-->
