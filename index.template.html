@@ -129,7 +129,7 @@
             publisher: "W3C",
             date: "November 2020"
           },
-          "WOT-PROFILE": {
+          "WOT-PROFILES": {
             title: "Web of Things (WoT) Profile",
             href: "https://www.w3.org/TR/wot-profile/",
             authors: [
@@ -1321,12 +1321,6 @@
               <td><code>AdditionalExpectedResponse</code></td>
               <td><code>success</code></td>
               <td><code>false</code></td>
-              <td></td>
-            </tr>
-            <tr class="rfc2119-default-assertion" id="td-default-AdditionalResponseContentType">
-              <td><code>AdditionalExpectedResponse</code></td>
-              <td><code>contentType</code></td>
-              <td>value of the <code>contentType</code> of the <code>Form</code> element it belongs to.</td>
               <td></td>
             </tr>
             <tr class="rfc2119-default-assertion" id="td-default-contentType">
@@ -3242,18 +3236,6 @@
             </p>
 
             <p>
-              <span class="rfc2119-assertion" id="td-form-response-object">
-                If present, the value assigned to <code>response</code> in an instance of <code>Form</code> MUST be a
-                JSON object.
-              </span>
-              <span class="rfc2119-assertion" id="td-forms-response">
-                If present, the response object MUST contain a <code>contentType</code> member as defined in the
-                <a>Class</a> definition of <a href="#expectedresponse" class="sec-ref"><code>ExpectedResponse</code></a
-                >.
-              </span>
-            </p>
-
-            <p>
               A <code>form</code> snippet with the <code>response</code> member is shown below based on the
               <code>takePhoto</code> Action described above:
             </p>
@@ -3278,6 +3260,49 @@
 }
 </pre
             >
+
+            <p>
+              In cases where responses are not expected to contain a payload and therefore no `contentType` either, an
+              empty `response` object can be used to convey this information.
+            </p>
+            <pre class="example">
+{
+    // ...
+    "actions": {
+        "brewCoffee": {
+            "description": "Invoking this action does not return a payload.",           
+            "input": {
+              "type": "object",
+              "properties": {
+                "coffeeType": {
+                  "enum": [
+                    "espresso",
+                    "americano",
+                    "cappuccino",
+                    "latte"
+                  ]
+                },
+                "useOatMilk": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "required": [
+                "coffeeType"
+              ]
+            },
+            "forms": [{
+                "op": "invokeaction",
+                "href": "http://coffee-maker.example.com/brew-coffee",
+                "contentType": "application/json",
+                "response": {}
+            }]
+        }
+    },
+    // ...
+}
+</pre
+            >
           </section>
           <section id="form-additionalResponses">
             <h3><code>additionalResponses</code></h3>
@@ -3294,10 +3319,12 @@
             </p>
             <p>
               A <code>TD</code> snippet with the <code>additionalResponses</code> member in an Action Affordance is
-              shown below. It describes the case mentioned above when an error response can be sent with another payload
-              than what is described in the <code>output</code>. The <code>success</code> with the value
+              shown below. Its first element ilustrates the case mentioned above when an error response can be sent with
+              another payload than what is described in the <code>output</code>. The <code>success</code> with the value
               <code>false</code> refers to the fact that this payload refers to an error case and
-              <code>schema</code> allows linking to the payload description used at <code>schemaDefinitions</code>:
+              <code>schema</code> allows linking to the payload description used at <code>schemaDefinitions</code>. The
+              second element within `additionalResponses` also describes an error response, but this time the response
+              does not have a payload.
             </p>
 
             <pre class="example">
@@ -3328,11 +3355,16 @@
                 "op": "invokeaction",
                 "href": "http://mycar.example.com/api/engine",
                 "contentType": "application/json",
-                "additionalResponses": [{
+                "additionalResponses": [
+                  {
                     "success": false,
                     "contentType": "application/json",
                     "schema": "actionErrorPayload"
-                }]
+                  },
+                  {
+                    "success": false
+                  },
+                ]
             }]
         }
     },
@@ -4573,6 +4605,28 @@
             own to specify how a <a>binding instance</a> should look.
           </p>
         </section>
+      </section>
+
+      <section id="profile-relationship">
+        <h4>Relationship to Profiles</h4>
+        <p>
+          The Web of Things also defines a profiling mechanism that allows the reduction of implementation effort.
+          Profiles are built on top of existing Bindings by constraining the flexibility of TDs. Such constraints can be
+          bindings, semantic contexts, link relations, security schemes, and discovery mechanisms. With these
+          constraints, they provide additional interoperability guarantees over bindings.
+        </p>
+        <p class="ednote">
+          The profiling mechanism currently specified in [[WOT-PROFILES]] does not exactly follow the above-mentioned
+          mechanism. However, there is agreement on the future of the profiling mechanism. Once the profiling mechanism
+          is updated, this section will be updated accordingly.
+        </p>
+        <p>
+          For example, a profile can constrain the usage of HTTP GET Method for <code>readproperty</code> operations and
+          require payloads to be always serialized in JSON. The usage of a profile is indicated by the
+          <code>profile</code> term in the TD, which is a URI that points to the profile definition. How a Consumer can
+          use a profile is explained in the <emph>Profiling Mechanism</emph> section of the [[WOT-PROFILES]]
+          specification.
+        </p>
       </section>
     </section>
 
@@ -6188,7 +6242,7 @@
           <dd>
             Implementations on resource-constrained devices are expected to perform raw JSON processing (as opposed to
             JSON-LD processing) and support only a limited set of domain-specific extensions. The set of supported
-            extensions can be established by a WoT Profile [[WOT-PROFILE]], for example.
+            extensions can be established by a WoT Profile [[WOT-PROFILES]], for example.
             <span class="rfc2119-assertion" id="td-security-static-context">
               Constrained implementations SHOULD use vetted versions of their supported context extensions managed
               statically or as part of a secure update process.</span
