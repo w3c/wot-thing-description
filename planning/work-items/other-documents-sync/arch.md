@@ -7,7 +7,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 ## Categorization of assertions (tentative)
 
 - A: Those related to the Thing Description document
-  - A1: Assertions that are already included in the Thing Description document. No changes to the Thing Description document are necessary. 
+  - A1: Assertions that are already included in the Thing Description document. No changes to the Thing Description document are necessary.
   - A2: Assertions that differ from what is written in the Thing Description document. If necessary, update the Thing Description document to ensure consistency.
   - A3: Assertions not included in the Thing Description document. Add them if necessary.
 - B: Those related to other documents
@@ -23,6 +23,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 ##### 6.1.1.1 Thing Descriptions
 
 - [ ] 1. In W3C WoT, the description metadata for a Thing instance MUST be available as a WoT Thing Description (TD) [WOT-THING-DESCRIPTION]. ([arch-td-metadata](https://www.w3.org/TR/wot-architecture11/#arch-td-metadata))
+
   - Category: A1 / A2 / A3 / B / C (example)
 
 - [ ] 2. There MAY be other representations of a Thing such as an HTML-based user interface, simply an image of the physical entity, or even non-Web representations in closed systems. ([arch-other-thing-representations](https://www.w3.org/TR/wot-architecture11/#arch-other-thing-representations))
@@ -188,4 +189,3 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 - [ ] 53. Things returning data or metadata (such as TDs) associated with a person SHOULD use some form of access control. ([arch-privacy-consideration-access-control-mandatory-person](https://www.w3.org/TR/wot-architecture11/#arch-privacy-consideration-access-control-mandatory-person))
 
 - [ ] 54. Services returning Thing Descriptions with immutable IDs SHOULD use some form of access control. ([arch-privacy-consideration-id-access-control-mandatory-immutable](https://www.w3.org/TR/wot-architecture11/#arch-privacy-consideration-id-access-control-mandatory-immutable))
-
