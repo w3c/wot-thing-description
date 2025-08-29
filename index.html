@@ -2737,7 +2737,126 @@
             >
             in the HTTP Binding.
           </li>
+          <li>
+            <span class="rfc2119-assertion" id="td-default-context-expansion">
+              When the TD contains items with prefixes that are not defined in the <code>@context</code>, to enable semantic processing, a <a>TD Processor</a> SHOULD expand the <code>@context</code> by adding definitions for those prefixes according to bindings defined in the [[WOT-BINDING-REGISTRY]].
+            </span>
+            This requires that the <a>TD Processor</a> is aware of the prefixes used in the TD. This is typically the case when the <a>TD Processor</a> has been implemented to support a specific set of protocols and data formats.
+            See also [[[#example-context-expansion]]].
+          </li>
         </ul>
+
+        <aside class="example with-default">
+          <div class="marker">
+            <span class="example-title">TD with htv prefix and context expansion</span>
+          </div>
+          <div class="with-default-control">
+            <input type="checkbox" />
+            <span><i>with Context Expansion</i></span>
+          </div>
+          <pre class="json">
+{
+    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+    "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
+    "title": "MyLampThing",
+    //...
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [{
+                "href": "https://mylamp.example.com/status",
+                "htv:methodName": "GET",
+                "op": "readproperty",
+                "contentType": "application/json"
+            }]
+        }
+    }
+}
+        </pre>
+          <pre class="json">
+{
+    "@context": ["https://www.w3.org/2022/wot/td/v1.1", {
+        "htv": "http://www.w3.org/2011/http#"
+    }],
+    "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
+    "title": "MyLampThing",
+    //...
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [{
+                "href": "https://mylamp.example.com/status",
+                "htv:methodName": "GET",
+                "op": "readproperty",
+                "contentType": "application/json"
+            }]
+        }
+    }
+}
+        </pre>
+        </aside>
+
+        <p>
+          Note that the default values and the expansion mechanisms can be applied in a sequence. For example, the lack of <code>"readOnly"</code> and <code>"writeOnly"</code> means that the default value <code>false</code> is applied to both following [[[#table-default-values-of-vocabulary-terms-that-are-used-when-the-terms-are-not-present-in-a-td]]], which in turn means that the default value for <code>"op"</code> is <code>["readproperty", "writeproperty"]</code>. Using the default methods for the protocol binding, this means that both <code>"GET"</code> and <code>"PUT"</code> correspond to <code>"readproperty"</code> and <code>"writeproperty"</code>, respectively. However, following [[[#td-binding-multiple-ops]]] two separate forms are created internally, one for each operation and indicating the default method. Then, the [[[#td-default-context-expansion]]] rule is applied to add the definition of the <code>htv</code> prefix to the <code>@context</code>.
+          The example below shows the initial TD and the fully expanded TD after applying all default values and expansion mechanisms.
+        </p>
+
+<aside class="example with-default">
+  <div class="marker">
+    <span class="example-title">TD with multiple default value and expansion mechanisms</span>
+  </div>
+  <div class="with-default-control">
+    <input type="checkbox" />
+    <span><i>with Defaults and Expansions</i></span>
+  </div>
+  <pre class="json">
+{
+    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+    "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
+    "title": "MyLampThing",
+    //...
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [{
+                "href": "https://mylamp.example.com/status",
+                "contentType": "application/json"
+            }]
+        }
+    }
+}
+        </pre>
+  <pre class="json">
+{
+    "@context": ["https://www.w3.org/2022/wot/td/v1.1", {
+        "htv": "http://www.w3.org/2011/http#"
+    }],
+    "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
+    "title": "MyLampThing",
+    //...
+    "properties": {
+        "status": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "forms": [
+                {
+                  "href": "https://mylamp.example.com/status",
+                  "htv:methodName": "GET",
+                  "op": "readproperty",
+                  "contentType": "application/json"
+                },
+                {
+                  "href": "https://mylamp.example.com/status",
+                  "htv:methodName": "PUT",
+                  "op": "writeproperty",
+                  "contentType": "application/json"
+                }
+            ]
+        }
+    }
+}
+
       </section>
     </section>
 
@@ -4576,7 +4695,7 @@
     // ...
     "actions": {
         "brewCoffee": {
-            "description": "Invoking this action does not return a payload.",           
+            "description": "Invoking this action does not return a payload.",
             "input": {
               "type": "object",
               "properties": {
