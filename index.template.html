@@ -27,6 +27,14 @@
         issueBase: "https://www.github.com/w3c/wot-thing-description/issues",
         editors: [
           {
+            name: "Ege Korkan",
+            w3cid: "110131",
+            company: "Siemens AG",
+            companyURL: "https://www.siemens.com/"
+          }
+        ],
+        formerEditors: [
+          {
             name: "Sebastian Kaebisch",
             w3cid: "43064",
             company: "Siemens AG",
@@ -38,14 +46,6 @@
             company: "Intel Corp.",
             companyURL: "https://www.intel.com"
           },
-          {
-            name: "Ege Korkan",
-            w3cid: "110131",
-            company: "Siemens AG",
-            companyURL: "https://www.siemens.com/"
-          }
-        ],
-        formerEditors: [
           {
             name: "Takuki Kamiya",
             w3cid: "29376",
@@ -129,7 +129,7 @@
             publisher: "W3C",
             date: "November 2020"
           },
-          "WOT-PROFILE": {
+          "WOT-PROFILES": {
             title: "Web of Things (WoT) Profile",
             href: "https://www.w3.org/TR/wot-profile/",
             authors: [
@@ -150,11 +150,11 @@
             publisher: "W3C",
             date: "July 2021"
           },
-          "WOT-BINDINGS-REGISTRY": {
-            title: "Web of Things (WoT) Bindings Registry",
-            //, href: "https://www.w3.org/TR/wot-bindings-registry/"
-            href: "https://w3c.github.io/wot-bindings-registry/",
-            authors: ["TODO"], //TODO: sync authors
+          "WOT-BINDING-REGISTRY": {
+            title: "Web of Things (WoT) Binding Registry",
+            //, href: "https://www.w3.org/TR/wot-binding-registry/"
+            href: "https://w3c.github.io/wot-binding-registry/",
+            authors: ["Ege Korkan"],
             publisher: "W3C",
             date: "TODO" //TODO: Add publication date
           },
@@ -789,7 +789,7 @@
         <dt><dfn id="dfn-binding-specification">Binding Specification</dfn></dt>
         <dd>
           A binding specification is a document that specifies a binding for a protocol, a payload format, or both. All
-          bindings follow the rules of the WoT Bindings Registry [[WOT-BINDINGS-REGISTRY]].
+          bindings follow the rules of the WoT Binding Registry [[WOT-BINDING-REGISTRY]].
         </dd>
         <dt><dfn id="dfn-binding-instance">Binding Instance</dfn></dt>
         <dd>
@@ -1163,8 +1163,8 @@
           <p>
             In a TD, concrete data formats are specified in Forms (see <a href="#form"></a>) using content types. When
             the value of a content type in an instance of the Form is <code>application/json</code>, the data schema can
-            be processed directly by JSON Schema processors. Otherwise, entries in Web of Things (WoT) Bindings Registry
-            [[?WOT-BINDINGS-REGISTRY]] define available mappings from data schemas to other content types such as XML
+            be processed directly by JSON Schema processors. Otherwise, entries in Web of Things (WoT) Binding Registry
+            [[?WOT-BINDING-REGISTRY]] define available mappings from data schemas to other content types such as XML
             [[?xml]]. If the content type in an instance of the Form is not <code>application/json</code> and if no
             mapping is defined for the content type, specifying a data schema does not make sense for the content type.
           </p>
@@ -1329,12 +1329,6 @@
               <td><code>false</code></td>
               <td></td>
             </tr>
-            <tr class="rfc2119-default-assertion" id="td-default-AdditionalResponseContentType">
-              <td><code>AdditionalExpectedResponse</code></td>
-              <td><code>contentType</code></td>
-              <td>value of the <code>contentType</code> of the <code>Form</code> element it belongs to.</td>
-              <td></td>
-            </tr>
             <tr class="rfc2119-default-assertion" id="td-default-contentType">
               <td><code>Form</code></td>
               <td><code>contentType</code></td>
@@ -1415,7 +1409,155 @@
             </tr>
           </tbody>
         </table>
-      </section>
+
+        <p>Additionally, following considerations apply to the use of default values:</p>
+
+        <ul>
+          <li>
+            <span class="rfc2119-assertion" id="td-default-binding-method">
+              When no method (or similar) is indicated in a form,
+              <a>Default Value</a> MUST be assumed from the <a>Protocol Binding</a> identified in the form.
+            </span>
+            Please see
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/http/#example-1">the example</a> in
+            the HTTP Binding.
+          </li>
+          <li>
+            <span class="rfc2119-assertion" id="td-binding-multiple-ops">
+              When a <code>forms</code> entry has multiple <code>op</code> values, the form MUST NOT
+              restrict the messages that can be sent by the Consumer to only one operation.
+            </span>
+            For example, a form with <code>"op":["readproperty", "writeproperty"] </code>cannot contain
+            <code>htv:methodName</code>. Typically, a <a>TD Processor</a> will internally extend the multiple
+            <code>op</code> values to separate <code>forms</code> entries and associate each operation with the concrete
+            protocol request using the default assumption. The address information (e.g., <code>href</code>) and other
+            metadata are carried over to the extended version. Please see
+            <a href="https://w3c.github.io/wot-binding-templates/bindings/protocols/http/#example-http-multiform-op"
+              >the example</a
+            >
+            in the HTTP Binding.
+          </li>
+          <li>
+            <span class="rfc2119-assertion" id="td-default-context-expansion">
+              To enable semantic processing when the TD contains items with prefixes that are not defined in the <code>@context</code>, a <a>TD Processor</a> SHOULD expand the <code>@context</code> by adding definitions for those prefixes according to bindings defined in the [[WOT-BINDING-REGISTRY]].
+            </span>
+            This requires that the <a>TD Processor</a> is aware of the prefixes used in the TD. This is typically the case when the <a>TD Processor</a> has been implemented to support a specific set of protocols and data formats.
+            See also [[[#example-context-expansion]]].
+          </li>
+        </ul>
+
+        <aside class="example with-default">
+          <div class="marker">
+            <span class="example-title">TD with htv prefix and context expansion</span>
+          </div>
+          <div class="with-default-control">
+            <input type="checkbox" />
+            <span><i>with Context Expansion</i></span>
+          </div>
+          <pre class="json">
+{
+    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+    "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
+    "title": "MyLampThing",
+    //...
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [{
+                "href": "https://mylamp.example.com/status",
+                "htv:methodName": "GET",
+                "op": "readproperty",
+                "contentType": "application/json"
+            }]
+        }
+    }
+}
+        </pre>
+          <pre class="json">
+{
+    "@context": ["https://www.w3.org/2022/wot/td/v1.1", {
+        "htv": "http://www.w3.org/2011/http#"
+    }],
+    "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
+    "title": "MyLampThing",
+    //...
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [{
+                "href": "https://mylamp.example.com/status",
+                "htv:methodName": "GET",
+                "op": "readproperty",
+                "contentType": "application/json"
+            }]
+        }
+    }
+}
+        </pre>
+        </aside>
+
+        <p>
+          Note that the default values and the expansion mechanisms can be applied in a sequence. For example, the lack of <code>"readOnly"</code> and <code>"writeOnly"</code> means that the default value <code>false</code> is applied to both, following [[[#table-default-values-of-vocabulary-terms-that-are-used-when-the-terms-are-not-present-in-a-td]]], which in turn means that the default value for <code>"op"</code> is <code>["readproperty", "writeproperty"]</code>. Using the default methods for the protocol binding, this means that both <code>"GET"</code> and <code>"PUT"</code> correspond to <code>"readproperty"</code> and <code>"writeproperty"</code>, respectively. However, following [[[#td-binding-multiple-ops]]], two separate forms are created internally, one for each operation and indicating the default method. Then, the [[[#td-default-context-expansion]]] rule is applied to add the definition of the <code>htv</code> prefix to the <code>@context</code>.
+          The example below shows the initial TD and the fully expanded TD after applying all default values and expansion mechanisms.
+        </p>
+
+<aside class="example with-default">
+  <div class="marker">
+    <span class="example-title">TD with multiple default value and expansion mechanisms</span>
+  </div>
+  <div class="with-default-control">
+    <input type="checkbox" />
+    <span><i>with Defaults and Expansions</i></span>
+  </div>
+  <pre class="json">
+{
+    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+    "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
+    "title": "MyLampThing",
+    //...
+    "properties": {
+        "status": {
+            "type": "string",
+            "forms": [{
+                "href": "https://mylamp.example.com/status",
+                "contentType": "application/json"
+            }]
+        }
+    }
+}
+        </pre>
+  <pre class="json">
+{
+    "@context": ["https://www.w3.org/2022/wot/td/v1.1", {
+        "htv": "http://www.w3.org/2011/http#"
+    }],
+    "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
+    "title": "MyLampThing",
+    //...
+    "properties": {
+        "status": {
+            "type": "string",
+            "readOnly": false,
+            "writeOnly": false,
+            "forms": [
+                {
+                  "href": "https://mylamp.example.com/status",
+                  "htv:methodName": "GET",
+                  "op": "readproperty",
+                  "contentType": "application/json"
+                },
+                {
+                  "href": "https://mylamp.example.com/status",
+                  "htv:methodName": "PUT",
+                  "op": "writeproperty",
+                  "contentType": "application/json"
+                }
+            ]
+        }
+    }
+}
+
+        </pre>
     </section>
 
     <section id="sec-td-serialization" class="normative">
@@ -3087,7 +3229,9 @@
 
             <pre class="example">
 {
-    "@context": "https://www.w3.org/ns/wot-next/td",
+    "@context": ["https://www.w3.org/ns/wot-next/td", {
+        "htv": "http://www.w3.org/2011/http#"
+    }],
     // ...
     "properties": {
         "weather": {
@@ -3123,7 +3267,9 @@
             </p>
             <pre class="example">
     {
-        "@context": "https://www.w3.org/ns/wot-next/td",
+        "@context": ["https://www.w3.org/ns/wot-next/td", {
+            "htv": "http://www.w3.org/2011/http#"
+        }],
         // ...
         "properties": {
             "weather": {
@@ -3153,7 +3299,9 @@
             </p>
             <pre class="example">
     {
-        "@context": "https://www.w3.org/ns/wot-next/td",
+        "@context": ["https://www.w3.org/ns/wot-next/td", {
+            "htv": "http://www.w3.org/2011/http#"
+        }],
         // ...
         "properties": {
             "weather": {
@@ -3219,18 +3367,6 @@
             </p>
 
             <p>
-              <span class="rfc2119-assertion" id="td-form-response-object">
-                If present, the value assigned to <code>response</code> in an instance of <code>Form</code> MUST be a
-                JSON object.
-              </span>
-              <span class="rfc2119-assertion" id="td-forms-response">
-                If present, the response object MUST contain a <code>contentType</code> member as defined in the
-                <a>Class</a> definition of <a href="#expectedresponse" class="sec-ref"><code>ExpectedResponse</code></a
-                >.
-              </span>
-            </p>
-
-            <p>
               A <code>form</code> snippet with the <code>response</code> member is shown below based on the
               <code>takePhoto</code> Action described above:
             </p>
@@ -3255,6 +3391,49 @@
 }
 </pre
             >
+
+            <p>
+              In cases where responses are not expected to contain a payload and therefore no `contentType` either, an
+              empty `response` object can be used to convey this information.
+            </p>
+            <pre class="example">
+{
+    // ...
+    "actions": {
+        "brewCoffee": {
+            "description": "Invoking this action does not return a payload.",
+            "input": {
+              "type": "object",
+              "properties": {
+                "coffeeType": {
+                  "enum": [
+                    "espresso",
+                    "americano",
+                    "cappuccino",
+                    "latte"
+                  ]
+                },
+                "useOatMilk": {
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "required": [
+                "coffeeType"
+              ]
+            },
+            "forms": [{
+                "op": "invokeaction",
+                "href": "http://coffee-maker.example.com/brew-coffee",
+                "contentType": "application/json",
+                "response": {}
+            }]
+        }
+    },
+    // ...
+}
+</pre
+            >
           </section>
           <section id="form-additionalResponses">
             <h3><code>additionalResponses</code></h3>
@@ -3271,10 +3450,12 @@
             </p>
             <p>
               A <code>TD</code> snippet with the <code>additionalResponses</code> member in an Action Affordance is
-              shown below. It describes the case mentioned above when an error response can be sent with another payload
-              than what is described in the <code>output</code>. The <code>success</code> with the value
+              shown below. Its first element ilustrates the case mentioned above when an error response can be sent with
+              another payload than what is described in the <code>output</code>. The <code>success</code> with the value
               <code>false</code> refers to the fact that this payload refers to an error case and
-              <code>schema</code> allows linking to the payload description used at <code>schemaDefinitions</code>:
+              <code>schema</code> allows linking to the payload description used at <code>schemaDefinitions</code>. The
+              second element within `additionalResponses` also describes an error response, but this time the response
+              does not have a payload.
             </p>
 
             <pre class="example">
@@ -3305,11 +3486,16 @@
                 "op": "invokeaction",
                 "href": "http://mycar.example.com/api/engine",
                 "contentType": "application/json",
-                "additionalResponses": [{
+                "additionalResponses": [
+                  {
                     "success": false,
                     "contentType": "application/json",
                     "schema": "actionErrorPayload"
-                }]
+                  },
+                  {
+                    "success": false
+                  },
+                ]
             }]
         }
     },
@@ -3989,7 +4175,7 @@
 
         <p>
           With the <a>TD Context Extensions</a> in a Thing Description, the communication metadata can be supplemented
-          via <a>Binding Specifications</a> from the WoT Bindings Registry [[WOT-BINDINGS-REGISTRY]], which are added
+          via <a>Binding Specifications</a> from the WoT Binding Registry [[WOT-BINDING-REGISTRY]], which are added
           through additional <a>Vocabulary Terms</a> serialized into JSON objects representing a
           <code>Form</code> instance. Please see <a href="#bindings"></a> for further information.
         </p>
@@ -4110,7 +4296,7 @@
         In summary, Bindings enable a Thing Description to be adapted to a specific protocol, data payload formats or
         both in specific ways. This is done through URI Schemes, additional descriptive vocabularies, Thing Models and
         examples that aim to guide the implementors of Things and Consumers alike. This section explains the overall
-        mechanism and gives basic guidance on creating new Bindings. The [[WOT-BINDINGS-REGISTRY]] contains a registry
+        mechanism and gives basic guidance on creating new Bindings. The [[WOT-BINDING-REGISTRY]] contains a registry
         (list) of existing Bindings as well the requirements to follow to register new entries to the registry.
       </p>
 
@@ -4265,7 +4451,7 @@
 
           <p>
             In some cases, header options or other parameters of the protocols need to be included. Given that these are
-            highly protocol dependent, please refer to the bindings listed in [[[WOT-BINDINGS-REGISTRY]]]. Additionally,
+            highly protocol dependent, please refer to the bindings listed in [[[WOT-BINDING-REGISTRY]]]. Additionally,
             protocols may have defined Subprotocols that can be used for some interaction types. For example, to receive
             asynchronous notifications using HTTP, some servers may support long polling (<code>longpoll</code>), WebSub
             [[WebSub]] (<code>websub</code>) and Server-Sent Events [[eventsource]] (<code>sse</code>).
@@ -4333,11 +4519,25 @@
                 specified by the form and additional behavior that is expected. These are specified using the different
                 form terms such as <code>subprotocol</code> or other vocabulary terms introduced by the protocol
                 binding. The interaction affordance data exchanged with the Thing SHOULD be according to the
-                <a>Data Schema</a> and <a>Content Type</a> present in the TD. The corresponding Data Schema to the
-                operation can be found in the [[WOT-THING-DESCRIPTION]], table called
-                <i>Mapping op Values to Data Schemas</i>.
+                <a>Data Schema</a> and <a>Content Type</a> present in the TD. The Data Schema corresponding to the
+                operation can be found in the Table [[[#table-mapping-op-values-to-data-schemas]]].
               </li>
             </ol>
+            <p>Consequently, the following requirements apply to Things and Consumers:</p>
+            <ul>
+              <li>
+                <span class="rfc2119-assertion" id="td-bindings-requirements-scheme">
+                  Every form in a WoT Thing Description MUST follow the requirements of the
+                  <a>Protocol Binding</a> indicated by the URI scheme [[!RFC3986]] of its <code>href</code> member.
+                </span>
+              </li>
+              <li>
+                <span class="rfc2119-assertion" id="td-bindings-server-accept">
+                  Every form in a WoT Thing Description MUST accurately describe requests (including request headers, if
+                  present) accepted by the <a>Thing</a> in an interaction.
+                </span>
+              </li>
+            </ul>
           </section>
         </section>
 
@@ -4537,6 +4737,28 @@
           </p>
         </section>
       </section>
+
+      <section id="profile-relationship">
+        <h4>Relationship to Profiles</h4>
+        <p>
+          The Web of Things also defines a profiling mechanism that allows the reduction of implementation effort.
+          Profiles are built on top of existing Bindings by constraining the flexibility of TDs. Such constraints can be
+          bindings, semantic contexts, link relations, security schemes, and discovery mechanisms. With these
+          constraints, they provide additional interoperability guarantees over bindings.
+        </p>
+        <p class="ednote">
+          The profiling mechanism currently specified in [[WOT-PROFILES]] does not exactly follow the above-mentioned
+          mechanism. However, there is agreement on the future of the profiling mechanism. Once the profiling mechanism
+          is updated, this section will be updated accordingly.
+        </p>
+        <p>
+          For example, a profile can constrain the usage of HTTP GET Method for <code>readproperty</code> operations and
+          require payloads to be always serialized in JSON. The usage of a profile is indicated by the
+          <code>profile</code> term in the TD, which is a URI that points to the profile definition. How a Consumer can
+          use a profile is explained in the <emph>Profiling Mechanism</emph> section of the [[WOT-PROFILES]]
+          specification.
+        </p>
+      </section>
     </section>
 
     <section id="behavior" class="normative">
@@ -4641,327 +4863,6 @@
         </ul>
       </section>
       <!-- end of id="behavior-data"-->
-
-      <section id="protocol-bindings">
-        <h3>Protocol Bindings</h3>
-
-        <p>
-          A <a>Protocol Binding</a> is the mapping from an <a>Interaction Affordance</a> to concrete messages of a
-          specific protocol such as HTTP [[?RFC7231]], CoAP [[?RFC7252]], or MQTT [[?MQTT]]. <a>Protocol Bindings</a> of
-          <a>Interaction Affordances</a> are serialized as <code>forms</code> as defined in
-          <a href="#form-serialization-json"></a>.
-        </p>
-
-        <p>
-          Every form in a WoT Thing Description needs to have a submission target, given by the
-          <code>href</code> member, as indicated in <a href="#form">Form</a>. The URI scheme [[!RFC3986]] of this
-          submission target indicates what <a>Protocol Binding</a> the <a>Thing</a> implements [[wot-architecture11]].
-          For instance, if the target starts with <code>http</code> or <code>https</code>, a <a>Consumer</a> can then
-          infer the <a>Thing</a> implements the <a>Protocol Binding</a> based on HTTP and it should expect HTTP-specific
-          terms in the form instance (see next section, <a href="#http-binding-assertions"></a>).
-        </p>
-        <ul>
-          <li>
-            <span class="rfc2119-assertion" id="td-bindings-requirements-scheme">
-              Every form in a WoT Thing Description MUST follow the requirements of the
-              <a>Protocol Binding</a> indicated by the URI scheme [[!RFC3986]] of its <code>href</code> member.
-            </span>
-          </li>
-          <li>
-            <span class="rfc2119-assertion" id="td-bindings-server-accept">
-              Every form in a WoT Thing Description MUST accurately describe requests (including request headers, if
-              present) accepted by the <a>Thing</a> in an interaction.
-            </span>
-          </li>
-        </ul>
-
-        <p class="note">
-          Optimally, the protocols used are listed as a scheme in the IANA registry [[?IANA-URI-SCHEMES]]). This
-          guarantees a unique <a>Protocol Binding</a> assignment. In case the desired protocol is not yet registered
-          with IANA, it is recommended to follow the scheme value of the protocol specifications, if available. In
-          principle, to avoid ambiguity in the identification of the protocol via the scheme, the
-          <a>Protocol Binding</a> document will provide a recommended scheme value to enable unique protocol
-          identification in the context of WoT.
-        </p>
-
-        <section id="http-binding-assertions">
-          <h4>Protocol Binding based on HTTP</h4>
-
-          <p>
-            Per default the Thing Description supports the <a>Protocol Binding</a> based on HTTP by including the HTTP
-            RDF vocabulary definitions from <em>HTTP Vocabulary in RDF 1.0</em> [[?HTTP-in-RDF10]]. This vocabulary can
-            be directly used within TD instances by the use of the prefix <code>htv</code>, which points to
-            <code>http://www.w3.org/2011/http#</code>. Further details of <a>Protocol Binding</a> based on HTTP can be
-            found in [[?WOT-BINDING-TEMPLATES]].
-          </p>
-          <p>
-            To interact with a <a>Thing</a> that implements the <a>Protocol Binding</a> based on HTTP, a <a>Consumer</a>
-            needs to know what HTTP method to use when submitting a form. In the general case, a Thing Description can
-            explicitly include a term indicating the method, i.e.,
-            <code>htv:methodName</code>. For the sake of conciseness, the <a>Protocol Binding</a> based on HTTP defines
-            <a>Default Values</a> for the operation types listed below, which also aims at convergence of the methods
-            expected by <a>Things</a> (e.g., GET to read, PUT to write).
-            <span class="rfc2119-assertion" id="td-default-http-method">
-              When no method is indicated in a form representing an <a>Protocol Binding</a> based on HTTP, a
-              <a>Default Value</a> MUST be assumed as shown in the following table.
-            </span>
-          </p>
-
-          <table class="def numbered">
-            <caption>
-              Default values of vocabulary terms for HTTP that are used when the terms are not present in a form of a
-              TD, containing an HTTP URI Scheme
-            </caption>
-            <thead>
-              <tr>
-                <th><a>Vocabulary term</a></th>
-                <th>Default value</th>
-                <th>Context</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="rfc2119-default-assertion" id="td-default-http-method_get">
-                <td>
-                  <code>htv:methodName</code>
-                </td>
-                <td><code>GET</code></td>
-                <td>
-                  <code>Form</code> with operation type <code>readproperty</code>, <code>readallproperties</code>,
-                  <code>readmultipleproperties</code>
-                </td>
-              </tr>
-              <tr class="rfc2119-default-assertion" id="td-default-http-method_put">
-                <td>
-                  <code>htv:methodName</code>
-                </td>
-                <td><code>PUT</code></td>
-                <td>
-                  <code>Form</code> with operation type <code>writeproperty</code>, <code>writeallproperties</code>,
-                  <code>writemultipleproperties</code>
-                </td>
-              </tr>
-              <tr class="rfc2119-default-assertion" id="td-default-http-method_post">
-                <td>
-                  <code>htv:methodName</code>
-                </td>
-                <td><code>POST</code></td>
-                <td><code>Form</code> with operation type <code>invokeaction</code></td>
-              </tr>
-            </tbody>
-          </table>
-
-          <p>
-            For example, the <a href="#simple-thing-description-sample">Example 1</a> in
-            <a href="#introduction"></a> does not contain operation types and HTTP methods in the forms. The following
-            <a>Default Values</a> should be assumed for the forms in the
-            <a href="#simple-thing-description-sample">Example 1</a>:
-          </p>
-
-          <aside class="example with-default">
-            <div class="with-default-control">
-              <input type="checkbox" />
-              <span><i>with default values for Protocol Binding based on HTTP</i></span>
-            </div>
-            <pre class="json">
-{
-    "@context": "https://www.w3.org/ns/wot-next/td",
-    "id": "urn:uuid:3a559b69-cbec-4e7b-b543-bd8e6e41fd8b",
-    "title": "MyLampThing",
-    "securityDefinitions": {
-        "basic_sc": {
-            "scheme": "basic",
-            "in": "header"
-        }
-    },
-    "security": [
-        "basic_sc"
-    ],
-    "properties": {
-        "status": {
-            "type": "string",
-            "readOnly": true,
-            "forms": [
-                {
-                    "op": "readproperty",
-                    "href": "https://mylamp.example.com/status"
-                }
-            ]
-        }
-    },
-    "actions": {
-        "toggle": {
-            "forms": [
-                {
-                    "href": "https://mylamp.example.com/toggle"
-                }
-            ]
-        }
-    },
-    "events": {
-        "overheating": {
-            "data": {
-                "type": "string"
-            },
-            "forms": [
-                {
-                    "href": "https://mylamp.example.com/oh",
-                    "subprotocol": "longpoll"
-                }
-            ]
-        }
-    }
-}</pre
-            >
-            <pre class="json">
-{
-    "@context": "https://www.w3.org/ns/wot-next/td",
-    "id": "urn:uuid:3deca264-4f90-4321-a5ea-f197e6a1c7cf",
-    "title": "MyLampThing",
-    "securityDefinitions": {
-        "basic_sc": {
-            "scheme": "basic",
-            "in": "header"
-        }
-    },
-    "security": [
-        "basic_sc"
-    ],
-    "properties": {
-        "status": {
-            "type": "string",
-            "readOnly": true,
-            "forms": [
-                {
-                    "op": "readproperty",
-                    "href": "https://mylamp.example.com/status",
-                    "htv:methodName": "GET"
-                }
-            ]
-        }
-    },
-    "actions": {
-        "toggle": {
-            "forms": [
-                {
-                    "op": "invokeaction",
-                    "href": "https://mylamp.example.com/toggle",
-                    "htv:methodName": "POST"
-                }
-            ]
-        }
-    },
-    "events": {
-        "overheating": {
-            "data": {
-                "type": "string"
-            },
-            "forms": [
-                {
-                    "op": "subscribeevent",
-                    "href": "https://mylamp.example.com/oh",
-                    "subprotocol": "longpoll"
-                }
-            ]
-        }
-    }
-}</pre
-            >
-          </aside>
-
-          <p>
-            In the case of a <code>forms</code> entry that has multiple <code>op</code> values the usage of the
-            <code>htv:methodName</code> is not permitted. A <a>TD Processor</a> will extend the multiple
-            <code>op</code> values to separate <code>forms</code> entries and associates a single operation with the
-            default assumption. The address information (e.g., <code>href</code>) and other metadata are taken over in
-            the extended version.
-          </p>
-
-          <aside class="example with-default">
-            <div class="with-default-control">
-              <input type="checkbox" />
-              <span
-                ><i>extended <code>forms</code> in case of multiple values in <code>op</code></i></span
-              >
-            </div>
-            <pre class="json">
-{
-    "@context": "https://www.w3.org/ns/wot-next/td",
-    "id": "urn:uuid:43e2081d-3fd9-41bf-803d-baaefb79c70f",
-    "title": "MyLampThing",
-    "securityDefinitions": {
-        "basic_sc": {
-            "scheme": "basic",
-            "in": "header"
-        }
-    },
-    "security": [
-        "basic_sc"
-    ],
-    "properties": {
-        "status": {
-            "type": "string",
-            "forms": [
-                {
-                    "op" : ["readproperty", "writeproperty"],
-                    "href": "https://mylamp.example.com/status"
-                }
-            ]
-        }
-    }
-}</pre
-            >
-            <pre class="json">
-{
-    "@context": "https://www.w3.org/ns/wot-next/td",
-    "id": "urn:uuid:9cd44eef-0b3f-4566-94b0-1358af3d86bd",
-    "title": "MyLampThing",
-    "securityDefinitions": {
-        "basic_sc": {
-            "scheme": "basic",
-            "in": "header"
-        }
-    },
-    "security": [
-        "basic_sc"
-    ],
-    "properties": {
-        "status": {
-            "type": "string",
-            "forms": [
-                {
-                    "op": "readproperty",
-                    "href": "https://mylamp.example.com/status",
-                    "htv:methodName": "GET"
-                },
-                {
-                    "op": "writeproperty",
-                    "href": "https://mylamp.example.com/status",
-                    "htv:methodName": "PUT"
-                }
-            ]
-        }
-    }
-}</pre
-            >
-          </aside>
-        </section>
-
-        <section>
-          <h4>Other Protocol Bindings</h4>
-
-          <p>
-            The number of <a>Protocol Bindings</a> a <a>Thing</a> can implement is not restricted. Other
-            <a>Protocol Bindings</a> (e.g., for CoAP, MQTT, or OPC UA) are intended to be standardized in separate
-            documents such as a protocol <a>Vocabulary</a> similar to
-            <em>HTTP Vocabulary in RDF 1.0</em> [[?HTTP-in-RDF10]] or specifications including
-            <a>Default Value</a> definitions. Such protocols can be simply integrated into the TD by the usage of the
-            <a>TD Context Extension</a> mechanism (see <a href="#sec-context-extensions"></a>).
-          </p>
-          <p>
-            Please refer to [[?WOT-BINDING-TEMPLATES]] for information on how to describe IoT platforms and ecosystems.
-          </p>
-        </section>
-      </section>
     </section>
     <!-- end of id="behavior"-->
 
@@ -6471,7 +6372,7 @@
           <dd>
             Implementations on resource-constrained devices are expected to perform raw JSON processing (as opposed to
             JSON-LD processing) and support only a limited set of domain-specific extensions. The set of supported
-            extensions can be established by a WoT Profile [[WOT-PROFILE]], for example.
+            extensions can be established by a WoT Profile [[WOT-PROFILES]], for example.
             <span class="rfc2119-assertion" id="td-security-static-context">
               Constrained implementations SHOULD use vetted versions of their supported context extensions managed
               statically or as part of a secure update process.</span
@@ -7172,7 +7073,9 @@
           </div>
           <pre class="selected without exampleTab1 json">
 {
-  "@context": "https://www.w3.org/ns/wot-next/td",
+  "@context": ["https://www.w3.org/ns/wot-next/td", {
+      "htv": "http://www.w3.org/2011/http#"
+  }],
   "id": "urn:uuid:4778f80a-4c78-4cbb-a0e4-fa37b7d748df",
   "title": "TemperatureSensor",
   "description": "Webhook-based Event with subscription and unsubscribe form.",
@@ -7231,7 +7134,9 @@
           </pre>
           <pre class="with exampleTab1 json">
 {
-  "@context": "https://www.w3.org/ns/wot-next/td",
+  "@context": ["https://www.w3.org/ns/wot-next/td", {
+    "htv": "http://www.w3.org/2011/http#"
+  }],
   "id": "urn:uuid:3c1b4716-247f-4cda-ba53-d3307ac6feb0",
   "title": "WebhookThing",
   "description": "Webhook-based Event with subscription and unsubscribe form.",
@@ -7315,7 +7220,8 @@
         "https://www.w3.org/ns/wot-next/td",
         {
             "cov": "http://www.example.org/coap-binding#",
-            "mqv": "http://www.example.org/mqtt-binding#"
+            "mqv": "http://www.example.org/mqtt-binding#",
+            "htv": "http://www.w3.org/2011/http#"
         }
     ],
     "title": "LampThing",
@@ -7437,7 +7343,8 @@
         "https://www.w3.org/ns/wot-next/td",
         {
             "cov": "http://www.example.org/coap-binding#",
-            "mqv": "http://www.example.org/mqtt-binding#"
+            "mqv": "http://www.example.org/mqtt-binding#",
+            "htv": "http://www.w3.org/2011/http#"
         }
     ],
     "title": "Lamp",
