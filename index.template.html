@@ -498,7 +498,7 @@
         <aside class="example" id="simple-thing-description-sample" title="Thing Description sample">
           <pre>
 {
-    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "id": "urn:uuid:0804d572-cce8-422a-bb7c-4412fcd56f06",
     "title": "MyLampThing",
     "securityDefinitions": {
@@ -584,7 +584,7 @@
           <pre>
     {
         "@context": [
-            "https://www.w3.org/2022/wot/td/v1.1",
+            "https://www.w3.org/ns/wot-next/td",
             { "saref": "https://w3id.org/saref#" }
         ],
         "id": "urn:uuid:300f4c4b-ca6b-484a-88cf-fd5224a9a61d",
@@ -654,7 +654,7 @@
 
         <pre class="example" title="Thing Model sample" id="td-model-example-lamp">
         {
-            "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+            "@context": ["https://www.w3.org/ns/wot-next/td"],
             "@type": "tm:ThingModel",
             "title": "Lamp Thing Model",
             "properties": {
@@ -810,15 +810,21 @@
         specification is identified by the following IRI:
       </p>
       <p>
-        <code>https://www.w3.org/2022/wot/td/v1.1</code>
+        <code>https://www.w3.org/ns/wot-next/td</code>
       </p>
       <p>
         This IRI [[RFC3987]], which is also a URI [[!RFC3986]], can be dereferenced to obtain a
-        <a href="https://www.w3.org/2022/wot/td/v1.1">JSON-LD context file</a> [[?json-ld11]], allowing the compact
+        <a href="https://www.w3.org/ns/wot-next/td">JSON-LD context file</a> [[?json-ld11]], allowing the compact
         strings in <a>TD Documents</a> to be expanded to full IRI-based <a>Vocabulary Terms</a>. However, this
         processing is only required when transforming JSON-based <a>TD Documents</a> to RDF, an optional feature of
         <a>TD Processor</a>
         implementations.
+      </p>
+
+      <p class="note">
+        Note that this namespace is temporary until the specification reaches Recommendation status. At that time, a
+        permanent namespace will be assigned. All documents using the temporary namespace point to the main branch of
+        the git repository of the specification, thus not stable.
       </p>
 
       <p>
@@ -1418,8 +1424,8 @@
           </li>
           <li>
             <span class="rfc2119-assertion" id="td-binding-multiple-ops">
-              When a <code>forms</code> entry has multiple <code>op</code> values, the form MUST NOT
-              restrict the messages that can be sent by the Consumer to only one operation.
+              When a <code>forms</code> entry has multiple <code>op</code> values, the form MUST NOT restrict the
+              messages that can be sent by the Consumer to only one operation.
             </span>
             For example, a form with <code>"op":["readproperty", "writeproperty"] </code>cannot contain
             <code>htv:methodName</code>. Typically, a <a>TD Processor</a> will internally extend the multiple
@@ -1433,10 +1439,13 @@
           </li>
           <li>
             <span class="rfc2119-assertion" id="td-default-context-expansion">
-              To enable semantic processing when the TD contains items with prefixes that are not defined in the <code>@context</code>, a <a>TD Processor</a> SHOULD expand the <code>@context</code> by adding definitions for those prefixes according to bindings defined in the [[WOT-BINDING-REGISTRY]].
+              To enable semantic processing when the TD contains items with prefixes that are not defined in the
+              <code>@context</code>, a <a>TD Processor</a> SHOULD expand the <code>@context</code> by adding definitions
+              for those prefixes according to bindings defined in the [[WOT-BINDING-REGISTRY]].
             </span>
-            This requires that the <a>TD Processor</a> is aware of the prefixes used in the TD. This is typically the case when the <a>TD Processor</a> has been implemented to support a specific set of protocols and data formats.
-            See also [[[#example-context-expansion]]].
+            This requires that the <a>TD Processor</a> is aware of the prefixes used in the TD. This is typically the
+            case when the <a>TD Processor</a> has been implemented to support a specific set of protocols and data
+            formats. See also [[[#example-context-expansion]]].
           </li>
         </ul>
 
@@ -1466,7 +1475,8 @@
         }
     }
 }
-        </pre>
+        </pre
+          >
           <pre class="json">
 {
     "@context": ["https://www.w3.org/2022/wot/td/v1.1", {
@@ -1487,23 +1497,33 @@
         }
     }
 }
-        </pre>
+        </pre
+          >
         </aside>
 
         <p>
-          Note that the default values and the expansion mechanisms can be applied in a sequence. For example, the lack of <code>"readOnly"</code> and <code>"writeOnly"</code> means that the default value <code>false</code> is applied to both, following [[[#table-default-values-of-vocabulary-terms-that-are-used-when-the-terms-are-not-present-in-a-td]]], which in turn means that the default value for <code>"op"</code> is <code>["readproperty", "writeproperty"]</code>. Using the default methods for the protocol binding, this means that both <code>"GET"</code> and <code>"PUT"</code> correspond to <code>"readproperty"</code> and <code>"writeproperty"</code>, respectively. However, following [[[#td-binding-multiple-ops]]], two separate forms are created internally, one for each operation and indicating the default method. Then, the [[[#td-default-context-expansion]]] rule is applied to add the definition of the <code>htv</code> prefix to the <code>@context</code>.
-          The example below shows the initial TD and the fully expanded TD after applying all default values and expansion mechanisms.
+          Note that the default values and the expansion mechanisms can be applied in a sequence. For example, the lack
+          of <code>"readOnly"</code> and <code>"writeOnly"</code> means that the default value <code>false</code> is
+          applied to both, following
+          [[[#table-default-values-of-vocabulary-terms-that-are-used-when-the-terms-are-not-present-in-a-td]]], which in
+          turn means that the default value for <code>"op"</code> is <code>["readproperty", "writeproperty"]</code>.
+          Using the default methods for the protocol binding, this means that both <code>"GET"</code> and
+          <code>"PUT"</code> correspond to <code>"readproperty"</code> and <code>"writeproperty"</code>, respectively.
+          However, following [[[#td-binding-multiple-ops]]], two separate forms are created internally, one for each
+          operation and indicating the default method. Then, the [[[#td-default-context-expansion]]] rule is applied to
+          add the definition of the <code>htv</code> prefix to the <code>@context</code>. The example below shows the
+          initial TD and the fully expanded TD after applying all default values and expansion mechanisms.
         </p>
 
-<aside class="example with-default">
-  <div class="marker">
-    <span class="example-title">TD with multiple default value and expansion mechanisms</span>
-  </div>
-  <div class="with-default-control">
-    <input type="checkbox" />
-    <span><i>with Defaults and Expansions</i></span>
-  </div>
-  <pre class="json">
+        <aside class="example with-default">
+          <div class="marker">
+            <span class="example-title">TD with multiple default value and expansion mechanisms</span>
+          </div>
+          <div class="with-default-control">
+            <input type="checkbox" />
+            <span><i>with Defaults and Expansions</i></span>
+          </div>
+          <pre class="json">
 {
     "@context": "https://www.w3.org/2022/wot/td/v1.1",
     "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
@@ -1519,8 +1539,9 @@
         }
     }
 }
-        </pre>
-  <pre class="json">
+  </pre
+          >
+          <pre class="json">
 {
     "@context": ["https://www.w3.org/2022/wot/td/v1.1", {
         "htv": "http://www.w3.org/2011/http#"
@@ -1551,6 +1572,9 @@
     }
 }
 
+  </pre
+          >
+        </aside>
       </section>
     </section>
 
@@ -1710,7 +1734,7 @@
           </div>
           <pre class="json">
 {
-    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
     "title": "MyLampThing",
     "securityDefinitions": {
@@ -1750,7 +1774,7 @@
           >
           <pre class="json">
 {
-    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "id": "urn:uuid:014139c9-b267-4db5-9c61-cc2d2bfc217d",
     "title": "MyLampThing",
     "securityDefinitions": {
@@ -1832,7 +1856,7 @@
             <span class="rfc2119-assertion" id="td-context">
               The root element of a <a>TD Serialization</a> MUST be a JSON object that includes a member with the name
               <code>@context</code> and a value of type string or array that equals or respectively contains
-              <code>https://www.w3.org/2022/wot/td/v1.1</code>.
+              <code>https://www.w3.org/ns/wot-next/td</code>.
             </span>
           </p>
 
@@ -1845,7 +1869,7 @@
 
           <pre class="example">
 {
-    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     // ...
 }
 </pre
@@ -1862,7 +1886,7 @@
 
           <pre class="example" id="thing-serialization-sample" title="Sample of Thing serializations">
 {
-    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "@type": "Thing",
     "id": "urn:uuid:1b37933b-3212-4dad-9c2c-74c6042c3e2b",
     "title": "MyThing",
@@ -1951,7 +1975,7 @@
           <pre class="example">
 {
     "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
+        "https://www.w3.org/ns/wot-next/td",
         { "@language": "en" }
     ],
     "title": "MyThing",
@@ -2023,7 +2047,7 @@
           <pre class="example">
 			{
         "@context": [
-            "https://www.w3.org/2022/wot/td/v1.1",
+            "https://www.w3.org/ns/wot-next/td",
             {
               "@language": "ar-EG",
               "@direction": "rtl"
@@ -2072,7 +2096,7 @@
 
           <pre class="example">
 {
-    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "MyThing",
     "titles": {
         "en": "MyThing",
@@ -2138,7 +2162,7 @@
           <pre class="example">
 {
     "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
+        "https://www.w3.org/ns/wot-next/td",
         { "@language": "de" }
     ],
     "title": "MeinDing",
@@ -2315,7 +2339,7 @@
 
           <pre class="example">
   {
-      "@context": "https://www.w3.org/2022/wot/td/v1.1",
+      "@context": "https://www.w3.org/ns/wot-next/td",
       "id": "urn:uuid:e9ecb6ad-cd4c-481b-96ce-5b4c57ddb844",
       "title": "MyThing",
       "description": "Human readable information.",
@@ -3223,7 +3247,7 @@
 
             <pre class="example">
 {
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1", {
+    "@context": ["https://www.w3.org/ns/wot-next/td", {
         "htv": "http://www.w3.org/2011/http#"
     }],
     // ...
@@ -3261,7 +3285,7 @@
             </p>
             <pre class="example">
     {
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1", {
+        "@context": ["https://www.w3.org/ns/wot-next/td", {
             "htv": "http://www.w3.org/2011/http#"
         }],
         // ...
@@ -3293,7 +3317,7 @@
             </p>
             <pre class="example">
     {
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1", {
+        "@context": ["https://www.w3.org/ns/wot-next/td", {
             "htv": "http://www.w3.org/2011/http#"
         }],
         // ...
@@ -3900,7 +3924,7 @@
       <pre class="example">
 {
     "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
+        "https://www.w3.org/ns/wot-next/td",
         {
             "eg": "http://example.org/iot#",
             "cov": "http://www.example.org/coap-binding#"
@@ -3959,7 +3983,7 @@
           <pre class="example">
 {
     "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
+        "https://www.w3.org/ns/wot-next/td",
         {
             "saref": "https://w3id.org/saref#",
             "om": "http://www.ontology-of-units-of-measure.org/resource/om-2/",
@@ -4012,7 +4036,7 @@
           <pre class="example" id="saref-state-annotation-example">
 {
     "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
+        "https://www.w3.org/ns/wot-next/td",
         {
             "saref": "https://w3id.org/saref#",
             "ssn": "http://www.w3.org/ns/ssn/"
@@ -4076,7 +4100,7 @@
           <pre class="example" id="saref-geolocation-annotation-example">
 {
     "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
+        "https://www.w3.org/ns/wot-next/td",
         {
             "geo": "http://www.w3.org/2003/01/geo/wgs84_pos#"
         }
@@ -4101,7 +4125,7 @@
           <pre class="example" id="saref-geolocation-annotation-example-2">
 {
     "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
+        "https://www.w3.org/ns/wot-next/td",
         {
             "schema": "https://schema.org#"
         }
@@ -4135,7 +4159,7 @@
           <pre class="example" id="saref-geolocation-annotation-example-3">
 {
     "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
+        "https://www.w3.org/ns/wot-next/td",
         {
             "schema": "https://schema.org#"
         }
@@ -4193,7 +4217,7 @@
         <pre class="example">
 {
     "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
+        "https://www.w3.org/ns/wot-next/td",
         {
             "cov": "http://www.example.org/coap-binding#",
             "ace": "http://www.example.org/ace-security#"
@@ -4857,7 +4881,6 @@
         </ul>
       </section>
       <!-- end of id="behavior-data"-->
-      </section>
     </section>
     <!-- end of id="behavior"-->
 
@@ -5026,7 +5049,7 @@
 
           <pre class="example" title="Basic On/Off Thing Model Definition" id="td-model-example-basic-on-off">
         {
-            "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+            "@context": ["https://www.w3.org/ns/wot-next/td"],
             "@type": "tm:ThingModel",
             "title": "Basic On/Off Thing Model",
             "properties": {
@@ -5050,7 +5073,7 @@
             id="td-model-example-smart-lamp-control"
           >
         {
-            "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+            "@context": ["https://www.w3.org/ns/wot-next/td"],
             "@type": "tm:ThingModel",
             "title": "Smart Lamp Control with Dimming",
             "links" : [{
@@ -5109,7 +5132,7 @@
           </p>
           <pre class="example" title="Smart Lamp Control imports existing definition" id="td-model-example-tmRef">
         {
-            "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+            "@context": ["https://www.w3.org/ns/wot-next/td"],
             "@type": "tm:ThingModel",
             "title": "Smart Lamp Control",
             "properties" : {
@@ -5133,7 +5156,7 @@
             id="td-model-example-relative-tmRef"
           >
         {
-            "@context": "https://www.w3.org/2022/wot/td/v1.1",
+            "@context": "https://www.w3.org/ns/wot-next/td",
             "@type": "tm:ThingModel",
             "title": "Multi Sensor",
             "properties": {
@@ -5198,7 +5221,7 @@
             id="td-model-example-tmRef2"
           >
         {
-            "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+            "@context": ["https://www.w3.org/ns/wot-next/td"],
             "@type": "tm:ThingModel",
             "title": "Smart Lamp Control",
             "properties" : {
@@ -5233,7 +5256,7 @@
             id="td-model-example-smart-lamp-control-extend-import"
           >
         {
-            "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+            "@context": ["https://www.w3.org/ns/wot-next/td"],
             "@type": "tm:ThingModel",
             "title": "Smart Lamp Control",
             "links" : [{
@@ -5310,7 +5333,7 @@
             </div>
             <pre class="SmartVentilator exampleTab1 selected json">
         {
-            "@context": "https://www.w3.org/2022/wot/td/v1.1",
+            "@context": "https://www.w3.org/ns/wot-next/td",
             "@type": "tm:ThingModel",
             "title": "Smart Ventilator Thing Model",
             "version" : { "model": "1.0.0" },
@@ -5336,7 +5359,7 @@
             >
             <pre class="Ventilation exampleTab1 json">
         {
-            "@context": "https://www.w3.org/2022/wot/td/v1.1",
+            "@context": "https://www.w3.org/ns/wot-next/td",
             "@type": "tm:ThingModel",
             "title": "Ventilator Thing Model",
             "version": {
@@ -5358,7 +5381,7 @@
             >
             <pre class="LED exampleTab1 json">
         {
-            "@context": "https://www.w3.org/2022/wot/td/v1.1",
+            "@context": "https://www.w3.org/ns/wot-next/td",
             "@type": "tm:ThingModel",
             "title": "LED Thing Model",
             "version": {
@@ -5439,7 +5462,7 @@
             </div>
             <pre class="SmartVentilator exampleTab1 selected json">
         {
-            "@context": "https://www.w3.org/2022/wot/td/v1.1",
+            "@context": "https://www.w3.org/ns/wot-next/td",
             "title": "Smart Ventilator",
             "securityDefinitions": {
                 "basic_sc": {
@@ -5485,7 +5508,7 @@
             >
             <pre class="Ventilation exampleTab1 json">
         {
-            "@context": "https://www.w3.org/2022/wot/td/v1.1",
+            "@context": "https://www.w3.org/ns/wot-next/td",
             "title": "Ventilator",
             "securityDefinitions": {
                 "basic_sc": {
@@ -5533,7 +5556,7 @@
             >
             <pre class="LED exampleTab1 json">
         {
-            "@context": "https://www.w3.org/2022/wot/td/v1.1",
+            "@context": "https://www.w3.org/ns/wot-next/td",
             "title": "LED Thing Model",
             "securityDefinitions": {
                 "basic_sc": {
@@ -5626,7 +5649,7 @@
 
           <pre class="example" title="Self-contained TD of the Smart Ventilator TM">
     {
-        "@context": "https://www.w3.org/2022/wot/td/v1.1",
+        "@context": "https://www.w3.org/ns/wot-next/td",
         "title": "Smart Ventilator",
         "securityDefinitions": {
             "basic_sc": {
@@ -5765,7 +5788,7 @@
 
           <pre class="example" title="Thing Model with the tm:optional term for interaction affordances.">
 {
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Lamp Thing Model",
     "description": "Lamp Thing Model Description",
@@ -5807,7 +5830,7 @@
 
           <pre class="example" title="Thing Model overwrites tm:optional of the previous Thing Model example.">
     {
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@context": ["https://www.w3.org/ns/wot-next/td"],
         "@type": "tm:ThingModel",
         "title": "Lamp Thing Model (All Mandatory)",
         "description": "Lamp Thing Model description expects all interaction affordances (status, toggle, and overheating)",
@@ -5882,7 +5905,7 @@
             </div>
             <pre class="selected thingmodel exampleTab1 json">
 {
-	"@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+	"@context": ["https://www.w3.org/ns/wot-next/td"],
 	"@type": "tm:ThingModel",
 	"title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
 	"version": "{{VERSION_INFO}}",
@@ -5912,7 +5935,7 @@
             >
             <pre class="thingdescription exampleTab1 json">
 {
-	"@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+	"@context": ["https://www.w3.org/ns/wot-next/td"],
 	"@type": "Thing",
 	"title": "Thermostate No. 4",
 	"version": {"instance": "1.0.1", "model": "2.0.0"},
@@ -6079,7 +6102,7 @@
 
         <pre class="example" title="Extending Smart Control Lamp with a modified dim constrained">
     {
-        "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+        "@context": ["https://www.w3.org/ns/wot-next/td"],
         "@type": "tm:ThingModel",
         "links" : [{
             "rel": "tm:extends",
@@ -6102,7 +6125,7 @@
 
         <pre class="example" title="Thing Description">
         {
-            "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+            "@context": ["https://www.w3.org/ns/wot-next/td"],
             "@type": "Thing",
             "title": "Smart Lamp Control",
             "securityDefinitions": {
@@ -6796,7 +6819,7 @@
           <pre class="json">
 {
     "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
+        "https://www.w3.org/ns/wot-next/td",
         {
             "cov": "http://www.example.org/coap-binding#"
         }
@@ -6855,7 +6878,7 @@
           <pre class="json">
 {
     "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
+        "https://www.w3.org/ns/wot-next/td",
         {
             "cov": "http://www.example.org/coap-binding#"
         }
@@ -6956,7 +6979,7 @@
           <pre class="json">
 {
   "@context": [
-    "https://www.w3.org/2022/wot/td/v1.1",
+    "https://www.w3.org/ns/wot-next/td",
     {
     "mqv": "http://www.example.org/mqtt-binding#"
     }
@@ -6990,7 +7013,7 @@
           <pre class="json">
 {
   "@context": [
-    "https://www.w3.org/2022/wot/td/v1.1",
+    "https://www.w3.org/ns/wot-next/td",
     {
       "mqv": "http://www.example.org/mqtt-binding#"
     }
@@ -7068,7 +7091,7 @@
           </div>
           <pre class="selected without exampleTab1 json">
 {
-  "@context": ["https://www.w3.org/2022/wot/td/v1.1", {
+  "@context": ["https://www.w3.org/ns/wot-next/td", {
       "htv": "http://www.w3.org/2011/http#"
   }],
   "id": "urn:uuid:4778f80a-4c78-4cbb-a0e4-fa37b7d748df",
@@ -7129,7 +7152,7 @@
           </pre>
           <pre class="with exampleTab1 json">
 {
-  "@context": ["https://www.w3.org/2022/wot/td/v1.1", {
+  "@context": ["https://www.w3.org/ns/wot-next/td", {
     "htv": "http://www.w3.org/2011/http#"
   }],
   "id": "urn:uuid:3c1b4716-247f-4cda-ba53-d3307ac6feb0",
@@ -7212,7 +7235,7 @@
         <pre class="example json" title="Multiprotocol TD of a Lamp with one Protocol per Form">
 {
     "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
+        "https://www.w3.org/ns/wot-next/td",
         {
             "cov": "http://www.example.org/coap-binding#",
             "mqv": "http://www.example.org/mqtt-binding#",
@@ -7335,7 +7358,7 @@
         <pre class="example json" title="Multiprotocol TD of a Lamp with Multiple Protocols per Form">
 {
     "@context": [
-        "https://www.w3.org/2022/wot/td/v1.1",
+        "https://www.w3.org/ns/wot-next/td",
         {
             "cov": "http://www.example.org/coap-binding#",
             "mqv": "http://www.example.org/mqtt-binding#",
@@ -7773,7 +7796,7 @@
       </p>
 
       <p>
-        <code>https://www.w3.org/2022/wot/td/v1.1</code>
+        <code>https://www.w3.org/ns/wot-next/td</code>
       </p>
 
       <p>includes the following mappings (among others):</p>
