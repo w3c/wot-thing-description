@@ -4,8 +4,7 @@
 
 >  Traditional "interaction affordances" in WoT (Properties, Actions, Events) describe what a Thing can do or expose. Manageable Affordances, on the other hand, address scenarios where 
 These interactions are not just one-off calls but require ongoing management and/or monitoring, and/or have dependencies on other interactions.
-
-Various use cases require the implementation of more complex actions that span multiple protocol transactions. Such actions are not simply invoked but need to managed over time by the Thing and the Consumer.
+Various use cases require the implementation of more complex actions that span multiple protocol transactions. Such actions are not simply invoked but need to be managed over time by the Thing and the Consumer.
 These are covered in the WoT Thing Description 1.1 via the initiation (invokeaction), monitoring (`queryaction`), and cancellation (`cancelaction`) of ongoing actions.
 However, the following points are not supported:
 
@@ -16,7 +15,7 @@ However, the following points are not supported:
 
 These limitations are also influencing the Profiles.
 
-Additionally, there have been proposals by the WG members that need to taken into account and evaluated:
+Additionally, there have been proposals by the WG members that need to be taken into account and evaluated:
 
 - <https://github.com/w3c/wot-thing-description/tree/main/proposals/hypermedia-control>
 - <https://github.com/w3c/wot-thing-description/tree/main/proposals/hypermedia-control-2>
@@ -104,7 +103,7 @@ Related Real World Implementations:
 
 ### Use Cases From Autonomous Agents on the Web CG
 
-The CG has collected some use cases on the topic not limited to WoT. The ones below are limited to the scope of WoT. These should be analyzed and extended to understand the user story and required features:
+The CG has collected some use cases on the topic, not limited to WoT. The ones below are limited to the scope of WoT. These should be analyzed and extended to understand the user story and required features:
 
 - https://github.com/w3c-cg/webagents/issues/40
 - https://github.com/w3c-cg/webagents/issues/31
@@ -118,11 +117,11 @@ The CG has collected some use cases on the topic not limited to WoT. The ones be
 
 ### Use `queryaction` and `cancelaction`
 
-To cover `Monitorable and Cancelable Actions` user story we can leverage on the newly introduced operation in the TD operation set. However, this two operations are currently underspecified and a Consumer cannot properly understand which payload to send to the `queryaction` operation and what it recives back. Cancelling is effected by the same problems too. In summary, the current solution only work for actions that has a single running instance and do not require complex payload relations between `invokeaction`,`queryaction` and `cancelaction`. 
+To cover the `Monitorable and Cancelable Actions` user story, we can leverage the newly introduced operation in the TD operation set. However, these two operations are currently underspecified, and a Consumer cannot properly understand which payload to send to the `queryaction` operation and what it receives back. Cancellation is also affected by the same problems. In summary, the current solution only works for actions that have a single running instance and do not require complex payload relations between `invokeaction`, `queryaction`, and `cancelaction`. 
 
-### Use a "meta-affordances" to describe extra resources or interaction patterns
+### Use a "meta-affordance" to describe extra resources or interaction patterns
 
-With the current specification users can support to same level all of the three user stories by creating ad hoc affordances that mimics the requirements of the underlying interaction pattern. For example, the queue of actions can be represented by a *PropertyAffordance*. [BACnet binding](https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/index.html#event-mappings) is also currently expressing relationships between events and actions thanks to a combiation of ad hoc affordances and binding defined well-known relationships. 
+With the current specification, users can support to same level all three user stories by creating ad hoc affordances that mimics the requirements of the underlying interaction pattern. For example, the queue of actions can be represented by a *PropertyAffordance*. [BACnet binding](https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/index.html#event-mappings) is also currently expressing relationships between events and actions thanks to a combination of ad hoc affordances and binding defined well-known relationships. 
 
 ## Existing technologies analysis with focus on Manageable Actions
 This section analyzes implementation examples of the same user stories in other "well-known" or production technologies/frameworks. 
@@ -130,7 +129,7 @@ This section analyzes implementation examples of the same user stories in other 
 ### AWS IoT 
 
 - **Support for Asynchronous Actions**: Yes
-- **Description**: AWS IoT provides the concept of Commands, which can be used to execute custom actions on devices. Since its beginning, AWS IoT was more focused on data gathering on top of MQTT, but with Commands they wanted to add the ability to execute remote operations on devices. Commands are basically a small interaction "protocol" on top of MQTT. They define a set of topics to simulate request/response semantics, and also enable the ability to listen for status updates. It seems that you can't cancel Commands. There is also the concept of "Jobs", but these are more about provisioning and managing devices (or a fleet of devices) and are more like scripts that should be executed on the device, rather than a single action that can be monitored or cancelled. Another pattern of implementing an asynchronous action is to use a Shadow Device, which is a virtual representation of a device that can be used to manage that device's state. A Shadow Device is basically a shared JSON document that represents the state with two fields: `desired` and `reported`. The `desired` state is the state that the device should be in, while the `reported` state is the state that the device is currently in. To implement an asynchronous action, you can update the `desired` state and then listen for changes in the `reported` state. This is a more complex pattern, but it is supported by AWS IoT, and the application should know the semantics of the state changes.
+- **Description**: AWS IoT provides the concept of Commands, which can be used to execute custom actions on devices. Since its beginning, AWS IoT was more focused on data gathering on top of MQTT, but with Commands, they wanted to add the ability to execute remote operations on devices. Commands are basically a small interaction "protocol" on top of MQTT. They define a set of topics to simulate request/response semantics, and also enable the ability to listen for status updates. It seems that you can't cancel Commands. There is also the concept of "Jobs", but these are more about provisioning and managing devices (or a fleet of devices) and are more like scripts that should be executed on the device, rather than a single action that can be monitored or cancelled. Another pattern of implementing an asynchronous action is to use a Shadow Device, which is a virtual representation of a device that can be used to manage that device's state. A Shadow Device is basically a shared JSON document that represents the state with two fields: `desired` and `reported`. The `desired` state is the state that the device should be in, while the `reported` state is the state that the device is currently in. To implement an asynchronous action, you can update the `desired` state and then listen for changes in the `reported` state. This is a more complex pattern, but it is supported by AWS IoT, and the application should know the semantics of the state changes.
 - **Support for queue**: Implicitly supported through MQTT topics, but the device might reject execution of multiple commands if it is busy.
 - **Reference**: [AWS IoT Commands](https://docs.aws.amazon.com/iot/latest/developerguide/iot-remote-command-concepts.html)
 
@@ -142,7 +141,7 @@ This section analyzes implementation examples of the same user stories in other 
 
 ### Azure IoT Hub 
 - **Support for Asynchronous Actions**: No
-- **Description**: Azure IoT Hub does not have a built-in concept for asynchronous actions. It supports direct methods, which are synchronous and do not allow for monitoring or cancelling. However, it does support device twins, which can be used to manage the state of devices, but this is more about state management than execution of actions.
+- **Description**: Azure IoT Hub does not have a built-in concept for asynchronous actions. It supports direct methods, which are synchronous and do not allow for monitoring or cancellation. However, it does support device twins, which can be used to manage the state of devices, but this is more about state management than execution of actions.
 - **Support for queue**: No
 - **Reference**: [Azure IoT Hub Direct Methods](https://learn.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-direct-methods)
 
@@ -159,7 +158,7 @@ Discontinued.
 
 ### Home Assistant
 - **Support for Asynchronous Actions**: No
-- **Description**: Home Assistant is an open-source platform for smart home automation that models devices as entities with states and attributes. Actions are performed via "services" that interact with these entities, typically resulting in synchronous changes. While Home Assistant supports automations, scripts, and scenes to orchestrate complex behaviors, there is no built-in mechanism for asynchronous action execution or monitoring/cancellation of actions. State changes can be tracked, but commands are not queued or managed asynchronously. Advanced workflows can be implemented using automations, but these go beyond the single device management and are mostly higher level abstractions.
+- **Description**: Home Assistant is an open-source platform for smart home automation that models devices as entities with states and attributes. Actions are performed via "services" that interact with these entities, typically resulting in synchronous changes. While Home Assistant supports automations, scripts, and scenes to orchestrate complex behaviors, there is no built-in mechanism for asynchronous action execution or monitoring/cancellation of actions. State changes can be tracked, but commands are not queued or managed asynchronously. Advanced workflows can be implemented using automations, but these go beyond the single device management and are mostly higher level abstractions
 - **Support for queue**: No
 - **Reference**: [Home Assistant Entities](https://www.home-assistant.io/docs/configuration/entities_domains/)
 
@@ -179,7 +178,7 @@ Sadly, it seems I can't disclose any information about Philips Hue Smart API as 
 ### Shelly Devices
 
 - **Support for Asynchronous Actions**: Yes, sort of.
-- **Description**: Device interaction is based on an RPC Protocol (specifically [JSON-RPC 2.0](https://www.jsonrpc.org/specification)). The device usally executes the command and immediately returns a response. While subsequent state changes can be monitored through notificatios send over MQTT or Websockets there is no built in concepts that encapsulates a long-running, monitorable process.
+- **Description**: Device interaction is based on an RPC Protocol (specifically [JSON-RPC 2.0](https://www.jsonrpc.org/specification)). The device usually executes the command and immediately returns a response. While subsequent state changes can be monitored through notifications send over MQTT or Websockets there is no built-in concepts that encapsulate a long-running, monitorable process.
 - **Support for queue**: You can send commands in batch but there is not built in common mechanism to access the command queue (unless comunicated with asyncrounous events in the device status). 
 - **Reference**: [Shelly API documentation](https://shelly-api-docs.shelly.cloud/gen2/General/RPCProtocol)
 
@@ -193,27 +192,26 @@ Sadly, it seems I can't disclose any information about Philips Hue Smart API as 
 ### SmartThings Devices 
 
 - **Support for Asynchronous Actions**: Yes
--  **Description**: The SmartThings platform's primary device interaction model is request and response based on HTTP REST APIs. The API allows to send a batch of commands to `devices/{deviceId}/commands` endpoint. As a response the developer get a list of objects with the `id` of the command and its `status` (`ACCEPTED`, `COMPLETED`, `FAILED`). Although this behaviour hints that later on the command instances can be queried about their status the documentation does not mention any specific endpoint for this purpose. 
+-  **Description**: The SmartThings platform's primary device interaction model is request and response based on HTTP REST APIs. The API allows sending a batch of commands to `devices/{deviceId}/commands` endpoint. As a response, the developer gets a list of objects with the `id` of the command and its `status` (`ACCEPTED`, `COMPLETED`, `FAILED`). Although this behaviour hints that later on the command instances can be queried about their status, the documentation does not mention any specific endpoint for this purpose. 
 - **Support for queue**: Yes, but it is not clear if there is a querible global queue per device. 
-- **Reference**: [SmartThings Execute a command](https://developer.smartthings.com/docs/api/public#tag/Devices/operation/executeDeviceCommands)
- 
+- **Reference**: [SmartThings Execute a command](https://developer.smartthings.com/docs/api/public#tag/Devices/operation/executeDeviceCommands) 
 ### Tuya IoT
 
 - **Support for Asynchronous Actions**: Unclear
-- **Description**: Tuya's interaction pattern is based on a state synchronization model. Consumers send commands to change a device's "desired" state, and the device reports its "current" state. Altough it is possible to send commands or actions in batch, the documentation suggets that those are executed syncronously and result is returned immediatly or fail if the device is not online. 
+- **Description**: Tuya's interaction pattern is based on a state synchronization model. Consumers send commands to change a device's "desired" state, and the device reports its "current" state. Although it is possible to send commands or actions in batch, the documentation suggests that those are executed syncronously and the result is returned immediatly or fail if the device is not online. 
 - **Support for queue**: No.
 - **Reference**: [Send Commands](https://developer.tuya.com/en/docs/cloud/e2512fb901?id=Kag2yag3tiqn5) [Send Actions](https://developer.tuya.com/en/docs/cloud/687123828c?id=Kcp2kw4igv7l8)
 
 ## Summarized Problem
 
-As introduced, current Thing Description interaction model does not take into account complex interaction pattern used in well-known application and frameworks. In particular, action affordances fail short to describe real-world actions that takes time and have impact on the physical world. Moreover, some scenarios require to describe (currently unbounded) realtionships between affordances that can result in specific interactions that a Cusumer can or have to perform to correctly interact with the remote Thing. 
+As introduced, the current Thing Description interaction model does not take into account the complex interaction pattern used in well-known applications and frameworks. In particular, action affordances fail to describe real-world actions that take time and have an impact on the physical world. Moreover, some scenarios require to describe (currently unbounded) realtionships between affordances that can result in specific interactions that a Cusumer can or have to perform to correctly interact with the remote Thing. 
 
 Possible challenges:
-- There is not a definitive "state machine" for manageable actions different solutions choose different state names or semantics
+- There is no definitive "state machine" for manageable actions; different solutions choose different state names or semantics
 - Affordance relationships are currently unbounded. Even if we have concrete examples (BACnet and Webthings), relationships might involve:
     * Just logical reference:
         - Affordance A is a collection of instances of B
-        - The payloads of Affordance A and B are some how related (An action influeces a Property)
+        - The payloads of Affordance A and B are somehow related (An action influences a Property)
         - ...
     * Call order (e.g. Affordance B can be called after A completes)
     * Call order and Payload dependency (e.g. Affordance B requires data from Affordance A)
