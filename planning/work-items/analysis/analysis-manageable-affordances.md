@@ -116,7 +116,13 @@ The CG has collected some use cases on the topic not limited to WoT. The ones be
 
 ## Existing Solutions
 
-TBD
+### Use `queryaction` and `cancelaction`
+
+To cover `Monitorable and Cancelable Actions` user story we can leverage on the newly introduced operation in the TD operation set. However, this two operations are currently underspecified and a Consumer cannot properly understand which payload to send to the `queryaction` operation and what it recives back. Cancelling is effected by the same problems too. In summary, the current solution only work for actions that has a single running instance and do not require complex payload relations between `invokeaction`,`queryaction` and `cancelaction`. 
+
+### Use a "meta-affordances" to describe extra resources or interaction patterns
+
+With the current specification users can support to same level all of the three user stories by creating ad hoc affordances that mimics the requirements of the underlying interaction pattern. For example, the queue of actions can be represented by a *PropertyAffordance*. [BACnet binding](https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/index.html#event-mappings) is also currently expressing relationships between events and actions thanks to a combiation of ad hoc affordances and binding defined well-known relationships. 
 
 ## Existing technologies analysis with focus on Manageable Actions
 This section analyzes implementation examples of the same user stories in other "well-known" or production technologies/frameworks. 
@@ -200,7 +206,17 @@ Sadly, it seems I can't disclose any information about Philips Hue Smart API as 
 
 ## Summarized Problem
 
-Will be done after collecting the user stories and all related issues
+As introduced, current Thing Description interaction model does not take into account complex interaction pattern used in well-known application and frameworks. In particular, action affordances fail short to describe real-world actions that takes time and have impact on the physical world. Moreover, some scenarios require to describe (currently unbounded) realtionships between affordances that can result in specific interactions that a Cusumer can or have to perform to correctly interact with the remote Thing. 
+
+Possible challenges:
+- There is not a definitive "state machine" for manageable actions different solutions choose different state names or semantics
+- Affordance relationships are currently unbounded. Even if we have concrete examples (BACnet and Webthings), relationships might involve:
+    * Just logical reference:
+        - Affordance A is a collection of instances of B
+        - The payloads of Affordance A and B are some how related (An action influeces a Property)
+        - ...
+    * Call order (e.g. Affordance B can be called after A completes)
+    * Call order and Payload dependency (e.g. Affordance B requires data from Affordance A)
 
 ## Requirements
 
