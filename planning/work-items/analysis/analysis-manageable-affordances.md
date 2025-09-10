@@ -145,13 +145,33 @@ Discontinued.
 Sadly, it seems I can't disclose any information about Philips Hue Smart API as explained in the [terms and conditions](https://developers.meethue.com/terms-of-use-and-conditions/) of the API documentation:
 > Confidentiality: You shall not disclose to any person the Developer Content or any other information of a confidential nature provided to you by Signify, including Feedback (“Confidential Information”), except that you may disclose the Confidential Information: (i) to employees, officers, representatives or advisers of the company you work for and who need to know such information for the purposes of carrying out your obligations under these Terms (“Representatives”), provided that the Representatives comply with the confidentiality obligations under this clause; and (ii) as may be required by law, court order or any governmental or regulatory authority. You shall not use the Confidential Information for any purpose other than to perform your obligations under these Terms.
 
-### Shelly Devices (TODO)
+### Shelly Devices
 
-### Sonoff Devices (TODO)
+- **Support for Asynchronous Actions**: Yes, sort of.
+- **Description**: Device interaction is based on an RPC Protocol (specifically [JSON-RPC 2.0](https://www.jsonrpc.org/specification)). The device usally executes the command and immediately returns a response. While subsequent state changes can be monitored through notificatios send over MQTT or Websockets there is no built in concepts that encapsulates a long-running, monitorable process.
+- **Support for queue**: You can send commands in batch but there is not built in common mechanism to access the command queue (unless comunicated with asyncrounous events in the device status). 
+- **Reference**: [Shelly API documentation](https://shelly-api-docs.shelly.cloud/gen2/General/RPCProtocol)
 
-### SmartThings Devices (TODO)
+### Sonoff Devices
+
+- **Support for Asynchronous Actions**: No.
+- **Description**: Sonoff devices utilize a command-centric, synchronous interaction model. Commands are executed immediately upon receipt over HTTP.
+- **Support for queue**: No.
+- **Reference**: [Sonoff DIY Mode API protocol](https://help.sonoff.tech/docs/puU2rU4w)
+
+### SmartThings Devices 
+
+- **Support for Asynchronous Actions**: Yes
+-  **Description**: The SmartThings platform's primary device interaction model is request and response based on HTTP REST APIs. The API allows to send a batch of commands to `devices/{deviceId}/commands` endpoint. As a response the developer get a list of objects with the `id` of the command and its `status` (`ACCEPTED`, `COMPLETED`, `FAILED`). Although this behaviour hints that later on the command instances can be queried about their status the documentation does not mention any specific endpoint for this purpose. 
+- **Support for queue**: Yes, but it is not clear if there is a querible global queue per device. 
+- **Reference**: [SmartThings Execute a command](https://developer.smartthings.com/docs/api/public#tag/Devices/operation/executeDeviceCommands)
  
-### Tuya IoT (TODO)
+### Tuya IoT
+
+- **Support for Asynchronous Actions**: Unclear
+- **Description**: Tuya's interaction pattern is based on a state synchronization model. Consumers send commands to change a device's "desired" state, and the device reports its "current" state. Altough it is possible to send commands or actions in batch, the documentation suggets that those are executed syncronously and result is returned immediatly or fail if the device is not online. 
+- **Support for queue**: No.
+- **Reference**: [Send Commands](https://developer.tuya.com/en/docs/cloud/e2512fb901?id=Kag2yag3tiqn5) [Send Actions](https://developer.tuya.com/en/docs/cloud/687123828c?id=Kcp2kw4igv7l8)
 
 ## Summarized Problem
 
