@@ -39,6 +39,8 @@ Related Real World Implementations:
 
 - BACnet Alarms: See the full discussion at <https://github.com/w3c/wot-binding-templates/pull/379>
 - OpenFlexure Microscope: Multiple long-running affordances. See [TD](https://github.com/w3c/wot-testing/tree/main/events/2024.11.Munich/TDs/openflexure) and [presentation](https://www.youtube.com/watch?v=TI6HUOw6lhU)
+- OPC-UA programs: https://reference.opcfoundation.org/Core/Part10/v105/docs/4.2
+- Webthings actions
 
 ## User Stories
 
