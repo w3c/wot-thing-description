@@ -51,7 +51,7 @@ Related Real World Implementations:
 * **Why:** So that I can monitor and/or cancel a long running action without waiting indefinitely for its completion
 * **Sentence:** As a Thing Description designer, I need to describe actions that can be monitored and canceled so that I can correctly describe the lifecycle of actions in automation systems.
 * **Process Stakeholders**:
-  - Submitter: Cristiano Aguzzi
+  - Submitter: WoT WG/extended community
   - Specification Writers: 
   - Implementation Volunteers: 
   - Impacted People: TD Designers and Consumer application developers.
@@ -70,7 +70,7 @@ Related Real World Implementations:
 * **Why:** So that I can fully describe the current status of a device capable of running persistent actions
 * **Sentence:** As a Thing Description designer, I need to describe a queue of actions as a resource so that I can fully describe the current status of a device capable of running monitorable and cancelable actions.
 * **Process Stakeholders**:
-    * Submitter: Cristiano Aguzzi
+    * Submitter: WoT WG/extended community
     * Specification Writers:
     * Implementation Volunteers:
     * Impacted People: TD Designers, Consumer application developers.
