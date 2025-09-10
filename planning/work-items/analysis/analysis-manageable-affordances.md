@@ -79,6 +79,29 @@ Related Real World Implementations:
    * https://github.com/w3c/wot-thing-description/issues/1070
    * https://github.com/w3c/wot-thing-description/issues/1779
 
+### Express dependencies between affordances
+
+* **Who:** Thing Description designer
+* **What:** Describe dependencies and relationships between multiple affordances.
+* **Why:** So that I can define how affordances are related and constrain how they can be used in relation of one another.
+* **Sentence:** As a Thing Description designer, I need to express dependencies between affordances so that I can define valid interaction flows and link related affordances.
+* **Process Stakeholders**:
+    * Submitter: WoT WG/extended community
+    * Specification Writers:
+    * Implementation Volunteers:
+    * Impacted People: TD Designers, Consumer application developers.
+    * Impact Type: Increase complexity of the WoT interaction model. This implies an increase in implementation complexity of both Consumer and Exposer applications. 
+* **Linked Use Cases or Categories:**
+   * https://github.com/w3c/wot-binding-templates/pull/379
+   * https://github.com/w3c/wot-thing-description/issues/1070
+   * https://github.com/w3c/wot-thing-description/issues/1779
+   * https://github.com/w3c-cg/webagents/issues/26
+   * https://github.com/w3c-cg/webagents/issues/27
+   * https://github.com/w3c-cg/webagents/issues/28
+   * https://github.com/w3c-cg/webagents/issues/29
+   * https://github.com/w3c-cg/webagents/issues/31
+   * https://github.com/w3c-cg/webagents/issues/30
+
 ### Use Cases From Autonomous Agents on the Web CG
 
 The CG has collected some use cases on the topic not limited to WoT. The ones below are limited to the scope of WoT. These should be analyzed and extended to understand the user story and required features:
@@ -95,7 +118,7 @@ The CG has collected some use cases on the topic not limited to WoT. The ones be
 
 TBD
 
-## Other technologies (WIP)
+## Existing technologies analysis with focus on Manageable Actions
 This section analyzes implementation examples of the same user stories in other "well-known" or production technologies/frameworks. 
 
 ### AWS IoT 
