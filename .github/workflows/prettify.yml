@@ -18,31 +18,10 @@ permissions:
 
 jobs:
   prettier:
+    name: Check coding style
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: Nerixyz/actionsx-prettier@v3-adj
         with:
-          # Make sure the actual branch is checked out when running on pull requests
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          # This is important to fetch the changes to the previous commit
-          fetch-depth: 0
-
-      - name: Check if PR is from a fork
-        id: check_fork
-        run: echo "::set-output name=is_fork::${{ github.event.pull_request.head.repo.fork }}"
-
-      - name: Prettify code
-        id: prettify
-        uses: creyD/prettier_action@v4.3
-        with:
-          dry: true
-          prettier_options: --write
-          commit_message: "chore: prettier"
-        continue-on-error: true
-
-      - name: Handle commit failure
-        if: ${{ steps.prettify.outcome == 'failure' && steps.check_fork.outputs.is_fork == 'true' }}
-        run: echo "Please run prettier locally"
+          args: --check .
