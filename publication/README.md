@@ -46,8 +46,6 @@ checkers can use.
 
 Some redirects come from [specref](https://www.specref.org/) not being up to date. In those cases, you need to manually update the final Overview.html.
 
-*s None
-
 ## Converting Automatically Generated SVGs to PNGs
 
 All SVG files under [visualization](../visualization) are generated automatically when running the `npm run render` command.
