@@ -204,7 +204,7 @@ Sadly, it seems I can't disclose any information about Philips Hue Smart API as 
 
 ## Summarized Problem
 
-As introduced, the current Thing Description interaction model does not take into account the complex interaction pattern used in well-known applications and frameworks. In particular, action affordances fail to describe real-world actions that take time and have an impact on the physical world. Moreover, some scenarios require to describe (currently unbounded) realtionships between affordances that can result in specific interactions that a Cusumer can or have to perform to correctly interact with the remote Thing. 
+As introduced, the current Thing Description interaction model does not take into account the complex interaction patterns used in well-known applications and frameworks. In particular, action affordances fail to describe real-world actions that take time and have an impact on the physical world. Moreover, some scenarios require description of (currently unbounded) relationships between affordances that can result in specific interactions that a Customer can or is required to perform to correctly interact with the remote Thing. 
 
 Possible challenges:
 - There is no definitive "state machine" for manageable actions; different solutions choose different state names or semantics
