@@ -193,7 +193,7 @@ Sadly, it seems I can't disclose any information about Philips Hue Smart API as 
 
 - **Support for Asynchronous Actions**: Yes
 -  **Description**: The SmartThings platform's primary device interaction model is request and response based on HTTP REST APIs. The API allows sending a batch of commands to `devices/{deviceId}/commands` endpoint. As a response, the developer gets a list of objects with the `id` of the command and its `status` (`ACCEPTED`, `COMPLETED`, `FAILED`). Although this behaviour hints that later on the command instances can be queried about their status, the documentation does not mention any specific endpoint for this purpose. 
-- **Support for queue**: Yes, but it is not clear if there is a querible global queue per device. 
+- **Support for queue**: Yes, but it is not clear if there is a queryable global queue per device. 
 - **Reference**: [SmartThings Execute a command](https://developer.smartthings.com/docs/api/public#tag/Devices/operation/executeDeviceCommands) 
 ### Tuya IoT
 
