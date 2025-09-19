@@ -158,7 +158,7 @@ Discontinued.
 
 ### Home Assistant
 - **Support for Asynchronous Actions**: No
-- **Description**: Home Assistant is an open-source platform for smart home automation that models devices as entities with states and attributes. Actions are performed via "services" that interact with these entities, typically resulting in synchronous changes. While Home Assistant supports automations, scripts, and scenes to orchestrate complex behaviors, there is no built-in mechanism for asynchronous action execution or monitoring/cancellation of actions. State changes can be tracked, but commands are not queued or managed asynchronously. Advanced workflows can be implemented using automations, but these go beyond the single device management and are mostly higher level abstractions
+- **Description**: Home Assistant is an open-source platform for smart home automation that models devices as entities with states and attributes. Actions are performed via "services" that interact with these entities, typically resulting in synchronous changes. While Home Assistant supports automations, scripts, and scenes to orchestrate complex behaviors, there is no built-in mechanism for asynchronous action execution nor monitoring or cancellation of actions. State changes can be tracked, but commands are not queued or managed asynchronously. Advanced workflows can be implemented using automations, but these go beyond single-device management and are mostly higher level abstractions.
 - **Support for queue**: No
 - **Reference**: [Home Assistant Entities](https://www.home-assistant.io/docs/configuration/entities_domains/)
 
