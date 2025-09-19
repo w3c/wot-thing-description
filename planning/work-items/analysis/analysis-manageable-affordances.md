@@ -179,7 +179,7 @@ Sadly, it seems I can't disclose any information about Philips Hue Smart API as 
 
 - **Support for Asynchronous Actions**: Yes, sort of.
 - **Description**: Device interaction is based on an RPC Protocol (specifically [JSON-RPC 2.0](https://www.jsonrpc.org/specification)). The device usually executes the command and immediately returns a response. While subsequent state changes can be monitored through notifications send over MQTT or Websockets there is no built-in concepts that encapsulate a long-running, monitorable process.
-- **Support for queue**: You can send commands in batch but there is not built in common mechanism to access the command queue (unless comunicated with asyncrounous events in the device status). 
+- **Support for queue**: You can send commands in batch but there is no common built-in mechanism to access the command queue (unless communicated with asynchronous events in the device status). 
 - **Reference**: [Shelly API documentation](https://shelly-api-docs.shelly.cloud/gen2/General/RPCProtocol)
 
 ### Sonoff Devices
