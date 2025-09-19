@@ -213,8 +213,8 @@ Possible challenges:
         - Affordance A is a collection of instances of B
         - The payloads of Affordance A and B are somehow related (An action influences a Property)
         - ...
-    * Call order (e.g. Affordance B can be called after A completes)
-    * Call order and Payload dependency (e.g. Affordance B requires data from Affordance A)
+    * Call order (e.g., Affordance B can be called after A completes)
+    * Call order and Payload dependency (e.g., Affordance B requires data from Affordance A)
 
 ## Requirements
 
