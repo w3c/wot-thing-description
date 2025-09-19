@@ -117,7 +117,7 @@ The CG has collected some use cases on the topic, not limited to WoT. The ones b
 
 ### Use `queryaction` and `cancelaction`
 
-To cover the `Monitorable and Cancelable Actions` user story, we can leverage the newly introduced operation in the TD operation set. However, these two operations are currently underspecified, and a Consumer cannot properly understand which payload to send to the `queryaction` operation and what it receives back. Cancellation is also affected by the same problems. In summary, the current solution only works for actions that have a single running instance and do not require complex payload relations between `invokeaction`, `queryaction`, and `cancelaction`. 
+To cover the `Monitorable and Cancelable Actions` user story, we can leverage the newly introduced operations in the TD operation set. However, these two operations are currently underspecified, and a Consumer cannot properly understand which payload to send to the `queryaction` operation nor what it receives back. Cancellation is affected by the same problems. In summary, the current solution works only for actions that have a single running instance and do not require complex payload relations between `invokeaction`, `queryaction`, and `cancelaction`. 
 
 ### Use a "meta-affordance" to describe extra resources or interaction patterns
 
