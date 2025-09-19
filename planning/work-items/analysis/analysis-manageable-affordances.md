@@ -198,7 +198,7 @@ Sadly, it seems I can't disclose any information about Philips Hue Smart API as 
 ### Tuya IoT
 
 - **Support for Asynchronous Actions**: Unclear
-- **Description**: Tuya's interaction pattern is based on a state synchronization model. Consumers send commands to change a device's "desired" state, and the device reports its "current" state. Although it is possible to send commands or actions in batch, the documentation suggests that those are executed syncronously and the result is returned immediatly or fail if the device is not online. 
+- **Description**: Tuya's interaction pattern is based on a state synchronization model. Consumers send commands to change a device's "desired" state, and the device reports its "current" state. Although it is possible to send commands or actions in batch, the documentation suggests that these are executed synchronously and the result is returned immediately or failed if the device is not online. 
 - **Support for queue**: No.
 - **Reference**: [Send Commands](https://developer.tuya.com/en/docs/cloud/e2512fb901?id=Kag2yag3tiqn5) [Send Actions](https://developer.tuya.com/en/docs/cloud/687123828c?id=Kcp2kw4igv7l8)
 
