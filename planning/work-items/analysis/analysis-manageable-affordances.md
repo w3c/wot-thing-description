@@ -82,7 +82,7 @@ Related Real World Implementations:
 
 * **Who:** Thing Description designer
 * **What:** Describe dependencies and relationships between multiple affordances.
-* **Why:** So that I can define how affordances are related and constrain how they can be used in relation of one another.
+* **Why:** So that I can define how affordances are related and constrain how they can be used in relation with one another.
 * **Sentence:** As a Thing Description designer, I need to express dependencies between affordances so that I can define valid interaction flows and link related affordances.
 * **Process Stakeholders**:
     * Submitter: WoT WG/extended community
