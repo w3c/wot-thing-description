@@ -121,7 +121,7 @@ To cover the `Monitorable and Cancelable Actions` user story, we can leverage th
 
 ### Use a "meta-affordance" to describe extra resources or interaction patterns
 
-With the current specification, users can support to same level all three user stories by creating ad hoc affordances that mimics the requirements of the underlying interaction pattern. For example, the queue of actions can be represented by a *PropertyAffordance*. [BACnet binding](https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/index.html#event-mappings) is also currently expressing relationships between events and actions thanks to a combination of ad hoc affordances and binding defined well-known relationships. 
+According to the current specification, users can support all three user stories to the same level by creating ad hoc affordances that mimic the requirements of the underlying interaction pattern. For example, the queue of actions can be represented by a *PropertyAffordance*. [BACnet binding](https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/index.html#event-mappings) is currently also expressing relationships between events and actions, thanks to a combination of ad hoc affordances and binding of defined well-known relationships. 
 
 ## Existing technologies analysis with focus on Manageable Actions
 This section analyzes implementation examples of the same user stories in other "well-known" or production technologies/frameworks. 
