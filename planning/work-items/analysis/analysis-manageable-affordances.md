@@ -34,7 +34,6 @@ Related Issues:
 - https://github.com/w3c/wot-thing-description/issues/1408
 - https://github.com/w3c/wot-thing-description/issues/1070
 
-
 ## Summarized Problem
 
 As introduced, the current Thing Description interaction model does not take into account the complex interaction patterns used in well-known applications and frameworks. In particular, action affordances fail to describe real-world actions that take time and have an impact on the physical world. Moreover, some scenarios require description of (currently unbounded) relationships between affordances that can result in specific interactions that a Customer can or is required to perform to correctly interact with the remote Thing.
@@ -72,6 +71,7 @@ Possible challenges:
   - https://github.com/w3c-cg/webagents/issues/31
 
 #### Scenarios
+
 - As a smart home user I want to close a window blind with my smartphone app and for it to show me when the blind has finished closing so that I know it completed successfully (example of a long-running action where the length of time for the blind to close may be longer than a typical HTTP timeout period)
 - As a smart home user I want to create an automation where the lights in my bedroom gradually get brighter over a 20 minute period in the morning, but to be able to turn them off again if I want to so that I can get more sleep (example of a cancellable action)
 - As a factory worker I want to tell an industrial counting machine to count a tray of 1,000 widgets so that I can verify how many there are (example of an action with an output)
@@ -94,6 +94,7 @@ Possible challenges:
   - https://github.com/w3c/wot-thing-description/issues/1779
 
 #### Scenarios
+
 - As a customer using a ticket kiosk I want to tell the printer to print three tickets and notify me on the screen when it is complete
 - As a factory worker I want to tell a robotic arm to make a series of movements in sequence, without having to wait for each movement to complete before starting the next
 - As a factory worker I want to tell a 3D printer to print a series of objects so that I don't have to wait for one object to be completed before submitting the next
@@ -112,6 +113,7 @@ Possible challenges:
   - Impact Type: Increase complexity of the WoT interaction model. This implies an increase in implementation complexity of both Consumer and Exposer applications.
 
 #### Scenarios
+
 - As an office worker using a high end photocopier I want to copy multiple multi-page documents at the same time to save me time
 - As a factory worker I want to instruct a multi-head 3D printer to print two objects at once so that I don't have to wait for one to finish before starting the other
 
@@ -255,7 +257,7 @@ Sadly, it seems I can't disclose any information about Philips Hue Smart API as 
 - **Support for queue**: Yes, actions are managed in a queue, and multiple actions can be invoked and tracked independently.
 - **Reference**: [WebThings Actions](https://webthings.io/api/#actionrequest-resource)
 
-#### OPC-UA 
+#### OPC-UA
 
 - **Support for Asynchronous Actions**: Yes
 - **Description**: OPC-UA supports the concept of Programs, which are long-running operations that can be started, monitored, and stopped. Programs are defined in the server's address space and can be invoked by clients. Once a program is started, it runs independently of the client, and its status can be monitored through specific nodes in the address space. Clients can also stop a running program if needed.
@@ -263,17 +265,17 @@ Sadly, it seems I can't disclose any information about Philips Hue Smart API as 
 - **Reference**: https://reference.opcfoundation.org/Core/Part10/v105/docs/4.2
 
 #### OpenFlexure Microscope
+
 - **Support for Asynchronous Actions**: Yes
 - **Description**: The OpenFlexure Microscope provides a RESTful API that allows users to control the microscope and perform various actions. Some actions, such as capturing images or moving the stage, can be long-running and are designed to be asynchronous. When an action is initiated, the API returns a job ID that can be used to monitor the status of the action. Users can query the status of the job and retrieve results once the action is complete. There is also support for cancelling ongoing actions if needed.
 - **Support for queue**: Yes, the API supports queuing of actions, allowing multiple actions to be initiated and managed independently.
 - **Reference**: [TD](https://github.com/w3c/wot-testing/tree/main/events/2024.11.Munich/TDs/openflexure) and [presentation](https://www.youtube.com/watch?v=TI6HUOw6lhU)
 
-
 ### Managiable Events in IoT Platforms and Frameworks
 
 #### BACnet Alarms
 
-BACnet is a communication protocol widely used in building automation and control systems. Alarms in BACnet are specialized event objects that represent abnormal or noteworthy conditions detected by devices (e.g., temperature out of range, equipment failure). These alarms are not simple notifications; they have a lifecycle that includes states such as "active," "acknowledged," and "cleared." Managing BACnet alarms involves initiating, monitoring, acknowledging, and sometimes silencing or resetting alarms. This process requires ongoing interaction between the consumer and the device, including tracking alarm instances, handling payloads for acknowledgment, and managing dependencies between multiple alarms and related actions. 
+BACnet is a communication protocol widely used in building automation and control systems. Alarms in BACnet are specialized event objects that represent abnormal or noteworthy conditions detected by devices (e.g., temperature out of range, equipment failure). These alarms are not simple notifications; they have a lifecycle that includes states such as "active," "acknowledged," and "cleared." Managing BACnet alarms involves initiating, monitoring, acknowledging, and sometimes silencing or resetting alarms. This process requires ongoing interaction between the consumer and the device, including tracking alarm instances, handling payloads for acknowledgment, and managing dependencies between multiple alarms and related actions.
 
 References: See the full discussion at <https://github.com/w3c/wot-binding-templates/pull/379>
 
