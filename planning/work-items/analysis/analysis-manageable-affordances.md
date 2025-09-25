@@ -34,7 +34,7 @@ Related Issues:
 - https://github.com/w3c/wot-thing-description/issues/1408
 - https://github.com/w3c/wot-thing-description/issues/1070
 
-## Summarized Problem
+## Problem Summary
 
 As introduced, the current Thing Description interaction model does not take into account the complex interaction patterns used in well-known applications and frameworks. In particular, action affordances fail to describe real-world actions that take time and have an impact on the physical world. Moreover, some scenarios require description of (currently unbounded) relationships between affordances that can result in specific interactions that a Customer can or is required to perform to correctly interact with the remote Thing.
 
@@ -99,7 +99,7 @@ Possible challenges:
 - As a factory worker I want to tell a robotic arm to make a series of movements in sequence, without having to wait for each movement to complete before starting the next
 - As a factory worker I want to tell a 3D printer to print a series of objects so that I don't have to wait for one object to be completed before submitting the next
 
-### Cuncurrent Actions
+### Concurrent Actions
 
 - **Who:** Thing Description designer
 - **What:** Describe actions that can be executed mutliple times concurrently
@@ -116,6 +116,7 @@ Possible challenges:
 
 - As an office worker using a high end photocopier I want to copy multiple multi-page documents at the same time to save me time
 - As a factory worker I want to instruct a multi-head 3D printer to print two objects at once so that I don't have to wait for one to finish before starting the other
+- As two office workers using a high-end automated coffee machine with two brew chambers, we want to brew two coffees at the same time to avoid waiting time
 
 ### Express dependencies between affordances
 
@@ -128,7 +129,7 @@ Possible challenges:
   - Specification Writers:
   - Implementation Volunteers:
   - Impacted People: TD Designers, Consumer application developers.
-  - Impact Type: Increase complexity of the WoT interaction model. This implies an increase in implementation complexity of both Consumer and Exposer applications.
+  - Impact Type: Increase complexity of the WoT interaction model. This implies an increase in implementation complexity of both Consumer and Exposer applications. Note: If an existing Thing already has this behavior, there is no increased complexity as the behavior was described out-of-band somehow.
 - **Linked Use Cases or Categories:**
   - https://github.com/w3c/wot-binding-templates/pull/379
   - https://github.com/w3c/wot-thing-description/issues/1070
@@ -166,7 +167,7 @@ According to the current specification, users can support all three user stories
 
 This section analyzes implementation examples of the same user stories in other "well-known" or production technologies/frameworks.
 
-### Managiable Actions in IoT Platforms and Frameworks
+### Manageable Actions in IoT Platforms and Frameworks
 
 #### AWS IoT
 
@@ -271,7 +272,7 @@ Sadly, it seems I can't disclose any information about Philips Hue Smart API as 
 - **Support for queue**: Yes, the API supports queuing of actions, allowing multiple actions to be initiated and managed independently.
 - **Reference**: [TD](https://github.com/w3c/wot-testing/tree/main/events/2024.11.Munich/TDs/openflexure) and [presentation](https://www.youtube.com/watch?v=TI6HUOw6lhU)
 
-### Managiable Events in IoT Platforms and Frameworks
+### Manageable Events in IoT Platforms and Frameworks
 
 #### BACnet Alarms
 
