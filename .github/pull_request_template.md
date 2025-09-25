@@ -14,7 +14,7 @@ Closes #
 
 <!-- Keep the correct line, remove the other and add the corresponding label if you are an editor. -->
 
-<!-- In this case, once the label is added and approved by one Editor, after 1 week the PR can be merged. -->
+<!-- In this case, once the label is added and approved by one Editor, after one week the PR can be merged. -->
 
 - [Editorial (non-normative)](https://github.com/w3c/wot/blob/main/policies/async-decision.md#editorial-non-normative-changes) with label ![Editorial Label](https://img.shields.io/github/labels/w3c/wot-thing-description/Editorial).
 
