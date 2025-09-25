@@ -4,8 +4,8 @@
 
 > Traditional "interaction affordances" in WoT (Properties, Actions, Events) describe what a Thing can do or expose. Manageable Affordances, on the other hand, address scenarios where
 > these interactions are not just one-off calls but require ongoing management and/or monitoring, and/or have dependencies on other interactions. In practice, they require a more complex interaction model which is rather a state machine "or an application protocol" then a simple request/response.
-> An instance of manageable afforandaces are Managiable Actions that span multiple protocol transactions. Such actions are not simply invoked but need to be managed over time by the Thing and the Consumer.
-> These are covered in the WoT Thing Description 1.1 via the initiation (invokeaction), monitoring (`queryaction`), and cancellation (`cancelaction`) of ongoing actions.
+> An instance of manageable affordances are Manageable Actions that span multiple protocol transactions. Such actions are not simply invoked but need to be managed over time by the Thing and the Consumer.
+> These are covered in the WoT Thing Description 1.1 via the initiation (`invokeaction`), monitoring (`queryaction`), and cancellation (`cancelaction`) of ongoing actions.
 > However, the following points are not supported:
 
 - Sent and received payloads associated to the operations
@@ -102,9 +102,9 @@ Possible challenges:
 ### Concurrent Actions
 
 - **Who:** Thing Description designer
-- **What:** Describe actions that can be executed mutliple times concurrently
+- **What:** Describe actions that can be executed multiple times concurrently
 - **Why:** So that I can describe devices that can handle multiple running operations at the same time
-- **Sentence:** As a Thing Description designer, I need to describe actions that can be executed mutliple times concurrently so that I can describe devices that can handle multiple running operations at the same time.
+- **Sentence:** As a Thing Description designer, I need to describe actions that can be executed multiple times concurrently so that I can describe devices that can handle multiple running operations at the same time.
 - **Process Stakeholders**:
   - Submitter: WoT WG/extended community
   - Specification Writers:
@@ -192,7 +192,7 @@ This section analyzes implementation examples of the same user stories in other 
 
 #### ECHONET (TODO)
 
-#### Goolg IoT Cloud
+#### Google IoT Cloud
 
 Discontinued.
 
@@ -213,7 +213,7 @@ Discontinued.
 #### Tasmota Firmware
 
 - **Support for Asynchronous Actions**: Yes, sort of.
-- **Description**: Tasmota is a command-centric framework where nearly every interaction, including reading the device's state, is performed by sending a command. Since its main transport protocol is MQTT, most results of these commands can be read asynchronously. While the execution of a single command on the device is synchronous, Tasmota publishes the result or the new state to predefined stat/ and tele/ MQTT topics. This decouples the command invocation from the result, allowing any client to subscribe to these topics and asynchronously monitor the device's status. There is no native concept of "canceling" a command once it has been issued.Furthermore, the Backlog command provides a mechanism to send a batch of commands asynchronously; the device queues this sequence and executes it without further interaction from the client.
+- **Description**: Tasmota is a command-centric framework where nearly every interaction, including reading the device's state, is performed by sending a command. Since its main transport protocol is MQTT, most results of these commands can be read asynchronously. While the execution of a single command on the device is synchronous, Tasmota publishes the result or the new state to predefined stat/ and tele/ MQTT topics. This decouples the command invocation from the result, allowing any client to subscribe to these topics and asynchronously monitor the device's status. There is no native concept of "canceling" a command once it has been issued. Furthermore, the Backlog command provides a mechanism to send a batch of commands asynchronously; the device queues this sequence and executes it without further interaction from the client.
 - **Support for queue**: Yes, sort of (again). Supported through the `Backlog` command. The `Backlog` command allows you to send a single string containing multiple commands separated by semicolons. Tasmota will place these commands into a queue and execute them sequentially. This is a single queue, and as Tasmota is single-threaded, it will process the backlog before handling new incoming commands. You can clear the backlog (effectly similar to cancelling the queued commands) and you can listen to its progression by subscribing to the relevant command result topics.
 - **Reference**: [Tasmota Commands Documentation](https://tasmota.github.io/docs/Commands/)
 
