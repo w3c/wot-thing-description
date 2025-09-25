@@ -27,6 +27,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
   - A3 (add to [Behavioral Assertions](https://w3c.github.io/wot-thing-description/#behavior)?)
 
 - [x] 2. There MAY be other representations of a Thing such as an HTML-based user interface, simply an image of the physical entity, or even non-Web representations in closed systems. ([arch-other-thing-representations](https://www.w3.org/TR/wot-architecture11/#arch-other-thing-representations))
+
   - D
 
 - [x] 3. To be considered a Thing, however, at least one TD representation MUST be available. ([arch-td-mandatory](https://www.w3.org/TR/wot-architecture11/#arch-td-mandatory))
@@ -35,6 +36,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 #### 6.1.2 Links
 
 - [x] 4. WoT Thing Descriptions and WoT Thing Models MAY link to other Things, WoT Thing Models, and other resources on the Web to form a Web of Things. ([arch-td-linking](https://www.w3.org/TR/wot-architecture11/#arch-td-linking))
+
   - A1 ([5.3.4.1 Link](https://w3c.github.io/wot-thing-description/#link))
 
 - [x] 5. Things MUST be hosted on networked system components with a software stack to realize interaction through a network-facing interface, the WoT Interface of a Thing. ([arch-networked](https://www.w3.org/TR/wot-architecture11/#arch-networked))
@@ -53,9 +55,11 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 #### 6.5.2 Actions
 
 - [x] 8. An Action MAY manipulate state that is not directly exposed (cf. Properties), manipulate multiple Properties at a time, or manipulate Properties based on internal logic (e.g., toggle). ([arch-action-functions](https://www.w3.org/TR/wot-architecture11/#arch-action-functions))
+
   - A1 ([5.3.1.4 ActionAffordance](https://w3c.github.io/wot-thing-description/#actionaffordance))
 
 - [x] 9. Invoking an Action MAY also trigger a process on the Thing that manipulates state (including physical state through actuators) over time. ([arch-action-process](https://www.w3.org/TR/wot-architecture11/#arch-action-process))
+
   - A1 ([5.3.1.4 ActionAffordance](https://w3c.github.io/wot-thing-description/#actionaffordance))
 
 - [ ] 10. If the data format is not fully specified by the Protocol Binding used (e.g., through a media type), Actions MAY contain data schemas for input parameters and output results. ([arch-action-dataschema](https://www.w3.org/TR/wot-architecture11/#arch-action-dataschema))
