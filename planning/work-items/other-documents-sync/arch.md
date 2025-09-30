@@ -111,6 +111,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 - [ ] 27. There SHOULD be a strict separation of Public Security Metadata and Private Security Data. ([arch-security-consideration-separate-security-data](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-separate-security-data))
 
 - [ ] 28. Authentication and authorization SHOULD be established based on separately managed Private Security Data. ([arch-security-consideration-auth-private-data](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-auth-private-data))
+
   - A3: Fits to https://w3c.github.io/wot-thing-description/#behavior-security
 
 - [ ] 29. Producers of TDs MUST ensure that no Private Security Data is included in TDs. ([arch-security-consideration-no-private-security-data](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-no-private-security-data))
@@ -120,6 +121,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 #### 10.1.2 Thing Description Communication Metadata Risk
 
 - [ ] 30. Whenever possible, TD creators SHOULD use the vetted communication metadata provided in the WoT Binding Templates. ([arch-security-consideration-communication-binding](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-communication-binding))
+
   - D (also the meaning is not clear, which is a sign for not making it normative)
 
 - [ ] 31. When generating TDs for an IoT Platform not covered by the WoT Binding Templates, TD creators SHOULD ensure that all the security requirements of the IoT Platform are satisfied. ([arch-security-consideration-communication-platform](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-communication-platform))
@@ -130,6 +132,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 #### 10.2.1 Cross-Script Security Risk
 
 - [ ] 32. The WoT Runtime SHOULD perform isolation of script instances and their data from each other in cases when scripts handle sensitive data. ([arch-security-consideration-isolation-sensitive](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-isolation-sensitive))
+
   - D (can also be B and in Scripting API but this is not limited to scripting api implementations)
 
 - [ ] 33. Similarly, the WoT Runtime implementation SHOULD perform isolation of WoT Runtime instances and their data from each other if a WoT device has more than one tenant. ([arch-security-consideration-isolation-tenants](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-isolation-tenants))
@@ -138,6 +141,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 #### 10.2.2 Physical Device Direct Access Risk
 
 - [ ] 34. The WoT Runtime SHOULD NOT directly expose low-level device hardware interfaces to the script developers. ([arch-security-consideration-avoid-direct](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-avoid-direct))
+
   - D (can also be B and in Scripting API but this is not limited to scripting api implementations)
 
 - [ ] 35. A WoT Runtime implementation SHOULD provide a hardware abstraction layer for accessing the low-level device hardware interfaces. ([arch-security-consideration-use-hal](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-use-hal))
@@ -175,12 +179,15 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 - [ ] 45. Private networks such as a LAN, protected by a firewall, MAY use the Trusted Environment approach of depending on network security only. ([arch-security-consideration-tls-optional-on-lan](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-tls-optional-on-lan))
 
 - [ ] 46. When secure transport over TCP is appropriate, then at least TLS 1.3 [RFC8446] SHOULD be used. ([arch-security-consideration-tls-1-3](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-tls-1-3))
+
   - A3: This should be a generic assertion to all bindings that can support TCP. The implementation enforcement can only happen in the binding, which is informative. However, we should recommend all implementers to do that. In the binding documents, there should be informative notes about this that can point back to TD.
 
 - [ ] 47. If TLS 1.3 cannot be used for compatibility reasons but secure transport over TCP is appropriate, TLS 1.2 [RFC5246] MAY be used. ([arch-security-consideration-tls-1-2](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-tls-1-2))
+
   - A3: This should be a generic assertion to all bindings that can support TCP. The implementation enforcement can only happen in the binding, which is informative. However, we should recommend all implementers to do that. In the binding documents, there should be informative notes about this that can point back to TD.
 
 - [ ] 48. If DTLS 1.3 cannot be used for compatibility reasons but secure transport over UDP is appropriate, then DTLS 1.2 [RFC6347] MAY be used. ([arch-security-consideration-dtls-1-2](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-dtls-1-2))
+
   - A3: This should be a generic assertion to all bindings that can support TCP. The implementation enforcement can only happen in the binding, which is informative. However, we should recommend all implementers to do that. In the binding documents, there should be informative notes about this that can point back to TD.
 
 - [ ] 49. Versions of DTLS or TLS earlier than 1.2 MUST NOT be used for new development. ([arch-security-consideration-no-earlier-tls-or-dtls](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-no-earlier-tls-or-dtls))
@@ -193,18 +200,21 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 #### 11.1.1 Thing Description Personally Identifiable Information (PII) Risk
 
 - [ ] 50. Storage of explicit PII in TDs SHOULD be minimized as much as possible. ([arch-privacy-consideration-min-explicit-pii](https://www.w3.org/TR/wot-architecture11/#arch-privacy-consideration-min-explicit-pii))
+
   - A3: https://w3c.github.io/wot-thing-description/#sec-privacy-consideration-inferencing
 
 - [ ] 51. TDs that can be associated with a person SHOULD generally be treated as if they contained PII and subject to the same management policies as other PII, even if they do not explicitly contain it. ([arch-privacy-consideration-explicit-pii](https://www.w3.org/TR/wot-architecture11/#arch-privacy-consideration-explicit-pii))
-  - B: Discovery 
+
+  - B: Discovery
 
 - [ ] 52. Distribution mechanisms for TDs SHOULD ensure they are only provided to authorized Consumers. ([arch-privacy-consideration-dist-td-auth](https://www.w3.org/TR/wot-architecture11/#arch-privacy-consideration-dist-td-auth))
-  - B: Discovery 
+  - B: Discovery
 
 ### 11.2 Access to Personally Identifiable Information
 
 - [ ] 53. Things returning data or metadata (such as TDs) associated with a person SHOULD use some form of access control. ([arch-privacy-consideration-access-control-mandatory-person](https://www.w3.org/TR/wot-architecture11/#arch-privacy-consideration-access-control-mandatory-person))
+
   - A3 and B (Discovery)
 
 - [ ] 54. Services returning Thing Descriptions with immutable IDs SHOULD use some form of access control. ([arch-privacy-consideration-id-access-control-mandatory-immutable](https://www.w3.org/TR/wot-architecture11/#arch-privacy-consideration-id-access-control-mandatory-immutable))
-  - B: Discovery 
+  - B: Discovery
