@@ -47,7 +47,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 
 - [x] 6. In addition to navigation affordances (i.e., Web links), Things MAY offer three other types of Interaction Affordances defined by this specification: Properties, Actions, and Events. ([arch-affordances](https://www.w3.org/TR/wot-architecture11/#arch-affordances))
   - D
-  - The sentence should be flipped since people first think of property, action, event and then add links 
+  - The sentence should be flipped since people first think of property, action, event and then add links
 
 #### 6.5.1 Properties
 
