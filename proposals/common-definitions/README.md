@@ -1,6 +1,6 @@
-# Reusable or Initial Connections
+# Common Definitions
 
-![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/reusable%20connections)
+![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/common%20definitions)
 
 ## Purpose of this folder
 
