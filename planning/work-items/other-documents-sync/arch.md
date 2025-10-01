@@ -181,6 +181,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 - [ ] 46. When secure transport over TCP is appropriate, then at least TLS 1.3 [RFC8446] SHOULD be used. ([arch-security-consideration-tls-1-3](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-tls-1-3))
 
   - A3: This should be a generic assertion to all bindings that can support TCP. The implementation enforcement can only happen in the binding, which is informative. However, we should recommend all implementers to do that. In the binding documents, there should be informative notes about this that can point back to TD.
+  - Note: the same concern seem to apply to OPC UA, which can use other mechanisms that TLS for security. We need to change the 4 following assertions to not constrain to a specific transport layer security.
 
 - [ ] 47. If TLS 1.3 cannot be used for compatibility reasons but secure transport over TCP is appropriate, TLS 1.2 [RFC5246] MAY be used. ([arch-security-consideration-tls-1-2](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-tls-1-2))
 
@@ -189,6 +190,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 - [ ] 48. If DTLS 1.3 cannot be used for compatibility reasons but secure transport over UDP is appropriate, then DTLS 1.2 [RFC6347] MAY be used. ([arch-security-consideration-dtls-1-2](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-dtls-1-2))
 
   - A3: This should be a generic assertion to all bindings that can support TCP. The implementation enforcement can only happen in the binding, which is informative. However, we should recommend all implementers to do that. In the binding documents, there should be informative notes about this that can point back to TD.
+  - Note: Since QUIC can be used as a secure transport over UDP, we need to rephrase this assertion, i.e., UDP doesn't imply DTLS.
 
 - [ ] 49. Versions of DTLS or TLS earlier than 1.2 MUST NOT be used for new development. ([arch-security-consideration-no-earlier-tls-or-dtls](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-no-earlier-tls-or-dtls))
   - A3: This should be a generic assertion to all bindings that can support TCP. The implementation enforcement can only happen in the binding, which is informative. However, we should recommend all implementers to do that. In the binding documents, there should be informative notes about this that can point back to TD.
