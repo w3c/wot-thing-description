@@ -142,41 +142,41 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 
 #### 10.3.2 Security Credentials Storage Risk
 
-- [x] 37. The WoT Runtime SHOULD securely store any provisioned security credentials, guaranteeing their integrity and confidentiality. ([arch-security-consideration-secure-cred-storage](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-secure-cred-storage))
+- [ ] 37. The WoT Runtime SHOULD securely store any provisioned security credentials, guaranteeing their integrity and confidentiality. ([arch-security-consideration-secure-cred-storage](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-secure-cred-storage))
 
   - B (https://w3c.github.io/wot-security/#wot-threat-model-assets)
 
-- [x] 38. In case there are more than one tenant on a single WoT-enabled device, a WoT Runtime implementation SHOULD isolate each tenant's provisioned security credentials from other tenants. ([arch-security-consideration-secure-cred-isolation](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-secure-cred-isolation))
+- [ ] 38. In case there are more than one tenant on a single WoT-enabled device, a WoT Runtime implementation SHOULD isolate each tenant's provisioned security credentials from other tenants. ([arch-security-consideration-secure-cred-isolation](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-secure-cred-isolation))
 
   - B (https://w3c.github.io/wot-security/#wot-threat-model-stakeholders)
 
-- [x] 39. In order to minimize a risk that provisioned security credentials get compromised, the WoT Runtime implementation SHOULD NOT expose any API for scripts to query provisioned security credentials. ([arch-security-consideration-no-expose-cred](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-no-expose-cred))
+- [ ] 39. In order to minimize a risk that provisioned security credentials get compromised, the WoT Runtime implementation SHOULD NOT expose any API for scripts to query provisioned security credentials. ([arch-security-consideration-no-expose-cred](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-no-expose-cred))
 
   - B (https://w3c.github.io/wot-security/#wot-threat-model-assets)
 
-- [x] 40. Such credentials (or even better, abstract operations that use them but do not expose them) SHOULD only be accessible to the underlying protocol implementation that uses them. ([arch-security-consideration-limit-cred-access](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-limit-cred-access))
+- [ ] 40. Such credentials (or even better, abstract operations that use them but do not expose them) SHOULD only be accessible to the underlying protocol implementation that uses them. ([arch-security-consideration-limit-cred-access](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-limit-cred-access))
   - B (https://w3c.github.io/wot-security/#wot-threat-model-assets)
 
 ### 10.4 Trusted Environment Risks
 
-- [x] 41. Trust relationships SHOULD be as restricted as possible, ideally pairwise and limited to precisely the access required. ([arch-security-consideration-limit-trust](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-limit-trust))
+- [ ] 41. Trust relationships SHOULD be as restricted as possible, ideally pairwise and limited to precisely the access required. ([arch-security-consideration-limit-trust](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-limit-trust))
 
   - B (https://w3c.github.io/wot-security/#wot-threat-model-assets)
 
-- [x] 42. In the case of implicit access control via access to a common network a segmented network SHOULD be used. ([arch-security-consideration-segmented-network](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-segmented-network))
+- [ ] 42. In the case of implicit access control via access to a common network a segmented network SHOULD be used. ([arch-security-consideration-segmented-network](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-segmented-network))
   - B (https://w3c.github.io/wot-security/)
 
 ### 10.5 Secure Transport
 
-- [x] 43. When a Thing is made available on the public internet so it can be accessed by anyone, from anywhere, then it MUST be protected by secure transport such as TLS or DTLS. ([arch-security-consideration-tls-mandatory-pub](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-tls-mandatory-pub))
+- [ ] 43. When a Thing is made available on the public internet so it can be accessed by anyone, from anywhere, then it MUST be protected by secure transport such as TLS or DTLS. ([arch-security-consideration-tls-mandatory-pub](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-tls-mandatory-pub))
 
   - B (https://w3c.github.io/wot-security/#sec-pract-system-user-data)
 
-- [x] 44. When a Thing is made available on a private network then it SHOULD be protected by secure transport such as TLS or DTLS. ([arch-security-consideration-tls-recommended-priv](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-tls-recommended-priv))
+- [ ] 44. When a Thing is made available on a private network then it SHOULD be protected by secure transport such as TLS or DTLS. ([arch-security-consideration-tls-recommended-priv](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-tls-recommended-priv))
 
   - B (https://w3c.github.io/wot-security/#sec-pract-system-user-data)
 
-- [x] 45. Private networks such as a LAN, protected by a firewall, MAY use the Trusted Environment approach of depending on network security only. ([arch-security-consideration-tls-optional-on-lan](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-tls-optional-on-lan))
+- [ ] 45. Private networks such as a LAN, protected by a firewall, MAY use the Trusted Environment approach of depending on network security only. ([arch-security-consideration-tls-optional-on-lan](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-tls-optional-on-lan))
 
   - B (https://w3c.github.io/wot-security/)
 
