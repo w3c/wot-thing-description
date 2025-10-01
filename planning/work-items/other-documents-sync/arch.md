@@ -32,6 +32,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 
 - [x] 3. To be considered a Thing, however, at least one TD representation MUST be available. ([arch-td-mandatory](https://www.w3.org/TR/wot-architecture11/#arch-td-mandatory))
   - A3 (add to [Behavioral Assertions](https://w3c.github.io/wot-thing-description/#behavior)?)
+  - Note: can be merged with 1
 
 #### 6.1.2 Links
 
@@ -46,6 +47,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 
 - [x] 6. In addition to navigation affordances (i.e., Web links), Things MAY offer three other types of Interaction Affordances defined by this specification: Properties, Actions, and Events. ([arch-affordances](https://www.w3.org/TR/wot-architecture11/#arch-affordances))
   - D
+  - The sentence should be flipped since people first think of property, action, event and then add links 
 
 #### 6.5.1 Properties
 
