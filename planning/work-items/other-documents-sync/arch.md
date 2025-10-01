@@ -7,7 +7,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 ## Categorization of assertions (tentative)
 
 - A: Those related to the Thing Description document
-  - A1: Assertions that are already included in the Thing Description document. No changes to the Thing Description document are necessary. 
+  - A1: Assertions that are already included in the Thing Description document. No changes to the Thing Description document are necessary.
   - A2: Assertions that differ from what is written in the Thing Description document. If necessary, update the Thing Description document to ensure consistency.
   - A3: Assertions not included in the Thing Description document. Add them if necessary.
 - B: Those related to other documents
@@ -23,6 +23,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 ##### 6.1.1.1 Thing Descriptions
 
 - [ ] 1. In W3C WoT, the description metadata for a Thing instance MUST be available as a WoT Thing Description (TD) [WOT-THING-DESCRIPTION]. ([arch-td-metadata](https://www.w3.org/TR/wot-architecture11/#arch-td-metadata))
+
   - Category: A1 / A2 / A3 / B / C (example)
 
 - [ ] 2. There MAY be other representations of a Thing such as an HTML-based user interface, simply an image of the physical entity, or even non-Web representations in closed systems. ([arch-other-thing-representations](https://www.w3.org/TR/wot-architecture11/#arch-other-thing-representations))
@@ -76,31 +77,35 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 - [ ] 18. Form fields are optional and MAY further specify the expected request message for the given operation. ([arch-op-expected-request](https://www.w3.org/TR/wot-architecture11/#arch-op-expected-request))
 
 - [ ] 19. Form fields MAY depend on the protocol used for the submission target as specified in the URI scheme. ([arch-op-form-fields-protocol](https://www.w3.org/TR/wot-architecture11/#arch-op-form-fields-protocol))
-    - A1
+  - A1
 
 ### 6.7 Protocol Bindings
 
 #### 6.7.1 Hypermedia-driven
 
 - [ ] 20. Interaction Affordances MUST include one or more Protocol Bindings. ([arch-hypermedia](https://www.w3.org/TR/wot-architecture11/#arch-hypermedia))
-    - A3
+
+  - A3
 
 - [ ] 21. Protocol Bindings MUST be serialized as hypermedia controls to be self-descriptive on how to activate the Interaction Affordance. ([arch-hypermedia-protocol-binding](https://www.w3.org/TR/wot-architecture11/#arch-hypermedia-protocol-binding))
-    - A1
+
+  - A1
 
 - [ ] 22. The hypermedia controls MAY be cached outside the Thing and used for offline processing if caching metadata is available to determine the freshness. ([arch-hypermedia-caching](https://www.w3.org/TR/wot-architecture11/#arch-hypermedia-caching))
-    - A1
+  - A1
 
 ### 6.8 Media Types
 
 - [ ] 23. All data (a.k.a. content) exchanged when activating Interaction Affordances MUST be identified by a media type [RFC2046] in the Protocol Binding. ([arch-media-type](https://www.w3.org/TR/wot-architecture11/#arch-media-type))
-    - A1 (implicitly via `contentType`) 
+
+  - A1 (implicitly via `contentType`)
 
 - [ ] 24. Protocol Bindings MAY have additional information that specifies representation formats in more detail than the media type alone. ([arch-media-type-extra](https://www.w3.org/TR/wot-architecture11/#arch-media-type-extra))
-    - A3
+
+  - A3
 
 - [ ] 25. Thus, the Interaction Affordance for structured data types SHOULD be associated with a data schema to provide more detailed syntactic metadata for the data exchanged. ([arch-schema](https://www.w3.org/TR/wot-architecture11/#arch-schema))
-    - A3
+  - A3
 
 ### 6.10 WoT System Components and their Interconnectivity
 
@@ -116,6 +121,7 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 #### 10.1.1 Thing Description Private Security Data Risk
 
 - [ ] 27. There SHOULD be a strict separation of Public Security Metadata and Private Security Data. ([arch-security-consideration-separate-security-data](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-separate-security-data))
+
   - D
 
 - [ ] 28. Authentication and authorization SHOULD be established based on separately managed Private Security Data. ([arch-security-consideration-auth-private-data](https://www.w3.org/TR/wot-architecture11/#arch-security-consideration-auth-private-data))
@@ -197,4 +203,3 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
 - [ ] 53. Things returning data or metadata (such as TDs) associated with a person SHOULD use some form of access control. ([arch-privacy-consideration-access-control-mandatory-person](https://www.w3.org/TR/wot-architecture11/#arch-privacy-consideration-access-control-mandatory-person))
 
 - [ ] 54. Services returning Thing Descriptions with immutable IDs SHOULD use some form of access control. ([arch-privacy-consideration-id-access-control-mandatory-immutable](https://www.w3.org/TR/wot-architecture11/#arch-privacy-consideration-id-access-control-mandatory-immutable))
-
