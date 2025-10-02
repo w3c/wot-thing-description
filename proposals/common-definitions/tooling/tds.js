@@ -3,18 +3,16 @@
 
 const validCompactTDs = [
   // Inline (no definitions objects)
-  // Separate Defaults
+  // All defaults in a form and flattened without connection
   {
     "@context": "http://www.w3.org/ns/td",
-    "title": "valid-test-compact-0",
-    "connection": {
-      "base": "https://example.com"
-    },
+    "title": "valid-test-compact-2",
     "form": {
-      "contentType": "application/json"
-    },
-    "security": {
-      "scheme": "nosec"
+      "contentType": "application/json",
+      "base": "https://example.com",
+      "security": {
+        "scheme": "nosec"
+      }
     },
     "properties": {
       "prop1": {
@@ -67,16 +65,18 @@ const validCompactTDs = [
       }
     }
   },
-  // All defaults in a form and flattened without connection
+  // Separate Defaults
   {
     "@context": "http://www.w3.org/ns/td",
-    "title": "valid-test-compact-2",
+    "title": "valid-test-compact-0",
+    "connection": {
+      "base": "https://example.com"
+    },
     "form": {
-      "contentType": "application/json",
-      "base": "https://example.com",
-      "security": {
-        "scheme": "nosec"
-      }
+      "contentType": "application/json"
+    },
+    "security": {
+      "scheme": "nosec"
     },
     "properties": {
       "prop1": {
@@ -97,6 +97,7 @@ const validCompactTDs = [
       }
     }
   },
+  // With definitions
   // All definitions are present and referenced in the root
   {
     "@context": "http://www.w3.org/ns/td",
@@ -133,36 +134,6 @@ const validCompactTDs = [
         "forms": [
           {
             "href": "/props/prop2"
-          }
-        ]
-      }
-    }
-  },
-  // only defined and used within the forms
-  {
-    "@context": "http://www.w3.org/ns/td",
-    "title": "valid-test-compact-4",
-    "properties": {
-      "prop1": {
-        "type": "string",
-        "forms": [
-          {
-            "href": "https://example.com/props/prop1",
-            "connection": {
-              "security": { "scheme": "nosec" }
-            },
-            "contentType": "application/json"
-          }
-        ]
-      },
-      "prop2": {
-        "type": "string",
-        "forms": [
-          {
-            "href": "https://example.com/props/prop2",
-            // applying flattening to the form above, removing connection
-            "security": { "scheme": "basic" },
-            "contentType": "application/json"
           }
         ]
       }
@@ -254,6 +225,37 @@ const validCompactTDs = [
       }
     }
   },
+  // nothing in the root
+  // only defined and used within the forms
+  {
+    "@context": "http://www.w3.org/ns/td",
+    "title": "valid-test-compact-4",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://example.com/props/prop1",
+            "connection": {
+              "security": { "scheme": "nosec" }
+            },
+            "contentType": "application/json"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://example.com/props/prop2",
+            // applying flattening to the form above, removing connection
+            "security": { "scheme": "basic" },
+            "contentType": "application/json"
+          }
+        ]
+      }
+    }
+  },
   // one writeproperty requiring basic auth
   {
     "@context": "http://www.w3.org/ns/td",
@@ -312,7 +314,7 @@ const validCompactTDs = [
 const invalidCompactTDs = [
   // Inline (no definitions objects)
   // Missing Connection
-  // TODO: This cannot be invalid since there is no way to say that connection is required if it is not inlined in the form
+  // TODO: This cannot be invalidated with a JSON Schema since there is no way to say that connection is required if it is not inlined in the form
   {
     "@context": "http://www.w3.org/ns/td",
     "title": "invalid-test-compacted-0",
@@ -341,7 +343,7 @@ const invalidCompactTDs = [
       }
     }
   },
-  // a flattened form but it still has connection
+  // a flattened form but it still has connection, i.e. base conflicts
   {
     "@context": "http://www.w3.org/ns/td",
     "title": "invalid-test-compacted-1",
