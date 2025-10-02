@@ -65,30 +65,41 @@ Continuation of https://github.com/w3c/wot-thing-description/issues/2120
   - A1 ([5.3.1.4 ActionAffordance](https://w3c.github.io/wot-thing-description/#actionaffordance))
 
 - [ ] 10. If the data format is not fully specified by the Protocol Binding used (e.g., through a media type), Actions MAY contain data schemas for input parameters and output results. ([arch-action-dataschema](https://www.w3.org/TR/wot-architecture11/#arch-action-dataschema))
+  - A1 (input and output)
 
 #### 6.5.3 Events
 
 - [ ] 11. Events MAY be triggered through conditions that are not exposed as Properties. ([arch-event-trigger](https://www.w3.org/TR/wot-architecture11/#arch-event-trigger))
+  - A3 (but as informative note)
 
 - [ ] 12. If the data is not fully specified by the Protocol Binding used (e.g., through a media type), Events MAY contain data schemas for the event data and subscription control messages (e.g., a callback URI to subscribe with a Webhook). ([arch-event-dataschema](https://www.w3.org/TR/wot-architecture11/#arch-event-dataschema))
+  - A1 (data)
 
 ### 6.6 Hypermedia Controls
 
 #### 6.6.1 Links
 
 - [ ] 13. Extension relation types MUST be compared as strings using ASCII case-insensitive comparison, (c.f. ASCII case insensitive). (If they are serialized in a different format they are to be converted to URIs). ([arch-rel-types](https://www.w3.org/TR/wot-architecture11/#arch-rel-types))
+  - A2 (we are case sensitive!)
+  - Ege opinion: we should change the TD spec as the https://www.rfc-editor.org/rfc/rfc8288.html#section-2.1.1 requires case insensitive comparison.
 
 - [ ] 14. Nevertheless, all-lowercase URIs SHOULD be used for extension relation types [RFC8288]. ([arch-rel-type-lowercase](https://www.w3.org/TR/wot-architecture11/#arch-rel-type-lowercase))
+  - A3 (not explicit but we comply)
 
 #### 6.6.2 Forms
 
 - [ ] 15. Form contexts and submission targets MUST both be Internationalized Resource Identifiers (IRIs) [RFC3987]. ([arch-form-iris](https://www.w3.org/TR/wot-architecture11/#arch-form-iris))
+  - A1
 
 - [ ] 16. Form context and submission target MAY point to the same resource or different resources, where the submission target resource implements the operation for the context. ([arch-form-iris2](https://www.w3.org/TR/wot-architecture11/#arch-form-iris2))
+  - A3 (basically GET and PUT can point to the same resource but we differentiate with methods. This is not explicit in TD spec)
 
 - [ ] 17. The request method MUST identify one method of the standard set of the protocol identified by the submission target URI scheme. ([arch-op-request-method](https://www.w3.org/TR/wot-architecture11/#arch-op-request-method))
+  - A3 (after https://w3c.github.io/wot-thing-description/#td-bindings-server-accept)
+  - Rewording that linked assertion can be also enough. Basically, this is saying that the TD cannot rely on out-of-information for the Consumer to build the request. 
 
 - [ ] 18. Form fields are optional and MAY further specify the expected request message for the given operation. ([arch-op-expected-request](https://www.w3.org/TR/wot-architecture11/#arch-op-expected-request))
+  - A1
 
 - [ ] 19. Form fields MAY depend on the protocol used for the submission target as specified in the URI scheme. ([arch-op-form-fields-protocol](https://www.w3.org/TR/wot-architecture11/#arch-op-form-fields-protocol))
   - A1
