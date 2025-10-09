@@ -559,7 +559,10 @@ const recommendedTDs = [
   // multi protocols (http and coap)
   // readproperty and writeproperty defaults (GET and POST)
   // read and write requring different security for all operations
-  // modbus with all parameters in connection
+  // modbus with all parameters in connection (one property not same endianness)
+  // mqtt with qos 0 for all topics except some
+  // default content type not being json
+  // multiple content types
 ];
 module.exports = {
   validCompactTDs,
