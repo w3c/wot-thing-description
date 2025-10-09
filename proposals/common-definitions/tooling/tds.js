@@ -5,7 +5,7 @@ const validCompactTDs = [
   // Inline (no definitions objects)
   // All defaults in a form and flattened without connection
   {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "valid-test-compact-2",
     "form": {
       "contentType": "application/json",
@@ -35,7 +35,7 @@ const validCompactTDs = [
   },
   // All Defaults in a Form but still with connection
   {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "valid-test-compact-1",
     "form": {
       "contentType": "application/json",
@@ -67,7 +67,7 @@ const validCompactTDs = [
   },
   // Separate Defaults
   {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "valid-test-compact-0",
     "connection": {
       "base": "https://example.com"
@@ -100,7 +100,7 @@ const validCompactTDs = [
   // With definitions
   // All definitions are present and referenced in the root
   {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "valid-test-compact-3",
     "connectionDefinitions": {
       "conn1": {
@@ -141,7 +141,7 @@ const validCompactTDs = [
   },
   // Definitions in the root but usage only in forms
   {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "valid-test-compact-5",
     "securityDefinitions": {
       "sec1": {
@@ -185,7 +185,7 @@ const validCompactTDs = [
   },
   // Root definitions using other definitions but no root usage
   {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "valid-test-compact-6",
     "securityDefinitions": {
       "sec1": {
@@ -228,7 +228,7 @@ const validCompactTDs = [
   // nothing in the root
   // only defined and used within the forms
   {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "valid-test-compact-4",
     "properties": {
       "prop1": {
@@ -258,7 +258,7 @@ const validCompactTDs = [
   },
   // one writeproperty requiring basic auth
   {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "valid-test-compact-7",
     "connectionDefinitions": {
       "conn1": {
@@ -311,12 +311,13 @@ const validCompactTDs = [
   }
 ];
 
+// TDs that do not have all information needed to build requests when expanded
 const invalidCompactTDs = [
   // Inline (no definitions objects)
   // Missing Connection
   // TODO: This cannot be invalidated with a JSON Schema since there is no way to say that connection is required if it is not inlined in the form
   {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "invalid-test-compacted-0",
     "form": {
       "contentType": "application/json"
@@ -345,7 +346,7 @@ const invalidCompactTDs = [
   },
   // a flattened form but it still has connection, i.e. base conflicts
   {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "invalid-test-compacted-1",
     "form": {
       "contentType": "application/json",
@@ -381,7 +382,7 @@ const invalidCompactTDs = [
 const validExpandedTDs = [
   // Simple TD
   {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "valid-test-expanded-0",
     "properties": {
       "prop1": {
@@ -399,10 +400,11 @@ const validExpandedTDs = [
   }
 ];
 
+// TDs that are not fully expanded or do not have all information needed to build requests
 const invalidExpandedTDs = [
   // connection is not expanded
   {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "invalid-test-expanded-0",
     "properties": {
       "prop1": {
@@ -422,7 +424,7 @@ const invalidExpandedTDs = [
   },
   // no security defined anywhere
   {
-    "@context": "http://www.w3.org/ns/td",
+    "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "invalid-test-expanded-1",
     "properties": {
       "prop1": {
@@ -447,9 +449,122 @@ const invalidExpandedTDs = [
     }
   }
 ];
+
+// Compact TDs that are recommended to be used as examples for different use cases such as multiple IP addresses, multi protocols, etc.
+const recommendedTDs = [
+  // 1. Multi IP addresses (IPv4 and IPv6)
+  // notes:
+  // there is no default connection/ip format.
+  // both use the same security and content type
+  // there is no advantage of the new mechanism much other than reducing TD lenght. The forms have the same amount of terms in the end.
+  // However, this is a recommended way to use multiple IP addresses
+  // without duplicating security and content type in each form
+  // and also without duplicating base in each form (as done in the past)
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "recommended-test-multi-ip",
+    "connectionDefinitions": {
+      "ipv4": {
+        "base": "https://192.168.1.10:8080"
+      },
+      "ipv6": {
+        "base": "https://2001:db8:85a3::8a2e:370:7334:8080"
+      }
+    },
+    "form": {
+      "contentType": "application/json"
+    },
+    "security": {
+      "scheme": "nosec"
+    },
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "connection": "ipv4",
+            "href": "/props/prop1"
+          },
+          {
+            "connection": "ipv6",
+            "href": "/props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "connection": "ipv4",
+            "href": "/props/prop2"
+          },
+          {
+            "connection": "ipv6",
+            "href": "/props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // local with no sec and public with basic auth
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "recommended-test-diff-sec",
+    "connectionDefinitions": {
+      "local": {
+        "base": "https://192.168.1.10:8080",
+        "security": {
+          "scheme": "nosec"
+        }
+      },
+      "public": {
+        "base": "https://example.com:8080",
+        "security": {
+          "scheme": "basic"
+        }
+      }
+    },
+    "form": {
+      "contentType": "application/json"
+    },
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "connection": "local",
+            "href": "/props/prop1"
+          },
+          {
+            "connection": "public",
+            "href": "/props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "connection": "local",
+            "href": "/props/prop2"
+          },
+          {
+            "connection": "public",
+            "href": "/props/prop2"
+          }
+        ]
+      }
+    }
+  }
+  // multi protocols (http and coap)
+  // readproperty and writeproperty defaults (GET and POST)
+  // read and write requring different security for all operations
+  // modbus with all parameters in connection
+];
 module.exports = {
   validCompactTDs,
   invalidCompactTDs,
   validExpandedTDs,
-  invalidExpandedTDs
+  invalidExpandedTDs,
+  recommendedTDs
 };
