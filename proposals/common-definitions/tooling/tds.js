@@ -452,7 +452,116 @@ const invalidExpandedTDs = [
 
 // Compact TDs that are recommended to be used as examples for different use cases such as multiple IP addresses, multi protocols, etc.
 const recommendedTDs = [
-  // 1. Multi IP addresses (IPv4 and IPv6)
+  // 1.default content type not being json (e.g. cbor)
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "recommended-test-cbor-default",
+    "form": {
+      "contentType": "application/cbor",
+      "base": "coap://[2001:DB8::1]/mything",
+      "security": {
+        "scheme": "nosec"
+      }
+    },
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "/props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "/props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // 2. modbus with all parameters in one form (one property not same endianness)
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "recommended-test-modbus-params",
+    "form": {
+      // until next comment: can be in connection
+      "base": "modbus+tcp://192.168.178.32:502/1/",
+      "modv:timeout": 1000,
+      "modv:pollingInterval": 5000,
+      // until security: not in connection
+      "modv:zeroBasedAddressing": true,
+      "modv:mostSignificantByte": true,
+      "modv:mostSignificantWord": true,
+      "contentType": "application/octet-stream",
+      "security": {
+        "scheme": "nosec"
+      }
+    },
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "/props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "/props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // 3. mqtt with qos 0 and retained for all topics except one with override. This can be an examples for overriding too.
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "recommended-test-mqtt-override",
+    "form": {
+      "base": "mqtt://broker.com:1883",
+      "mqv:qos": "0",
+      "mqv:retain": true,
+      "contentType": "application/json",
+      "security": {
+        "scheme": "nosec"
+      }
+    },
+    "actions": {
+      "act1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "actions/act1"
+          }
+        ]
+      },
+      "act2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "actions/act2"
+          }
+        ]
+      },
+      "act3": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "actions/act3",
+            "mqv:qos": "2",
+            "mqv:retain": false
+          }
+        ]
+      }
+    }
+  },
+  // 4. Multi IP addresses (IPv4 and IPv6)
   // notes:
   // there is no default connection/ip format.
   // both use the same security and content type
@@ -506,7 +615,7 @@ const recommendedTDs = [
       }
     }
   },
-  // local with no sec and public with basic auth
+  // 5. local with no sec and public with basic auth
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-diff-sec",
@@ -555,14 +664,217 @@ const recommendedTDs = [
         ]
       }
     }
+  },
+  // 6. multi protocols: http with json and coap with cbor
+  // notes:
+  // there is no default connection/protocol.
+  // both use the same security but different content type
+  // if they were both using the same content type, we could have used two connection definitions, like in the example above
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "recommended-test-multi-protocol",
+    "formDefinitions": {
+      "http": {
+        "base": "https://192.168.1.10:8080",
+        "contentType": "application/json"
+      },
+      "coap": {
+        "base": "coap://[2001:DB8::1]/mything",
+        "contentType": "application/cbor"
+      }
+    },
+    "security": {
+      "scheme": "nosec"
+    },
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "form": "http",
+            "href": "/props/prop1"
+          },
+          {
+            "form": "coap",
+            "href": "/props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "form": "http",
+            "href": "/props/prop2"
+          },
+          {
+            "form": "coap",
+            "href": "/props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // 7. readproperty and writeproperty defaults (GET and POST)
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "recommended-test-multi-protocol",
+    "connection": {
+        "base": "https://192.168.1.10:8080"
+    },
+    "formDefinitions":{
+      "read":{
+        "op": "readproperty",
+        "contentType": "application/json",
+        "htv:methodName": "GET"
+      },
+      "write":{
+        "op": "writeproperty",
+        "contentType": "application/json", // duplicating this can be avoided with "inherit"
+        "htv:methodName": "POST"
+      },
+      "invoke":{
+        "op": "invokeaction",
+        "contentType": "application/json",
+        "htv:methodName": "POST"
+      }
+    },
+    "security": {
+      "scheme": "nosec"
+    },
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "form": "read",
+            "href": "/props/prop1"
+          },
+          {
+            "form": "write",
+            "href": "/props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "form": "read",
+            "href": "/props/prop2"
+          },
+          {
+            "form": "write",
+            "href": "/props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // 8. read and write requiring different security for all affordances
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "recommended-test-multi-protocol",
+    "connection": {
+        "base": "https://192.168.1.10:8080"
+    },
+    "formDefinitions":{
+      "read":{
+        "op": "readproperty",
+        "contentType": "application/json",
+        "security": "readNoSec"
+      },
+      "write":{
+        "op": "writeproperty",
+        "contentType": "application/json", // duplicating this can be avoided with "inherit"
+        "security": "writeBasic"
+      }
+    },
+    "securityDefinitions": {
+      "readNoSec": {
+        "scheme": "nosec"
+      },
+      "writeBasic": {
+        "scheme": "basic"
+      }
+    },
+    "security": "readNoSec",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "form": "read",
+            "href": "/props/prop1"
+          },
+          {
+            "form": "write",
+            "href": "/props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "form": "read",
+            "href": "/props/prop2"
+          },
+          {
+            "form": "write",
+            "href": "/props/prop2"
+          }
+        ]
+      }
+    }
   }
-  // multi protocols (http and coap)
-  // readproperty and writeproperty defaults (GET and POST)
-  // read and write requring different security for all operations
-  // modbus with all parameters in connection (one property not same endianness)
-  // mqtt with qos 0 for all topics except some
-  // default content type not being json
-  // multiple content types
+  // 9. multiple content types where all affordances are available in json and cbor
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "recommended-test-multi-protocol",
+    "formDefinitions": {
+      "json": {
+        "contentType": "application/json"
+      },
+      "cbor": {
+        "contentType": "application/cbor"
+      }
+    },
+    "connection": {
+      "base": "https://192.168.1.10:8080"
+    },
+    "security": {
+      "scheme": "nosec"
+    },
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "form": "json",
+            "href": "/props/prop1"
+          },
+          {
+            "form": "cbor",
+            "href": "/props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "form": "json",
+            "href": "/props/prop2"
+          },
+          {
+            "form": "cbor",
+            "href": "/props/prop2"
+          }
+        ]
+      }
+    }
+  }
 ];
 module.exports = {
   validCompactTDs,
