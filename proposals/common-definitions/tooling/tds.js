@@ -452,7 +452,7 @@ const invalidExpandedTDs = [
 
 // Compact TDs that are recommended to be used as examples for different use cases such as multiple IP addresses, multi protocols, etc.
 const recommendedTDs = [
-  // 1.default content type not being json (e.g. cbor)
+  // 1. default content type not being json (e.g. cbor)
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-cbor-default",
@@ -827,7 +827,7 @@ const recommendedTDs = [
         ]
       }
     }
-  }
+  },
   // 9. multiple content types where all affordances are available in json and cbor
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
@@ -876,6 +876,7 @@ const recommendedTDs = [
     }
   }
 ];
+
 module.exports = {
   validCompactTDs,
   invalidCompactTDs,
