@@ -720,20 +720,20 @@ const recommendedTDs = [
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-multi-protocol",
     "connection": {
-        "base": "https://192.168.1.10:8080"
+      "base": "https://192.168.1.10:8080"
     },
-    "formDefinitions":{
-      "read":{
+    "formDefinitions": {
+      "read": {
         "op": "readproperty",
         "contentType": "application/json",
         "htv:methodName": "GET"
       },
-      "write":{
+      "write": {
         "op": "writeproperty",
         "contentType": "application/json", // duplicating this can be avoided with "inherit"
         "htv:methodName": "POST"
       },
-      "invoke":{
+      "invoke": {
         "op": "invokeaction",
         "contentType": "application/json",
         "htv:methodName": "POST"
@@ -776,15 +776,15 @@ const recommendedTDs = [
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-multi-protocol",
     "connection": {
-        "base": "https://192.168.1.10:8080"
+      "base": "https://192.168.1.10:8080"
     },
-    "formDefinitions":{
-      "read":{
+    "formDefinitions": {
+      "read": {
         "op": "readproperty",
         "contentType": "application/json",
         "security": "readNoSec"
       },
-      "write":{
+      "write": {
         "op": "writeproperty",
         "contentType": "application/json", // duplicating this can be avoided with "inherit"
         "security": "writeBasic"
