@@ -482,7 +482,7 @@ const recommendedTDs = [
       }
     }
   },
-  // 2. modbus with all parameters in one form (one property not same endianness)
+  // 2. modbus with all parameters in one form
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-modbus-params",
@@ -565,7 +565,7 @@ const recommendedTDs = [
   // notes:
   // there is no default connection/ip format.
   // both use the same security and content type
-  // there is no advantage of the new mechanism much other than reducing TD lenght. The forms have the same amount of terms in the end.
+  // there is no advantage of the new mechanism much other than reducing TD length. The forms have the same amount of terms in the end.
   // However, this is a recommended way to use multiple IP addresses
   // without duplicating security and content type in each form
   // and also without duplicating base in each form (as done in the past)
@@ -577,7 +577,7 @@ const recommendedTDs = [
         "base": "https://192.168.1.10:8080"
       },
       "ipv6": {
-        "base": "https://2001:db8:85a3::8a2e:370:7334:8080"
+        "base": "https://[2001:db8:85a3::8a2e:370:7334]:8080"
       }
     },
     "form": {
@@ -621,7 +621,7 @@ const recommendedTDs = [
     "title": "recommended-test-diff-sec",
     "connectionDefinitions": {
       "local": {
-        "base": "https://192.168.1.10:8080",
+        "base": "http://192.168.1.10:8080",
         "security": {
           "scheme": "nosec"
         }
