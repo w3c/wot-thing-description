@@ -7,23 +7,23 @@ Once there is an agreement, the rules will be moved to a corresponding policy an
 ## Versioning for 1.0 and 1.1 Specifications
 
 - With each REC, we publish the following files:
-  - Ontology files in the form of TTL and HTML. These are TD, Security, hypermedia controls, JSON Schema, and soon the TM
+  - Ontology files in the form of TTL and HTML. These are TD, Security, hypermedia controls, JSON Schema, and, soon, TM
   - JSON-LD Context file
   - JSON Schemas for TD and TM
-- DECISION: We do not publish different versions of these files until we see the need (e.g. a bug that also has breaking changes to current implementations).
+- DECISION: We do not publish different versions of these files until we see a need (e.g., a bug that also has breaking changes to current implementations).
 
 ## Versioning for this Charter Period Resources
 
 ### Requirements
 
 - Support all users of WoT resources (schemas, ontologies, type definitions, etc.), which can be of different versions. Users can be split into two:
-  1. Early adopters (implementers before REC publication), which include specification developers, editors, testers, other TFs etc.
-  2. REC publication users. Naturally, all early adopters are in this category as well.
-- To both users, provide concrete guidelines and rules on how implementations should be made that take the versioning into account. The lack of this is the reason why we do not have versioned resources for 1.0 and 1.1 specifications.
+  * Early adopters (implementers before REC publication), which include specification developers, editors, testers, other Task Forces (TFs), etc.
+  * REC publication users. Naturally, this category also includes all early adopters.
+- For both categories of user, provide concrete guidelines and rules for how implementations should be made to take versioning into account. The lack of such guidelines and rules is the reason we do not have versioned resources for 1.0 and 1.1 specifications.
 - Prioritize stability for post-REC users
-- Make sure that quick changes are well-communicated to early adopters in the form of a changelog or similar
-- Publicly serve all versions of all resources all the time
-- Any change to any resource should bump the version inside the resource as well as the way the resource is obtained (e.g. URL, package manager, etc.)
+- Make sure that quick changes are well communicated to early adopters in the form of a changelog or similar
+- Publicly serve all versions of all resources, all the time
+- Any change to any resource should bump the version inside the resource as well as the way the resource is obtained (e.g., URL, package manager, etc.)
 
 ---
 
@@ -32,25 +32,25 @@ Once there is an agreement, the rules will be moved to a corresponding policy an
 
 ### Summary of Basic Policy
 
-- We assume that each resource belongs to a specification. If not, we can "invent" a virtual specification like wot that is hosting multiple resources and use that string to identify multiple resources.
-- Until AND after REC release (rules that are common to both phases):
-  - Version is contained at all times inside the resource. E.g. JSON Schema version field reflects the version of the schema.
-  - A changelog is created in each change. Until the REC release, it is the only source of information about the changes.
-  - The part after the `+` sign is informative, called [build metadata](https://semver.org/#spec-item-10) in semver. [A real-life example for curl in crates.io](https://crates.io/crates/curl-sys/versions)
-- Until REC release (rules that apply only until REC release):
-  - We publish snapshots that have no guarantees on the meaning of changes. E.g. snapshot 2 is published after snapshot 1 and it can break all your tooling. A changelog becomes necessary in this case.
-  - Naming scheme: (semver for resource)-pre(date with day).(sequence number)+(spec version)-pre(date with day).(sequence number)
+- We assume that each resource belongs to a specification. If not, we can "invent" a virtual specification like WoT that is hosting multiple resources and use that string to identify multiple resources.
+- Rules that are common to both phases (i.e., before AND after REC release):
+  - Version is contained inside the resource at all times, e.g., JSON Schema `version` field reflects the version of the schema.
+  - A changelog is created with each change. Until the REC release, it is the only source of information about the changes.
+  - The part after the `+` sign is informative, called [build metadata](https://semver.org/#spec-item-10) in semver. [A real-life example for `curl` in crates.io](https://crates.io/crates/curl-sys/versions)
+- Rules that apply only until REC release:
+  - We publish snapshots that have no guarantees on the meaning of changes, e.g., snapshot 2 is published after snapshot 1, and it can break all your tooling. A changelog becomes necessary in this case.
+  - Naming scheme: `(semver for resource)-pre(date with day).(sequence number)+(spec version)-pre(date with day).(sequence number)`, e.g., `xxxxxxxxx`
   - Synchronization: All resources have the same version (before and after `+`)
   - `-` complies with [pre-release version notation](https://semver.org/#spec-item-9) in semver.
-  - Frequency: We should consider a release after a resource-targeting PR but we can skip some if we see the need.
-- After REC release  (rules that apply only after REC release):
-  - Each resource gets versioned separately based on the need of that resource respecting the semver rules of that resource.
-  - Naming scheme: resourcename-(semver for resource)+(spec version)
-  - Synchronization: Syncing the part after the `+` sign but part before is per resource. At the same time, each resource has its own versioning rules on what is a major, minor, patch (see the meaning of changes).
+  - Frequency: We should consider a release after a resource-targeting PR, but we can skip some if we see the need.
+- Rules that apply only after REC release:
+  - Each resource gets versioned separately, based on the need of that resource, respecting the semver rules of that resource.
+  - Naming scheme: `resourcename-(semver for resource)+(spec version)`, e.g., `xxxxxxx`
+  - Synchronization: Syncing the part after the `+` sign; the part before `+` is per resource. At the same time, each resource has its own versioning rules about what is a major, minor, patch (see the meaning of changes).
   - Meaning of changes: Each type of resource has its own versioning timeline and meaning of changes
     - JSON Schemas:
-      - Patch: Language typos etc.
-      - Minor: Relaxing a constraint (longer strings, more oneof) so that more TDs can pass the schema. Adding new optional property keys. These can still "surprise" a receiver. 
+      - Patch: Language, typos, etc.
+      - Minor: Relaxing a constraint (longer strings, more one-of) so that more TDs can pass the schema. Adding new optional property keys. These can still "surprise" a receiver. 
       - Major: Adding or restricting constraints that will break or surprise the receiver.
       - Further reading: <https://github.com/json-schema-org/website/issues/197#issuecomment-1883270213> and <https://gitlab.openretailing.org/public-standards/api-design-guidelines/-/blob/main/Open%20Retailing%20API%20Design%20Rules%20for%20JSON.pdf>
     - JSON-LD Context: No input yet.
@@ -59,9 +59,9 @@ Once there is an agreement, the rules will be moved to a corresponding policy an
     - UML Diagrams: No input yet
 - List of open points. More information at [Open Points Section](./#open-points):
   - How to take deprecation of terms into account
-  - How should the changelog look like
-  - Which tooling will we use
-  - How will versioning information look like inside each resource
+  - How the changelog should look
+  - Which tooling we use
+  - How versioning information will look, inside each resource
  
 #### Example Versioning of TD JSON Schema
 
@@ -69,13 +69,13 @@ Once there is an agreement, the rules will be moved to a corresponding policy an
   - `2.0.0-pre1+td-2.0.0-pre1` OR `2.0.0-pre20240301+td-2.0.0-pre20240301` -> The unique number gets updated and remains in sync between two
   - `2.0.0-pre2+td-2.0.0-pre2` OR `2.0.0-pre20240401+td-2.0.0-pre20240401` -> Next small release during working mode
 - After the REC release
-  - 2.0.0+td-2.0.0 -> First publication after REC
-  - 2.0.1+td-2.0.0 -> Fixed a typo in JSON Schema
-  - 2.1.0+td-2.0.0 -> Added a new feature to JSON Schema
-  - 2.0.2+td-2.0.1 -> Published an errata in TD spec
-  - 3.0.1+td-2.0.1 -> We decided to move to a different version of JSON Schema itself
-  - 4.0.1+td-2.0.1 -> We restrict JSON Schema in one way (e.g. reducing the number of enums). This should ideally never happen since it means we did not review the schema enough before the REC publication.
-  - 5.0.0-pre1+td-3.0.0-pre1 -> We start a new TD REC version work
+  - `2.0.0+td-2.0.0` -> First publication after REC
+  - `2.0.1+td-2.0.0` -> Fixed a typo in JSON Schema
+  - `2.1.0+td-2.0.0` -> Added a new feature to JSON Schema
+  - `2.0.2+td-2.0.1` -> Published an errata in TD spec
+  - `3.0.1+td-2.0.1` -> We decided to move to a different version of JSON Schema itself
+  - `4.0.1+td-2.0.1` -> We restrict JSON Schema in one way (e.g., reducing the number of enums). This should ideally never happen, since it means we did not review the schema enough before the REC publication.
+  - `5.0.0-pre1+td-3.0.0-pre1` -> We start work on a new TD REC version
 
 ### Open Points
 
@@ -86,40 +86,40 @@ Problems to solve:
 - URIs of resources
 - Packaging
 
-- @ektrah has tooling for TTL files that leverages npm that we can use. https://github.com/ektrah/rdf-toolkit and its publication at https://github.com/ektrah/rdf-library
-  - In general, we should be able to package all types of resources in an npm release which solves the distribution problem. npm packages can contain anything (e.g. dotnet requires dotnet files)
-  - The URI of the unstable packages needs to be resolved. We can say something like "unstable package can be obtained from npm with the usual npm mechanism". This doesn't imply node.js knowledge, just npm usage. We can test using github.io links with file ending which avoids the content negotiation problem.
-  - The tooling doesn't address JSON Schemas and JSON-LD context files (current tooling can be maybe used, to test) (and examples files in the future) but they can be still just packaged together. For JSON Schema, there can be tools from the JSON Schema community that we can leverage for fetching correct versions of our dependencies (we don't have that atm).
-  - `files` attribute in package.json can allow us to filter which files should be considered for the npm package.
-  - We should involve more people in this (Ege to contact Pierre Antoine for pointers to people)
-  - GitHub also supports npm packages so no need to publish on npmjs.org
-- npmjs.org has different people trying to publish ontologies as packages (search for ontologies).
-- Protege has an XML file that can do local redirection. Similar to npm linking in local environment but it does for URLs. See example at https://github.com/geneontology/protege-tutorial/blob/master/advanced-metabolism/catalog-v001.xml
-- We can also evaluate GitHub releases (with gh actions)
+- @ektrah has tooling for TTL files that we can use, that leverages `npm`. https://github.com/ektrah/rdf-toolkit and its publication at https://github.com/ektrah/rdf-library
+  - In general, we should be able to package all types of resources in an `npm` release, which solves the distribution problem. `npm` packages can contain anything (unlike, for instance, `dotnet`, which requires `dotnet` files)
+  - The URI of the unstable packages needs to be resolved. We can say something like "unstable package can be obtained from `npm` with the usual `npm` mechanism". This doesn't imply knowledge of `node.js`, just use of `npm`. We can test using `github.io` links with file endings which avoid the content negotiation problem.
+  - The tooling doesn't address JSON Schemas and JSON-LD context files (current tooling can be used to test) (and examples files in the future) but they can still be packaged together. For JSON Schema, there can be tools from the JSON Schema community that we can leverage for fetching correct versions of our dependencies (we don't have that at the moment).
+  - `files` attribute in `package.json` can allow us to filter which files should be considered for the `npm` package.
+  - We should involve more people in this (ACTION: Ege to contact Pierre Antoine for pointers to people)
+  - GitHub also supports `npm` packages, so no need to publish on `npmjs.org`
+- npmjs.org has different people trying to publish ontologies as packages ([search for ontologies](https://www.npmjs.com/search?q=ontology)).
+- Protege has an XML file that can do local redirection. Similar to `npm` linking in local environment, but for URLs. See example at https://github.com/geneontology/protege-tutorial/blob/master/advanced-metabolism/catalog-v001.xml
+- We can also evaluate GitHub releases (with GitHub actions)
 - We still need to have tooling for updating the version-relevant field within the files
-- We currently rely on ontologies that do not change a lot (plus our own ontologies) so we do not have a problem with our dependencies.
+- We currently rely on ontologies that do not change a lot (plus our own ontologies), so we do not have a problem with our dependencies.
 
 #### Changelog
 
-- McCool : Discovery TF did a changelog "test". We should let git/GitHub do the work for us, if possible. Tagging etc.
-- Cris : commit messages to drive the changelog. There are tools for that but may not work for "documents". We need to define guidelines as well, e.g. using "chore" when doing a small fix. It is not easy to define what is a "fix" for the resources we are dealing with, thus we need guidelines.
-- Koster : docstrings in commit messages can be used to automate changelog
+- McCool: Discovery TF did a changelog "test". We should let `git`/GitHub do the work (tagging, etc.) for us, if possible.
+- Cris: Use commit messages to drive the changelog. There are tools for that, but they may not work for "documents". We need to define guidelines as well, e.g., using `chore:` when doing a small fix. It is not easy to define what a `fix` is for the resources we are dealing with, thus we need guidelines.
+- Koster: docstrings in commit messages can be used to automate changelog
 - Ege:
-    - The changelog should reside outside of the resource itself. An exception can be made for HTML resources like the HTML of the ontology. I think that we can use a template md file with a section per resource that is in the root of the folder of the release bundle. If we use automatic tooling via commits, I am not sure if it can be separated based on section/resource.
+    - The changelog should reside outside of the resource itself. An exception can be made for HTML resources, like the HTML of the ontology. I think that we can use a template `md` file with a section per resource, that is in the root of the folder of the release bundle. If we use automatic tooling via commits, I am not sure if it can be separated based on section/resource.
         - Cris: the commit scope would fix this if you write the resources you are changing
-    - Should the changelog be a relative difference, i.e. diff to previous release? I think so but at least we should link back to the previous changelog so that someone who missed two releases can follow back. This would be very relevant in the pre-REC phase.
-    - Changelog should be ideally driven by commits but I am not sure if we can be that well-organized but I am willing to give it a try.
+    - Should the changelog be a relative difference, i.e., `diff` to previous release? I think so, but at least we should link back to the previous changelog, so that someone who missed two releases can follow back. This would be very relevant in the pre-REC phase.
+    - Ideally, changelog should be driven by commits. I am not sure if we can be that well-organized, but I am willing to give it a try.
  
 Open points:
 
-3. Guideline for commit messages
-4. Should there be one changelog file or per resource?
+3. Guidelines for commit messages
+4. Should there be one changelog file, or one per resource?
 5. Clarify the goal of the changelog. For now, it is 
 
 #### Version Information within Resources
 
-- @mahdanoura: There needs to be also some supplementary metadata that needs to be provided in versioned ontologies like `dct:created`, `dct:modified`, `dct:valid`, `vann:changes`, and the relation between the ontology versions. [Section 7.4](https://www.w3.org/TR/owl-ref/#VersionInformation) details ontology versioning. It states that the `owl:versionInfo` is an annotation property, `owl:priorVersion`, `owl:backwardCompatibleWith` and `owl:incompatibleWith` are ontology properties, where `owl:Ontology` is considered as the `domain `and `range`. Therefore, this shows that OWL requires different versions of an ontology to have different URIs.
-  - There is also a proposed standard, [MOD2.0](https://github.com/FAIR-IMPACT/MOD) specification for describing ontology metada and semantic artifacts. It has some metadata we could reuse for our versioned ontologies. 
+- @mahdanoura: There is also some supplementary metadata that needs to be provided in versioned ontologies like `dct:created`, `dct:modified`, `dct:valid`, `vann:changes`, and the relation between the ontology versions. [Section 7.4](https://www.w3.org/TR/owl-ref/#VersionInformation) details ontology versioning. It states that the `owl:versionInfo` is an annotation property, and `owl:priorVersion`, `owl:backwardCompatibleWith`, and `owl:incompatibleWith` are ontology properties, where `owl:Ontology` is considered as the `domain `and `range`. This shows that OWL requires different versions of an ontology to have different URIs.
+  - There is also a proposed standard, [MOD2.0](https://github.com/FAIR-IMPACT/MOD),  for describing ontology metadata and semantic artifacts. It has some metadata we could reuse for our versioned ontologies. 
 
 ## Archive
 
@@ -128,41 +128,43 @@ This section contains discussions during the TD calls and will be removed in the
 ### Version String
 
 - Decide whether we want a simple integer or a date after the `pre`.
-    - McCool: date is better for being less error-prone. it is my preference. The number approach is shorter. We should use day granularity. In cases like Testfest, we may want to publish quick fixes.
-      - We can also do both: date,`.`,number, i.e. `2.0.0-pre20240301.1+td-2.0.0-pre20240301.1`
-    - Luca: if we release whenever needed, the date makes more sense. If we do monthly, the number is like the date. We can add more granularity when needed or trim when not needed. This will depend on or influence tooling.
+    - McCool: Date is better for being less error-prone. It is my preference. The number approach is shorter. We should use day granularity. In cases like Testfest, we may want to publish quick fixes.
+      - We can also do both: `(date).(number)`, e.g. `2.0.0-pre20240301.1+td-2.0.0-pre20240301.1`
+    - Luca: if we release whenever needed, the date makes more sense. If we do monthly, the number is like the date. We can add more granularity when needed or trim when not needed. This may depend on or influence tooling.
     - Kaz: The possibility of doing multiple releases per day should be discussed later.
-    - Ege: I prefer the simple number to be flexible. If not, we will really need adjustable granularity in the date format which can confuse users but not a deal breaker. It is also easier to communicate in human language, e.g. "I have used pre23 in this implementation" "ah but you should have tried with pre22 since broke something in pre23"
-    - Cris: Prefering the date.
+    - Ege: I prefer the simple number to be flexible. If not, we will really need adjustable granularity in the date format which can confuse users but is not a deal breaker. It is also easier to communicate in human language, e.g., "I have used `pre23` in this implementation", "ah, you should try with `pre22` since we broke something in `pre23`."
+    - Cris: Preferring the date.
     - Daniel: Not changing granularity would make it easier
  
 ### Release Frequency
 
-- Whenever needed or monthly.
-    - Ege: I propose to do monthly as a basis and then as needed, e.g. every PR during testfest.
-    - McCool: Whenever needed. There could be micro PRs and micro commits. We should consider a release after a resource-targeting PR but we can skip some if we see the need. +1 from Ege and Daniel.
+- Whenever needed or monthly?
+    - Ege: I propose to do monthly as a basis and then as needed, e.g., every PR during testfest.
+    - McCool: Whenever needed. There could be micro PRs and micro commits. We should consider a release after a resource-targeting PR, but we can skip some if we see the need. +1 from Ege and Daniel.
     - Luca: Doesn't matter if we automate and run it whenever we want.
-    - Kaz: all changes should be recorded, i.e. via commit/branch names/number
+    - Kaz: All changes should be recorded, i.e., via commit/branch names/number.
 
 ### Big Picture Versioning Timeline
 
 Do we version anything until a REC release, i.e. for TD.next, do we want to publish resources with each publication (WD, CR, PR etc, even each PR merged) or not?
   - ( @relu91 ) An unofficial version increment for WG members (not for outside): E.g. an alpha prefix and then a number. Beta etc. can be used when going into CR. Or we just tag/prefix/suffix with CR, PR or nightly
-  - ( @egekorkan ) The versioning rules do not apply to different versions of a specification, e.g. TD 1.1 schema should be treated like a new release, not a next iteration of the 1.0 schema
-  - @mmccool : We need specific snapshots for testing and plugfest purposes where we ask implementors to use a certain (pre-release) version of the resources. Better to name these versions with a word that reflects this (e.g. plugfest september 2025 version)
+  - ( @egekorkan ) The versioning rules do not apply to different versions of a specification, e.g., TD 1.1 schema should be treated like a new release, not a next iteration of the 1.0 schema
+  - @mmccool: We need specific snapshots for testing and plugfest purposes where we ask implementers to use a certain (pre-release) version of the resources. Better to name these versions with a word that reflects this (e.g., plugfest September 2025 version)
 
 ---
 
 **Decision Making Discussion:**
 
-- McCool : I agree with versioning until development but with another namespace (e.g. unstable, development etc.) (+1 from Luca for the idea)
-- Luca: Semver can support "unstable" tags. Developers know that. McCool: the generic unstable iri should return the latest unstable though. Stable iri should return the stable version. Luca: the part after version number is up to us, we can use year-month-date for example.
+- McCool: I agree with versioning until development, but with another namespace (e.g., `unstable`, `development`, etc.) (+1 from Luca for the idea)
+- Luca: Semver can support "unstable" tags. Developers know that. 
+- McCool: The generic `unstable` IRI should return the latest unstable though. Stable IRI should return the stable version.
+- Luca: The part after the version number is up to us; we can use year-month-date for example.
 
 - Preliminary Decision: Do versioning until REC release
 
 ### Meaning of Changes
 
-Which changes are bugfixes, which are new features etc. For each type of artifact, we need to agree on the meaning. Then, these meanings can be reflected in the version information.
+Which changes are bugfixes, which are new features, etc. For each type of artifact, we need to agree on the meaning. Then, these meanings can be reflected in the version information.
 
 File types in question:
   - JSON Schemas
@@ -174,12 +176,12 @@ File types in question:
       - Major: Adding or restricting constraints
       - Also see: https://gitlab.openretailing.org/public-standards/api-design-guidelines/-/blob/main/Open%20Retailing%20API%20Design%20Rules%20for%20JSON.pdf
       - 
-  - JSON-LD Context: How a JSON-LD context is versioned needs further input. No input from Ege, Daniel or Luca so far
+  - JSON-LD Context: How a JSON-LD context is versioned needs further input. No input from Ege, Daniel, or Luca, so far.
   - Ontology files
     - TTL
     - HTML
   - TypeScript types: Needs input from Scripting API TF what major, minor, patch means for type versions.
-  - UML Diagrams: How a UML diagram is versioned needs further input. No input from Ege, Daniel or Luca so far
+  - UML Diagrams: How a UML diagram is versioned needs further input. No input from Ege, Daniel, or Luca, so far.
 
 Notes: 
 - @mahdanoura : Also, the deprecation of terms needs to be considered, i.e. not removing but marking as deprecated.
