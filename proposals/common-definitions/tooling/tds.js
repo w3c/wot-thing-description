@@ -453,6 +453,7 @@ const invalidExpandedTDs = [
 // Compact TDs that are recommended to be used as examples for different use cases such as multiple IP addresses, multi protocols, etc.
 const recommendedTDs = [
   // 1. default content type not being json (e.g. cbor)
+  // use case: constrained devices using coap and cbor
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-cbor-default",
@@ -483,6 +484,7 @@ const recommendedTDs = [
     }
   },
   // 2. modbus with all parameters in one form
+  // use case: any modbus device
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-modbus-params",
@@ -520,6 +522,7 @@ const recommendedTDs = [
     }
   },
   // 3. mqtt with qos 0 and retained for all topics except one with override. This can be an examples for overriding too.
+  // use case: mqtt device with different qos/retain requirements in different topics
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-mqtt-override",
@@ -562,6 +565,7 @@ const recommendedTDs = [
     }
   },
   // 4. Multi IP addresses (IPv4 and IPv6)
+  // Use case: Device with two IP assignments
   // notes:
   // there is no default connection/ip format.
   // both use the same security and content type
@@ -616,6 +620,7 @@ const recommendedTDs = [
     }
   },
   // 5. local with no sec and public with basic auth
+  // Use case: When a device is proxied to the internet
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-diff-sec",
@@ -666,6 +671,7 @@ const recommendedTDs = [
     }
   },
   // 6. multi protocols: http with json and coap with cbor
+  // Use case: Device supporting both coap and http
   // notes:
   // there is no default connection/protocol.
   // both use the same security but different content type
@@ -715,7 +721,9 @@ const recommendedTDs = [
       }
     }
   },
-  // 7. readproperty and writeproperty defaults (GET and POST)
+  // 7. readproperty and writeproperty defaults that are not the defaults of the binding (GET and POST)
+  // use case: device using REST but not following usual conventions
+  // TODO: add a readOnly property
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-multi-protocol",
@@ -766,6 +774,16 @@ const recommendedTDs = [
           {
             "form": "write",
             "href": "/props/prop2"
+          }
+        ]
+      },
+      // in the following, we don't use the definitions from above as the protocol defaults are enough.
+      "propWithProtocolDefaults": {
+        "type": "string",
+        "forms": [
+          {
+            "op": ["readproperty", "writeproperty"],
+            "href": "/props/prop1"
           }
         ]
       }
@@ -875,6 +893,7 @@ const recommendedTDs = [
       }
     }
   }
+  // TODO: 10. different protocol per affordance type (http for properties and actions, mqtt for events)
 ];
 
 module.exports = {
