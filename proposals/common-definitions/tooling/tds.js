@@ -723,7 +723,6 @@ const recommendedTDs = [
   },
   // 7. readproperty and writeproperty defaults that are not the defaults of the binding (GET and POST)
   // use case: device using REST but not following usual conventions
-  // TODO: add a readOnly property
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-multi-protocol",
@@ -778,12 +777,23 @@ const recommendedTDs = [
         ]
       },
       // in the following, we don't use the definitions from above as the protocol defaults are enough.
+      // it is not clear if this is a real use case, but it shows the possibility
       "propWithProtocolDefaults": {
         "type": "string",
         "forms": [
           {
             "op": ["readproperty", "writeproperty"],
             "href": "/props/prop1"
+          }
+        ]
+      },
+      "propReadOnly": {
+        "type": "string",
+        "readOnly": true,
+        "forms": [
+          {
+            "form": "read",
+            "href": "/props/propR"
           }
         ]
       }
@@ -892,8 +902,58 @@ const recommendedTDs = [
         ]
       }
     }
-  }
-  // TODO: 10. different protocol per affordance type (http for properties and actions, mqtt for events)
+  },
+  // 10. different protocol per affordance type (http for properties and actions, mqtt for events)
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "recommended-test-multi-affordance-protocol",
+    "formDefinitions": {
+      "http": {
+        "base": "https://192.168.1.10:8080",
+        "contentType": "application/json"
+      },
+      "mqtt": {
+        "base": "mqtt://test.mosquitto.org:1883",
+        "contentType": "text/plain"
+      }
+    },
+    "security": {
+      "scheme": "nosec"
+    },
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "form": "http",
+            "href": "/props/prop1"
+          }
+        ]
+      }
+    },
+    "actions":{
+      "act1": {
+        "input": { "type": "string" },
+        "forms": [
+          {
+            "form": "http",
+            "href": "/actions/act1"
+          }
+        ]
+      }
+    },
+    "events": {
+      "evt1": {
+        "data": { "type": "string" },
+        "forms": [
+          {
+            "form": "mqtt",
+            "href": "events/evt1" //assuming we transition to topic relative hrefs in mqtt binding
+          }
+        ]
+      }
+    }
+  },
 ];
 
 module.exports = {
