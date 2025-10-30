@@ -931,7 +931,7 @@ const recommendedTDs = [
         ]
       }
     },
-    "actions":{
+    "actions": {
       "act1": {
         "input": { "type": "string" },
         "forms": [
@@ -953,7 +953,7 @@ const recommendedTDs = [
         ]
       }
     }
-  },
+  }
 ];
 
 module.exports = {
