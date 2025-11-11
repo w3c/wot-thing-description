@@ -504,10 +504,11 @@ const recommendedTDs = [
     },
     "properties": {
       "prop1": {
-        "type": "string",
+        "type": "boolean",
         "forms": [
           {
-            "href": "props/prop1"
+            "href": "1",
+            "modv:entity": "Coil"
           }
         ]
       },
@@ -515,7 +516,8 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "props/prop2"
+            "href": "2",
+            "modv:entity": "HoldingRegister"
           }
         ]
       }
@@ -919,6 +921,50 @@ const recommendedTDs = [
           {
             "form": "mqtt",
             "href": "events/evt1" //assuming we transition to topic relative hrefs in mqtt binding
+          }
+        ]
+      }
+    }
+  },
+  // 11. multiple content types and protocols where all affordances are available in json and cbor AND coap and http
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "recommended-test-multi-protocol",
+    "connectionDefinitions": {
+      "http": {
+        "base": "http://192.168.1.10:8080/mything"
+      },
+      "coap": {
+        "base": "coap://[2001:DB8::1]/mything"
+      }
+    },
+    "formDefinitions": {
+      "json": {
+        "contentType": "application/json"
+      },
+      "cbor": {
+        "contentType": "application/cbor"
+      }
+    },
+    "form": ["json", "cbor"],
+    "connection": ["http", "coap"],
+    "security": {
+      "scheme": "nosec"
+    },
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "props/prop2"
           }
         ]
       }
