@@ -19,7 +19,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -27,7 +27,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -51,7 +51,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -59,7 +59,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -83,7 +83,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -91,7 +91,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -125,7 +125,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -133,7 +133,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -166,7 +166,7 @@ const validCompactTDs = [
             "connection": ["conn1"],
             "form": ["form1"],
             "security": ["sec1"],
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -177,7 +177,7 @@ const validCompactTDs = [
             "connection": ["conn1"],
             "form": ["form1"],
             "security": ["sec1"],
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -210,7 +210,7 @@ const validCompactTDs = [
         "forms": [
           {
             "form": ["form1"],
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -219,7 +219,7 @@ const validCompactTDs = [
         "forms": [
           {
             "form": ["form1"],
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -235,7 +235,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "https://example.com/props/prop1",
+            "href": "https://example.comprops/prop1",
             "connection": {
               "security": { "scheme": "nosec" }
             },
@@ -247,7 +247,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "https://example.com/props/prop2",
+            "href": "https://example.comprops/prop2",
             // applying flattening to the form above, removing connection
             "security": { "scheme": "basic" },
             "contentType": "application/json"
@@ -286,11 +286,11 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1",
+            "href": "props/prop1",
             "op": "readproperty"
           },
           {
-            "href": "/props/prop1",
+            "href": "props/prop1",
             "op": "writeproperty",
             "connection": {
               "inherit": "conn1",
@@ -303,7 +303,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -330,7 +330,7 @@ const invalidCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -338,7 +338,7 @@ const invalidCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -363,7 +363,7 @@ const invalidCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -371,7 +371,7 @@ const invalidCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -389,7 +389,7 @@ const validExpandedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "https://example.com/props/prop1",
+            "href": "https://example.comprops/prop1",
             "security": { "scheme": "basic" },
             "contentType": "application/json",
             "op": "readproperty"
@@ -411,7 +411,7 @@ const invalidExpandedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "https://example.com/props/prop1",
+            "href": "https://example.comprops/prop1",
             "connection": {
               "security": { "scheme": "nosec" }
             },
@@ -431,7 +431,7 @@ const invalidExpandedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "https://example.com/props/prop1",
+            "href": "https://example.comprops/prop1",
             "contentType": "application/json",
             "op": "readproperty"
           }
@@ -441,7 +441,7 @@ const invalidExpandedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "https://example.com/props/prop2",
+            "href": "https://example.comprops/prop2",
             "contentType": "application/json"
           }
         ]
@@ -469,7 +469,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -477,7 +477,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -507,7 +507,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -515,7 +515,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -596,7 +596,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -605,10 +605,10 @@ const recommendedTDs = [
         "forms": [
           // TODO: leaving it here for now to give an idea. It would look weird but keep more consistency
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           },
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -642,7 +642,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -650,7 +650,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -684,7 +684,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -692,7 +692,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -732,11 +732,11 @@ const recommendedTDs = [
         "forms": [
           {
             "form": "read",
-            "href": "/props/prop1"
+            "href": "props/prop1"
           },
           {
             "form": "write",
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -745,11 +745,11 @@ const recommendedTDs = [
         "forms": [
           {
             "form": "read",
-            "href": "/props/prop2"
+            "href": "props/prop2"
           },
           {
             "form": "write",
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       },
@@ -760,7 +760,7 @@ const recommendedTDs = [
         "forms": [
           {
             "op": ["readproperty", "writeproperty"],
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -770,7 +770,7 @@ const recommendedTDs = [
         "forms": [
           {
             "form": "read",
-            "href": "/props/propR"
+            "href": "props/propR"
           }
         ]
       }
@@ -810,11 +810,11 @@ const recommendedTDs = [
         "forms": [
           {
             "form": "read",
-            "href": "/props/prop1"
+            "href": "props/prop1"
           },
           {
             "form": "write",
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -823,11 +823,11 @@ const recommendedTDs = [
         "forms": [
           {
             "form": "read",
-            "href": "/props/prop2"
+            "href": "props/prop2"
           },
           {
             "form": "write",
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -858,7 +858,7 @@ const recommendedTDs = [
         "forms": [
           {
             "form": "json",
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -867,7 +867,7 @@ const recommendedTDs = [
         "forms": [
           {
             "form": "json",
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -896,7 +896,7 @@ const recommendedTDs = [
         "forms": [
           {
             "form": "http",
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       }
