@@ -235,7 +235,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "https://example.comprops/prop1",
+            "href": "https://example.com/props/prop1",
             "connection": {
               "security": { "scheme": "nosec" }
             },
@@ -247,7 +247,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "https://example.comprops/prop2",
+            "href": "https://example.com/props/prop2",
             // applying flattening to the form above, removing connection
             "security": { "scheme": "basic" },
             "contentType": "application/json"
@@ -389,7 +389,7 @@ const validExpandedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "https://example.comprops/prop1",
+            "href": "https://example.com/props/prop1",
             "security": { "scheme": "basic" },
             "contentType": "application/json",
             "op": "readproperty"
@@ -411,7 +411,7 @@ const invalidExpandedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "https://example.comprops/prop1",
+            "href": "https://example.com/props/prop1",
             "connection": {
               "security": { "scheme": "nosec" }
             },
@@ -431,7 +431,7 @@ const invalidExpandedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "https://example.comprops/prop1",
+            "href": "https://example.com/props/prop1",
             "contentType": "application/json",
             "op": "readproperty"
           }
@@ -441,7 +441,7 @@ const invalidExpandedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "https://example.comprops/prop2",
+            "href": "https://example.com/props/prop2",
             "contentType": "application/json"
           }
         ]
