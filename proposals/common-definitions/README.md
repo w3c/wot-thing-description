@@ -109,13 +109,13 @@ Related Issues:
 
 ### Defaultable elements
 
-An element that is defaultable has a container `{element}Def` at the root of the Thing that is a map of element of that kind.
+An element that is defaultable has a container `{element}Definitions` at the root of the Thing that is a map of element of that kind.
 
-Every element as a term `inherit` that points to a single element in `{element}Def`, if inherit is populated all the fields in the pointed element are used as default for the current element.
+Every element as a term `inherit` that points to a single element in `{element}Definitions`, if inherit is populated all the fields in the pointed element are used as default for the current element.
 
 ### Inlineable fields
 
-A field may contain either a string pointing to an element in `{element}Def` or may contain the element of that kind itself.
+A field may contain either a string pointing to an element in `{element}Definitions` or may contain the element of that kind itself.
 
 ### Thing-wide default
 
@@ -174,13 +174,13 @@ Same as now
 | Vocabulary Term | Description                                                                                 | Assignment                     | Type                     | Remarks                                                                                                 |
 | --------------- | ------------------------------------------------------------------------------------------- | ------------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------- |
 | base            | The base URI that is used for building an absolute URI together with relative URIs in forms | optional                       | String of URI            | None                                                                                                    |
-| security        | String pointing to the `securityDefinitions` map or Object with type `Security`             | SecurityDefinition (no change) | mandatory (TODO: Is it?) | When the security definition moves to the bindings, these terms can be moved a layer up to `connection` |
+| security        | String pointing to the `securityDefinitions` map or Object with type `Security`             | optional | Array with items pointing to the `securityDefinitions` map or Object with type `Security`                 | When the security definition moves to the bindings, these terms can be moved a layer up to `connection` |
 
 #### Form
 
 | Vocabulary Term | Description                                                                                                                          | Assignment   | Type                                   | Remarks                                                                     |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------ | -------------------------------------- | --------------------------------------------------------------------------- |
-| connection      | A reference to or an in-place definition of a connection definition                                                                  | optional     |                                        | If a string, it MUST refer to a first-level key in `connectionDefinitions`. |
+| connection      | A reference to or an in-place definition of a connection definition                                                                  | optional     |  Array with items pointing to the `connectionDefinitions` map or Object with type `Connection`.    | If a string, it MUST refer to a first-level key in `connectionDefinitions`. |
 | op              | Indicates the semantic intention of performing the operation(s) described by the form.                                               | with default | String or Array of Strings (no change) |                                                                             |
 | contentType     | Assign a content type based on a media type (e.g., `text/plain`) and potential parameters (e.g., `charset=utf-8`) for the media type | with default | String (no change)                     |                                                                             |
 
@@ -192,15 +192,15 @@ Same as now
 
 Best practices for designing TDs. When to use this or not.
 
-1. If you have one mechanism (security, connection, form, schema), just inline it.
+1. If you have one mechanism (security, connection, form, schema), just inline it, i.e. do not use `-Definitions` objects.
+2. In case of multiple defaults, as default definitions are applied to all forms, any local form overwriting it can result in multiple forms with the same information. See https://github.com/w3c/wot-thing-description/pull/2163#issuecomment-3562576204
+3. A TD is not required to use the common definitions. If you do not have common patterns in your TD, where most of the forms don't have duplicate terms, do not try to use this feature. It will make it more complicated for the Consumers to process.
 
 - Security term at the top level is optional
   - McCool not mandatory -> Reducing verbosity, make TDs simpler and shorter. People say it is annoying and does not improve security. Defining a "useless" security at the top and always overwriting it is not clear.
 - No resolution: Having no security field at all (none in the forms, none in the top level) -> reverting to defaults
 - No resolution: Security defaults:
   - McCool auto -> Assuming nosec is wrong assumption
-
-TODO: Documenting why we have multi sec for one Thing. Some properties being public, some not. Reading being public, writing not.
 
 ## Validation Rules
 
