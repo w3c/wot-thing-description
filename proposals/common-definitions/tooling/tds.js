@@ -716,7 +716,7 @@ const recommendedTDs = [
       },
       "write": {
         "op": "writeproperty",
-        "contentType": "application/json", // duplicating this can be avoided with "inherit"
+        "contentType": "application/json",
         "htv:methodName": "POST"
       },
       "invoke": {
@@ -733,11 +733,11 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "read",
+            "form": ["read"],
             "href": "props/prop1"
           },
           {
-            "form": "write",
+            "form": ["write"],
             "href": "props/prop1"
           }
         ]
@@ -746,11 +746,11 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "read",
+            "form": ["read"],
             "href": "props/prop2"
           },
           {
-            "form": "write",
+            "form": ["write"],
             "href": "props/prop2"
           }
         ]
@@ -771,7 +771,7 @@ const recommendedTDs = [
         "readOnly": true,
         "forms": [
           {
-            "form": "read",
+            "form": ["read"],
             "href": "props/propR"
           }
         ]
@@ -811,11 +811,11 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "read",
+            "form": ["read"],
             "href": "props/prop1"
           },
           {
-            "form": "write",
+            "form": ["write"],
             "href": "props/prop1"
           }
         ]
@@ -824,11 +824,11 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "read",
+            "form": ["read"],
             "href": "props/prop2"
           },
           {
-            "form": "write",
+            "form": ["write"],
             "href": "props/prop2"
           }
         ]
@@ -859,7 +859,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "json",
+            "form": ["json"],
             "href": "props/prop1"
           }
         ]
@@ -868,7 +868,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "json",
+            "form": ["json"],
             "href": "props/prop2"
           }
         ]
@@ -897,7 +897,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "http",
+            "form": ["http"],
             "href": "props/prop1"
           }
         ]
@@ -908,7 +908,7 @@ const recommendedTDs = [
         "input": { "type": "string" },
         "forms": [
           {
-            "form": "http",
+            "form": ["http"],
             "href": "/actions/act1"
           }
         ]
