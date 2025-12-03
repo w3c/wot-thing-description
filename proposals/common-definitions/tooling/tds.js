@@ -996,6 +996,7 @@ const recommendedTDs = [
     }
   },
   // 11. multiple content types and protocols where all affordances are available in json and cbor AND coap and http
+  // note that the expanded version would have 4 forms per affordance (http+json, http+cbor, coap+json, coap+cbor)
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-multi-protocol",
