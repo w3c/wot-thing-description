@@ -308,6 +308,42 @@ const validCompactTDs = [
         ]
       }
     }
+  },
+  // one writeproperty requiring basic auth
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "valid-test-compact-8-override",
+    "connection": {
+      "base": "coap://mylamp.example.com"
+    },
+    "formDefinitions": {
+      "cbor": {
+        "contentType": "application/cbor"
+      },
+      "octet": {
+        "contentType": "application/octet-stream"
+      }
+    },
+    "form": ["cbor", "octet"],
+    "properties": {
+      "status1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "status1"
+          }
+        ]
+      },
+      "status2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://mylamp.example.com/status",
+            "contentType": "text/html"
+          }
+        ]
+      }
+    }
   }
 ];
 
@@ -393,6 +429,39 @@ const validExpandedTDs = [
             "security": { "scheme": "basic" },
             "contentType": "application/json",
             "op": "readproperty"
+          }
+        ]
+      }
+    }
+  },
+  // expanded version of the "valid-test-compact-8-override" from above. Note that status2 gets duplicated forms
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "valid-test-expanded-8-override",
+    "properties": {
+      "status1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "coap://mylamp.example.com/status1",
+            "contentType": "application/cbor"
+          },
+          {
+            "href": "coap://mylamp.example.com/status1",
+            "contentType": "application/octet-stream"
+          }
+        ]
+      },
+      "status2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://mylamp.example.com/status",
+            "contentType": "text/html"
+          },
+          {
+            "href": "https://mylamp.example.com/status",
+            "contentType": "text/html"
           }
         ]
       }
