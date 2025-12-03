@@ -19,7 +19,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -27,7 +27,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -51,7 +51,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -59,7 +59,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -83,7 +83,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -91,7 +91,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -117,15 +117,15 @@ const validCompactTDs = [
         "scheme": "nosec"
       }
     },
-    "connection": "conn1",
-    "form": "form1",
-    "security": "sec1",
+    "connection": ["conn1"],
+    "form": ["form1"],
+    "security": ["sec1"],
     "properties": {
       "prop1": {
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -133,7 +133,7 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -163,10 +163,10 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "connection": "conn1",
-            "form": "form1",
-            "security": "sec1",
-            "href": "/props/prop1"
+            "connection": ["conn1"],
+            "form": ["form1"],
+            "security": ["sec1"],
+            "href": "props/prop1"
           }
         ]
       },
@@ -174,10 +174,10 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "connection": "conn1",
-            "form": "form1",
-            "security": "sec1",
-            "href": "/props/prop2"
+            "connection": ["conn1"],
+            "form": ["form1"],
+            "security": ["sec1"],
+            "href": "props/prop2"
           }
         ]
       }
@@ -209,8 +209,8 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "form1",
-            "href": "/props/prop1"
+            "form": ["form1"],
+            "href": "props/prop1"
           }
         ]
       },
@@ -218,8 +218,8 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "form1",
-            "href": "/props/prop2"
+            "form": ["form1"],
+            "href": "props/prop2"
           }
         ]
       }
@@ -278,19 +278,19 @@ const validCompactTDs = [
         "scheme": "basic"
       }
     },
-    "connection": "conn1",
-    "form": "form1",
-    "security": "sec1",
+    "connection": ["conn1"],
+    "form": ["form1"],
+    "security": ["sec1"],
     "properties": {
       "prop1": {
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1",
+            "href": "props/prop1",
             "op": "readproperty"
           },
           {
-            "href": "/props/prop1",
+            "href": "props/prop1",
             "op": "writeproperty",
             "connection": {
               "inherit": "conn1",
@@ -303,7 +303,43 @@ const validCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // one writeproperty requiring basic auth
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "valid-test-compact-8-override",
+    "connection": {
+      "base": "coap://mylamp.example.com"
+    },
+    "formDefinitions": {
+      "cbor": {
+        "contentType": "application/cbor"
+      },
+      "octet": {
+        "contentType": "application/octet-stream"
+      }
+    },
+    "form": ["cbor", "octet"],
+    "properties": {
+      "status1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "status1"
+          }
+        ]
+      },
+      "status2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://mylamp.example.com/status",
+            "contentType": "text/html"
           }
         ]
       }
@@ -330,7 +366,7 @@ const invalidCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -338,7 +374,7 @@ const invalidCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -363,7 +399,7 @@ const invalidCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -371,7 +407,7 @@ const invalidCompactTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -393,6 +429,39 @@ const validExpandedTDs = [
             "security": { "scheme": "basic" },
             "contentType": "application/json",
             "op": "readproperty"
+          }
+        ]
+      }
+    }
+  },
+  // expanded version of the "valid-test-compact-8-override" from above. Note that status2 gets duplicated forms
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "valid-test-expanded-8-override",
+    "properties": {
+      "status1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "coap://mylamp.example.com/status1",
+            "contentType": "application/cbor"
+          },
+          {
+            "href": "coap://mylamp.example.com/status1",
+            "contentType": "application/octet-stream"
+          }
+        ]
+      },
+      "status2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://mylamp.example.com/status",
+            "contentType": "text/html"
+          },
+          {
+            "href": "https://mylamp.example.com/status",
+            "contentType": "text/html"
           }
         ]
       }
@@ -469,7 +538,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -477,7 +546,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -504,10 +573,11 @@ const recommendedTDs = [
     },
     "properties": {
       "prop1": {
-        "type": "string",
+        "type": "boolean",
         "forms": [
           {
-            "href": "/props/prop1"
+            "href": "1",
+            "modv:entity": "Coil"
           }
         ]
       },
@@ -515,7 +585,8 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "href": "/props/prop2"
+            "href": "2",
+            "modv:entity": "HoldingRegister"
           }
         ]
       }
@@ -584,6 +655,7 @@ const recommendedTDs = [
         "base": "https://[2001:db8:85a3::8a2e:370:7334]:8080"
       }
     },
+    "connection": ["ipv4", "ipv6"],
     "form": {
       "contentType": "application/json"
     },
@@ -595,25 +667,19 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "connection": "ipv4",
-            "href": "/props/prop1"
-          },
-          {
-            "connection": "ipv6",
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
       "prop2": {
         "type": "string",
         "forms": [
+          // TODO: leaving it here for now to give an idea. It would look weird but keep more consistency
           {
-            "connection": "ipv4",
-            "href": "/props/prop2"
+            "href": "props/prop2"
           },
           {
-            "connection": "ipv6",
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -638,6 +704,7 @@ const recommendedTDs = [
         }
       }
     },
+    "connection": ["local", "public"],
     "form": {
       "contentType": "application/json"
     },
@@ -646,12 +713,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "connection": "local",
-            "href": "/props/prop1"
-          },
-          {
-            "connection": "public",
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -659,12 +721,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "connection": "local",
-            "href": "/props/prop2"
-          },
-          {
-            "connection": "public",
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -689,6 +746,7 @@ const recommendedTDs = [
         "contentType": "application/cbor"
       }
     },
+    "form": ["http", "coap"],
     "security": {
       "scheme": "nosec"
     },
@@ -697,12 +755,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "http",
-            "href": "/props/prop1"
-          },
-          {
-            "form": "coap",
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -710,12 +763,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "http",
-            "href": "/props/prop2"
-          },
-          {
-            "form": "coap",
-            "href": "/props/prop2"
+            "href": "props/prop2"
           }
         ]
       }
@@ -737,7 +785,7 @@ const recommendedTDs = [
       },
       "write": {
         "op": "writeproperty",
-        "contentType": "application/json", // duplicating this can be avoided with "inherit"
+        "contentType": "application/json",
         "htv:methodName": "POST"
       },
       "invoke": {
@@ -754,12 +802,12 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "read",
-            "href": "/props/prop1"
+            "form": ["read"],
+            "href": "props/prop1"
           },
           {
-            "form": "write",
-            "href": "/props/prop1"
+            "form": ["write"],
+            "href": "props/prop1"
           }
         ]
       },
@@ -767,12 +815,12 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "read",
-            "href": "/props/prop2"
+            "form": ["read"],
+            "href": "props/prop2"
           },
           {
-            "form": "write",
-            "href": "/props/prop2"
+            "form": ["write"],
+            "href": "props/prop2"
           }
         ]
       },
@@ -783,7 +831,7 @@ const recommendedTDs = [
         "forms": [
           {
             "op": ["readproperty", "writeproperty"],
-            "href": "/props/prop1"
+            "href": "props/prop1"
           }
         ]
       },
@@ -792,8 +840,8 @@ const recommendedTDs = [
         "readOnly": true,
         "forms": [
           {
-            "form": "read",
-            "href": "/props/propR"
+            "form": ["read"],
+            "href": "props/propR"
           }
         ]
       }
@@ -832,12 +880,12 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "read",
-            "href": "/props/prop1"
+            "form": ["read"],
+            "href": "props/prop1"
           },
           {
-            "form": "write",
-            "href": "/props/prop1"
+            "form": ["write"],
+            "href": "props/prop1"
           }
         ]
       },
@@ -845,12 +893,12 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "read",
-            "href": "/props/prop2"
+            "form": ["read"],
+            "href": "props/prop2"
           },
           {
-            "form": "write",
-            "href": "/props/prop2"
+            "form": ["write"],
+            "href": "props/prop2"
           }
         ]
       }
@@ -868,6 +916,7 @@ const recommendedTDs = [
         "contentType": "application/cbor"
       }
     },
+    "form": ["json", "cbor"],
     "connection": {
       "base": "https://192.168.1.10:8080"
     },
@@ -879,12 +928,8 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "json",
-            "href": "/props/prop1"
-          },
-          {
-            "form": "cbor",
-            "href": "/props/prop1"
+            "form": ["json"],
+            "href": "props/prop1"
           }
         ]
       },
@@ -892,12 +937,8 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "json",
-            "href": "/props/prop2"
-          },
-          {
-            "form": "cbor",
-            "href": "/props/prop2"
+            "form": ["json"],
+            "href": "props/prop2"
           }
         ]
       }
@@ -925,8 +966,8 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": "http",
-            "href": "/props/prop1"
+            "form": ["http"],
+            "href": "props/prop1"
           }
         ]
       }
@@ -936,7 +977,7 @@ const recommendedTDs = [
         "input": { "type": "string" },
         "forms": [
           {
-            "form": "http",
+            "form": ["http"],
             "href": "/actions/act1"
           }
         ]
@@ -949,6 +990,51 @@ const recommendedTDs = [
           {
             "form": "mqtt",
             "href": "events/evt1" //assuming we transition to topic relative hrefs in mqtt binding
+          }
+        ]
+      }
+    }
+  },
+  // 11. multiple content types and protocols where all affordances are available in json and cbor AND coap and http
+  // note that the expanded version would have 4 forms per affordance (http+json, http+cbor, coap+json, coap+cbor)
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "recommended-test-multi-protocol",
+    "connectionDefinitions": {
+      "http": {
+        "base": "http://192.168.1.10:8080/mything"
+      },
+      "coap": {
+        "base": "coap://[2001:DB8::1]/mything"
+      }
+    },
+    "formDefinitions": {
+      "json": {
+        "contentType": "application/json"
+      },
+      "cbor": {
+        "contentType": "application/cbor"
+      }
+    },
+    "form": ["json", "cbor"],
+    "connection": ["http", "coap"],
+    "security": {
+      "scheme": "nosec"
+    },
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "props/prop2"
           }
         ]
       }
