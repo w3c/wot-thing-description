@@ -1,4 +1,4 @@
-# Proposal: Mapping data and managing complex intractions in WoT Thing Descriptions
+# Proposal: Mapping data and managing complex interactions in WoT Thing Descriptions
 
 The Web of Things (WoT) Thing Description (TD) provides an abstract model for describing a Thing's functionalities through its three traditional interaction affordances: Properties, Actions, and Events. This model excels at describing simple, atomic, and one-off interactions. However, complex systems — particularly those found in industrial automation, enterprise integration, and service orchestration — rely on interaction patterns that go beyond a simple request/response. These scenarios present two critical, unresolved challenges for the TD:
 
@@ -68,7 +68,7 @@ Example supporting [Data Mapping in HTTP](https://github.com/w3c/wot-thing-descr
 }
 ```
 
-In the example above, the `jobType` property in the Action input schema is marked as a Variable. When the client invokes the `startJob` action, it will bind the value of `jobType` to the `X-Job-Type` HTTP header in the request and the real payload sent to the the server will not contain the `jobType` field.
+In the example above, the `jobType` property in the Action input schema is marked as a Variable. When the client invokes the `startJob` action, it will bind the value of `jobType` to the `X-Job-Type` HTTP header in the request and the real payload sent to the server will not contain the `jobType` field.
 
 ```json
 {
@@ -92,7 +92,7 @@ Example:
           "messageSchema": {
             "type": "object",
             "properties": {
-              // User may choose to full specify the payload schema or just the part they want to map
+              // User may choose to fully specify the payload schema or just the part they want to map
               "value": { "type": "number", "variable": "propXValue" }
             }
           }
@@ -117,7 +117,7 @@ We could also reconsider the use of JSON pointers for variable assignment instea
 
 ### 4.2 Concept B: Capabilities / Clusters (Context and Management)
 
-Building on the Variables mechanism, we introduce a new top-level structural element called **Capability** (or Cluster or some better name) to encapsulate related Affordances and Variables. This construct provides a runtime context for managing complex interactions that require stateful managment.
+Building on the Variables mechanism, we introduce a new top-level structural element called **Capability** (or Cluster or some better name) to encapsulate related Affordances and Variables. This construct provides a runtime context for managing complex interactions that require stateful management.
 
 - **Definition:** A **Capability** is a new top-level structural element that serves as a **runtime context** for a complex function. It groups a set of related Affordances and Variables.
 - **Role:** Establish **scoping**, and define **relationships** between interactions.
@@ -222,7 +222,7 @@ Example:
 - Naming and Terminology: The term "Capability" may conflict with existing IoT frameworks. Future work may explore alternative names like "Cluster" or "Module" or "Group" "RuntimeContext".
 - Advanced Relationships: While this proposal introduces basic grouping and state management, future work may explore more advanced relationships between Capabilities (e.g., dependencies, hierarchies).
 - Global operations still need to be defined outside capabilities (e.g., Thing level actions, see next sections).
-- It is just one level of grouping. Future work may explore nested Capabilities or hierarchical structures altough this may add complexity.
+- It is just one level of grouping. Future work may explore nested Capabilities or hierarchical structures although this may add complexity.
 
 ---
 
