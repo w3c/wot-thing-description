@@ -7,7 +7,7 @@ const validCompactTDs = [
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "valid-test-compact-2",
-    "form": {
+    "formDefaults": {
       "contentType": "application/json",
       "base": "https://example.com",
       "security": {
@@ -33,19 +33,20 @@ const validCompactTDs = [
       }
     }
   },
-  // All Defaults in a Form but still with connection
+  // With definitions and reference from root
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-compact-1",
-    "form": {
-      "contentType": "application/json",
-      "connection": {
+    "title": "valid-test-compact-3",
+    "formDefinitions": {
+      "form1": {
+        "contentType": "application/json",
         "base": "https://example.com",
         "security": {
           "scheme": "nosec"
         }
       }
     },
+    "formDefaults": ["form1"],
     "properties": {
       "prop1": {
         "type": "string",
@@ -65,281 +66,55 @@ const validCompactTDs = [
       }
     }
   },
-  // Separate Defaults
+  // one writeproperty requiring nosec, rest basic. This is a weird example!
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-compact-0",
-    "connection": {
-      "base": "https://example.com"
-    },
-    "form": {
-      "contentType": "application/json"
-    },
-    "security": {
-      "scheme": "nosec"
-    },
-    "properties": {
-      "prop1": {
-        "type": "string",
-        "forms": [
-          {
-            "href": "props/prop1"
-          }
-        ]
-      },
-      "prop2": {
-        "type": "string",
-        "forms": [
-          {
-            "href": "props/prop2"
-          }
-        ]
-      }
-    }
-  },
-  // With definitions
-  // All definitions are present and referenced in the root
-  {
-    "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-compact-3",
-    "connectionDefinitions": {
-      "conn1": {
-        "base": "https://example.com"
-      }
-    },
+    "title": "valid-test-compact-7",
     "formDefinitions": {
-      "form1": {
-        "contentType": "application/json"
-      }
-    },
-    "securityDefinitions": {
-      "sec1": {
-        "scheme": "nosec"
-      }
-    },
-    "connection": ["conn1"],
-    "form": ["form1"],
-    "security": ["sec1"],
-    "properties": {
-      "prop1": {
-        "type": "string",
-        "forms": [
-          {
-            "href": "props/prop1"
-          }
-        ]
+      "formNoSec": {
+        "contentType": "application/json",
+        "base": "https://example.com",
+        "security": {
+          "scheme": "nosec"
+        },
+        "op": "readproperty"
       },
-      "prop2": {
-        "type": "string",
-        "forms": [
-          {
-            "href": "props/prop2"
-          }
-        ]
-      }
-    }
-  },
-  // Definitions in the root but usage only in forms
-  {
-    "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-compact-5",
-    "securityDefinitions": {
-      "sec1": {
-        "scheme": "nosec"
+      "formBasicSec": {
+        "contentType": "application/json",
+        "base": "https://example.com",
+        "security": {
+          "scheme": "basic"
+        },
+        "op": "writeproperty"
       }
     },
-    "connectionDefinitions": {
-      "conn1": {
-        "base": "https://example.com"
-      }
-    },
-    "formDefinitions": {
-      "form1": {
-        "contentType": "application/json"
-      }
-    },
-    "properties": {
-      "prop1": {
-        "type": "string",
-        "forms": [
-          {
-            "connection": ["conn1"],
-            "form": ["form1"],
-            "security": ["sec1"],
-            "href": "props/prop1"
-          }
-        ]
-      },
-      "prop2": {
-        "type": "string",
-        "forms": [
-          {
-            "connection": ["conn1"],
-            "form": ["form1"],
-            "security": ["sec1"],
-            "href": "props/prop2"
-          }
-        ]
-      }
-    }
-  },
-  // Root definitions using other definitions but no root usage
-  {
-    "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-compact-6",
-    "securityDefinitions": {
-      "sec1": {
-        "scheme": "nosec"
-      }
-    },
-    "connectionDefinitions": {
-      "conn1": {
-        "security": "sec1",
-        "base": "https://example.com"
-      }
-    },
-    "formDefinitions": {
-      "form1": {
-        "connection": "conn1",
-        "contentType": "application/json"
-      }
-    },
-    "properties": {
-      "prop1": {
-        "type": "string",
-        "forms": [
-          {
-            "form": ["form1"],
-            "href": "props/prop1"
-          }
-        ]
-      },
-      "prop2": {
-        "type": "string",
-        "forms": [
-          {
-            "form": ["form1"],
-            "href": "props/prop2"
-          }
-        ]
-      }
-    }
-  },
-  // nothing in the root
-  // only defined and used within the forms
-  {
-    "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-compact-4",
+    "formDefaults": ["formNoSec", "formBasicSec"],
     "properties": {
       "prop1": {
         "type": "string",
         "forms": [
           {
             "href": "https://example.com/props/prop1",
-            "connection": {
-              "security": { "scheme": "nosec" }
-            },
-            "contentType": "application/json"
-          }
-        ]
-      },
-      "prop2": {
-        "type": "string",
-        "forms": [
-          {
-            "href": "https://example.com/props/prop2",
-            // applying flattening to the form above, removing connection
-            "security": { "scheme": "basic" },
-            "contentType": "application/json"
-          }
-        ]
-      }
-    }
-  },
-  // one writeproperty requiring basic auth
-  {
-    "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-compact-7",
-    "connectionDefinitions": {
-      "conn1": {
-        "base": "https://example.com"
-      }
-    },
-    "formDefinitions": {
-      "form1": {
-        "contentType": "application/json"
-      }
-    },
-    "securityDefinitions": {
-      "sec1": {
-        "scheme": "nosec"
-      },
-      "sec2": {
-        "scheme": "basic"
-      }
-    },
-    "connection": ["conn1"],
-    "form": ["form1"],
-    "security": ["sec1"],
-    "properties": {
-      "prop1": {
-        "type": "string",
-        "forms": [
-          {
-            "href": "props/prop1",
-            "op": "readproperty"
+            "contentType": "application/json",
+            "op": "readproperty",
+            "security": {
+              "scheme": "basic"
+            }
           },
           {
-            "href": "props/prop1",
+            "href": "https://example.com/props/prop1",
+            "contentType": "application/json",
             "op": "writeproperty",
-            "connection": {
-              "inherit": "conn1",
-              "security": "sec2"
-            }
+            "security": { "scheme": "nosec" }
           }
         ]
       },
       "prop2": {
         "type": "string",
+        // this is the usual property using both in the root level
         "forms": [
           {
             "href": "props/prop2"
-          }
-        ]
-      }
-    }
-  },
-  // one writeproperty requiring basic auth
-  {
-    "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-compact-8-override",
-    "connection": {
-      "base": "coap://mylamp.example.com"
-    },
-    "formDefinitions": {
-      "cbor": {
-        "contentType": "application/cbor"
-      },
-      "octet": {
-        "contentType": "application/octet-stream"
-      }
-    },
-    "form": ["cbor", "octet"],
-    "properties": {
-      "status1": {
-        "type": "string",
-        "forms": [
-          {
-            "href": "status1"
-          }
-        ]
-      },
-      "status2": {
-        "type": "string",
-        "forms": [
-          {
-            "href": "https://mylamp.example.com/status",
-            "contentType": "text/html"
           }
         ]
       }
@@ -350,48 +125,16 @@ const validCompactTDs = [
 // TDs that do not have all information needed to build requests when expanded
 const invalidCompactTDs = [
   // Inline (no definitions objects)
-  // Missing Connection
-  // TODO: This cannot be invalidated with a JSON Schema since there is no way to say that connection is required if it is not inlined in the form
+  // Missing Base
+  // TODO: This cannot be invalidated with a JSON Schema since there is no way to say that a base is needed somewhere or all href must be absolute.
+  // this is the case in td 1.1 too.
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "invalid-test-compacted-0",
-    "form": {
-      "contentType": "application/json"
-    },
-    "security": {
-      "scheme": "nosec"
-    },
-    "properties": {
-      "prop1": {
-        "type": "string",
-        "forms": [
-          {
-            "href": "props/prop1"
-          }
-        ]
-      },
-      "prop2": {
-        "type": "string",
-        "forms": [
-          {
-            "href": "props/prop2"
-          }
-        ]
-      }
-    }
-  },
-  // a flattened form but it still has connection, i.e. base conflicts
-  {
-    "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "invalid-test-compacted-1",
-    "form": {
+    "formDefaults": {
       "contentType": "application/json",
-      "base": "https://example.com",
       "security": {
         "scheme": "nosec"
-      },
-      "connection": {
-        "base": "https://example.com"
       }
     },
     "properties": {
@@ -471,26 +214,6 @@ const validExpandedTDs = [
 
 // TDs that are not fully expanded or do not have all information needed to build requests
 const invalidExpandedTDs = [
-  // connection is not expanded
-  {
-    "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "invalid-test-expanded-0",
-    "properties": {
-      "prop1": {
-        "type": "string",
-        "forms": [
-          {
-            "href": "https://example.com/props/prop1",
-            "connection": {
-              "security": { "scheme": "nosec" }
-            },
-            "contentType": "application/json",
-            "op": "readproperty"
-          }
-        ]
-      }
-    }
-  },
   // no security defined anywhere
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
@@ -526,7 +249,7 @@ const recommendedTDs = [
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-cbor-default",
-    "form": {
+    "formDefaults": {
       "contentType": "application/cbor",
       "base": "coap://[2001:DB8::1]/mything",
       "security": {
@@ -557,7 +280,7 @@ const recommendedTDs = [
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-modbus-params",
-    "form": {
+    "formDefaults": {
       // until next comment: can be in connection
       "base": "modbus+tcp://192.168.178.32:502/1/",
       "modv:timeout": 1000,
@@ -597,7 +320,7 @@ const recommendedTDs = [
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-mqtt-override",
-    "form": {
+    "formDefaults": {
       "base": "mqtt://broker.com:1883",
       "mqv:qos": "0",
       "mqv:retain": true,
@@ -647,21 +370,23 @@ const recommendedTDs = [
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-multi-ip",
-    "connectionDefinitions": {
+    "formDefinitions": {
       "ipv4": {
-        "base": "https://192.168.1.10:8080"
+        "base": "https://192.168.1.10:8080",
+        "contentType": "application/json",
+        "security": {
+          "scheme": "nosec"
+        }
       },
       "ipv6": {
-        "base": "https://[2001:db8:85a3::8a2e:370:7334]:8080"
+        "base": "https://[2001:db8:85a3::8a2e:370:7334]:8080",
+        "contentType": "application/json",
+        "security": {
+          "scheme": "nosec"
+        }
       }
     },
-    "connection": ["ipv4", "ipv6"],
-    "form": {
-      "contentType": "application/json"
-    },
-    "security": {
-      "scheme": "nosec"
-    },
+    "formDefaults": ["ipv4", "ipv6"],
     "properties": {
       "prop1": {
         "type": "string",
@@ -690,24 +415,23 @@ const recommendedTDs = [
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-diff-sec",
-    "connectionDefinitions": {
+    "formDefinitions": {
       "local": {
         "base": "http://192.168.1.10:8080",
+        "contentType": "application/json",
         "security": {
           "scheme": "nosec"
         }
       },
       "public": {
         "base": "https://example.com:8080",
+        "contentType": "application/json",
         "security": {
           "scheme": "basic"
         }
       }
     },
-    "connection": ["local", "public"],
-    "form": {
-      "contentType": "application/json"
-    },
+    "formDefaults": ["local", "public"],
     "properties": {
       "prop1": {
         "type": "string",
@@ -739,17 +463,20 @@ const recommendedTDs = [
     "formDefinitions": {
       "http": {
         "base": "https://192.168.1.10:8080",
-        "contentType": "application/json"
+        "contentType": "application/json",
+        "security": {
+          "scheme": "nosec"
+        }
       },
       "coap": {
         "base": "coap://[2001:DB8::1]/mything",
-        "contentType": "application/cbor"
+        "contentType": "application/cbor",
+        "security": {
+          "scheme": "nosec"
+        }
       }
     },
-    "form": ["http", "coap"],
-    "security": {
-      "scheme": "nosec"
-    },
+    "formDefaults": ["http", "coap"],
     "properties": {
       "prop1": {
         "type": "string",
@@ -771,6 +498,7 @@ const recommendedTDs = [
   },
   // 7. readproperty and writeproperty defaults that are not the defaults of the binding (GET and POST)
   // use case: device using REST but not following usual conventions
+  // TODO: Double check this one's correctness
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "recommended-test-multi-protocol",
@@ -779,34 +507,43 @@ const recommendedTDs = [
     },
     "formDefinitions": {
       "read": {
+        "base": "https://192.168.1.10:8080",
         "op": "readproperty",
         "contentType": "application/json",
-        "htv:methodName": "GET"
+        "htv:methodName": "GET",
+        "security": {
+          "scheme": "nosec"
+        }
       },
       "write": {
+        "base": "https://192.168.1.10:8080",
         "op": "writeproperty",
         "contentType": "application/json",
-        "htv:methodName": "POST"
+        "htv:methodName": "POST",
+        "security": {
+          "scheme": "nosec"
+        }
       },
       "invoke": {
+        "base": "https://192.168.1.10:8080",
         "op": "invokeaction",
         "contentType": "application/json",
-        "htv:methodName": "POST"
+        "htv:methodName": "POST",
+        "security": {
+          "scheme": "nosec"
+        }
       }
-    },
-    "security": {
-      "scheme": "nosec"
     },
     "properties": {
       "prop1": {
         "type": "string",
         "forms": [
           {
-            "form": ["read"],
+            "formDefaults": ["read"],
             "href": "props/prop1"
           },
           {
-            "form": ["write"],
+            "formDefaults": ["write"],
             "href": "props/prop1"
           }
         ]
@@ -815,11 +552,11 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": ["read"],
+            "formDefaults": ["read"],
             "href": "props/prop2"
           },
           {
-            "form": ["write"],
+            "formDefaults": ["write"],
             "href": "props/prop2"
           }
         ]
@@ -840,7 +577,7 @@ const recommendedTDs = [
         "readOnly": true,
         "forms": [
           {
-            "form": ["read"],
+            "formDefaults": ["read"],
             "href": "props/propR"
           }
         ]
@@ -856,35 +593,28 @@ const recommendedTDs = [
     },
     "formDefinitions": {
       "read": {
+        "base": "https://192.168.1.10:8080",
         "op": "readproperty",
         "contentType": "application/json",
-        "security": "readNoSec"
+        "security": {
+          "scheme": "nosec"
+        }
       },
       "write": {
+        "base": "https://192.168.1.10:8080",
         "op": "writeproperty",
         "contentType": "application/json", // duplicating this can be avoided with "inherit"
-        "security": "writeBasic"
+        "security": {
+          "scheme": "basic"
+        }
       }
     },
-    "securityDefinitions": {
-      "readNoSec": {
-        "scheme": "nosec"
-      },
-      "writeBasic": {
-        "scheme": "basic"
-      }
-    },
-    "security": "readNoSec",
+    "formDefaults": ["read", "write"],
     "properties": {
       "prop1": {
         "type": "string",
         "forms": [
           {
-            "form": ["read"],
-            "href": "props/prop1"
-          },
-          {
-            "form": ["write"],
             "href": "props/prop1"
           }
         ]
@@ -893,11 +623,6 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": ["read"],
-            "href": "props/prop2"
-          },
-          {
-            "form": ["write"],
             "href": "props/prop2"
           }
         ]
@@ -910,25 +635,27 @@ const recommendedTDs = [
     "title": "recommended-test-multi-protocol",
     "formDefinitions": {
       "json": {
-        "contentType": "application/json"
+        "base": "https://192.168.1.10:8080",
+        "contentType": "application/json",
+        "security": {
+          "scheme": "nosec"
+        }
       },
       "cbor": {
-        "contentType": "application/cbor"
+        "base": "https://192.168.1.10:8080",
+        "contentType": "application/cbor",
+        "security": {
+          "scheme": "nosec"
+        }
       }
     },
-    "form": ["json", "cbor"],
-    "connection": {
-      "base": "https://192.168.1.10:8080"
-    },
-    "security": {
-      "scheme": "nosec"
-    },
+    "formDefaults": ["json", "cbor"],
     "properties": {
       "prop1": {
         "type": "string",
         "forms": [
           {
-            "form": ["json"],
+            "formDefaults": ["json"],
             "href": "props/prop1"
           }
         ]
@@ -937,7 +664,7 @@ const recommendedTDs = [
         "type": "string",
         "forms": [
           {
-            "form": ["json"],
+            "formDefaults": ["json"],
             "href": "props/prop2"
           }
         ]
@@ -951,22 +678,25 @@ const recommendedTDs = [
     "formDefinitions": {
       "http": {
         "base": "https://192.168.1.10:8080",
-        "contentType": "application/json"
+        "contentType": "application/json",
+        "security": {
+          "scheme": "nosec"
+        }
       },
       "mqtt": {
         "base": "mqtt://test.mosquitto.org:1883",
-        "contentType": "text/plain"
+        "contentType": "text/plain",
+        "security": {
+          "scheme": "nosec"
+        }
       }
-    },
-    "security": {
-      "scheme": "nosec"
     },
     "properties": {
       "prop1": {
         "type": "string",
         "forms": [
           {
-            "form": ["http"],
+            "formDefaults": ["http"],
             "href": "props/prop1"
           }
         ]
@@ -977,7 +707,7 @@ const recommendedTDs = [
         "input": { "type": "string" },
         "forms": [
           {
-            "form": ["http"],
+            "formDefaults": ["http"],
             "href": "/actions/act1"
           }
         ]
@@ -988,7 +718,7 @@ const recommendedTDs = [
         "data": { "type": "string" },
         "forms": [
           {
-            "form": "mqtt",
+            "formDefaults": ["mqtt"],
             "href": "events/evt1" //assuming we transition to topic relative hrefs in mqtt binding
           }
         ]
@@ -999,28 +729,38 @@ const recommendedTDs = [
   // note that the expanded version would have 4 forms per affordance (http+json, http+cbor, coap+json, coap+cbor)
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "recommended-test-multi-protocol",
-    "connectionDefinitions": {
-      "http": {
-        "base": "http://192.168.1.10:8080/mything"
-      },
-      "coap": {
-        "base": "coap://[2001:DB8::1]/mything"
-      }
-    },
+    "title": "recommended-test-multi-protocol-multi-contenttype",
     "formDefinitions": {
-      "json": {
-        "contentType": "application/json"
+      "http+json": {
+        "base": "http://192.168.1.10:8080/mything",
+        "contentType": "application/json",
+        "security": {
+          "scheme": "nosec"
+        }
       },
-      "cbor": {
-        "contentType": "application/cbor"
+      "http+cbor": {
+        "base": "http://192.168.1.10:8080/mything",
+        "contentType": "application/cbor",
+        "security": {
+          "scheme": "nosec"
+        }
+      },
+      "coap+json": {
+        "base": "coap://[2001:DB8::1]/mything",
+        "contentType": "application/json",
+        "security": {
+          "scheme": "nosec"
+        }
+      },
+      "coap+cbor": {
+        "base": "coap://[2001:DB8::1]/mything",
+        "contentType": "application/cbor",
+        "security": {
+          "scheme": "nosec"
+        }
       }
     },
-    "form": ["json", "cbor"],
-    "connection": ["http", "coap"],
-    "security": {
-      "scheme": "nosec"
-    },
+    "formDefaults": ["http+json", "http+cbor", "coap+json", "coap+cbor"],
     "properties": {
       "prop1": {
         "type": "string",
