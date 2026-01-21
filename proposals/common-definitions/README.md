@@ -146,7 +146,7 @@ These set a default for the whole Thing. The mechanism is the same for all the t
 
 Note: Even if a single form of an affordance is not complete, a defaultable element should exist.
 
-### Elementss
+### Elements
 
 #### Security
 
