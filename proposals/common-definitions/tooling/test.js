@@ -1,6 +1,6 @@
 const fs = require("fs");
 const assert = require("assert");
-const { validCompactTDs, invalidCompactTDs, validExpandedTDs, invalidExpandedTDs } = require("./tds");
+const { validTDs, invalidCompactTDs, invalidExpandedTDs } = require("./tds");
 const Ajv = require("ajv");
 
 const tdSchemaCompacted = fs.readFileSync("schema-new.schema.json");
