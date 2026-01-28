@@ -32,57 +32,68 @@ const invalidCompactTDs = [
         ]
       }
     }
-  }
-];
-
-// TDs that are fully expanded and have all information needed to build requests, i.e., like TD 1.1
-const validExpandedTDs = [
-  // Simple TD
+  },
+  // no formDefaults, i.e. definitions exist but not referenced. Thus, no way to build full requests or understand security
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-expanded-0",
+    "title": "valid-test-cbor-default-definitions",
+    "formDefinitions": {
+      "cborCoap": {
+        "contentType": "application/cbor",
+        "base": "coap://[2001:DB8::1]/mything",
+        "security": {
+          "scheme": "nosec"
+        }
+      }
+    },
     "properties": {
       "prop1": {
         "type": "string",
         "forms": [
           {
-            "href": "https://example.com/props/prop1",
-            "security": { "scheme": "basic" },
-            "contentType": "application/json",
-            "op": "readproperty"
+            "href": "props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "props/prop2"
           }
         ]
       }
     }
   },
-  // expanded version of the "valid-test-compact-8-override" from above. Note that status2 gets duplicated forms
+  // One form is referencing a non-existing definition
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-expanded-8-override",
+    "title": "valid-test-cbor-default-definitions",
+    "formDefinitions": {
+      "cborCoap": {
+        "contentType": "application/cbor",
+        "base": "coap://[2001:DB8::1]/mything",
+        "security": {
+          "scheme": "nosec"
+        }
+      }
+    },
     "properties": {
-      "status1": {
+      "prop1": {
         "type": "string",
         "forms": [
           {
-            "href": "coap://mylamp.example.com/status1",
-            "contentType": "application/cbor"
-          },
-          {
-            "href": "coap://mylamp.example.com/status1",
-            "contentType": "application/octet-stream"
+            "form": "http",
+            "href": "props/prop1"
           }
         ]
       },
-      "status2": {
+      "prop2": {
         "type": "string",
         "forms": [
           {
-            "href": "https://mylamp.example.com/status",
-            "contentType": "text/html"
-          },
-          {
-            "href": "https://mylamp.example.com/status",
-            "contentType": "text/html"
+            "form": "cborCoap",
+            "href": "props/prop2"
           }
         ]
       }
@@ -153,11 +164,11 @@ const validCompactTDs = [
       }
     }
   },
-  // 1-alt. alternative way of writing the same TD using definitions instead of inlining
+  // 1-alt1. alternative way of writing the same TD using definitions instead of inlining
   // this is not recommended but possible
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-cbor-default-definitions",
+    "title": "valid-test-cbor-default-definitions-alt1",
     "formDefinitions": {
       "cborCoap": {
         "contentType": "application/cbor",
@@ -182,6 +193,72 @@ const validCompactTDs = [
         "forms": [
           {
             "href": "props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // 1-alt2. alternative way of writing the same TD without formDefaults
+  // this is not recommended but possible
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "valid-test-cbor-default-definitions-alt2",
+    "formDefinitions": {
+      "cborCoap": {
+        "contentType": "application/cbor",
+        "base": "coap://[2001:DB8::1]/mything",
+        "security": {
+          "scheme": "nosec"
+        }
+      }
+    },
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "form": "cborCoap",
+            "href": "props/prop1"
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "form": "cborCoap",
+            "href": "props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // expanded
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "expanded-valid-test-cbor-default",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "coap://[2001:DB8::1]/mything/props/prop1",
+            "contentType": "application/cbor",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "coap://[2001:DB8::1]/mything/props/prop2",
+            "contentType": "application/cbor",
+            "security": {
+              "scheme": "nosec"
+            }
           }
         ]
       }
@@ -225,6 +302,49 @@ const validCompactTDs = [
       }
     }
   },
+  // expanded
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "valid-test-modbus-params",
+    "properties": {
+      "prop1": {
+        "type": "boolean",
+        "forms": [
+          {
+            "href": "modbus+tcp://192.168.178.32:502/1/1",
+            "modv:entity": "Coil",
+            "modv:timeout": 1000,
+            "modv:pollingInterval": 5000,
+            "modv:zeroBasedAddressing": true,
+            "modv:mostSignificantByte": true,
+            "modv:mostSignificantWord": true,
+            "contentType": "application/octet-stream",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "modbus+tcp://192.168.178.32:502/1/2",
+            "modv:entity": "HoldingRegister",
+            "modv:timeout": 1000,
+            "modv:pollingInterval": 5000,
+            "modv:zeroBasedAddressing": true,
+            "modv:mostSignificantByte": true,
+            "modv:mostSignificantWord": true,
+            "contentType": "application/octet-stream",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      }
+    }
+  },
   // 3. mqtt with qos 0 and retained for all topics except one with override. This can be an examples for overriding too.
   // use case: mqtt device with different qos/retain requirements in different topics
   {
@@ -263,6 +383,55 @@ const validCompactTDs = [
             "href": "actions/act3",
             "mqv:qos": "2",
             "mqv:retain": false
+          }
+        ]
+      }
+    }
+  },
+  // expanded
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "valid-test-mqtt-override",
+    "actions": {
+      "act1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "mqtt://broker.com:1883/actions/act1",
+            "mqv:qos": "0",
+            "mqv:retain": true,
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      },
+      "act2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "mqtt://broker.com:1883/actions/act2",
+            "mqv:qos": "0",
+            "mqv:retain": true,
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      },
+      "act3": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "mqtt://broker.com:1883/actions/act3",
+            "mqv:qos": "2",
+            "mqv:retain": false,
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
           }
         ]
       }
@@ -315,6 +484,51 @@ const validCompactTDs = [
       }
     }
   },
+  // expanded
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "valid-test-multi-ip",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://192.168.1.10:8080/props/prop1",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "https://[2001:db8:85a3::8a2e:370:7334]:8080/props/prop2",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://192.168.1.10:8080/props/prop2",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "https://[2001:db8:85a3::8a2e:370:7334]:8080/props/prop2",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      }
+    }
+  },
   // 5. local with no sec and public with basic auth
   // Use case: When a device is proxied to the internet
   {
@@ -351,6 +565,51 @@ const validCompactTDs = [
         "forms": [
           {
             "href": "props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // expanded
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "valid-test-diff-sec",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "http://192.168.1.10:8080/props/prop1",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "https://example.com:8080/props/prop1",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "basic"
+            }
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "http://192.168.1.10:8080/props/prop2",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "https://example.com:8080/props/prop2",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "basic"
+            }
           }
         ]
       }
@@ -394,6 +653,51 @@ const validCompactTDs = [
         "forms": [
           {
             "href": "props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // expanded
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "valid-test-multi-protocol",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://192.168.1.10:8080/props/prop1",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "coap://[2001:DB8::1]/mything/props/prop1",
+            "contentType": "application/cbor",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://192.168.1.10:8080/props/prop2",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "coap://[2001:DB8::1]/mything/props/prop2",
+            "contentType": "application/cbor",
+            "security": {
+              "scheme": "nosec"
+            }
           }
         ]
       }
@@ -526,6 +830,55 @@ const validCompactTDs = [
       }
     }
   },
+  // expanded
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "valid-test-diff-sec-per-op",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://192.168.1.10:8080/props/prop1",
+            "op": "readproperty",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "https://192.168.1.10:8080/props/prop1",
+            "op": "readproperty",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "basic"
+            }
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://192.168.1.10:8080/props/prop2",
+            "op": "readproperty",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "https://192.168.1.10:8080/props/prop2",
+            "op": "readproperty",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "basic"
+            }
+          }
+        ]
+      }
+    }
+  },
   // 9. multiple content types where all affordances are available in json and cbor
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
@@ -561,6 +914,51 @@ const validCompactTDs = [
         "forms": [
           {
             "href": "props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // expanded
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "valid-test-multi-contenttype",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://192.168.1.10:8080/props/prop1",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "https://192.168.1.10:8080/props/prop1",
+            "contentType": "application/cbor",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://192.168.1.10:8080/props/prop2",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "https://192.168.1.10:8080/props/prop2",
+            "contentType": "application/cbor",
+            "security": {
+              "scheme": "nosec"
+            }
           }
         ]
       }
