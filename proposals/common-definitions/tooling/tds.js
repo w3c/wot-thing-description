@@ -305,7 +305,7 @@ const validCompactTDs = [
   // expanded
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-modbus-params",
+    "title": "expanded-valid-test-modbus-params",
     "properties": {
       "prop1": {
         "type": "boolean",
@@ -391,7 +391,7 @@ const validCompactTDs = [
   // expanded
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-mqtt-override",
+    "title": "expanded-valid-test-mqtt-override",
     "actions": {
       "act1": {
         "type": "string",
@@ -487,7 +487,7 @@ const validCompactTDs = [
   // expanded
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-multi-ip",
+    "title": "expanded-valid-test-multi-ip",
     "properties": {
       "prop1": {
         "type": "string",
@@ -573,7 +573,7 @@ const validCompactTDs = [
   // expanded
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-diff-sec",
+    "title": "expanded-valid-test-diff-sec",
     "properties": {
       "prop1": {
         "type": "string",
@@ -661,7 +661,7 @@ const validCompactTDs = [
   // expanded
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-multi-protocol",
+    "title": "expanded-valid-test-multi-protocol",
     "properties": {
       "prop1": {
         "type": "string",
@@ -772,7 +772,7 @@ const validCompactTDs = [
         "forms": [
           {
             "op": ["readproperty", "writeproperty"],
-            "href": "props/prop1"
+            "href": "props/prop3"
           }
         ]
       },
@@ -783,6 +783,99 @@ const validCompactTDs = [
           {
             "form": "read",
             "href": "props/propR"
+          }
+        ]
+      }
+    }
+  },
+  // expanded
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "expanded-valid-test-nonstandard-rest",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://192.168.1.10:8080/props/prop1",
+            "op": "readproperty",
+            "contentType": "application/json",
+            "htv:methodName": "GET",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "https://192.168.1.10:8080/props/prop1",
+            "op": "readproperty",
+            "contentType": "application/json",
+            "htv:methodName": "POST",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://192.168.1.10:8080/props/prop2",
+            "op": "readproperty",
+            "contentType": "application/json",
+            "htv:methodName": "GET",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "https://192.168.1.10:8080/props/prop2",
+            "op": "readproperty",
+            "contentType": "application/json",
+            "htv:methodName": "POST",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      },
+      // in the following, we don't use the definitions from above as the protocol defaults are enough.
+      // it is not clear if this is a real use case, but it shows the possibility
+      "propWithProtocolDefaults": {
+        "type": "string",
+        "forms": [
+          {
+            "op": "readproperty",
+            "href": "https://192.168.1.10:8080/props/prop3",
+            "security": {
+              "scheme": "nosec"
+            },
+            "contentType": "application/json",
+            "htv:methodName": "GET"
+          },
+          {
+            "op": "writeproperty",
+            "href": "https://192.168.1.10:8080/props/prop3",
+            "security": {
+              "scheme": "nosec"
+            },
+            "contentType": "application/json",
+            "htv:methodName": "PUT"
+          }
+        ]
+      },
+      "propReadOnly": {
+        "type": "string",
+        "readOnly": true,
+        "forms": [
+          {
+            "op": "readproperty",
+            "href": "https://192.168.1.10:8080/props/propR",
+            "security": {
+              "scheme": "nosec"
+            },
+            "contentType": "application/json",
+            "htv:methodName": "GET"
           }
         ]
       }
@@ -833,7 +926,7 @@ const validCompactTDs = [
   // expanded
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-diff-sec-per-op",
+    "title": "expanded-valid-test-diff-sec-per-op",
     "properties": {
       "prop1": {
         "type": "string",
@@ -922,7 +1015,7 @@ const validCompactTDs = [
   // expanded
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-multi-contenttype",
+    "title": "expanded-valid-test-multi-contenttype",
     "properties": {
       "prop1": {
         "type": "string",
@@ -1018,6 +1111,53 @@ const validCompactTDs = [
       }
     }
   },
+  // expanded
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "expanded-valid-test-multi-affordance-protocol",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "https://192.168.1.10:8080/props/prop1",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      }
+    },
+    "actions": {
+      "act1": {
+        "input": { "type": "string" },
+        "forms": [
+          {
+            "href": "https://192.168.1.10:8080/actions/act1",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      }
+    },
+    "events": {
+      "evt1": {
+        "data": { "type": "string" },
+        "forms": [
+          {
+            "href": "mqtt://test.mosquitto.org:1883/events/evt1", //assuming we transition to topic relative hrefs in mqtt binding
+            "contentType": "text/plain",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      }
+    }
+  },
   // 11. multiple content types and protocols where all affordances are available in json and cbor AND coap and http
   // note that the expanded version would have 4 forms per affordance (http+json, http+cbor, coap+json, coap+cbor)
   {
@@ -1068,6 +1208,79 @@ const validCompactTDs = [
         "forms": [
           {
             "href": "props/prop2"
+          }
+        ]
+      }
+    }
+  },
+  // expanded
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "expanded-valid-test-multi-protocol-multi-contenttype",
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "http://192.168.1.10:8080/mything/props/prop1",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "http://192.168.1.10:8080/mything/props/prop1",
+            "contentType": "application/cbor",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "coap://[2001:DB8::1]/mything/props/prop1",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "coap://[2001:DB8::1]/mything/props/prop1",
+            "contentType": "application/cbor",
+            "security": {
+              "scheme": "nosec"
+            }
+          }
+        ]
+      },
+      "prop2": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "http://192.168.1.10:8080/mything/props/prop2",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "http://192.168.1.10:8080/mything/props/prop2",
+            "contentType": "application/cbor",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "coap://[2001:DB8::1]/mything/props/prop2",
+            "contentType": "application/json",
+            "security": {
+              "scheme": "nosec"
+            }
+          },
+          {
+            "href": "coap://[2001:DB8::1]/mything/props/prop2",
+            "contentType": "application/cbor",
+            "security": {
+              "scheme": "nosec"
+            }
           }
         ]
       }
