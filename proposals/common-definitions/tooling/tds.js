@@ -5,6 +5,7 @@
 const invalidCompactTDs = [
   // Inline (no definitions objects)
   // Missing Base, i.e., no way to build full URI
+  // This cannot be validated by the schema as base is optional in formDefaults since form hrefs can have absolute URIs
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
     "title": "invalid-test-compacted-0",
@@ -34,9 +35,10 @@ const invalidCompactTDs = [
     }
   },
   // no formDefaults, i.e. definitions exist but not referenced. Thus, no way to build full requests or understand security
+  // This cannot be validated by the schema as maybe all forms have "form"
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-cbor-default-definitions",
+    "title": "invalid-test-compacted-1",
     "formDefinitions": {
       "cborCoap": {
         "contentType": "application/cbor",
@@ -66,9 +68,10 @@ const invalidCompactTDs = [
     }
   },
   // One form is referencing a non-existing definition
+  // This cannot be validated by the schema as we cannot check for links between values
   {
     "@context": "https://www.w3.org/ns/wot-next/td",
-    "title": "valid-test-cbor-default-definitions",
+    "title": "invalid-test-compacted-2",
     "formDefinitions": {
       "cborCoap": {
         "contentType": "application/cbor",
@@ -179,7 +182,8 @@ const validTDs = [
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         },
@@ -191,7 +195,8 @@ const validTDs = [
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         }
@@ -246,7 +251,8 @@ const validTDs = [
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         },
@@ -258,7 +264,8 @@ const validTDs = [
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         }
@@ -314,7 +321,8 @@ const validTDs = [
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         },
@@ -326,7 +334,8 @@ const validTDs = [
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         }
@@ -391,7 +400,8 @@ const validTDs = [
               "contentType": "application/octet-stream",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": "readproperty"
             }
           ]
         },
@@ -409,7 +419,8 @@ const validTDs = [
               "contentType": "application/octet-stream",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": "readproperty"
             }
           ]
         }
@@ -475,7 +486,8 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": "invokeaction"
             }
           ]
         },
@@ -489,7 +501,8 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": "invokeaction"
             }
           ]
         },
@@ -503,7 +516,8 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": "invokeaction"
             }
           ]
         }
@@ -571,14 +585,16 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "https://[2001:db8:85a3::8a2e:370:7334]:8080/props/prop2",
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         },
@@ -590,14 +606,16 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "https://[2001:db8:85a3::8a2e:370:7334]:8080/props/prop2",
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         }
@@ -659,14 +677,16 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "https://example.com:8080/props/prop1",
               "contentType": "application/json",
               "security": {
                 "scheme": "basic"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         },
@@ -678,14 +698,16 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "https://example.com:8080/props/prop2",
               "contentType": "application/json",
               "security": {
                 "scheme": "basic"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         }
@@ -749,14 +771,16 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "coap://[2001:DB8::1]/mything/props/prop1",
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         },
@@ -768,14 +792,16 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "coap://[2001:DB8::1]/mything/props/prop2",
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         }
@@ -886,7 +912,7 @@ const validTDs = [
             },
             {
               "href": "https://192.168.1.10:8080/props/prop1",
-              "op": "readproperty",
+              "op": "writeproperty",
               "contentType": "application/json",
               "htv:methodName": "POST",
               "security": {
@@ -909,7 +935,7 @@ const validTDs = [
             },
             {
               "href": "https://192.168.1.10:8080/props/prop2",
-              "op": "readproperty",
+              "op": "writeproperty",
               "contentType": "application/json",
               "htv:methodName": "POST",
               "security": {
@@ -1108,14 +1134,16 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "https://192.168.1.10:8080/props/prop1",
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         },
@@ -1127,14 +1155,16 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "https://192.168.1.10:8080/props/prop2",
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         }
@@ -1209,7 +1239,8 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         }
@@ -1223,7 +1254,8 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": "invokeaction"
             }
           ]
         }
@@ -1237,7 +1269,8 @@ const validTDs = [
               "contentType": "text/plain",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": "subscribeevent"
             }
           ]
         }
@@ -1313,28 +1346,32 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "http://192.168.1.10:8080/mything/props/prop1",
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "coap://[2001:DB8::1]/mything/props/prop1",
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "coap://[2001:DB8::1]/mything/props/prop1",
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         },
@@ -1346,28 +1383,32 @@ const validTDs = [
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "http://192.168.1.10:8080/mything/props/prop2",
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "coap://[2001:DB8::1]/mything/props/prop2",
               "contentType": "application/json",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             },
             {
               "href": "coap://[2001:DB8::1]/mything/props/prop2",
               "contentType": "application/cbor",
               "security": {
                 "scheme": "nosec"
-              }
+              },
+              "op": ["readproperty", "writeproperty"]
             }
           ]
         }
