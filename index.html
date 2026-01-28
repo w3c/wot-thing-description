@@ -742,6 +742,37 @@
           Data Schemas.
         </dd>
         <dt>
+          <dfn id="dfn-base-uri">Base URI</dfn>
+        </dt>
+        <dd>
+          A base URI, as defined by [[RFC3986]], section 5.1. It is used to resolve <a>Relative URIs</a>. It can be
+          found in the <code>base</code> member in a Thing Description.
+        </dd>
+        <dt>
+          <dfn id="dfn-relative-uri">Relative URI</dfn>
+        </dt>
+        <dd>
+          A relative URI as defined by [[RFC3986]], section 4.2, which is resolved against a <a>base URI</a> to obtain
+          an <a>Absolute URI</a>, which is the target meant by the relative URI. It can be found in the
+          <code>href</code> member of a <a href="#form">Form</a> in a Thing Description.
+        </dd>
+        <dt>
+          <dfn id="dfn-absolute-uri">Absolute URI</dfn>
+        </dt>
+        <dd>
+          A URI, as defined by [[RFC3986]], section 5.1. It can be found in the <code>base</code> member or
+          <code>href</code> member of a <a href="#form">Form</a> in a Thing Description or obtained by resolving a
+          <a>Relative URI</a> against a <a>Base URI</a>.
+        </dd>
+        <dt><dfn id="dfn-target-uri">Target URI</dfn></dt>
+        <dd>
+          A URI conforming to the absolute URI definition by [[RFC3986]], section 4.3, that locates a resource on the
+          network and can be directly used to send the correct protocol message. It can be found in the
+          <code>href</code> member of a <a href="#form">Form</a> in a Thing Description or obtained by resolving a
+          <a>Relative URI</a> against a <a>Base URI</a>. A <a>Base URI</a> on its own is not a valid
+          <a>Target URI</a> as it may not point to a specific resource.
+        </dd>
+        <dt>
           <dfn id="dfn-inf-model">TD Information Model</dfn>
         </dt>
         <dd>
@@ -1101,6 +1132,17 @@
           <code>unsignedInt</code>, <code>double</code>, and <code>boolean</code>. Their definition (i.e., the
           specification of their lexical form) is outside of the scope of the <a>TD Information Model</a>.
         </p>
+
+        <p class="note" id="note-uri-iri" title="Usage of anyURI Type">
+          We note one important distinction on the usage of the <code>anyURI</code> type. Any vocabulary term typed as
+          <code>anyURI</code> is intended to be interpreted as a URI per [[RFC3986]].
+          <span id="td-uri-unicode-usage">
+            When Universal Character Set (Unicode) [[ISO10646]] characters are used to represent the resource and are to
+            be sent in the protocol message, they MUST be converted to a URI following Section 3.1 of [[RFC3987]] before
+            placing it in a Thing Description.
+          </span>
+        </p>
+
         <p>
           In addition, the <a>TD Information Model</a> defines a global function on pairs of <a>Vocabulary Terms</a>.
           The function takes a <a>Class</a> name and another <a>Vocabulary Term</a> as input and returns an
@@ -1275,9 +1317,9 @@
                 <tr class="rfc2119-table-assertion" id="td-vocab-base--Thing">
                   <td><code>base</code></td>
                   <td>
-                    Define the base URI that is used for all relative URI references throughout a TD document. In TD
-                    instances, all relative URIs are resolved relative to the base URI using the algorithm defined in
-                    [<cite
+                    Define the absolute base URI that is used for all relative URI references throughout a TD document.
+                    In TD instances, all relative URIs are resolved relative to the base URI using the algorithm defined
+                    in [<cite
                       ><a
                         class="bibref"
                         data-link-type="biblio"
@@ -1297,6 +1339,8 @@
                         >LINKED-DATA</a
                       ></cite
                     >] graphs that are relevant when semantic processing is applied to TD instances.
+                    <br />
+                    Also see <a href="#note-uri-iri">the note</a> about the type of base URI.
                   </td>
                   <td>optional</td>
                   <td>
@@ -1912,7 +1956,7 @@
             <p>
               EventAffordances are similar to observable PropertyAffordances in the sense that the Thing itself informs
               interested Consumers about state changes. However, a main difference of EventAffordances is that not every
-              change of the associated resource needs to trigger an event message to be emitted, e.g. a critical
+              change of the associated resource needs to trigger an event message to be emitted, e.g., a critical
               threshold for a numeric value. Furthermore, EventAffordances allow for more complex subscribing and
               unsubscribing mechanisms via the definition of <code>subscription</code>, <code>dataResponse</code>, and
               <code>cancellation</code> DataSchema definitions. Not all protocols might support these more advanced
@@ -2520,8 +2564,8 @@
                   <td><code>required</code></td>
                   <td>
                     Defines which members of the object type are mandatory, i.e. which members are mandatory in the
-                    payload that is to be sent (e.g. input of <code>invokeaction</code>, <code>writeproperty</code>) and
-                    what members will be definitely delivered in the payload that is being received (e.g. output of
+                    payload that is to be sent (e.g., input of <code>invokeaction</code>, <code>writeproperty</code>)
+                    and what members will be definitely delivered in the payload that is being received (e.g., output of
                     <code>invokeaction</code>, <code>readproperty</code>)
                   </td>
                   <td>optional</td>
@@ -2760,7 +2804,7 @@
                   <code>SecurityScheme</code>, then the <code>name</code> field SHOULD NOT be set.</span
                 >
                 In this case, the application of the <code>SecurityScheme</code> is subject to the respective
-                specification for the given protocol (e.g. [[!RFC8288]] when using the
+                specification for the given protocol (e.g., [[!RFC8288]] when using the
                 <code>BasicSecurityScheme</code> with HTTP).
               </dd>
             </dl>
@@ -2892,7 +2936,7 @@
               An automatic authentication security configuration identified by the term <code>auto</code> (i.e.,
               <code>"scheme": "auto"</code>). This scheme indicates that the security parameters are going to be
               negotiated by the underlying protocols at runtime, subject to the respective specifications for the
-              protocol (e.g. [[!RFC8288]] for Basic Authentication when using HTTP).
+              protocol (e.g., [[!RFC8288]] for Basic Authentication when using HTTP).
             </p>
           </section>
           <section>
@@ -3422,7 +3466,7 @@
               <tbody>
                 <tr class="rfc2119-table-assertion" id="td-vocab-href--Link">
                   <td><code>href</code></td>
-                  <td>Target IRI of a link or submission target of a form.</td>
+                  <td><a>Target URI</a> of a link.</td>
                   <td>mandatory</td>
                   <td>
                     <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a>
@@ -3677,7 +3721,10 @@
               <tbody>
                 <tr class="rfc2119-table-assertion" id="td-vocab-href--Form">
                   <td><code>href</code></td>
-                  <td>Target IRI of a link or submission target of a form.</td>
+                  <td>
+                    <a>Target URI</a> of a submission target of a <a>Form</a>. See the
+                    <a href="#note-uri-iri">note on URI/IRI</a>.
+                  </td>
                   <td>mandatory</td>
                   <td>
                     <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a>
@@ -3758,7 +3805,7 @@
                 <tr class="rfc2119-table-assertion" id="td-vocab-additionalResponses--Form">
                   <td><code>additionalResponses</code></td>
                   <td>
-                    This optional term can be used if additional expected responses are possible, e.g. for error
+                    This optional term can be used if additional expected responses are possible, e.g., for error
                     reporting. Each additional response needs to be distinguished from others in some way (for example,
                     by specifying a protocol-specific error code), and may also have its own data schema.
                   </td>
@@ -3812,12 +3859,21 @@
               </tbody>
             </table>
 
+            <p class="note">
+              The value of the <code>href</code> property in a <a>Form</a> instance can be a <a>relative URI</a> or an
+              <a>absolute URI</a>.
+              <span class="rfc2119-assertion" id="td-form-href-relative">
+                To properly build the target URI, if <code>base</code> is present in the <a>Thing level</a>, the
+                <code>href</code> value MUST be resolved using the <code>base</code> URI.
+              </span>
+            </p>
+
             <!-- https://www.w3.org/TR/wot-architecture11/#arch-media-type-extra -->
             <p>
               While this table defines the terms available in a form,
-              <span class="rfc2119-assertion" id="td-form-additional-mediatype-metadata"
-                >, Bindings MAY have additional information that specifies representation formats in more detail than
-                the media type alone.</span
+              <span class="rfc2119-assertion" id="td-form-additional-mediatype-metadata">
+                Bindings MAY have additional information that specifies representation formats in more detail than the
+                media type alone.</span
               >
               For example, in a TD with the Modbus Binding, <code>modv:mostSignificantByte</code> in a form describes
               the endianness of the payload. Please see <a href="#bindings"></a> for further information. Furthermore,
