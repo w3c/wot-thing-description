@@ -9,113 +9,31 @@
           "type": "string",
           "$comment": "same as now but will be probably made binding-specific"
         },
-        "@type": {
-          "$ref": "#/definitions/type_declaration"
-        },
-        "description": {
-          "$ref": "#/definitions/description"
-        },
-        "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
         "proxy": {
           "$ref": "#/definitions/anyUri"
         }
       }
     },
-    "singleConnectionDefinition": {
+    "singleFormDefinition": {
       "type": "object",
       "properties": {
         "base": {
           "type": "string"
         },
+        "contentType": {
+          "type": "string"
+        },
         "security": {
-          "$ref": "#/definitions/securityUsageDefinition"
+          "$ref": "#/definitions/singleSecurityDefinition"
         }
       }
-    },
-    "singleFormDefinition": {
-      "anyOf": [
-        {
-          "$comment": "Not flattened",
-          "type": "object",
-          "properties": {
-            "contentType": {
-              "type": "string"
-            },
-            "connection": {
-              "$ref": "#/definitions/connectionUsageDefinition"
-            }
-          },
-          "not": {
-            "required": ["base"]
-          }
-        },
-        {
-          "$comment": "Flattened",
-          "type": "object",
-          "properties": {
-            "contentType": {
-              "type": "string"
-            },
-            "base": {
-              "type": "string"
-            },
-            "security": {
-              "$ref": "#/definitions/singleSecurityDefinition"
-            }
-          },
-          "not": {
-            "required": ["connection"]
-          }
-        }
-      ]
     },
     "singleSchemaDefinition": {
       "type": "object",
       "$comment": "A JSON Schema definition"
     },
-    "securityUsageDefinition": {
-      "oneOf": [
-        {
-          "$ref": "#/definitions/singleSecurityDefinition"
-        },
-        {
-          "type": "string",
-          "$comment": "Reference to a securityDefinitions object key"
-        }
-      ]
-    },
-    "connectionUsageDefinition": {
-      "oneOf": [
-        {
-          "$ref": "#/definitions/singleConnectionDefinition"
-        },
-        {
-          "type": "string",
-          "$comment": "Reference to a connectionDefinitions object key"
-        }
-      ]
-    },
-    "formUsageDefinition": {
-      "oneOf": [
-        {
-          "$ref": "#/definitions/singleFormDefinition"
-        },
-        {
-          "type": "string",
-          "$comment": "Reference to a formDefinitions object key"
-        }
-      ]
-    },
     "description": {
       "type": "string"
-    },
-    "descriptions": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      }
     },
     "type_declaration": {
       "oneOf": [
@@ -141,26 +59,18 @@
     }
   },
   "properties": {
-    "security": {
-      "$ref": "#/definitions/securityUsageDefinition"
-    },
-    "connection": {
-      "$ref": "#/definitions/connectionUsageDefinition"
-    },
-    "form": {
-      "$ref": "#/definitions/formUsageDefinition"
-    },
-    "securityDefinitions": {
-      "type": "object",
-      "additionalProperties": {
-        "$ref": "#/definitions/singleSecurityDefinition"
-      }
-    },
-    "connectionDefinitions": {
-      "type": "object",
-      "additionalProperties": {
-        "$ref": "#/definitions/singleConnectionDefinition"
-      }
+    "formDefaults": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "$ref": "#/definitions/singleFormDefinition"
+        }
+      ]
     },
     "formDefinitions": {
       "type": "object",

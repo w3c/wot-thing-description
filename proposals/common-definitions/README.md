@@ -107,23 +107,22 @@ Related Issues:
 
 ## Basic mechanism
 
-### Defaultable elements
+### Defaultable form elements
 
-An element that is defaultable has a container `{element}Definitions` at the root of the Thing that is a map of element of that kind.
+Forms and schemas are defaultable and have a container `formDefinitions` and `schemaDefinitions` at the root of the Thing that is a map of Forms and Schemas, respectively.
+Using `formDefaults` or `schemaDefaults` as an array in the root level chooses which of the previously-defined definitions are default for the Thing.
 
-Every element as a term `inherit` that points to a single element in `{element}Definitions`, if inherit is populated all the fields in the pointed element are used as default for the current element.
+### Inlining
 
-### Inlineable fields
+Using `formDefaults` or `schemaDefaults` with an object in the root level removes the need for `formDefinitions` or `schemaDefinitions` and you can define the default for the Thing within the object, thus not needing to define before using.
+This mechanism is called inlining a definition.
 
-A field may contain either a string pointing to an element in `{element}Definitions` or may contain the element of that kind itself.
+### Overriding
 
-### Thing-wide default
+The defaults defined in the root level (definition or inlining), can be overwritten in two ways:
 
-Fields that override the starting default for all the elements of that kind.
-
-### Usage in the TD
-
-`Form`, `Connection`, `DataSchema` and `Security` are **Defaultable Elements**. All the fields that can take one are **Inlineable fields**.
+1. A form can redefine the specific keyword in the defaults object, i.e. `contentType` or use an absolute URI in the value `href`. This way, the default defined in the Thing-level is overridden.
+2. A form can use the `form` keyword and point to a form definition from `formDefinitions`. That way, that specific form would use the keys and values defined at that definition instead of the default one.
 
 ## Keywords and Types
 
@@ -131,58 +130,39 @@ Fields that override the starting default for all the elements of that kind.
 
 #### Thing-wide defaults
 
-These set a default for the whole Thing. The mechanism is the same for all the terms, i.e. if the term has a string value, it is a reference and if it has an object value, it is an in-place definition.
+These set a default for the whole Thing. The mechanism is the same for all the terms, i.e. if the term has an array of strings value, each string is a reference and if it has an object value, it is an in-place definition.
 
-| Vocabulary Term | Description                                                                                                      | Assignment | Type                                                                                                                        | Remarks                                                                                                  |
-| --------------- | ---------------------------------------------------------------------------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| security        | A reference to or an in-place definition of a Security                                                           | optional   | Array with items pointing to the `securityDefinitions` map or Object with type `Security` (currently called SecurityScheme) | If Array, the items have an `OR` relationship key, meaning multiple security mechanisms can be used      |
-| connection      | A reference to or an in-place definition of a Connection, if missing a protocol binding default is in place.     | optional   | Array with items pointing to the `connectionDefinitions` map or Object with type `Connection`.                              | If Array, the items have an `OR` relationship key, meaning multiple connection alternatives can be used. |
-| form            | A reference to or an in-place definition of a Form, if missing the affordance/operation-specific defaults apply. | optional   | Array with items pointing to the `formDefinitions` map or Object with type`Form`.                                           | If Array, the items have an `OR` relationship key, meaning multiple form defaults can be used.           |
-| schema          | A reference to or an in-place definition of a Data Schema                                                        | optional   | Array with items pointing to the `schemaDefinitions` map or Object with type `DataSchema`.                                  |                                                                                                          |
+| Vocabulary Term | Description                                                                                                                        | Assignment | Type                                                                                              | Remarks                                                                                                     |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| formDefaults    | Reference(s) to or an in-place definition of a Form. If there are missing terms, the affordance/operation-specific defaults apply. | optional   | Array with String Items pointing to the `formDefinitions` map or Object of type `Form`.           | The items have an `OR` relationship key, meaning multiple forms with defaults can be used in an affordance. |
+| schemaDefaults  | Reference(s) to or an in-place definition of a Data Schema                                                                         | optional   | Array with String Items pointing to the `schemaDefinitions` map or Object with type `DataSchema`. |                                                                                                             |
 
-#### Definitions/Defaults container
+#### Definitions container
 
-| Vocabulary Term       | Description                                                                                                            | Assignment | Type                                    | Remarks                                                                    |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------- | --------------------------------------- | -------------------------------------------------------------------------- |
-| securityDefinitions   | Set of named security configurations to be applied based on the presence of the `security` term                        | optional   | Map of Object with of type `Security`   | The first-level keys are free to choose by the TD producer. Same as TD 1.1 |
-| connectionDefinitions | A set of connections that can be reused in forms to group common connection information such as a base URI or security | optional   | Map of Object with of type `Connection` | The first-level keys are free to choose by the TD producer. Same as TD 1.1 |
-| formDefinitions       | A set of form information that can be referenced in a forms to group common form information such as `contentType`.    | optional   | Map of Object with of type `Form`       | The first-level keys are free to choose by the TD producer. Same as TD 1.1 |
-| schemaDefinitions     | A set of Data Schemas to group common payload structures                                                               | optional   | Map of Object with of type `DataSchema` | The first-level keys are free to choose by the TD producer. Same as TD 1.1 |
+| Vocabulary Term   | Description                                                                                                                                                                            | Assignment | Type                                    | Remarks                                                                    |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------------------------------------- | -------------------------------------------------------------------------- |
+| formDefinitions   | A set of form information that can be referenced in a form or in `formDefaults` to group common form information such as `contentType`, `base`, `security`, or binding-specific terms. | optional   | Map of Object with of type `Form`       | The first-level keys are free to choose by the TD producer.                |
+| schemaDefinitions | A set of Data Schemas to group common payload structures                                                                                                                               | optional   | Map of Object with of type `DataSchema` | The first-level keys are free to choose by the TD producer. Same as TD 1.1 |
 
 Note: Even if a single form of an affordance is not complete, a defaultable element should exist.
 
 ### Elements
 
-#### Overall Rules
-
-- All of them contain `inherit`, which has type `String`
-- Form can refer to a connection via `Form::connection`
-- Connection can refer to a security `Connection::security`
-- Form can refer to a schema via `Form::additionalResponse` (no change)
-- Security can be overridden in a form using an inline definition for connection. No `security` term in the form level.
-- Thing can refer to some forms in `Thing::forms`
-- Security cannot refer to a connection, form or schema
-- Connection cannot refer to a form or schema
-- Schema cannot refer to anything beside itself, i.e. inheriting or `oneOf` etc.
-
 #### Security
 
-Same as now
-
-#### Connection
-
-| Vocabulary Term | Description                                                                                 | Assignment | Type                                                                                      | Remarks                                                                                                 |
-| --------------- | ------------------------------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| base            | The base URI that is used for building an absolute URI together with relative URIs in forms | optional   | String of URI                                                                             | None                                                                                                    |
-| security        | String pointing to the `securityDefinitions` map or Object with type `Security`             | optional   | Array with items pointing to the `securityDefinitions` map or Object with type `Security` | When the security definition moves to the bindings, these terms can be moved a layer up to `connection` |
+Does not exist in the Thing-level anymore. It exists within `Form` and is the same as a `SecurityDefinition` from TD 1.1
 
 #### Form
 
-| Vocabulary Term | Description                                                                                                                          | Assignment   | Type                                                                                           | Remarks                                                                     |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------ | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| connection      | A reference to or an in-place definition of a connection definition                                                                  | optional     | Array with items pointing to the `connectionDefinitions` map or Object with type `Connection`. | If a string, it MUST refer to a first-level key in `connectionDefinitions`. |
-| op              | Indicates the semantic intention of performing the operation(s) described by the form.                                               | with default | String or Array of Strings (no change)                                                         |                                                                             |
-| contentType     | Assign a content type based on a media type (e.g., `text/plain`) and potential parameters (e.g., `charset=utf-8`) for the media type | with default | String (no change)                                                                             |                                                                             |
+| Vocabulary Term | Description                                                                                                                          | Assignment   | Type                        | Remarks                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------ | --------------------------- | ------------------------------------------------------------------ |
+| op              | Indicates the semantic intention of performing the operation(s) described by the form.                                               | with default | String or Array of Strings  | (no change)                                                        |
+| contentType     | Assign a content type based on a media type (e.g., `text/plain`) and potential parameters (e.g., `charset=utf-8`) for the media type | with default | String                      | (no change)                                                        |
+| base            | The base URI that is used for building an absolute URI together with relative URIs in forms                                          | optional     | String of URI               | Cannot be used in the Form-level, only usable in a Form Definition |
+| security        | Security applied on the operations of the `Form`                                                                                     | mandatory    | Object with type `Security` |                                                                    |
+| form            | A form definition from the `formDefinitions` to be used for a specific form in the Form-level                                        | optional     | String                      | Cannot be used in a form definition, only usable in the Form-level |
+
+Note: The terms `base` and `form` can be only used in specific levels. Please see the Remarks column.
 
 #### Schema
 
@@ -190,36 +170,28 @@ Same as now
 
 ## Guidelines
 
-Best practices for designing TDs. When to use this or not.
+Best practices for designing TDs. When to use this common definitions mechanism or not.
 
-1. If you have one mechanism (security, connection, form, schema), just inline it, i.e. do not use `-Definitions` objects.
+1. If you have one mechanism just inline it, i.e. do not use `-Definitions` objects.
 2. In case of multiple defaults, as default definitions are applied to all forms, any local form overwriting it can result in multiple forms with the same information. See https://github.com/w3c/wot-thing-description/pull/2163#issuecomment-3562576204
 3. A TD is not required to use the common definitions. If you do not have common patterns in your TD, where most of the forms don't have duplicate terms, do not try to use this feature. It will make it more complicated for the Consumers to process.
+4. You do not need to use `"form"` in the Form-level if that form already uses the defaults. That is provided as a way to override defaults.
 
-- Security term at the top level is optional
-  - McCool not mandatory -> Reducing verbosity, make TDs simpler and shorter. People say it is annoying and does not improve security. Defining a "useless" security at the top and always overwriting it is not clear.
 - No resolution: Having no security field at all (none in the forms, none in the top level) -> reverting to defaults
-- No resolution: Security defaults:
-  - McCool auto -> Assuming nosec is wrong assumption
 
 ## Validation Rules
 
 1. In an expanded TD, each form MUST contain the information required to construct the request, meaning an absolute `href`, `security`, `op`, and protocol-related information defined by the binding specification. If a term has a default value, it MUST also be provided.
 2. In an expanded TD, the following terms MUST NOT be used in the root level:
-   1. `"security"`
-   2. `"securityDefinitions"`
-   3. `"schema"`
-   4. `"schemaDefinitions"`
-   5. `"connection"`
-   6. `"connectionDefinitions"`
-   7. `"form"`
-   8. `"formDefinitions"`
+   1. `"schema"`
+   2. `"schemaDefinitions"`
+   3. `"formDefaults"`
+   4. `"formDefinitions"`
 3. In an expanded TD, the following terms MUST NOT be used in the form level:
-   1. `"security"`
-   2. `"schema"`
-   3. `"connection"`
-   4. `"form"`
-4. When a field — such as `"security"`, `"schema"`, `"connection"`, or `"form"` — references a definition, that definition MUST exist in the root level in the respective category; e.g., the value of `"security"` (when not an object) must be in the `"securityDefinitions"` in the root level.
+   1. `"schema"`: TODO: How to remove?
+   2. `"formDefaults"`
+   3. `"form"`
+4. When a field — such as or `"formDefaults"` — references a definition, that definition MUST exist in the root level in the respective category; e.g., all values of `"formDefaults"` (when not an object) must be in the `"formDefinitions"` in the root level.
 
 ## Algorithm
 
@@ -228,10 +200,11 @@ TODO: Discuss flattening, normalization and canonicalization algorithm should ta
 1. Each TD form MUST be expanded before using its information in a protocol driver. However, it is not required that TDs be expanded upon receipt.
 2. If a term is available in a form and is also available in a definition, the value in the form MUST be used. In other words, local definitions have priority over global definitions, making it possible to overwrite when needed.
 3. Even if all necessary terms are defined in a form, if there is a link to a reference, the TD MUST be expanded. This is required to guarantee that all protocol-related terms are available in a form.
+4. TODO: https://github.com/w3c/wot-thing-description/pull/2163#issuecomment-3562576204 should be incorporated
 
 To expand the form in an affordance:
 
-- Check whether there is a `connection` or `form` available. If neither is present, check whether there is a top-level `connection` or `form` available. If neither is present, this form SHOULD be complete and can be used in a binding driver.
+- Check whether there is a `formDefaults` available. If not present, check whether there is a top-level `form` available. If neither is present, this form SHOULD be complete and can be used in a binding driver.
 
 ## Examples
 
