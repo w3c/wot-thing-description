@@ -204,75 +204,6 @@ const validTDs = [
     }
   ],
   [
-    // 1-alt1. alternative way of writing the same TD using definitions instead of inlining
-    // this is not recommended but possible
-    {
-      "@context": "https://www.w3.org/ns/wot-next/td",
-      "title": "valid-test-cbor-default-definitions-alt1",
-      "formDefinitions": {
-        "cborCoap": {
-          "contentType": "application/cbor",
-          "base": "coap://[2001:DB8::1]/mything",
-          "security": {
-            "scheme": "nosec"
-          }
-        }
-      },
-      "formDefaults": ["cborCoap"],
-      "properties": {
-        "prop1": {
-          "type": "string",
-          "forms": [
-            {
-              "href": "props/prop1"
-            }
-          ]
-        },
-        "prop2": {
-          "type": "string",
-          "forms": [
-            {
-              "href": "props/prop2"
-            }
-          ]
-        }
-      }
-    },
-    // expanded
-    {
-      "@context": "https://www.w3.org/ns/wot-next/td",
-      "title": "expanded-valid-test-cbor-default",
-      "properties": {
-        "prop1": {
-          "type": "string",
-          "forms": [
-            {
-              "href": "coap://[2001:DB8::1]/mything/props/prop1",
-              "contentType": "application/cbor",
-              "security": {
-                "scheme": "nosec"
-              },
-              "op": ["readproperty", "writeproperty"]
-            }
-          ]
-        },
-        "prop2": {
-          "type": "string",
-          "forms": [
-            {
-              "href": "coap://[2001:DB8::1]/mything/props/prop2",
-              "contentType": "application/cbor",
-              "security": {
-                "scheme": "nosec"
-              },
-              "op": ["readproperty", "writeproperty"]
-            }
-          ]
-        }
-      }
-    }
-  ],
-  [
     // 1-alt2. alternative way of writing the same TD without formDefaults
     // this is not recommended but possible
     {
@@ -552,12 +483,16 @@ const validTDs = [
           }
         }
       },
-      "formDefaults": ["ipv4", "ipv6"],
       "properties": {
         "prop1": {
           "type": "string",
           "forms": [
             {
+              "form": "ipv4",
+              "href": "props/prop1"
+            },
+            {
+              "form": "ipv6",
               "href": "props/prop1"
             }
           ]
@@ -566,6 +501,11 @@ const validTDs = [
           "type": "string",
           "forms": [
             {
+              "form": "ipv4",
+              "href": "props/prop2"
+            },
+            {
+              "form": "ipv6",
               "href": "props/prop2"
             }
           ]
@@ -644,12 +584,16 @@ const validTDs = [
           }
         }
       },
-      "formDefaults": ["local", "public"],
       "properties": {
         "prop1": {
           "type": "string",
           "forms": [
             {
+              "form": "local",
+              "href": "props/prop1"
+            },
+            {
+              "form": "public",
               "href": "props/prop1"
             }
           ]
@@ -658,6 +602,11 @@ const validTDs = [
           "type": "string",
           "forms": [
             {
+              "form": "local",
+              "href": "props/prop2"
+            },
+            {
+              "form": "public",
               "href": "props/prop2"
             }
           ]
@@ -744,6 +693,11 @@ const validTDs = [
           "type": "string",
           "forms": [
             {
+              "form": "http",
+              "href": "props/prop1"
+            },
+            {
+              "form": "coap",
               "href": "props/prop1"
             }
           ]
@@ -752,6 +706,11 @@ const validTDs = [
           "type": "string",
           "forms": [
             {
+              "form": "http",
+              "href": "props/prop2"
+            },
+            {
+              "form": "coap",
               "href": "props/prop2"
             }
           ]
@@ -1016,6 +975,11 @@ const validTDs = [
           "type": "string",
           "forms": [
             {
+              "form": "read",
+              "href": "props/prop1"
+            },
+            {
+              "form": "write",
               "href": "props/prop1"
             }
           ]
@@ -1107,6 +1071,11 @@ const validTDs = [
           "type": "string",
           "forms": [
             {
+              "form": "json",
+              "href": "props/prop1"
+            },
+            {
+              "form": "cbor",
               "href": "props/prop1"
             }
           ]
@@ -1115,6 +1084,11 @@ const validTDs = [
           "type": "string",
           "forms": [
             {
+              "form": "json",
+              "href": "props/prop2"
+            },
+            {
+              "form": "cbor",
               "href": "props/prop2"
             }
           ]
@@ -1319,6 +1293,19 @@ const validTDs = [
           "type": "string",
           "forms": [
             {
+              "form": "http+json",
+              "href": "props/prop1"
+            },
+            {
+              "form": "http+cbor",
+              "href": "props/prop1"
+            },
+            {
+              "form": "coap+json",
+              "href": "props/prop1"
+            },
+            {
+              "form": "coap+cbor",
               "href": "props/prop1"
             }
           ]
@@ -1327,6 +1314,19 @@ const validTDs = [
           "type": "string",
           "forms": [
             {
+              "form": "http+json",
+              "href": "props/prop2"
+            },
+            {
+              "form": "http+cbor",
+              "href": "props/prop2"
+            },
+            {
+              "form": "coap+json",
+              "href": "props/prop2"
+            },
+            {
+              "form": "coap+cbor",
               "href": "props/prop2"
             }
           ]
