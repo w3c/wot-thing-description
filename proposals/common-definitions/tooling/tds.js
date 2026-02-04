@@ -1065,7 +1065,6 @@ const validTDs = [
           }
         }
       },
-      "formDefaults": ["json", "cbor"],
       "properties": {
         "prop1": {
           "type": "string",
@@ -1287,7 +1286,6 @@ const validTDs = [
           }
         }
       },
-      "formDefaults": ["http+json", "http+cbor", "coap+json", "coap+cbor"],
       "properties": {
         "prop1": {
           "type": "string",
