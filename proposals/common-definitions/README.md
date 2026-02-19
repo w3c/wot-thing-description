@@ -126,7 +126,7 @@ The defaults defined in the root level (definition or inlining), can be overwrit
 
 ### Multiple Possible Defaults
 
-When there are multiple defaults available at the same time, e.g. IPv4 or IPv6 available at the same time, you can use multiple defaults at the same time, where you define `formDefaults` as an array and reference to multiple form definitions you have defined in `formDefinitions`.
+When there are multiple defaults available at the same time, e.g., IPv4 and IPv6 available at the same time, you can use multiple defaults at the same time, where you define `formDefaults` as an array and refer to multiple form definitions you have defined in `formDefinitions`.
 In this case, the expanded TD has the same number of forms per affordance as the length of the `formDefaults` array.
 On the other hand, you can have multiple forms in an affordance but a single default form in `formDefaults`.
 In this case, the expanded TD has the same number of forms per affordance as the length of the `forms` array of that affordance.
