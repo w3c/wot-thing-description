@@ -124,6 +124,18 @@ The defaults defined in the root level (definition or inlining), can be overwrit
 1. A form can redefine the specific keyword in the defaults object, i.e. `contentType` or use an absolute URI in the value `href`. This way, the default defined in the Thing-level is overridden.
 2. A form can use the `form` keyword and point to a form definition from `formDefinitions`. That way, that specific form would use the keys and values defined at that definition instead of the default one.
 
+### Multiple Possible Defaults
+
+When there are multiple defaults available at the same time, e.g., IPv4 and IPv6 available at the same time, you can use multiple defaults at the same time, where you define `formDefaults` as an array and refer to multiple form definitions you have defined in `formDefinitions`.
+In this case, the expanded TD has the same number of forms per affordance as the length of the `formDefaults` array.
+On the other hand, you can have multiple forms in an affordance but a single default form in `formDefaults`.
+In this case, the expanded TD has the same number of forms per affordance as the length of the `forms` array of that affordance.
+However, it is not allowed to have a `formDefaults` array with multiple defaults and multiple forms in an affordance.
+That causes a **matrix multiplication**, which needs to be avoided.
+To avoid that, you can define multiple `formDefinitions` and not use `formDefaults` but simply use `form` inside each form of the affordances.
+Please see the test case `"valid-test-matrix-multiplication-avoid"` to see the example.
+Of course, you can choose to not compact that TD and always use the expanded form.
+
 ## Keywords and Types
 
 ### Thing Level
@@ -201,6 +213,7 @@ Best practices for designing TDs. When to use this common definitions mechanism 
    2. `"formDefaults"`
    3. `"form"`
 4. When a field — such as or `"formDefaults"` — references a definition, that definition MUST exist in the root level in the respective category; e.g., all values of `"formDefaults"` (when not an object) must be in the `"formDefinitions"` in the root level.
+5. if formDefaults is used as an array, the forms in affordances must be a single item array.
 
 ## Algorithm
 

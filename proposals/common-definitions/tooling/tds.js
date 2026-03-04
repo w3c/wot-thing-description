@@ -101,6 +101,41 @@ const invalidCompactTDs = [
         ]
       }
     }
+  },
+  // multiple forms in the affordance and multiple defaults result in matrix multiplication
+  {
+    "@context": "https://www.w3.org/ns/wot-next/td",
+    "title": "invalid-test-matrix-multiplication",
+    "formDefinitions": {
+      "http": {
+        "base": "https://192.168.1.10:8080",
+        "contentType": "application/json",
+        "security": {
+          "scheme": "nosec"
+        }
+      },
+      "coap": {
+        "base": "coap://[2001:DB8::1]/mything",
+        "contentType": "application/cbor",
+        "security": {
+          "scheme": "nosec"
+        }
+      }
+    },
+    "formDefaults": ["http", "coap"],
+    "properties": {
+      "prop1": {
+        "type": "string",
+        "forms": [
+          {
+            "href": "props/prop1"
+          },
+          {
+            "href": "properties/prop1"
+          }
+        ]
+      }
+    }
   }
 ];
 
@@ -1415,7 +1450,97 @@ const validTDs = [
       }
     }
   ],
-  // 12. Multiple Security Schemes applying to all affordances and operations
+  [
+    // 12-matrix-multiplication-avoidance: multiple forms in the affordance and multiple definitions are used to avoid matrix multiplication
+    {
+      "@context": "https://www.w3.org/ns/wot-next/td",
+      "title": "valid-test-matrix-multiplication-avoid",
+      "formDefinitions": {
+        "http": {
+          "base": "https://192.168.1.10:8080",
+          "contentType": "application/json",
+          "security": {
+            "scheme": "nosec"
+          }
+        },
+        "coap": {
+          "base": "coap://[2001:DB8::1]/mything",
+          "contentType": "application/cbor",
+          "security": {
+            "scheme": "nosec"
+          }
+        }
+      },
+      "properties": {
+        "prop1": {
+          "type": "string",
+          "forms": [
+            {
+              "href": "props/prop1",
+              "form": "http"
+            },
+            {
+              "href": "properties/prop1",
+              "form": "coap"
+            },
+            {
+              "href": "props/prop1",
+              "form": "http"
+            },
+            {
+              "href": "properties/prop1",
+              "form": "coap"
+            }
+          ]
+        }
+      }
+    },
+    // expanded
+    {
+      "@context": "https://www.w3.org/ns/wot-next/td",
+      "title": "expanded-valid-test-matrix-multiplication-avoid",
+      "properties": {
+        "prop1": {
+          "type": "string",
+          "forms": [
+            {
+              "href": "https://192.168.1.10:8080/props/prop1",
+              "contentType": "application/json",
+              "security": {
+                "scheme": "nosec"
+              },
+              "op": ["readproperty", "writeproperty"]
+            },
+            {
+              "href": "coap://[2001:DB8::1]/mything/props/prop1",
+              "contentType": "application/cbor",
+              "security": {
+                "scheme": "nosec"
+              },
+              "op": ["readproperty", "writeproperty"]
+            },
+            {
+              "href": "https://192.168.1.10:8080/properties/prop1",
+              "contentType": "application/json",
+              "security": {
+                "scheme": "nosec"
+              },
+              "op": ["readproperty", "writeproperty"]
+            },
+            {
+              "href": "coap://[2001:DB8::1]/mything/properties/prop1",
+              "contentType": "application/cbor",
+              "security": {
+                "scheme": "nosec"
+              },
+              "op": ["readproperty", "writeproperty"]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  // 13. Multiple Security Schemes applying to all affordances and operations
   // using allOf. So, similar to 1.1. Combo of combo is possible, oneOf also works the same way.
   [
     {
@@ -1511,7 +1636,7 @@ const validTDs = [
       }
     }
   ],
-  // 13. Multiple Security Schemes with OR relationship applying to all affordances and operations
+  // 14. Multiple Security Schemes with OR relationship applying to all affordances and operations
   // using oneOf. So, similar to 1.1. Combo of combo is possible
   [
     {
