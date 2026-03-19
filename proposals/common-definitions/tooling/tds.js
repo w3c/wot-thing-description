@@ -1540,7 +1540,7 @@ const validTDs = [
       }
     }
   ],
-  // 12. Multiple Security Schemes applying to all affordances and operations
+  // 13. Multiple Security Schemes applying to all affordances and operations
   // using allOf. So, similar to 1.1. Combo of combo is possible, oneOf also works the same way.
   [
     {
@@ -1636,7 +1636,7 @@ const validTDs = [
       }
     }
   ],
-  // 13. Multiple Security Schemes with OR relationship applying to all affordances and operations
+  // 14. Multiple Security Schemes with OR relationship applying to all affordances and operations
   // using oneOf. So, similar to 1.1. Combo of combo is possible
   [
     {
