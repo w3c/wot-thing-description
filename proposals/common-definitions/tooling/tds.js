@@ -1539,6 +1539,198 @@ const validTDs = [
         }
       }
     }
+  ],
+  // 12. Multiple Security Schemes applying to all affordances and operations
+  // using allOf. So, similar to 1.1. Combo of combo is possible, oneOf also works the same way.
+  [
+    {
+      "@context": "https://www.w3.org/ns/wot-next/td",
+      "title": "valid-test-multi-sec-allOf",
+      "formDefaults": {
+        "contentType": "application/json",
+        "base": "https://example.com/mything/{adminKey}",
+        "security": {
+          "scheme": "combo",
+          "allOf": [
+            {
+              "scheme": "basic"
+            },
+            {
+              "scheme": "apikey",
+              "in": "uri",
+              "name": "adminKey"
+            }
+          ]
+        }
+      },
+      "properties": {
+        "prop1": {
+          "type": "string",
+          "forms": [
+            {
+              "href": "props/prop1"
+            }
+          ]
+        },
+        "prop2": {
+          "type": "string",
+          "forms": [
+            {
+              "href": "props/prop2"
+            }
+          ]
+        }
+      }
+    },
+    // expanded
+    {
+      "@context": "https://www.w3.org/ns/wot-next/td",
+      "title": "expanded-valid-test-multi-sec-allOf",
+      "properties": {
+        "prop1": {
+          "type": "string",
+          "forms": [
+            {
+              "href": "https://example.com/mything/{adminKey}/props/prop1",
+              "contentType": "application/json",
+              "security": {
+                "scheme": "combo",
+                "allOf": [
+                  {
+                    "scheme": "basic"
+                  },
+                  {
+                    "scheme": "apikey",
+                    "in": "uri",
+                    "name": "adminKey"
+                  }
+                ]
+              },
+              "op": ["readproperty", "writeproperty"]
+            }
+          ]
+        },
+        "prop2": {
+          "type": "string",
+          "forms": [
+            {
+              "href": "https://example.com/mything/{adminKey}/props/prop2",
+              "contentType": "application/json",
+              "security": {
+                "scheme": "combo",
+                "allOf": [
+                  {
+                    "scheme": "basic"
+                  },
+                  {
+                    "scheme": "apikey",
+                    "in": "uri",
+                    "name": "adminKey"
+                  }
+                ]
+              },
+              "op": ["readproperty", "writeproperty"]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  // 13. Multiple Security Schemes with OR relationship applying to all affordances and operations
+  // using oneOf. So, similar to 1.1. Combo of combo is possible
+  [
+    {
+      "@context": "https://www.w3.org/ns/wot-next/td",
+      "title": "valid-test-multi-sec-oneOf",
+      "formDefaults": {
+        "contentType": "application/json",
+        "base": "https://example.com/mything/{adminKey}",
+        "security": {
+          "scheme": "combo",
+          "oneOf": [
+            {
+              "scheme": "basic"
+            },
+            {
+              "scheme": "apikey",
+              "in": "uri",
+              "name": "adminKey"
+            }
+          ]
+        }
+      },
+      "properties": {
+        "prop1": {
+          "type": "string",
+          "forms": [
+            {
+              "href": "props/prop1"
+            }
+          ]
+        },
+        "prop2": {
+          "type": "string",
+          "forms": [
+            {
+              "href": "props/prop2"
+            }
+          ]
+        }
+      }
+    },
+    // expanded
+    {
+      "@context": "https://www.w3.org/ns/wot-next/td",
+      "title": "expanded-valid-test-multi-sec-oneOf",
+      "properties": {
+        "prop1": {
+          "type": "string",
+          "forms": [
+            {
+              "href": "https://example.com/mything/{adminKey}/props/prop1",
+              "contentType": "application/json",
+              "security": {
+                "scheme": "combo",
+                "oneOf": [
+                  {
+                    "scheme": "basic"
+                  },
+                  {
+                    "scheme": "apikey",
+                    "in": "uri",
+                    "name": "adminKey"
+                  }
+                ]
+              },
+              "op": ["readproperty", "writeproperty"]
+            }
+          ]
+        },
+        "prop2": {
+          "type": "string",
+          "forms": [
+            {
+              "href": "https://example.com/mything/{adminKey}/props/prop2",
+              "contentType": "application/json",
+              "security": {
+                "scheme": "combo",
+                "oneOf": [
+                  {
+                    "scheme": "basic"
+                  },
+                  {
+                    "scheme": "apikey",
+                    "in": "uri",
+                    "name": "adminKey"
+                  }
+                ]
+              },
+              "op": ["readproperty", "writeproperty"]
+            }
+          ]
+        }
+      }
+    }
   ]
 ];
 
