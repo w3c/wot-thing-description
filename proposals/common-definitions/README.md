@@ -162,7 +162,16 @@ Note: Even if a single form of an affordance is not complete, a defaultable elem
 
 #### Security
 
-Does not exist in the Thing-level anymore. It exists within `Form` and is the same as a `SecurityDefinition` from TD 1.1
+Does not exist in the Thing-level anymore. It exists within `Form` and other than combo security, it is the same as a `SecurityDefinition` from TD 1.1.
+Combo security used to be achieved by doing `"scheme":"combo"` and listing the predefined schemes in `securityDefinitions` with `"allOf":["scheme1","scheme2"]` and `"oneOf":["scheme1","scheme2"]`.
+Given that the term `securityDefinitions` does not exist anymore, possible schemes need to be defined inline as explained below.
+
+| Vocabulary Term | Description                                                                                                                             | Assignment | Type              | Remarks                                                                                                                                                        |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| scheme          | Identification of the security mechanism being configured.                                                                              | mandatory  | String            | one of `nosec`, `combo`, `basic`, digest, `bearer`, `psk`, `oauth2`, `apikey`, or `auto`. When the value is `combo`, either `oneOf` or `allOf` MUST be present |
+| description     | Provides additional (human-readable) information based on a default language.                                                           | optional   | String            | (no change)                                                                                                                                                    |
+| oneOf           | Array of two or more security security definitions any one of which, when satisfied, will allow access. Only one may be chosen for use. | optional   | Array of Security | only allowed when `scheme` is equal to `combo`                                                                                                                 |
+| allOf           | Array of two or more security security definitions all of which must be satisfied for access.                                           | optional   | Array of Security | only allowed when `scheme` is equal to `combo`                                                                                                                 |
 
 #### Form
 
