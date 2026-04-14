@@ -2,6 +2,9 @@
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/common%20definitions)
 
+> [!NOTE]
+> Proposal Status: Accepted
+
 ## Purpose of this folder
 
 This folder contains a sandbox-like environment to work on the feature before it is integrated into the editor's draft.
