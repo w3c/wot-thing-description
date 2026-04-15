@@ -9046,11 +9046,18 @@
               The placeholder labeling MUST be substituted with a concrete value (e.g., as JSON number, JSON string,
               JSON object, etc) when TD instance is created from the Thing Model.
             </span>
-            <span class="rfc2119-assertion" id="tm-placeholder">
-              The string-based pattern of the placeholder MUST follow a valid pattern based on the regular expression
-              <code>{{2}[ -~]+}{2}</code> (e.g., <code>{{</code><code>PLACEHOLDER_IDENTIFIER</code><code>}}</code>). The
-              characters between <code>{{</code> and <code>}}</code> are used as identifier name of the placeholder. The
-              identifier name can be used to identify the placeholder for the substitution process.
+            <span class="rfc2119-assertion" id="tm-placeholder-pattern">
+              The string-based pattern of the placeholder MUST be defined with double curly braces to clearly
+              distinguish the placeholder from the rest of the value content (e.g., <code>{{</code>
+              <code>PLACEHOLDER_IDENTIFIER</code><code>}}</code>).
+            </span>
+            The characters between <code>{{</code> and <code>}}</code> are used as identifier name of the placeholder.
+            The identifier name can be used to identify the placeholder for the substitution process.
+
+            <span class="rfc2119-assertion" id="tm-placeholder-multiple-placeholders">
+              Within a single value, there MAY be multiple placeholders, e.g.,
+              <code>"mqtt://</code><code>{{</code><code>MQTT_BROKER_ADDRESS</code><code>}}</code><code>:{{</code
+              ><code>PORT</code><code>}}</code><code>"</code>
             </span>
             <span class="rfc2119-assertion" id="tm-placeholder-value">
               A placeholder MUST be applied within the value of the JSON name-value pair.
@@ -9059,9 +9066,19 @@
               If a non string-based value of a JSON name-value pair has a placeholder, the value MUST be (temporarily)
               typed as string.
             </span>
-
+            <span class="rfc2119-assertion" id="tm-placeholder-object-serialization">
+              If a string-based value of a JSON name-value pair has a placeholder and the value replacement is a Map
+              (JSON Object), it MUST be replaced by the stringified version of the Map and MUST NOT contain any
+              whitespace character (e.g., space, tab, etc).
+            </span>
             After replacing the placeholder, e.g., when creating a Thing Description instance, the original type is
             applied with the corresponding replaced value.
+          </p>
+
+          <p class="note">
+            The regex <code>\{{2}[ -~]+}{2}</code> can be used to identify the placeholder pattern. However, as
+            different regex engines can behave differently, the regex pattern can be adapted to the specific regex
+            engine.
           </p>
 
           <p>
