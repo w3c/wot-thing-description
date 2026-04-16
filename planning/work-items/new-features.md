@@ -34,6 +34,13 @@ This work item would add any infrastructure needed to TDs in order to support st
 
 In order to clearly define what infrastructure is actually needed, if any, one or more concrete streaming protocol bindings should also be attempted, such as [RTSP](https://w3c.github.io/wot-charter-drafts/wot-wg-2023-details.html#rtsp-binding-workitem).
 
+Related Issues:
+
+- https://github.com/w3c/wot-thing-description/issues/1044
+- https://github.com/w3c/wot-usecases/issues/13
+- https://github.com/w3c/wot-architecture/issues/8
+- https://github.com/w3c/wot-usecases/issues/83
+
 ## Signing and Canonicalization
 
 Note: This should be moved to an analysis document.
