@@ -31,15 +31,14 @@ Also known as: Mapping TD elements to protocol or network messages
 1. Side Channels
 
 - **Who:** Developer of a Consumer, TD Designer
-- **What:** Want to use the DataSchema for the application-relevant data even when the application-relevant data does not fit into one part of the protocol message
+- **What:** Want to use the DataSchema for the application relevant data even when the application relevant data does not fit into one part of the protocol message
   - HTTP [header fields](https://www.rfc-editor.org/rfc/rfc9110.html#name-header-fields)
   - [URL](https://www.rfc-editor.org/rfc/rfc3986) Query and Path
 - **Why:** I can provide one abstraction over diverse protocols and constrain the mess
-
   - Developer of a Consumer: better abstraction to separate implementations better, easier to build web applications
   - TD Designer: Simplify the understanding of the TD
 
-- Sentence: **As a** Developer of a Consumer, TD Designer, **I need** to use the DataSchema for the application relevant data even when the application relevant data does not fit into one part of the protocol message, **so that I can** provide one abstraction over diverse protocols and constrain the mess.
+- Sentence: **As a** Developer of a Consumer, TD Designer, **I need** Want to use the DataSchema for the application relevant data even when the application relevant data does not fit into one part of the protocol message, **so that I can** provide one abstraction over diverse protocols and constrain the mess.
 - Process Stakeholders:
   - Submitter: Multiple
   - Specification Writers: Luca Barbato, the WoT TD TF for TD 1.1 uriVariables support
