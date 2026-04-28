@@ -21,3 +21,7 @@ Closes #
 <!-- In this case, two Editors who are not from the same organization or who are Invited Experts need to approve -->
 
 - [Normative](https://github.com/w3c/wot/blob/main/policies/async-decision.md#editorial-non-normative-changes) with label ![Normative Label](https://img.shields.io/github/labels/w3c/wot-thing-description/normative%20change)
+
+<!-- In this case, no formal process is needed -->
+
+- Prepatory work such analyses, user stories etc.
