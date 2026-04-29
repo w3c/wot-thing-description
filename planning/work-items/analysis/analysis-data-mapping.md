@@ -31,7 +31,7 @@ Also known as: Mapping TD elements to protocol or network messages
 1. Side Channels
 
 - **Who:** Developer of a Consumer, TD Designer
-- **What:** Want to use the DataSchema for the application relevant data even when the application relevant data does not fit into one part of the protocol message
+- **What:** Want to use the DataSchema for the application-relevant data even when the application-relevant data does not fit into one part of the protocol message
   - HTTP [header fields](https://www.rfc-editor.org/rfc/rfc9110.html#name-header-fields)
   - [URL](https://www.rfc-editor.org/rfc/rfc3986) Query and Path
 - **Why:** I can provide one abstraction over diverse protocols and constrain the mess
@@ -169,6 +169,7 @@ How to model it in JSON but also giving hints so that the drivers can use it.
   - BACnet: https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/#datatype-mappings
   - Profinet: https://w3c.github.io/wot-binding-templates/bindings/protocols/profinet/#payloaddatatype
   - LoRaWan: Once PR is merged.
+
 
 ## Existing Solutions
 
