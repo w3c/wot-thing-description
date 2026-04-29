@@ -31,7 +31,7 @@ Also known as: Mapping TD elements to protocol or network messages
 1. Side Channels
 
 - **Who:** Developer of a Consumer, TD Designer
-- **What:** Want to use the DataSchema for the application relevant data even when the application relevant data does not fit into one part of the protocol message
+- **What:** Want to use the DataSchema for the application-relevant data even when the application-relevant data does not fit into one part of the protocol message
   - HTTP [header fields](https://www.rfc-editor.org/rfc/rfc9110.html#name-header-fields)
   - [URL](https://www.rfc-editor.org/rfc/rfc3986) Query and Path
 - **Why:** I can provide one abstraction over diverse protocols and constrain the mess
@@ -48,12 +48,19 @@ Also known as: Mapping TD elements to protocol or network messages
 - Linked Use Cases or Categories: TBD
 - Relevant issues:
   - https://github.com/w3c/wot-binding-templates/issues/302
-  - HTTP offers a specific way to extend the information provided and URL can be used to encode further information.
+  - HTTP offers a specific way to extend the information provided, and a URL can be used to encode further information.
   - BACnet binding requires 3 URI variables to give the possibility to provide additional parameters: https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/#vocabulary-uri-variables
+  - MQTT attributes
+  - ? CoAP headers to be checked
 
-2. XML data exchange
+2. Mapping to non-JSON Payloads
 
-- **Who:** TD designer of a Thing with XML data exchange.
+Note: this includes plain text, xml etc. but not image and video formats, not binary data like modbus data
+Note 2: Adapt it to bring nuance on the complexity of the payload format. XML has more "features" that JSON, CSV has other concepts.
+Note 3: For the potential solution, we want the transformation to JSON Schema understandable format for the implementer to understand. 
+Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2value, ...],[col1value, col2value, ...]]` or `[ {col1Name:col1Value}, {col2Name:col2Value}` or do we let the TD desinger choose or we let the consumer application choose, thus no need transform but give meaning of the columns.
+
+- **Who:** TD designer of a Thing with non-JSON data exchange such as XML.
 - **What:** Want to describe XML payloads in TDs (TD uses JSON Schema to describe payload data) and automatically validate XML payloads (WoT implementations use JSON Schema to validate payload data)
   - Impossible to describe XML data accurately (i.e., there is no 1:1 mapping between JSON schema and XML schema)
   - XML and/or JSON in memory while data on the wire (mapping between JSON and XML)
@@ -69,6 +76,34 @@ Also known as: Mapping TD elements to protocol or network messages
 - Linked Use Cases or Categories: TBD
 - Relevant issues:
   - https://github.com/w3c/wot-binding-templates/issues/139
+ 
+3. Basic Mathematical Operations
+
+- https://github.com/w3c/wot-thing-description/issues/2034#issuecomment-4260667948
+- https://github.com/w3c/wot-thing-description/issues/2169
+- https://github.com/w3c/wot-thing-description/issues/875
+
+
+4. Type Conversion
+
+enum assignment
+- https://github.com/w3c/wot-thing-description/issues/1930
+- https://github.com/w3c/wot-thing-description/issues/997
+
+5. Structured Data in Simple Formats
+
+value wrapper (/value), bitmasking, choosing bits
+
+- https://github.com/w3c/wot-thing-description/issues/1936
+- https://github.com/w3c/wot-thing-description/issues/1930#issuecomment-4342467719
+
+
+6. More Detailed Types
+
+How to model it in JSON but also giving hints so that the drivers can use it.
+
+- Moving the xsd type extension pointers of Modbus, Lorawan, BACnet to the core TD vocabulary (`modv:type`, `"bacv:hasDataType"` . No issue, but it is in all of the bindings.
+
 
 ## Existing Solutions
 
