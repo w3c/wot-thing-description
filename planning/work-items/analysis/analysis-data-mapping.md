@@ -35,6 +35,7 @@ Also known as: Mapping TD elements to protocol or network messages
   - HTTP [header fields](https://www.rfc-editor.org/rfc/rfc9110.html#name-header-fields)
   - [URL](https://www.rfc-editor.org/rfc/rfc3986) Query and Path
 - **Why:** I can provide one abstraction over diverse protocols and constrain the mess
+
   - Developer of a Consumer: better abstraction to separate implementations better, easier to build web applications
   - TD Designer: Simplify the understanding of the TD
 
@@ -169,7 +170,6 @@ How to model it in JSON but also giving hints so that the drivers can use it.
   - BACnet: https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/#datatype-mappings
   - Profinet: https://w3c.github.io/wot-binding-templates/bindings/protocols/profinet/#payloaddatatype
   - LoRaWan: Once PR is merged.
-
 
 ## Existing Solutions
 
