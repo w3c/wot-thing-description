@@ -35,6 +35,7 @@ Also known as: Mapping TD elements to protocol or network messages
   - HTTP [header fields](https://www.rfc-editor.org/rfc/rfc9110.html#name-header-fields)
   - [URL](https://www.rfc-editor.org/rfc/rfc3986) Query and Path
 - **Why:** I can provide one abstraction over diverse protocols and constrain the mess
+
   - Developer of a Consumer: better abstraction to separate implementations better, easier to build web applications
   - TD Designer: Simplify the understanding of the TD
 
@@ -57,7 +58,7 @@ Also known as: Mapping TD elements to protocol or network messages
 
 Note: this includes plain text, xml etc. but not image and video formats, not binary data like modbus data
 Note 2: Adapt it to bring nuance on the complexity of the payload format. XML has more "features" that JSON, CSV has other concepts.
-Note 3: For the potential solution, we want the transformation to JSON Schema understandable format for the implementer to understand. 
+Note 3: For the potential solution, we want the transformation to JSON Schema understandable format for the implementer to understand.
 Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2value, ...],[col1value, col2value, ...]]` or `[ {col1Name:col1Value}, {col2Name:col2Value}` or do we let the TD desinger choose or we let the consumer application choose, thus no need transform but give meaning of the columns.
 
 - **Who:** TD designer of a Thing with non-JSON data exchange such as XML.
@@ -76,17 +77,17 @@ Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2
 - Linked Use Cases or Categories: TBD
 - Relevant issues:
   - https://github.com/w3c/wot-binding-templates/issues/139
- 
+
 3. Basic Mathematical Operations
 
 - https://github.com/w3c/wot-thing-description/issues/2034#issuecomment-4260667948
 - https://github.com/w3c/wot-thing-description/issues/2169
 - https://github.com/w3c/wot-thing-description/issues/875
 
-
 4. Type Conversion
 
 enum assignment
+
 - https://github.com/w3c/wot-thing-description/issues/1930
 - https://github.com/w3c/wot-thing-description/issues/997
 
@@ -97,13 +98,11 @@ value wrapper (/value), bitmasking, choosing bits
 - https://github.com/w3c/wot-thing-description/issues/1936
 - https://github.com/w3c/wot-thing-description/issues/1930#issuecomment-4342467719
 
-
 6. More Detailed Types
 
 How to model it in JSON but also giving hints so that the drivers can use it.
 
 - Moving the xsd type extension pointers of Modbus, Lorawan, BACnet to the core TD vocabulary (`modv:type`, `"bacv:hasDataType"` . No issue, but it is in all of the bindings.
-
 
 ## Existing Solutions
 
