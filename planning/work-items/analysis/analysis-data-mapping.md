@@ -80,7 +80,7 @@ Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2
 - Existing Solutions:
   - OpenAPI 3.2 with XML Payload Description: https://github.com/OAI/OpenAPI-Specification/pull/4592
 
-1. Basic Mathematical Operations
+3. Basic Mathematical Operations
 
 - **Who:** Developer of a Consumer, TD Designer
 - **What:** Express the need to apply mathematical operations to the data received or to be sent as a protocol message
@@ -101,7 +101,7 @@ Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2
 - Existing Solutions:
   - Lorawan Binding: https://github.com/w3c/wot-binding-templates/pull/458 (`lorav:multiplier`)
 
-4. Type Conversion (enum mapping)
+4. Simple Type Conversion (enum mapping)
 
 - **Who:** TD Designer
 - **What:** Express that a single value in Data Schema converts to another simple value in the protocol message
