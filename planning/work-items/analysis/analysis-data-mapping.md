@@ -39,7 +39,7 @@ Also known as: Mapping TD elements to protocol or network messages
   - Developer of a Consumer: better abstraction to separate implementations better, easier to build web applications
   - TD Designer: Simplify the understanding of the TD
 
-- Sentence: **As a** Developer of a Consumer, TD Designer, **I need** Want to use the DataSchema for the application relevant data even when the application relevant data does not fit into one part of the protocol message, **so that I can** provide one abstraction over diverse protocols and constrain the mess.
+- Sentence: **As a** Developer of a Consumer, TD Designer, **I need** to use the DataSchema for the application relevant data even when the application relevant data does not fit into one part of the protocol message, **so that I can** provide one abstraction over diverse protocols and constrain the mess.
 - Process Stakeholders:
   - Submitter: Multiple
   - Specification Writers: Luca Barbato, the WoT TD TF for TD 1.1 uriVariables support
@@ -80,7 +80,7 @@ Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2
 - Existing Solutions:
   - OpenAPI 3.2 with XML Payload Description: https://github.com/OAI/OpenAPI-Specification/pull/4592
 
-3. Basic Mathematical Operations
+1. Basic Mathematical Operations
 
 - **Who:** Developer of a Consumer, TD Designer
 - **What:** Express the need to apply mathematical operations to the data received or to be sent as a protocol message
