@@ -1,8 +1,10 @@
-# [DRAFT] Streaming Analysis
+# [DRAFT] Media Streaming Analysis
 
 ![GitHub labels](https://img.shields.io/github/labels/w3c/wot-thing-description/streaming)
 
-Streaming refers to the continuous delivery of time-sensitive data such as audio, video, or similar media over one or more protocols.
+In this document, "Streaming" refers to media streaming, such as the continuous delivery of audio, video, or similar time-sensitive media over one or more protocols.
+It does not include chunked transfer of large files, pagination, or other mechanisms for segmented
+delivery of content.
 A streaming solution may use reliable or unreliable transport, and may involve encryption, session control, or other metadata needed to start, maintain, or stop the stream.
 
 This analysis focuses on what additional Thing Description infrastructure, if any, is needed to describe streaming-related affordances and bindings in a generic way.
@@ -33,6 +35,7 @@ Because the required infrastructure is not yet clear, this work item should also
 TBD
 
 This section will follow the same format used in other analysis documents.
+
 - **Who:** The intended role or stakeholder
 - **What:** The capability or behavior they need
 - **Why:** The reason the capability matters
@@ -43,6 +46,7 @@ This section will follow the same format used in other analysis documents.
 ## Existing Solutions
 
 TBD
+
 - Identify representative streaming protocols and existing descriptions if available.
   - RTSP, HLS, DASH, MSE, and WebRTC are candidate references, but the analysis should distinguish between protocol families and actual TD-level needs.
 
