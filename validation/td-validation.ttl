@@ -920,182 +920,7 @@
           As a <a>Form</a> but not just the <code>href</code> defines how to execute the interaction, <code>href</code> of multiple <a>Forms</a> MAY point to the same resource, where the different <a>Forms</a> represent different operations on that resource.</span>
           For example, in a TD with the HTTP Binding, two <a>Forms</a> with HTTP GET and PUT methods can point to the same resource but represent different operations such as <code>readproperty</code> and <code>writeproperty</code>.
         </p>
-
-        <section id="sec-op-data-schema-mapping" class="informative">
-        <h4>Mapping op Values to Data Schemas</h4>
-
-        <p>
-            Protocols that can be used with TDs follow request-response or eventing mechanisms.
-            The Data Schema of an affordance generally correlates with the <code>op</code> keywords used in <code>forms</code>.
-            The table below informatively summarizes the available data schema related terms with the <code>op</code> keywords.
-        </p>
-        <ul>
-            <li>Consumer to Thing applies for messages sent by the Consumer to the Thing, such as the value for writing a property.</li>
-            <li>Thing to Consumer applies for messages sent by the Thing to the Consumer, such as the value of a property value as the result of reading a property.</li>
-            <li>In case that there is no correlation with the data schema and the operation, it implies that no payload is required for executing the operation or no
-            payload is expected as a result of the operation.</li>
-        </ul>
-
-        <table class="def numbered">
-        <caption>Mapping op Values to Data Schemas</caption>
-        <thead>
-            <tr>
-            <th>Operation Type</th>
-            <th>Consumer to Thing DataSchema Correlation</th>
-            <th>Thing to Consumer DataSchema Correlation</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-            <td>readproperty</td>
-            <td>No correlation.</td>
-            <td>All fields in the Property Affordance without <code>"writeOnly":true</code>.</td>
-            </tr>
-            <tr>
-            <td>writeproperty</td>
-            <td>All fields in the Property Affordance without <code>"readOnly":true</code>.</td>
-            <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
-            </tr>
-            <tr>
-            <td>observeproperty</td>
-            <td>No correlation.</td>
-            <td>All fields in the Property Affordance without <code>"writeOnly":true</code>.</td>
-            </tr>
-            <tr>
-            <td>unobserveproperty</td>
-            <td>No correlation.</td>
-            <td>No correlation.</td>
-            </tr>
-            <tr>
-            <td>invokeaction</td>
-            <td>Value of the <code>input</code> key.</td>
-            <td>Value of the <code>output</code> key.</td>
-            </tr>
-            <tr>
-            <td>queryaction</td>
-            <td>No correlation.</td>
-            <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
-            </tr>
-            <tr>
-            <td>cancelaction</td>
-            <td>No correlation.</td>
-            <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
-            </tr>
-            <tr>
-            <td>subscribeevent</td>
-            <td>Value of the <code>subscription</code> key with all fields without <code>"readOnly":true</code></td>
-            <td>Value of the <code>subscription</code> key with all fields without <code>"writeOnly":true</code></td>
-            </tr>
-            <tr>
-            <td>unsubscribeevent</td>
-            <td>Value of the <code>subscription</code> key with all fields without <code>"readOnly":true</code></td>
-            <td>Value of the <code>subscription</code> key with all fields without <code>"writeOnly":true</code></td>
-            </tr>
-        </tbody>
-        </table>
-        <p class="note" title="writeproperty and observeproperty relationship">
-            Writing to a property does not necessarily mean that a new value will be sent to the Consumer observing the property.
-            It depends on the protocol and implementation.
-        </p>
-        <p class="note" title="Further Data Schemas mappings">
-            Further specification of how to map operations to data schemas, as well as mapping meta operations such as <code>readallproperties</code>
-            can be found in the respective binding entry of the [[WOT-BINDING-REGISTRY]].
-        </p>
-        </section>
-
-        <section id="sec-response-usage">
-        <h4>Response-related Terms Usage</h4>
-
-          <p>The optional <code>response</code> name-value pair can
-          be used to provide metadata for the expected response
-          message.
-          With the core vocabulary, it can include only
-          content type information, but TD Context Extensions could
-          be applied.
-          <span class="rfc2119-assertion" id="td-expectedResponse-default-contentType"
-            >If no <code>response</code> name-value pair is provided, it MUST be assumed that the content type of
-            the response is equal to the content type assigned to the Form instance.</span
-          >
-          Note that <code>contentType</code> within an
-          <code>ExpectedResponse</code>
-          <a href="#dfn-class" class=
-          "internalDFN" data-link-type="dfn">Class</a> does not
-          have a <a href="#dfn-default-value" class="internalDFN"
-          data-link-type="dfn">Default Value</a>.
-          </p>
-          <p>
-          In some cases additional responses might be possible.
-          One example of this is error responses but in some cases
-          there might also be additional successful responses.
-          In this case, the <code>response</code> name-value pair
-          is still used for the primary response but
-          <code>additionalResponses</code> may also be provided,
-          whose value is an array of <code>AdditionalExpectedResponse</code>
-          objects.
-          Each additional response must be distinguished in some way from the primary
-          response, either by <code>contentType</code> or by
-          protocol-specific settings such as error code header values.
-          Each additional response may also have a data schema
-          which can differ from the normal output data schema for the
-          interaction.
-          </p>
-          <p>
-            In some use cases, input and output data might be represented in a different form, for instance an Action
-            that accepts JSON, but returns an image.
-            In such a case, the optional `response` key-value pair can describe the content type of the expected
-            response.
-            As there is no default value defined, the following assertions apply:
-          </p>
-          <ul>
-            <li>
-              <span class="rfc2119-assertion" id="td-expectedResponse-missing-contentType">
-                If there is no `contentType` value defined in a `response` object within a form, a <a>Consumer</a> MUST
-                expect that the respective response does not contain any payload.
-              </span>
-            </li>
-            <li>
-              <span class="rfc2119-assertion" id="td-expectedResponse-defined-contentType">
-                If a content type is defined in the `response` object within a form, a <a>Consumer</a> MUST expect a
-                response containing a payload in the respective format, e.g., an image in the case of `image/jpeg`.
-              </span>
-            </li>
-          </ul>
-          <p>
-            Similar considerations apply to additional responses:
-          </p>
-          <ul>
-            <li>
-              <span class="rfc2119-assertion" id="td-additionalExpectedResponse-contentType">
-                If the content type of an additional expected response differs from the content type of the form, the
-                `Form` instance MUST include an entry in the array associated with the name `additionalResponses`.
-              </span>
-            </li>
-            <li>
-              <span class="rfc2119-assertion" id="td-additionalExpectedResponse-missing-contentType">
-                If there is no `contentType` value defined in an additional expected response object, a
-                <a>Consumer</a> MUST expect that the respective response does not contain any payload.
-              </span>
-            </li>
-            <li>
-              <span class="rfc2119-assertion" id="td-additionalExpectedResponse-schema">
-                If the data schema of an additional expected response differs from the output data schema of the
-                interaction, the `Form` MUST include an entry in the array associated with the name
-                `additionalResponses` that includes a value for the name `schema`.
-              </span>
-            </li>
-            <li>
-              <span class="rfc2119-assertion" id="td-additionalExpectedResponse-noSchemaWithoutPayload">
-                The `schema` of an additional expected response object MUST NOT be defined when there is no
-                `contentType` present.
-              </span>
-            </li>
-          </ul>
-          <p>
-            The different cases on the variation of request and response are explained above.
-            The tables at <a href="#contentType-usage"></a> summarize these cases in a concise manner.
-          </p>
-          </section>
-          """^^rdf:HTML .
+    """^^rdf:HTML .
 
 :LinkShape a sh:NodeShape ;
     sh:targetClass hctl:Link ;
@@ -1370,7 +1195,49 @@
         sh:nodeKind sh:Literal ;
         sh:datatype xsd:string ;
         sh:maxCount 1 ;
-    ] .
+    ] ;
+    skos:scopeNote """
+          <p>The optional <code>response</code> name-value pair can
+          be used to provide metadata for the expected response
+          message.
+          With the core vocabulary, it can include only
+          content type information, but TD Context Extensions could
+          be applied.
+          <span class="rfc2119-assertion" id="td-expectedResponse-default-contentType"
+            >If no <code>response</code> name-value pair is provided, it MUST be assumed that the content type of
+            the response is equal to the content type assigned to the Form instance.</span
+          >
+          Note that <code>contentType</code> within an
+          <code>ExpectedResponse</code>
+          <a href="#dfn-class" class=
+          "internalDFN" data-link-type="dfn">Class</a> does not
+          have a <a href="#dfn-default-value" class="internalDFN"
+          data-link-type="dfn">Default Value</a>.
+          </p>
+
+        <p>
+            In some use cases, input and output data might be represented in a different form, for instance an Action
+            that accepts JSON, but returns an image.
+            In such a case, the optional `response` key-value pair can describe the content type of the expected
+            response.
+            As there is no default value defined, the following assertions apply:
+          </p>
+          <ul>
+            <li>
+              <span class="rfc2119-assertion" id="td-expectedResponse-missing-contentType">
+                If there is no `contentType` value defined in a `response` object within a form, a <a>Consumer</a> MUST
+                expect that the respective response does not contain any payload.
+              </span>
+            </li>
+            <li>
+              <span class="rfc2119-assertion" id="td-expectedResponse-defined-contentType">
+                If a content type is defined in the `response` object within a form, a <a>Consumer</a> MUST expect a
+                response containing a payload in the respective format, e.g., an image in the case of `image/jpeg`.
+              </span>
+            </li>
+          </ul>
+
+    """^^rdf:HTML .
 
 :AdditionalExpectedResponseShape a sh:NodeShape ;
     sh:targetClass hctl:AdditionalExpectedResponse ;
@@ -1407,7 +1274,60 @@
         sh:nodeKind sh:Literal ;
         sh:datatype xsd:string ;
         sh:maxCount 1 ;
-    ] .
+    ] ;
+    skos:scopeNote """
+        <p>
+          In some cases additional responses might be possible.
+          One example of this is error responses but in some cases
+          there might also be additional successful responses.
+          In this case, the <code>response</code> name-value pair
+          is still used for the primary response but
+          <code>additionalResponses</code> may also be provided,
+          whose value is an array of <code>AdditionalExpectedResponse</code>
+          objects.
+          Each additional response must be distinguished in some way from the primary
+          response, either by <code>contentType</code> or by
+          protocol-specific settings such as error code header values.
+          Each additional response may also have a data schema
+          which can differ from the normal output data schema for the
+          interaction.
+        </p>
+
+        <p>
+            Similar expected response, additional responses have the following considerations:
+        </p>
+        <ul>
+        <li>
+            <span class="rfc2119-assertion" id="td-additionalExpectedResponse-contentType">
+            If the content type of an additional expected response differs from the content type of the form, the
+            `Form` instance MUST include an entry in the array associated with the name `additionalResponses`.
+            </span>
+        </li>
+        <li>
+            <span class="rfc2119-assertion" id="td-additionalExpectedResponse-missing-contentType">
+            If there is no `contentType` value defined in an additional expected response object, a
+            <a>Consumer</a> MUST expect that the respective response does not contain any payload.
+            </span>
+        </li>
+        <li>
+            <span class="rfc2119-assertion" id="td-additionalExpectedResponse-schema">
+            If the data schema of an additional expected response differs from the output data schema of the
+            interaction, the `Form` MUST include an entry in the array associated with the name
+            `additionalResponses` that includes a value for the name `schema`.
+            </span>
+        </li>
+        <li>
+            <span class="rfc2119-assertion" id="td-additionalExpectedResponse-noSchemaWithoutPayload">
+            The `schema` of an additional expected response object MUST NOT be defined when there is no
+            `contentType` present.
+            </span>
+        </li>
+        </ul>
+        <p>
+        The different cases on the variation of request and response are explained above.
+        The tables at <a href="#contentType-usage"></a> summarize these cases in a concise manner.
+        </p>
+    """^^rdf:HTML .
 
 :SecuritySchemeShape a sh:NodeShape ;
     sh:targetClass wotsec:SecurityScheme ;
