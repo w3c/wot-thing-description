@@ -56,7 +56,7 @@ Also known as: Mapping TD elements to protocol or network messages
 
 2. Mapping to non-JSON Payloads
 
-Note: this includes plain text, xml etc. but not image and video formats, not binary data like modbus data
+Note: this includes plain text, XML etc. but not image and video formats, not binary data like modbus data
 Note 2: Adapt it to bring nuance on the complexity of the payload format. XML has more "features" that JSON, CSV has other concepts.
 Note 3: For the potential solution, we want the transformation to JSON Schema understandable format for the implementer to understand.
 Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2value, ...],[col1value, col2value, ...]]` or `[ {col1Name:col1Value}, {col2Name:col2Value}` or do we let the TD desinger choose or we let the consumer application choose, thus no need transform but give meaning of the columns.
