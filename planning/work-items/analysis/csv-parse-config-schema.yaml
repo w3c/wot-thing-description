@@ -1,0 +1,95 @@
+schema_version: 1
+profile_name: td_csv_mapping_profile_csv_parse
+
+stack:
+  runtime: nodejs
+  parser_library: csv-parse
+  package: csv-parse
+
+description: >-
+  Declarative configuration that can be loaded by application code and mapped
+  to csv-parse options plus TD-oriented field mapping and validation.
+
+source:
+  path: ./inputs/example.csv
+  encoding: utf8
+
+csv_parse_options:
+  # Common csv-parse options. Application code forwards this object to parse().
+  delimiter: ","
+  quote: '"'
+  escape: '"'
+  columns: true
+  bom: true
+  comment: null
+  comment_no_infix: false
+  relax_quotes: false
+  trim: false
+  ltrim: false
+  rtrim: false
+  skip_empty_lines: true
+  skip_records_with_empty_values: false
+  skip_records_with_error: false
+  relax_column_count: false
+  relax_column_count_less: false
+  relax_column_count_more: false
+  from_line: 1
+  to_line: null
+  max_record_size: 0
+  cast: false
+  cast_date: false
+  record_delimiter: auto
+
+columns:
+  timestamp:
+    source_column: ts
+    required: true
+    js_type: string
+    transform:
+      parse_datetime:
+        format: iso8601
+        timezone: UTC
+    constraints:
+      not_null: true
+
+  value:
+    source_column: reading
+    required: true
+    js_type: number
+    transform:
+      parse_number: true
+    constraints:
+      min: -1000
+      max: 1000
+
+  unit:
+    source_column: unit
+    required: false
+    js_type: string
+    default: C
+    constraints:
+      enum: [C, F, K]
+
+record_filters:
+  drop_if:
+    - column: status
+      equals: invalid
+
+mapping:
+  td_fields:
+    observedAt: timestamp
+    value: value
+    unit: unit
+  payload_shape: object
+  include_fields: [observedAt, value, unit]
+
+validation:
+  fail_on_missing_required_columns: true
+  fail_on_constraint_violation: true
+  max_error_rows: 10
+
+output:
+  format: json_records
+  notes: >-
+    csv-parse emits records as arrays or objects (with columns=true). Application
+    code applies mapping/validation and serializes final output.

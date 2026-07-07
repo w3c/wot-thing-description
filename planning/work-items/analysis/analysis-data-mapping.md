@@ -173,7 +173,11 @@ How to model it in JSON but also giving hints so that the drivers can use it.
 
 ## Existing Solutions
 
-## Summarized Challenges
+TODO
+
+## Challenges
+
+As a first concrete case for non-JSON payloads, this analysis starts with CSV.
 
 ### CSV Handling
 
@@ -231,7 +235,11 @@ This creates the exact mapping problem discussed above: a TD consumer must inter
 
 As a result, CR1000 TOA5 is a strong candidate to exercise CSV data mapping decisions before defining normative TD requirements.
 
-#### Exercise 1: Illustrating Tabular Wire Data vs TD DataSchema Semantics
+#### Semantic Mapping Concerns
+
+This subsection groups exercises where interoperability depends primarily on explicit TD-level meaning, mapping intent, and domain semantics.
+
+##### Exercise 1: Illustrating Tabular Wire Data vs TD DataSchema Semantics
 
 Using the CR1000 example, consider the following simplified TOA5-style payload:
 
@@ -272,7 +280,118 @@ This gap illustrates the problem. The wire data does not directly say that `AirT
 
 The exercise therefore shows that CSV handling is not only about parsing rows and columns. It is about identifying which rows carry schema information, which cells carry data values, and how both are mapped into the logical data model exposed by the TD.
 
-#### Exercise 2: Canonical Representation Decision (Row-as-Array vs Row-as-Object)
+##### Exercise 2: Header and Metadata Line Classification
+
+Using a TOA5-style fragment:
+
+```csv
+"TOA5","CR1000","CR1000","12345","CR1000.Std.32.07","CPU:weather.CR1X","1234","Weather"
+"TIMESTAMP","RECORD","AirTemp_C","RH","WindSpeed_ms"
+"TS","RN","Deg C","%","m/s"
+"","","Avg","Avg","Avg"
+"2026-06-25 10:00:00",1,23.4,56.2,4.8
+```
+
+the first four lines are not equivalent. They contain different kinds of metadata:
+
+- logger/table context,
+- field identifiers,
+- engineering units,
+- aggregation qualifiers.
+
+If an implementation misclassifies any of these lines as data records, the TD mapping may become corrupted (for example, trying to parse `"Deg C"` as a numeric measurement).
+
+To make behavior deterministic, the mapping profile should define:
+
+- which rows are metadata and which rows are observations,
+- whether metadata is fixed-position, pattern-based, or explicitly declared,
+- how repeated headers or table restarts are handled,
+- whether metadata lines are preserved as provenance/annotations.
+
+This exercise shows that CSV interoperability depends on row-role classification before value mapping begins.
+
+##### Exercise 3: Time Semantics and Normalization
+
+Using a row with timestamp but no explicit timezone:
+
+```csv
+"2026-10-25 01:30:00",1201,12.1,84.0,1.2
+```
+
+two consumers may normalize the same value differently:
+
+- Consumer A assumes UTC -> `2026-10-25T01:30:00Z`
+- Consumer B assumes local station time with daylight-saving context -> `2026-10-25T01:30:00+02:00` (or `+01:00`)
+
+Both normalizations are plausible, but they represent different instants. That can break downstream correlation, event ordering, historical queries, and threshold analytics in WoT consumers.
+
+To avoid this ambiguity, mapping metadata should define at least:
+
+- source timezone policy (fixed timezone, UTC, or per-station configuration),
+- daylight-saving handling rules,
+- timestamp format grammar and precision,
+- normalization target (for example, always RFC 3339 UTC in TD-facing payloads),
+- behavior for invalid or ambiguous local times.
+
+This exercise demonstrates that time handling is a core semantic mapping concern, not only a formatting concern.
+
+##### Exercise 4: Quality and Status Side-Channel Mapping
+
+Assume the payload includes quality/status columns next to measurements:
+
+```csv
+"TIMESTAMP","AirTemp_C","AirTemp_QC","RH","RH_QC"
+"2026-06-25 10:10:00",23.9,"G",55.8,"SUSPECT"
+```
+
+The mapping challenge is deciding where quality semantics live in the TD-facing model. At least three choices are common:
+
+- embed quality with each value,
+- publish quality in a parallel structure,
+- expose quality via separate affordances.
+
+If implementations choose different patterns without explicit mapping metadata, applications cannot consume quality information consistently.
+
+A deterministic mapping should define:
+
+- accepted quality vocabulary (for example `G`, `BAD`, `SUSPECT`),
+- how quality links to each measured field,
+- whether low-quality values are filtered, flagged, or still delivered,
+- how quality affects validation and downstream automation.
+
+This exercise shows that CSV mapping may need to combine payload value channels with semantic quality channels.
+
+##### Exercise 5: Multi-Table and Multi-Measurement Routing
+
+Assume one export stream carries rows from different logical tables:
+
+```csv
+"TABLE","TIMESTAMP","RECORD","AirTemp_C","RH","Battery_V"
+"Weather","2026-06-25 10:15:00",15,24.1,54.9,
+"Power","2026-06-25 10:15:00",99,,,12.4
+```
+
+The challenge is routing rows to the correct TD model elements:
+
+- `Weather` row -> environmental property/event model,
+- `Power` row -> device-health property model.
+
+Without explicit routing rules, consumers may attempt to coerce sparse columns into one schema, causing invalid or misleading payloads.
+
+A robust mapping should define:
+
+- table discriminator field(s),
+- per-table target affordance (property/action/event data model),
+- per-table schema and required fields,
+- behavior for unknown tables or partially populated rows.
+
+This exercise demonstrates that table-level routing is a first-class mapping concern, not a post-processing detail.
+
+#### Parser-Centric Concerns
+
+This subsection groups exercises where parser behavior and deterministic normalization rules are the main focus.
+
+##### Exercise 6: Canonical Representation Decision (Row-as-Array vs Row-as-Object)
 
 Using the same CR1000 TOA5-style data row:
 
@@ -321,7 +440,7 @@ To avoid ambiguity across implementations, mapping metadata must make the repres
 
 This exercise illustrates why the specification needs either one canonical mapping profile or a small set of allowed mappings with mandatory metadata. Without that, two conforming consumers can parse the same CSV payload and still produce incompatible semantic results.
 
-#### Exercise 3: Type Coercion and Missing-Value Handling
+##### Exercise 7: Type Coercion and Missing-Value Handling
 
 Using CR1000-like rows, assume the following payload fragment:
 
@@ -367,114 +486,7 @@ To preserve interoperability, mapping metadata (or a canonical profile) should d
 
 This exercise highlights that CSV-to-TD mapping is not only structural. It also requires deterministic semantic rules for value normalization, especially for partial, noisy, or legacy telemetry data.
 
-#### Exercise 4: Header and Metadata Line Classification
-
-Using a TOA5-style fragment:
-
-```csv
-"TOA5","CR1000","CR1000","12345","CR1000.Std.32.07","CPU:weather.CR1X","1234","Weather"
-"TIMESTAMP","RECORD","AirTemp_C","RH","WindSpeed_ms"
-"TS","RN","Deg C","%","m/s"
-"","","Avg","Avg","Avg"
-"2026-06-25 10:00:00",1,23.4,56.2,4.8
-```
-
-the first four lines are not equivalent. They contain different kinds of metadata:
-
-- logger/table context,
-- field identifiers,
-- engineering units,
-- aggregation qualifiers.
-
-If an implementation misclassifies any of these lines as data records, the TD mapping may become corrupted (for example, trying to parse `"Deg C"` as a numeric measurement).
-
-To make behavior deterministic, the mapping profile should define:
-
-- which rows are metadata and which rows are observations,
-- whether metadata is fixed-position, pattern-based, or explicitly declared,
-- how repeated headers or table restarts are handled,
-- whether metadata lines are preserved as provenance/annotations.
-
-This exercise shows that CSV interoperability depends on row-role classification before value mapping begins.
-
-#### Exercise 5: Time Semantics and Normalization
-
-Using a row with timestamp but no explicit timezone:
-
-```csv
-"2026-10-25 01:30:00",1201,12.1,84.0,1.2
-```
-
-two consumers may normalize the same value differently:
-
-- Consumer A assumes UTC -> `2026-10-25T01:30:00Z`
-- Consumer B assumes local station time with daylight-saving context -> `2026-10-25T01:30:00+02:00` (or `+01:00`)
-
-Both normalizations are plausible, but they represent different instants. That can break downstream correlation, event ordering, historical queries, and threshold analytics in WoT consumers.
-
-To avoid this ambiguity, mapping metadata should define at least:
-
-- source timezone policy (fixed timezone, UTC, or per-station configuration),
-- daylight-saving handling rules,
-- timestamp format grammar and precision,
-- normalization target (for example, always RFC 3339 UTC in TD-facing payloads),
-- behavior for invalid or ambiguous local times.
-
-This exercise demonstrates that time handling is a core semantic mapping concern, not only a formatting concern.
-
-#### Exercise 7: Quality and Status Side-Channel Mapping
-
-Assume the payload includes quality/status columns next to measurements:
-
-```csv
-"TIMESTAMP","AirTemp_C","AirTemp_QC","RH","RH_QC"
-"2026-06-25 10:10:00",23.9,"G",55.8,"SUSPECT"
-```
-
-The mapping challenge is deciding where quality semantics live in the TD-facing model. At least three choices are common:
-
-- embed quality with each value,
-- publish quality in a parallel structure,
-- expose quality via separate affordances.
-
-If implementations choose different patterns without explicit mapping metadata, applications cannot consume quality information consistently.
-
-A deterministic mapping should define:
-
-- accepted quality vocabulary (for example `G`, `BAD`, `SUSPECT`),
-- how quality links to each measured field,
-- whether low-quality values are filtered, flagged, or still delivered,
-- how quality affects validation and downstream automation.
-
-This exercise shows that CSV mapping may need to combine payload value channels with semantic quality channels.
-
-#### Exercise 8: Multi-Table and Multi-Measurement Routing
-
-Assume one export stream carries rows from different logical tables:
-
-```csv
-"TABLE","TIMESTAMP","RECORD","AirTemp_C","RH","Battery_V"
-"Weather","2026-06-25 10:15:00",15,24.1,54.9,
-"Power","2026-06-25 10:15:00",99,,,12.4
-```
-
-The challenge is routing rows to the correct TD model elements:
-
-- `Weather` row -> environmental property/event model,
-- `Power` row -> device-health property model.
-
-Without explicit routing rules, consumers may attempt to coerce sparse columns into one schema, causing invalid or misleading payloads.
-
-A robust mapping should define:
-
-- table discriminator field(s),
-- per-table target affordance (property/action/event data model),
-- per-table schema and required fields,
-- behavior for unknown tables or partially populated rows.
-
-This exercise demonstrates that table-level routing is a first-class mapping concern, not a post-processing detail.
-
-#### Exercise 9: CSV Dialect and Locale Variability
+##### Exercise 8: CSV Dialect and Locale Variability
 
 Assume different producers emit equivalent data using different dialects:
 
@@ -497,7 +509,7 @@ Mapping metadata should declare at least:
 
 This exercise shows that semantic interoperability depends on syntactic dialect declarations before any TD schema mapping can be trusted.
 
-#### Exercise 10: Error Handling and Validation Outcomes
+##### Exercise 9: Error Handling and Validation Outcomes
 
 Assume a row violates expected numeric constraints:
 
@@ -522,6 +534,61 @@ The mapping specification should define:
 - retry, quarantine, or dead-letter behavior for repeated failures.
 
 This exercise highlights that validation is part of semantic mapping behavior, not only implementation-specific error handling.
+
+## Findings from Stack Comparison (pandas vs csv-parse)
+
+Based on the two proposed configuration profiles ([planning/work-items/analysis/pandas-csv-config-schema.yaml](planning/work-items/analysis/pandas-csv-config-schema.yaml) and [planning/work-items/analysis/csv-parse-config-schema.yaml](planning/work-items/analysis/csv-parse-config-schema.yaml)), the following findings summarize how the stacks address the CSV handling challenges above.
+
+### 1. Parsing and Dialect Control
+
+- Both stacks provide strong controls for delimiter, quoting, escaping, comments, and malformed lines.
+- `pandas.read_csv` provides many parsing controls in one API, including `dialect` compatibility and `on_bad_lines` policies.
+- `csv-parse` offers similarly rich parser-level controls (`delimiter`, `columns`, `relax_*`, `skip_*`, `record_delimiter`) with stream-oriented behavior by default.
+- Finding: both stacks can handle Exercise 8 (dialect variability) well when configuration is explicit.
+
+### 2. Header and Metadata Row Classification
+
+- `pandas` supports `header`, `names`, and row skipping, but multi-line metadata patterns like TOA5 usually require additional logic around `read_csv`.
+- `csv-parse` gives low-level row control in streaming mode, which can simplify custom classification pipelines for mixed metadata/data rows.
+- Finding: both can implement Exercise 2, but neither provides domain-native TOA5 row-role semantics out of the box.
+
+### 3. Canonical Row Representation (array vs object)
+
+- `pandas` naturally yields table-like columns and then JSON objects (`orient=records`) for row-as-object output.
+- `csv-parse` can emit arrays or objects (`columns: true`), making the representation choice explicit at parser level.
+- Finding: both support Exercise 6, and both still require explicit profile rules to guarantee one canonical representation across implementations.
+
+### 4. Type Coercion and Missing Values
+
+- `pandas` has stronger built-in declarative support for type and missing-value normalization (`dtype`, `na_values`, `keep_default_na`, date parsing).
+- `csv-parse` can cast values (`cast`, `cast_date`) but practical normalization policies are usually implemented in application code after parse.
+- Finding: for Exercise 7, pandas is more batteries-included; csv-parse is more flexible but relies more on downstream transformation logic.
+
+### 5. Time Semantics and Normalization
+
+- Both stacks can parse timestamp strings, but neither stack alone resolves semantic timezone policy, DST policy, or canonical TD-facing instant semantics.
+- Both require explicit profile metadata and application logic for deterministic normalization.
+- Finding: Exercise 3 remains a mapping-policy problem above the parser layer in both ecosystems.
+
+### 6. Quality/Status Side-Channels and Routing
+
+- Both stacks can parse side-channel columns (for example `*_QC`) and discriminator columns (for example `TABLE`).
+- Neither stack prescribes how to map those fields into TD quality semantics or affordance routing.
+- Finding: Exercises 4 and 5 are not parser problems; they require explicit mapping/routing metadata and implementation conventions.
+
+### 7. Error Handling and Validation Outcomes
+
+- `pandas` provides parser-time bad-line policies and can pair well with DataFrame-level validation.
+- `csv-parse` supports strict/relaxed parsing and skip/error controls; validation outcomes are typically implemented in custom processing stages.
+- Finding: both can support Exercise 9, but interoperable behavior depends on explicitly documented reject/annotate/quarantine policy beyond parser settings.
+
+### 8. Configuration Model and Interoperability Implication
+
+- Neither stack has a mandatory standardized external CSV profile format for semantic mapping.
+- In both ecosystems, parser options are usually code-level objects; external YAML/JSON profiles are a project convention.
+- Finding: parser capability is sufficient, but interoperability depends on shared, declarative mapping profiles (including typing, nullability, time, routing, and validation semantics), not only parser options.
+
+Coverage summary: across Exercises 1 to 9, parser-centric concerns are covered well (especially Exercises 6, 7, 8, and parser aspects of 9), while semantic mapping concerns are only partially covered or uncovered without additional profile logic (notably Exercises 1, 2, 3, 4, and 5).
 
 ## Requirements
 
