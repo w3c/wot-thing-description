@@ -293,8 +293,8 @@ Writable battery mode where enum-to-wire mapping uses canonical representative p
       "map": "https://example.org/wot/data-mapping/v1#"
     }
   ],
-  "id": "urn:example:thing:battery-profile-1",
-  "title": "BatteryProfile",
+  "id": "urn:example:thing:battery-target-1",
+  "title": "BatteryTarget",
   "properties": {
     "targetBatteryBand": {
       "type": "string",
@@ -346,6 +346,201 @@ Writable battery mode where enum-to-wire mapping uses canonical representative p
 - Processing order is explicit and deterministic.
 - Challenge 4 is composable with challenge 3 rather than handled by a separate incompatible mechanism.
 - Inverse mapping requirements for writable forms are made explicit.
+
+## Mapping Architecture: TM/TD Semantics and Binding Responsibilities
+
+- We need to handle two distinct mappings, not one:
+  1. Mapping from abstract WoT model (preferably reusable TM semantics, then TD instance data) to industry-standard device models.
+  2. Mapping from those industry-standard model elements to concrete protocol and payload details via WoT Bindings.
+
+### Layered Model
+
+1. WoT semantic layer (TM/TD):
+- Defines abstract capabilities, interaction affordances, and data meaning.
+- TM is preferred for reusable abstract models; TD instantiates deployment-specific endpoints and concrete forms.
+
+2. Industry model alignment layer:
+- Aligns WoT concepts to specific industry models (for example BACnet objects, OPC UA nodes, or similar domain standards).
+- Uses explicit semantic mapping terms in TM/TD extensions or companion vocabularies, independent of transport.
+
+3. Binding/protocol layer:
+- Defines transport, serialization, addressing, headers/options, and wire-level transformation details.
+- Uses Binding Templates and form-level metadata.
+
+### Responsibility Split for This Proposal
+
+- Challenge 3 (basic math operations) and challenge 4 (enum mapping) should primarily be treated as binding-level value transformations, unless an industry standard defines these conversions as intrinsic semantic rules.
+- Industry semantics should not be encoded only as protocol-specific terms; they should be represented with reusable semantic mapping annotations that can be used across multiple bindings.
+- TD instances should compose both concerns: semantic mapping annotations plus concrete form/binding mapping.
+
+### Processing Pipeline
+
+Read path:
+1. Resolve WoT semantic concept from TM/TD.
+2. Resolve industry model alignment (which concrete industry concept is represented).
+3. Apply binding mapping to decode wire value (including math/enum transforms).
+
+Write path:
+1. Start from WoT semantic value.
+2. Apply semantic mapping constraints.
+3. Apply inverse binding mapping to produce protocol payload value.
+
+### Standardization Guidance
+
+- TD core should standardize extension points and deterministic processing behavior.
+- Industry-specific conceptual mappings should be standardized in companion vocabularies and mapping conventions.
+- Binding Templates should standardize transport/wire transformations and reference semantic alignment terms where needed.
+- Conformance should test both semantic consistency (industry alignment layer) and deterministic wire behavior (binding layer).
+
+### TD/TM Examples for the Responsibility Split
+
+The snippets below are intentionally minimal and use placeholder namespaces for illustration.
+
+#### Example A: TM (semantic layer only)
+
+This TM declares abstract capability and semantics, without transport or wire mapping details.
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/2022/wot/tm/v1.1",
+    {
+      "ex": "https://example.org/sem#"
+    }
+  ],
+  "@type": "tm:ThingModel",
+  "title": "BatteryMonitorModel",
+  "properties": {
+    "batteryState": {
+      "type": "string",
+      "enum": ["critical", "low", "medium", "high"],
+      "description": "Abstract battery state exposed to applications",
+      "ex:concept": "ex:BatteryState"
+    }
+  }
+}
+```
+
+#### Example B: TD (semantic + industry model alignment)
+
+This TD instantiates the semantic model and links the property to an industry concept, still without protocol-specific conversion details.
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/2022/wot/td/v1.1",
+    {
+      "ind": "https://example.org/industry-model#"
+    }
+  ],
+  "id": "urn:example:thing:battery-42",
+  "title": "BatteryThing",
+  "properties": {
+    "batteryState": {
+      "type": "string",
+      "enum": ["critical", "low", "medium", "high"],
+      "ind:mapsToConcept": "ind:BatteryLevelState"
+    }
+  }
+}
+```
+
+#### Example C: TD form (binding/protocol layer)
+
+This form adds concrete protocol endpoint and wire-level transformation for the same semantic property.
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/2022/wot/td/v1.1",
+    {
+      "map": "https://example.org/wot/data-mapping/v1#",
+      "ind": "https://example.org/industry-model#"
+    }
+  ],
+  "id": "urn:example:thing:battery-42",
+  "title": "BatteryThing",
+  "properties": {
+    "batteryState": {
+      "type": "string",
+      "enum": ["critical", "low", "medium", "high"],
+      "ind:mapsToConcept": "ind:BatteryLevelState",
+      "forms": [
+        {
+          "href": "coap://example.local/power/battery",
+          "contentType": "application/octet-stream",
+          "op": ["readproperty"],
+          "map:valueMapping": {
+            "map:fromWire": [
+              { "map:op": "mul", "map:value": 0.3921568627 },
+              { "map:op": "round", "map:mode": "nearest" },
+              {
+                "map:op": "enumRange",
+                "map:ranges": [
+                  { "map:min": 0, "map:max": 10, "map:app": "critical" },
+                  { "map:min": 11, "map:max": 30, "map:app": "low" },
+                  { "map:min": 31, "map:max": 80, "map:app": "medium" },
+                  { "map:min": 81, "map:max": 100, "map:app": "high" }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+#### Example D: Same semantics with a different binding
+
+The same semantic property and industry model mapping can be reused with a different protocol form.
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/2022/wot/td/v1.1",
+    {
+      "map": "https://example.org/wot/data-mapping/v1#",
+      "ind": "https://example.org/industry-model#"
+    }
+  ],
+  "id": "urn:example:thing:battery-42-http",
+  "title": "BatteryThingHttp",
+  "properties": {
+    "batteryState": {
+      "type": "string",
+      "enum": ["critical", "low", "medium", "high"],
+      "ind:mapsToConcept": "ind:BatteryLevelState",
+      "forms": [
+        {
+          "href": "https://api.example.org/devices/42/battery",
+          "contentType": "application/json",
+          "op": ["readproperty"],
+          "map:valueMapping": {
+            "map:fromWire": [
+              {
+                "map:op": "enum",
+                "map:map": [
+                  { "map:wire": "A", "map:app": "critical" },
+                  { "map:wire": "B", "map:app": "low" },
+                  { "map:wire": "C", "map:app": "medium" },
+                  { "map:wire": "D", "map:app": "high" }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+Interpretation:
+- Example A defines the reusable abstract semantics.
+- Example B adds industry concept alignment.
+- Example C and Example D show that bindings can vary independently while preserving the same semantic and industry-model-level meaning.
 
 ## JSON-LD Context Document (Provisional)
 
