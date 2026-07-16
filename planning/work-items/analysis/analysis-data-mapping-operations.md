@@ -415,7 +415,7 @@ This TM declares abstract capability and semantics, without transport or wire ma
       "type": "string",
       "enum": ["critical", "low", "medium", "high"],
       "description": "Abstract battery state exposed to applications",
-      "ex:concept": "ex:BatteryState"
+      "@type": "ex:BatteryState"
     }
   }
 }
@@ -439,7 +439,7 @@ This TD instantiates the semantic model and links the property to an industry co
     "batteryState": {
       "type": "string",
       "enum": ["critical", "low", "medium", "high"],
-      "ind:mapsToConcept": "ind:BatteryLevelState"
+      "@type": "ind:BatteryLevelState"
     }
   }
 }
@@ -464,7 +464,7 @@ This form adds concrete protocol endpoint and wire-level transformation for the 
     "batteryState": {
       "type": "string",
       "enum": ["critical", "low", "medium", "high"],
-      "ind:mapsToConcept": "ind:BatteryLevelState",
+      "@type": "ind:BatteryLevelState",
       "forms": [
         {
           "href": "coap://example.local/power/battery",
@@ -511,7 +511,7 @@ The same semantic property and industry model mapping can be reused with a diffe
     "batteryState": {
       "type": "string",
       "enum": ["critical", "low", "medium", "high"],
-      "ind:mapsToConcept": "ind:BatteryLevelState",
+      "@type": "ind:BatteryLevelState",
       "forms": [
         {
           "href": "https://api.example.org/devices/42/battery",
