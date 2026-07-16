@@ -551,8 +551,8 @@ What exists:
 - WoT XML Binding covers mapping Data Schema to XML Schema for non-JSON payloads. Source: https://w3c.github.io/wot-binding-templates/bindings/payloads/xml/index.html
 
 What seems to be missing:
-- A general W3C vocabulary for arithmetic transforms such as `mul`, `add`, `round`, or `clamp`.
-- A general W3C vocabulary for a reusable `fromWire` / `toWire` transformation pipeline across protocols.
+- Vocabulary for arithmetic transforms such as `mul`, `add`, `round`, or `clamp`.
+- Vocabulary for a reusable `fromWire` / `toWire` transformation pipeline across protocols.
 - A single standard vocabulary that replaces the whole custom `map` context end to end.
 
 The following JSON-LD context document corresponds to the provisional `map` vocabulary used in the TD snippets above.
