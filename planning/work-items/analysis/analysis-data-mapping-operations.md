@@ -349,9 +349,7 @@ Writable battery mode where enum-to-wire mapping uses canonical representative p
 
 ## Mapping Architecture: TM/TD Semantics and Binding Responsibilities
 
-- We need to handle two distinct mappings, not one:
-  1. Mapping from abstract WoT model (preferably reusable TM semantics, then TD instance data) to industry-standard device models.
-  2. Mapping from those industry-standard model elements to concrete protocol and payload details via WoT Bindings.
+The examples above lack an explicit separation of two distinct mappings, so we propose first mapping from the abstract WoT model, preferably reusable TM semantics and then TD instance data, to industry-standard device models, and second mapping those industry-standard model elements to concrete protocol and payload details via WoT Bindings.
 
 ### Layered Model
 
@@ -543,6 +541,19 @@ Interpretation:
 - Example C and Example D show that bindings can vary independently while preserving the same semantic and industry-model-level meaning.
 
 ## JSON-LD Context Document (Provisional)
+
+Even though some concepts already exist in specific protocol bindings, important mapping concepts are still missing; therefore, we propose introducing new vocabulary for the missing mapping terms while reusing the corresponding W3C binding vocabulary wherever it already exists.
+
+What exists:
+- HTTP binding vocabulary already covers transport details such as htv:methodName, htv:headers, htv:fieldName, and htv:fieldValue. Source: https://w3c.github.io/wot-binding-templates/bindings/protocols/http/
+- Modbus binding vocabulary covers protocol and payload details such as modv:address, modv:entity, modv:type, modv:mostSignificantByte, modv:mostSignificantWord, modv:pollingTime, and modv:timeout. Source: https://w3c.github.io/wot-binding-templates/bindings/protocols/modbus/
+- BACnet binding vocabulary is the closest match for enum/value mapping. It has bacv:hasValueMap, bacv:hasMapEntry, bacv:hasProtocolVal, bacv:hasLogicalVal, plus bacv:hasDataType and bacv:usesService. Source: https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/
+- WoT XML Binding covers mapping Data Schema to XML Schema for non-JSON payloads. Source: https://w3c.github.io/wot-binding-templates/bindings/payloads/xml/index.html
+
+What seems to be missing:
+- A general W3C vocabulary for arithmetic transforms such as `mul`, `add`, `round`, or `clamp`.
+- A general W3C vocabulary for a reusable `fromWire` / `toWire` transformation pipeline across protocols.
+- A single standard vocabulary that replaces the whole custom `map` context end to end.
 
 The following JSON-LD context document corresponds to the provisional `map` vocabulary used in the TD snippets above.
 
