@@ -114,6 +114,19 @@ Use case:
 1. Reverse enum mapping for `mode`.
 2. `bitCompose` to produce one status byte.
 
+How `map:mask` works in this pattern:
+- `map:mask` selects which bits in the wire integer belong to one logical field.
+- Extraction follows: `fieldValue = (wireValue AND mask) >> shift`.
+- In this example:
+  - `alarm`: `mask=1` (`0001`), `shift=0` -> reads bit 0.
+  - `running`: `mask=2` (`0010`), `shift=1` -> reads bit 1.
+  - `modeCode`: `mask=12` (`1100`), `shift=2` -> reads bits 2 and 3.
+- Example with wire value `13` (`1101`):
+  - `alarm = (1101 AND 0001) >> 0 = 1`
+  - `running = (1101 AND 0010) >> 1 = 0`
+  - `modeCode = (1101 AND 1100) >> 2 = 3`
+- For `bitCompose`, `map:mask` constrains where each field is written in the output integer; overlapping masks are invalid.
+
 ## Example TD Snippets (Provisional)
 
 The snippets are illustrative and reuse the provisional mapping namespace style from `analysis-data-mapping-operations.md`.
