@@ -100,6 +100,8 @@ Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2
   - Should it be possible to indicate whether writing a property returns set value?: https://github.com/w3c/wot-thing-description/issues/875
 - Existing Solutions:
   - Lorawan Binding: https://github.com/w3c/wot-binding-templates/pull/458 (`lorav:multiplier`)
+- Detailed analysis:
+  - See `analysis-data-mapping-operations.md`.
 
 4. Simple Type Conversion (enum mapping)
 
@@ -122,6 +124,8 @@ Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2
 - Existing Solutions:
   - BACnet Binding: https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/#example-enum-mapping (`bacv:hasValueMap`)
   - Profinet https://w3c.github.io/wot-binding-templates/bindings/protocols/profinet/#example-complex-datatype (`profv:enumeratedValue`)
+- Detailed analysis:
+  - See `analysis-data-mapping-operations.md`.
 
 5. Structured and Simple Data Mismatch (value wrapping, bitmasking)
 
@@ -143,6 +147,8 @@ Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2
 - Existing Solutions:
   - Data Mapping in node-wot to choose a part of the JSON Payload: https://github.com/eclipse-thingweb/node-wot#data-mapping-per-thing
   - Profinet https://w3c.github.io/wot-binding-templates/bindings/protocols/profinet/#example-complex-datatype (`profv:payloadMapping`)
+- Detailed analysis:
+  - See `analysis-data-mapping-conversion.md`.
 - Notes:
   - This does NOT include mathematical operations, that is above above point 3
   - This does NOT restrict itself to simple type conversion, that is above point 4. However, this can be applied on top of point 4.
@@ -173,10 +179,4 @@ How to model it in JSON but also giving hints so that the drivers can use it.
 
 ## Existing Solutions
 
-## Summarized Problem
-
-Will be done after collecting the user stories and all related issues
-
-## Requirements
-
-Will be done after everything else
+TODO

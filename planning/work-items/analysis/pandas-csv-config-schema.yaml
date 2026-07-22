@@ -1,0 +1,89 @@
+schema_version: 1
+profile_name: td_csv_mapping_profile
+
+description: >-
+  Declarative configuration for parsing CSV with pandas and mapping rows/columns
+  to TD-oriented logical fields.
+
+source:
+  path: ./inputs/example.csv
+  encoding: utf-8
+  compression: infer
+
+pandas_read_csv:
+  sep: ","
+  header: infer
+  names: null
+  usecols: null
+  skiprows: 0
+  skipfooter: 0
+  nrows: null
+  quotechar: '"'
+  quoting: minimal
+  doublequote: true
+  escapechar: null
+  comment: null
+  skipinitialspace: false
+  on_bad_lines: error
+  keep_default_na: true
+  na_values: []
+  true_values: ["true", "True", "1"]
+  false_values: ["false", "False", "0"]
+  parse_dates: []
+  date_format: null
+  dayfirst: false
+  engine: c
+  chunksize: null
+
+columns:
+  timestamp:
+    source_column: ts
+    pandas_dtype: string
+    required: true
+    transform:
+      parse_datetime:
+        format: "%Y-%m-%dT%H:%M:%SZ"
+        timezone: UTC
+    constraints:
+      not_null: true
+
+  value:
+    source_column: reading
+    pandas_dtype: float64
+    required: true
+    transform: {}
+    constraints:
+      min: -1000
+      max: 1000
+
+  unit:
+    source_column: unit
+    pandas_dtype: string
+    required: false
+    default: C
+    constraints:
+      enum: [C, F, K]
+
+record_filters:
+  drop_if:
+    - column: status
+      equals: invalid
+
+mapping:
+  # Maps parsed columns to TD-facing semantic fields.
+  td_fields:
+    observedAt: timestamp
+    value: value
+    unit: unit
+
+  payload_shape: object
+  include_fields: [observedAt, value, unit]
+
+validation:
+  fail_on_missing_required_columns: true
+  fail_on_constraint_violation: true
+  max_error_rows: 10
+
+output:
+  format: json_records
+  orient: records
