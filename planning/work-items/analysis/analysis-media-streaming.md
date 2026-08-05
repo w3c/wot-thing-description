@@ -166,7 +166,6 @@ Common and emerging streaming protocols and description models include the follo
 - [ONVIF Network Interface Specifications](https://www.onvif.org/profiles/specifications/) describe media configurations and stream URI retrieval for network media devices.
 - [SMIL 3.0](https://www.w3.org/TR/smil/) describes the composition, timing, and synchronization of multimedia presentations.
 
-
 ## Summarized Problem
 
 Will be done after collecting the user stories and all related issues
