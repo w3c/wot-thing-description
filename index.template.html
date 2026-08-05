@@ -5009,7 +5009,182 @@
           set to true.
         </p>
 
-        <p></p>
+        <p>
+          Other terms can also influence the interaction semantics and also the location of the terms mentioned above.
+          As indicated in Section X, <code>readOnly</code> and <code>writeOnly</code> can exist in other levels such as
+          within the input or output of an Action Affordance or within the data, subscription or cancellation of an
+          Event Affordance. Furthermore, the presence of an object or array in the Data Schema creates the possibility
+          to include these terms in deeper levels of a Data Schema.
+        </p>
+
+        <p>
+          An interaction with a Thing can be comprised of multiple messages which may or may not have any application relevant payload.
+          This needs to be reflected in the TD.
+          <!-- TODO: Explain the lack of data schema. Where does it best fit? -->
+        </p>
+
+        <p class="note">
+          While other terms also influence interaction semantics such as <code>idempotent</code> in
+          <a>ActionAffordance</a>, those are excluded from this section for the time being.
+        </p>
+
+        <section id="sec-read-write-locations" class="informative">
+          <h4>Usage of readOnly and writeOnly</h4>
+
+          <p>
+            The table below presents different locations where <code>readOnly</code> and <code>writeOnly</code> can be
+            used. The scope is derived from the location. Please make sure to read [[[#sec-op-data-schema-mapping]]] as
+            well.
+          </p>
+
+          <table class="def numbered">
+            <caption>
+              Location, Scope and Implications of readOnly and writeOnly. When one is true, the other is assumed to be false or not present.
+            </caption>
+            <thead>
+              <tr>
+                <th>Location</th>
+                <th>Recommended Usage?</th>
+                <th>Scope</th>
+                <th>Implication of readOnly=true</th>
+                <th>Implication of writeOnly=true</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1. Root of a Property Affordance</td>
+                <td>Yes</td>
+                <td>All messages between the Thing and Consumer</td>
+                <td>There should be only readproperty operations in the forms</td>
+                <td>Not recommended usage. There should be only writeproperty operations in the forms</td>
+              </tr>
+              <tr>
+                <td>2. Within a key of an Object in a Property Affordance</td>
+                <td>Yes</td>
+                <td>Presence of the key and its value in a message</td>
+                <td>Different payload for readproperty response and writeproperty request</td>
+                <td>Different payload for readproperty response and writeproperty request</td>
+              </tr>
+              <tr>
+                <td>3. Root of an Action Affordance</td>
+                <td>No</td>
+                <td>Not applicable</td>
+                <td>Not applicable</td>
+                <td>Not applicable</td>
+              </tr>
+              <tr>
+                <td>4. Root Input Schema of an Action Affordance</td>
+                <td>No?</td>
+                <td>All messages between the Thing and Consumer to invoke an action</td>
+                <td>Not recommended? Action does not require a payload for invokeaction but a response will be provided that is not the output</td>
+                <td>Already implied that an input is a writeOnly operation</td>
+              </tr>
+              <tr>
+                <td>5. Root Output Schema of an Action Affordance</td>
+                <td>No?</td>
+                <td>All messages between the Thing and Consumer after the an invoke an action</td>
+                <td>Already implied that an output is a readOnly operation</td>
+                <td>Not recommended? Action does not require a request (with or without payload) to get invokeaction response</td>
+              </tr>
+              <tr>
+                <td>6. Within a key of an Object in the input or output of an Action Affordance</td>
+                <td>No. Turn to separate input and output instead.</td>
+                <td>Not applicable</td>
+                <td>Not applicable</td>
+                <td>Not applicable</td>
+              </tr>
+              <tr>
+                <td>7. Root of an Event Affordance</td>
+                <td>No</td>
+                <td>Not applicable</td>
+                <td>Not applicable</td>
+                <td>Not applicable</td>
+              </tr>
+              <tr>
+                <td>8. Root of Subscription in an Event Affordance</td>
+                <td>Yes</td>
+                <td>All messages between the Thing and Consumer to establish a subscription</td>
+                <td>Only a response is returned</td>
+                <td>Only a request is needed to establish subscription, no payload returned</td>
+              </tr>
+              <tr>
+                <td>9. Root of Data in an Event Affordance</td>
+                <td>No</td>
+                <td>Not applicable</td>
+                <td>Not applicable</td>
+                <td>Not applicable</td>
+              </tr>
+              <tr>
+                <td>10. Within a key of an Object in Data in an Event Affordance</td>
+                <td>No. A data is always asynchronously emitted to the Consumer. Thus, readOnly or writeOnly should not be used</td>
+                <td>Not applicable</td>
+                <td>Not applicable</td>
+                <td>Not applicable</td>
+              </tr>
+              <tr>
+                <td>11. Root of Cancellation in an Event Affordance</td>
+                <td>Yes</td>
+                <td>All messages between the Thing and Consumer to cancel a subscription</td>
+                <td>Only a response is returned</td>
+                <td>Only a request payload is needed to cancel subscription, no payload returned</td>
+              </tr>
+              <tr>
+                <td>12. Within a key of an Object in the subscription of an Event Affordance</td>
+                <td>Yes</td>
+                <td>Presence of the key and its value in a subscription-related message</td>
+                <td>Different payloads for the subscription request and its response</td>
+                <td>Different payloads for the subscription request and its response</td>
+              </tr>
+              <tr>
+                <td>13. Within a key of an Object in the cancellation of an Event Affordance</td>
+                <td>Yes</td>
+                <td>Presence of the key and its value in a cancellation-related message</td>
+                <td>Different payloads for the cancellation request and its response</td>
+                <td>Different payloads for the cancellation request and its response</td>
+              </tr>
+        </section>
+
+<pre class="example" title="Example of readOnly and writeOnly usages" id="example-read-write-locations">
+{
+    "properties": {
+        "prop1": {
+            "type": "string",
+            "readOnly": true
+        },
+        "prop2": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "number"
+                },
+                "unit": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "timestamp": {
+                    "type": "integer",
+                    "writeOnly": true
+                }
+            }
+        },
+        "prop3": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "number"
+                },
+                "unit": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "timestamp": {
+                    "type": "integer",
+                    "writeOnly": true
+                }
+            }
+        }
+    }
+}
 
         <section id="sec-op-data-schema-mapping" class="informative">
           <h4>Mapping op Values to Data Schemas</h4>
