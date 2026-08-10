@@ -9,6 +9,10 @@ Also known as: Mapping TD elements to protocol or network messages
 - Some protocols do not have the concept of `contentType` at all.
 - Some `contentType` may be more expressive than our DataSchema, e.g. CBOR [Maps with integer keys](https://www.rfc-editor.org/rfc/rfc8949.html#map-keys).
 
+## Summarized Problem
+
+TODO
+
 ## Open questions
 
 - How can we describe how the logical information (state for property, input/output messages for actions, messages for event) is mapped to each channel?

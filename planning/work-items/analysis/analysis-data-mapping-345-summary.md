@@ -115,7 +115,7 @@ Three existing standards were evaluated to reduce the proprietary `map` surface.
 - Cross-domain mappings (e.g. integer wire code to string application label)
 - Write-path inversion policy
 
-**Recommended use:** Use JSON Schema first for declarative constraints and value-domain modeling. Replace `map:op: "enum"` with JSON Schema `oneOf`/`const` only when the wire and application value domains are identical (same-domain code labeling). JSON Schema terms are native TD DataSchema keywords and require no additional context prefix.
+**Recommended use:** Use JSON Schema first for declarative constraints and value-domain modeling. Replace `map:proc: "enum"` with JSON Schema `oneOf`/`const` only when the wire and application value domains are identical (same-domain code labeling). JSON Schema terms are native TD DataSchema keywords and require no additional context prefix.
 
 ---
 
@@ -166,7 +166,7 @@ The namespace `https://www.w3.org/wot/data-mapping/v1#` is a placeholder. The pr
     },
 
     "op": {
-      "@id": "map:op",
+      "@id": "map:proc",
       "@type": "xsd:string"
     },
 
@@ -284,6 +284,91 @@ The namespace `https://www.w3.org/wot/data-mapping/v1#` is a placeholder. The pr
 - QUDT terms (`qudt:hasQuantityKind`, `qudt:hasUnit`, `qudt:conversionMultiplier`, etc.) and JSON Schema keywords (`type`, `enum`, `oneOf`, `minimum`, `maximum`) are used directly alongside this context without being redefined here.
 - FnO terms (`fno:Function`, `fnoc:PartiallyAppliedFunction`, etc.) may be used as optional enrichment alongside this context for reusable function descriptions.
 
+### Term Reference
+
+#### Pipeline Attachment and Direction
+
+| Term | Description |
+|---|---|
+| `map:valueMapping` | Container object attached to a TD form that holds the `fromWire` and/or `toWire` pipeline. |
+| `map:fromWire` | Ordered list of operation objects executed when reading a value from the protocol (wire → application). Applied on read interactions. |
+| `map:toWire` | Ordered list of operation objects executed when writing a value to the protocol (application → wire). Applied on write interactions. If absent for a writable form, a write attempt must fail with `error`. |
+
+#### Operation Selector
+
+| Term | Description |
+|---|---|
+| `map:proc` | String identifier for the operation to execute in one pipeline step. Required in every operation object. |
+
+Valid `map:proc` values:
+
+| Value | Category | Description |
+|---|---|---|
+| `mul` | numeric | Multiply the current numeric value by `map:value`. |
+| `add` | numeric | Add `map:value` to the current numeric value. |
+| `round` | numeric | Round the current numeric value according to `map:mode`. |
+| `clamp` | numeric | Constrain the current numeric value to the range `[map:min, map:max]`. |
+| `affine` | numeric | Shortcut for `mul` followed by `add` in one step. |
+| `enum` | enum | Look up the current value in `map:map` and replace it with the matching entry's other side. |
+| `enumRange` | enum | Map the current numeric value to an application label by finding the matching range in `map:ranges`. |
+| `pick` | structural | Extract the value at `map:path` from the current structured input. |
+| `place` | structural | Insert the current value at `map:path` into an output structure. |
+| `wrap` | structural | Wrap the current value into the fixed envelope defined by `map:template`. |
+| `unwrap` | structural | Remove one known envelope layer, yielding the contained value. |
+| `at` | structural | Get the array element at a specific integer index from the current array input. |
+| `setAt` | structural | Set the array element at a specific integer index in the current array input. |
+| `bitExtract` | bitfield | Decompose the current integer wire value into a structured object of named fields using `map:fields`. |
+| `bitCompose` | bitfield | Compose a structured object of named fields back into a single integer wire value using `map:fields`. Inverse of `bitExtract`. |
+
+#### Numeric Operation Parameters
+
+| Term | Used by | Description |
+|---|---|---|
+| `map:value` | `mul`, `add` | Numeric constant operand. For `mul` this is the factor; for `add` this is the addend. |
+| `map:mode` | `round` | Rounding strategy. Valid values: `floor` (round down), `ceil` (round up), `nearest` (round half to even), `towardZero` (truncate). |
+| `map:min` | `clamp`, `enumRange` | Lower bound. For `clamp`, values below this are set to `map:min`. For `enumRange` entries, defines the inclusive lower bound of the range. |
+| `map:max` | `clamp`, `enumRange` | Upper bound. For `clamp`, values above this are set to `map:max`. For `enumRange` entries, defines the inclusive upper bound of the range. |
+
+#### Enum Mapping Parameters
+
+| Term | Used by | Description |
+|---|---|---|
+| `map:map` | `enum` | Ordered list of wire/app value pair objects. Each entry must contain `map:wire` and `map:app`. Direction of lookup (wire→app or app→wire) depends on whether the step appears in `fromWire` or `toWire`. |
+| `map:wire` | `enum` entry | The wire-side value in one mapping pair. |
+| `map:app` | `enum` entry, `enumRange` entry | The application-side value in one mapping pair or range entry. |
+| `map:ranges` | `enumRange` | Ordered list of range entries. Each entry must contain `map:min`, `map:max`, and `map:app`. Ranges must not overlap. |
+| `map:onNoMatch` | `enum`, `enumRange` | Policy when no entry matches the input value. Default: `error`. |
+| `map:mapFrom` | `enum` | Name of the field within the current object to use as input for the enum lookup. Used when operating on a named subfield of a structured object (e.g. after `bitExtract`). If absent, the whole current value is used. |
+| `map:mapTo` | `enum` | Name of the field within the current object to write the converted output into. If absent, the whole current value is replaced. |
+
+#### Structural Conversion Parameters
+
+| Term | Used by | Description |
+|---|---|---|
+| `map:path` | `pick`, `place`, `unwrap` | Dot-notation path string locating a value within a JSON object or array. Segments are separated by `.`; array indexes may be written as `[n]` (e.g. `"d.v"`, `"items[0].value"`). |
+| `map:onMissing` | `pick`, `unwrap` | Policy when the path does not resolve to an existing value. Valid values: `error` (default), `null` (return null), `default` (return `map:default`). |
+| `map:default` | `pick`, `unwrap` | Fallback value returned when `map:onMissing` is `"default"`. Only valid together with `map:onMissing: "default"`. |
+| `map:createMissing` | `place` | Boolean. When `true` (default), intermediate container nodes that do not exist are created automatically. When `false`, a missing intermediate node raises `error`. |
+| `map:targetTemplate` | `place` | Initial container object or array used as the output structure when one does not already exist. |
+| `map:template` | `wrap` | Object or array envelope into which the current value is inserted. Must contain exactly one occurrence of the placeholder token identified by `map:placeholder`. |
+| `map:placeholder` | `wrap` | Token string within `map:template` that is replaced with the current value. Default: `"$value"`. Defining the placeholder zero times or more than once in the template is invalid. |
+
+#### Bitfield Parameters
+
+| Term | Used by | Description |
+|---|---|---|
+| `map:fields` | `bitExtract`, `bitCompose` | Ordered list of field definition objects. Each entry defines one logical field within the packed wire integer. |
+| `map:name` | `map:fields` entry | Name of the logical field. Used as the object key in the structured output of `bitExtract` and as the lookup key in `bitCompose`. |
+| `map:mask` | `map:fields` entry | Integer bitmask selecting which bits in the wire integer belong to this field. Extraction: `(wireValue & mask) >> shift`. Composition: `(fieldValue << shift) & mask`. Must be non-zero. Overlapping masks across fields in the same operation are invalid. |
+| `map:shift` | `map:fields` entry | Non-negative integer specifying how many bit positions to right-shift during extraction (or left-shift during composition). Together with `map:mask`, this isolates the field within the wire integer. |
+| `map:type` | `map:fields` entry | Type hint for the extracted field value. Valid values: `boolean` (`0` → `false`, non-zero → `true`), `integer` (default, returned as a numeric value). |
+
+#### Error Handling
+
+| Term | Used by | Description |
+|---|---|---|
+| `map:onError` | any operation object | Per-operation failure policy. Valid values: `error` (default — terminate processing), `skip` (pass the unchanged current input value to the next step without raising an error). |
+
 ---
 
 ## Examples
@@ -330,7 +415,7 @@ All examples include both proprietary `map` terms and available standard terms. 
 ```json
 {
   "@context": [
-    "https://www.w3.org/2022/wot/td/v1.1",
+    "https://www.w3.org/ns/wot-next/td",
     {
       "map": "https://www.w3.org/wot/data-mapping/v1#",
       "qudt": "http://qudt.org/schema/qudt/",
@@ -357,7 +442,7 @@ All examples include both proprietary `map` terms and available standard terms. 
           "qudt:hasUnit": "unit:DEG_C-DECI",
           "map:valueMapping": {
             "map:fromWire": [
-              { "map:op": "mul", "map:value": 0.1 }
+              { "map:proc": "mul", "map:value": 0.1 }
             ]
           }
         }
@@ -408,7 +493,7 @@ All examples include both proprietary `map` terms and available standard terms. 
 ```json
 {
   "@context": [
-    "https://www.w3.org/2022/wot/td/v1.1",
+    "https://www.w3.org/ns/wot-next/td",
     {
       "map": "https://www.w3.org/wot/data-mapping/v1#",
       "qudt": "http://qudt.org/schema/qudt/",
@@ -432,14 +517,14 @@ All examples include both proprietary `map` terms and available standard terms. 
           "op": ["readproperty", "writeproperty"],
           "map:valueMapping": {
             "map:fromWire": [
-              { "map:op": "mul", "map:value": 0.3921568627 },
-              { "map:op": "round", "map:mode": "nearest" },
-              { "map:op": "clamp", "map:min": 0, "map:max": 100 }
+              { "map:proc": "mul", "map:value": 0.3921568627 },
+              { "map:proc": "round", "map:mode": "nearest" },
+              { "map:proc": "clamp", "map:min": 0, "map:max": 100 }
             ],
             "map:toWire": [
-              { "map:op": "mul", "map:value": 2.55 },
-              { "map:op": "round", "map:mode": "nearest" },
-              { "map:op": "clamp", "map:min": 0, "map:max": 255 }
+              { "map:proc": "mul", "map:value": 2.55 },
+              { "map:proc": "round", "map:mode": "nearest" },
+              { "map:proc": "clamp", "map:min": 0, "map:max": 255 }
             ]
           }
         }
@@ -460,7 +545,7 @@ All examples include both proprietary `map` terms and available standard terms. 
 
 #### 4.A — Door State Sensor (integer codes to string labels, same-domain case without `map`)
 
-When the application-facing data schema uses integer codes and titles are sufficient for human readability, JSON Schema `oneOf` + `const` replaces a custom `map:op: "enum"`.
+When the application-facing data schema uses integer codes and titles are sufficient for human readability, JSON Schema `oneOf` + `const` replaces a custom `map:proc: "enum"`.
 
 **TM:**
 
@@ -488,7 +573,7 @@ When the application-facing data schema uses integer codes and titles are suffic
 
 ```json
 {
-  "@context": "https://www.w3.org/2022/wot/td/v1.1",
+  "@context": "https://www.w3.org/ns/wot-next/td",
   "id": "urn:example:thing:door-1a",
   "title": "DoorSensor",
   "properties": {
@@ -561,7 +646,7 @@ When the application data schema uses strings and the wire uses integers, a `map
 ```json
 {
   "@context": [
-    "https://www.w3.org/2022/wot/td/v1.1",
+    "https://www.w3.org/ns/wot-next/td",
     {
       "map": "https://www.w3.org/wot/data-mapping/v1#",
       "qudt": "http://qudt.org/schema/qudt/",
@@ -593,7 +678,7 @@ When the application data schema uses strings and the wire uses integers, a `map
           "map:valueMapping": {
             "map:fromWire": [
               {
-                "map:op": "enum",
+                "map:proc": "enum",
                 "map:map": [
                   { "map:wire": 0, "map:app": "closed" },
                   { "map:wire": 1, "map:app": "open" },
@@ -611,7 +696,7 @@ When the application data schema uses strings and the wire uses integers, a `map
 
 **What the example shows:**
 - QUDT `TaggedEnumeration` declares the *semantics* of the coded vocabulary.
-- `map:op: "enum"` handles the *runtime conversion* from wire integer to application string.
+- `map:proc: "enum"` handles the *runtime conversion* from wire integer to application string.
 - The two roles are complementary and do not overlap.
 
 ---
@@ -641,7 +726,7 @@ When the application data schema uses strings and the wire uses integers, a `map
 ```json
 {
   "@context": [
-    "https://www.w3.org/2022/wot/td/v1.1",
+    "https://www.w3.org/ns/wot-next/td",
     {
       "map": "https://www.w3.org/wot/data-mapping/v1#"
     }
@@ -659,10 +744,10 @@ When the application data schema uses strings and the wire uses integers, a `map
           "contentType": "application/octet-stream",
           "map:valueMapping": {
             "map:fromWire": [
-              { "map:op": "mul", "map:value": 0.3921568627 },
-              { "map:op": "round", "map:mode": "nearest" },
+              { "map:proc": "mul", "map:value": 0.3921568627 },
+              { "map:proc": "round", "map:mode": "nearest" },
               {
-                "map:op": "enumRange",
+                "map:proc": "enumRange",
                 "map:ranges": [
                   { "map:min": 0,  "map:max": 10,  "map:app": "critical" },
                   { "map:min": 11, "map:max": 30,  "map:app": "low" },
@@ -693,7 +778,7 @@ When the application data schema uses strings and the wire uses integers, a `map
 ```json
 {
   "@context": [
-    "https://www.w3.org/2022/wot/td/v1.1",
+    "https://www.w3.org/ns/wot-next/td",
     {
       "map": "https://www.w3.org/wot/data-mapping/v1#"
     }
@@ -711,10 +796,10 @@ When the application data schema uses strings and the wire uses integers, a `map
           "op": ["readproperty", "writeproperty"],
           "map:valueMapping": {
             "map:fromWire": [
-              { "map:op": "mul", "map:value": 0.3921568627 },
-              { "map:op": "round", "map:mode": "nearest" },
+              { "map:proc": "mul", "map:value": 0.3921568627 },
+              { "map:proc": "round", "map:mode": "nearest" },
               {
-                "map:op": "enumRange",
+                "map:proc": "enumRange",
                 "map:ranges": [
                   { "map:min": 0,  "map:max": 10,  "map:app": "critical" },
                   { "map:min": 11, "map:max": 30,  "map:app": "low" },
@@ -725,7 +810,7 @@ When the application data schema uses strings and the wire uses integers, a `map
             ],
             "map:toWire": [
               {
-                "map:op": "enum",
+                "map:proc": "enum",
                 "map:map": [
                   { "map:app": "critical", "map:wire": 5  },
                   { "map:app": "low",      "map:wire": 20 },
@@ -733,9 +818,9 @@ When the application data schema uses strings and the wire uses integers, a `map
                   { "map:app": "high",     "map:wire": 90 }
                 ]
               },
-              { "map:op": "mul", "map:value": 2.55 },
-              { "map:op": "round", "map:mode": "nearest" },
-              { "map:op": "clamp", "map:min": 0, "map:max": 255 }
+              { "map:proc": "mul", "map:value": 2.55 },
+              { "map:proc": "round", "map:mode": "nearest" },
+              { "map:proc": "clamp", "map:min": 0, "map:max": 255 }
             ]
           }
         }
@@ -779,7 +864,7 @@ When the application data schema uses strings and the wire uses integers, a `map
 ```json
 {
   "@context": [
-    "https://www.w3.org/2022/wot/td/v1.1",
+    "https://www.w3.org/ns/wot-next/td",
     {
       "map": "https://www.w3.org/wot/data-mapping/v1#",
       "qudt": "http://qudt.org/schema/qudt/",
@@ -804,13 +889,13 @@ When the application data schema uses strings and the wire uses integers, a `map
           "op": ["readproperty", "writeproperty"],
           "map:valueMapping": {
             "map:fromWire": [
-              { "map:op": "pick", "map:path": "d.v" },
-              { "map:op": "mul", "map:value": 0.1 }
+              { "map:proc": "pick", "map:path": "d.v" },
+              { "map:proc": "mul", "map:value": 0.1 }
             ],
             "map:toWire": [
-              { "map:op": "mul", "map:value": 10 },
-              { "map:op": "round", "map:mode": "nearest" },
-              { "map:op": "place", "map:path": "d.v" }
+              { "map:proc": "mul", "map:value": 10 },
+              { "map:proc": "round", "map:mode": "nearest" },
+              { "map:proc": "place", "map:path": "d.v" }
             ]
           }
         }
@@ -856,7 +941,7 @@ When the application data schema uses strings and the wire uses integers, a `map
 ```json
 {
   "@context": [
-    "https://www.w3.org/2022/wot/td/v1.1",
+    "https://www.w3.org/ns/wot-next/td",
     {
       "map": "https://www.w3.org/wot/data-mapping/v1#"
     }
@@ -880,7 +965,7 @@ When the application data schema uses strings and the wire uses integers, a `map
           "map:valueMapping": {
             "map:fromWire": [
               {
-                "map:op": "bitExtract",
+                "map:proc": "bitExtract",
                 "map:fields": [
                   { "map:name": "alarm",    "map:mask": 1,  "map:shift": 0, "map:type": "boolean" },
                   { "map:name": "running",  "map:mask": 2,  "map:shift": 1, "map:type": "boolean" },
@@ -888,7 +973,7 @@ When the application data schema uses strings and the wire uses integers, a `map
                 ]
               },
               {
-                "map:op": "enum",
+                "map:proc": "enum",
                 "map:mapFrom": "modeCode",
                 "map:map": [
                   { "map:wire": 0, "map:app": "off" },
@@ -900,7 +985,7 @@ When the application data schema uses strings and the wire uses integers, a `map
             ],
             "map:toWire": [
               {
-                "map:op": "enum",
+                "map:proc": "enum",
                 "map:mapFrom": "mode",
                 "map:map": [
                   { "map:app": "off",    "map:wire": 0 },
@@ -910,7 +995,7 @@ When the application data schema uses strings and the wire uses integers, a `map
                 "map:mapTo": "modeCode"
               },
               {
-                "map:op": "bitCompose",
+                "map:proc": "bitCompose",
                 "map:fields": [
                   { "map:name": "alarm",    "map:mask": 1,  "map:shift": 0 },
                   { "map:name": "running",  "map:mask": 2,  "map:shift": 1 },
@@ -973,4 +1058,4 @@ When all three use cases are composed in one form, the normative processing orde
 3. Publish the context as a JSON-LD context document at a resolvable URL.
 4. Coordinate with Binding Templates to map existing binding-specific terms (e.g. LoRaWAN `lorav:multiplier`, BACnet `bacv:hasValueMap`) onto the core `map` operations.
 5. Add interoperable test vectors for all example patterns, including negative cases.
-6. Evaluate whether the `map:op` string vocabulary should be defined as a SKOS concept scheme or as plain string identifiers.
+6. Evaluate whether the `map:proc` string vocabulary should be defined as a SKOS concept scheme or as plain string identifiers.
