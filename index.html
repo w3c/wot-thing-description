@@ -3453,69 +3453,153 @@
           </p>
 
           <!-- rendered from RDF definitions -->
-          <section><h3><code>Link</code></h3><p>A link can be viewed as a statement of the form
-          "<b><em>link context</em></b> has a <b><em>relation
-          type</em></b> resource at <b><em>link target</em></b>",
-          where the optional <b><em>target attributes</em></b> may
-          further describe the resource.</p><table class="def numbered"><caption>Vocabulary Terms in Link Level</caption><thead><tr><th><a>Vocabulary term</a></th><th>Description</th><th>Assignment</th><th>Type</th></tr></thead><tbody><tr class="rfc2119-table-assertion" id="td-vocab-href--Link"><td><code>href</code></td><td><a>Target URI</a> of a link.</td><td>mandatory</td><td><a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-type--Link"><td><code>type</code></td><td>Target attribute providing a hint indicating
-                what the media type [<cite><a class="bibref" data-link-type="biblio" href="#bib-rfc2046" title="Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types">RFC2046</a></cite>]
-                of the result of dereferencing the link should
-                be.</td><td>optional</td><td><a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-rel--Link"><td><code>rel</code></td><td>A link relation type identifies the semantics
-                of a link.</td><td>optional</td><td><a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-anchor--Link"><td><code>anchor</code></td><td>Overrides the link context (by default the
-                Thing itself identified by its <code>id</code>)
-                with the given URI or IRI.</td><td>optional</td><td><a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-sizes--Link"><td><code>sizes</code></td><td>Target attribute that specifies one or more sizes for the referenced icon.
-                    Only applicable for relation type "icon". The value pattern follows
-                    {Height}x{Width} (e.g., "16x16", "16x16 32x32").</td><td>optional</td><td><a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr>
-<tr class="rfc2119-table-assertion" id="td-vocab-hreflang--Link"><td><code>hreflang</code></td><td>The hreflang attribute specifies the language of a linked document. The value of this must be a valid language tag [[BCP47]].</td><td>optional</td><td><a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or <a>Array</a> of <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a></td></tr></tbody></table><p class="note" title="hreflang type">
-        The <code>hreflang</code> attribute is allowed to be a <code>string</code> or <code>array</code> in this version of the spec. Depending on the result of [[LINKSET-MEDIA-TYPES]] the values of <code>hrefLang</code> can be restricted to <code>array</code> only.
-	</p>
-     <p>Link relations can be used to describe relations such as to other Things (e.g., a Switch Thing controls a Lamp Thing), to a specific kind of Thing Models (e.g., a Thing Description
-    is an instance of a specific Thing Model), or to further documentations information (e.g., device manual of a Thing). It is recommended to reuse existing and established
-    <a href="https://www.iana.org/assignments/link-relations">Link Relation definitions from IANA.</a>
-    </p>
-    <p>
-    The link relation types follow Web Linking [<a data-cite="RFC8288#rfc.section.2.1">RFC8288 Section 2.1</a>], meaning:
-    </p>
-    <ul>
-      <li>
-      <!-- arch-rel-types -->
-      <span class="rfc2119-assertion" id="td-rel-type-case-insensitive">
-      Relation types MUST be compared as strings using case-insensitive comparison.
-      </span>
-      (If they are serialized in a different format they are to be converted to URIs.)
-      Because the general TD Information Model is strictly case-sensitive, this rule act as an explicit exception
-      for link relations.  TD Consumers should be permissive and handle mixed-case relation types gracefully.
-      </li>
-      <li>
-      <!-- arch-rel-type-lowercase -->
-      <span class="rfc2119-assertion" id="td-rel-type-lowercase">
-      All-lowercase URIs SHOULD be used for extension relation types.
-      </span>
-      Note that while this is the recommended practice for newly defined extensions,
-      some existing WoT-specific relation types in the table below (such as <code>controlledBy</code>) have historically used mixed casing.
-      Due to the case-insensitive comparison requirement, these legacy mixed-case types remain fully valid and interoperable.
-      </li>
-    </ul>
-        <p>In the following a best practice relation type table is introduced that is recommended to use within WoT <a>Thing Description</a>
-    or <a>Thing Model</a> instances.
-    </p>
-    <table class="def numbered">
-        <caption>Best practice relation type table</caption>
-        <thead>
-            <tr>
-                <th>Value</th>
-                <th>Occurrence</th>
-                <th>Explanation</th>
-                <th>Source of value origin</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr >
-                <td>
+          <section>
+            <h3><code>Link</code></h3>
+            <p>
+              A link can be viewed as a statement of the form "<b><em>link context</em></b> has a
+              <b><em>relation type</em></b> resource at <b><em>link target</em></b
+              >", where the optional <b><em>target attributes</em></b> may further describe the resource.
+            </p>
+            <table class="def numbered">
+              <caption>
+                Vocabulary Terms in Link Level
+              </caption>
+              <thead>
+                <tr>
+                  <th><a>Vocabulary term</a></th>
+                  <th>Description</th>
+                  <th>Assignment</th>
+                  <th>Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="rfc2119-table-assertion" id="td-vocab-href--Link">
+                  <td><code>href</code></td>
+                  <td><a>Target URI</a> of a link.</td>
+                  <td>mandatory</td>
+                  <td>
+                    <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a>
+                  </td>
+                </tr>
+                <tr class="rfc2119-table-assertion" id="td-vocab-type--Link">
+                  <td><code>type</code></td>
+                  <td>
+                    Target attribute providing a hint indicating what the media type [<cite
+                      ><a
+                        class="bibref"
+                        data-link-type="biblio"
+                        href="#bib-rfc2046"
+                        title="Multipurpose Internet Mail Extensions (MIME) Part Two: Media Types"
+                        >RFC2046</a
+                      ></cite
+                    >] of the result of dereferencing the link should be.
+                  </td>
+                  <td>optional</td>
+                  <td>
+                    <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a>
+                  </td>
+                </tr>
+                <tr class="rfc2119-table-assertion" id="td-vocab-rel--Link">
+                  <td><code>rel</code></td>
+                  <td>A link relation type identifies the semantics of a link.</td>
+                  <td>optional</td>
+                  <td>
+                    <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a>
+                  </td>
+                </tr>
+                <tr class="rfc2119-table-assertion" id="td-vocab-anchor--Link">
+                  <td><code>anchor</code></td>
+                  <td>
+                    Overrides the link context (by default the Thing itself identified by its <code>id</code>) with the
+                    given URI or IRI.
+                  </td>
+                  <td>optional</td>
+                  <td>
+                    <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#anyURI"><code>anyURI</code></a>
+                  </td>
+                </tr>
+                <tr class="rfc2119-table-assertion" id="td-vocab-sizes--Link">
+                  <td><code>sizes</code></td>
+                  <td>
+                    Target attribute that specifies one or more sizes for the referenced icon. Only applicable for
+                    relation type "icon". The value pattern follows {Height}x{Width} (e.g., "16x16", "16x16 32x32").
+                  </td>
+                  <td>optional</td>
+                  <td>
+                    <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a>
+                  </td>
+                </tr>
+                <tr class="rfc2119-table-assertion" id="td-vocab-hreflang--Link">
+                  <td><code>hreflang</code></td>
+                  <td>
+                    The hreflang attribute specifies the language of a linked document. The value of this must be a
+                    valid language tag [[BCP47]].
+                  </td>
+                  <td>optional</td>
+                  <td>
+                    <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a> or
+                    <a>Array</a> of
+                    <a href="https://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string"><code>string</code></a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="note" title="hreflang type">
+              The <code>hreflang</code> attribute is allowed to be a <code>string</code> or <code>array</code> in this
+              version of the spec. Depending on the result of [[LINKSET-MEDIA-TYPES]] the values of
+              <code>hrefLang</code> can be restricted to <code>array</code> only.
+            </p>
+            <p>
+              Link relations can be used to describe relations such as to other Things (e.g., a Switch Thing controls a
+              Lamp Thing), to a specific kind of Thing Models (e.g., a Thing Description is an instance of a specific
+              Thing Model), or to further documentations information (e.g., device manual of a Thing). It is recommended
+              to reuse existing and established
+              <a href="https://www.iana.org/assignments/link-relations">Link Relation definitions from IANA.</a>
+            </p>
+            <p>
+              The link relation types follow Web Linking [<a data-cite="RFC8288#rfc.section.2.1">RFC8288 Section 2.1</a
+              >], meaning:
+            </p>
+            <ul>
+              <li>
+                <!-- arch-rel-types -->
+                <span class="rfc2119-assertion" id="td-rel-type-case-insensitive">
+                  Relation types MUST be compared as strings using case-insensitive comparison.
+                </span>
+                (If they are serialized in a different format they are to be converted to URIs.) Because the general TD
+                Information Model is strictly case-sensitive, this rule act as an explicit exception for link relations.
+                TD Consumers should be permissive and handle mixed-case relation types gracefully.
+              </li>
+              <li>
+                <!-- arch-rel-type-lowercase -->
+                <span class="rfc2119-assertion" id="td-rel-type-lowercase">
+                  All-lowercase URIs SHOULD be used for extension relation types.
+                </span>
+                Note that while this is the recommended practice for newly defined extensions, some existing
+                WoT-specific relation types in the table below (such as <code>controlledBy</code>) have historically
+                used mixed casing. Due to the case-insensitive comparison requirement, these legacy mixed-case types
+                remain fully valid and interoperable.
+              </li>
+            </ul>
+            <p>
+              In the following a best practice relation type table is introduced that is recommended to use within WoT
+              <a>Thing Description</a> or <a>Thing Model</a> instances.
+            </p>
+            <table class="def numbered">
+              <caption>
+                Best practice relation type table
+              </caption>
+              <thead>
+                <tr>
+                  <th>Value</th>
+                  <th>Occurrence</th>
+                  <th>Explanation</th>
+                  <th>Source of value origin</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
                     <code>icon</code>
                   </td>
                   <td>0..*</td>
