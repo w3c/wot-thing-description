@@ -5011,438 +5011,112 @@
 
         <p>
           Other terms can also influence the interaction semantics and also the location of the terms mentioned above.
-          As indicated in Section X, <code>readOnly</code> and <code>writeOnly</code> can exist in other levels such as
-          within the input or output of an <a>Action</a> or within the data, subscription or cancellation of an
-          <a>Event</a>. Furthermore, the presence of an object or array in the Data Schema creates the possibility to
-          include these terms in deeper levels of a Data Schema.
+          As indicated in Section [[[#DataSchema]]], <code>readOnly</code> and <code>writeOnly</code> can exist in other
+          levels such as within the input or output of an <a>Action</a> or within the data, subscription or cancellation
+          of an <a>Event</a>. Furthermore, the presence of an object or array in the Data Schema creates the possibility
+          to include these terms in deeper levels of a Data Schema.
         </p>
 
-        <p>
-          An interaction with a Thing can be comprised of multiple messages which may or may not have any application
-          relevant payload. This needs to be reflected in the TD.
-          <!-- TODO: Explain the lack of data schema. Where does it best fit? -->
+        <p class="ednote">
+          Make sure to include the information in
+          https://github.com/w3c/wot-thing-description/blob/main/planning/work-items/analysis/readOnly-writeOnly.md
         </p>
 
-        <p class="note">
-          While other terms also influence interaction semantics such as <code>idempotent</code> in <a>Action</a>, those
-          are excluded from this section for the time being.
-        </p>
-
-        <section id="sec-read-write-locations" class="informative">
-          <h4>Usage of readOnly and writeOnly</h4>
+        <section id="sec-op-data-schema-mapping" class="informative">
+          <h4>Mapping op Values to Data Schemas</h4>
 
           <p>
-            The table below presents different locations where <code>readOnly</code> and <code>writeOnly</code> can be
-            used. The scope is derived from the location. Please make sure to read [[[#sec-op-data-schema-mapping]]] as
-            well.
+            Protocols that can be used with TDs follow request-response or eventing mechanisms. The Data Schema of an
+            affordance generally correlates with the <code>op</code> keywords used in <code>forms</code>. The table
+            below informatively summarizes the available data schema related terms with the <code>op</code> keywords.
           </p>
+          <ul>
+            <li>
+              Consumer to Thing applies for messages sent by the Consumer to the Thing, such as the value for writing a
+              property.
+            </li>
+            <li>
+              Thing to Consumer applies for messages sent by the Thing to the Consumer, such as the value of a property
+              value as the result of reading a property.
+            </li>
+            <li>
+              In case that there is no correlation with the data schema and the operation, it implies that no payload is
+              required for executing the operation or no payload is expected as a result of the operation.
+            </li>
+          </ul>
 
           <table class="def numbered">
             <caption>
-              Location, Scope and Implications of readOnly and writeOnly. When one is true, the other is assumed to be
-              false or not present.
+              Mapping op Values to Data Schemas
             </caption>
             <thead>
               <tr>
-                <th>Location</th>
-                <th>Recommended Usage?</th>
-                <th>Scope</th>
-                <th>Implication of readOnly=true</th>
-                <th>Implication of writeOnly=true</th>
+                <th>Operation Type</th>
+                <th>Consumer to Thing DataSchema Correlation</th>
+                <th>Thing to Consumer DataSchema Correlation</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>1. Root of a Property Affordance</td>
-                <td>Yes</td>
-                <td>All messages between the Thing and Consumer</td>
-                <td>There should be only readproperty operations in the forms</td>
-                <td>Not recommended usage. There should be only writeproperty operations in the forms</td>
+                <td>readproperty</td>
+                <td>No correlation.</td>
+                <td>All fields in the Property Affordance without <code>"writeOnly":true</code>.</td>
               </tr>
               <tr>
-                <td>2. Within a key of an Object in a Property Affordance</td>
-                <td>Yes</td>
-                <td>Presence of the key and its value in a message</td>
-                <td>Different payload for readproperty response and writeproperty request</td>
-                <td>Different payload for readproperty response and writeproperty request</td>
+                <td>writeproperty</td>
+                <td>All fields in the Property Affordance without <code>"readOnly":true</code>.</td>
+                <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
               </tr>
               <tr>
-                <td>3. Root of an Action Affordance</td>
-                <td>No</td>
-                <td>Not applicable</td>
-                <td>Not applicable</td>
-                <td>Not applicable</td>
+                <td>observeproperty</td>
+                <td>No correlation.</td>
+                <td>All fields in the Property Affordance without <code>"writeOnly":true</code>.</td>
               </tr>
               <tr>
-                <td>4. Root Input Schema of an Action Affordance</td>
-                <td>No?</td>
-                <td>All messages between the Thing and Consumer to invoke an action</td>
+                <td>unobserveproperty</td>
+                <td>No correlation.</td>
+                <td>No correlation.</td>
+              </tr>
+              <tr>
+                <td>invokeaction</td>
+                <td>Value of the <code>input</code> key.</td>
+                <td>Value of the <code>output</code> key.</td>
+              </tr>
+              <tr>
+                <td>queryaction</td>
+                <td>No correlation.</td>
+                <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
+              </tr>
+              <tr>
+                <td>cancelaction</td>
+                <td>No correlation.</td>
+                <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
+              </tr>
+              <tr>
+                <td>subscribeevent</td>
+                <td>Value of the <code>subscription</code> key with all fields without <code>"readOnly":true</code></td>
                 <td>
-                  Not recommended? Action does not require a payload for invokeaction but a response will be provided
-                  that is not the output
+                  Value of the <code>subscription</code> key with all fields without <code>"writeOnly":true</code>
                 </td>
-                <td>Already implied that an input is a writeOnly operation</td>
               </tr>
               <tr>
-                <td>5. Root Output Schema of an Action Affordance</td>
-                <td>No?</td>
-                <td>All messages between the Thing and Consumer after the an invoke an action</td>
-                <td>Already implied that an output is a readOnly operation</td>
+                <td>unsubscribeevent</td>
+                <td>Value of the <code>subscription</code> key with all fields without <code>"readOnly":true</code></td>
                 <td>
-                  Not recommended? Action does not require a request (with or without payload) to get invokeaction
-                  response
+                  Value of the <code>subscription</code> key with all fields without <code>"writeOnly":true</code>
                 </td>
-              </tr>
-              <tr>
-                <td>6. Within a key of an Object in the input or output of an Action Affordance</td>
-                <td>No. Turn to separate input and output instead.</td>
-                <td>Not applicable</td>
-                <td>Not applicable</td>
-                <td>Not applicable</td>
-              </tr>
-              <tr>
-                <td>7. Root of an Event Affordance</td>
-                <td>No</td>
-                <td>Not applicable</td>
-                <td>Not applicable</td>
-                <td>Not applicable</td>
-              </tr>
-              <tr>
-                <td>8. Root of Subscription in an Event Affordance</td>
-                <td>Yes</td>
-                <td>All messages between the Thing and Consumer to establish a subscription</td>
-                <td>Only a response is returned</td>
-                <td>Only a request is needed to establish subscription, no payload returned</td>
-              </tr>
-              <tr>
-                <td>9. Root of Data in an Event Affordance</td>
-                <td>No</td>
-                <td>Not applicable</td>
-                <td>Not applicable</td>
-                <td>Not applicable</td>
-              </tr>
-              <tr>
-                <td>10. Within a key of an Object in Data in an Event Affordance</td>
-                <td>
-                  No. A data is always asynchronously emitted to the Consumer. Thus, readOnly or writeOnly should not be
-                  used
-                </td>
-                <td>Not applicable</td>
-                <td>Not applicable</td>
-                <td>Not applicable</td>
-              </tr>
-              <tr>
-                <td>11. Root of Cancellation in an Event Affordance</td>
-                <td>Yes</td>
-                <td>All messages between the Thing and Consumer to cancel a subscription</td>
-                <td>Only a response is returned</td>
-                <td>Only a request payload is needed to cancel subscription, no payload returned</td>
-              </tr>
-              <tr>
-                <td>12. Within a key of an Object in the subscription of an Event Affordance</td>
-                <td>Yes</td>
-                <td>Presence of the key and its value in a subscription-related message</td>
-                <td>Different payloads for the subscription request and its response</td>
-                <td>Different payloads for the subscription request and its response</td>
-              </tr>
-              <tr>
-                <td>13. Within a key of an Object in the cancellation of an Event Affordance</td>
-                <td>Yes</td>
-                <td>Presence of the key and its value in a cancellation-related message</td>
-                <td>Different payloads for the cancellation request and its response</td>
-                <td>Different payloads for the cancellation request and its response</td>
               </tr>
             </tbody>
           </table>
-
-          <pre class="example" title="Example of readOnly and writeOnly usages" id="example-read-write-locations">
-{
-  "properties": {
-    "prop1a": {
-      "description": "For row 1 readonly true",
-      "type": "string",
-      "readOnly": true
-    },
-    "prop1b": {
-      "description": "For row 1 writeonly true",
-      "type": "string",
-      "writeOnly": true
-    },
-    "prop2": {
-      "description": "For row 2",
-        "type": "object",
-        "properties": {
-          "key1": {
-              "type": "number",
-              "readOnly": true
-          },
-          "key2": {
-              "type": "string",
-              "writeOnly": true
-          }
-      }
-    }
-  },
-  "actions":{
-    "act1":{
-      "description": "For row 3",
-      "readOnly": true,
-    },
-    "act2a":{
-      "description": "For row 4, input readOnly true",
-      "input": {
-        "type": "string",
-        "readOnly": true
-      }
-    },
-    "act2b":{
-      "description": "For row 4, input writeOnly true",
-      "input": {
-        "type": "string",
-        "writeOnly": true
-      }
-    },
-    "act3a":{
-      "description": "For row 5, output readOnly true",
-      "output": {
-        "type": "string",
-        "readOnly": true
-      }
-    },
-    "act3b":{
-      "description": "For row 5, output writeOnly true",
-      "output": {
-        "type": "string",
-        "writeOnly": true
-      }
-    },
-    "act3a":{
-      "description": "For row 6, input output objects",
-      "input": {
-        "type": "object",
-        "properties": {
-          "key1": {
-            "description": "this should move to output",
-            "type": "number",
-            "readOnly": true
-          },
-          "key2": {
-            "description": "this is implied",
-            "type": "string",
-            "writeOnly": true
-          }
-        }
-      },
-      "output": {
-        "type": "object",
-        "properties": {
-          "key1": {
-            "description": "this is implied",
-            "type": "number",
-            "readOnly": true
-          },
-          "key2": {
-            "description": "this should move to input",
-            "type": "string",
-            "writeOnly": true
-          }
-        }
-      }
-    }
-  },
-  "events":{
-    "ev1":{
-      "description": "For row 7",
-      "readOnly": true,
-    },
-    "ev2a":{
-      "description": "For row 8, readonly true in subscription",
-      "subscription": {
-        "type": "string",
-        "readOnly": true
-      }
-    },
-    "ev2b":{
-      "description": "For row 8, writeonly true in subscription",
-      "subscription": {
-        "type": "string",
-        "writeOnly": true
-      }
-    },
-    "ev3":{
-      "description": "For row 9, readonly true in data (same for writeOnly)",
-      "data": {
-        "type": "string",
-        "readOnly": true
-      }
-    },
-    "ev4":{
-      "description": "For row 10, readonly and writeOnlytrue in object in data",
-      "data": {
-        "type": "object",
-        "properties": {
-          "key1": {
-            "type": "number",
-            "readOnly": true
-          },
-          "key2": {
-            "type": "string",
-            "writeOnly": true
-          }
-        }
-      }
-    },
-    "ev5a":{
-      "description": "For row 11, readonly true in cancellation",
-      "cancellation": {
-        "type": "string",
-        "readOnly": true
-      }
-    },
-    "ev5b":{
-      "description": "For row 11, writeonly true in cancellation",
-      "cancellation": {
-        "type": "string",
-        "writeOnly": true
-      }
-    },
-    "ev6":{
-      "description": "For row 12, readonly and writeOnlytrue in object in subscription",
-      "subscription": {
-        "type": "object",
-        "properties": {
-          "key1": {
-            "type": "number",
-            "readOnly": true
-          },
-          "key2": {
-            "type": "string",
-            "writeOnly": true
-          }
-        }
-      }
-    },
-    "ev7":{
-      "description": "For row 13, readonly and writeOnlytrue in object in cancellation",
-      "cancellation": {
-        "type": "object",
-        "properties": {
-          "key1": {
-            "type": "number",
-            "readOnly": true
-          },
-          "key2": {
-            "type": "string",
-            "writeOnly": true
-          }
-        }
-      }
-    },
-  }
-}
-</pre
-          >
-
-          <section id="sec-op-data-schema-mapping" class="informative">
-            <h4>Mapping op Values to Data Schemas</h4>
-
-            <p>
-              Protocols that can be used with TDs follow request-response or eventing mechanisms. The Data Schema of an
-              affordance generally correlates with the <code>op</code> keywords used in <code>forms</code>. The table
-              below informatively summarizes the available data schema related terms with the <code>op</code> keywords.
-            </p>
-            <ul>
-              <li>
-                Consumer to Thing applies for messages sent by the Consumer to the Thing, such as the value for writing
-                a property.
-              </li>
-              <li>
-                Thing to Consumer applies for messages sent by the Thing to the Consumer, such as the value of a
-                property value as the result of reading a property.
-              </li>
-              <li>
-                In case that there is no correlation with the data schema and the operation, it implies that no payload
-                is required for executing the operation or no payload is expected as a result of the operation.
-              </li>
-            </ul>
-
-            <table class="def numbered">
-              <caption>
-                Mapping op Values to Data Schemas
-              </caption>
-              <thead>
-                <tr>
-                  <th>Operation Type</th>
-                  <th>Consumer to Thing DataSchema Correlation</th>
-                  <th>Thing to Consumer DataSchema Correlation</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>readproperty</td>
-                  <td>No correlation.</td>
-                  <td>All fields in the Property Affordance without <code>"writeOnly":true</code>.</td>
-                </tr>
-                <tr>
-                  <td>writeproperty</td>
-                  <td>All fields in the Property Affordance without <code>"readOnly":true</code>.</td>
-                  <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
-                </tr>
-                <tr>
-                  <td>observeproperty</td>
-                  <td>No correlation.</td>
-                  <td>All fields in the Property Affordance without <code>"writeOnly":true</code>.</td>
-                </tr>
-                <tr>
-                  <td>unobserveproperty</td>
-                  <td>No correlation.</td>
-                  <td>No correlation.</td>
-                </tr>
-                <tr>
-                  <td>invokeaction</td>
-                  <td>Value of the <code>input</code> key.</td>
-                  <td>Value of the <code>output</code> key.</td>
-                </tr>
-                <tr>
-                  <td>queryaction</td>
-                  <td>No correlation.</td>
-                  <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
-                </tr>
-                <tr>
-                  <td>cancelaction</td>
-                  <td>No correlation.</td>
-                  <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
-                </tr>
-                <tr>
-                  <td>subscribeevent</td>
-                  <td>
-                    Value of the <code>subscription</code> key with all fields without <code>"readOnly":true</code>
-                  </td>
-                  <td>
-                    Value of the <code>subscription</code> key with all fields without <code>"writeOnly":true</code>
-                  </td>
-                </tr>
-                <tr>
-                  <td>unsubscribeevent</td>
-                  <td>
-                    Value of the <code>subscription</code> key with all fields without <code>"readOnly":true</code>
-                  </td>
-                  <td>
-                    Value of the <code>subscription</code> key with all fields without <code>"writeOnly":true</code>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <p class="note" title="writeproperty and observeproperty relationship">
-              Writing to a property does not necessarily mean that a new value will be sent to the Consumer observing
-              the property. It depends on the protocol and implementation.
-            </p>
-            <p class="note" title="Further Data Schemas mappings">
-              Further specification of how to map operations to data schemas, as well as mapping meta operations such as
-              <code>readallproperties</code>
-              can be found in the respective binding entry of the [[WOT-BINDING-REGISTRY]].
-            </p>
-          </section>
+          <p class="note" title="writeproperty and observeproperty relationship">
+            Writing to a property does not necessarily mean that a new value will be sent to the Consumer observing the
+            property. It depends on the protocol and implementation.
+          </p>
+          <p class="note" title="Further Data Schemas mappings">
+            Further specification of how to map operations to data schemas, as well as mapping meta operations such as
+            <code>readallproperties</code>
+            can be found in the respective binding entry of the [[WOT-BINDING-REGISTRY]].
+          </p>
         </section>
       </section>
     </section>
