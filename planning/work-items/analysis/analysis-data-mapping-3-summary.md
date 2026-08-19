@@ -1,0 +1,465 @@
+# Data Mapping Use Case 3 — Basic Mathematical Operations Summary
+
+This document covers only use case 3 as defined in `analysis-data-mapping.md`.
+
+---
+
+## Use Case Summary
+
+**Problem:** A protocol payload contains numeric values in a wire encoding that differs from the application-level representation. Examples include raw byte values representing temperatures in deci-degrees, brightness as a 0–255 byte, or sensor calibration with a scale factor.
+
+**Proposed solution:** A declarative, direction-explicit, ordered operation pipeline attached at form level. Operations are applied strictly in document order. The pipeline runs in `fromWire` direction on read and `toWire` direction on write.
+
+**Core operations (phase 1):**
+- `mul` — multiply by a constant
+- `add` — add a constant
+- `round` — round with mode `floor`, `ceil`, `nearest`, or `towardZero`
+- `clamp` — enforce min and/or max bounds
+
+**Key design decisions:**
+- Direction is explicit per form, not inferred.
+- Operation order is normative.
+- `NaN` and infinity are invalid unless explicitly allowed.
+- Rounding and clamping are separate steps, not implicit in arithmetic.
+
+---
+
+## Standard Term Evaluation
+
+Three existing standards were evaluated to reduce the proprietary `map` surface for use case 3.
+
+### QUDT
+
+**Covers well:**
+- Quantity kind semantics (`qudt:hasQuantityKind`)
+- Unit semantics (`qudt:hasUnit`)
+- Unit conversion metadata (`qudt:conversionMultiplier`, `qudt:conversionOffset`)
+
+**Does not cover:**
+- TD-specific directional pipeline (`fromWire`, `toWire`)
+- Arbitrary protocol encoding tricks that are not genuine unit conversions (e.g. a brightness byte 0–255 mapped to 0–100%)
+- Ordered execution steps, rounding, and clamping as operations
+
+**Recommended use:** Use QUDT at property level for quantity/unit annotations when the transform is a genuine unit conversion. QUDT explains *what a value means*; `map` explains *how a TD runtime converts it*.
+
+---
+
+### FnO (Function Ontology)
+
+**Covers well:**
+- Abstract function declarations (`fno:Function`, `fno:expects`, `fno:returns`, `fno:Parameter`, `fno:Output`)
+- Partial application of constants (`fnoc:PartiallyAppliedFunction`, `fnoc:parameterBinding`)
+- Ordered pipeline composition (`fnoc:Composition`, `fnoc:composedOf`)
+
+**Does not cover:**
+- A built-in catalog of arithmetic primitives (`mul`, `round`, `clamp`)
+- TD form-level attachment (`fromWire`, `toWire`)
+- TD-specific write-path inversion policy
+
+**Recommended use:** Use FnO as an optional enrichment layer for describing reusable transformation functions. FnO explains *which function is applied and how it is composed*; `map` remains needed for *where in the TD form that function is invoked*.
+
+---
+
+### JSON Schema
+
+**Covers well:**
+- Declarative value constraints (`minimum`, `maximum`, `multipleOf`)
+
+**Does not cover:**
+- Executable directional transformations
+- Ordered operation pipelines (`mul`, `round`, `clamp`)
+
+**Recommended use:** Use JSON Schema for application-level value constraints (`minimum`, `maximum`, `multipleOf`). It complements `map` but cannot replace it.
+
+---
+
+## Capability Matrix Summary
+
+| Capability | QUDT | FnO | JSON Schema | Keep `map`? |
+|---|---|---|---|---|
+| Quantity kind and unit semantics | Yes | No | No | No |
+| Standard unit conversion (mul/add as unit math) | Yes | Partial | No | Sometimes |
+| Reusable function signatures and composition | No | Yes | No | Sometimes |
+| Declarative value constraints | No | No | Yes | No |
+| Directional pipeline (`fromWire`, `toWire`) | No | No | No | Yes |
+| Write-path inversion policy | No | No | No | Yes |
+
+---
+
+## Proprietary Context Definition
+
+The following JSON-LD context defines only the terms required for use case 3 that are not covered by QUDT, FnO, or JSON Schema.
+
+The namespace `https://www.w3.org/wot/data-mapping/v1#` is a placeholder. The prefix `map` is used throughout this document.
+
+```json
+{
+  "@context": {
+    "@version": 1.1,
+
+    "map": "https://www.w3.org/wot/data-mapping/v1#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "valueMapping": {
+      "@id": "map:valueMapping",
+      "@type": "@json"
+    },
+
+    "fromWire": {
+      "@id": "map:fromWire",
+      "@container": "@list"
+    },
+
+    "toWire": {
+      "@id": "map:toWire",
+      "@container": "@list"
+    },
+
+    "op": {
+      "@id": "map:proc",
+      "@type": "xsd:string"
+    },
+
+    "value": {
+      "@id": "map:value",
+      "@type": "xsd:decimal"
+    },
+
+    "mode": {
+      "@id": "map:mode",
+      "@type": "xsd:string"
+    },
+
+    "min": {
+      "@id": "map:min",
+      "@type": "xsd:decimal"
+    },
+
+    "max": {
+      "@id": "map:max",
+      "@type": "xsd:decimal"
+    },
+
+    "onError": {
+      "@id": "map:onError",
+      "@type": "xsd:string"
+    }
+  }
+}
+```
+
+**Notes:**
+- `valueMapping`, `fromWire`, and `toWire` are the core attachment and direction terms. They are always proprietary.
+- `op` and its numeric operation identifiers (`mul`, `add`, `round`, `clamp`) are proprietary execution step identifiers with no standard equivalent.
+- QUDT terms (`qudt:hasQuantityKind`, `qudt:hasUnit`, etc.) and JSON Schema keywords (`minimum`, `maximum`, `multipleOf`) are used directly alongside this context without being redefined here.
+- FnO terms (`fno:Function`, `fnoc:PartiallyAppliedFunction`, etc.) may be used as optional enrichment alongside this context for reusable function descriptions.
+
+### Term Reference
+
+#### Pipeline Attachment and Direction
+
+| Term | Description |
+|---|---|
+| `map:valueMapping` | Container object attached to a TD form that holds the `fromWire` and/or `toWire` pipeline. |
+| `map:fromWire` | Ordered list of operation objects executed when reading a value from the protocol (wire → application). Applied on read interactions. |
+| `map:toWire` | Ordered list of operation objects executed when writing a value to the protocol (application → wire). Applied on write interactions. If absent for a writable form, a write attempt must fail with `error`. |
+
+#### Operation Selector
+
+| Term | Description |
+|---|---|
+| `map:proc` | String identifier for the operation to execute in one pipeline step. Required in every operation object. |
+
+Valid `map:proc` values for use case 3:
+
+| Value | Description |
+|---|---|
+| `mul` | Multiply the current numeric value by `map:value`. |
+| `add` | Add `map:value` to the current numeric value. |
+| `round` | Round the current numeric value according to `map:mode`. |
+| `clamp` | Constrain the current numeric value to the range `[map:min, map:max]`. |
+
+#### Numeric Operation Parameters
+
+| Term | Used by | Description |
+|---|---|---|
+| `map:value` | `mul`, `add` | Numeric constant operand. For `mul` this is the factor; for `add` this is the addend. |
+| `map:mode` | `round` | Rounding strategy. Valid values: `floor` (round down), `ceil` (round up), `nearest` (round half to even), `towardZero` (truncate). |
+| `map:min` | `clamp` | Lower bound. Values below this are set to `map:min`. |
+| `map:max` | `clamp` | Upper bound. Values above this are set to `map:max`. |
+
+#### Error Handling
+
+| Term | Used by | Description |
+|---|---|---|
+| `map:onError` | any operation object | Per-operation failure policy. Valid values: `error` (default — terminate processing), `skip` (pass the unchanged current input value to the next step without raising an error). |
+
+---
+
+## Examples
+
+All examples include both proprietary `map` terms and available standard terms. Each section covers TM (abstract model, no transport) and TD (deployment instance with forms).
+
+---
+
+### 3.A — Temperature Sensor (deci-degrees to Celsius, read-only)
+
+**TM (abstract layer):**
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/2022/wot/tm/v1.1",
+    {
+      "qudt": "http://qudt.org/schema/qudt/",
+      "unit": "http://qudt.org/vocab/unit/",
+      "quantitykind": "http://qudt.org/vocab/quantitykind/"
+    }
+  ],
+  "@type": "tm:ThingModel",
+  "title": "TemperatureSensorModel",
+  "properties": {
+    "temperature": {
+      "type": "number",
+      "minimum": -40,
+      "maximum": 125,
+      "multipleOf": 0.1,
+      "readOnly": true,
+      "qudt:hasQuantityKind": "quantitykind:Temperature",
+      "qudt:hasUnit": "unit:DEG_C",
+      "description": "Air temperature in degrees Celsius."
+    }
+  }
+}
+```
+
+**TD (CoAP binding with deci-degree wire encoding):**
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/wot-next/td",
+    {
+      "map": "https://www.w3.org/wot/data-mapping/v1#",
+      "qudt": "http://qudt.org/schema/qudt/",
+      "unit": "http://qudt.org/vocab/unit/",
+      "quantitykind": "http://qudt.org/vocab/quantitykind/"
+    }
+  ],
+  "id": "urn:example:thing:temp-sensor-1",
+  "title": "TemperatureSensor",
+  "links": [{ "rel": "type", "href": "urn:example:tm:TemperatureSensorModel", "type": "application/td+json" }],
+  "properties": {
+    "temperature": {
+      "type": "number",
+      "minimum": -40,
+      "maximum": 125,
+      "multipleOf": 0.1,
+      "readOnly": true,
+      "qudt:hasQuantityKind": "quantitykind:Temperature",
+      "qudt:hasUnit": "unit:DEG_C",
+      "forms": [
+        {
+          "href": "coap://example.local/sensors/temp",
+          "contentType": "application/octet-stream",
+          "qudt:hasUnit": "unit:DEG_C-DECI",
+          "map:valueMapping": {
+            "map:fromWire": [
+              { "map:proc": "mul", "map:value": 0.1 }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+**What the example shows:**
+- QUDT annotates the property-level unit (`unit:DEG_C`) and form-level wire unit (`unit:DEG_C-DECI`) to capture *semantics*.
+- `map:valueMapping` with `map:fromWire` captures the *runtime execution* step.
+- JSON Schema `minimum`, `maximum`, and `multipleOf` constrain the application-level value.
+- No `map:toWire` is needed because the property is read-only.
+
+---
+
+### 3.B — Dimmer (byte 0–255 to percent 0–100, bidirectional)
+
+**TM:**
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/2022/wot/tm/v1.1",
+    {
+      "qudt": "http://qudt.org/schema/qudt/",
+      "unit": "http://qudt.org/vocab/unit/",
+      "quantitykind": "http://qudt.org/vocab/quantitykind/"
+    }
+  ],
+  "@type": "tm:ThingModel",
+  "title": "DimmerModel",
+  "properties": {
+    "brightness": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "qudt:hasQuantityKind": "quantitykind:DimensionlessRatio",
+      "qudt:hasUnit": "unit:PERCENT",
+      "description": "Brightness level in percent."
+    }
+  }
+}
+```
+
+**TD (Modbus binding with 0–255 wire encoding):**
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/wot-next/td",
+    {
+      "map": "https://www.w3.org/wot/data-mapping/v1#",
+      "qudt": "http://qudt.org/schema/qudt/",
+      "unit": "http://qudt.org/vocab/unit/",
+      "quantitykind": "http://qudt.org/vocab/quantitykind/"
+    }
+  ],
+  "id": "urn:example:thing:dimmer-1",
+  "title": "Dimmer",
+  "properties": {
+    "brightness": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "qudt:hasQuantityKind": "quantitykind:DimensionlessRatio",
+      "qudt:hasUnit": "unit:PERCENT",
+      "forms": [
+        {
+          "href": "modbus://example.local/holding-register/17",
+          "contentType": "application/octet-stream",
+          "op": ["readproperty", "writeproperty"],
+          "map:valueMapping": {
+            "map:fromWire": [
+              { "map:proc": "mul", "map:value": 0.3921568627 },
+              { "map:proc": "round", "map:mode": "nearest" },
+              { "map:proc": "clamp", "map:min": 0, "map:max": 100 }
+            ],
+            "map:toWire": [
+              { "map:proc": "mul", "map:value": 2.55 },
+              { "map:proc": "round", "map:mode": "nearest" },
+              { "map:proc": "clamp", "map:min": 0, "map:max": 255 }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+**What the example shows:**
+- The wire encoding is not a standard unit conversion, so `map` operations are required even though QUDT annotates the semantics.
+- Rounding and clamping are explicit ordered steps, not implicit in multiplication.
+- `map:toWire` makes the write path deterministic; there is no guessing of the inverse.
+- The factors `0.3921568627` (≈ 100/255) and `2.55` (≈ 255/100) are the exact inverse pair; together with `round` and `clamp` they guarantee a lossless round-trip within integer precision.
+
+---
+
+## Binding Comparison: LoRaWAN and Modbus
+
+This section compares which UC3-relevant `map` terms already have counterparts in the LoRaWAN (`lorav:*`) and Modbus (`modv:*`) binding context definitions. Only terms needed for use case 3 are shown here.
+
+### LoRaWAN
+
+LoRaWAN defines several binding-specific transformation terms that correspond directly to UC3 numeric operations.
+
+| LoRaWAN Term | Purpose | General `map` Equivalent | Notes |
+|---|---|---|---|
+| `lorav:multiplier` | Scale wire value by a constant: `value = raw × multiplier` | `map:proc: "mul"` with `map:value` | Direct one-to-one replacement. |
+| `lorav:divisor` | Scale wire value by division: `value = raw / divisor` | `map:proc: "mul"` with `map:value = 1/divisor` | Modeled as multiplication by the reciprocal. A dedicated `div` operation could be added later. |
+| `lorav:offset` | Add a constant after scaling: `value = scaled + offset` | `map:proc: "add"` with `map:value` | Applied as a sequential step after `mul` in the pipeline. |
+| `lorav:polynomial` | Evaluate a polynomial: `c₀ + c₁x + c₂x² + …` | Sequence of `mul` and `add` steps | Decomposed into an explicit ordered pipeline; no dedicated polynomial operation is needed for phase 1. |
+| `lorav:transform` | Ordered post-processing list of `add`/`div`/`mult` operations | `map:fromWire` pipeline of `map:proc` steps | Already an ordered operation list; structurally identical to the `fromWire`/`toWire` model. |
+
+**Summary:** All five LoRaWAN numeric transformation terms can be represented using the `map:proc` operations `mul`, `add`, and their combinations. Migration replaces the binding-specific terms with the general pipeline without loss of expressiveness.
+
+---
+
+### Modbus
+
+The Modbus binding (`modv:*`) does not define any binding-specific declarative arithmetic transformation terms. Modbus protocol terms address transport, addressing, and request control; value-level transformations are handled externally in application codecs.
+
+| Modbus Term | Purpose | General `map` Equivalent | Notes |
+|---|---|---|---|
+| *(none)* | — | — | No `modv:*` term in `modbus.md` corresponds to `mul`, `add`, `round`, or `clamp`. |
+
+The only Modbus metadata with a bearing on numeric interpretation is `byteSeq` (byte and word ordering, e.g. `BIG_ENDIAN`), which controls how raw register bytes are assembled into a numeric value before any `map` operation runs. It is wire-format metadata, not a transformation operation, and falls outside the `map` pipeline scope.
+
+**Summary:** For Modbus, UC3 operations (`mul`, `add`, `round`, `clamp`) need to be introduced as new `map`-based annotations on forms. No existing `modv:*` term needs to be migrated or replaced; the `map` pipeline simply adds what was previously missing.
+
+---
+
+### BACnet
+
+The BACnet binding (`bacv:*`) focuses on service selection, BACnet-specific type annotation, and enum/value mapping. It defines no arithmetic transformation terms.
+
+| BACnet Term | Purpose | General `map` Equivalent | Notes |
+|---|---|---|---|
+| *(none)* | — | — | No `bacv:*` term corresponds to `mul`, `add`, `round`, or `clamp`. |
+
+The binding does define wire type declarations (`bacv:hasDataType` with types such as `bacv:Real`, `bacv:Unsigned`, `bacv:Signed`, `bacv:Double`) that tell the consumer how to interpret the raw BACnet-encoded bytes as a numeric value. These are wire-format metadata — prerequisites for reading a number — not value transformation operations, and they fall outside the `map` pipeline scope.
+
+The enum mapping terms `bacv:hasValueMap`, `bacv:hasMapEntry`, `bacv:hasProtocolVal`, and `bacv:hasLogicalVal` are the BACnet equivalents of the UC4 `map:op: "enum"` pattern and are out of scope for UC3.
+
+**Summary:** BACnet has no existing terms to migrate into UC3. The `map` numeric pipeline needs to be introduced as new form-level annotations alongside the existing `bacv:*` vocabulary. `bacv:hasDataType` provides the wire type context needed before any `map` operation runs but is not itself a UC3 operation.
+
+---
+
+### PROFINET
+
+The PROFINET binding (`profv:*`) focuses on addressing, payload layout, type annotation, structural field extraction, and enum decoding. It defines no arithmetic transformation terms.
+
+| PROFINET Term | Purpose | General `map` Equivalent | Notes |
+|---|---|---|---|
+| *(none)* | — | — | No `profv:*` term corresponds to `mul`, `add`, `round`, or `clamp`. |
+
+Two PROFINET metadata terms have a bearing on the numeric value interpretation that precedes any UC3 operation:
+
+| PROFINET Term | Purpose | Relation to UC3 | Notes |
+|---|---|---|---|
+| `profv:mostSignificantByte` | Byte order (`true` = big-endian, `false` = little-endian) | Wire metadata; determines how raw bytes are assembled into a number before `map` runs | Not a transformation operation. |
+| `profv:mostSignificantWord` | Word order for multi-byte payloads | Wire metadata; same role as `profv:mostSignificantByte` for 32-bit and wider values | Not a transformation operation. |
+| `profv:type` | Declares the wire data type (e.g. `Unsigned16`, `Float32`) | Wire metadata; tells the consumer the numeric type to decode from the payload | Not a transformation operation. |
+
+The structural terms `profv:byteOffset`, `profv:byteLength`, `profv:bitOffset`, `profv:bitlength`, and `profv:payloadMapping` cover UC5 (structural extraction) use cases. The enum terms `profv:enumeratedValue`, `profv:encodedPayload`, and `profv:decodedPayload` cover UC4. Neither group is relevant to UC3.
+
+**Summary:** PROFINET has no existing terms to migrate into UC3. The `map` numeric pipeline needs to be introduced as new form-level annotations. `profv:type`, `profv:mostSignificantByte`, and `profv:mostSignificantWord` collectively define the wire representation of the raw numeric value that the UC3 `map:fromWire` pipeline then transforms.
+
+---
+
+## Role of `map` Terms as Default and Fallback for Binding Implementations
+
+### Two valid homes for the same term
+
+A term with the same semantic meaning can legitimately appear in two places:
+
+1. **In the `map` context and ontology** — as a protocol-independent, core-defined operation with a normative processing model guaranteed by any conformant WoT runtime.
+2. **In a binding template definition** — as a protocol-specific term whose interpretation may be tied to the binding's own processing rules, data types, or addressing conventions.
+
+Neither placement is wrong. A binding can define `bacv:scalingFactor` or `lorav:multiplier` with the same arithmetic intent as `map:proc: "mul"` and remain internally consistent. These terms are part of the binding's own vocabulary and their meaning is defined by the binding specification.
+
+### `map` terms as a default and fallback
+
+When a binding-specific term exists, implementations of that binding carry the knowledge of how to process it. However, there are two situations where relying on `map` terms instead is advantageous:
+
+**Implementing an existing binding template.** A developer building a Consumer or Exposer for, say, LoRaWAN or BACnet must implement the full binding vocabulary. If that binding's transformation terms (`lorav:multiplier`, `lorav:offset`, …) are declared as semantically equivalent to the corresponding `map` operations, the implementation can delegate their processing to the core `map` pipeline rather than writing dedicated codec logic for each binding. The binding term becomes an alias, and the `map` implementation in the runtime does the work. This avoids duplicating arithmetic and enum conversion logic across every binding implementation.
+
+**Authoring a new binding template.** When writing a new binding specification, the author can choose to reuse `map` terms directly for any value-level transformation that is not specific to the protocol's wire format. Instead of inventing a new `newbinding:multiplier` term that means the same as `map:proc: "mul"`, the binding can simply reference the `map` operation and note that the standard processing rules apply. The binding remains focused on protocol-specific concerns (addressing, service selection, wire type metadata) while delegating transformation semantics to the core vocabulary.
+
+### Practical implications
+
+- **No code duplication.** A single implementation of the `map` pipeline in a WoT runtime covers the transformation logic for all bindings that use `map` terms, whether natively or as a fallback from a binding-specific alias.
+- **Uniform error semantics.** Conformance assertions apply uniformly, regardless of which binding term triggered the operation.
+- **Incremental migration path.** Existing binding vocabularies do not need to be revised immediately. A binding specification can document the correspondence between its own terms and `map` equivalents, allowing implementations to treat the binding terms as shorthand for the general pipeline while the ecosystem converges over time.
+- **Interoperability across bindings.** A TD that mixes `map` terms with binding-specific terms can be validated and processed by any runtime that implements the core `map` pipeline, even if the runtime does not have full knowledge of every binding vocabulary.
