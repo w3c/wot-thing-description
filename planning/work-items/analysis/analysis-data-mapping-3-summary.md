@@ -1,16 +1,16 @@
-# Data Mapping Use Case 3 — Basic Mathematical Operations Summary
+# Data Mapping User Story 3 — Basic Mathematical Operations - Summary
 
-This document covers only use case 3 as defined in `analysis-data-mapping.md`.
+This document covers only user story 3 as defined in `analysis-data-mapping.md`.
 
 ---
 
-## Use Case Summary
+## User Story Summary
 
 **Problem:** A protocol payload contains numeric values in a wire encoding that differs from the application-level representation. Examples include raw byte values representing temperatures in deci-degrees, brightness as a 0–255 byte, or sensor calibration with a scale factor.
 
 **Proposed solution:** A declarative, direction-explicit, ordered operation pipeline attached at form level. Operations are applied strictly in document order. The pipeline runs in `fromWire` direction on read and `toWire` direction on write.
 
-**Core operations (phase 1):**
+**Core operations:**
 - `mul` — multiply by a constant
 - `add` — add a constant
 - `round` — round with mode `floor`, `ceil`, `nearest`, or `towardZero`
@@ -26,13 +26,13 @@ This document covers only use case 3 as defined in `analysis-data-mapping.md`.
 
 ## Standard Term Evaluation
 
-Three existing standards were evaluated to reduce the proprietary `map` surface for use case 3.
+Three existing standards were evaluated to reduce the proprietary `map` surface for user story 3.
 
 ### QUDT
 
 **Covers well:**
 - Quantity kind semantics (`qudt:hasQuantityKind`)
-- Unit semantics (`qudt:hasUnit`)
+- Unit semantics (`qudt:hasUnit`); however (`unit`) is a standard TD term and should be used instead
 - Unit conversion metadata (`qudt:conversionMultiplier`, `qudt:conversionOffset`)
 
 **Does not cover:**
@@ -73,7 +73,7 @@ Three existing standards were evaluated to reduce the proprietary `map` surface 
 
 ---
 
-## Capability Matrix Summary
+### Capability Matrix Summary
 
 | Capability | QUDT | FnO | JSON Schema | Keep `map`? |
 |---|---|---|---|---|
@@ -88,7 +88,7 @@ Three existing standards were evaluated to reduce the proprietary `map` surface 
 
 ## Proprietary Context Definition
 
-The following JSON-LD context defines only the terms required for use case 3 that are not covered by QUDT, FnO, or JSON Schema.
+The following JSON-LD context defines only the terms required for user story 3 that are not covered by QUDT, FnO, or JSON Schema.
 
 The namespace `https://www.w3.org/wot/data-mapping/v1#` is a placeholder. The prefix `map` is used throughout this document.
 
@@ -138,11 +138,6 @@ The namespace `https://www.w3.org/wot/data-mapping/v1#` is a placeholder. The pr
     "max": {
       "@id": "map:max",
       "@type": "xsd:decimal"
-    },
-
-    "onError": {
-      "@id": "map:onError",
-      "@type": "xsd:string"
     }
   }
 }
@@ -151,7 +146,7 @@ The namespace `https://www.w3.org/wot/data-mapping/v1#` is a placeholder. The pr
 **Notes:**
 - `valueMapping`, `fromWire`, and `toWire` are the core attachment and direction terms. They are always proprietary.
 - `op` and its numeric operation identifiers (`mul`, `add`, `round`, `clamp`) are proprietary execution step identifiers with no standard equivalent.
-- QUDT terms (`qudt:hasQuantityKind`, `qudt:hasUnit`, etc.) and JSON Schema keywords (`minimum`, `maximum`, `multipleOf`) are used directly alongside this context without being redefined here.
+- QUDT terms (`qudt:hasQuantityKind`, etc.) and JSON Schema keywords (`minimum`, `maximum`, `multipleOf`) are used directly alongside this context without being redefined here.
 - FnO terms (`fno:Function`, `fnoc:PartiallyAppliedFunction`, etc.) may be used as optional enrichment alongside this context for reusable function descriptions.
 
 ### Term Reference
@@ -170,7 +165,7 @@ The namespace `https://www.w3.org/wot/data-mapping/v1#` is a placeholder. The pr
 |---|---|
 | `map:proc` | String identifier for the operation to execute in one pipeline step. Required in every operation object. |
 
-Valid `map:proc` values for use case 3:
+Valid `map:proc` values for user story 3:
 
 | Value | Description |
 |---|---|
@@ -187,12 +182,6 @@ Valid `map:proc` values for use case 3:
 | `map:mode` | `round` | Rounding strategy. Valid values: `floor` (round down), `ceil` (round up), `nearest` (round half to even), `towardZero` (truncate). |
 | `map:min` | `clamp` | Lower bound. Values below this are set to `map:min`. |
 | `map:max` | `clamp` | Upper bound. Values above this are set to `map:max`. |
-
-#### Error Handling
-
-| Term | Used by | Description |
-|---|---|---|
-| `map:onError` | any operation object | Per-operation failure policy. Valid values: `error` (default — terminate processing), `skip` (pass the unchanged current input value to the next step without raising an error). |
 
 ---
 
@@ -226,7 +215,7 @@ All examples include both proprietary `map` terms and available standard terms. 
       "multipleOf": 0.1,
       "readOnly": true,
       "qudt:hasQuantityKind": "quantitykind:Temperature",
-      "qudt:hasUnit": "unit:DEG_C",
+      "unit": "unit:DEG_C",
       "description": "Air temperature in degrees Celsius."
     }
   }
@@ -257,12 +246,11 @@ All examples include both proprietary `map` terms and available standard terms. 
       "multipleOf": 0.1,
       "readOnly": true,
       "qudt:hasQuantityKind": "quantitykind:Temperature",
-      "qudt:hasUnit": "unit:DEG_C",
+      "unit": "unit:DEG_C",
       "forms": [
         {
           "href": "coap://example.local/sensors/temp",
           "contentType": "application/octet-stream",
-          "qudt:hasUnit": "unit:DEG_C-DECI",
           "map:valueMapping": {
             "map:fromWire": [
               { "map:proc": "mul", "map:value": 0.1 }
@@ -276,7 +264,7 @@ All examples include both proprietary `map` terms and available standard terms. 
 ```
 
 **What the example shows:**
-- QUDT annotates the property-level unit (`unit:DEG_C`) and form-level wire unit (`unit:DEG_C-DECI`) to capture *semantics*.
+- QUDT annotates the property-level unit (`unit:DEG_C`) to capture *semantics*.
 - `map:valueMapping` with `map:fromWire` captures the *runtime execution* step.
 - JSON Schema `minimum`, `maximum`, and `multipleOf` constrain the application-level value.
 - No `map:toWire` is needed because the property is read-only.
@@ -305,7 +293,7 @@ All examples include both proprietary `map` terms and available standard terms. 
       "minimum": 0,
       "maximum": 100,
       "qudt:hasQuantityKind": "quantitykind:DimensionlessRatio",
-      "qudt:hasUnit": "unit:PERCENT",
+      "unit": "unit:PERCENT",
       "description": "Brightness level in percent."
     }
   }
@@ -333,7 +321,7 @@ All examples include both proprietary `map` terms and available standard terms. 
       "minimum": 0,
       "maximum": 100,
       "qudt:hasQuantityKind": "quantitykind:DimensionlessRatio",
-      "qudt:hasUnit": "unit:PERCENT",
+      "unit": "unit:PERCENT",
       "forms": [
         {
           "href": "modbus://example.local/holding-register/17",
@@ -366,9 +354,9 @@ All examples include both proprietary `map` terms and available standard terms. 
 
 ---
 
-## Binding Comparison: LoRaWAN and Modbus
+## Binding Comparison
 
-This section compares which UC3-relevant `map` terms already have counterparts in the LoRaWAN (`lorav:*`) and Modbus (`modv:*`) binding context definitions. Only terms needed for use case 3 are shown here.
+This section compares which UC3-relevant `map` terms already have counterparts in other binding context definitions. Only terms needed for user story 3 are shown here.
 
 ### LoRaWAN
 
@@ -379,7 +367,7 @@ LoRaWAN defines several binding-specific transformation terms that correspond di
 | `lorav:multiplier` | Scale wire value by a constant: `value = raw × multiplier` | `map:proc: "mul"` with `map:value` | Direct one-to-one replacement. |
 | `lorav:divisor` | Scale wire value by division: `value = raw / divisor` | `map:proc: "mul"` with `map:value = 1/divisor` | Modeled as multiplication by the reciprocal. A dedicated `div` operation could be added later. |
 | `lorav:offset` | Add a constant after scaling: `value = scaled + offset` | `map:proc: "add"` with `map:value` | Applied as a sequential step after `mul` in the pipeline. |
-| `lorav:polynomial` | Evaluate a polynomial: `c₀ + c₁x + c₂x² + …` | Sequence of `mul` and `add` steps | Decomposed into an explicit ordered pipeline; no dedicated polynomial operation is needed for phase 1. |
+| `lorav:polynomial` | Evaluate a polynomial: `c₀ + c₁x + c₂x² + …` | Sequence of `mul` and `add` steps | Decomposed into an explicit ordered pipeline; no dedicated polynomial operation is needed for the moment. |
 | `lorav:transform` | Ordered post-processing list of `add`/`div`/`mult` operations | `map:fromWire` pipeline of `map:proc` steps | Already an ordered operation list; structurally identical to the `fromWire`/`toWire` model. |
 
 **Summary:** All five LoRaWAN numeric transformation terms can be represented using the `map:proc` operations `mul`, `add`, and their combinations. Migration replaces the binding-specific terms with the general pipeline without loss of expressiveness.
@@ -432,7 +420,7 @@ Two PROFINET metadata terms have a bearing on the numeric value interpretation t
 | `profv:mostSignificantWord` | Word order for multi-byte payloads | Wire metadata; same role as `profv:mostSignificantByte` for 32-bit and wider values | Not a transformation operation. |
 | `profv:type` | Declares the wire data type (e.g. `Unsigned16`, `Float32`) | Wire metadata; tells the consumer the numeric type to decode from the payload | Not a transformation operation. |
 
-The structural terms `profv:byteOffset`, `profv:byteLength`, `profv:bitOffset`, `profv:bitlength`, and `profv:payloadMapping` cover UC5 (structural extraction) use cases. The enum terms `profv:enumeratedValue`, `profv:encodedPayload`, and `profv:decodedPayload` cover UC4. Neither group is relevant to UC3.
+The structural terms `profv:byteOffset`, `profv:byteLength`, `profv:bitOffset`, `profv:bitlength`, and `profv:payloadMapping` cover UC5 (structural extraction) user stories. The enum terms `profv:enumeratedValue`, `profv:encodedPayload`, and `profv:decodedPayload` cover UC4. Neither group is relevant to UC3.
 
 **Summary:** PROFINET has no existing terms to migrate into UC3. The `map` numeric pipeline needs to be introduced as new form-level annotations. `profv:type`, `profv:mostSignificantByte`, and `profv:mostSignificantWord` collectively define the wire representation of the raw numeric value that the UC3 `map:fromWire` pipeline then transforms.
 
