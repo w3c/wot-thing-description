@@ -13,6 +13,7 @@ This document covers only user story 3 as defined in `analysis-data-mapping.md`.
 **Core operations:**
 - `mul` — multiply by a constant
 - `add` — add a constant
+- `reciprocal` — replace the current value with a constant divided by the current value
 - `round` — round with mode `floor`, `ceil`, `nearest`, or `towardZero`
 - `clamp` — enforce min and/or max bounds
 
@@ -145,7 +146,7 @@ The namespace `https://www.w3.org/wot/data-mapping/v1#` is a placeholder. The pr
 
 **Notes:**
 - `valueMapping`, `fromWire`, and `toWire` are the core attachment and direction terms. They are always proprietary.
-- `op` and its numeric operation identifiers (`mul`, `add`, `round`, `clamp`) are proprietary execution step identifiers with no standard equivalent.
+- `op` and its numeric operation identifiers (`mul`, `add`, `reciprocal`, `round`, `clamp`) are proprietary execution step identifiers with no standard equivalent.
 - QUDT terms (`qudt:hasQuantityKind`, etc.) and JSON Schema keywords (`minimum`, `maximum`, `multipleOf`) are used directly alongside this context without being redefined here.
 - FnO terms (`fno:Function`, `fnoc:PartiallyAppliedFunction`, etc.) may be used as optional enrichment alongside this context for reusable function descriptions.
 
@@ -171,6 +172,7 @@ Valid `map:proc` values for user story 3:
 |---|---|
 | `mul` | Multiply the current numeric value by `map:value`. |
 | `add` | Add `map:value` to the current numeric value. |
+| `reciprocal` | Replace the current numeric value with `map:value / currentValue`. The current value must not be zero. |
 | `round` | Round the current numeric value according to `map:mode`. |
 | `clamp` | Constrain the current numeric value to the range `[map:min, map:max]`. |
 
@@ -178,7 +180,7 @@ Valid `map:proc` values for user story 3:
 
 | Term | Used by | Description |
 |---|---|---|
-| `map:value` | `mul`, `add` | Numeric constant operand. For `mul` this is the factor; for `add` this is the addend. |
+| `map:value` | `mul`, `add`, `reciprocal` | Numeric constant operand. For `mul` this is the factor; for `add` this is the addend; for `reciprocal` this is the numerator. |
 | `map:mode` | `round` | Rounding strategy. Valid values: `floor` (round down), `ceil` (round up), `nearest` (round half to even), `towardZero` (truncate). |
 | `map:min` | `clamp` | Lower bound. Values below this are set to `map:min`. |
 | `map:max` | `clamp` | Upper bound. Values above this are set to `map:max`. |
@@ -187,42 +189,15 @@ Valid `map:proc` values for user story 3:
 
 ## Examples
 
-All examples include both proprietary `map` terms and available standard terms. Each section covers TM (abstract model, no transport) and TD (deployment instance with forms).
+All examples include both proprietary `map` terms and available standard terms.
 
 ---
 
-### 3.A — Temperature Sensor (deci-degrees to Celsius, read-only)
+### Example 1: Numeric Scaling and Offset
 
-**TM (abstract layer):**
+Read-only temperature value over a protocol that sends deci-degrees Celsius (`231` means `23.1 C`).
 
-```json
-{
-  "@context": [
-    "https://www.w3.org/2022/wot/tm/v1.1",
-    {
-      "qudt": "http://qudt.org/schema/qudt/",
-      "unit": "http://qudt.org/vocab/unit/",
-      "quantitykind": "http://qudt.org/vocab/quantitykind/"
-    }
-  ],
-  "@type": "tm:ThingModel",
-  "title": "TemperatureSensorModel",
-  "properties": {
-    "temperature": {
-      "type": "number",
-      "minimum": -40,
-      "maximum": 125,
-      "multipleOf": 0.1,
-      "readOnly": true,
-      "qudt:hasQuantityKind": "quantitykind:Temperature",
-      "unit": "unit:DEG_C",
-      "description": "Air temperature in degrees Celsius."
-    }
-  }
-}
-```
-
-**TD (CoAP binding with deci-degree wire encoding):**
+**TD (Modbus binding with deci-degree wire encoding):**
 
 ```json
 {
@@ -249,8 +224,9 @@ All examples include both proprietary `map` terms and available standard terms. 
       "unit": "unit:DEG_C",
       "forms": [
         {
-          "href": "coap://example.local/sensors/temp",
+          "href": "modbus://example.local/holding-register/9",
           "contentType": "application/octet-stream",
+          "op": ["readproperty"],
           "map:valueMapping": {
             "map:fromWire": [
               { "map:proc": "mul", "map:value": 0.1 }
@@ -271,34 +247,9 @@ All examples include both proprietary `map` terms and available standard terms. 
 
 ---
 
-### 3.B — Dimmer (byte 0–255 to percent 0–100, bidirectional)
+### Example 2: Bidirectional Numeric Mapping With Rounding and Clamping
 
-**TM:**
-
-```json
-{
-  "@context": [
-    "https://www.w3.org/2022/wot/tm/v1.1",
-    {
-      "qudt": "http://qudt.org/schema/qudt/",
-      "unit": "http://qudt.org/vocab/unit/",
-      "quantitykind": "http://qudt.org/vocab/quantitykind/"
-    }
-  ],
-  "@type": "tm:ThingModel",
-  "title": "DimmerModel",
-  "properties": {
-    "brightness": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 100,
-      "qudt:hasQuantityKind": "quantitykind:DimensionlessRatio",
-      "unit": "unit:PERCENT",
-      "description": "Brightness level in percent."
-    }
-  }
-}
-```
+Writable dimmer level where application sees `0..100` percent, but wire uses `0..255`.
 
 **TD (Modbus binding with 0–255 wire encoding):**
 
@@ -351,6 +302,95 @@ All examples include both proprietary `map` terms and available standard terms. 
 - Rounding and clamping are explicit ordered steps, not implicit in multiplication.
 - `map:toWire` makes the write path deterministic; there is no guessing of the inverse.
 - The factors `0.3921568627` (≈ 100/255) and `2.55` (≈ 255/100) are the exact inverse pair; together with `round` and `clamp` they guarantee a lossless round-trip within integer precision.
+
+---
+
+### Example 3: HTTP Light Colorpicker Properties
+
+Philips Hue exposes the current dimming value as `dimming.brightness`, a `0..100` percentage, and the current color temperature as `color_temperature.mirek`, an integer reciprocal-megakelvin value. Modern colorpicker applets usually present color temperature in kelvin because lower and higher values are easier for humans to understand as cooler and warmer light. This example therefore exposes two application-level properties that a colorpicker applet can consume directly: brightness in percent and color temperature in kelvin.
+
+**TD (HTTP endpoints exposing Hue light setting leaves):**
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/wot-next/td",
+    {
+      "map": "https://www.w3.org/wot/data-mapping/v1#",
+      "qudt": "http://qudt.org/schema/qudt/",
+      "unit": "http://qudt.org/vocab/unit/",
+      "quantitykind": "http://qudt.org/vocab/quantitykind/"
+    }
+  ],
+  "id": "urn:example:thing:hue-light-1",
+  "title": "HueLightColorpicker",
+  "properties": {
+    "brightness": {
+      "title": "Brightness",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "readOnly": false,
+      "writeOnly": false,
+      "qudt:hasQuantityKind": "quantitykind:DimensionlessRatio",
+      "unit": "unit:PERCENT",
+      "forms": [
+        {
+          "href": "http://hue.example.local/clip/v2/resource/light/01234567-89ab-cdef-0123-456789abcdef/dimming/brightness",
+          "contentType": "application/json",
+          "op": ["readproperty", "writeproperty"],
+          "map:valueMapping": {
+            "map:fromWire": [
+              { "map:proc": "clamp", "map:min": 0, "map:max": 100 }
+            ],
+            "map:toWire": [
+              { "map:proc": "clamp", "map:min": 0, "map:max": 100 }
+            ]
+          }
+        }
+      ]
+    },
+    "colorTemperature": {
+      "title": "Color Temperature",
+      "type": "integer",
+      "minimum": 2000,
+      "maximum": 6536,
+      "readOnly": false,
+      "writeOnly": false,
+      "qudt:hasQuantityKind": "quantitykind:ColorTemperature",
+      "unit": "unit:K",
+      "forms": [
+        {
+          "href": "http://hue.example.local/clip/v2/resource/light/01234567-89ab-cdef-0123-456789abcdef/color_temperature/mirek",
+          "contentType": "application/json",
+          "op": ["readproperty", "writeproperty"],
+          "map:valueMapping": {
+            "map:fromWire": [
+              { "map:proc": "clamp", "map:min": 153, "map:max": 500 },
+              { "map:proc": "reciprocal", "map:value": 1000000 },
+              { "map:proc": "round", "map:mode": "nearest" },
+              { "map:proc": "clamp", "map:min": 2000, "map:max": 6536 }
+            ],
+            "map:toWire": [
+              { "map:proc": "clamp", "map:min": 2000, "map:max": 6536 },
+              { "map:proc": "reciprocal", "map:value": 1000000 },
+              { "map:proc": "round", "map:mode": "nearest" },
+              { "map:proc": "clamp", "map:min": 153, "map:max": 500 }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+**What the example shows:**
+- The HTTP endpoints are assumed to expose the individual Hue `LightGet` leaves, so each form receives one numeric value before the `map` pipeline runs.
+- The brightness property needs no scale conversion because Hue already exposes `dimming.brightness` as a percentage; `map:clamp` still records the usable applet range.
+- The color-temperature property exposes kelvin to the applet even though the Hue endpoint uses mirek. `map:reciprocal` captures the required transformation in both directions: `kelvin = 1000000 / mirek` on read and `mirek = 1000000 / kelvin` on write.
+- The Hue example range `153..500` mirek maps to approximately `6536..2000` K, so the TD presents the application-level range as `2000..6536` K.
+- `map:round` and `map:clamp` make the integer write path deterministic and ensure values stay within the Hue light's advertised `mirek_schema` range.
 
 ---
 
