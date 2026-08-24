@@ -193,11 +193,11 @@ All examples include both proprietary `map` terms and available standard terms.
 
 ---
 
-### Example 1: Numeric Scaling and Offset
+### Example 1: Lion EMS Cabinet Temperature Scaling
 
-Read-only temperature value over a protocol that sends deci-degrees Celsius (`231` means `23.1 C`).
+The Lion Energy EMS Modbus server exposes cabinet temperature at holding register `1237` as a read-only signed 16-bit value in deci-degrees Celsius (`237` means `23.7 C`).
 
-**TD (Modbus binding with deci-degree wire encoding):**
+**TD (Lion EMS Modbus server):**
 
 ```json
 {
@@ -210,8 +210,8 @@ Read-only temperature value over a protocol that sends deci-degrees Celsius (`23
       "quantitykind": "http://qudt.org/vocab/quantitykind/"
     }
   ],
-  "id": "urn:example:thing:temp-sensor-1",
-  "title": "TemperatureSensor",
+  "id": "urn:example:thing:lion-ems-1",
+  "title": "LionEnergyEMS",
   "links": [{ "rel": "type", "href": "urn:example:tm:TemperatureSensorModel", "type": "application/td+json" }],
   "properties": {
     "temperature": {
@@ -224,7 +224,7 @@ Read-only temperature value over a protocol that sends deci-degrees Celsius (`23
       "unit": "unit:DEG_C",
       "forms": [
         {
-          "href": "modbus://example.local/holding-register/9",
+          "href": "modbus://lion-ems.example.local/holding-register/1237",
           "contentType": "application/octet-stream",
           "op": ["readproperty"],
           "map:valueMapping": {
@@ -247,11 +247,11 @@ Read-only temperature value over a protocol that sends deci-degrees Celsius (`23
 
 ---
 
-### Example 2: Bidirectional Numeric Mapping With Rounding and Clamping
+### Example 2: Lion EMS Power Factor Scaling With Rounding and Clamping
 
-Writable dimmer level where application sees `0..100` percent, but wire uses `0..255`.
+The Lion Energy EMS Modbus server exposes inverter power factor at holding register `1205` as a read-only signed 16-bit value in hundredths. The application sees the normalized range `[-1.0, 1.0]`; for example, wire value `95` represents power factor `0.95`.
 
-**TD (Modbus binding with 0–255 wire encoding):**
+**TD (Lion EMS Modbus server):**
 
 ```json
 {
@@ -264,30 +264,27 @@ Writable dimmer level where application sees `0..100` percent, but wire uses `0.
       "quantitykind": "http://qudt.org/vocab/quantitykind/"
     }
   ],
-  "id": "urn:example:thing:dimmer-1",
-  "title": "Dimmer",
+  "id": "urn:example:thing:lion-ems-1",
+  "title": "LionEnergyEMS",
   "properties": {
-    "brightness": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 100,
+    "powerFactor": {
+      "title": "Inverter Power Factor",
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1,
+      "multipleOf": 0.01,
       "qudt:hasQuantityKind": "quantitykind:DimensionlessRatio",
-      "unit": "unit:PERCENT",
+      "unit": "unit:UNITLESS",
       "forms": [
         {
-          "href": "modbus://example.local/holding-register/17",
+          "href": "modbus://lion-ems.example.local/holding-register/1205",
           "contentType": "application/octet-stream",
-          "op": ["readproperty", "writeproperty"],
+          "op": ["readproperty"],
           "map:valueMapping": {
             "map:fromWire": [
-              { "map:proc": "mul", "map:value": 0.3921568627 },
+              { "map:proc": "mul", "map:value": 0.01 },
               { "map:proc": "round", "map:mode": "nearest" },
-              { "map:proc": "clamp", "map:min": 0, "map:max": 100 }
-            ],
-            "map:toWire": [
-              { "map:proc": "mul", "map:value": 2.55 },
-              { "map:proc": "round", "map:mode": "nearest" },
-              { "map:proc": "clamp", "map:min": 0, "map:max": 255 }
+              { "map:proc": "clamp", "map:min": -1, "map:max": 1 }
             ]
           }
         }
@@ -298,10 +295,10 @@ Writable dimmer level where application sees `0..100` percent, but wire uses `0.
 ```
 
 **What the example shows:**
-- The wire encoding is not a standard unit conversion, so `map` operations are required even though QUDT annotates the semantics.
+- The wire encoding is not a standard unit conversion, so `map` operations are required even though QUDT annotates the dimensionless semantics.
+- Register `1205` is read-only in the Lion EMS system data map, so the TD correctly declares only `readproperty` and has no `map:toWire` pipeline.
+- The `0.01` multiplier converts the hundredths wire representation to the application-level power factor, while the explicit rounding and clamping steps enforce the documented range.
 - Rounding and clamping are explicit ordered steps, not implicit in multiplication.
-- `map:toWire` makes the write path deterministic; there is no guessing of the inverse.
-- The factors `0.3921568627` (≈ 100/255) and `2.55` (≈ 255/100) are the exact inverse pair; together with `round` and `clamp` they guarantee a lossless round-trip within integer precision.
 
 ---
 
