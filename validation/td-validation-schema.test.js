@@ -25,7 +25,6 @@ const ajv = new Ajv({
 });
 
 describe("Thing Description validation", () => {
-
   describe("JSONSchema validation", () => {
     for (const [id, td] of validTDs.entries()) {
       it(`should validate n° ${id}`, () => {
