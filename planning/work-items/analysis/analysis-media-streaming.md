@@ -18,6 +18,7 @@ Because the required infrastructure is not yet clear, this work item should also
 - Should streaming be modeled as a new affordance pattern or as metadata on existing affordances?
 - If a Thing can receive or be written with a stream, how should TD describe that capability?
 - Which parts of streaming description belong in TD vocabulary, and which belong in protocol binding metadata?
+- How can a TD express that affordances are related to the same media content or activity, even when they are not delivered over the same underlying stream or transport session (e.g., a stream endpoint and a separately delivered metadata resource, or a stream and its session controls)?
 
 ## Related Issues
 
@@ -81,7 +82,7 @@ Because the required infrastructure is not yet clear, this work item should also
 
 - **Who:** Developer of a Consumer or system integrator
 - **What:** Determine how to establish a session in which a Thing and a Consumer exchange media streams in both directions
-- **Why:** So that interactive Things can support real-time communication without requiring an application-specific description of the session
+- **Why:** So that the Consumer can treat send and receive as a single managed session, avoiding application-specific logic to pair separate interactions and manage their connections independently
 - **Sentence:** **As a** developer of a Consumer, **I need** to describe bidirectional media communication **so that I can** establish and maintain an interactive media session with a Thing.
 - **Process Stakeholders:**
   - Submitter: WoT WG/extended community
@@ -165,6 +166,7 @@ Common and emerging streaming protocols and description models include the follo
 - [MOQT Streaming Format (MSF)](https://datatracker.ietf.org/doc/draft-ietf-moq-msf/) defines a JSON-based catalog describing available MOQT media tracks and their characteristics. MSF remains an Internet-Draft.
 - [ONVIF Network Interface Specifications](https://www.onvif.org/profiles/specifications/) describe media configurations and stream URI retrieval for network media devices.
 - [SMIL 3.0](https://www.w3.org/TR/smil/) describes the composition, timing, and synchronization of multimedia presentations.
+- [WebVMT](https://www.w3.org/TR/webvmt/) synchronizes geolocation and other time-aligned metadata with a video or audio track via a separately delivered external track file; the metadata and the media are not part of the same stream. If such a file were exposed as a TD property, associating it with the corresponding media stream affordance would require the kind of cross-affordance association raised above, independent of any shared transport session.
 
 ## Summarized Problem
 
