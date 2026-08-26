@@ -1,8 +1,7 @@
 const validTDs = [
   {
     "@context": [
-      "https://www.w3.org/2019/wot/td/v1",
-      "https://www.w3.org/2022/wot/td/v1.1",
+      "https://www.w3.org/ns/wot-next/td",
       {
         "@language": "en"
       }
@@ -33,7 +32,7 @@ const validTDs = [
     }
   },
   {
-    "@context": ["https://www.w3.org/2019/wot/td/v1", "https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "title": "Minimal TD",
     "@type": "Thing",
     "security": ["nosec_sc"],
@@ -46,8 +45,7 @@ const validTDs = [
   },
   {
     "@context": [
-      "https://www.w3.org/2019/wot/td/v1",
-      "https://www.w3.org/2022/wot/td/v1.1",
+      "https://www.w3.org/ns/wot-next/td",
       {
         "@language": "it"
       }
@@ -70,7 +68,7 @@ const validTDs = [
     }
   },
   {
-    "@context": ["https://www.w3.org/2019/wot/td/v1", "https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "title": "Minimal TD with link",
     "@type": "Thing",
     "security": ["nosec_sc"],
@@ -91,7 +89,7 @@ const validTDs = [
     ]
   },
   {
-    "@context": ["https://www.w3.org/2019/wot/td/v1", "https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "title": "Minimal TD with Operations",
     "@type": "Thing",
     "security": ["nosec_sc"],
@@ -109,7 +107,7 @@ const validTDs = [
     ]
   },
   {
-    "@context": ["https://www.w3.org/2019/wot/td/v1", "https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "title": "Minimal TD with Array Operations",
     "@type": "Thing",
     "security": ["nosec_sc"],
@@ -129,18 +127,18 @@ const validTDs = [
 ];
 const invalidTDs = [
   {
-    "@context": ["https://www.w3.org/2019/wot/td/v1", "https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "Thing"
   },
   {
-    "@context": ["https://www.w3.org/2019/wot/td/v1", "https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "title": {
       "foo": "bar"
     },
     "@type": "Thing"
   },
   {
-    "@context": ["https://www.w3.org/2019/wot/td/v1", "https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "title": "Minimal TD",
     "@type": "Thing",
     "security": ["nosec_sc"],
@@ -155,7 +153,7 @@ const invalidTDs = [
     "events": [{ "foo": "bar" }]
   },
   {
-    "@context": ["https://www.w3.org/2019/wot/td/v1", "https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "title": "Minimal TD missing href",
     "@type": "Thing",
     "security": ["nosec_sc"],

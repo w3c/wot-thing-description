@@ -1,7 +1,7 @@
 const validTMs = [
   {
     "$comment": "security allowing placeholders in scheme",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Valid model 1",
     "securityDefinitions": {
@@ -13,7 +13,7 @@ const validTMs = [
   },
   {
     "$comment": "placeholder with underscore",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Valid model 2",
     "forms": [
@@ -25,12 +25,12 @@ const validTMs = [
   },
   {
     "$comment": "missing title",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel"
   },
   {
     "$comment": "example 3 of the spec",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Valid Model 4",
     "properties": {
@@ -54,7 +54,7 @@ const validTMs = [
   },
   {
     "$comment": "example 51 of the spec",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Valid Model 5",
     "properties": {
@@ -65,7 +65,7 @@ const validTMs = [
   },
   {
     "$comment": "example 52",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Valid Model 6",
     "links": [
@@ -85,7 +85,7 @@ const validTMs = [
   },
   {
     "$comment": "example 53 of the spec",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Valid Model 7",
     "properties": {
@@ -96,7 +96,7 @@ const validTMs = [
   },
   {
     "$comment": "example 54 of the spec",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Valid Model 8",
     "properties": {
@@ -109,7 +109,7 @@ const validTMs = [
   },
   {
     "$comment": "example 55 of the spec",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Valid Model 9",
     "links": [
@@ -130,7 +130,7 @@ const validTMs = [
   },
   {
     "$comment": "example 56 of the spec. Valid Model 10",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
     "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
@@ -146,7 +146,7 @@ const validTMs = [
   },
   {
     "$comment": "example 57 of the spec",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Valid Model 11",
     "description": "Lamp Thing Description Model",
@@ -172,7 +172,7 @@ const validTMs = [
   },
   {
     "$comment": "example 59 of the spec",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "links": [
       {
@@ -189,7 +189,7 @@ const validTMs = [
   },
   {
     "$comment": "Enum with placeholder",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "links": [
       {
@@ -209,7 +209,7 @@ const validTMs = [
 const invalidTMs = [
   {
     "$comment": "absence of @type",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "title": "Invalid model 1"
   },
   {
@@ -219,7 +219,7 @@ const invalidTMs = [
   },
   {
     "$comment": "single curly bracket",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Invalid model 3",
     "securityDefinitions": {
@@ -231,7 +231,7 @@ const invalidTMs = [
   },
   {
     "$comment": "no curly bracket",
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Invalid model 4",
     "securityDefinitions": {
@@ -242,7 +242,7 @@ const invalidTMs = [
     "security": ["example_sc"]
   },
   {
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Thermostate No. {{THERMOSTATE_NUMBER}}",
     "base": "mqtt://{{MQTT_BROKER_ADDRESS}}",
@@ -258,14 +258,14 @@ const invalidTMs = [
     }
   },
   {
-    "@context": ["https://www.w3.org/2022/wot/td/v1.1"],
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Lamp Thing Model",
     "description": "Lamp Thing Description Model",
     "version": { "instance": "1.0.0" }
   },
   {
-    "@context": "https://www.w3.org/2022/wot/td/v1.1",
+    "@context": ["https://www.w3.org/ns/wot-next/td"],
     "@type": "tm:ThingModel",
     "title": "Invalid tm optional syntax",
     "properties": {
