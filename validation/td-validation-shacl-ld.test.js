@@ -39,22 +39,6 @@ describe("Thing Description validation", () => {
     configureCustomLoader();
   });
 
-  describe("JSONSchema validation", () => {
-    for (const [id, td] of validTDs.entries()) {
-      it(`should validate n° ${id}`, () => {
-        const valid = ajv.validate(JSON.parse(tdSchema), td);
-        assert.equal(valid, true, ajv.errorsText());
-      });
-    }
-
-    for (const [id, td] of invalidTDs.entries()) {
-      it(`should reject n° ${id}`, () => {
-        const valid = ajv.validate(JSON.parse(tdSchema), td);
-        assert.equal(valid, false, ajv.errorsText());
-      });
-    }
-  });
-
   describe("SHACL validation", () => {
     for (const [id, td] of validTDs.entries()) {
       it(`should validate n° ${id}`, async () => {
