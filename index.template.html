@@ -154,10 +154,9 @@
           "WOT-BINDING-REGISTRY": {
             title: "Web of Things (WoT) Binding Registry",
             href: "https://www.w3.org/TR/wot-binding-registry/",
-            // href: "https://w3c.github.io/wot-binding-registry/",
             authors: ["Ege Korkan"],
             publisher: "W3C",
-            date: "TODO" //TODO: Add publication date
+            date: "November 2025"
           },
           "MQTT": {
             title: "MQTT Version 3.1.1",
@@ -4837,13 +4836,13 @@
     </section>
 
     <section id="behavior" class="normative">
-      <h2>Behavioral Assertions</h2>
+      <h2>Behavioral Considerations</h2>
       <p>
-        The following assertions relate to the behavior of components of a WoT system, as opposed to the representation
-        or information model of the TD. However, note that TDs are descriptive, and may in particular be used to
-        describe pre-existing network interfaces. In these cases, assertions cannot be made that constrain the behavior
-        of such pre-existing interfaces. Instead, the assertions are to be interpreted as constraints on the TD to
-        accurately represent such interfaces.
+        The following sections relate to the behavior of components of a WoT system, as opposed to the representation or
+        information model of the TD. However, note that TDs are descriptive, and may in particular be used to describe
+        pre-existing network interfaces. In these cases, assertions found in these sections cannot be made that
+        constrain the behavior of such pre-existing interfaces. Instead, the assertions are to be interpreted as
+        constraints on the TD to accurately represent such interfaces.
       </p>
       <p>
         <!-- 1. arch-td-metadata, 3. arch-td-mandatory -->
@@ -4995,6 +4994,133 @@
         </ul>
       </section>
       <!-- end of id="behavior-data"-->
+      <section id="interaction-semantics">
+        <h3>Interaction Semantics</h3>
+        <p>
+          The interaction semantics are hinted by different keywords in the <a>affordance level</a> of the TD, such as
+          <code>readOnly</code>, <code>writeOnly</code> and <code>observable</code> for <a>Properties</a>. These act as
+          hints, where the form containg the relevant <code>op</code> value is the one that defines the actual
+          interaction semantics. For example, if a form with <code>op</code> value of <code>readproperty</code>
+          is present, then the interaction semantics of that property is to be considered as readable, even if the
+          <code>readOnly</code> keyword is not present or set to false. However, if all forms have <code>op</code> key
+          but there is no form with <code>op</code> value of <code>readproperty</code>, then the interaction semantics
+          of that property is to be considered as not readable, even if the <code>readOnly</code> keyword is present and
+          set to true.
+        </p>
+
+        <p>
+          Other terms can also influence the interaction semantics and also the location of the terms mentioned above.
+          As indicated in Section <a href="#dataschema" class="sec-ref">DataSchema</a>, <code>readOnly</code> and
+          <code>writeOnly</code> can exist in other levels such as within the input or output of an <a>Action</a> or
+          within the data, subscription or cancellation of an <a>Event</a>. Furthermore, the presence of an object or
+          array in the Data Schema creates the possibility to include these terms in deeper levels of a Data Schema.
+        </p>
+
+        <p class="ednote">
+          Make sure to include the information in
+          <a
+            href="https://github.com/w3c/wot-thing-description/blob/main/planning/work-items/analysis/readOnly-writeOnly.md"
+            >readOnly-writeOnly.md</a
+          >
+        </p>
+
+        <section id="sec-op-data-schema-mapping" class="informative">
+          <h4>Mapping op Values to Data Schemas</h4>
+
+          <p>
+            Protocols that can be used with TDs follow request-response or eventing mechanisms. The Data Schema of an
+            affordance generally correlates with the <code>op</code> keywords used in <code>forms</code>. The table
+            below informatively summarizes the available data schema related terms with the <code>op</code> keywords.
+          </p>
+          <ul>
+            <li>
+              Consumer to Thing applies for messages sent by the Consumer to the Thing, such as the value for writing a
+              property.
+            </li>
+            <li>
+              Thing to Consumer applies for messages sent by the Thing to the Consumer, such as the value of a property
+              value as the result of reading a property.
+            </li>
+            <li>
+              In case that there is no correlation with the data schema and the operation, it implies that no payload is
+              required for executing the operation or no payload is expected as a result of the operation.
+            </li>
+          </ul>
+
+          <table class="def numbered">
+            <caption>
+              Mapping op Values to Data Schemas
+            </caption>
+            <thead>
+              <tr>
+                <th>Operation Type</th>
+                <th>Consumer to Thing DataSchema Correlation</th>
+                <th>Thing to Consumer DataSchema Correlation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>readproperty</td>
+                <td>No correlation.</td>
+                <td>All fields in the Property Affordance without <code>"writeOnly":true</code>.</td>
+              </tr>
+              <tr>
+                <td>writeproperty</td>
+                <td>All fields in the Property Affordance without <code>"readOnly":true</code>.</td>
+                <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
+              </tr>
+              <tr>
+                <td>observeproperty</td>
+                <td>No correlation.</td>
+                <td>All fields in the Property Affordance without <code>"writeOnly":true</code>.</td>
+              </tr>
+              <tr>
+                <td>unobserveproperty</td>
+                <td>No correlation.</td>
+                <td>No correlation.</td>
+              </tr>
+              <tr>
+                <td>invokeaction</td>
+                <td>Value of the <code>input</code> key.</td>
+                <td>Value of the <code>output</code> key.</td>
+              </tr>
+              <tr>
+                <td>queryaction</td>
+                <td>No correlation.</td>
+                <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
+              </tr>
+              <tr>
+                <td>cancelaction</td>
+                <td>No correlation.</td>
+                <td>No correlation. <code>additionalResponses</code> can be used in the form level.</td>
+              </tr>
+              <tr>
+                <td>subscribeevent</td>
+                <td>Value of the <code>subscription</code> key with all fields without <code>"readOnly":true</code></td>
+                <td>
+                  Value of the <code>subscription</code> key with all fields without <code>"writeOnly":true</code>
+                </td>
+              </tr>
+              <tr>
+                <td>unsubscribeevent</td>
+                <td>Value of the <code>subscription</code> key with all fields without <code>"readOnly":true</code></td>
+                <td>
+                  Value of the <code>subscription</code> key with all fields without <code>"writeOnly":true</code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="note" title="writeproperty and observeproperty relationship">
+            Writing to a property does not necessarily mean that a new value will be sent to the Consumer observing the
+            property. It depends on the protocol and implementation.
+          </p>
+          <p class="note" title="Further Data Schemas mappings">
+            Further specification of how to map operations to data schemas, as well as mapping meta operations such as
+            <code>readallproperties</code>
+            can be found in the respective binding entry of the [[WOT-BINDING-REGISTRY]].
+          </p>
+        </section>
+      </section>
     </section>
     <!-- end of id="behavior"-->
 
@@ -5437,15 +5563,26 @@
               <span class="example-title">Top level/parent Smart Ventilator Thing Model </span>
             </div>
             <div class="selectors">
-              <button class="selected exampleTab1 SmartVentilator" onclick="openTab('exampleTab1', 'SmartVentilator')">
+              <button
+                class="selected example-tabs-thing-model-composition SmartVentilator"
+                onclick="openTab('example-tabs-thing-model-composition', 'SmartVentilator')"
+              >
                 Smart Ventilator TM
               </button>
-              <button class="exampleTab1 Ventilation" onclick="openTab('exampleTab1', 'Ventilation')">
+              <button
+                class="example-tabs-thing-model-composition Ventilation"
+                onclick="openTab('example-tabs-thing-model-composition', 'Ventilation')"
+              >
                 Ventilation TM
               </button>
-              <button class="exampleTab1 LED" onclick="openTab('exampleTab1', 'LED')">LED TM</button>
+              <button
+                class="example-tabs-thing-model-composition LED"
+                onclick="openTab('example-tabs-thing-model-composition', 'LED')"
+              >
+                LED TM
+              </button>
             </div>
-            <pre class="SmartVentilator exampleTab1 selected json">
+            <pre class="SmartVentilator example-tabs-thing-model-composition selected json">
         {
             "@context": "https://www.w3.org/ns/wot-next/td",
             "@type": "tm:ThingModel",
@@ -5471,7 +5608,7 @@
           }
        </pre
             >
-            <pre class="Ventilation exampleTab1 json">
+            <pre class="Ventilation example-tabs-thing-model-composition json">
         {
             "@context": "https://www.w3.org/ns/wot-next/td",
             "@type": "tm:ThingModel",
@@ -5493,7 +5630,7 @@
         }
        </pre
             >
-            <pre class="LED exampleTab1 json">
+            <pre class="LED example-tabs-thing-model-composition json">
         {
             "@context": "https://www.w3.org/ns/wot-next/td",
             "@type": "tm:ThingModel",
@@ -5566,15 +5703,26 @@
               <span class="example-title">Thing Descriptions of the Smart Ventilator</span>
             </div>
             <div class="selectors">
-              <button class="selected exampleTab1 SmartVentilator" onclick="openTab('exampleTab1', 'SmartVentilator')">
+              <button
+                class="selected example-tabs-td-smart-ventilator SmartVentilator"
+                onclick="openTab('example-tabs-td-smart-ventilator', 'SmartVentilator')"
+              >
                 Top level Smart Ventilator TD
               </button>
-              <button class="exampleTab1 Ventilation" onclick="openTab('exampleTab1', 'Ventilation')">
+              <button
+                class="example-tabs-td-smart-ventilator Ventilation"
+                onclick="openTab('example-tabs-td-smart-ventilator', 'Ventilation')"
+              >
                 Ventilation TD
               </button>
-              <button class="exampleTab1 LED" onclick="openTab('exampleTab1', 'LED')">LED TD</button>
+              <button
+                class="example-tabs-td-smart-ventilator LED"
+                onclick="openTab('example-tabs-td-smart-ventilator', 'LED')"
+              >
+                LED TD
+              </button>
             </div>
-            <pre class="SmartVentilator exampleTab1 selected json">
+            <pre class="SmartVentilator example-tabs-td-smart-ventilator selected json">
         {
             "@context": "https://www.w3.org/ns/wot-next/td",
             "title": "Smart Ventilator",
@@ -5620,7 +5768,7 @@
         }
        </pre
             >
-            <pre class="Ventilation exampleTab1 json">
+            <pre class="Ventilation example-tabs-td-smart-ventilator json">
         {
             "@context": "https://www.w3.org/ns/wot-next/td",
             "title": "Ventilator",
@@ -5668,7 +5816,7 @@
         }
        </pre
             >
-            <pre class="LED exampleTab1 json">
+            <pre class="LED example-tabs-td-smart-ventilator json">
         {
             "@context": "https://www.w3.org/ns/wot-next/td",
             "title": "LED Thing Model",
@@ -6024,17 +6172,26 @@
               <span class="example-title">Thing Description generation from Thing Model</span>
             </div>
             <div class="selectors">
-              <button class="selected exampleTab1 thingmodel" onclick="openTab('exampleTab1', 'thingmodel')">
+              <button
+                class="selected example-tabs-td-from-tm thingmodel"
+                onclick="openTab('example-tabs-td-from-tm', 'thingmodel')"
+              >
                 Thing Model
               </button>
-              <button class="exampleTab1 placeholder" onclick="openTab('exampleTab1', 'placeholder')">
+              <button
+                class="example-tabs-td-from-tm placeholder"
+                onclick="openTab('example-tabs-td-from-tm', 'placeholder')"
+              >
                 Placeholder Map
               </button>
-              <button class="exampleTab1 thingdescription" onclick="openTab('exampleTab1', 'thingdescription')">
+              <button
+                class="example-tabs-td-from-tm thingdescription"
+                onclick="openTab('example-tabs-td-from-tm', 'thingdescription')"
+              >
                 Thing Description
               </button>
             </div>
-            <pre class="selected thingmodel exampleTab1 json">
+            <pre class="selected thingmodel example-tabs-td-from-tm json">
 {
 	"@context": ["https://www.w3.org/ns/wot-next/td"],
 	"@type": "tm:ThingModel",
@@ -6054,7 +6211,7 @@
 }
 	</pre
             >
-            <pre class="placeholder exampleTab1 json">
+            <pre class="placeholder example-tabs-td-from-tm json">
 {
 	"THERMOSTATE_NUMBER": 4,
 	"MQTT_BROKER_ADDRESS": "192.168.178.72:1883",
@@ -6064,7 +6221,7 @@
 }
 	</pre
             >
-            <pre class="thingdescription exampleTab1 json">
+            <pre class="thingdescription example-tabs-td-from-tm json">
 {
 	"@context": ["https://www.w3.org/ns/wot-next/td"],
 	"@type": "Thing",
@@ -6174,14 +6331,20 @@
             <span class="example-title">Linking Thing Description to a Thing Model Definition</span>
           </div>
           <div class="selectors">
-            <button class="selected exampleTab2 thingmodel" onclick="openTab('exampleTab2', 'thingmodel')">
+            <button
+              class="selected example-tabs-linking-td-to-tm thingmodel"
+              onclick="openTab('example-tabs-linking-td-to-tm', 'thingmodel')"
+            >
               Thing Model
             </button>
-            <button class="exampleTab2 thingdescription" onclick="openTab('exampleTab2', 'thingdescription')">
+            <button
+              class="example-tabs-linking-td-to-tm thingdescription"
+              onclick="openTab('example-tabs-linking-td-to-tm', 'thingdescription')"
+            >
               Thing Description
             </button>
           </div>
-          <pre class="selected exampleTab2 thingmodel json">
+          <pre class="selected example-tabs-linking-td-to-tm thingmodel json">
 {
 	// ...
 	"@type": "tm:ThingModel",
@@ -6193,7 +6356,7 @@
 }
 		</pre
           >
-          <pre class="exampleTab2 thingdescription json">
+          <pre class="example-tabs-linking-td-to-tm thingdescription json">
 {
 	// ...
 	"@type": "Thing",
@@ -7224,12 +7387,20 @@
             >
           </div>
           <div class="selectors">
-            <button class="selected exampleTab1 without" onclick="openTab('exampleTab1', 'without')">
+            <button
+              class="selected example-tabs-temperature-sensor-event without"
+              onclick="openTab('example-tabs-temperature-sensor-event', 'without')"
+            >
               Without uriVariables
             </button>
-            <button class="exampleTab1 with" onclick="openTab('exampleTab1', 'with')">With uriVariables</button>
+            <button
+              class="example-tabs-temperature-sensor-event with"
+              onclick="openTab('example-tabs-temperature-sensor-event', 'with')"
+            >
+              With uriVariables
+            </button>
           </div>
-          <pre class="selected without exampleTab1 json">
+          <pre class="selected without example-tabs-temperature-sensor-event json">
 {
   "@context": ["https://www.w3.org/ns/wot-next/td", {
       "htv": "http://www.w3.org/2011/http#"
@@ -7290,7 +7461,7 @@
   }
 }
           </pre>
-          <pre class="with exampleTab1 json">
+          <pre class="with example-tabs-temperature-sensor-event json">
 {
   "@context": ["https://www.w3.org/ns/wot-next/td", {
     "htv": "http://www.w3.org/2011/http#"
@@ -7644,11 +7815,11 @@
       <h2>contentType usage in Thing Descriptions</h2>
       <p>
         The different cases on the variation of request and response are explained at
-        <a href="#sec-response-usage"></a>. The tables below summarize these cases in a concise manner. The tables start
-        from simpler cases, such as single <code>contentType</code>, and go for more complex cases, such as multiple
-        <code>contentType</code>s. In all the tables, the messages are seen from the Thing point of view, where input
-        means messages sent from Consumer to the Thing (e.g., request) and output means messages sent from Thing to the
-        Consumer (e.g., response).
+        <a href="#additionalexpectedresponse"></a> and <a href="#expectedresponse"></a>. The tables below summarize
+        these cases in a concise manner. The tables start from simpler cases, such as single <code>contentType</code>,
+        and go for more complex cases, such as multiple <code>contentType</code>s. In all the tables, the messages are
+        seen from the Thing point of view, where input means messages sent from Consumer to the Thing (e.g., request)
+        and output means messages sent from Thing to the Consumer (e.g., response).
       </p>
       <p>The cases are numbered, which can be used to associate them with examples after the tables.</p>
       <table class="def numbered">
