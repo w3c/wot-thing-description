@@ -170,7 +170,28 @@ Common and emerging streaming protocols and description models include the follo
 
 ## Summarized Problem
 
-Will be done after collecting the user stories and all related issues
+This is an initial statement derived from the user stories and related issues collected above.
+
+- **A Consumer cannot determine how to establish a stream, or which one to choose.**
+  A Thing Description identifies the protocol by the URI scheme, and the media type can narrow it further, but for some protocols neither is enough.
+  WHIP and WHEP, for example, use plain `https` endpoints, and `application/sdp` is shared with other ways of exchanging a session description.
+  A Consumer therefore does not know which protocol operates there, or in which direction the media flows.
+  Characteristics such as codec, resolution, and frame rate are also missing; they are not needed to establish a stream, but a Consumer offered several Forms needs them in order to choose.
+  Formats such as SDP and the MOQT Streaming Format already describe these characteristics.
+  It is an open question whether a Thing Description should rely on them, reference them, or carry some of the information itself.
+- **No affordance type fits a media stream exactly.**
+  A media source has three candidates: a Property Affordance with `readproperty` or `observeproperty`, or an Event Affordance.
+  But none of the three fits well.
+  `readproperty` says nothing about how long a retrieval lasts.
+  `observeproperty` means notification when a Property is updated, not a continuous flow.
+  An Event Affordance is an event source that pushes individual messages, such as an alert, rather than media.
+  A media sink has one candidate, a Property Affordance with `writeproperty`, which updates data with a value rather than accepting an ongoing transfer.
+  A bidirectional media session has no candidate at all, because an Action's request and response do not describe media flowing both ways at once.
+- **A Thing Description cannot describe operations on a stream.**
+  Some operations already exist, but they are narrow: `cancelaction` ends only the Action it belongs to, and there is no way to cancel a `readproperty`.
+  Adding a media-specific operation for each control, such as stopping playback or fast-forwarding, is not practical either.
+  A Thing Description also cannot say which stream or session a control acts on.
+  This is better examined together with the more general [manageable affordances work item](./analysis-manageable-affordances.md).
 
 ## Requirements
 
