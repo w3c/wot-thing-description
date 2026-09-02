@@ -2,9 +2,9 @@
 
 # The parts of the TD specification encoded in RDF are rendered using STTL,
 # the SPARQL Template Transformation Languge. Reference:
-# 
-# http://ns.inria.fr/sparql-template/
-# 
+#
+# https://ns.inria.fr/sparql-template/
+#
 # An STTL engine evaluates SPARQL queries over an RDF dataset and injects
 # query results into a string template. The engine used in this script is
 # STTL.js:
@@ -34,9 +34,9 @@ STTL_CMD="node "$STTL_CLI
 
 # All vocabulary terms in the TD specification are defined in the JSON-LD
 # context that all TD documents must reference:
-# 
+#
 # context/td-context-1.1.jsonld
-# 
+#
 # This file is compiled from four source context files, one for each
 # vocabulary in the TD model: td (core), json-schema, wot-security, hypermedia.
 # The term mappings defined in the resulting JSON-LD context are then turned
@@ -55,9 +55,9 @@ echo "> context/td-context-1.1.jsonld"
 #
 # This schema is expressed in the SHACL language, the Shapes Constraint
 # Language:
-# 
+#
 # https://www.w3.org/TR/shacl/
-# 
+#
 # SHACL defines 'node shapes' and 'property shapes', which constrain nodes and
 # edges in an RDF graph. The mapping between the TD object model and SHACL is as
 # follows:
@@ -67,7 +67,7 @@ echo "> context/td-context-1.1.jsonld"
 # Assignment Function 	sh:minCount (Mandatory), sh:defaultValue (With Default)
 # Type Function 		sh:node, sh:datatype (Simple Type)
 # Map, Array			no sh:maxCount
-# 
+#
 # Along with these SHACL shapes, we add the JSON-LD term mappings, generated in
 # the previous step, to the rendering process. The following JSON-LD definitions
 # are used to generate TD class signatures:
@@ -78,7 +78,7 @@ echo "> context/td-context-1.1.jsonld"
 #
 # Finally, we add vocabulary files that include sub-class axioms (using
 # the rdfs:subClassOf RDF property):
-# 
+#
 # ontology/td.ttl
 # ontology/jsonschema.ttl
 # ontology/wotsec.ttl
@@ -104,7 +104,7 @@ node testing/extractFile.js > testing/assertions.csv
 # The TD specification includes diagrams that can be automatically generated
 # from the same SHACL source. The diagrams are first generated in textual form
 # with STTL and then turned into graphics using Graphviz:
-# 
+#
 # https://graphviz.gitlab.io/
 
 if [[ -n $DOT_CMD ]]; then

@@ -336,7 +336,7 @@ An explanation follows the example:
   "@context": [
     "http://w3.org/ns/td",
     { "saref": "https://w3id.org/saref#" },
-    { "htv": "http://www.w3.org/2011/http#" }
+    { "htv": "https://www.w3.org/2011/http#" }
   ],
   "@type": ["Thing", "saref#LightingDevice"],
   "id": "urn:dev:wot:com:example:servient:lamp",
