@@ -9,7 +9,7 @@ This is an updated version of the [Explainer for TD 1.0](Explainer.md).
 [//]: # "The W3C Web of Things [WoT] is intended to enable
 interoperability across IoT Platforms and application domains using Web technology."
 
-In the [WoT Architecture](https://w3c.github.io/wot-architecture/index.html),
+In the [WoT Architecture](https://www.w3.org/TR/wot-architecture11/),
 a Thing is defined as an abstraction of a physical IoT device such as a sensor (temperature, CO2, ...), an actuator (lamp, motor, ...), or a virtual entity (e.g., composition of one or more Things, weather service). The Thing Description (TD) provides descriptive metadata for a Thing's network interface.
 
 With a TD, clients are informed of the choices they can make when interacting with Things such reading a temperature value or switching on a lamp. This can drive applications in the same way that Web HTML pages allow users to
@@ -70,7 +70,7 @@ Based on such information a Thing Description can be designed in the following w
 }
 ```
 
-Before going into detail an important paradigm is explained that is defined by the [WoT Architecture](https://w3c.github.io/wot-architecture/index.html), namely about the interaction affordances **properties, actions**, and **events**.
+Before going into detail an important paradigm is explained that is defined by the [WoT Architecture](https://www.w3.org/TR/wot-architecture11/), namely about the interaction affordances **properties, actions**, and **events**.
 
 Each Thing and its data and functions offerings that is possible via the interface can be classified in those affordances. Sensor and/or parameter data are considered **properties**. Functions like on/off, dimming, etc. are considered **actions**. Notifications and data streams are considered **events**.
 
@@ -96,7 +96,7 @@ Now, by processing the above example TD, a client can obtain knowledge about the
 
 ## What can you do with a Thing Description (TD)?
 
-Based on the information in a TD, a WoT software stack such as that described in the [W3C Web of Things Scripting API](https://w3c.github.io/wot-scripting-api/) can interpret the TD content and automatically handle all the communication details. A developer working with the **properties, actions**, and **events** affordances does not need to deal with protocol specific details such as the HTTP method, the resource address, port number, etc.. The following video gives an insight about this aspect:
+Based on the information in a TD, a WoT software stack such as that described in the [W3C Web of Things Scripting API](https://www.w3.org/TR/wot-scripting-api/) can interpret the TD content and automatically handle all the communication details. A developer working with the **properties, actions**, and **events** affordances does not need to deal with protocol specific details such as the HTTP method, the resource address, port number, etc.. The following video gives an insight about this aspect:
 
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/lt_P2BU8e3I/0.jpg)](http://www.youtube.com/watch?v=lt_P2BU8e3I "TD usage with a programming API")
 
@@ -104,7 +104,7 @@ This example also shows that TDs can be used to onboard Things into an IoT ecosy
 
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/oAcYbJ6P9bU/0.jpg)](http://www.youtube.com/watch?v=oAcYbJ6P9bU "TD usage in Node-RED")
 
-TD also helps to manage IoT systems. An IoT system typically consists of a heterogenous set of devices provided by different vendors and based on different technologies and protocols (e.g. HTTP, MQTT, Modbus, etc). Directories can be used to manage the TDs (e.g., create, search, etc). [The W3C WoT Discovery](https://w3c.github.io/wot-discovery/) defines mechanisms for controlled distribution and access to TDs, including searchable directories in which TDs can be dynamically registered.
+TD also helps to manage IoT systems. An IoT system typically consists of a heterogenous set of devices provided by different vendors and based on different technologies and protocols (e.g. HTTP, MQTT, Modbus, etc). Directories can be used to manage the TDs (e.g., create, search, etc). [The W3C WoT Discovery](https://www.w3.org/TR/2023/REC-wot-discovery-20231205/) defines mechanisms for controlled distribution and access to TDs, including searchable directories in which TDs can be dynamically registered.
 
 ## What Other Features Support the Thing Description Specification?
 
@@ -112,7 +112,7 @@ Other features complementary to the TD, including Protocol Bindings, Context Ext
 
 ### Protocol Binding
 
-A Thing Description is not limited to HTTP based interfaces as shown in the example above. In general, WoT is a protocol agnostic approach and provides a common mechanism to define how specific protocols such as MQTT, HTTP, CoAP or Modbus can be mapped to the WoT’s interaction properties-action-event abstraction within the Thing Description `forms` definition. More details is provide in the [Protocol Binding section](https://w3c.github.io/wot-thing-description/#protocol-bindings).
+A Thing Description is not limited to HTTP based interfaces as shown in the example above. In general, WoT is a protocol agnostic approach and provides a common mechanism to define how specific protocols such as MQTT, HTTP, CoAP or Modbus can be mapped to the WoT’s interaction properties-action-event abstraction within the Thing Description `forms` definition. More details is provide in the [Protocol Binding section](https://www.w3.org/TR/2023/REC-wot-thing-description11-20231205/#protocol-bindings).
 
 ### TD Context Extensions
 
@@ -217,13 +217,13 @@ conceptually interconvertible with JSON.
 
 The main difference of this new specification from Thing Description 1.0 is that it includes the Thing Model concept (see above). This was only discussed in the Annex of the Thing Description 1.0 and was called Thing Description Template at that time.
 
-A new features is also possible to indicate that a Thing is following a specific profile such as the [W3C WoT Core Profile](https://w3c.github.io/wot-profile/).
+A new features is also possible to indicate that a Thing is following a specific profile such as the HTTP Basic Profile in [W3C WoT Profiles](https://www.w3.org/TR/wot-profile/).
 
 In general, TD 1.1 is backward compatible with implementations that follow version TD 1.0.
 
 The new minor version update is also used to redefine some features more clearly and to add additional examples to make it easier to understand.
 
-The complete change log with the new features and refinements can be found in the [change log section](https://w3c.github.io/wot-thing-description/#changes).
+The complete change log with the new features and refinements can be found in the [change log section](https://www.w3.org/TR/2023/REC-wot-thing-description11-20231205/#changes).
 
 ## Implementations
 
