@@ -1,6 +1,23 @@
 # Data Mapping User Story 3 — Basic Mathematical Operations - Summary
 
-This document covers only user story 3 as defined in `analysis-data-mapping.md`.
+- **Who:** Developer of a Consumer, TD Designer
+- **What:** Express the need to apply mathematical operations to the data received or to be sent as a protocol message
+- **Why:** Guarantee that the data fits to the protocol message while staying easy to understand for the application
+
+- Sentence: **As a** Developer of a Consumer, TD Designer, **I need** to express the need to apply mathematical operations to the data received or to be sent as a protocol message, **so that I can** guarantee that the data fits to the protocol message while staying easy to understand for the application.
+- Process Stakeholders:
+  - Submitter: Multiple
+  - Specification Writers: Multiple
+  - Implementation Volunteers: ?
+  - Impacted People: TD Designers and Consumer application developers.
+  - Impact Type: More use cases covered without protocol-specific vocabularies
+- Linked Use Cases or Categories: TBD
+- Relevant issues:
+  - Extending Data Mapping Examples: https://github.com/w3c/wot-thing-description/issues/2034#issuecomment-4260667948
+  - Basic Operations on Data: https://github.com/w3c/wot-thing-description/issues/2169
+  - Should it be possible to indicate whether writing a property returns set value?: https://github.com/w3c/wot-thing-description/issues/875
+- Existing Solutions:
+  - Lorawan Binding: https://github.com/w3c/wot-binding-templates/pull/458 (`lorav:multiplier`)
 
 ---
 
@@ -247,9 +264,9 @@ The Lion Energy EMS Modbus server exposes cabinet temperature at holding registe
 
 ---
 
-### Example 2: Lion EMS Power Factor Scaling With Rounding and Clamping
+### Example 2: Lion EMS Power Factor Scaling and Clamping
 
-The Lion Energy EMS Modbus server exposes inverter power factor at holding register `1205` as a read-only signed 16-bit value in hundredths. The application sees the normalized range `[-1.0, 1.0]`; for example, wire value `95` represents power factor `0.95`.
+The Lion Energy EMS Modbus server exposes inverter power factor at holding register `1205` as a read-only signed 16-bit value in hundredths. The documented application range `[-1.0, 1.0]` corresponds to raw register values `[-100, 100]`. For example, wire value `95` represents power factor `0.95`, while wire value `-95` represents `-0.95`.
 
 **TD (Lion EMS Modbus server):**
 
@@ -283,7 +300,6 @@ The Lion Energy EMS Modbus server exposes inverter power factor at holding regis
           "map:valueMapping": {
             "map:fromWire": [
               { "map:proc": "mul", "map:value": 0.01 },
-              { "map:proc": "round", "map:mode": "nearest" },
               { "map:proc": "clamp", "map:min": -1, "map:max": 1 }
             ]
           }
@@ -297,8 +313,8 @@ The Lion Energy EMS Modbus server exposes inverter power factor at holding regis
 **What the example shows:**
 - The wire encoding is not a standard unit conversion, so `map` operations are required even though QUDT annotates the dimensionless semantics.
 - Register `1205` is read-only in the Lion EMS system data map, so the TD correctly declares only `readproperty` and has no `map:toWire` pipeline.
-- The `0.01` multiplier converts the hundredths wire representation to the application-level power factor, while the explicit rounding and clamping steps enforce the documented range.
-- Rounding and clamping are explicit ordered steps, not implicit in multiplication.
+- The signed register permits both positive and negative values: `95 * 0.01 = 0.95` and `-95 * 0.01 = -0.95`.
+- The `0.01` multiplier preserves the documented hundredths precision (`multipleOf: 0.01`), while `map:clamp` enforces the application-level range. Rounding is intentionally omitted because rounding to an integer would incorrectly change `0.95` to `1`.
 
 ---
 
@@ -335,15 +351,7 @@ Philips Hue exposes the current dimming value as `dimming.brightness`, a `0..100
         {
           "href": "http://hue.example.local/clip/v2/resource/light/01234567-89ab-cdef-0123-456789abcdef/dimming/brightness",
           "contentType": "application/json",
-          "op": ["readproperty", "writeproperty"],
-          "map:valueMapping": {
-            "map:fromWire": [
-              { "map:proc": "clamp", "map:min": 0, "map:max": 100 }
-            ],
-            "map:toWire": [
-              { "map:proc": "clamp", "map:min": 0, "map:max": 100 }
-            ]
-          }
+          "op": ["readproperty", "writeproperty"]
         }
       ]
     },
@@ -384,7 +392,7 @@ Philips Hue exposes the current dimming value as `dimming.brightness`, a `0..100
 
 **What the example shows:**
 - The HTTP endpoints are assumed to expose the individual Hue `LightGet` leaves, so each form receives one numeric value before the `map` pipeline runs.
-- The brightness property needs no scale conversion because Hue already exposes `dimming.brightness` as a percentage; `map:clamp` still records the usable applet range.
+- The brightness property has no `map:valueMapping` because Hue already exposes `dimming.brightness` in the application's percentage domain. Its `minimum` and `maximum` schema constraints declare the valid range without transforming the value.
 - The color-temperature property exposes kelvin to the applet even though the Hue endpoint uses mirek. `map:reciprocal` captures the required transformation in both directions: `kelvin = 1000000 / mirek` on read and `mirek = 1000000 / kelvin` on write.
 - The Hue example range `153..500` mirek maps to approximately `6536..2000` K, so the TD presents the application-level range as `2000..6536` K.
 - `map:round` and `map:clamp` make the integer write path deterministic and ensure values stay within the Hue light's advertised `mirek_schema` range.
@@ -413,16 +421,13 @@ LoRaWAN defines several binding-specific transformation terms that correspond di
 
 ### Modbus
 
-The Modbus binding (`modv:*`) does not define any binding-specific declarative arithmetic transformation terms. Modbus protocol terms address transport, addressing, and request control; value-level transformations are handled externally in application codecs.
+The Modbus binding does not define binding-specific declarative arithmetic transformation terms. Its terms address transport, addressing, request control, and wire representation; value-level transformations are handled externally in application codecs.
 
 | Modbus Term | Purpose | General `map` Equivalent | Notes |
 |---|---|---|---|
-| *(none)* | — | — | No `modv:*` term in `modbus.md` corresponds to `mul`, `add`, `round`, or `clamp`. |
+| *(none in the reviewed Modbus binding)* | — | — | No standard binding term corresponds to `mul`, `add`, `round`, or `clamp`. |
 
-The only Modbus metadata with a bearing on numeric interpretation is `byteSeq` (byte and word ordering, e.g. `BIG_ENDIAN`), which controls how raw register bytes are assembled into a numeric value before any `map` operation runs. It is wire-format metadata, not a transformation operation, and falls outside the `map` pipeline scope.
-
-**Summary:** For Modbus, UC3 operations (`mul`, `add`, `round`, `clamp`) need to be introduced as new `map`-based annotations on forms. No existing `modv:*` term needs to be migrated or replaced; the `map` pipeline simply adds what was previously missing.
-
+**Summary:** The Modbus binding has no arithmetic transformation terms.
 ---
 
 ### BACnet
