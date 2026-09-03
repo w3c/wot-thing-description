@@ -9,6 +9,10 @@ Also known as: Mapping TD elements to protocol or network messages
 - Some protocols do not have the concept of `contentType` at all.
 - Some `contentType` may be more expressive than our DataSchema, e.g. CBOR [Maps with integer keys](https://www.rfc-editor.org/rfc/rfc8949.html#map-keys).
 
+## Summarized Problem
+
+TODO
+
 ## Open questions
 
 - How can we describe how the logical information (state for property, input/output messages for actions, messages for event) is mapped to each channel?
@@ -82,24 +86,7 @@ Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2
 
 3. Basic Mathematical Operations
 
-- **Who:** Developer of a Consumer, TD Designer
-- **What:** Express the need to apply mathematical operations to the data received or to be sent as a protocol message
-- **Why:** Guarantee that the data fits to the protocol message while staying easy to understand for the application
-
-- Sentence: **As a** Developer of a Consumer, TD Designer, **I need** to express the need to apply mathematical operations to the data received or to be sent as a protocol message, **so that I can** guarantee that the data fits to the protocol message while staying easy to understand for the application.
-- Process Stakeholders:
-  - Submitter: Multiple
-  - Specification Writers: Multiple
-  - Implementation Volunteers: ?
-  - Impacted People: TD Designers and Consumer application developers.
-  - Impact Type: More use cases covered without protocol-specific vocabularies
-- Linked Use Cases or Categories: TBD
-- Relevant issues:
-  - Extending Data Mapping Examples: https://github.com/w3c/wot-thing-description/issues/2034#issuecomment-4260667948
-  - Basic Operations on Data: https://github.com/w3c/wot-thing-description/issues/2169
-  - Should it be possible to indicate whether writing a property returns set value?: https://github.com/w3c/wot-thing-description/issues/875
-- Existing Solutions:
-  - Lorawan Binding: https://github.com/w3c/wot-binding-templates/pull/458 (`lorav:multiplier`)
+See [detailed document](./analysis-data-mapping-3-summary.md).
 
 4. Simple Type Conversion (enum mapping)
 
@@ -173,10 +160,4 @@ How to model it in JSON but also giving hints so that the drivers can use it.
 
 ## Existing Solutions
 
-## Summarized Problem
-
-Will be done after collecting the user stories and all related issues
-
-## Requirements
-
-Will be done after everything else
+TODO
