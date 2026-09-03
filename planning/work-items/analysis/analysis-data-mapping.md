@@ -177,4 +177,91 @@ How to model it in JSON but also giving hints so that the drivers can use it.
 
 ## Existing Solutions
 
+- Sentence: **As a** Developer of a Consumer, TD Designer, **I need** to express the need to apply mathematical operations to the data received or to be sent as a protocol message, **so that I can** guarantee that the data fits to the protocol message while staying easy to understand for the application.
+- Process Stakeholders:
+  - Submitter: Multiple
+  - Specification Writers: Multiple
+  - Implementation Volunteers: ?
+  - Impacted People: TD Designers and Consumer application developers.
+  - Impact Type: More use cases covered without protocol-specific vocabularies
+- Linked Use Cases or Categories: TBD
+- Relevant issues:
+  - Extending Data Mapping Examples: https://github.com/w3c/wot-thing-description/issues/2034#issuecomment-4260667948
+  - Basic Operations on Data: https://github.com/w3c/wot-thing-description/issues/2169
+  - Should it be possible to indicate whether writing a property returns set value?: https://github.com/w3c/wot-thing-description/issues/875
+- Existing Solutions:
+  - Lorawan Binding: https://github.com/w3c/wot-binding-templates/pull/458 (`lorav:multiplier`)
+
+4. Simple Type Conversion (enum mapping)
+
+- **Who:** TD Designer
+- **What:** Express that a single value in Data Schema converts to another simple value in the protocol message
+- **Why:** Provide easier to understand data schemas
+
+- Sentence: **As a** TD Designer, **I need** express that a single value in Data Schema converts to another simple value in the protocol message, **so that I can** Provide easier to understand data schemas.
+- Process Stakeholders:
+  - Submitter: Multiple
+  - Specification Writers: Multiple
+  - Implementation Volunteers: ?
+  - Impacted People: TD Designers and Consumer application developers.
+  - Impact Type: More use cases covered without protocol-specific vocabularies
+- Linked Use Cases or Categories: TBD
+- Relevant issues:
+  - Modeling enumeration values semantically: https://github.com/w3c/wot-thing-description/issues/997 (main issue)
+  - Supporting complex/structured types in simple protocols: https://github.com/w3c/wot-thing-description/issues/1936
+  - Supporting bitmaps : https://github.com/w3c/wot-thing-description/issues/1930
+- Existing Solutions:
+  - BACnet Binding: https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/#example-enum-mapping (`bacv:hasValueMap`)
+  - Profinet https://w3c.github.io/wot-binding-templates/bindings/protocols/profinet/#example-complex-datatype (`profv:enumeratedValue`)
+
+5. Structured and Simple Data Mismatch (value wrapping, bitmasking)
+
+- **Who:** TD Designer
+- **What:** Express conversion between data structures
+- **Why:** Allow Data Schema abstraction to be used on more complex data structures of the protocol message or on more simple protocol message structures
+
+- Sentence: **As a** TD Designer, **I need** express conversion between data structures, **so that I can** allow Data Schema abstraction to be used on more complex data structures of the protocol message or on more simple protocol message structures.
+- Process Stakeholders:
+  - Submitter: Multiple
+  - Specification Writers: Multiple
+  - Implementation Volunteers: node-wot
+  - Impacted People: TD Designers and Consumer application developers.
+  - Impact Type: More use cases covered without protocol-specific vocabularies
+- Linked Use Cases or Categories: TBD
+- Relevant issues:
+  - Supporting complex/structured types in simple protocols: https://github.com/w3c/wot-thing-description/issues/1936
+  - Supporting bitmaps : https://github.com/w3c/wot-thing-description/issues/1930#issuecomment-4342467719
+- Existing Solutions:
+  - Data Mapping in node-wot to choose a part of the JSON Payload: https://github.com/eclipse-thingweb/node-wot#data-mapping-per-thing
+  - Profinet https://w3c.github.io/wot-binding-templates/bindings/protocols/profinet/#example-complex-datatype (`profv:payloadMapping`)
+- Notes:
+  - This does NOT include mathematical operations, that is above above point 3
+  - This does NOT restrict itself to simple type conversion, that is above point 4. However, this can be applied on top of point 4.
+
+6. More Detailed Types
+
+How to model it in JSON but also giving hints so that the drivers can use it.
+
+- **Who:** TD Consumer
+- **What:** understand more detailed data types without looking into binding specifications
+- **Why:** reduce implementation effort per protocol
+
+- Sentence: **As a** TD Consumer, **I need** understand more detailed data types without looking into binding specifications, **so that I can** reduce implementation effort per protocol.
+- Process Stakeholders:
+  - Submitter: Multiple
+  - Specification Writers: Multiple
+  - Implementation Volunteers: ?
+  - Impacted People: TD Designers and Consumer application developers.
+  - Impact Type: More use cases covered without protocol-specific vocabularies
+- Linked Use Cases or Categories: TBD
+- Relevant issues:
+  - ?
+- Existing Solutions:
+  - Modbus: https://w3c.github.io/wot-binding-templates/bindings/protocols/modbus/#payloaddatatype
+  - BACnet: https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/#datatype-mappings
+  - Profinet: https://w3c.github.io/wot-binding-templates/bindings/protocols/profinet/#payloaddatatype
+  - LoRaWan: Once PR is merged.
+
+## Existing Solutions
+
 TODO
