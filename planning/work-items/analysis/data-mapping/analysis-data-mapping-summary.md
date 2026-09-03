@@ -86,7 +86,7 @@ Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2
 
 3. Basic Mathematical Operations
 
-See [detailed document](./analysis-data-mapping-3-summary.md)
+See [detailed document](./analysis-data-mapping-3-summary.md).
 
 4. Simple Type Conversion (enum mapping)
 
