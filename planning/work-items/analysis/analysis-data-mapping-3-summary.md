@@ -195,6 +195,8 @@ Valid `map:proc` values for user story 3:
 | `round` | Round the current numeric value according to `map:mode`. |
 | `clamp` | Constrain the current numeric value to the range `[map:min, map:max]`. |
 
+Note: the reciprocal operation can also be read as `map:value * currentValue^-1`, i.e. multiplication by the reciprocal of the current value. This equivalent formulation may be mathematically clearer for some readers and more flexible if the same pipeline is later extended to other exponent-based transforms, while keeping the operation semantics the same.
+
 #### Numeric Operation Parameters
 
 | Term | Used by | Description |
