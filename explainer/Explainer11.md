@@ -98,11 +98,11 @@ Now, by processing the above example TD, a client can obtain knowledge about the
 
 Based on the information in a TD, a WoT software stack such as that described in the [W3C Web of Things Scripting API](https://w3c.github.io/wot-scripting-api/) can interpret the TD content and automatically handle all the communication details. A developer working with the **properties, actions**, and **events** affordances does not need to deal with protocol specific details such as the HTTP method, the resource address, port number, etc.. The following video gives an insight about this aspect:
 
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/lt_P2BU8e3I/0.jpg)](http://www.youtube.com/watch?v=lt_P2BU8e3I "TD usage with a programming API")
+[![IMAGE ALT TEXT](https://img.youtube.com/vi/lt_P2BU8e3I/0.jpg)](https://www.youtube.com/watch?v=lt_P2BU8e3I "TD usage with a programming API")
 
 This example also shows that TDs can be used to onboard Things into an IoT ecosystem (e.g., IoT cloud services, edge systems, etc.). TD helps a client to understand what the Things offers and how the offered data and functions can be bound to application processes (e.g., creating service mash-ups, dashboards, etc.). The following example shows how a TD is used in a Node-RED application:
 
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/oAcYbJ6P9bU/0.jpg)](http://www.youtube.com/watch?v=oAcYbJ6P9bU "TD usage in Node-RED")
+[![IMAGE ALT TEXT](https://img.youtube.com/vi/oAcYbJ6P9bU/0.jpg)](https://www.youtube.com/watch?v=oAcYbJ6P9bU "TD usage in Node-RED")
 
 TD also helps to manage IoT systems. An IoT system typically consists of a heterogenous set of devices provided by different vendors and based on different technologies and protocols (e.g. HTTP, MQTT, Modbus, etc). Directories can be used to manage the TDs (e.g., create, search, etc). [The W3C WoT Discovery](https://w3c.github.io/wot-discovery/) defines mechanisms for controlled distribution and access to TDs, including searchable directories in which TDs can be dynamically registered.
 
