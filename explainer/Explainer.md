@@ -5,7 +5,7 @@
 [//]: # "The W3C Web of Things [WoT] is intended to enable
 interoperability across IoT Platforms and application domains using Web technology."
 
-In the [WoT Architecture](https://w3c.github.io/wot-architecture/index.html),
+In the [WoT Architecture](https://www.w3.org/TR/2020/REC-wot-architecture-20200409/),
 a Thing is defined as an abstraction of an IoT device or service.
 The Thing Description (TD) provides descriptive metadata for a Thing.
 TDs supports interoperability between Things (and applications that use Things)
@@ -37,7 +37,7 @@ Each building block,
 identified in the WoT WG's charter,
 is concerned with addressing specific interoperability issues.
 
-![WoT Building Blocks](https://w3c.github.io/wot-architecture/images/wot-thing-with-scripting.png)
+![WoT Building Blocks](https://www.w3.org/TR/2020/REC-wot-architecture-20200409/images/servient/wot-thing-scripting.svg)
 
 TDs are a WoT building block that consolidates metadata related
 to several of different architectural aspects of Things.
@@ -211,36 +211,36 @@ conceptually interconvertible with JSON.
 ## What is inside the Thing Description (TD) specification
 
 The draft TD specification is
-[available for review](https://w3c.github.io/wot-thing-description/).
+[available for review](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/).
 
 This specification primarily defines the TD Information Model
 and the TD Serialization as JSON:
 
-- **[TD Information Model](https://w3c.github.io/wot-thing-description/#sec-vocabulary-definition)** (Section 5)
+- **[TD Information Model](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#sec-core-vocabulary-definition)** (Section 5)
 
   The Thing Description Information model serves as the conceptual basis
   for the serialization and processing of a Thing Description.
   It consists of the four vocabularies listed below:
 
-  - [**Core Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-core-vocabulary-definition)
+  - [**Core Vocabulary**](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#sec-core-vocabulary-definition)
 
     TD Information Model's core vocabulary includes terms for:
 
-    - _[Thing](https://w3c.github.io/wot-thing-description/#thing)_,
-    - _[Interaction Affordance](https://w3c.github.io/wot-thing-description/#interactionaffordance)_,
-    - _[Form](https://w3c.github.io/wot-thing-description/#form)_,
-    - _[Version Information](https://w3c.github.io/wot-thing-description/#versioninfo)_,
-    - _[Expected Response](https://w3c.github.io/wot-thing-description/#expectedresponse)_
+    - _[Thing](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#thing)_,
+    - _[Interaction Affordance](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#interactionaffordance)_,
+    - _[Form](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#form)_,
+    - _[Version Information](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#versioninfo)_,
+    - _[Expected Response](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#expectedresponse)_
       (media type of response messages), and
-    - _[Multi Language](https://w3c.github.io/wot-thing-description/#multilanguage)_
+    - _[Multi Language](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#multilanguage)_
       (Container to provide human-readable text in different languages).
 
-  - [**Data Schema Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-data-schema-vocabulary-definition)
+  - [**Data Schema Vocabulary**](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#dataschema)
     - Vocabulary for Data Schema definitions of
       both scalar and structured payload data.
-  - [**Security Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-security-vocabulary-definition)
+  - [**Security Vocabulary**](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#sec-security-vocabulary-definition)
     - Vocabulary of well-established security mechanisms considered appropriate to be built-in in TD Information Model.
-  - [**Web Linking Vocabulary**](https://w3c.github.io/wot-thing-description/#sec-web-linking-vocabulary-definition)
+  - [**Web Linking Vocabulary**](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#link)
     - Vocabulary for web links exposed by a Thing.
     - The Web Linking Vocabulary, modeled after the CoRE Link format,
       is in its own namespace for modularity.
@@ -248,10 +248,10 @@ and the TD Serialization as JSON:
 The TD Information Model borrows two keywords from JSON-LD, `@context` and `@type`,
 as extension points in order to allow the use of semantic vocabularies and tools.
 
-- **[TD Serialization](https://w3c.github.io/wot-thing-description/#sec-td-serialization)** (Section 6)
+- **[TD Serialization](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#sec-td-serialization)** (Section 6)
   - Describes the serialization of instances of TD Information Model.
   - Serialization of TD is in JSON.
-  - There is an (informative) [JSON Schema](https://w3c.github.io/wot-thing-description/#json-schema-4-validation)
+  - There is an (informative) [JSON Schema](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#json-schema-for-validation)
     provided for TD serialization that can be used for validating TD instances.
 
 In light of the Open-World assumption used by RDF,
@@ -267,12 +267,12 @@ in TD specification.
 In particular,
 a Full Thing Description instance always at least contains an `@context` value
 at the
-[Thing](https://w3c.github.io/wot-thing-description/#sec-thing-as-a-whole-json) level.
+[Thing](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#sec-thing-as-a-whole-json) level.
 
 The Full Thing Description enables semantic processing,
 such as that supported by RDF tools.
 The TD specification also provides
-[guidelines](https://w3c.github.io/wot-thing-description/#note-jsonld11-processing)
+[guidelines](https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/#json-ld-ctx-usage)
 (in an Appendix) for transforming TD instances into a form
 adequate for feeding into such tools, i.e. RDF N-Triples.
 The TD is also aligned with the current JSON-LD 1.1 draft.
@@ -321,7 +321,7 @@ TD instances must use external vocabularies such as
 the [HTTP Vocabulary in RDF 1.0](https://www.w3.org/TR/HTTP-in-RDF10/)
 to identify methods and options for particular concrete protocols (such as HTTP).
 See more on the WoT WG Note
-[Web of Things (WoT) Protocol Binding Templates](https://w3c.github.io/wot-binding-templates/).
+[Web of Things (WoT) Protocol Binding Templates](https://www.w3.org/TR/2024/NOTE-wot-binding-templates-20240528/).
 
 The reason for this decision is to simplify the extension of the TD
 specification to additional concrete communication protocols in the future.
@@ -334,9 +334,9 @@ An explanation follows the example:
 ```json
 {
   "@context": [
-    "http://w3.org/ns/td",
+    "https://www.w3.org/2019/wot/td/v1",
     { "saref": "https://w3id.org/saref#" },
-    { "htv": "http://www.w3.org/2011/http#" }
+    { "htv": "https://www.w3.org/2011/http#" }
   ],
   "@type": ["Thing", "saref#LightingDevice"],
   "id": "urn:dev:wot:com:example:servient:lamp",
@@ -464,7 +464,7 @@ Implementations were built by
 Smart Things, ERCIM, Hitachi, Intel, Oracle, Panasonic, Fujitsu and Siemens.
 Some organizations built more than one implementation;
 in total 15 implementations were developed.
-The [`node-wot`](https://github.com/eclipse/thingweb.node-wot)
+The [`node-wot`](https://github.com/eclipse-thingweb/node-wot)
 implementation open-sourced by Siemens
 via the Eclipse Foundation is one of the most complete
 implementations and can be considered a "reference implementation".
