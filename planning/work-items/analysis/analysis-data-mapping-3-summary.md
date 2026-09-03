@@ -46,6 +46,8 @@
 
 Three existing standards were evaluated to reduce the proprietary `map` surface for user story 3.
 
+The `map` prefix is a temporary, work-in-progress namespace label used in this analysis and examples. It is intentionally short because it is meant to denote data-mapping semantics, but it can still be confusing because people often read it as a generic JSON/object "map" or other common computer-science terminology. This prefix is not intended as a final TD term; it is a placeholder while the vocabulary is still being developed, and it may disappear entirely if the equivalent terms become part of the TD core context and no longer need a proprietary prefix.
+
 ### QUDT
 
 **Covers well:**
@@ -207,6 +209,12 @@ Valid `map:proc` values for user story 3:
 ## Examples
 
 All examples include both proprietary `map` terms and available standard terms.
+
+The `unit`: `"unit:..."` annotation is used here only as an illustrative shorthand for the existing unit semantics discussion; it is not presented as a recommended practice. The broader question of how TD should represent units and related semantics is being discussed in issue https://github.com/w3c/wot-thing-description/issues/2227, and this document does not aim to settle that discussion.
+
+There is also an active design discussion about whether it is necessary to keep both `map:fromWire` and `map:toWire`, or whether one direction could be derived from the other implicitly.
+Some argue that a single direction could avoid redundancy because the reverse transformation is logically inferable. However, this is not always safe: the two directions are not necessarily symmetric. A fromWire mapping may intentionally lose precision to provide a more usable application value, while the corresponding toWire mapping must preserve the original application value and may therefore avoid the same rounding step. In such cases, the reverse mapping is not uniquely determined, and a single inferred direction would be misleading. Explicit direction-specific mappings remain necessary whenever precision or semantic intent is not preserved in one direction.
+Similarly, enum mapping is often not symmetric: a protocol value may map to a semantic enum at the application level, but the reverse direction may be ambiguous or may require a chosen fallback when multiple application values share the same wire encoding. For that reason, this document keeps both directions explicit where needed, because the reverse path is not always mathematically reversible and may not be semantically unambiguous.
 
 ---
 
