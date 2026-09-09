@@ -447,7 +447,7 @@ The Modbus binding does not define binding-specific declarative arithmetic trans
 | --------------------------------------- | ------- | ------------------------ | -------------------------------------------------------------------------- |
 | _(none in the reviewed Modbus binding)_ | —       | —                        | No standard binding term corresponds to `mul`, `add`, `round`, or `clamp`. |
 
-## **Summary:** The Modbus binding has no arithmetic transformation terms.
+**Summary:** The Modbus binding has no arithmetic transformation terms.
 
 ### BACnet
 
