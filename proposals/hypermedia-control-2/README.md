@@ -1,6 +1,6 @@
 # Hypermedia Control on the Web of Things
 
-> [!NOTE]  
+> [!NOTE]
 > Proposal Status: Paused
 
 This proposal introduces a generic hypermedia control framework for the Web of Things (WoT) that is similar to that of @vcharpenay but uses static TDs and focuses on action affordances.
@@ -351,7 +351,7 @@ A distilled version of its TD is below:
       "maximum": 90,
       "forms": [
         {
-          "href": "http://example.org/PanTilt/properties/panPosition",
+          "href": "https://example.org/PanTilt/properties/panPosition",
           "contentType": "application/json",
           "op": "readproperty",
           "htv:methodName": "GET"
@@ -371,7 +371,7 @@ A distilled version of its TD is below:
       },
       "forms": [
         {
-          "href": "http://example.org/PanTilt/actions/panContinuously",
+          "href": "https://example.org/PanTilt/actions/panContinuously",
           "contentType": "application/json",
           "op": "invokeaction",
           "htv:methodName": "POST"
@@ -382,7 +382,7 @@ A distilled version of its TD is below:
       "description": "Stops any movement that was created with continuous movement calls",
       "forms": [
         {
-          "href": "http://example.org/PanTilt/actions/stopMovement",
+          "href": "https://example.org/PanTilt/actions/stopMovement",
           "contentType": "application/json",
           "op": "invokeaction",
           "htv:methodName": "POST"
@@ -420,19 +420,19 @@ We can reduce this TD to a single action when we think of hypermedia control.
       },
       "forms": [
         {
-          "href": "http://example.org/PanTilt/actions/panContinuously",
+          "href": "https://example.org/PanTilt/actions/panContinuously",
           "contentType": "application/json",
           "op": "invokeaction",
           "htv:methodName": "POST"
         },
         {
-          "href": "http://example.org/PanTilt/properties/panPosition",
+          "href": "https://example.org/PanTilt/properties/panPosition",
           "contentType": "application/json",
           "op": "queryaction",
           "htv:methodName": "GET"
         },
         {
-          "href": "http://example.org/PanTilt/actions/stopMovement",
+          "href": "https://example.org/PanTilt/actions/stopMovement",
           "contentType": "application/json",
           "op": "cancelaction",
           "htv:methodName": "POST"

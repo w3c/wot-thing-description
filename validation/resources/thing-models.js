@@ -71,7 +71,7 @@ const validTMs = [
     "links": [
       {
         "rel": "tm:extends",
-        "href": "http://example.com/BasicOnOffTM",
+        "href": "https://example.com/BasicOnOffTM",
         "type": "application/td+json"
       }
     ],
@@ -90,7 +90,7 @@ const validTMs = [
     "title": "Valid Model 7",
     "properties": {
       "switch": {
-        "tm:ref": "http://example.com/BasicOnOffTM.tm.jsonld#/properties/onOff"
+        "tm:ref": "https://example.com/BasicOnOffTM.tm.jsonld#/properties/onOff"
       }
     }
   },
@@ -101,7 +101,7 @@ const validTMs = [
     "title": "Valid Model 8",
     "properties": {
       "dimming": {
-        "tm:ref": "http://example.com/SmartLampControlwithDimming.tm.jsonld#/properties/dim",
+        "tm:ref": "https://example.com/SmartLampControlwithDimming.tm.jsonld#/properties/dim",
         "maximum": 80,
         "unit": "%"
       }
@@ -115,16 +115,16 @@ const validTMs = [
     "links": [
       {
         "rel": "extends",
-        "href": "http://example.com/BasicOnOffTM",
+        "href": "https://example.com/BasicOnOffTM",
         "type": "application/td+json"
       }
     ],
     "properties": {
       "status": {
-        "tm:ref": "http://example.com/LampTM.tm.jsonld#/properties/status"
+        "tm:ref": "https://example.com/LampTM.tm.jsonld#/properties/status"
       },
       "dimming": {
-        "tm:ref": "http://example.com/LampWithDimmingTM.tm.jsonld#/properties/dim"
+        "tm:ref": "https://example.com/LampWithDimmingTM.tm.jsonld#/properties/dim"
       }
     }
   },
@@ -177,7 +177,7 @@ const validTMs = [
     "links": [
       {
         "rel": "tm:extends",
-        "href": "http://example.com/SmartControlLampTM",
+        "href": "https://example.com/SmartControlLampTM",
         "type": "application/td+json"
       }
     ],
@@ -194,7 +194,7 @@ const validTMs = [
     "links": [
       {
         "rel": "tm:extends",
-        "href": "http://example.com/SmartControlLampTM",
+        "href": "https://example.com/SmartControlLampTM",
         "type": "application/td+json"
       }
     ],
