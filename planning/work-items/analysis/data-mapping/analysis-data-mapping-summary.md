@@ -86,53 +86,15 @@ Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2
 
 3. Basic Mathematical Operations
 
-See [detailed document](./analysis-data-mapping-3-summary.md).
+See [detailed document](./US3-details.md).
 
 4. Simple Type Conversion (enum mapping)
 
-- **Who:** TD Designer
-- **What:** Express that a single value in Data Schema converts to another simple value in the protocol message
-- **Why:** Provide easier to understand data schemas
-
-- Sentence: **As a** TD Designer, **I need** express that a single value in Data Schema converts to another simple value in the protocol message, **so that I can** Provide easier to understand data schemas.
-- Process Stakeholders:
-  - Submitter: Multiple
-  - Specification Writers: Multiple
-  - Implementation Volunteers: ?
-  - Impacted People: TD Designers and Consumer application developers.
-  - Impact Type: More use cases covered without protocol-specific vocabularies
-- Linked Use Cases or Categories: TBD
-- Relevant issues:
-  - Modeling enumeration values semantically: https://github.com/w3c/wot-thing-description/issues/997 (main issue)
-  - Supporting complex/structured types in simple protocols: https://github.com/w3c/wot-thing-description/issues/1936
-  - Supporting bitmaps : https://github.com/w3c/wot-thing-description/issues/1930
-- Existing Solutions:
-  - BACnet Binding: https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/#example-enum-mapping (`bacv:hasValueMap`)
-  - Profinet https://w3c.github.io/wot-binding-templates/bindings/protocols/profinet/#example-complex-datatype (`profv:enumeratedValue`)
+See [detailed document](./US4-details.md).
 
 5. Structured and Simple Data Mismatch (value wrapping, bitmasking)
 
-- **Who:** TD Designer
-- **What:** Express conversion between data structures
-- **Why:** Allow Data Schema abstraction to be used on more complex data structures of the protocol message or on more simple protocol message structures
-
-- Sentence: **As a** TD Designer, **I need** express conversion between data structures, **so that I can** allow Data Schema abstraction to be used on more complex data structures of the protocol message or on more simple protocol message structures.
-- Process Stakeholders:
-  - Submitter: Multiple
-  - Specification Writers: Multiple
-  - Implementation Volunteers: node-wot
-  - Impacted People: TD Designers and Consumer application developers.
-  - Impact Type: More use cases covered without protocol-specific vocabularies
-- Linked Use Cases or Categories: TBD
-- Relevant issues:
-  - Supporting complex/structured types in simple protocols: https://github.com/w3c/wot-thing-description/issues/1936
-  - Supporting bitmaps : https://github.com/w3c/wot-thing-description/issues/1930#issuecomment-4342467719
-- Existing Solutions:
-  - Data Mapping in node-wot to choose a part of the JSON Payload: https://github.com/eclipse-thingweb/node-wot#data-mapping-per-thing
-  - Profinet https://w3c.github.io/wot-binding-templates/bindings/protocols/profinet/#example-complex-datatype (`profv:payloadMapping`)
-- Notes:
-  - This does NOT include mathematical operations, that is above above point 3
-  - This does NOT restrict itself to simple type conversion, that is above point 4. However, this can be applied on top of point 4.
+See [detailed document](./US5-details.md).
 
 6. More Detailed Types
 
