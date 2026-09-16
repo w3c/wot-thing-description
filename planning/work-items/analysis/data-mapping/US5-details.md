@@ -31,6 +31,7 @@
 **Proposed solution:** A declarative, direction-explicit structural conversion pipeline attached at form level. The pipeline uses simple deterministic operators for path selection, placement, wrapping, array access, and bitfield conversion. It can be composed with the numeric operations of user story 3 and the enum operations of user story 4.
 
 **Core operators:**
+
 - `pick` - extract a value at a dot-notation path.
 - `place` - insert the current value at a dot-notation path.
 - `wrap` - put the current value into a fixed object or array template.
@@ -41,6 +42,7 @@
 - `bitCompose` - convert a structured object of fields into one integer.
 
 **Key design decisions:**
+
 - Direction is explicit per form: `map:fromWire` for protocol-to-application and `map:toWire` for application-to-protocol.
 - Operations are applied in document order and each operation receives the previous operation's output.
 - Paths use deterministic dot notation with optional array indexes, not an unrestricted query language.
@@ -53,6 +55,7 @@
 ## Scope
 
 **In scope:**
+
 - Extracting nested object values from protocol payloads.
 - Inserting application values into nested protocol payloads.
 - Adding and removing fixed object or array envelopes.
@@ -62,6 +65,7 @@
 - Combining structural conversion with numeric scaling and enum mapping.
 
 **Out of scope:**
+
 - Arbitrary code execution or embedded scripts.
 - Full JSONPath or query languages with filters, unions, or non-deterministic selectors.
 - Protocol framing, addressing, headers, timing, and transport details.
@@ -71,16 +75,16 @@
 
 ## Candidate Core Conversion Set
 
-| Operator | Directional purpose | Result |
-|---|---|---|
-| `pick` | Read a value at a declared object/array path | Selected value |
-| `place` | Write the current value at a declared object/array path | Structured container |
-| `wrap` | Add a fixed envelope around the current value | Wrapped object or array |
-| `unwrap` | Remove one known envelope layer | Contained value |
-| `at` | Read one array element | Selected array element |
-| `setAt` | Replace one array element | Updated array |
-| `bitExtract` | Read named fields from an integer using masks and shifts | Structured object |
-| `bitCompose` | Write named fields into an integer using masks and shifts | Integer |
+| Operator     | Directional purpose                                       | Result                  |
+| ------------ | --------------------------------------------------------- | ----------------------- |
+| `pick`       | Read a value at a declared object/array path              | Selected value          |
+| `place`      | Write the current value at a declared object/array path   | Structured container    |
+| `wrap`       | Add a fixed envelope around the current value             | Wrapped object or array |
+| `unwrap`     | Remove one known envelope layer                           | Contained value         |
+| `at`         | Read one array element                                    | Selected array element  |
+| `setAt`      | Replace one array element                                 | Updated array           |
+| `bitExtract` | Read named fields from an integer using masks and shifts  | Structured object       |
+| `bitCompose` | Write named fields into an integer using masks and shifts | Integer                 |
 
 These operators are intentionally small and deterministic. They describe common structural mismatches without requiring protocol-specific code or an embedded programming language.
 
@@ -91,10 +95,12 @@ These operators are intentionally small and deterministic. They describe common 
 ### QUDT
 
 **Covers well:**
+
 - Quantity and unit semantics for values contained in the structure.
 - Scale and enumeration descriptions that may be applied after structural extraction.
 
 **Does not cover:**
+
 - TD form-level path extraction or placement.
 - Object and array envelope conversion.
 - Bit extraction and composition.
@@ -105,10 +111,12 @@ These operators are intentionally small and deterministic. They describe common 
 ### FnO (Function Ontology)
 
 **Covers well:**
+
 - Reusable functions and their input/output signatures.
 - Composed functions that could describe a reusable structural conversion.
 
 **Does not cover:**
+
 - A standard compact path language for `pick` and `place`.
 - A standard envelope template or placeholder model.
 - A built-in bitfield mask and shift vocabulary.
@@ -119,11 +127,13 @@ These operators are intentionally small and deterministic. They describe common 
 ### JSON Schema
 
 **Covers well:**
+
 - Object and array shape constraints.
 - Required properties, property types, array lengths, and nested schemas.
 - Validation of the application-facing structure and the target wire structure.
 
 **Does not cover:**
+
 - Executable path extraction or insertion.
 - Envelope wrapping and unwrapping.
 - Array element selection and update.
@@ -136,17 +146,17 @@ These operators are intentionally small and deterministic. They describe common 
 
 ## Capability Matrix Summary
 
-| Capability | QUDT | FnO | JSON Schema | Keep `map`? |
-|---|---|---|---|---|
-| Quantity semantics inside a structure | Strong | Weak | Weak | Usually no |
-| Object shape validation | Weak | Weak | Strong | No |
-| Nested path extraction/insertion | Weak | Partial | Weak | Yes |
-| Fixed envelope wrapping | Weak | Partial | Partial | Yes |
-| Array index conversion | Weak | Partial | Partial | Yes |
-| Bitfield decomposition/composition | Weak | Partial | Weak | Yes |
-| Directional execution | Weak | Weak | Weak | Yes |
-| Missing-path and reconstruction policy | Weak | Weak | Weak | Yes |
-| Composition with numeric and enum steps | Weak | Partial | Weak | Yes |
+| Capability                              | QUDT   | FnO     | JSON Schema | Keep `map`? |
+| --------------------------------------- | ------ | ------- | ----------- | ----------- |
+| Quantity semantics inside a structure   | Strong | Weak    | Weak        | Usually no  |
+| Object shape validation                 | Weak   | Weak    | Strong      | No          |
+| Nested path extraction/insertion        | Weak   | Partial | Weak        | Yes         |
+| Fixed envelope wrapping                 | Weak   | Partial | Partial     | Yes         |
+| Array index conversion                  | Weak   | Partial | Partial     | Yes         |
+| Bitfield decomposition/composition      | Weak   | Partial | Weak        | Yes         |
+| Directional execution                   | Weak   | Weak    | Weak        | Yes         |
+| Missing-path and reconstruction policy  | Weak   | Weak    | Weak        | Yes         |
+| Composition with numeric and enum steps | Weak   | Partial | Weak        | Yes         |
 
 ---
 
@@ -246,6 +256,7 @@ The following JSON-LD context defines the structural conversion terms not covere
 ```
 
 **Notes:**
+
 - `valueMapping`, `fromWire`, and `toWire` are shared pipeline attachment and direction terms.
 - `op` and the structural operation identifiers are proprietary execution step identifiers.
 - `map:path` is deliberately narrower than a general query language: it addresses object keys and array indexes only.
@@ -256,35 +267,35 @@ The following JSON-LD context defines the structural conversion terms not covere
 
 #### Pipeline Attachment and Direction
 
-| Term | Description |
-|---|---|
+| Term               | Description                                                         |
+| ------------------ | ------------------------------------------------------------------- |
 | `map:valueMapping` | Container attached to a TD form that holds the structural pipeline. |
-| `map:fromWire` | Ordered operation list applied when reading protocol data. |
-| `map:toWire` | Ordered operation list applied when writing application data. |
+| `map:fromWire`     | Ordered operation list applied when reading protocol data.          |
+| `map:toWire`       | Ordered operation list applied when writing application data.       |
 
 #### Path and Envelope Operators
 
-| Term | Used by | Description |
-|---|---|---|
-| `map:proc` | All operations | Operation identifier for the current pipeline step. |
-| `map:path` | `pick`, `place`, `unwrap` | Dot-notation path over object keys and optional array indexes, such as `d.v` or `items[0].value`. |
-| `map:onMissing` | `pick`, `unwrap` | Missing-path policy: `error` (default), `null`, or `default`. |
-| `map:default` | `pick`, `unwrap` | Value returned when `map:onMissing` is `default`. |
-| `map:createMissing` | `place` | Whether missing intermediate containers are created; default is `true`. |
-| `map:targetTemplate` | `place` | Initial object or array used when a target container does not already exist. |
-| `map:template` | `wrap` | Object or array containing exactly one placeholder occurrence. |
-| `map:placeholder` | `wrap` | Token replaced by the current value; default is `$value`. |
-| `map:index` | `at`, `setAt` | Non-negative integer array index. |
+| Term                 | Used by                   | Description                                                                                       |
+| -------------------- | ------------------------- | ------------------------------------------------------------------------------------------------- |
+| `map:proc`           | All operations            | Operation identifier for the current pipeline step.                                               |
+| `map:path`           | `pick`, `place`, `unwrap` | Dot-notation path over object keys and optional array indexes, such as `d.v` or `items[0].value`. |
+| `map:onMissing`      | `pick`, `unwrap`          | Missing-path policy: `error` (default), `null`, or `default`.                                     |
+| `map:default`        | `pick`, `unwrap`          | Value returned when `map:onMissing` is `default`.                                                 |
+| `map:createMissing`  | `place`                   | Whether missing intermediate containers are created; default is `true`.                           |
+| `map:targetTemplate` | `place`                   | Initial object or array used when a target container does not already exist.                      |
+| `map:template`       | `wrap`                    | Object or array containing exactly one placeholder occurrence.                                    |
+| `map:placeholder`    | `wrap`                    | Token replaced by the current value; default is `$value`.                                         |
+| `map:index`          | `at`, `setAt`             | Non-negative integer array index.                                                                 |
 
 #### Bitfield Operators
 
-| Term | Used by | Description |
-|---|---|---|
-| `map:fields` | `bitExtract`, `bitCompose` | Ordered list of field definitions. |
-| `map:name` | Field definition | Name used as the structured object's key. |
-| `map:mask` | Field definition | Non-zero integer mask selecting the field's bits. |
-| `map:shift` | Field definition | Non-negative right shift for extraction or left shift for composition. |
-| `map:type` | Field definition | `boolean` or `integer`; default is `integer`. |
+| Term         | Used by                    | Description                                                            |
+| ------------ | -------------------------- | ---------------------------------------------------------------------- |
+| `map:fields` | `bitExtract`, `bitCompose` | Ordered list of field definitions.                                     |
+| `map:name`   | Field definition           | Name used as the structured object's key.                              |
+| `map:mask`   | Field definition           | Non-zero integer mask selecting the field's bits.                      |
+| `map:shift`  | Field definition           | Non-negative right shift for extraction or left shift for composition. |
+| `map:type`   | Field definition           | `boolean` or `integer`; default is `integer`.                          |
 
 For extraction, a field is computed as:
 
@@ -302,8 +313,8 @@ Masks in one operation must not overlap. A boolean field is `false` when its ext
 
 #### Error Handling
 
-| Term | Description |
-|---|---|
+| Term          | Description                                                                                                    |
+| ------------- | -------------------------------------------------------------------------------------------------------------- |
 | `map:onError` | Per-operation failure policy. `error` is the default; `skip` passes the unchanged input to the next operation. |
 
 ---
@@ -398,7 +409,7 @@ All examples include proprietary `map` terms and available standard terms where 
 
 ### Example 1: IKEA Trådfri CoAP Bulb Dimmer Extraction and Placement
 
-The IKEA Trådfri Gateway (E1526) exposes connected smart light bulbs (such as the TRÅDFRI bulb E27 WS opal 980lm) over CoAP/DTLS at endpoints like `coaps://gateway.local:5684/15001/65538`. The gateway uses IPSO Smart Object structures in JSON payloads, where the light control parameters are nested under IPSO object `3311` (an array of light control instances) and dimmer resource `5851` (dimmer level `0..254`). 
+The IKEA Trådfri Gateway (E1526) exposes connected smart light bulbs (such as the TRÅDFRI bulb E27 WS opal 980lm) over CoAP/DTLS at endpoints like `coaps://gateway.local:5684/15001/65538`. The gateway uses IPSO Smart Object structures in JSON payloads, where the light control parameters are nested under IPSO object `3311` (an array of light control instances) and dimmer resource `5851` (dimmer level `0..254`).
 
 The application property exposes a clean percentage scale (`0..100%`). On read, `map:proc: "pick"` extracts the nested integer value `3311[0].5851` before numeric scaling is applied. On write, the percentage is scaled back to `0..254`, rounded, and `map:proc: "wrap"` constructs the required nested JSON envelope `{"3311": [{"5851": "$value"}]}` for the CoAP payload.
 
@@ -458,6 +469,7 @@ The application property exposes a clean percentage scale (`0..100%`). On read, 
 ```
 
 **What the example shows:**
+
 - `map:proc: "pick"` extracts the nested IPSO resource `5851` from array element `3311[0]` out of the complex CoAP JSON response on read.
 - The pipeline composes structural extraction with numeric scaling and rounding to expose a clean `0..100%` brightness property.
 - On write, `map:proc: "wrap"` reconstructs the required nested JSON envelope (`{"3311": [{"5851": "$value"}]}`) expected by the Trådfri gateway.
@@ -465,7 +477,7 @@ The application property exposes a clean percentage scale (`0..100%`). On read, 
 
 ### Example 2: Array Element Selection and Update for a Multi-Outlet Power Strip
 
-The TP-Link Kasa KP303 is a 3-outlet smart power strip where device controllers can interact with the relay states of all outlets formatted as an array of boolean values `[true, false, true]`. 
+The TP-Link Kasa KP303 is a 3-outlet smart power strip where device controllers can interact with the relay states of all outlets formatted as an array of boolean values `[true, false, true]`.
 
 This example exposes an individual boolean property `outlet2` for the second socket. On read, `map:proc: "at"` selects the element at array index `1`. On write, `map:proc: "setAt"` updates the element at index `1` in the state array.
 
@@ -490,9 +502,7 @@ This example exposes an individual boolean property `outlet2` for the second soc
           "contentType": "application/json",
           "op": ["readproperty", "writeproperty"],
           "map:valueMapping": {
-            "map:fromWire": [
-              { "map:proc": "at", "map:index": 1 }
-            ],
+            "map:fromWire": [{ "map:proc": "at", "map:index": 1 }],
             "map:toWire": [
               {
                 "map:proc": "setAt",
@@ -508,13 +518,14 @@ This example exposes an individual boolean property `outlet2` for the second soc
 ```
 
 **What the example shows:**
+
 - `map:proc: "at"` selects a stable array element by index (`1` for the second outlet) from the protocol array payload on read.
 - `map:proc: "setAt"` updates the element at that index when writing an application boolean back to the array.
 - The surrounding array is managed by the pipeline to update one channel while preserving the positions of other channels.
 
 ### Example 3: Bitfield to Structured Status Object for a Variable Frequency Drive
 
-The Siemens SINAMICS V20 variable frequency drive communicates over Modbus RTU and packs discrete drive status flags and operating codes into 16-bit status registers (such as holding register `40110`). 
+The Siemens SINAMICS V20 variable frequency drive communicates over Modbus RTU and packs discrete drive status flags and operating codes into 16-bit status registers (such as holding register `40110`).
 
 This example decomposes a 16-bit status register into an application-level object containing `alarm` (bit 0), `running` (bit 1), and a 2-bit numeric `modeCode` (bits 2–3). On read, `map:proc: "bitExtract"` unpacks the register integer into structured properties. On write, `map:proc: "bitCompose"` packs the fields back into the single 16-bit integer expected by the drive.
 
@@ -573,6 +584,7 @@ This example decomposes a 16-bit status register into an application-level objec
 ```
 
 **What the example shows:**
+
 - `map:proc: "bitExtract"` unpacks a single Modbus integer into a structured application object on read (e.g., wire value `13` / `0b1101` yields `alarm=true`, `running=false`, and `modeCode=3`).
 - `map:proc: "bitCompose"` explicitly packs structured object properties back into an integer for the write pipeline.
 - The masks `1`, `2`, and `12` are disjoint and non-overlapping, so each bit belongs to exactly one logical field.
@@ -658,6 +670,7 @@ The application property `status` exposes semantic fields: `alarm` (boolean), `r
 ```
 
 **What the example shows:**
+
 - The read pipeline first extracts the bitfield into discrete fields with `map:proc: "bitExtract"`, then maps the extracted `modeCode` integer to the application-level `mode` string enum with `map:proc: "enum"`.
 - The write pipeline executes the inverse sequence: reverse enum mapping from `mode` to `modeCode`, followed by `map:proc: "bitCompose"` to pack the fields into the 16-bit Modbus integer.
 - `map:mapFrom` and `map:mapTo` allow the enum step to transform one field within a structured object while leaving the other fields (`alarm`, `running`) untouched.
@@ -674,11 +687,11 @@ The node-wot data-mapping approach supports selecting a part of a JSON payload f
 
 The PROFINET binding defines `profv:payloadMapping` and related byte/bit position terms for mapping complex data types. Its structural concepts are protocol-aware and remain useful for describing payload layout. The general mapping model corresponds as follows:
 
-| PROFINET term | General relation |
-|---|---|
-| `profv:payloadMapping` | `map:valueMapping` structural pipeline |
-| `profv:byteOffset` / `profv:byteLength` | Binding wire-layout metadata before structural conversion |
-| `profv:bitOffset` / `profv:bitlength` | `map:mask` and `map:shift` conceptually, with binding-specific byte layout retained |
+| PROFINET term                           | General relation                                                                    |
+| --------------------------------------- | ----------------------------------------------------------------------------------- |
+| `profv:payloadMapping`                  | `map:valueMapping` structural pipeline                                              |
+| `profv:byteOffset` / `profv:byteLength` | Binding wire-layout metadata before structural conversion                           |
+| `profv:bitOffset` / `profv:bitlength`   | `map:mask` and `map:shift` conceptually, with binding-specific byte layout retained |
 
 The general operators should not replace byte order, byte offsets, or native PROFINET type declarations.
 
@@ -686,12 +699,12 @@ The general operators should not replace byte order, byte offsets, or native PRO
 
 LoRaWAN terms such as `lorav:byteOffset`, `lorav:presenceField`, `lorav:switchField`, and `lorav:guard` describe protocol-specific payload layout and conditional inclusion. They relate to structural conversion, but are not all direct equivalents of the phase 1 operators:
 
-| LoRaWAN term | General relation |
-|---|---|
-| `lorav:byteOffset` | Binding wire-layout metadata, not `map:path` |
-| `lorav:presenceField` / `lorav:presenceBit` | Conditional structural behavior beyond phase 1 |
-| `lorav:switchField` / `lorav:switchValue` | Discriminator-based structural selection beyond phase 1 |
-| `lorav:ref` | Reference to another field; may be needed by a future composite operator |
+| LoRaWAN term                                | General relation                                                         |
+| ------------------------------------------- | ------------------------------------------------------------------------ |
+| `lorav:byteOffset`                          | Binding wire-layout metadata, not `map:path`                             |
+| `lorav:presenceField` / `lorav:presenceBit` | Conditional structural behavior beyond phase 1                           |
+| `lorav:switchField` / `lorav:switchValue`   | Discriminator-based structural selection beyond phase 1                  |
+| `lorav:ref`                                 | Reference to another field; may be needed by a future composite operator |
 
 ### Modbus
 

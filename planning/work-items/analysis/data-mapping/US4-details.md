@@ -29,10 +29,12 @@
 **Proposed solution:** A declarative, direction-explicit enum mapping pipeline attached at form level. Enum mapping is a composable step in the same pipeline model used for numeric and structural conversions. The pipeline runs in `fromWire` direction on read and `toWire` direction on write.
 
 **Core operations:**
+
 - `enum` - map an exact input value to the corresponding value on the other side of a wire/application table.
 - `enumRange` - map a numeric interval to one application enum symbol.
 
 **Key design decisions:**
+
 - Enum mapping is a pipeline step, not a separate mechanism.
 - `map:fromWire` and `map:toWire` are explicit; reverse mapping is never guessed.
 - Exact enum mappings must be unambiguous. Range mappings must not overlap.
@@ -45,6 +47,7 @@
 ## Scope
 
 **In scope:**
+
 - Exact one-to-one mappings between wire values and application values.
 - Mapping integer or string protocol codes to application enum symbols.
 - Mapping numeric ranges to application enum symbols.
@@ -53,6 +56,7 @@
 - Composition with `mul`, `add`, `round`, and `clamp`.
 
 **Out of scope:**
+
 - Arbitrary code execution or scripting.
 - Structural extraction, wrapping, and bitfield composition, which belong to user story 5.
 - Numeric scaling itself, which belongs to user story 3.
@@ -67,12 +71,14 @@ Three existing standards were evaluated to reduce the proprietary `map` surface 
 ### QUDT
 
 **Covers well:**
+
 - Enumeration structures such as `qudt:Enumeration`, `qudt:TaggedEnumeration`, and `qudt:EnumeratedValue`.
 - Stable code and literal semantics using `dtype:code` and `dtype:literal`.
 - Nominal and ordinal scale descriptions.
 - Reusable domain vocabularies for coded values.
 
 **Does not cover:**
+
 - TD form-level direction (`fromWire`, `toWire`).
 - An executable table lookup operation attached to a form.
 - Range-to-label mapping.
@@ -83,11 +89,13 @@ Three existing standards were evaluated to reduce the proprietary `map` surface 
 ### FnO (Function Ontology)
 
 **Covers well:**
+
 - Abstract decode and encode functions using `fno:Function`.
 - Input and output signatures using `fno:expects`, `fno:returns`, `fno:Parameter`, and `fno:Output`.
 - Reusable function descriptions and ordered compositions.
 
 **Does not cover:**
+
 - A built-in vocabulary for enum lookup tables.
 - A built-in range mapping model.
 - TD form-level attachment and direction.
@@ -98,11 +106,13 @@ Three existing standards were evaluated to reduce the proprietary `map` surface 
 ### JSON Schema
 
 **Covers well:**
+
 - Application enum domains with `enum`.
 - Same-domain coded values with `oneOf`, `const`, and `title`.
 - Validation of the resulting application value.
 
 **Does not cover:**
+
 - Cross-domain conversion, such as integer wire code to string application label.
 - Directional execution and ordered mapping pipelines.
 - Reverse mapping and canonical representatives.
@@ -114,17 +124,17 @@ Three existing standards were evaluated to reduce the proprietary `map` surface 
 
 ## Capability Matrix Summary
 
-| Capability | QUDT | FnO | JSON Schema | Keep `map`? |
-|---|---|---|---|---|
-| Reusable coded vocabulary | Strong | Partial | Weak | Often no |
-| Exact code-to-label semantics | Strong | Partial | Partial | Sometimes |
-| Same-domain allowed values | Partial | Weak | Strong | Often no |
-| Cross-domain exact mapping | Partial | Partial | Weak | Yes |
-| Range-to-label mapping | Weak | Partial | Partial | Yes |
-| Directional execution | Weak | Weak | Weak | Yes |
-| Ordered composition with numeric operations | Weak | Strong | Weak | Yes |
-| Unknown-value policy | Weak | Weak | Weak | Yes |
-| Non-bijective write policy | Weak | Weak | Weak | Yes |
+| Capability                                  | QUDT    | FnO     | JSON Schema | Keep `map`? |
+| ------------------------------------------- | ------- | ------- | ----------- | ----------- |
+| Reusable coded vocabulary                   | Strong  | Partial | Weak        | Often no    |
+| Exact code-to-label semantics               | Strong  | Partial | Partial     | Sometimes   |
+| Same-domain allowed values                  | Partial | Weak    | Strong      | Often no    |
+| Cross-domain exact mapping                  | Partial | Partial | Weak        | Yes         |
+| Range-to-label mapping                      | Weak    | Partial | Partial     | Yes         |
+| Directional execution                       | Weak    | Weak    | Weak        | Yes         |
+| Ordered composition with numeric operations | Weak    | Strong  | Weak        | Yes         |
+| Unknown-value policy                        | Weak    | Weak    | Weak        | Yes         |
+| Non-bijective write policy                  | Weak    | Weak    | Weak        | Yes         |
 
 ---
 
@@ -184,6 +194,7 @@ The following JSON-LD context defines the terms required for user story 4 that a
 ```
 
 **Notes:**
+
 - `valueMapping`, `fromWire`, and `toWire` attach the directional pipeline to a TD form and preserve its order.
 - `op` and the operation identifiers `enum` and `enumRange` are proprietary execution step identifiers.
 - `map:map`, `map:wire`, and `map:app` describe exact mapping pairs.
@@ -195,39 +206,39 @@ The following JSON-LD context defines the terms required for user story 4 that a
 
 #### Pipeline Attachment and Direction
 
-| Term | Description |
-|---|---|
-| `map:valueMapping` | Container object attached to a TD form that holds the directional pipeline. |
-| `map:fromWire` | Ordered list of operations applied when reading a protocol value. |
-| `map:toWire` | Ordered list of operations applied when writing an application value. A writable form without this mapping must fail unless an unambiguous inverse is explicitly defined. |
+| Term               | Description                                                                                                                                                               |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `map:valueMapping` | Container object attached to a TD form that holds the directional pipeline.                                                                                               |
+| `map:fromWire`     | Ordered list of operations applied when reading a protocol value.                                                                                                         |
+| `map:toWire`       | Ordered list of operations applied when writing an application value. A writable form without this mapping must fail unless an unambiguous inverse is explicitly defined. |
 
 #### Enum Operation Selector
 
-| Term | Description |
-|---|---|
-| `map:proc` | String identifier for the operation executed in one pipeline step. |
-| `enum` | Look up the current value in an exact wire/application table and replace it with the value from the other side. |
+| Term        | Description                                                                                                         |
+| ----------- | ------------------------------------------------------------------------------------------------------------------- |
+| `map:proc`  | String identifier for the operation executed in one pipeline step.                                                  |
+| `enum`      | Look up the current value in an exact wire/application table and replace it with the value from the other side.     |
 | `enumRange` | Find the numeric interval containing the current value and replace it with that interval's application enum symbol. |
 
 #### Exact Enum Mapping Parameters
 
-| Term | Used by | Description |
-|---|---|---|
-| `map:map` | `enum` | Ordered list of exact mapping entries. Each entry contains one `map:wire` and one `map:app` value. |
-| `map:wire` | `enum` entry | Value in the protocol domain. |
-| `map:app` | `enum` entry and `enumRange` entry | Value in the application domain. |
-| `map:onNoMatch` | `enum`, `enumRange` | Failure policy when no entry matches. Valid values are `error` (default) and `default` when an explicit default is defined by the surrounding mapping model. |
+| Term            | Used by                            | Description                                                                                                                                                  |
+| --------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `map:map`       | `enum`                             | Ordered list of exact mapping entries. Each entry contains one `map:wire` and one `map:app` value.                                                           |
+| `map:wire`      | `enum` entry                       | Value in the protocol domain.                                                                                                                                |
+| `map:app`       | `enum` entry and `enumRange` entry | Value in the application domain.                                                                                                                             |
+| `map:onNoMatch` | `enum`, `enumRange`                | Failure policy when no entry matches. Valid values are `error` (default) and `default` when an explicit default is defined by the surrounding mapping model. |
 
 Exact mappings must not contain duplicate wire values or duplicate application values when both directions are declared. A duplicate would make lookup or inversion ambiguous.
 
 #### Range Mapping Parameters
 
-| Term | Used by | Description |
-|---|---|---|
-| `map:ranges` | `enumRange` | Ordered list of range entries. |
-| `map:min` | range entry | Inclusive lower bound of the interval. |
-| `map:max` | range entry | Inclusive upper bound of the interval. |
-| `map:app` | range entry | Application enum symbol returned for values in the interval. |
+| Term            | Used by                      | Description                                                                                                              |
+| --------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `map:ranges`    | `enumRange`                  | Ordered list of range entries.                                                                                           |
+| `map:min`       | range entry                  | Inclusive lower bound of the interval.                                                                                   |
+| `map:max`       | range entry                  | Inclusive upper bound of the interval.                                                                                   |
+| `map:app`       | range entry                  | Application enum symbol returned for values in the interval.                                                             |
 | `map:canonical` | range entry or reverse entry | Canonical wire value used when writing the corresponding application symbol. It must lie within the associated interval. |
 
 Ranges must have `min <= max` and must not overlap. Boundary inclusivity must be consistent; this summary uses inclusive intervals. An uncovered input follows `map:onNoMatch`, which defaults to `error`.
@@ -331,6 +342,7 @@ This example is modeled on the Siemens OpenAir `GDB111.1E/MO` / `GLB111.1E/MO` M
 ```
 
 **What the example shows:**
+
 - The application schema exposes meaningful string values while the wire value remains an integer.
 - `map:enum` performs an exact lookup and rejects unknown status codes.
 - No reverse table, so a runtime should invert the mapping.
@@ -382,6 +394,7 @@ The Heiman `HS1CA-E` Zigbee carbon-monoxide alarm exposes `battery` (0..100%) th
 ```
 
 **What the example shows:**
+
 - An MQTT JSON value can be classified into application-level semantic bands.
 - The enum ranges operate on the battery percentage exposed by the adapter.
 - The ranges are exhaustive over the valid percentage domain and do not overlap.
@@ -453,6 +466,7 @@ The IKEA LED1545G12 is a Zigbee dimmable bulb supported by Zigbee2MQTT. Its `bri
 ```
 
 **What the example shows:**
+
 - A range mapping is not inherently invertible.
 - Canonical representatives make the write path deterministic, but writing a band does not restore the original percentage.
 - The canonical values selected in this example are for illustration only and do not represent a recommendation; manufacturers might select other values and even more or fewer ranges that better reflect the features of their product.
@@ -504,6 +518,7 @@ The BACnet binding example for enum mapping shows how a protocol value can be tr
 ```
 
 **What the example shows:**
+
 - It follows the BACnet enum-mapping pattern shown in https://w3c.github.io/wot-binding-templates/bindings/protocols/bacnet/#example-enum-mapping.
 - The protocol value is represented as `map:wire`; the application value is represented as `map:app`.
 - `map:proc: "enum"` performs an exact lookup from protocol values to semantic strings.
@@ -546,10 +561,7 @@ The PROFINET binding example for a complex datatype shows how a bitfield within 
       },
       "forms": [
         {
-          "op": [
-            "writeproperty",
-            "readproperty"
-          ],
+          "op": ["writeproperty", "readproperty"],
           "href": "profinet://127.0.0.1/0/1?api=0&index=1&datalength=14",
           "contentType": "application/octet-stream",
           "profv:type": "object",
@@ -612,6 +624,7 @@ The PROFINET binding example for a complex datatype shows how a bitfield within 
 ```
 
 **What the example shows:**
+
 - It follows the PROFINET complex-datatype pattern shown in https://w3c.github.io/wot-binding-templates/bindings/protocols/profinet/#example-complex-datatype.
 - The encoded bit values are modeled as `map:wire`, while the semantic boolean values are modeled as `map:app`.
 - `map:proc: "enum"` maps each encoded flag value to a boolean application value.
@@ -625,11 +638,11 @@ The PROFINET binding example for a complex datatype shows how a bitfield within 
 
 The LoRaWAN binding defines protocol-specific enum support such as `lorav:enum`, as well as discriminator and conditional terms. The direct general equivalent is:
 
-| LoRaWAN term | Purpose | General `map` equivalent |
-|---|---|---|
-| `lorav:enum` | Map raw integer or string code to a semantic label | `map:proc: "enum"` with `map:map` |
-| `lorav:switchField` / `lorav:switchValue` | Select a payload case using a discriminator | Outside simple enum mapping; requires structural conditional support |
-| `lorav:guard` | Select a value conditionally | Outside simple enum mapping; requires a conditional operation |
+| LoRaWAN term                              | Purpose                                            | General `map` equivalent                                             |
+| ----------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------- |
+| `lorav:enum`                              | Map raw integer or string code to a semantic label | `map:proc: "enum"` with `map:map`                                    |
+| `lorav:switchField` / `lorav:switchValue` | Select a payload case using a discriminator        | Outside simple enum mapping; requires structural conditional support |
+| `lorav:guard`                             | Select a value conditionally                       | Outside simple enum mapping; requires a conditional operation        |
 
 `lorav:enum` can be aligned directly with `map:enum` when the binding's value table is exact and directionality is made explicit. Conditional payload selection remains outside user story 4.
 
@@ -641,12 +654,12 @@ The Modbus binding defines no binding-specific enum conversion vocabulary in the
 
 The BACnet binding provides `bacv:hasValueMap`, `bacv:hasMapEntry`, `bacv:hasProtocolVal`, and `bacv:hasLogicalVal` for protocol-to-logical value mappings. These correspond closely to `map:enum`:
 
-| BACnet term | Purpose | General `map` equivalent |
-|---|---|---|
-| `bacv:hasValueMap` | Value mapping container | `map:map` |
-| `bacv:hasMapEntry` | One mapping entry | One `map:map` item |
-| `bacv:hasProtocolVal` | Protocol-side value | `map:wire` |
-| `bacv:hasLogicalVal` | Application/logical value | `map:app` |
+| BACnet term           | Purpose                   | General `map` equivalent |
+| --------------------- | ------------------------- | ------------------------ |
+| `bacv:hasValueMap`    | Value mapping container   | `map:map`                |
+| `bacv:hasMapEntry`    | One mapping entry         | One `map:map` item       |
+| `bacv:hasProtocolVal` | Protocol-side value       | `map:wire`               |
+| `bacv:hasLogicalVal`  | Application/logical value | `map:app`                |
 
 The BACnet terms remain useful for BACnet-specific descriptions, while `map:enum` supplies a protocol-independent execution model and explicit no-match/write behavior.
 
@@ -654,11 +667,11 @@ The BACnet terms remain useful for BACnet-specific descriptions, while `map:enum
 
 The PROFINET binding's `profv:enumeratedValue`, `profv:encodedPayload`, and `profv:decodedPayload` describe encoded and decoded enum-like values. They can provide binding-specific type and payload metadata, but they do not replace the general directional pipeline or its runtime policies.
 
-| PROFINET term | Purpose | General `map` relation |
-|---|---|---|
-| `profv:enumeratedValue` | Declare an enumerated value | Application enum/domain annotation |
-| `profv:encodedPayload` | Encoded protocol representation | `map:wire` side of an exact mapping |
-| `profv:decodedPayload` | Decoded application representation | `map:app` side of an exact mapping |
+| PROFINET term           | Purpose                            | General `map` relation              |
+| ----------------------- | ---------------------------------- | ----------------------------------- |
+| `profv:enumeratedValue` | Declare an enumerated value        | Application enum/domain annotation  |
+| `profv:encodedPayload`  | Encoded protocol representation    | `map:wire` side of an exact mapping |
+| `profv:decodedPayload`  | Decoded application representation | `map:app` side of an exact mapping  |
 
 ---
 
