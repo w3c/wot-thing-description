@@ -172,6 +172,10 @@ The following JSON-LD context defines the terms required for user story 4 that a
 
     "wire": "map:wire",
     "app": "map:app",
+    "name": {
+      "@id": "map:name",
+      "@type": "xsd:string"
+    },
 
     "ranges": {
       "@id": "map:ranges",
@@ -189,6 +193,8 @@ The following JSON-LD context defines the terms required for user story 4 that a
 - `map:map`, `map:wire`, and `map:app` describe exact mapping pairs.
 - `map:ranges` describes ordered, non-overlapping numeric intervals.
 - `map:canonical` is used by a range mapping when a writable application enum symbol needs a deterministic wire representative.
+- `map:name` selects a DataSchema object member for an in-place `enum` or `enumRange` operation. It must match the target property or nested member name; it does not rename the member.
+- No `map:mapFrom` or `map:mapTo` terms are defined. `map:wire` and `map:app` identify the two values in a mapping pair, while `map:fromWire` and `map:toWire` specify pipeline direction.
 - QUDT terms and JSON Schema keywords are used directly alongside this context without being redefined here.
 
 ### Term Reference
@@ -206,6 +212,7 @@ The following JSON-LD context defines the terms required for user story 4 that a
 | Term | Description |
 |---|---|
 | `map:proc` | String identifier for the operation executed in one pipeline step. |
+| `map:name` | Optional for a scalar input; when `enum` or `enumRange` operates on one member of a structured object, identifies that member and must match its target DataSchema name. The operation replaces that member's value in place in both directions. |
 | `enum` | Look up the current value in an exact wire/application table and replace it with the value from the other side. |
 | `enumRange` | Find the numeric interval containing the current value and replace it with that interval's application enum symbol. |
 
@@ -247,6 +254,84 @@ Each mapping declares direction explicitly:
 
 - `fromWire`: protocol value to application value.
 - `toWire`: application value to protocol value.
+
+An `enum` or `enumRange` step may map the whole current scalar value. When it targets one member of a structured object, `map:name` identifies the target DataSchema member and the operation updates that same member in place. The name must match the property or nested-member name; it is not a wire-side alias. This same selector is used for both directions, so no separate `map:mapFrom` or `map:mapTo` term is needed.
+
+### Example: In-Place Mapping of Structured Members
+
+Here the decoded object already has the application-facing member names. `map:name` selects each member to convert without renaming it. The exact `enum` maps `mode`; `enumRange` classifies `batteryState`, with canonical wire values for writes.
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/2019/wot/td/v1",
+    { "map": "https://www.w3.org/wot/data-mapping/v1#" }
+  ],
+  "id": "urn:example:thing:status-1",
+  "title": "Status",
+  "properties": {
+    "status": {
+      "type": "object",
+      "properties": {
+        "mode": { "type": "string", "enum": ["off", "auto", "manual"] },
+        "batteryState": { "type": "string", "enum": ["low", "medium", "high"] }
+      },
+      "required": ["mode", "batteryState"],
+      "forms": [
+        {
+          "href": "https://example.org/status",
+          "contentType": "application/json",
+          "op": ["readproperty", "writeproperty"],
+          "map:valueMapping": {
+            "map:fromWire": [
+              {
+                "map:proc": "enum",
+                "map:name": "mode",
+                "map:map": [
+                  { "map:wire": 0, "map:app": "off" },
+                  { "map:wire": 1, "map:app": "auto" },
+                  { "map:wire": 2, "map:app": "manual" }
+                ]
+              },
+              {
+                "map:proc": "enumRange",
+                "map:name": "batteryState",
+                "map:ranges": [
+                  { "map:min": 0, "map:max": 20, "map:app": "low", "map:canonical": 10 },
+                  { "map:min": 21, "map:max": 70, "map:app": "medium", "map:canonical": 50 },
+                  { "map:min": 71, "map:max": 100, "map:app": "high", "map:canonical": 90 }
+                ]
+              }
+            ],
+            "map:toWire": [
+              {
+                "map:proc": "enum",
+                "map:name": "mode",
+                "map:map": [
+                  { "map:app": "off", "map:wire": 0 },
+                  { "map:app": "auto", "map:wire": 1 },
+                  { "map:app": "manual", "map:wire": 2 }
+                ]
+              },
+              {
+                "map:proc": "enumRange",
+                "map:name": "batteryState",
+                "map:ranges": [
+                  { "map:min": 0, "map:max": 20, "map:app": "low", "map:canonical": 10 },
+                  { "map:min": 21, "map:max": 70, "map:app": "medium", "map:canonical": 50 },
+                  { "map:min": 71, "map:max": 100, "map:app": "high", "map:canonical": 90 }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+On read, `mode` and `batteryState` are replaced in place with their application values. On write, the same names select those members for reverse mapping; `enumRange` uses the declared canonical values.
 
 When user story 4 is combined with user story 3, the default composition is:
 
