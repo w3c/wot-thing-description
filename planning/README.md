@@ -9,15 +9,15 @@ First, work items are listed and then a roadmap with priorities is provided per 
 
 The work items are split into four categories.
 
-1. [Binding Templates](./td-next-work-items/binding-templates.md): The first category is Binding Templates, which involves specifying the mechanism but also the submission mechanism.
-2. [Usability and Design](./td-next-work-items/usability-and-design.md): The second category focuses on work items that are more about restructuring, redesigning, and improving the usability of the specification. These could pave the way for new features.
-3. [New Features](./td-next-work-items/new-features.md): The third category is about work items that are directly linked to new features.
-4. [Testing and Tooling](./td-next-work-items/testing-and-tooling.md): The fourth category is comprised of items that help the specification management and maintain consistency.
+1. [Binding Templates](./work-items/binding-templates.md): The first category is Binding Templates, which involves specifying the mechanism but also the submission mechanism.
+2. [Usability and Design](./work-items/usability-and-design.md): The second category focuses on work items that are more about restructuring, redesigning, and improving the usability of the specification. These could pave the way for new features.
+3. [New Features](./work-items/new-features.md): The third category is about work items that are directly linked to new features.
+4. [Testing and Tooling](./work-items/testing-and-tooling.md): The fourth category is comprised of items that help the specification management and maintain consistency.
 
 Such categories can be reflected with labels and different views in the GitHub project management panel.
 The task force will go through existing issues, pull requests, and discussions, and categorize them accordingly.
 
-- **Priorities:** The items in each markdown under [td-next-work-items](./td-next-work-items) are a flat list with no priorities set for now. Ideally, items that are dependencies to other items and those with concrete industry use cases will be prioritized.
+- **Priorities:** The items in each markdown under [work-items](./work-items) are a flat list with no priorities set for now. Ideally, items that are dependencies to other items and those with concrete industry use cases will be prioritized.
 
 - **Details:** The details of different work items can be found at <https://github.com/w3c/wot/blob/main/proposals/deliverable-proposals/thing-description.md>. We will consolidate such details and link them appropriately.
 
@@ -27,15 +27,8 @@ In addition to GitHub issues and Use Cases, there are various documents that sho
 
 - Long Running Actions Proposals: <https://github.com/w3c/wot-thing-description/tree/main/proposals>
 - Registry Analysis: <https://github.com/w3c/wot/tree/main/registry-analysis>
-- Historical Data Landscape: <https://github.com/w3c/wot/pull/1112>
-- Charter Details: <https://w3c.github.io/wot-charter-drafts/wot-wg-2023-details.html>
-
-### Notes
-
-- The points below are still open to discussion:
-  - What to do with the existing issues and PRs that are postponed?
-    - Option 1: If there are no use cases identified, they can be closed after some time.
-  - What about the work items in the charter or details that are not linked to use cases?
+- Historical Data Landscape: <[https://github.com/w3c/](https://github.com/w3c/wot-thing-description/blob/main/planning/work-items/analysis/analysis-historical-data-work-item.md)>
+- Charter Details: <https://www.w3.org/2026/09/wot-wg-2026.html>
 
 ## Roadmap
 
@@ -46,16 +39,13 @@ Concrete roadmaps with the order of items are below at [Individual Roadmaps](#in
 
 #### WoT WG Charter Details
 
-- Charter End Date: 2 October 2025
-- CR Transition (feature freeze): July 10, 2025 (worst estimate)
-- Charter Start: October 2023
+- Charter End Date: 8 September 2028
+- Charter Start: September 2026
 
 #### Schedule for TD Deliverable
 
-- We will stop work big features 6 months prior to the CR Transition. That means January 10, 2025. In other words, we should be done with big features by the end of 2024. Please see https://github.com/w3c/wot/blob/main/planning/schedule.md
-- As a result, we should indicate whether a feature is considered a big feature. Some notes on this:
-  - The bigger the implementation impact, the more time to implement.
-  - We can give something like "Story Points" to give a rough idea of the effort.
+- We will stop work big features 6 months prior to the CR Transition.
+- See also <https://github.com/w3c/wot/issues/1334>
 
 ### Category-based Roadmaps
 
@@ -83,9 +73,9 @@ Each section contains a list of work items to be done in an order.
 
 An example list of usability and design items with an order:
 
-- Initial connection
-- Data mapping
+- Common Definitions
 
 #### New Features
 
-They are not ordered yet. See [here](./td-next-work-items/new-features.md) for more information.
+- Data Mapping
+- Historical Data
