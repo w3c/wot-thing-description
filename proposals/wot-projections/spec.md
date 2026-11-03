@@ -3,7 +3,8 @@
 > **Status:** Working draft for discussion. This document is a proposal, not a W3C
 > specification.
 >
-> The vocabulary namespace and exact term names below are provisional. Normative terms
+> The experimental vocabulary below is controlled by this proposal repository,
+> not assigned by W3C or the OPC Foundation. Normative terms
 > (MUST, MUST NOT, SHOULD, and MAY) are used to make the proposed processing contract
 > concrete; they do not imply Working Group adoption.
 
@@ -51,11 +52,35 @@ A projection-aware processor MUST either return a fully resolved and validated T
 report a resolution error. It MUST NOT expose an unresolved plan as an ordinary TD or TM,
 and MUST NOT return a success-shaped partial result.
 
-### 1.2 Provisional vocabulary
+### 1.2 Experimental vocabulary
 
-The examples use `wotproj:` for a proposed WoT projection vocabulary. Its namespace IRI,
-term names, and validation format have not been assigned. Example IRIs use
-`https://example.org/` and are placeholders, not stable identifiers.
+This proposal defines an experimental version 1 vocabulary for implementation
+trials. Its namespace IRI is:
+
+`https://raw.githubusercontent.com/marcschier/wot-thing-description/main/proposals/wot-projections/context.experimental-v1.jsonld#`
+
+The [experimental JSON-LD context](context.experimental-v1.jsonld) binds
+`wotproj:` to this namespace. The namespace and context are controlled by this
+repository; neither is a W3C or OPC Foundation vocabulary assignment. A later
+standard vocabulary is a separate version, not an implicit alias. An incompatible
+change to this experiment MUST use a different namespace.
+
+The namespace IRI identifies terms; it does not require network retrieval.
+Before this proposal is merged, processors use the context artifact from their
+explicitly selected source revision rather than expecting the `main` URL to
+serve an unmerged context.
+
+The terms are `projection`, `scenario`, `projects`, `sourceName`, `routing`,
+`sourceDigest`, `namePrefix`, `selectAll`, `select`, `affordanceKind` and
+`resolvedFrom`, with the meanings defined below. The context represents
+`projects` as an ordered list and `scenario` and `resolvedFrom` as IRI-valued
+members. Consumers MUST identify terms by their expanded IRIs, not the literal
+`wotproj` prefix. The earlier `https://example.org/wot/projection#` placeholders
+MUST NOT be treated as aliases for this vocabulary.
+
+Other `https://example.org/` IRIs in the examples remain illustrative scenario
+and domain identifiers. This experiment does not assign the other proposals'
+provisional `td:` terms or version-profile vocabulary.
 
 Explicit projection selectors use the existing `tm:ref` in both TD and TM envelopes. The
 projection-plan format reuses this Thing Model term as its selector; its use in a TD envelope
@@ -122,7 +147,7 @@ A plan MAY select from a TD, a TM, or another projection plan. Its own root kind
 admission of the result. An incomplete TM can remain a TM, but MUST NOT be served as an
 executable TD without completion and full TD validation.
 
-The example vocabulary and syntax below are provisional:
+The example below uses the experimental vocabulary:
 
 ```json
 {
@@ -145,10 +170,18 @@ The example vocabulary and syntax below are provisional:
         "@id": "https://www.w3.org/2019/wot/td#minVersion",
         "@type": "http://www.w3.org/2001/XMLSchema#string"
       },
-      "wotproj": "https://example.org/wot/projection#",
+      "wotproj": "https://raw.githubusercontent.com/marcschier/wot-thing-description/main/proposals/wot-projections/context.experimental-v1.jsonld#",
       "wotproj:projects": {
-        "@id": "https://example.org/wot/projection#projects",
+        "@id": "https://raw.githubusercontent.com/marcschier/wot-thing-description/main/proposals/wot-projections/context.experimental-v1.jsonld#projects",
         "@container": "@list"
+      },
+      "wotproj:scenario": {
+        "@id": "https://raw.githubusercontent.com/marcschier/wot-thing-description/main/proposals/wot-projections/context.experimental-v1.jsonld#scenario",
+        "@type": "@id"
+      },
+      "wotproj:resolvedFrom": {
+        "@id": "https://raw.githubusercontent.com/marcschier/wot-thing-description/main/proposals/wot-projections/context.experimental-v1.jsonld#resolvedFrom",
+        "@type": "@id"
       }
     }
   ],
@@ -573,7 +606,8 @@ unchanged.
 
 ## 11. Open issues
 
-1. Assign the projection vocabulary namespace and finalize its term names and JSON-LD context.
+1. Review the experimental vocabulary before any standards assignment; define an
+   explicit migration if a different namespace or term set is adopted.
 2. Define validation for marked TD/TM envelopes and selectors that are not yet complete
    affordance definitions.
 3. Complete the list of known document-local dependencies and extension reference rules.

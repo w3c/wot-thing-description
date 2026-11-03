@@ -6,6 +6,11 @@
 The companion [specification draft](./spec.md) develops this design into a provisional
 processing model.
 
+The draft now defines a repository-controlled
+[experimental vocabulary and context](./spec.md#12-experimental-vocabulary).
+It is not a W3C or OPC Foundation vocabulary assignment. Earlier example
+namespace IRIs are not aliases for the experiment.
+
 ## Summary
 
 A projection plan is an ordinary WoT Thing Description (TD) or Thing Model (TM) envelope
@@ -153,7 +158,8 @@ that use projection plans for particular protocols.
 
 ## Open questions
 
-1. What namespace and exact term names should the projection vocabulary use?
+1. What namespace and terms should a future standard adopt, and how should
+   implementations migrate from the explicitly experimental vocabulary?
 2. Which URI schemes and safe-fetching constraints should projection-aware processors
    support?
 3. What are the complete rules for copying known dependencies while preserving scoped
@@ -165,6 +171,10 @@ that use projection plans for particular protocols.
 
 ## Next steps
 
+- Run the offline context checks with
+  `node --test proposals/wot-projections/tests/experimental-vocabulary.test.js`
+  after installing this repository's existing dependencies. These checks cover
+  JSON-LD expansion and source-list order, not complete projection resolution.
 - Review the marked-envelope processing model with TD and TM implementers.
 - Specify and test explicit, bulk, and predicate selection, deterministic conflict handling,
   local-definition precedence, dependency closure, routing, contexts, and security.
