@@ -74,7 +74,7 @@ Requirements: Node.js 16, [GraphViz](https://graphviz.org/).
 The script will first download and install some dependencies (triple store, Node.js dependencies) and then execute the JS script `render.js`.
 The latter should always be executed within `render.sh` since it requires some env variables to be set first.
 
-For Windows users, the script should be run in a [Cygwin shell](http://cygwin.com/). The Git package from Cygwin distribution should not be used. Alternative Git client distribution such as [Git for Windows](https://gitforwindows.org/) works better when you encounter an issue building the document using Cygwin.
+For Windows users, the script should be run in a [Cygwin shell](https://cygwin.com/). The Git package from Cygwin distribution should not be used. Alternative Git client distribution such as [Git for Windows](https://gitforwindows.org/) works better when you encounter an issue building the document using Cygwin.
 
 #### Automatic rendering
 
@@ -199,7 +199,7 @@ These can be used for the purposes below among others:
 
 **Note** that TM Schema is generated from the TD schema using the `tmSchemaGenerator.js` script.
 
-Each commit here will sync to the master, which will expose the content to http://w3c.github.io/wot-thing-description/.
+Each commit here will sync to the master, which will expose the content to https://w3c.github.io/wot-thing-description/.
 To make contributions, please provide pull requests to the appropriate files,
 keeping in mind that some files, most notably `index.html` and `testing/report.html`,
 as well as most files under `visualization`, are
