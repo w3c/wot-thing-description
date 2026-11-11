@@ -85,8 +85,8 @@ Note 4: Do we prescribe a transformation, CSVs must look like `[[col1value, col2
   - OpenAPI 3.2 with XML Payload Description: https://github.com/OAI/OpenAPI-Specification/pull/4592
 
 **Implementation note:** The [node-wot prototype implementation](https://github.com/eclipse-thingweb/node-wot/tree/glc-datamapping) exercises the CSV payload
-inding and generic mapping split described in [US2-details.md](./US2-details.md).
-and [US2345-general.md](./US2345-general.md). It decodes all data rows into
+binding and generic mapping split described in [US2-details.md](./US2-details.md).
+and [US2345-summary.md](./US2345-summary.md). It decodes all data rows into
 string-valued array or object rows, supports form-level header/metadata and
 dialect options, and applies `pick`, `coerce`, or row-wise `record` mappings
 before DataSchema validation. This is an implementation experiment, not a
