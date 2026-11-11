@@ -33,7 +33,7 @@
 **Candidate operations by layer:**
 - JSON payload binding (`jsonv`): `pick`, `place`, `wrap`, `unwrap`, `at`, and `setAt` operate on decoded JSON object/array trees.
 - Octet-stream payload binding (`octv`): `bitExtract` and `bitCompose` operate on an integer after the binding has decoded the relevant bytes.
-- Shared mapping core: `record` applies named field pipelines to each element of an already-decoded array and returns application-facing records. It is a collection operation described in [US2345-general.md](./US2345-general.md), not a JSON or CSV parser and not a US5 structural operator.
+- Shared mapping core: `record` applies named field pipelines to each element of an already-decoded array and returns application-facing records. It is a collection operation described in [US2345-summary.md](./US2345-summary.md), not a JSON or CSV parser and not a US5 structural operator.
 
 **Key design decisions:**
 - Direction is explicit per form: `map:fromWire` for protocol-to-application and `map:toWire` for application-to-protocol.
@@ -170,7 +170,7 @@ The remaining combined-context material and examples below are retained as histo
 | Octet-stream binding (`octv`) | `bitExtract` | Read named fields from a decoded integer using masks and shifts | Structured object |
 | Octet-stream binding (`octv`) | `bitCompose` | Write structured fields into an integer using masks and shifts | Integer |
 
-These binding-level operators are intentionally small and deterministic. They describe common structural mismatches without requiring protocol-specific code or an embedded programming language. The shared `record` collection operation belongs to the `map` core and is defined separately in [US2345-general.md](./US2345-general.md).
+These binding-level operators are intentionally small and deterministic. They describe common structural mismatches without requiring protocol-specific code or an embedded programming language. The shared `record` collection operation belongs to the `map` core and is defined separately in [US2345-summary.md](./US2345-summary.md).
 
 ## Preferred-Layer Examples
 
