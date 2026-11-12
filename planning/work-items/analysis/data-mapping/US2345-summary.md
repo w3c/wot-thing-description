@@ -9,17 +9,24 @@
 3. **Protocol binding terms stay where they are.** Terms that protocol bindings already define (for example `lorav:multiplier`, `bacv:hasValueMap`, `profv:payloadMapping`) remain in their own contexts. They can be used in combination with `map` terms in the same form.
 4. **Payload bindings live outside the core specification.** The JSON (`jsonv`), octet-stream (`octv`), and CSV (`csvv`, reusing CSVW) vocabularies are defined as payload bindings outside the core TD specification and are candidates for entries in the WoT Binding Registry.
 
-**Layering.** A payload binding owns how wire bytes or characters become a JSON-like value or scalar. The `map` core owns the format-independent transformation of that value into the TD DataSchema value, and the inverse for writes.
+**Layering.** The current TD workflow already binds the interaction to a protocol and content type, then validates the resulting value against the DataSchema. The proposal adds two optional decoding stages between content decoding and validation: a payload binding for format-specific interpretation and the format-neutral `map` pipeline.
 
 ```mermaid
 flowchart LR
-  W["Wire bytes or text"] --> P["Protocol binding<br/>htv, modv, bacv, profv, lorav"]
-  P --> B["Payload binding<br/>jsonv, octv, csvv"]
-  B --> M["map core pipeline<br/>map:fromWire"]
-  M --> D["DataSchema value"]
+  W["Wire message"] --> S1["1. Protocol binding"]
+  S1 --> S2["2. Content-type codec"]
+  S2 --> S3["3. Payload binding decode<br/>jsonv / octv / csvv"]
+  S3 --> S4["4. map transformation<br/>map:fromWire"]
+  S4 --> S5["5. DataSchema validation"]
+  S2 -. "skip optional stages" .-> S5
+  S3 -. "skip map" .-> S5
+  classDef existing fill:#e7f2eb,stroke:#367553,color:#153c29
+  classDef optional fill:#fff4d6,stroke:#a87500,color:#4c3900,stroke-dasharray:5 3
+  class S1,S2,S5 existing
+  class S3,S4 optional
 ```
 
-For writes the same stages run in the opposite direction, with `map:toWire`.
+Steps 1, 2, and 5 are existing required workflow stages. Steps 3 and 4 are new optional stages and may be skipped independently. For writes, the data transformation runs in the opposite direction, using `map:toWire` and the payload binding's encoder when present.
 
 **Why the split.** Several operators that looked generic assume one representation of the decoded value:
 
