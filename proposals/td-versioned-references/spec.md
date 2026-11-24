@@ -302,6 +302,9 @@ The caller chooses the operation. An exact replay pin is not an authored require
 | Raw exact replay | Use the caller's exact revision or digest in one authorized source sequence (Section 6.2). | Verify identity, authority, bytes and any retained expectations. Do not derive or apply authored floors or lines and do not claim authoring validity or compatibility. Failure does not retry live. |
 | Snapshot composition | Open the supplied channel once or verify the exact snapshot and use its captured bindings (Section 2.3). | Verify the bound revision's identity, authority and bytes, and check its applicable authored requirements and caller policy. Do not retry live, use another digest match or substitute another snapshot. A partial set is not successful composition. |
 
+In any of these operations, conflicting bytes or fixed metadata claiming the
+same source revision identity MUST fail as `inconsistent-publication`.
+
 ### 6.1 Selection
 
 For standalone live resolution, a resolver MUST apply these steps in order:
@@ -316,8 +319,6 @@ For standalone live resolution, a resolver MUST apply these steps in order:
 A non-sticky raw retrieval default, publication order or retrieval order MUST NOT replace profile-specific selection. A provider that cannot expose the profile or default policy needed for constrained resolution MUST report unsupported resolution rather than treat raw retrieval as a successful match.
 
 A release has higher precedence than prereleases of the same major, minor, and patch values. Numeric prerelease identifiers are compared numerically under SemVer; for example, `1.3.0-rc.10` has higher precedence than `1.3.0-rc.2`. A prerelease such as `1.2.0-rc.1` is below a release floor of `1.2.0`, even when the consumer opts in.
-
-Conflicting bytes or fixed metadata claiming the same source revision identity MUST fail as `inconsistent-publication`.
 
 ### 6.2 Resolution records and reproducibility
 
@@ -391,7 +392,7 @@ Ordinary TM composition uses `tm:extends`, `tm:submodel`, and `tm:ref` with vers
 
 ### 8.2 WoT Projection Plans
 
-[WoT Projection Plans](../wot-projections/spec.md) defines `wotproj:sourceDigest` on a source-manifest entry as an exact-byte SHA-256 pin. The projection processor MUST verify each declared digest against the source bytes as retrieved, even for an entry that contributes nothing to the resolved view. Verification precedes transforming that source or resolving it as a nested projection plan. Checking an unused entry's digest does not add a provenance link. A mismatching or unverified digest MUST fail projection resolution; a satisfied floor cannot substitute for the pinned bytes.
+[WoT Projection Plans](../wot-projections/spec.md#4-source-manifest) defines verification of `wotproj:sourceDigest`, including pins on unused sources.
 
 A projection source-manifest entry follows the requirements in Section 3 and the [source manifest rules](../wot-projections/spec.md#4-source-manifest). The entry's expected media type determines its target kind; the provider contract determines its profile. The projection envelope's `version.model`, `version.instance` and root line do not supply source requirements.
 
@@ -399,7 +400,7 @@ These requirements apply to manifest-source resolution, not to selector annotati
 
 An ordinary `tm:ref` that is not a projection selector can carry `tm:minVersion` as specified in Section 5.1. Ordinary TM references inside a retrieved source likewise retain their floors during dependency resolution. A source's TD type-link floors are evaluated against that source's own root metadata, not against the projection envelope's `version.model`.
 
-A source digest pins the representation retrieved from that source. If the source is an unresolved nested plan, the digest pins that plan, not its resolved result or the bytes of transitive sources or dependencies. The consumer MUST separately retain dependency resolution records or use the projection proposal's source pins at the relevant dependency boundaries when reproducibility is required.
+A source digest does not pin transitive dependencies. The consumer MUST separately retain dependency resolution records or use source pins at the relevant dependency boundaries when reproducibility is required.
 
 An authored `wotproj:sourceDigest` is not a request for raw exact replay. Projection processing MUST check both the source's applicable compatibility requirement and any declared digest against the selected revision. If source selection uses the digest outside a snapshot, apply the digest match rule in Section 6.2 and check that revision. Within a snapshot, use the exact bound revision instead, even if another revision has the same digest. Reject either unmet check without fallback. Where neither rule specifies priority, this proposal does not prescribe which failure to report when the same bound source fails both checks. Publication closure covers reachable source dependencies; the projection proposal's acyclic-plan rule is unchanged.
 

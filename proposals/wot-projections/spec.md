@@ -250,23 +250,19 @@ A source MAY itself be a projection plan. It is resolved before its affordances 
 The graph of projection plans MUST be acyclic.
 
 The processor MUST verify every declared `wotproj:sourceDigest`, even for sources that do not
-contribute to the resolved view. Compute SHA-256 over the exact source bytes as retrieved and
-compare it to the declared value. The hexadecimal digest MUST
-be lowercase. The processor MUST NOT canonicalize or otherwise transform the bytes before
+contribute to the resolved view. Verification precedes transforming a source or resolving
+it as a nested projection plan. Compute SHA-256 over the exact source bytes as retrieved and
+compare it to the declared value. The hexadecimal digest MUST be lowercase.
+The processor MUST NOT canonicalize or otherwise transform the bytes before
 hashing. A mismatch MUST fail resolution and identify the source. If the source is provided
 only as an already-parsed object and its original bytes are unavailable, the processor MUST
-report the pin as unverified and MUST NOT treat it as satisfied. When a source digest and
-version requirement are both present, the exact pinned source MUST also satisfy
-that requirement: SemVer floor/cap/prerelease rules or the incremental line and
-numeric floor. A mismatch MUST fail without fallback. An authored digest is not a request
-for raw replay; the [versioned-reference rules for projection sources][Source digest processing]
-explain how to combine a digest with a version requirement or exact snapshot binding.
+report the pin as unverified and MUST NOT complete resolution. Checking an unused entry's
+digest does not add a provenance link. A nested plan's digest pins its unresolved bytes,
+not its resolved view or transitive sources.
 
-For snapshot-bound processing, the exact source occurrence binding selects the
-revision. The processor MUST validate its requirement and any source digest
-against that bound revision; it MUST NOT substitute live highest-version
-selection. A nested plan's digest pins its unresolved bytes, not its resolved
-view or transitive sources. WoT-complete publication follows the
+The [versioned-reference rules for projection sources][Source digest processing]
+specify how a digest combines with a version requirement and how a snapshot fixes
+the selected revision. WoT-complete publication follows the
 [publication model and acceptance contract](../td-versioned-references/spec.md#2-publication-model).
 
 ## 5. Selection
