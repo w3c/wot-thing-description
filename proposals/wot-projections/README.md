@@ -5,6 +5,7 @@
 
 The companion [specification draft](./spec.md) develops this design into a provisional
 processing model.
+See the [use cases](./use-cases.md) for examples of selection, routing, and publication.
 
 ## Summary
 

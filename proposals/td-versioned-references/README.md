@@ -5,6 +5,8 @@
 
 Publish related WoT documents as a complete immutable snapshot and expose that snapshot through a named channel. A consumer opens the channel once, then interprets entries and dependencies using the snapshot's exact bindings. The companion [specification draft](./spec.md) defines the WoT closure and compatibility contract for that flow without prescribing a registry, publication API or manifest format. The vocabulary and processing rules are proposals, not a W3C Recommendation.
 
+See the [use cases](./use-cases.md) for examples of live selection, exact replay, and snapshot composition.
+
 ## Summary
 
 A publisher creates or reuses document revisions, binds each recognized dependency occurrence to an exact target, validates the complete set and retains it as a snapshot before conditionally moving a channel head. A consumer selects that publication, not an independently moving revision for every reference. Forking can share a snapshot, promotion can select an already reviewed set, and rollback can restore an earlier set without renumbering documents.

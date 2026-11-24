@@ -5,6 +5,7 @@
 
 The companion [specification draft](./spec.md) proposes `td:extends`, `td:subthing`, and
 `td:ref` for TD-to-TD composition and reuse. These term names are provisional.
+See the [use cases](./use-cases.md) for examples of when to use each relationship.
 
 ## Summary
 
