@@ -273,7 +273,11 @@ mechanism rather than impose one processing model on all three.
 
 ## 9. Compatibility and relation to existing processing
 
-The version of a target TD in a `td:extends`, `td:subthing`, or `td:ref` relationship is selected according to the [Versioned References between WoT Documents proposal](../td-versioned-references/spec.md). Version selection determines which TD is supplied to the composition operator; it does not change the operator's inheritance, child-relationship, or definition-reference semantics.
+The [WoT Publications and Versioned References proposal](../td-versioned-references/spec.md#6-resolution-semantics)
+defines live selection for `td:extends`, `td:subthing`, and ordinary `td:ref`. When composing
+from a snapshot, use and check its exact bound target rather than selecting a live revision.
+Retrieving a raw pin does not perform those checks. These rules determine which TD is supplied
+to the operator without changing its inheritance, child-relationship, or definition-reference semantics.
 
 TD-to-TD support should be additive. Existing TM-to-TM processing must produce the same
 results as before. Processors that do not implement TD-to-TD composition need a defined

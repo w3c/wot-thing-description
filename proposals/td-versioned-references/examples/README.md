@@ -31,8 +31,8 @@ These JSON-LD documents illustrate SemVer floors and incremental compatibility r
 | [td-single-type.jsonld](./td-single-type.jsonld) | Use `version.model` as the implicit floor `1.2.0` for the single type link. |
 | [td-multiple-types.jsonld](./td-multiple-types.jsonld) | Resolve each type link using the greater of its explicit floor and the root model version. |
 | [tm-deprecated-v1.jsonld](./tm-deprecated-v1.jsonld) | Mark pump v1 as deprecated and link to v2 without redirecting existing references. |
-| [td-extends.jsonld](./td-extends.jsonld) | Extend a target TD at floor `1.4.0`; selection stays below `2.0.0`. |
-| [td-subthing.jsonld](./td-subthing.jsonld) | Select a child TD at floor `0.8.0`; selection stays below `1.0.0`. |
+| [td-extends.jsonld](./td-extends.jsonld) | Extend a target TD at floor `1.4.0`; selection stays within major `1`, excluding even `2.0.0` prereleases. |
+| [td-subthing.jsonld](./td-subthing.jsonld) | Select a child TD at floor `0.8.0`; selection stays within major `0`, excluding even `1.0.0` prereleases. |
 | [td-ref.jsonld](./td-ref.jsonld) | Select a TD definition source using sibling `td:minVersion`. |
 | [td-instance-v1.jsonld](./td-instance-v1.jsonld) and [td-instance-v2.jsonld](./td-instance-v2.jsonld) | Publish two SemVer instance revisions under one concrete Thing `id`. |
 | [td-incremental-extends.jsonld](./td-incremental-extends.jsonld) | Require a bound target in line `control-a` at integer revision `42` or higher in one selected source sequence. Standalone live resolution selects a qualifying target instead. |

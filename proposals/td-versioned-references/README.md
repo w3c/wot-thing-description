@@ -64,7 +64,7 @@ The channel selects the publication, and its bindings select exact dependency re
 
 #### SemVer references
 
-`tm:minVersion` sets a minimum for the target TM's `version.model`. `td:minVersion` sets a minimum for the target TD's `version.instance` and caps acceptable revisions below the next major, including when that major is zero. Both values use SemVer 2.0.0 without build metadata. An unfloored TD reference has no major cap, but still uses its snapshot's exact binding. A referencing TD's versions do not determine the target TD version.
+`tm:minVersion` sets a minimum for the target TM's `version.model`. `td:minVersion` sets a minimum for the target TD's `version.instance` and limits it to the floor's major, including major zero. Even prereleases of the next major are excluded. Both values use SemVer 2.0.0 without build metadata. An unfloored TD reference has no major cap, but still uses its snapshot's exact binding. A referencing TD's versions do not determine the target TD version.
 
 For a TD with exactly one SemVer `type` target, the effective floor is the greater of the link's explicit floor and the TD's implicit `version.model`, or the only floor present. With several SemVer targets and `version.model`, each SemVer link requires an explicit floor; a missing one produces `ambiguous-floor`. Without `version.model`, those per-link floors are optional. Incremental type targets never inherit a model floor.
 
@@ -80,7 +80,7 @@ The [deployment mapping](./spec.md#31-incremental-requirements-and-deployment-ma
 
 Outside snapshot-bound consumption, [standalone live resolution](./spec.md#61-selection) selects the highest qualifying revision unless a sticky default is authoritative. With incremental history 42/A, 43/B and 44/A, a line-A request selects 44; a sticky 43/B makes it fail. This live algorithm is not a fallback for a snapshot's missing or incompatible bound target.
 
-A consumer can also retain an exact revision, digest, origin and applicable profile/line expectations outside the document. Raw exact replay retrieves that selection without rerunning live candidate selection and verifies the recorded expectations. It does not imply compatibility-checked composition or pin the transitive closure.
+A consumer can also retain an exact revision, digest, origin and applicable profile/line expectations outside the document. [Raw exact replay](./spec.md#62-resolution-records-and-reproducibility) verifies that selection without deriving or applying the document's floor or line. It neither validates the authored reference nor checks compatibility or pins the transitive closure. Using the retrieved content for composition still requires the applicable checks.
 
 ## Examples
 

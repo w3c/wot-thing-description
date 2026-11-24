@@ -238,45 +238,29 @@ A source entry MAY also contain:
 A source entry's `type` determines its target kind, not its version profile.
 The provider contract MUST establish that profile before constrained source
 selection; a processor MUST NOT infer it from the document's version string.
-For SemVer sources using the provisional core terms, a TM source MAY carry only
-`tm:minVersion`; a TD source MAY carry only `td:minVersion`. The informative
-deployment mapping also permits one `uav:minVersion` for either target kind.
-A source entry with both core floor terms, or with a core floor for the other target kind, MUST fail as
-`invalid-floor`. The floor MUST use the syntax in the [versioned-reference
-proposal][Versioned-reference proposal] and MUST NOT use a generated
-`0.0.0-N` id. A TM floor has no upper bound. A TD floor is a caret bound:
-`X.Y.Z` selects versions from `X.Y.Z` up to but not including `(X+1).0.0`,
-including when X is zero. Without a sticky default, an unfloored SemVer source
-selects the highest eligible version for its kind, and an unfloored TD source
-can cross major versions. Prerelease and sticky-default behavior follow
-[versioned-reference selection](../td-versioned-references/spec.md#61-selection).
-For authored SemVer versions, the processor MUST use
-`version.model` for a TM source and `version.instance` for a TD
-source. The projection envelope's own `version.model` or `version.instance`
-MUST NOT supply a source floor.
-
-An incremental source MUST have its own explicit compatibility-line selector
-and MAY have a numeric floor. The plan's root line and version members MUST NOT
-be inherited by sources. Requirements belong on the source entry, never on an
-explicit affordance selector. The informative mapping uses
-`uav:compatibilityLine` and `uav:minVersion`; it does not replace `td:ref`,
-`tm:ref` or other composition operators. Duplicate legacy/new floor spellings
-MUST fail as `invalid-floor`.
+The [versioned-reference proposal][Versioned-reference proposal] defines the
+permitted floor spellings and values, the SemVer TD major cap, and the explicit
+line required for incremental sources. Requirements belong on the source entry,
+never on an explicit affordance selector. A plan's own version and root line
+MUST NOT supply source requirements. Live source selection and snapshot
+composition follow the distinct
+[resolution rules](../td-versioned-references/spec.md#6-resolution-semantics).
 
 A source MAY itself be a projection plan. It is resolved before its affordances are selected.
 The graph of projection plans MUST be acyclic.
 
-When `wotproj:sourceDigest` is present, the processor MUST compute SHA-256 over the exact
-source bytes as retrieved and compare it to the declared value. The hexadecimal digest MUST
+The processor MUST verify every declared `wotproj:sourceDigest`, even for sources that do not
+contribute to the resolved view. Compute SHA-256 over the exact source bytes as retrieved and
+compare it to the declared value. The hexadecimal digest MUST
 be lowercase. The processor MUST NOT canonicalize or otherwise transform the bytes before
 hashing. A mismatch MUST fail resolution and identify the source. If the source is provided
 only as an already-parsed object and its original bytes are unavailable, the processor MUST
 report the pin as unverified and MUST NOT treat it as satisfied. When a source digest and
 version requirement are both present, the exact pinned source MUST also satisfy
 that requirement: SemVer floor/cap/prerelease rules or the incremental line and
-numeric floor. A mismatch MUST fail without fallback. A digest alone does not
-establish incremental line membership when identical bytes occur in several
-revisions; the processor still needs trusted revision metadata.
+numeric floor. A mismatch MUST fail without fallback. An authored digest is not a request
+for raw replay; the [versioned-reference rules for projection sources][Source digest processing]
+explain how to combine a digest with a version requirement or exact snapshot binding.
 
 For snapshot-bound processing, the exact source occurrence binding selects the
 revision. The processor MUST validate its requirement and any source digest
@@ -465,7 +449,8 @@ Every imported affordance in the resolved view MUST retain provenance identifyin
 document and original affordance definition pointer. The proposed member
 `wotproj:resolvedFrom` carries a URI reference to that original definition. A relative
 provenance reference MUST be resolved against the original source document URI before the
-definition is moved.
+definition is moved. Digest verification alone does not add a provenance link for an
+unused source.
 
 An affordance already carrying provenance retains that original provenance through
 subsequent projection resolution. An intermediate bulk plan is not substituted for an
@@ -584,3 +569,4 @@ unchanged.
 6. Determine what implementation and interoperability evidence is needed before adoption.
 
 [Versioned-reference proposal]: ../td-versioned-references/spec.md#3-vocabulary-and-json-ld-context
+[Source digest processing]: ../td-versioned-references/spec.md#82-wot-projection-plans
