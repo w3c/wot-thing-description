@@ -101,7 +101,7 @@ The [example guide](./examples/README.md) starts with publication, consumption, 
 
 [WoT Projection Plans](../wot-projections/spec.md) defines `wotproj:sourceDigest`, which pins the exact bytes of a source. That authored pin serves a different purpose from a version floor or a consumer-owned resolution record. [Section 8 of the draft](./spec.md#8-relationship-to-other-proposals) specifies how these constraints interact, including when a source contains a nested plan or dependencies.
 
-The [source mapping](./spec.md#9-xregistry-mapping-informative) records the reviewed head of [xregistry/spec#571](https://github.com/xregistry/spec/pull/571), distinguishes its SemVer specification from the proposed incremental and closure designs, and links the generic publication and federation contracts. xRegistry-specific epochs, XIDs, manifest formats and revision allocation remain outside WoT language requirements.
+The [source mapping](./spec.md#9-xregistry-mapping-informative) links the SemVer, Incremental, and closure clauses in the xRegistry WoT Registry Service draft, Version 1.0-rc4, under review in [xregistry/spec#571](https://github.com/xregistry/spec/pull/571). xRegistry epochs, XIDs, manifest formats, and revision allocation remain outside WoT language requirements.
 
 ## Next steps
 

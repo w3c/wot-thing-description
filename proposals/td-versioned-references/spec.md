@@ -228,11 +228,13 @@ A document-local reference uses the containing exact revision instead of selecti
 
 ### 5.2 Exactly one TD type link
 
-The resolver MUST establish the target profiles of the TD's type links before deriving their floors. A type link MUST target a TM; a non-TM target causes an error rather than an unconstrained model match. When exactly one link targets a SemVer TM, the effective floor is the greater of its explicit floor and the TD's `version.model` by SemVer precedence, or the only value present. Each supplied floor used here MUST satisfy Section 3's syntax. `version.model` states the version needed by the TD, not an exact revision. Prerelease eligibility uses the effective floor.
+The resolver MUST establish the target profiles of the TD's type links before deriving their floors. A type link MUST target a TM; a non-TM target causes an error rather than an unconstrained model match. When exactly one link targets a SemVer TM, the effective floor is the greater of its explicit floor and the TD's `version.model` by SemVer precedence, or the only value present. `version.model` states the version needed by the TD, not an exact revision. Prerelease eligibility uses the effective floor.
+
+The resolver MUST validate any explicit floor under Section 3. When deriving an implicit floor, it MUST validate a present `version.model` against the same SemVer floor rules, without applying a stored revision identifier's length limit. A null value, a non-SemVer string, a version with build metadata, or a generated bookkeeping value fails as `invalid-version`. Only an absent `version.model` means no implicit floor. Apply these checks after the ambiguity check in Section 5.3 when it applies. Raw exact replay does not derive the implicit floor.
 
 ### 5.3 Several TD type links
 
-When several type links target SemVer TMs and the TD has `version.model`, each SemVer link MUST carry its own explicit floor. When deriving these requirements, the resolver MUST report a missing per-link floor as `ambiguous-floor` before validating the individual floor values, even when resolving a different, fully specified link. It MUST NOT fill in a missing per-link floor from `version.model`. If all required floors are present, validate their values and take the greater of each explicit floor and `version.model` as in Section 5.2.
+When several type links target SemVer TMs and the TD has a `version.model` member, each SemVer link MUST carry its own explicit floor. When deriving these requirements, the resolver MUST report a missing per-link floor as `ambiguous-floor` before validating the individual floor values, even when resolving a different, fully specified link. It MUST NOT fill in a missing per-link floor from `version.model`. If all required floors are present, validate their values and take the greater of each explicit floor and `version.model` as in Section 5.2.
 
 A TD without `version.model` has no implicit floor. Each SemVer type link MUST use its own explicit floor if present, and otherwise has no floor. A missing floor in this case MUST NOT produce `ambiguous-floor`; TDs with several unversioned SemVer type links can be resolved without adding floors. Each link is resolved independently against its own target TM.
 
@@ -408,15 +410,17 @@ An authored `wotproj:sourceDigest` is not a request for raw exact replay. Projec
 
 ## 9. xRegistry mapping (informative)
 
-The current [xRegistry WoT specification][xRegistry WoT] and [decision record][xRegistry decisions] define the SemVer baseline. Its [versioning design][xRegistry versioning] and [overview][xRegistry overview] propose the additional incremental profile; they do not replace that baseline specification or demonstrate runtime support. The [WoT publication companion][xRegistry WoT publication] is an informative closure design, while the separate [generic publication working draft][xRegistry publication] defines xRegistry-specific manifests, channels, conditional updates and access contexts. All remain unreleased drafts.
+The [WoT Registry Service draft, Version 1.0-rc4][xRegistry WoT], specifies the SemVer and Incremental profiles, the three resolution operations, and [the WoT closure rules][xRegistry WoT publication] for xRegistry. These clauses are under review in [xregistry/spec#571] and do not establish runtime support. The [xRegistry Publications working draft][xRegistry publication] defines the underlying manifest, channel, and open context. These references describe the registry mapping; they do not define WoT conformance.
 
 In the SemVer mapping, TM `version.model` and TD `version.instance` supply `versionid` when valid; missing or non-SemVer values receive `0.0.0-N` with the lowest unused positive N. The provider records `versionorigin` without rewriting document bytes. Build metadata and Core identifier-limit violations fail publication. The proposed incremental mapping uses a durable high-water mark. A canonical authored integer supplies the revision only above that mark; an older integer fails new publication. An absent or non-integer authored value instead receives the next integer. Both maps preserve source identity, but independent integer sequences are not interchangeable. These assignment algorithms, Core lineage aspects and identifier limits are not W3C WoT requirements.
 
-The Resource and provider sequence scope selection; exact retrieval names a Version or matches a digest within that scope. The reviewed xRegistry draft accepts at most one selector kind per request, even though a retained resolution result can record both. Its default Version is not the selected publication, and a document digest is not a manifest digest.
+The Resource and provider sequence scope selection. A replay request can name an exact Version or supply a digest, but not both; a retained result can record both. An authored projection source digest checks the bytes of the selected Version in xRegistry. It does not choose the Version. A Resource's default Version does not select a publication, and a document digest does not identify a manifest.
+
+The [OPC UA WoT Binding draft][OPC UA WoT review] has two additional authoring restrictions: at most one WoT `type` link in the root of a TD, and `uav:minVersion` as the only floor spelling on `uav:projects` entries. These restrictions apply to documents authored for that Binding. They do not narrow the portable reference table or the general type-link rules in this proposal.
 
 xRegistry's generic publication model identifies a snapshot by the SHA-256 of exact manifest bytes. Its channel head is a checked manifest descriptor updated conditionally with the channel Meta epoch; rollback advances that epoch, and deleted channel Resource identities cannot be reused. Groups are organizational containers, not channels, snapshots or compatibility lines. A WoT closure extension binds source Version/reference locations to exact target Versions; this draft does not copy its XIDs or extension format into WoT vocabulary.
 
-The [federation draft][xRegistry federation] separates source ownership, original reference bases and capture completeness. A publication HTTP projection exposes a snapshot-specific root and a checked open-context record under the [HTTP binding][xRegistry HTTP]. Git commits, OCI digests and publication IDs remain distinct; an alternate binding needs a checked association to the captured model, metadata and bytes before claiming the same publication. Read-only federation does not provide publication writes.
+The [xRegistry Federation working draft][xRegistry federation] separates source ownership, original reference bases, and capture completeness. The [Publication HTTP projection][xRegistry publication HTTP] exposes a snapshot-specific root and a checked open record. Git commits, OCI digests, and publication IDs remain distinct; an alternate binding needs a checked association to the captured model, metadata, and bytes before it can serve the same publication. Read-only federation does not provide publication writes.
 
 The checked SemVer vectors establish only their documented baseline cases. Generic publication examples exercise synthetic state and integrity; the WoT closure sample/schema checks shape, not independent closure discovery, compatibility enforcement, durable allocation or deployed cross-binding conformance.
 
@@ -436,13 +440,10 @@ The SemVer floor terms remain provisional. Incremental requirements use the OPC 
 
 Live selection depends on a provider contract that exposes trusted profile, sequence and sticky-default metadata. Snapshot-bound composition uses the exact bindings and fixed metadata in the selected snapshot. This proposal defines neither a provider-discovery mechanism nor a publication API or manifest format. Independent implementation evidence is still required for compatibility checks, closure discovery, snapshot acceptance and offline replay; examples and schema checks do not establish those behaviors.
 
-The source references below pin the xRegistry PR head reviewed for this alignment, `422fe3728f434db5dbcfb3b2cec29809a2b03dad` from [xregistry/spec#571](https://github.com/xregistry/spec/pull/571). A later editorial or design revision requires another comparison; the linked design prose is not normative W3C authority.
-
-[xRegistry WoT]: https://github.com/marcschier/xregistry-drafts/blob/422fe3728f434db5dbcfb3b2cec29809a2b03dad/workingdrafts/models/wot/spec.md
-[xRegistry decisions]: https://github.com/marcschier/xregistry-drafts/blob/422fe3728f434db5dbcfb3b2cec29809a2b03dad/workingdrafts/models/wot/decisions.md
-[xRegistry versioning]: https://github.com/marcschier/xregistry-drafts/blob/422fe3728f434db5dbcfb3b2cec29809a2b03dad/workingdrafts/publication/design/design.md#wot-versioning-design-and-operating-workflows
-[xRegistry overview]: https://github.com/marcschier/xregistry-drafts/blob/422fe3728f434db5dbcfb3b2cec29809a2b03dad/workingdrafts/publication/design/design.md#wot-versioning-design-overview
-[xRegistry WoT publication]: https://github.com/marcschier/xregistry-drafts/blob/422fe3728f434db5dbcfb3b2cec29809a2b03dad/workingdrafts/publication/design/design.md#wot-channels-snapshots-and-dependency-bindings
-[xRegistry publication]: https://github.com/marcschier/xregistry-drafts/blob/422fe3728f434db5dbcfb3b2cec29809a2b03dad/workingdrafts/publication/spec.md
-[xRegistry federation]: https://github.com/marcschier/xregistry-drafts/blob/422fe3728f434db5dbcfb3b2cec29809a2b03dad/workingdrafts/federation/spec.md
-[xRegistry HTTP]: https://github.com/marcschier/xregistry-drafts/blob/422fe3728f434db5dbcfb3b2cec29809a2b03dad/workingdrafts/bindings/http-federation.md
+[xregistry/spec#571]: https://github.com/xregistry/spec/pull/571
+[xRegistry WoT]: https://github.com/marcschier/xregistry-drafts/blob/main/workingdrafts/models/wot/spec.md#54-versioned-reference-resolution
+[xRegistry WoT publication]: https://github.com/marcschier/xregistry-drafts/blob/main/workingdrafts/models/wot/spec.md#544-publication-closure
+[xRegistry publication]: https://github.com/marcschier/xregistry-drafts/blob/main/workingdrafts/publication/spec.md#publishing-and-opening-a-channel
+[xRegistry publication HTTP]: https://github.com/marcschier/xregistry-drafts/blob/main/workingdrafts/publication/spec.md#http-projection
+[xRegistry federation]: https://github.com/marcschier/xregistry-drafts/blob/main/workingdrafts/federation/spec.md
+[OPC UA WoT review]: https://github.com/OPCF-Members/OPC10100-WoT/pull/56

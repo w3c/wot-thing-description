@@ -46,7 +46,7 @@ To check JSON syntax from the repository root:
 python -c "import json; from pathlib import Path; files = sorted(Path('proposals/td-versioned-references/examples').glob('*.jsonld')); [json.loads(p.read_text(encoding='utf-8')) for p in files]; print(f'{len(files)} JSON-LD examples parsed')"
 ```
 
-The [multiple-type TD without a model version](./td-multiple-types-no-model-version.jsonld) has an explicit floor on one link and no floor on the other. Each link resolves independently. With no root model version, the absent per-link floor does not cause an error.
+The [multiple-type TD without a model version](./td-multiple-types-no-model-version.jsonld) has an explicit floor on one link and no floor on the other. Each link resolves independently. The example omits `version.model`; an explicit `null` does not mean omission. See [the type-link floor rules](../spec.md#53-several-td-type-links).
 
 SemVer TD-to-TD floors use `td:minVersion` on `td:extends` and `td:subthing` links, and beside `td:ref`. A floor caps selection at the next major; omitting it permits selection across majors. The TD instance examples use the same `id` for `version.instance` values `1.4.0` and `2.0.0`, because the identifier names the concrete Thing rather than a compatibility major.
 
