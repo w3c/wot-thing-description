@@ -8,7 +8,7 @@
 
 Publish related Thing Models (TMs) and Thing Descriptions (TDs) as a complete immutable snapshot, then expose that snapshot through a named channel. A consumer opens the channel once and interprets every dependency through the snapshot's exact bindings. Publishing a later snapshot does not change an operation already using an earlier one.
 
-This proposal defines WoT dependency closure and compatibility acceptance within that publication flow, independently of the registry or transport publishing it. SemVer floors and incremental compatibility lines constrain acceptance of bound revisions; they do not choose another revision from outside the snapshot. Standalone live resolution and raw exact replay remain separate operations. The proposal does not define a publication API or manifest format.
+This proposal defines which dependencies a WoT snapshot retains and how consumers check its bound revisions, regardless of the registry or transport. SemVer floors and incremental compatibility lines constrain which bound revisions a consumer can accept. They do not select revisions outside the snapshot. Standalone live resolution and raw exact replay remain separate operations. The proposal does not define a publication API or manifest format.
 
 ## 1. Scope and conformance
 
@@ -42,7 +42,7 @@ Section 2 describes the primary publication and consumption flow. Sections 3–5
 
 **Compatibility line:** An absolute URI declaring backward compatibility among incremental revisions in one authoritative sequence. Line URIs are compared exactly and case-sensitively; they have no order.
 
-The following four records are an informative way to group existing information. They are not new JSON objects, wire fields or protocol messages.
+The four records below group information that already exists. They introduce no JSON objects, wire fields, or protocol messages.
 
 | Record | What it describes |
 | --- | --- |

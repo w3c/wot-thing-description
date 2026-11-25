@@ -9,11 +9,10 @@
 
 ## Abstract
 
-This document proposes a way to describe a projection plan using an ordinary WoT Thing
-Description (TD) or Thing Model (TM) envelope. The plan is marked as unresolved, identifies
-source TDs or TMs, and selects source affordances using references in the envelope's
-affordance maps. A projection-aware processor resolves the plan into an ordinary TD or TM
-by combining imported affordances with complete local definitions and permitted annotations.
+A projection plan uses a WoT Thing Description (TD) or Thing Model (TM) envelope marked
+as unresolved. The plan identifies source TDs or TMs and selects affordances by reference
+in the envelope's affordance maps. A projection-aware processor combines those affordances
+with complete local definitions and permitted annotations to produce an ordinary TD or TM.
 
 The proposal does not define a separate document format or media type. It does not define
 protocol bindings or materialization into a platform-specific information model.
@@ -49,7 +48,7 @@ unresolved projection marker unless it invokes projection-aware processing.
 
 A projection-aware processor MUST either return a fully resolved and validated TD or TM or
 report a resolution error. It MUST NOT expose an unresolved plan as an ordinary TD or TM,
-and MUST NOT return a success-shaped partial result.
+and MUST NOT report partial resolution as successful.
 
 ### 1.2 Provisional vocabulary
 
@@ -523,12 +522,11 @@ document.
 
 ## 9. Source changes and security considerations
 
-A projection may change its resolved result when a source changes. A source digest pins
-exact source bytes, while a source requirement constrains compatibility and revision
-selection as described in Section 4. A publication snapshot additionally fixes
-dependency bindings and their metadata; it does not waive those requirements.
-This proposal does not define
-notifications or continuous synchronization.
+Resolving a projection again may produce a different result if a source changes. A source
+digest pins the exact source bytes. A source requirement constrains compatibility and
+revision selection as described in Section 4. A publication snapshot also fixes the
+dependency bindings and their metadata. The bound revisions still need to meet the source
+requirements. This proposal does not define notifications or continuous synchronization.
 
 Projection-aware processors may retrieve multiple documents using author-supplied URIs.
 Implementations SHOULD apply safe-fetching policies for allowed network destinations,

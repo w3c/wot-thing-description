@@ -10,9 +10,8 @@ See the [use cases](./use-cases.md) for examples of when to use each relationshi
 ## Summary
 
 The Thing Description specification defines extension, composition, and definition reuse
-using Thing Models as their sources. This proposal explores making those same mechanisms
-available between Thing Descriptions through new TD vocabulary terms: a TD may extend
-another TD, link to a child Thing's TD, or reuse a definition from another TD.
+for Thing Models. This proposal adds corresponding TD terms so an author can extend another
+TD, link to a child Thing's TD, or reuse a definition from another TD.
 
 The proposal is deliberately limited to TD-to-TD relationships. Existing TM-to-TM behavior
 remains unchanged, and cross-kind relationships (a TD using a TM or a TM using a TD) are
@@ -49,8 +48,6 @@ TD as a TM can lose or obscure its instance-level meaning.
 - Defining a protocol-specific way to bind composed descriptions.
 
 ## Proposed scope
-
-The proposal introduces three TD terms with distinct roles:
 
 - **`td:extends`**: inherit a whole TD as the basis of another TD, subject to rules for
   identifying the resulting Thing and resolving conflicting definitions.

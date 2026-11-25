@@ -34,8 +34,6 @@ be represented safely.
 
 ### 1.1 Scope
 
-The following matrix describes the proposed scope:
-
 | Referencing document | Referenced document | Status in this proposal |
 | --- | --- | --- |
 | TD | TD | Proposed for all three mechanisms |
@@ -70,7 +68,7 @@ validated as an ordinary TD.
 
 ## 3. Design principles
 
-An adopted design should:
+The design should:
 
 1. Keep `td:extends`, `td:subthing`, and `td:ref` semantically distinct.
 2. Preserve the current TM-to-TM rules and examples.
@@ -267,9 +265,8 @@ as input and either returns a complete ordinary TD or reports an error. Under th
 5. It validates the final TD and returns it atomically, or returns an error without a
    partial result.
 
-This candidate model may not be appropriate for `td:subthing`, which could remain a
-descriptive relationship and require no resolution. The specification must decide this per
-mechanism rather than impose one processing model on all three.
+If `td:subthing` remains a descriptive relationship, it needs no resolution. The
+specification must decide whether to require resolution for each mechanism.
 
 ## 9. Compatibility and relation to existing processing
 
