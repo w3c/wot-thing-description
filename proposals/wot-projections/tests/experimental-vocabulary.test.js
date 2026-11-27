@@ -92,6 +92,62 @@ test("selection and source-option terms preserve their literal contents", async 
   ]);
 });
 
+test("observation requests and form templates preserve numbers, protocol keys, and template text", async () => {
+  const protocol = "https://example.org/bindings/collection";
+  const byProtocol = { [protocol]: { samplingInterval: 20 } };
+  const template = { href: "https://example.org/{group}/{affordance}" };
+  const [expanded] = await jsonld.expand(
+    {
+      ...context,
+      "wotproj:observe": {
+        samplingInterval: 0,
+        publishingInterval: 100,
+        "wotproj:byProtocol": byProtocol
+      },
+      "wotproj:projects": [{ "wotproj:formTemplate": template }]
+    },
+    options
+  );
+  assert.deepEqual(expanded[namespace + "observe"], [
+    {
+      [namespace + "samplingInterval"]: [{ "@value": 0 }],
+      [namespace + "publishingInterval"]: [{ "@value": 100 }],
+      [namespace + "byProtocol"]: [{ "@value": byProtocol, "@type": "@json" }]
+    }
+  ]);
+  assert.deepEqual(expanded[namespace + "projects"], [
+    {
+      "@list": [
+        {
+          [namespace + "formTemplate"]: [{ "@value": template, "@type": "@json" }]
+        }
+      ]
+    }
+  ]);
+});
+
+test("organizing links and form-base provenance expand with the TD context", async () => {
+  const tdContext = JSON.parse(readFileSync(join(__dirname, "../../../context/td-context-1.1.jsonld"), "utf8"));
+  const hypermedia = "https://www.w3.org/2019/wot/hypermedia#";
+  const td = "https://www.w3.org/2019/wot/td#";
+  const base = "https://example.org/source/";
+  const [expanded] = await jsonld.expand(
+    {
+      "@context": [tdContext["@context"], context["@context"]],
+      links: [{ rel: namespace + "organizes", "wotproj:refName": "condition" }],
+      forms: [{ "wotproj:resolvedFormBase": base }]
+    },
+    options
+  );
+  assert.deepEqual(expanded[td + "hasLink"], [
+    {
+      [hypermedia + "hasRelationType"]: [{ "@value": namespace + "organizes" }],
+      [namespace + "refName"]: [{ "@value": "condition" }]
+    }
+  ]);
+  assert.deepEqual(expanded[td + "hasForm"], [{ [namespace + "resolvedFormBase"]: [{ "@id": base }] }]);
+});
+
 test("placeholder and rebound prefix terms remain distinct from the experiment", async () => {
   const placeholder = "https://example.org/wot/projection#";
   const [expanded] = await jsonld.expand(

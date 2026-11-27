@@ -5,6 +5,8 @@
 
 Publish related WoT documents as a complete immutable snapshot and expose that snapshot through a named channel. A consumer opens the channel once, then interprets entries and dependencies using the snapshot's exact bindings. The companion [specification draft](./spec.md) defines the WoT closure and compatibility contract for that flow without prescribing a registry, publication API or manifest format. The vocabulary and processing rules are proposals, not a W3C Recommendation.
 
+See the [use cases](./use-cases.md) for examples of live selection, exact replay, and snapshot composition.
+
 ## Summary
 
 A publisher creates or reuses document revisions, binds each recognized dependency occurrence to an exact target, validates the complete set and retains it as a snapshot before conditionally moving a channel head. A consumer selects that publication, not an independently moving revision for every reference. Forking can share a snapshot, promotion can select an already reviewed set, and rollback can restore an earlier set without renumbering documents.
@@ -64,7 +66,7 @@ The channel selects the publication, and its bindings select exact dependency re
 
 #### SemVer references
 
-`tm:minVersion` sets a minimum for the target TM's `version.model`. `td:minVersion` sets a minimum for the target TD's `version.instance` and caps acceptable revisions below the next major, including when that major is zero. Both values use SemVer 2.0.0 without build metadata. An unfloored TD reference has no major cap, but still uses its snapshot's exact binding. A referencing TD's versions do not determine the target TD version.
+`tm:minVersion` sets a minimum for the target TM's `version.model`. `td:minVersion` sets a minimum for the target TD's `version.instance` and limits it to the floor's major, including major zero. Even prereleases of the next major are excluded. Both values use SemVer 2.0.0 without build metadata. An unfloored TD reference has no major cap, but still uses its snapshot's exact binding. A referencing TD's versions do not determine the target TD version.
 
 For a TD with exactly one SemVer `type` target, the effective floor is the greater of the link's explicit floor and the TD's implicit `version.model`, or the only floor present. With several SemVer targets and `version.model`, each SemVer link requires an explicit floor; a missing one produces `ambiguous-floor`. Without `version.model`, those per-link floors are optional. Incremental type targets never inherit a model floor.
 
@@ -80,7 +82,7 @@ The [deployment mapping](./spec.md#31-incremental-requirements-and-deployment-ma
 
 Outside snapshot-bound consumption, [standalone live resolution](./spec.md#61-selection) selects the highest qualifying revision unless a sticky default is authoritative. With incremental history 42/A, 43/B and 44/A, a line-A request selects 44; a sticky 43/B makes it fail. This live algorithm is not a fallback for a snapshot's missing or incompatible bound target.
 
-A consumer can also retain an exact revision, digest, origin and applicable profile/line expectations outside the document. Raw exact replay retrieves that selection without rerunning live candidate selection and verifies the recorded expectations. It does not imply compatibility-checked composition or pin the transitive closure.
+A consumer can also retain an exact revision, digest, origin and applicable profile/line expectations outside the document. [Raw exact replay](./spec.md#62-resolution-records-and-reproducibility) verifies that selection without deriving or applying the document's floor or line. It neither validates the authored reference nor checks compatibility or pins the transitive closure. Using the retrieved content for composition still requires the applicable checks.
 
 ## Examples
 
@@ -101,7 +103,7 @@ The [example guide](./examples/README.md) starts with publication, consumption, 
 
 [WoT Projection Plans](../wot-projections/spec.md) defines `wotproj:sourceDigest`, which pins the exact bytes of a source. That authored pin serves a different purpose from a version floor or a consumer-owned resolution record. [Section 8 of the draft](./spec.md#8-relationship-to-other-proposals) specifies how these constraints interact, including when a source contains a nested plan or dependencies.
 
-The [source mapping](./spec.md#9-xregistry-mapping-informative) records the reviewed head of [xregistry/spec#571](https://github.com/xregistry/spec/pull/571), distinguishes its SemVer specification from the proposed incremental and closure designs, and links the generic publication and federation contracts. xRegistry-specific epochs, XIDs, manifest formats and revision allocation remain outside WoT language requirements.
+The [source mapping](./spec.md#9-xregistry-mapping-informative) links the SemVer, Incremental, and closure clauses in the xRegistry WoT Registry Service draft, Version 1.0-rc4, under review in [xregistry/spec#571](https://github.com/xregistry/spec/pull/571). xRegistry epochs, XIDs, manifest formats, and revision allocation remain outside WoT language requirements.
 
 ## Next steps
 
