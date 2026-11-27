@@ -64,6 +64,29 @@ resolved view or its dependencies. If a necessary binding is missing or a
 source check fails, the processor doesn't return a partial TD or substitute
 a newer live source.
 
+## Stage grouped data sets at the edge
+
+An edge gateway collects readings from instruments over two protocol bindings.
+Operations clients need a fast equipment-status data set and a slower utility-usage
+data set, both served from gateway-hosted views. Each data set has its own plan.
+A site overview plan with its own health readings
+[organizes the two plans](./spec.md#31-organizing-plans) without importing their
+properties.
+
+The overview plan supplies a default publishing interval when the gateway resolves
+a data set through its organizing link. Each data set's plan can set its own
+defaults, and an [explicit property selector](./spec.md#55-observation-requests)
+requests more frequent sampling for a critical reading. A binding-specific override
+can account for different collection capabilities. The gateway can revise the
+requested rates without adding them to the client-facing TDs. For bulk-selected
+properties, a [form template](./spec.md#81-form-templates-for-bulk-selections)
+can put the group and resolved property names in the gateway URI.
+
+The team pins source revisions for the new data sets with source byte digests.
+The gateway checks the pins and serves the new views in preview while production
+continues to use the earlier pinned set. The team promotes the reviewed set
+after checking the preview.
+
 ## Annex A: OPC UA use cases (informative)
 
 OPC Unified Architecture (OPC UA) servers represent equipment and data as
@@ -77,9 +100,9 @@ resolved projection can be exposed in that environment.
   is the node that exposes the speed value. The View doesn't duplicate the
   Variable or create another connection to the pump.
 - **Organize views across a production line.** A line-level projection can
-  include a maintenance view that the server already exposes. The draft
+  link to a maintenance view that the server already exposes. The draft
   mapping uses an organizing node that points to the existing View, rather
-  than creating a second View for the same source. The portable proposal
-  describes how to resolve the nested plan, not how to organize OPC UA nodes.
+  than creating a second View for the same source. The portable organizing
+  link does not specify how to organize OPC UA nodes.
 
 [OPC review]: https://github.com/OPCF-Members/OPC10100-WoT/pull/56
