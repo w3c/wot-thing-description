@@ -46,6 +46,11 @@ Projection remains distinct from those proposed operators as well.
 This proposal describes requirements for projection-plan authors, ordinary TD/TM admission
 processors, and projection-aware processors. An ordinary TD/TM processor MUST reject an
 unresolved projection marker unless it invokes projection-aware processing.
+When it rejects a document because the root type expands to the projection marker, it
+SHOULD report a distinct unresolved projection plan diagnostic
+(`unresolved-projection-plan`), rather than only a generic TD/TM validation error.
+This diagnostic does not prescribe an error format or require an ordinary processor to
+implement projection resolution.
 
 A projection-aware processor MUST either return a fully resolved and validated TD or TM or
 report a resolution error. It MUST NOT expose an unresolved plan as an ordinary TD or TM,
@@ -281,6 +286,37 @@ expose links between resolved views, or add organizing links to publication snap
 remains open. Until snapshot bindings for organizing links are defined, a processor MUST NOT
 follow them in snapshot composition or substitute a live organizing target.
 
+### 3.2 Instantiating a Thing Model plan (proposed)
+
+Ordinary resolution of a TM-kind plan produces a TM. In the proposed first version of
+instantiation, the caller explicitly requests a TD from a TM-kind plan whose manifest
+contains only ordinary TMs. The caller supplies an absolute `id` for the result and
+identifies one exact corresponding TD revision for each manifest occurrence. Each TD
+must be an ordinary TD and declare a `rel: "type"` link to the corresponding source TM.
+A type link, a compatible version floor, or a similar display name alone does not
+identify a corresponding TD revision.
+
+These are inputs to a separate operation (Section 7.5), not new plan members, implicit
+TM-to-TD conversion, or extensions to ordinary
+[TD composition](../td-composition/spec.md#11-scope).
+
+### 3.3 Compact shape validation
+
+The [experimental projection-plan schema](projection-plan.schema.json) checks the JSON
+shape of one compact serialization. It uses the member names shown in Section 3 and
+literal `Thing`, `tm:ThingModel`, and `wotproj:projection` type values with the intended
+context bindings. It checks the envelope, source entries, and the shape of compact
+reference and predicate members. It checks for an affordance entry or a bulk-selection
+rule, not whether that entry or rule contributes a usable affordance.
+
+A document using equivalent JSON-LD aliases or absolute IRIs may not match this schema.
+A schema result does not establish whether another serialization is a valid plan, or
+whether the asserted context bindings have the expected meaning. Processors identify the
+marker and vocabulary terms by their expanded IRIs (Section 1.2). Semantic checks still
+include source identity and uniqueness, selector classification and target matching,
+version requirements, digest verification, cycles, context handling, and ordinary TD/TM
+validation of definitions and results.
+
 ## 4. Source manifest
 
 `wotproj:projects` is a non-empty ordered array. Every source entry MUST contain:
@@ -496,7 +532,7 @@ membership for equivalent plans and source representations.
 
 ## 7. Resolution and dependency closure
 
-Resolution produces an ordinary TD or TM whose kind is determined solely by the projection
+Ordinary resolution produces a TD or TM whose kind is determined solely by the projection
 envelope's ordinary root kind. A source may be a TD, TM, or another projection plan; each
 copied affordance and dependency MUST be representable in the resolved envelope, or
 resolution fails during final validation.
@@ -606,6 +642,37 @@ The processor MUST reject credential-bearing inputs without disclosing credentia
 the resolved view, provenance, or error details. Authentication material is supplied
 separately under Section 8.
 
+**Informative example.** A pump TD retrieved from
+`https://catalog.example/descriptions/pump.td.json` has no authored `base`.
+One of its properties has the following form (other members omitted):
+
+```json
+{
+  "href": "./properties/pressure",
+  "op": "readproperty"
+}
+```
+
+Without a deployment-supplied base, the retrieval URI is the fallback:
+
+```json
+{
+  "href": "https://catalog.example/descriptions/properties/pressure",
+  "op": "readproperty"
+}
+```
+
+With `https://gateway.example/devices/pump/` as the deployment-supplied base,
+the carried form keeps the same `op` and records the base it used:
+
+```json
+{
+  "href": "https://gateway.example/devices/pump/properties/pressure",
+  "op": "readproperty",
+  "wotproj:resolvedFormBase": "https://gateway.example/devices/pump/"
+}
+```
+
 With `projection` routing, the selected affordance's forms are served by the projection
 endpoint. An explicitly selected affordance MUST provide forms; for bulk and predicate
 selections, the projection host MUST supply forms while resolving the view, using the
@@ -624,6 +691,35 @@ in different owner scopes are not by themselves a conflict. Selection predicates
 and reference comparisons MUST use expanded semantic identities. A processor MAY serialize
 scoped context differences or equivalent deterministic namespace-qualified names, provided
 that it preserves opaque lexical values and the original context interpretation.
+
+### 7.5 Instantiation processing (proposed)
+
+The first version is a standalone operation over the original TM-kind plan, not a
+conversion of its resolved TM. Resolve each original TM source and check its authored
+floor, line, and digest as applicable. Verify the designated TD revision separately.
+Its applicable type link must identify the original source TM and accept the selected TM
+revision under the [versioned-reference rules][Versioned-reference resolution].
+If either revision or the correspondence cannot be verified, reject instantiation.
+
+Apply the plan's explicit, whole-source, and predicate selections to the original TM
+revisions. For each selected affordance, require a counterpart at the same JSON Pointer
+in the corresponding TD revision. Reject missing counterparts, including renamed or
+moved affordances. Do not select additional TD affordances or infer matches from titles
+or types. Use the TD definitions with the original output names and Section 6
+precedence. Retain the plan's annotations and local definitions where valid for a TD.
+Preserve source ownership and apply Section 8 to routing and security.
+
+The caller or host supplies any TD completion data not already provided by those
+definitions and routing rules, including any required forms and security for local
+affordances. Use the caller-supplied result `id` and validate the complete ordinary TD.
+If an annotation or definition cannot be carried or completed under TD rules, report an
+error without returning a partial TD.
+
+This version does not instantiate nested plans or substitute TDs for snapshot-bound
+TMs. A TM digest or exact revision binding applies only to the original TM. Do not
+reuse it as a TD pin, discard an incompatible pin, or fall back to a live revision.
+How to record and replay TD correspondences in a snapshot, match renamed affordances,
+instantiate nested plans, and represent caller-supplied completion data remains open.
 
 ## 8. Routing and security
 
@@ -657,6 +753,19 @@ hexadecimal digits without Unicode normalization. All references, including nest
 combinations and issued-token references defined by WoT vocabularies, MUST be rewritten
 consistently. Identical repeated references reuse one definition; contradictory definitions
 MUST fail resolution.
+
+Each qualified source-owned security definition in the result MUST carry
+`wotproj:resolvedFrom` identifying the original document with the definition's
+JSON Pointer as the URI fragment (RFC 6901). When copying a definition from a nested plan
+result, the processor MUST retain valid original provenance rather than replace it
+with the intermediate document or its qualified name. The processor MUST use the
+known source identity and original location, not infer either from a display name.
+
+The processor MUST NOT add source provenance to plan-owned security definitions.
+Recording provenance MUST NOT change the effective security or disclose credentials
+in the reference or diagnostics. If the processor cannot establish the original
+location or cannot identify it without disclosing credentials, it MUST report a
+resolution error.
 
 Retrieval authorization for the plan and sources is distinct from the security needed to
 interact with affordances. Retrieval credentials MUST NOT be copied into the resolved
@@ -732,8 +841,8 @@ unchanged.
 
 1. Review the experimental vocabulary before any standards assignment; define an
    explicit migration if a different namespace or term set is adopted.
-2. Define validation for marked TD/TM envelopes and selectors that are not yet complete
-   affordance definitions.
+2. Complete semantic validation beyond the compact schema, including selector
+   classification, source and target matching, and validation of incomplete selections.
 3. Complete the list of known document-local dependencies and extension reference rules.
 4. Decide whether the template for projection-routed bulk and predicate `href` values
    (Section 8.1) should cover other form members. Define how the host supplies
@@ -741,6 +850,9 @@ unchanged.
    present. Review whether both routing modes preserve TD/TM security semantics.
 5. Define safe-fetching requirements and limits for recursive plan resolution.
 6. Determine what implementation and interoperability evidence is needed before adoption.
+7. Decide how instantiation handles renamed affordances, nested plans, snapshot
+   bindings and incompatible pins, and how the caller supplies TD completion data.
 
 [Versioned-reference proposal]: ../td-versioned-references/spec.md#3-vocabulary-and-json-ld-context
+[Versioned-reference resolution]: ../td-versioned-references/spec.md#6-resolution-semantics
 [Source digest processing]: ../td-versioned-references/spec.md#82-wot-projection-plans
