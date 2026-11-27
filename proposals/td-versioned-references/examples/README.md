@@ -31,8 +31,8 @@ These JSON-LD documents illustrate SemVer floors and incremental compatibility r
 | [td-single-type.jsonld](./td-single-type.jsonld) | Use `version.model` as the implicit floor `1.2.0` for the single type link. |
 | [td-multiple-types.jsonld](./td-multiple-types.jsonld) | Resolve each type link using the greater of its explicit floor and the root model version. |
 | [tm-deprecated-v1.jsonld](./tm-deprecated-v1.jsonld) | Mark pump v1 as deprecated and link to v2 without redirecting existing references. |
-| [td-extends.jsonld](./td-extends.jsonld) | Extend a target TD at floor `1.4.0`; selection stays below `2.0.0`. |
-| [td-subthing.jsonld](./td-subthing.jsonld) | Select a child TD at floor `0.8.0`; selection stays below `1.0.0`. |
+| [td-extends.jsonld](./td-extends.jsonld) | Extend a target TD at floor `1.4.0`; selection stays within major `1`, excluding even `2.0.0` prereleases. |
+| [td-subthing.jsonld](./td-subthing.jsonld) | Select a child TD at floor `0.8.0`; selection stays within major `0`, excluding even `1.0.0` prereleases. |
 | [td-ref.jsonld](./td-ref.jsonld) | Select a TD definition source using sibling `td:minVersion`. |
 | [td-instance-v1.jsonld](./td-instance-v1.jsonld) and [td-instance-v2.jsonld](./td-instance-v2.jsonld) | Publish two SemVer instance revisions under one concrete Thing `id`. |
 | [td-incremental-extends.jsonld](./td-incremental-extends.jsonld) | Require a bound target in line `control-a` at integer revision `42` or higher in one selected source sequence. Standalone live resolution selects a qualifying target instead. |
@@ -46,7 +46,7 @@ To check JSON syntax from the repository root:
 python -c "import json; from pathlib import Path; files = sorted(Path('proposals/td-versioned-references/examples').glob('*.jsonld')); [json.loads(p.read_text(encoding='utf-8')) for p in files]; print(f'{len(files)} JSON-LD examples parsed')"
 ```
 
-The [multiple-type TD without a model version](./td-multiple-types-no-model-version.jsonld) has an explicit floor on one link and no floor on the other. Each link resolves independently. With no root model version, the absent per-link floor does not cause an error.
+The [multiple-type TD without a model version](./td-multiple-types-no-model-version.jsonld) has an explicit floor on one link and no floor on the other. Each link resolves independently. The example omits `version.model`; an explicit `null` does not mean omission. See [the type-link floor rules](../spec.md#53-several-td-type-links).
 
 SemVer TD-to-TD floors use `td:minVersion` on `td:extends` and `td:subthing` links, and beside `td:ref`. A floor caps selection at the next major; omitting it permits selection across majors. The TD instance examples use the same `id` for `version.instance` values `1.4.0` and `2.0.0`, because the identifier names the concrete Thing rather than a compatibility major.
 

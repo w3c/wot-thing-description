@@ -9,11 +9,10 @@
 
 ## Abstract
 
-This document proposes a way to describe a projection plan using an ordinary WoT Thing
-Description (TD) or Thing Model (TM) envelope. The plan is marked as unresolved, identifies
-source TDs or TMs, and selects source affordances using references in the envelope's
-affordance maps. A projection-aware processor resolves the plan into an ordinary TD or TM
-by combining imported affordances with complete local definitions and permitted annotations.
+A projection plan uses a WoT Thing Description (TD) or Thing Model (TM) envelope marked
+as unresolved. The plan identifies source TDs or TMs and selects affordances by reference
+in the envelope's affordance maps. A projection-aware processor combines those affordances
+with complete local definitions and permitted annotations to produce an ordinary TD or TM.
 
 The proposal does not define a separate document format or media type. It does not define
 protocol bindings or materialization into a platform-specific information model.
@@ -49,7 +48,7 @@ unresolved projection marker unless it invokes projection-aware processing.
 
 A projection-aware processor MUST either return a fully resolved and validated TD or TM or
 report a resolution error. It MUST NOT expose an unresolved plan as an ordinary TD or TM,
-and MUST NOT return a success-shaped partial result.
+and MUST NOT report partial resolution as successful.
 
 ### 1.2 Provisional vocabulary
 
@@ -202,6 +201,50 @@ annotations and are completed during resolution. The processor removes the proje
 source manifest, and unresolved selectors, retains the plan's identifier and scenario, and
 validates the resulting ordinary TD or TM before returning it.
 
+### 3.1 Organizing plans
+
+A plan MAY organize other plans by including entries in its root `links` array with the
+extension relation `wotproj:organizes`. In `rel`, authors MUST use the absolute relation
+IRI (provisionally `https://example.org/wot/projection#organizes`), not the compact
+spelling. Each organizing link MUST have an `href` that identifies a whole marked
+projection plan, without a fragment, and a non-empty string `wotproj:refName` unique
+among the organizing links of that plan. Resolve the `href` against the organizing
+plan's effective base URI. For example, with the context in Section 3:
+
+```json
+{
+  "rel": "https://example.org/wot/projection#organizes",
+  "href": "./condition-signals.td.json",
+  "wotproj:refName": "condition"
+}
+```
+
+An organizing link names a group; it does not select a source, supply a `tm:ref` target,
+or include or merge any member of the target plan. The organizing graph MUST be acyclic.
+Before using a group association, the processor MUST validate the reachable organizing
+graph from the organizing plan: each target MUST be a marked plan and no path may return
+to the same plan document, even through a different URI alias. This traversal uses only
+organizing links and does not resolve targets as affordance sources. Section 4 still
+governs the separate source dependency graph.
+
+A group association consists of the organizing plan's exact document identity and its local
+`wotproj:refName`. A target MAY have more than one incoming link. When resolving a target
+as an organized group, the caller MUST identify exactly one direct incoming link in the
+validated graph. The processor MUST NOT infer the association from the target URI,
+source manifest, or traversal order, or pass it to plans resolved as sources. The root of
+the selected link's organizing plan can supply fallback observation defaults (Section 5.5).
+The selected link's `wotproj:refName` supplies the `group` template variable (Section 8.1).
+The host MUST distinguish group associations even when two organizing plans use the same
+local name. Standalone resolution has no group association.
+
+**Proposed scope (open for Working Group decision):** Organizing links are plan-only
+metadata. Ordinary view resolution validates the links' local syntax but does not follow
+them, and removes them from the result. This draft does not admit a grouping-only envelope
+that lacks the otherwise required manifest or affordances. Whether to admit such envelopes,
+expose links between resolved views, or add organizing links to publication snapshot closure
+remains open. Until snapshot bindings for organizing links are defined, a processor MUST NOT
+follow them in snapshot composition or substitute a live organizing target.
+
 ## 4. Source manifest
 
 `wotproj:projects` is a non-empty ordered array. Every source entry MUST contain:
@@ -225,6 +268,8 @@ and prevents an undeclared document from being used as a projection source.
 A source entry MAY also contain:
 
 - `wotproj:routing`: `source` or `projection`; `source` is the default;
+- `wotproj:formTemplate`: an optional form-generation template permitted only when
+  `wotproj:routing` is `projection` (Section 8.1);
 - `tm:minVersion` or `td:minVersion`: an optional floor for a TM or TD source,
   respectively, under the SemVer profile;
 - an incremental compatibility-line selector and optional numeric floor under
@@ -238,51 +283,31 @@ A source entry MAY also contain:
 A source entry's `type` determines its target kind, not its version profile.
 The provider contract MUST establish that profile before constrained source
 selection; a processor MUST NOT infer it from the document's version string.
-For SemVer sources using the provisional core terms, a TM source MAY carry only
-`tm:minVersion`; a TD source MAY carry only `td:minVersion`. The informative
-deployment mapping also permits one `uav:minVersion` for either target kind.
-A source entry with both core floor terms, or with a core floor for the other target kind, MUST fail as
-`invalid-floor`. The floor MUST use the syntax in the [versioned-reference
-proposal][Versioned-reference proposal] and MUST NOT use a generated
-`0.0.0-N` id. A TM floor has no upper bound. A TD floor is a caret bound:
-`X.Y.Z` selects versions from `X.Y.Z` up to but not including `(X+1).0.0`,
-including when X is zero. Without a sticky default, an unfloored SemVer source
-selects the highest eligible version for its kind, and an unfloored TD source
-can cross major versions. Prerelease and sticky-default behavior follow
-[versioned-reference selection](../td-versioned-references/spec.md#61-selection).
-For authored SemVer versions, the processor MUST use
-`version.model` for a TM source and `version.instance` for a TD
-source. The projection envelope's own `version.model` or `version.instance`
-MUST NOT supply a source floor.
-
-An incremental source MUST have its own explicit compatibility-line selector
-and MAY have a numeric floor. The plan's root line and version members MUST NOT
-be inherited by sources. Requirements belong on the source entry, never on an
-explicit affordance selector. The informative mapping uses
-`uav:compatibilityLine` and `uav:minVersion`; it does not replace `td:ref`,
-`tm:ref` or other composition operators. Duplicate legacy/new floor spellings
-MUST fail as `invalid-floor`.
+The [versioned-reference proposal][Versioned-reference proposal] defines the
+permitted floor spellings and values, the SemVer TD major cap, and the explicit
+line required for incremental sources. Requirements belong on the source entry,
+never on an explicit affordance selector. A plan's own version and root line
+MUST NOT supply source requirements. Live source selection and snapshot
+composition follow the distinct
+[resolution rules](../td-versioned-references/spec.md#6-resolution-semantics).
 
 A source MAY itself be a projection plan. It is resolved before its affordances are selected.
 The graph of projection plans MUST be acyclic.
 
-When `wotproj:sourceDigest` is present, the processor MUST compute SHA-256 over the exact
-source bytes as retrieved and compare it to the declared value. The hexadecimal digest MUST
-be lowercase. The processor MUST NOT canonicalize or otherwise transform the bytes before
+The processor MUST verify every declared `wotproj:sourceDigest`, even for sources that do not
+contribute to the resolved view. Verification precedes transforming a source or resolving
+it as a nested projection plan. Compute SHA-256 over the exact source bytes as retrieved and
+compare it to the declared value. The hexadecimal digest MUST be lowercase.
+The processor MUST NOT canonicalize or otherwise transform the bytes before
 hashing. A mismatch MUST fail resolution and identify the source. If the source is provided
 only as an already-parsed object and its original bytes are unavailable, the processor MUST
-report the pin as unverified and MUST NOT treat it as satisfied. When a source digest and
-version requirement are both present, the exact pinned source MUST also satisfy
-that requirement: SemVer floor/cap/prerelease rules or the incremental line and
-numeric floor. A mismatch MUST fail without fallback. A digest alone does not
-establish incremental line membership when identical bytes occur in several
-revisions; the processor still needs trusted revision metadata.
+report the pin as unverified and MUST NOT complete resolution. Checking an unused entry's
+digest does not add a provenance link. A nested plan's digest pins its unresolved bytes,
+not its resolved view or transitive sources.
 
-For snapshot-bound processing, the exact source occurrence binding selects the
-revision. The processor MUST validate its requirement and any source digest
-against that bound revision; it MUST NOT substitute live highest-version
-selection. A nested plan's digest pins its unresolved bytes, not its resolved
-view or transitive sources. WoT-complete publication follows the
+The [versioned-reference rules for projection sources][Source digest processing]
+specify how a digest combines with a version requirement and how a snapshot fixes
+the selected revision. WoT-complete publication follows the
 [publication model and acceptance contract](../td-versioned-references/spec.md#2-publication-model).
 
 ## 5. Selection
@@ -310,8 +335,9 @@ definition. Alongside `tm:ref`, it MAY carry only the following standard annotat
 
 - `title` and `titles`;
 - `description` and `descriptions`;
-- additional `@type` values; and
-- `forms` and `security` under the routing rules of Section 8.
+- additional `@type` values;
+- `forms` and `security` under the routing rules of Section 8; and
+- `wotproj:observe` on a property selector only (Section 5.5).
 
 An explicit selection MAY also carry a vendor-defined annotation whose key is a compact IRI
 with a prefix bound in the plan's effective context. The expanded IRI MUST NOT be in a WoT
@@ -334,10 +360,10 @@ affordance when the source's effective context does not bind that prefix. If the
 the same prefix to a different namespace, resolution MUST fail rather than change the meaning
 of either document.
 
-The selector's `tm:ref` is consumed during resolution; it is the only member discarded. Any
-`tm:ref`, `td:ref`, or other defined reference already present in the source affordance is
-not another selector. It is retained and relocated by source identity and original reference
-origin according to Section 7.
+The selector's `tm:ref` and `wotproj:observe` are consumed during resolution, not copied
+as affordance annotations. Any `tm:ref`, `td:ref`, or other defined reference already present
+in the source affordance is not another selector. It is retained and relocated by source
+identity and original reference origin according to Section 7.
 
 ### 5.2 Whole-source selection
 
@@ -380,6 +406,40 @@ category, the local definition replaces the imported selection in the resolved v
 Processors SHOULD report imported selections displaced by local definitions. Local
 precedence is independent of manifest order.
 
+### 5.5 Observation requests
+
+An explicit imported property selector MAY carry `wotproj:observe` to request collection
+intervals. A plan root MAY carry the same member to supply defaults for its retained imported
+properties, including those selected by a bulk rule. When a target is resolved as an organized
+group, the selected direct organizer's authored root values also supply fallback defaults
+for those properties. A processor MUST NOT inherit defaults from any other organizer or
+from an ancestor of the selected organizer. Standalone and source resolution do not inherit
+organizer defaults. Defaults do not apply to local definitions, actions, or events.
+`wotproj:observe` MUST NOT appear as a plan vocabulary member at any other location.
+
+`wotproj:observe` is a JSON object that MAY contain only `samplingInterval`,
+`publishingInterval`, and `wotproj:byProtocol`. Each interval value MUST be a non-negative
+number in milliseconds. `wotproj:byProtocol` is an object keyed by absolute IRIs identifying
+collection protocol bindings. Each override object MAY contain only the same two interval
+members, with the same units and constraints. The effective request for each interval is
+the first value present in this order:
+
+1. The selector's override for the collection protocol binding, if known.
+2. The selector's general request.
+3. The target plan root's override for the collection protocol binding, if known.
+4. The target plan root's general default.
+5. The selected direct organizer's root override for the collection protocol binding,
+   if resolving as an organized group and the binding is known.
+6. The selected direct organizer's root general default, if resolving as an organized group.
+
+If none of these supplies a value, there is no request for that interval. The collection
+binding is the one used to acquire the source property, not the binding of the published
+view. The host MAY revise requested intervals to match deployment or binding capabilities.
+A request does not guarantee support or a particular delivery rate. Neither the request nor
+the revised values are serialized into the resolved view by this mechanism; the processor
+MUST remove `wotproj:observe` from the plan root and consume it on selectors without changing
+the source definition.
+
 ## 6. Deterministic conflict resolution
 
 The source manifest order is the first selection-order key. Within a source, explicit
@@ -413,9 +473,12 @@ Resolution MUST:
 3. Recursively resolve source projection plans depth-first while detecting cycles.
 4. Identify explicit, bulk, and predicate selections.
 5. Apply deterministic imported-selection precedence and local-definition precedence.
-6. Copy each selected definition with permitted annotations.
+6. Copy each selected definition with permitted annotations, derive any observation requests
+   for retained properties, and obtain any host-supplied forms and security (including forms
+   generated from a template).
 7. Close known local dependencies of selected definitions.
-8. Relocate defined references, preserve contexts and security, and record provenance.
+8. Resolve form URIs, relocate defined references, preserve contexts and security, and record
+   provenance.
 9. Remove projection-only members and the projection marker.
 10. Validate the completed ordinary TD or TM.
 
@@ -465,7 +528,8 @@ Every imported affordance in the resolved view MUST retain provenance identifyin
 document and original affordance definition pointer. The proposed member
 `wotproj:resolvedFrom` carries a URI reference to that original definition. A relative
 provenance reference MUST be resolved against the original source document URI before the
-definition is moved.
+definition is moved. Digest verification alone does not add a provenance link for an
+unused source.
 
 An affordance already carrying provenance retains that original provenance through
 subsequent projection resolution. An intermediate bulk plan is not substituted for an
@@ -480,15 +544,37 @@ to definitions copied into the resolved document MUST target the mapped output l
 Only defined reference-bearing terms and terms explicitly defined as IRI-valued may be
 relocated.
 
-With `source` routing, each carried form's relative `href` MUST be resolved against the
-source's effective `base`, or the source document URI if no `base` is declared. The resolved
-view MUST carry an absolute `href` for that form, and MUST NOT declare a root `base` that
-changes the carried form's meaning.
+With `source` routing, the resolved view MUST carry an absolute `href` for every carried
+form and MUST NOT declare a root `base` that changes its meaning.
+
+**Proposed precedence (open for Working Group decision):** For a carried form with a
+relative `href`, use the source's authored `base` when present, otherwise a
+deployment-supplied base for that source occurrence when configured, otherwise the
+source document URI (its retrieval URI for a retrieved source). The deployment base
+therefore takes precedence over the retrieval URI only when the source has no authored
+`base`; without a deployment base the existing document URI fallback applies. A configured
+base selected by this rule MUST be usable as an absolute URI base under RFC 3986. If the
+selected base is unusable, or no base is available, the processor MUST reject the relative
+`href`.
+
+The deployment base is a resolution input associated with the exact source selected at that
+manifest occurrence, not an authored plan or source field. It MUST NOT change an absolute
+`href`, a projection-owned form, the source's identity or revision, or the original
+owner and origin used for any other reference, including `tm:ref` and `wotproj:resolvedFrom`.
+When the processor uses a deployment-supplied base, it MUST record that base as provenance
+on the form (`wotproj:resolvedFormBase`, provisionally). It MUST retain that provenance
+if the resulting absolute form is later carried into another view. It MUST NOT add this
+provenance when using the authored `base` or source document URI, or when no base is needed.
+The base and resulting `href` MUST NOT contain credentials, including URI user information.
+The processor MUST reject credential-bearing inputs without disclosing credentials in
+the resolved view, provenance, or error details. Authentication material is supplied
+separately under Section 8.
 
 With `projection` routing, the selected affordance's forms are served by the projection
 endpoint. An explicitly selected affordance MUST provide forms; for bulk and predicate
-selections, the projection host MUST supply forms while resolving the view. Such forms are
-resolved against the plan's effective base.
+selections, the projection host MUST supply forms while resolving the view, using the
+generated absolute `href` if a form template applies (Section 8.1). Other projection-owned
+form `href` values are resolved against the plan's effective base.
 
 ### 7.4 Context preservation
 
@@ -540,14 +626,49 @@ Retrieval authorization for the plan and sources is distinct from the security n
 interact with affordances. Retrieval credentials MUST NOT be copied into the resolved
 document.
 
+### 8.1 Form templates for bulk selections
+
+**Proposed scope (open for Working Group decision):** This draft templates only `href`.
+Whether a template should also supply other form members remains open. The host still
+supplies those members and the effective security under Section 8.
+
+A projection-routed source entry MAY provide `wotproj:formTemplate`, an object whose only
+member is an `href` string containing an [RFC 6570](https://www.rfc-editor.org/rfc/rfc6570)
+Level 1 URI template. For each retained whole-source or predicate selection from that
+entry, the projection host MUST expand the template with these string variables:
+
+| Variable | Value |
+| -------- | ----- |
+| `affordance` | The affordance's resolved name, including any bulk name prefix |
+| `kind` | `property`, `action`, or `event` |
+| `source` | The manifest entry's `wotproj:sourceName` |
+| `group` | The selected organizing link's `wotproj:refName` (Section 3.1), if resolving as an organized group |
+
+The template MUST NOT refer to an unknown variable. If expansion needs `group` and no
+group association is supplied, resolution MUST fail. Expansion MUST produce an absolute
+URI; the processor MUST NOT use a base to make a relative expansion absolute. For example,
+`https://gateway.example.org/{group}/{kind}/{affordance}` could expand to
+`https://gateway.example.org/condition/property/pumpSpeed`.
+
+The host uses that URI as the `href` of the forms it supplies for the selection. It still
+supplies the applicable operations, binding metadata, and effective plan-owned security
+under Section 8, and MUST serve the generated forms. Template expansion does not select,
+modify, or weaken that security.
+
+Within one resolved view, two distinct affordances whose forms use the same source
+entry's template MUST NOT have the same expanded `href` and the same effective operation.
+Compare each effective `op` separately, including any default under ordinary TD/TM rules.
+A duplicate pair MUST fail resolution. Explicit selections are not expanded or included in
+this template collision check; their authored forms and security are unchanged by this
+mechanism.
+
 ## 9. Source changes and security considerations
 
-A projection may change its resolved result when a source changes. A source digest pins
-exact source bytes, while a source requirement constrains compatibility and revision
-selection as described in Section 4. A publication snapshot additionally fixes
-dependency bindings and their metadata; it does not waive those requirements.
-This proposal does not define
-notifications or continuous synchronization.
+Resolving a projection again may produce a different result if a source changes. A source
+digest pins the exact source bytes. A source requirement constrains compatibility and
+revision selection as described in Section 4. A publication snapshot also fixes the
+dependency bindings and their metadata. The bound revisions still need to meet the source
+requirements. This proposal does not define notifications or continuous synchronization.
 
 Projection-aware processors may retrieve multiple documents using author-supplied URIs.
 Implementations SHOULD apply safe-fetching policies for allowed network destinations,
@@ -577,10 +698,12 @@ unchanged.
 2. Define validation for marked TD/TM envelopes and selectors that are not yet complete
    affordance definitions.
 3. Complete the list of known document-local dependencies and extension reference rules.
-4. Define how a projection host supplies forms and security for projection-routed bulk and
-   predicate selections, and review whether both routing modes preserve TD/TM security
-   semantics.
+4. Decide whether the template for projection-routed bulk and predicate `href` values
+   (Section 8.1) should cover other form members. Define how the host supplies
+   operations, other binding metadata, and security, and forms when no template is
+   present. Review whether both routing modes preserve TD/TM security semantics.
 5. Define safe-fetching requirements and limits for recursive plan resolution.
 6. Determine what implementation and interoperability evidence is needed before adoption.
 
 [Versioned-reference proposal]: ../td-versioned-references/spec.md#3-vocabulary-and-json-ld-context
+[Source digest processing]: ../td-versioned-references/spec.md#82-wot-projection-plans

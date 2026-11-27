@@ -5,6 +5,7 @@
 
 The companion [specification draft](./spec.md) develops this design into a provisional
 processing model.
+See the [use cases](./use-cases.md) for examples of selection, routing, and publication.
 
 ## Summary
 
@@ -121,10 +122,10 @@ relocated to their resolved targets. Imported definitions retain source provenan
 definitions remain owned by the plan and receive no synthetic provenance.
 
 Permitted annotations can describe an imported affordance without redefining its schema.
-The plan may contribute titles, descriptions, additional `@type` values, context-bound
-vendor-defined annotations, and—when routing interactions to the plan's endpoint—forms and
-security. An annotation `@type` adds RDF class membership; it does not identify the view's
-purpose, which `wotproj:scenario` states. Under source routing, forms and
+The plan may contribute titles, descriptions, additional `@type` values, and context-bound
+vendor-defined annotations. If the plan's endpoint serves the interaction, the plan may
+also contribute forms and security. An annotation `@type` adds RDF class membership; it
+does not identify the view's purpose, which `wotproj:scenario` states. Under source routing, forms and
 security remain source-owned and cannot be restated on a selection. A source form must not
 inherit the plan's credentials; each carried form retains its effective source security.
 

@@ -34,8 +34,6 @@ be represented safely.
 
 ### 1.1 Scope
 
-The following matrix describes the proposed scope:
-
 | Referencing document | Referenced document | Status in this proposal |
 | --- | --- | --- |
 | TD | TD | Proposed for all three mechanisms |
@@ -70,7 +68,7 @@ validated as an ordinary TD.
 
 ## 3. Design principles
 
-An adopted design should:
+The design should:
 
 1. Keep `td:extends`, `td:subthing`, and `td:ref` semantically distinct.
 2. Preserve the current TM-to-TM rules and examples.
@@ -267,13 +265,16 @@ as input and either returns a complete ordinary TD or reports an error. Under th
 5. It validates the final TD and returns it atomically, or returns an error without a
    partial result.
 
-This candidate model may not be appropriate for `td:subthing`, which could remain a
-descriptive relationship and require no resolution. The specification must decide this per
-mechanism rather than impose one processing model on all three.
+If `td:subthing` remains a descriptive relationship, it needs no resolution. The
+specification must decide whether to require resolution for each mechanism.
 
 ## 9. Compatibility and relation to existing processing
 
-The version of a target TD in a `td:extends`, `td:subthing`, or `td:ref` relationship is selected according to the [Versioned References between WoT Documents proposal](../td-versioned-references/spec.md). Version selection determines which TD is supplied to the composition operator; it does not change the operator's inheritance, child-relationship, or definition-reference semantics.
+The [WoT Publications and Versioned References proposal](../td-versioned-references/spec.md#6-resolution-semantics)
+defines live selection for `td:extends`, `td:subthing`, and ordinary `td:ref`. When composing
+from a snapshot, use and check its exact bound target rather than selecting a live revision.
+Retrieving a raw pin does not perform those checks. These rules determine which TD is supplied
+to the operator without changing its inheritance, child-relationship, or definition-reference semantics.
 
 TD-to-TD support should be additive. Existing TM-to-TM processing must produce the same
 results as before. Processors that do not implement TD-to-TD composition need a defined
