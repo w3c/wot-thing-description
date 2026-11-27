@@ -34,12 +34,12 @@ be represented safely.
 
 ### 1.1 Scope
 
-| Referencing document | Referenced document | Status in this proposal |
-| --- | --- | --- |
-| TD | TD | Proposed for all three mechanisms |
-| TM | TM | Existing behavior; unchanged |
-| TD | TM | Out of scope |
-| TM | TD | Out of scope |
+| Referencing document | Referenced document | Status in this proposal           |
+| -------------------- | ------------------- | --------------------------------- |
+| TD                   | TD                  | Proposed for all three mechanisms |
+| TM                   | TM                  | Existing behavior; unchanged      |
+| TD                   | TM                  | Out of scope                      |
+| TM                   | TD                  | Out of scope                      |
 
 The referencing document contains the relation or reference. The referenced document is
 the target of that relation or reference.
@@ -87,11 +87,11 @@ The proposed TD terms use `td:` for `https://www.w3.org/2019/wot/td#`.
 proposed definition-reference member. They are not aliases for `tm:extends`,
 `tm:submodel`, or `tm:ref`. The existing TM terms retain their current definitions.
 
-| Role | Existing TM term | Proposed TD term |
-| --- | --- | --- |
-| Whole-description inheritance | `tm:extends` | `td:extends` |
-| Composition | `tm:submodel` | `td:subthing` |
-| Definition reuse | `tm:ref` | `td:ref` |
+| Role                          | Existing TM term | Proposed TD term |
+| ----------------------------- | ---------------- | ---------------- |
+| Whole-description inheritance | `tm:extends`     | `td:extends`     |
+| Composition                   | `tm:submodel`    | `td:subthing`    |
+| Definition reuse              | `tm:ref`         | `td:ref`         |
 
 The corresponding roles do not imply identical processing semantics for models and concrete
 Things. In particular, `td:subthing` targets a child Thing's TD, not a child model.

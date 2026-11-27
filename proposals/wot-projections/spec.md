@@ -203,9 +203,7 @@ The example below inlines the experimental context bindings it uses:
       "type": "application/td+json",
       "td:minVersion": "1.2.0",
       "wotproj:routing": "source",
-      "wotproj:select": [
-        { "wotproj:affordanceKind": "property" }
-      ]
+      "wotproj:select": [{ "wotproj:affordanceKind": "property" }]
     }
   ],
   "properties": {
@@ -782,12 +780,12 @@ member is an `href` string containing an [RFC 6570](https://www.rfc-editor.org/r
 Level 1 URI template. For each retained whole-source or predicate selection from that
 entry, the projection host MUST expand the template with these string variables:
 
-| Variable | Value |
-| -------- | ----- |
-| `affordance` | The affordance's resolved name, including any bulk name prefix |
-| `kind` | `property`, `action`, or `event` |
-| `source` | The manifest entry's `wotproj:sourceName` |
-| `group` | The selected organizing link's `wotproj:refName` (Section 3.1), if resolving as an organized group |
+| Variable     | Value                                                                                              |
+| ------------ | -------------------------------------------------------------------------------------------------- |
+| `affordance` | The affordance's resolved name, including any bulk name prefix                                     |
+| `kind`       | `property`, `action`, or `event`                                                                   |
+| `source`     | The manifest entry's `wotproj:sourceName`                                                          |
+| `group`      | The selected organizing link's `wotproj:refName` (Section 3.1), if resolving as an organized group |
 
 The template MUST NOT refer to an unknown variable. If expansion needs `group` and no
 group association is supplied, resolution MUST fail. Expansion MUST produce an absolute

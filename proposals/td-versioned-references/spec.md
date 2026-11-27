@@ -44,12 +44,12 @@ Section 2 describes the primary publication and consumption flow. Sections 3–5
 
 The four records below group information that already exists. They introduce no JSON objects, wire fields, or protocol messages.
 
-| Record | What it describes |
-| --- | --- |
-| Revision | One document revision: its trusted source sequence, logical identifier, TD or TM kind, exact revision identifier, authored version label, profile, assignment origin and line where applicable, and verified content evidence. The stored identifier can differ from the authored label. |
-| Requirement | One authored reference: its operator or source media type, target and optional fragment, effective floor, explicit line where applicable, and any authored Projection source digest. |
-| Resolution request | Live selection, raw exact replay, or snapshot composition. The caller supplies source trust and applicable prerelease policy, replay pins, or a channel or snapshot selector; these are not authored floor or line terms. |
-| Resolution result | The exact target and its verified origin and bytes, plus occurrence and manifest evidence when composing a snapshot. The consumer can retain the result for replay. It identifies what was resolved, not what a deployment activated. |
+| Record             | What it describes                                                                                                                                                                                                                                                                        |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Revision           | One document revision: its trusted source sequence, logical identifier, TD or TM kind, exact revision identifier, authored version label, profile, assignment origin and line where applicable, and verified content evidence. The stored identifier can differ from the authored label. |
+| Requirement        | One authored reference: its operator or source media type, target and optional fragment, effective floor, explicit line where applicable, and any authored Projection source digest.                                                                                                     |
+| Resolution request | Live selection, raw exact replay, or snapshot composition. The caller supplies source trust and applicable prerelease policy, replay pins, or a channel or snapshot selector; these are not authored floor or line terms.                                                                |
+| Resolution result  | The exact target and its verified origin and bytes, plus occurrence and manifest evidence when composing a snapshot. The consumer can retain the result for replay. It identifies what was resolved, not what a deployment activated.                                                    |
 
 <a id="9-publication-and-registry-mappings"></a>
 
@@ -119,12 +119,12 @@ This section defines what an author can write at one reference occurrence. Secti
 
 The proposed SemVer term `tm:minVersion` uses the Thing Model namespace `https://www.w3.org/2019/wot/tm#`; `td:minVersion` uses the Thing Description namespace `https://www.w3.org/2019/wot/td#`. Both are string-valued members, not IRI-valued references, and both use the same syntax: a valid [SemVer 2.0.0](https://semver.org/spec/v2.0.0.html) version without build metadata. For example, `1.2.0` and `1.3.0-rc.1` are valid; `1.2`, `v1.2.0`, `^1.2.0`, `>=1.2.0`, and `1.2.0+build.7` are invalid. SemVer's numeric and prerelease identifier rules, including the restrictions on leading zeroes, apply. The provider-generated bookkeeping form `0.0.0-N` MUST NOT be used as a floor, even if the corresponding revision is absent. Registry-specific identifier length limits are not WoT vocabulary constraints: `1.0.0-` followed by 123 ASCII `a` characters is a valid 129-character floor even where stored identifiers have a 128-character limit.
 
-| Reference occurrence | What determines target kind? | SemVer requirement | Incremental requirement for live selection or composition |
-| --- | --- | --- | --- |
-| `tm:extends` or `tm:submodel` link, or object containing ordinary `tm:ref` | Operator: TM | Optional `tm:minVersion`. No TD major cap. A breaking TM major has a different identifier. | Explicit line; optional numeric floor. |
-| TD link with `rel: "type"` | Link selects a TM | `tm:minVersion` and any applicable TD `version.model` supply the floor under Sections 5.2 and 5.3. Neither is an exact pin. | Explicit line; optional numeric floor. No floor from `version.model`. |
-| `td:extends` or `td:subthing` link, or object containing ordinary `td:ref` | Operator: TD | Optional `td:minVersion`. With a floor, the target stays within the floor's major (Section 5.4). Neither version field of the referring TD supplies a floor. | Explicit line; optional numeric floor. |
-| Projection source-manifest entry | Entry's expected media type: TM or TD | Optional `tm:minVersion` for a TM or `td:minVersion` for a TD; the TD cap applies only to TD sources. No implicit floor from the envelope. | Explicit line; optional numeric floor. No line or floor inherited from the envelope. |
+| Reference occurrence                                                       | What determines target kind?          | SemVer requirement                                                                                                                                           | Incremental requirement for live selection or composition                            |
+| -------------------------------------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `tm:extends` or `tm:submodel` link, or object containing ordinary `tm:ref` | Operator: TM                          | Optional `tm:minVersion`. No TD major cap. A breaking TM major has a different identifier.                                                                   | Explicit line; optional numeric floor.                                               |
+| TD link with `rel: "type"`                                                 | Link selects a TM                     | `tm:minVersion` and any applicable TD `version.model` supply the floor under Sections 5.2 and 5.3. Neither is an exact pin.                                  | Explicit line; optional numeric floor. No floor from `version.model`.                |
+| `td:extends` or `td:subthing` link, or object containing ordinary `td:ref` | Operator: TD                          | Optional `td:minVersion`. With a floor, the target stays within the floor's major (Section 5.4). Neither version field of the referring TD supplies a floor. | Explicit line; optional numeric floor.                                               |
+| Projection source-manifest entry                                           | Entry's expected media type: TM or TD | Optional `tm:minVersion` for a TM or `td:minVersion` for a TD; the TD cap applies only to TD sources. No implicit floor from the envelope.                   | Explicit line; optional numeric floor. No line or floor inherited from the envelope. |
 
 Authors MUST use only the floor term for the target kind and place it on the link, ordinary reference object, or source entry listed above. A floor term of the other kind, competing floor terms on one occurrence, or a floor term in any other location (including the document root or a projection selector) MUST fail as `invalid-floor`. Recognize terms by their JSON-LD identifiers in their applicable contexts, not just by their compact spelling. Do not interpret opaque payloads such as examples or default values as dependency occurrences.
 
@@ -298,11 +298,11 @@ The following abbreviated link uses the deployment mapping from Section 3.1, not
 
 The caller chooses the operation. An exact replay pin is not an authored requirement, and a publication selector does not turn a bound dependency into a live lookup.
 
-| Request | How it gets its target | What the resolver checks |
-| --- | --- | --- |
-| Live selection | Establish one authorized source sequence. Use its sticky default if declared; otherwise choose the highest eligible candidate (Section 6.1). | Check target identity and kind, trusted profile, floor, line and prerelease policy as applicable. A sticky SemVer choice bypasses only prerelease filtering. An unacceptable found target or default does not authorize another source or revision as a fallback. |
-| Raw exact replay | Use the caller's exact revision or digest in one authorized source sequence (Section 6.2). | Verify identity, authority, bytes and any retained expectations. Do not derive or apply authored floors or lines and do not claim authoring validity or compatibility. Failure does not retry live. |
-| Snapshot composition | Open the supplied channel once or verify the exact snapshot and use its captured bindings (Section 2.3). | Verify the bound revision's identity, authority and bytes, and check its applicable authored requirements and caller policy. Do not retry live, use another digest match or substitute another snapshot. A partial set is not successful composition. |
+| Request              | How it gets its target                                                                                                                       | What the resolver checks                                                                                                                                                                                                                                          |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Live selection       | Establish one authorized source sequence. Use its sticky default if declared; otherwise choose the highest eligible candidate (Section 6.1). | Check target identity and kind, trusted profile, floor, line and prerelease policy as applicable. A sticky SemVer choice bypasses only prerelease filtering. An unacceptable found target or default does not authorize another source or revision as a fallback. |
+| Raw exact replay     | Use the caller's exact revision or digest in one authorized source sequence (Section 6.2).                                                   | Verify identity, authority, bytes and any retained expectations. Do not derive or apply authored floors or lines and do not claim authoring validity or compatibility. Failure does not retry live.                                                               |
+| Snapshot composition | Open the supplied channel once or verify the exact snapshot and use its captured bindings (Section 2.3).                                     | Verify the bound revision's identity, authority and bytes, and check its applicable authored requirements and caller policy. Do not retry live, use another digest match or substitute another snapshot. A partial set is not successful composition.             |
 
 In any of these operations, conflicting bytes or fixed metadata claiming the
 same source revision identity MUST fail as `inconsistent-publication`.
@@ -340,22 +340,22 @@ This separation does not prohibit the distinct, explicitly authored `wotproj:sou
 
 These cases assume SemVer unpinned resolution of one target identifier and no sticky default. A dash in the floor column means the reference omits a floor.
 
-| Available authored versions | Floor | Consumer allows prereleases | Result |
-| --- | --- | --- | --- |
-| `1.0.0`, `1.1.0`, `1.0.1` | `1.0.0` | No | `1.1.0`, independent of publication order |
-| `1.1.0` | `1.2.0` | No | Failure: unsatisfied floor |
-| `1.2.0`, `1.3.0-rc.1` | `1.2.0` | No | `1.2.0` |
-| `1.2.0`, `1.3.0-rc.1` | `1.2.0` | Yes | `1.3.0-rc.1` |
-| `1.3.0-rc.2`, `1.3.0-rc.10`, `1.3.0` | `1.3.0-rc.1` | No | `1.3.0` |
-| `1.3.0-rc.2`, `1.3.0-rc.10` | `1.3.0-rc.1` | No | `1.3.0-rc.10` |
-| `1.2.0-rc.1` | `1.2.0` | Yes | Failure: prerelease is below the floor |
-| `1.3.0-rc.1` | — | No | Failure: no eligible release |
-| `1.2.0`, `1.3.0` | — | No | `1.3.0` |
-| TD target: `1.4.0`, `1.7.0`, `2.0.0` | `1.4.0` | No | `1.7.0` |
-| TD target: `1.4.0`, `2.0.0` | `1.4.0` | No | `1.4.0` |
-| TD target: `1.2.0`, `2.0.0` | — | No | `2.0.0` |
-| TD target: `1.2.0-rc.1`, `1.3.0-rc.1`, `2.0.0-rc.1` | `1.2.0-rc.1` | No | `1.3.0-rc.1` |
-| TD target: `0.5.0-rc.1`, `1.0.0-rc.1` | `0.4.2` | Yes | `0.5.0-rc.1`; the next major is excluded even for a floor of major zero |
+| Available authored versions                         | Floor        | Consumer allows prereleases | Result                                                                  |
+| --------------------------------------------------- | ------------ | --------------------------- | ----------------------------------------------------------------------- |
+| `1.0.0`, `1.1.0`, `1.0.1`                           | `1.0.0`      | No                          | `1.1.0`, independent of publication order                               |
+| `1.1.0`                                             | `1.2.0`      | No                          | Failure: unsatisfied floor                                              |
+| `1.2.0`, `1.3.0-rc.1`                               | `1.2.0`      | No                          | `1.2.0`                                                                 |
+| `1.2.0`, `1.3.0-rc.1`                               | `1.2.0`      | Yes                         | `1.3.0-rc.1`                                                            |
+| `1.3.0-rc.2`, `1.3.0-rc.10`, `1.3.0`                | `1.3.0-rc.1` | No                          | `1.3.0`                                                                 |
+| `1.3.0-rc.2`, `1.3.0-rc.10`                         | `1.3.0-rc.1` | No                          | `1.3.0-rc.10`                                                           |
+| `1.2.0-rc.1`                                        | `1.2.0`      | Yes                         | Failure: prerelease is below the floor                                  |
+| `1.3.0-rc.1`                                        | —            | No                          | Failure: no eligible release                                            |
+| `1.2.0`, `1.3.0`                                    | —            | No                          | `1.3.0`                                                                 |
+| TD target: `1.4.0`, `1.7.0`, `2.0.0`                | `1.4.0`      | No                          | `1.7.0`                                                                 |
+| TD target: `1.4.0`, `2.0.0`                         | `1.4.0`      | No                          | `1.4.0`                                                                 |
+| TD target: `1.2.0`, `2.0.0`                         | —            | No                          | `2.0.0`                                                                 |
+| TD target: `1.2.0-rc.1`, `1.3.0-rc.1`, `2.0.0-rc.1` | `1.2.0-rc.1` | No                          | `1.3.0-rc.1`                                                            |
+| TD target: `0.5.0-rc.1`, `1.0.0-rc.1`               | `0.4.2`      | Yes                         | `0.5.0-rc.1`; the next major is excluded even for a floor of major zero |
 
 A TD with two SemVer type targets and `version.model` fails with `ambiguous-floor` if one link omits its explicit floor, even if the other supplies a malformed floor. With one SemVer target and one incremental target, the SemVer link can use `version.model` without an explicit floor, but the incremental link must have its own line. Without `version.model`, each SemVer link uses only its explicit floor, if present.
 
@@ -363,18 +363,18 @@ For the pump type link in Section 5.4, the floor is `2.3.0`. If the authorized s
 
 The following cases contrast live selection, raw replay and publication acceptance. A and B abbreviate distinct absolute incremental line URIs in one source sequence.
 
-| Operation and candidates | Requirement | Result |
-| --- | --- | --- |
-| Live: `42/A`, `43/B`, `44/A` | Line A, no floor | `44/A` |
-| Live: same history | Line A, floor `45` | `unsatisfied` |
-| Live: same history | Floor `42`, no line | `compatibility-required` |
-| Live: same history, sticky `43/B` | Line A | `unsatisfied`; do not select `44/A` |
-| Live SemVer: `1.4.0`, `1.7.0`, sticky `2.0.0` | TD floor `1.4.0` | `unsatisfied`; do not select `1.7.0` |
-| Raw replay: revision `42/A` retained | Current authored floor `44` | Retrieve `42/A`; verify retained expectations |
-| Raw replay: an exact revision with no recorded line | No authored line | Retrieve the revision if identity, authorization and bytes check out |
-| Bare digest: identical bytes at `42/A` and `44/B` | Digest only | `44/B`; no line-membership guarantee |
-| Snapshot binds an incremental target | No authored line | `compatibility-required`; exact binding does not waive the line requirement |
-| Snapshot binds dependency to `43/B` | Source requires A | Reject composition; no live or older-snapshot fallback |
+| Operation and candidates                            | Requirement                 | Result                                                                      |
+| --------------------------------------------------- | --------------------------- | --------------------------------------------------------------------------- |
+| Live: `42/A`, `43/B`, `44/A`                        | Line A, no floor            | `44/A`                                                                      |
+| Live: same history                                  | Line A, floor `45`          | `unsatisfied`                                                               |
+| Live: same history                                  | Floor `42`, no line         | `compatibility-required`                                                    |
+| Live: same history, sticky `43/B`                   | Line A                      | `unsatisfied`; do not select `44/A`                                         |
+| Live SemVer: `1.4.0`, `1.7.0`, sticky `2.0.0`       | TD floor `1.4.0`            | `unsatisfied`; do not select `1.7.0`                                        |
+| Raw replay: revision `42/A` retained                | Current authored floor `44` | Retrieve `42/A`; verify retained expectations                               |
+| Raw replay: an exact revision with no recorded line | No authored line            | Retrieve the revision if identity, authorization and bytes check out        |
+| Bare digest: identical bytes at `42/A` and `44/B`   | Digest only                 | `44/B`; no line-membership guarantee                                        |
+| Snapshot binds an incremental target                | No authored line            | `compatibility-required`; exact binding does not waive the line requirement |
+| Snapshot binds dependency to `43/B`                 | Source requires A           | Reject composition; no live or older-snapshot fallback                      |
 
 ## 7. Version-navigation links
 

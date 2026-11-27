@@ -11,13 +11,13 @@ The status of a proposal is indicated next to it with the following meanings:
 - Accepted: The proposal is in use by the TF
 - Retired: The proposal was accepted and used but it is not relevant anymore and thus is retired.
 
-| Proposal Name and Link                               | Status   |
-| ---------------------------------------------------- | -------- |
-| [Simplified TD](./simplified-td/index.html)          | Rejected |
-| [Hypermedia 1](./hypermedia-control/README.md)       | Paused   |
-| [Hypermedia 2](./hypermedia-control-2/README.md)     | Paused   |
-| [Hypermedia 3](./hypermedia-control-3/README.md)     | Paused   |
-| [Project Management](./project-management/README.md) | Accepted |
-| [WoT Projection Plans](./wot-projections/README.md) | In Progress |
-| [TD Composition and Reuse](./td-composition/README.md) | In Progress |
+| Proposal Name and Link                                                           | Status      |
+| -------------------------------------------------------------------------------- | ----------- |
+| [Simplified TD](./simplified-td/index.html)                                      | Rejected    |
+| [Hypermedia 1](./hypermedia-control/README.md)                                   | Paused      |
+| [Hypermedia 2](./hypermedia-control-2/README.md)                                 | Paused      |
+| [Hypermedia 3](./hypermedia-control-3/README.md)                                 | Paused      |
+| [Project Management](./project-management/README.md)                             | Accepted    |
+| [WoT Projection Plans](./wot-projections/README.md)                              | In Progress |
+| [TD Composition and Reuse](./td-composition/README.md)                           | In Progress |
 | [WoT Publications and Versioned References](./td-versioned-references/README.md) | In Progress |
